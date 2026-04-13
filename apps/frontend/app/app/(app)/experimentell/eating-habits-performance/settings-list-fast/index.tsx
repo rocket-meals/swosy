@@ -10,7 +10,7 @@
  * in the "settings-list" variant.
  */
 import { FlatList, SafeAreaView } from 'react-native';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -20,6 +20,8 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import DebugView from '@/components/DebugView';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import { useNavigation } from 'expo-router';
 
 // ---------------------------------------------------------------------------
 // Screen
@@ -30,6 +32,14 @@ const EatingHabitsSettingsListFast = () => {
 	const { translate } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_settings_list_fast)} />,
+		});
+	}, [navigation, translate]);
 
 	const mountTimeRef = useRef<number>(performance.now());
 	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);

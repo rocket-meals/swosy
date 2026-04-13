@@ -12,7 +12,8 @@ import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
 import AppButton from '@/components/AppButton';
 
 const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isArabic = language === 'ar';
 	const { theme } = useTheme();
 	const state = useAppSelector((state) => state);
 	const { primaryColor, selectedTheme: mode } = state.settings;
@@ -44,10 +45,10 @@ const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
 	return (
 		<View style={styles.sheetView}>
 			<View style={styles.sheetHeader}></View>
-			<Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>
+			<Text style={{ ...styles.sheetHeading, color: theme.sheet.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : {}) }}>
 				{translate(TranslationKeys.show_login_for_management_with_email_and_password)}
 			</Text>
-			<Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>
+			<Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : {}) }}>
 				{translate(TranslationKeys.management_login_description)}
 			</Text>
 			<SettingsListTextInputField

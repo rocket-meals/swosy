@@ -32,6 +32,7 @@ export interface FeatureWishesScreenTexts {
 export interface FeatureWishesScreenProps {
 	isAdmin?: boolean;
 	primaryColor?: string;
+	isArabic?: boolean;
 	texts?: FeatureWishesScreenTexts;
 }
 
@@ -79,6 +80,7 @@ const STATUS_DRAFT = 'draft';
 const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	isAdmin = false,
 	primaryColor,
+	isArabic = false,
 	texts,
 }) => {
 	const { theme, isDark } = useTheme();
@@ -252,15 +254,18 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 							likeCount={item.likes ?? 0}
 							onPressLike={() => handleLike(item.id ?? '')}
 							primaryColor={resolvedPrimaryColor}
+							isArabic={isArabic}
 						/>
 					}
 					groupPosition={groupPosition}
 					showSeparator={groupPosition !== 'bottom' && groupPosition !== 'single'}
 					onPress={() => openDetail(item)}
+					reverseLayout={isArabic}
+					titleTextAlign={isArabic ? 'right' : 'left'}
 				/>
 			);
 		},
-		[visibleItems.length, resolvedPrimaryColor, contrastColor, likedIds, handleLike, openDetail]
+		[visibleItems.length, resolvedPrimaryColor, contrastColor, likedIds, handleLike, openDetail, isArabic]
 	);
 
 	const keyExtractor = useCallback((item: FeatureWishItem) => item.id ?? '', []);
@@ -284,21 +289,21 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={styles.header}>
-				<Text style={[styles.introText, { color: theme.screen.text }]}>{introText}</Text>
+				<Text style={[styles.introText, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }]}>{introText}</Text>
 				<View
 					style={[
 						styles.searchInputContainer,
-						{ backgroundColor: theme.screen.iconBg },
+						{ backgroundColor: theme.screen.iconBg, flexDirection: isArabic ? 'row-reverse' : 'row' },
 					]}
 				>
 					<MaterialCommunityIcons
 						name="magnify"
 						size={20}
 						color={theme.screen.icon}
-						style={styles.searchIcon}
+						style={isArabic ? { marginLeft: 6 } : styles.searchIcon}
 					/>
 					<TextInput
-						style={[styles.searchInput, { color: theme.screen.text }]}
+						style={[styles.searchInput, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }]}
 						value={searchText}
 						onChangeText={setSearchText}
 						placeholder={searchPlaceholder}
@@ -306,14 +311,14 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 						returnKeyType="search"
 					/>
 					{showCreateButton && (
-						<Pressable onPress={() => setSearchText('')} style={styles.clearButton}>
+						<Pressable onPress={() => setSearchText('')} style={isArabic ? { paddingRight: 6 } : styles.clearButton}>
 							<MaterialCommunityIcons name="close-circle" size={18} color={theme.screen.icon} />
 						</Pressable>
 					)}
 				</View>
 				{showCreateButton && (
 					<Pressable
-						style={[styles.createButton, { backgroundColor: resolvedPrimaryColor }]}
+						style={[styles.createButton, { backgroundColor: resolvedPrimaryColor, flexDirection: isArabic ? 'row-reverse' : 'row' }]}
 						onPress={showCreateModal}
 					>
 						<MaterialCommunityIcons name="plus-circle-outline" size={18} color={contrastColor} />
@@ -322,7 +327,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 						</Text>
 					</Pressable>
 				)}
-				<View style={styles.filterRow}>
+				<View style={[styles.filterRow, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 					<Pressable
 						style={filterButtonStyle(activeFilter === STATUS_PUBLISHED)}
 						onPress={() => setActiveFilter(STATUS_PUBLISHED)}

@@ -1,14 +1,15 @@
 import { ScrollView, Text, View } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '../styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 /**
  * Shared base props for plain marking row components in the eating-habits-performance
@@ -27,7 +28,15 @@ const EatingHabitsPerformanceIndex = () => {
 	useSetPageTitle(TranslationKeys.eating_habits_performance);
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance)} />,
+		});
+	}, [navigation, translate]);
 
 	const listItems = [
 		{
@@ -107,7 +116,7 @@ const EatingHabitsPerformanceIndex = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 					{translate(TranslationKeys.eating_habits_performance)}
 				</Text>
 				{listItems.map((item, index) => {
@@ -120,7 +129,7 @@ const EatingHabitsPerformanceIndex = () => {
 							iconBgColor={primaryColor}
 							leftIcon={item.leftIcon}
 							label={item.label}
-							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+							rightIcon={<Entypo name={isArabic ? "chevron-small-left" : "chevron-small-right"} color={theme.screen.icon} size={24} />}
 							handleFunction={item.onPress}
 							groupPosition={groupPosition}
 						/>

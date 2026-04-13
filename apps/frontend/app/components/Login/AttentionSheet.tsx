@@ -64,7 +64,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 							text={translate(TranslationKeys.cancel)}
 							onPress={closeSheet}
 							style={styles.cancleButton}
-							textStyle={styles.confirmLabel}
+							textStyle={[styles.confirmLabel, { color: theme.dark }]}
 						/>
 					</View>
 				</View>

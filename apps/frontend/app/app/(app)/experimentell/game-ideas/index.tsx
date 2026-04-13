@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAppSelector } from '@/redux/hooks';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import styles from './styles';
@@ -60,6 +61,8 @@ const generateMemoryBoard = (): (Card | null)[] => {
 const GameIdeas = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const { language } = useAppSelector(state => state.settings);
+	const isArabic = language === 'ar';
 	useSetPageTitle(TranslationKeys.game_ideas);
 
 	const [ratingPair, setRatingPair] = useState<[Dish, Dish]>(getRandomPair());
@@ -120,10 +123,10 @@ const GameIdeas = () => {
 
 	return (
 		<ScrollView style={{ flex: 1, backgroundColor: theme.screen.background }} contentContainerStyle={styles.container}>
-			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.game_ideas)}</Text>
+			<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.game_ideas)}</Text>
 
-			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_better_rated_dish)}</Text>
-			<View style={styles.row}>
+			<Text style={{ ...styles.subheading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.guess_better_rated_dish)}</Text>
+			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{ratingPair.map(dish => (
 					<AppButton
 						key={dish.name}
@@ -132,14 +135,14 @@ const GameIdeas = () => {
 						text={dish.name}
 						onPress={() => handleRatingGuess(dish)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
-						textStyle={{ color: theme.screen.text }}
+						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}
 					/>
 				))}
 			</View>
-			{ratingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{ratingResult}</Text>}
+			{ratingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}>{ratingResult}</Text>}
 
-			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_most_disliked_marking)}</Text>
-			<View style={styles.row}>
+			<Text style={{ ...styles.subheading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.guess_most_disliked_marking)}</Text>
+			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{markings.map(m => (
 					<AppButton
 						key={m.name}
@@ -148,13 +151,13 @@ const GameIdeas = () => {
 						text={m.name}
 						onPress={() => handleMarkingGuess(m)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
-						textStyle={{ color: theme.screen.text }}
+						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}
 					/>
 				))}
 			</View>
-			{markingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{markingResult}</Text>}
+			{markingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}>{markingResult}</Text>}
 
-			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.food_memory_game)}</Text>
+			<Text style={{ ...styles.subheading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.food_memory_game)}</Text>
 			<View style={styles.memoryContainer}>
 				{board.map((card, idx) =>
 					card ? (
@@ -173,8 +176,8 @@ const GameIdeas = () => {
 				)}
 			</View>
 
-			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_more_expensive_dish)}</Text>
-			<View style={styles.row}>
+			<Text style={{ ...styles.subheading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.guess_more_expensive_dish)}</Text>
+			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{pricePair.map(dish => (
 					<AppButton
 						key={dish.name}
@@ -183,11 +186,11 @@ const GameIdeas = () => {
 						text={dish.name}
 						onPress={() => handlePriceGuess(dish)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
-						textStyle={{ color: theme.screen.text }}
+						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}
 					/>
 				))}
 			</View>
-			{priceResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{priceResult}</Text>}
+			{priceResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}>{priceResult}</Text>}
 		</ScrollView>
 	);
 };

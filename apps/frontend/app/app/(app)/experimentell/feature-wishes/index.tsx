@@ -11,7 +11,8 @@ const FeatureWishesRoute = () => {
 	useSetPageTitle(TranslationKeys.feature_wishes);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { language, primaryColor } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 	const { isManagement } = useAppSelector((state) => state.authReducer);
 
 	return (
@@ -19,6 +20,7 @@ const FeatureWishesRoute = () => {
 			<FeatureWishesScreen
 				isAdmin={isManagement}
 				primaryColor={primaryColor}
+				isArabic={isArabic}
 				texts={{
 					introText: translate(TranslationKeys.feature_wishes_intro),
 					filterPublishedLabel: translate(TranslationKeys.feature_wishes_filter_published),

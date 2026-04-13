@@ -425,7 +425,7 @@ const ChatDetailsScreen = () => {
                                                                         }
                                                                         rightIcon={
                                                                                 <MaterialCommunityIcons
-                                                                                        name="chevron-right"
+                                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
                                                                                         size={24}
                                                                                         color={theme.screen.icon}
                                                                                 />
@@ -433,6 +433,8 @@ const ChatDetailsScreen = () => {
                                                                         onPress={food?.id ? handlePress : undefined}
                                                                         iconBackgroundColor={foodsAreaColor}
                                                                         groupPosition="top"
+                                                                        reverseLayout={language === 'ar'}
+                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                                 />
                                                                 <SettingsList
                                                                         label={translate(TranslationKeys.linked_elements_rating)}
@@ -446,6 +448,8 @@ const ChatDetailsScreen = () => {
                                                                         }
                                                                         iconBackgroundColor={foodsAreaColor}
                                                                         groupPosition="middle"
+                                                                        reverseLayout={language === 'ar'}
+                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                                 />
                                                                 <SettingsList
                                                                         label={translate(TranslationKeys.linked_elements_comment)}
@@ -460,6 +464,8 @@ const ChatDetailsScreen = () => {
                                                                         iconBackgroundColor={foodsAreaColor}
                                                                         groupPosition="bottom"
                                                                         showSeparator={false}
+                                                                        reverseLayout={language === 'ar'}
+                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                                 />
                                                         </>
                                                 );

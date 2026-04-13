@@ -11,7 +11,7 @@
  * compared to the flat plain-text variant.
  */
 import { SafeAreaView, ScrollView, Text, View } from 'react-native';
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -21,13 +21,15 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import DebugView from '@/components/DebugView';
 import { PlainMarkingBaseProps } from '..';
+import { useNavigation } from 'expo-router';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 // ---------------------------------------------------------------------------
 // Minimal plain component – receives resolved strings, no hooks/Redux inside
 // ---------------------------------------------------------------------------
 type PlainMarkingRowProps = PlainMarkingBaseProps;
 
-const PlainMarkingRow: React.FC<PlainMarkingRowProps> = ({ id, name, description, borderColor, textColor }) => (
+const PlainMarkingRow: React.FC<PlainMarkingRowProps & { isArabic: boolean }> = ({ id, name, description, borderColor, textColor, isArabic }) => (
 	<View
 		style={{
 			marginBottom: 12,
@@ -36,15 +38,38 @@ const PlainMarkingRow: React.FC<PlainMarkingRowProps> = ({ id, name, description
 			paddingBottom: 8,
 		}}
 	>
-		<Text style={{ color: textColor, fontWeight: 'bold', fontSize: 14 }}>
+		<Text
+			style={{
+				color: textColor,
+				fontWeight: 'bold',
+				fontSize: 14,
+				...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+			}}
+		>
 			{name}
 		</Text>
 		{!!description && (
-			<Text style={{ color: textColor, fontSize: 12, marginTop: 2, opacity: 0.7 }}>
+			<Text
+				style={{
+					color: textColor,
+					fontSize: 12,
+					marginTop: 2,
+					opacity: 0.7,
+					...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+				}}
+			>
 				{description}
 			</Text>
 		)}
-		<Text style={{ color: textColor, fontSize: 10, marginTop: 2, opacity: 0.4 }}>
+		<Text
+			style={{
+				color: textColor,
+				fontSize: 10,
+				marginTop: 2,
+				opacity: 0.4,
+				...(isArabic ? { textAlign: 'right', writingDirection: 'ltr', alignSelf: 'flex-end' } : {}),
+			}}
+		>
 			{`id: ${id}`}
 		</Text>
 	</View>
@@ -59,6 +84,14 @@ const EatingHabitsPlainEachComponent = () => {
 	const { translate, language } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const isArabic = language === 'ar';
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_plain_each_component)} />,
+		});
+	}, [navigation, translate]);
 
 	const mountTimeRef = useRef<number>(performance.now());
 	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);
@@ -92,6 +125,7 @@ const EatingHabitsPlainEachComponent = () => {
 								description={description}
 								borderColor={borderColor}
 								textColor={textColor}
+								isArabic={isArabic}
 							/>
 						);
 					})}

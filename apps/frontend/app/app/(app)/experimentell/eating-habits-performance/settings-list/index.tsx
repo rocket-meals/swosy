@@ -10,7 +10,7 @@
  * compared to the fully plain variants (plain-component-full etc.).
  */
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -23,6 +23,8 @@ import SettingsList from '@/components/SettingsList';
 import { SettingsListProps } from '@/components/SettingsList/types';
 import MarkingIcon from '@/components/MarkingIcon';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import { useNavigation } from 'expo-router';
 
 // ---------------------------------------------------------------------------
 // Per-marking component – reads its own like state from Redux
@@ -88,6 +90,14 @@ const EatingHabitsSettingsList = () => {
 	const { translate } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_settings_list)} />,
+		});
+	}, [navigation, translate]);
 
 	const mountTimeRef = useRef<number>(performance.now());
 	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);

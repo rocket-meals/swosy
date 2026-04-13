@@ -9,6 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { performLogout } from '@/helper/logoutHelper';
+import { useAppSelector } from '@/redux/hooks';
 
 const useAccountRequiredModal = () => {
 	const { show, close, closeAll } = useMyScrollViewModal();
@@ -16,6 +17,8 @@ const useAccountRequiredModal = () => {
 	const { theme } = useTheme();
 	const router = useRouter();
 	const dispatch = useDispatch();
+	const language = useAppSelector((state) => state.settings.language);
+	const isArabic = language === 'ar';
 
 	const openAccountRequiredModal = useCallback(() => {
 		const handleLogin = () => {
@@ -24,10 +27,12 @@ const useAccountRequiredModal = () => {
 
 		show({
 			title: translate(TranslationKeys.access_limited),
+			titleTextAlign: isArabic ? 'right' : 'left',
+			titleWritingDirection: isArabic ? 'rtl' : 'ltr',
 			onClose: close,
 			children: (
 				<View style={{ gap: 12 }}>
-					<Text style={{ color: theme.sheet.text }}>
+					<Text style={{ color: theme.sheet.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 						{translate(TranslationKeys.limited_access_description)}
 					</Text>
 					<AppButton
@@ -41,7 +46,7 @@ const useAccountRequiredModal = () => {
 				</View>
 			),
 		});
-	}, [close, closeAll, dispatch, router, show, theme.sheet.text, translate]);
+	}, [close, closeAll, dispatch, router, show, theme.sheet.text, translate, isArabic]);
 
 	return { openAccountRequiredModal, closeAccountRequiredModal: close };
 };

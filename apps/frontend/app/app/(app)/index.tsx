@@ -130,7 +130,12 @@ const Home = () => {
 			>
 				<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_canteens_found)}</Text>
 				<AppButton
-					style={{ ...styles.continueButton, backgroundColor: theme.screen.iconBg, marginVertical: 0, justifyContent: 'flex-start' }}
+					style={{
+						...styles.continueButton,
+						backgroundColor: theme.screen.iconBg,
+						marginVertical: 0,
+						justifyContent: 'flex-start',
+					}}
 					onPress={() => drawerNavigation.toggleDrawer()}
 					text={translate(TranslationKeys.open_drawer)}
 					iconLeft={<Ionicons name="menu" size={24} color={theme.screen.icon} />}

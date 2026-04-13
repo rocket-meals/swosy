@@ -27,7 +27,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { excerpt } from '@/constants/HelperFunctions';
 import animation from '@/assets/animations/allergist.json';
 import type LottieView from 'lottie-react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -38,7 +38,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -46,6 +46,7 @@ import DebugView from '@/components/DebugView';
 import eatingHabitsStyles from '../../../eating-habits/styles';
 import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 import AppButton from '@/components/AppButton';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 // Isolated cache so this variant doesn't interfere with other screens
 let _cachedAnimationJson: any = null;
@@ -71,6 +72,14 @@ const EatingHabitsPerformanceNoDefer = () => {
 	const [isActive, setIsActive] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const isArabic = language === 'ar';
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_no_defer)} />,
+		});
+	}, [navigation, translate]);
 
 	// Performance timing
 	const mountTimeRef = useRef<number>(performance.now());
@@ -157,7 +166,7 @@ const EatingHabitsPerformanceNoDefer = () => {
 					ref={animationRef}
 					source={animationJson}
 					resizeMode="contain"
-					style={isWeb ? { width: 220, height: 220 } : { width: '100%', height: '100%' }}
+					style={{ width: isWeb ? 220 : '100%', height: 220 }}
 					autoPlay={autoPlay || false}
 					loop={false}
 				/>
@@ -202,9 +211,12 @@ const EatingHabitsPerformanceNoDefer = () => {
 			<View style={{ flex: 1 }}>
 				<ScrollView
 					style={{ backgroundColor: theme.screen.background }}
-					contentContainerStyle={eatingHabitsStyles.flatListContent}
+					contentContainerStyle={[
+						eatingHabitsStyles.flatListContent,
+						{ paddingBottom: 100 }
+					]}
 				>
-					<View style={{ width: '100%' }}>{renderLottie}</View>
+					<View style={{ width: '100%', alignItems: 'center' }}>{renderLottie}</View>
 					<View
 						style={{
 							...eatingHabitsStyles.eatingHabitsContainer,
@@ -212,18 +224,28 @@ const EatingHabitsPerformanceNoDefer = () => {
 						}}
 					>
 						<DebugView title="Performance (No Defer)" logs={debugLogs} isVisible />
-						<Text style={{ ...eatingHabitsStyles.body1, color: theme.screen.text }}>
+						<Text style={{ 
+							...eatingHabitsStyles.body1, 
+							color: theme.screen.text,
+							textAlign: isArabic ? 'right' : 'left',
+							writingDirection: isArabic ? 'rtl' : 'ltr'
+						}}>
 							{readMore
 								? translate(TranslationKeys.eatinghabits_introduction)
 								: excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
 						</Text>
 						{readMore && <FoodLabelingInfo textStyle={eatingHabitsStyles.body2} backgroundColor={primaryColor} />}
-						<View style={eatingHabitsStyles.readMoreContainer}>
+						<View style={[eatingHabitsStyles.readMoreContainer, isArabic ? { alignItems: 'flex-end' } : undefined]}>
 							<AppButton
 								text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
 								onPress={() => setReadMore((prev) => !prev)}
 								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary, marginVertical: 0 }}
-								textStyle={{ ...eatingHabitsStyles.readMore, color: contrastColor }}
+								textStyle={{ 
+									...eatingHabitsStyles.readMore, 
+									color: contrastColor,
+									textAlign: isArabic ? 'right' : 'left',
+									writingDirection: isArabic ? 'rtl' : 'ltr'
+								}}
 							/>
 						</View>
 						<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
@@ -233,6 +255,7 @@ const EatingHabitsPerformanceNoDefer = () => {
 							label={translate(TranslationKeys.clear_markings_selection)}
 							handleFunction={handleClearMarkings}
 							groupPosition="single"
+							rightIcon={<Entypo name={isArabic ? "chevron-small-left" : "chevron-small-right"} color={theme.screen.icon} size={24} />}
 						/>
 						{/* Markings rendered immediately without deferral */}
 						{markingsSections.map((section) => (

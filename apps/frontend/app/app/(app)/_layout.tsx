@@ -680,10 +680,45 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/account-required-example/index"
+					options={{
+						header: () => <CustomStackHeader label="Account Required Example" key={'account_required_example'} />,
+						title: "Account Required Example",
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/eating-habits-performance/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance)} key={'eating_habits_performance'} />,
+						title: translate(TranslationKeys.eating_habits_performance),
+					}}
+				/>
+				<Drawer.Screen
 					name="experimentell/edge-speech/index"
 					options={{
 						header: () => <CustomStackHeader label={translate(TranslationKeys.edge_speech_test)} key={'edge_speech_test'} />,
 						title: translate(TranslationKeys.edge_speech_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/feature-wishes/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.feature_wishes)} key={"feature_wishes"} />,
+						title: translate(TranslationKeys.feature_wishes),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/food-wishlist/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.food_wishlist)} key={"food_wishlist"} />,
+						title: translate(TranslationKeys.food_wishlist),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/game-ideas/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.game_ideas)} key={"game_ideas"} />,
+						title: translate(TranslationKeys.game_ideas),
 					}}
 				/>
 				<Drawer.Screen

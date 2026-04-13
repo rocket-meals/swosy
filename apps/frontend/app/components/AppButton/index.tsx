@@ -25,6 +25,11 @@ const AppButton: React.FC<AppButtonProps> = ({
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
 
 	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
+	const resolvedText = typeof text === 'string' || typeof text === 'number' ? String(text) : '';
+	const resolvedIconLeft =
+		React.isValidElement(iconLeft) || Array.isArray(iconLeft) || typeof iconLeft === 'string' || typeof iconLeft === 'number' ? iconLeft : null;
+	const resolvedIconRight =
+		React.isValidElement(iconRight) || Array.isArray(iconRight) || typeof iconRight === 'string' || typeof iconRight === 'number' ? iconRight : null;
 
 	const getBackgroundColor = () => {
 		if (variant === 'primary') return primaryColor;
@@ -63,9 +68,9 @@ const AppButton: React.FC<AppButtonProps> = ({
 				<ActivityIndicator color={loadingIndicatorColor ?? getTextColor()} size={loadingIndicatorSize} />
 			) : (
 				<>
-					{iconLeft && <View>{iconLeft}</View>}
-					<Text style={[usePlainText ? null : styles.label, { color: getTextColor() }, textStyle]}>{text}</Text>
-					{iconRight && <View>{iconRight}</View>}
+					{resolvedIconLeft ? <View>{resolvedIconLeft}</View> : null}
+					<Text style={[usePlainText ? null : styles.label, { color: getTextColor() }, textStyle]}>{resolvedText}</Text>
+					{resolvedIconRight ? <View>{resolvedIconRight}</View> : null}
 				</>
 			)}
 		</TouchableOpacity>

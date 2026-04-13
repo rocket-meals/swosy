@@ -9,7 +9,7 @@
  * Purpose: compare FlashList vs FlatList vs ScrollView render times.
  */
 import { SafeAreaView } from 'react-native';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
@@ -20,6 +20,8 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import DebugView from '@/components/DebugView';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import { useNavigation } from 'expo-router';
 
 // ---------------------------------------------------------------------------
 // Screen
@@ -30,6 +32,13 @@ const EatingHabitsSettingsListFlash = () => {
 	const { translate } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_settings_list_flash)} />,
+		});
+	}, [navigation, translate]);
 
 	const mountTimeRef = useRef<number>(performance.now());
 	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);

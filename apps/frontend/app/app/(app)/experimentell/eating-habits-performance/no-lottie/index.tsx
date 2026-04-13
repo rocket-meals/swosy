@@ -36,11 +36,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import DebugView from '@/components/DebugView';
 import eatingHabitsStyles from '../../../eating-habits/styles';
 import AppButton from '@/components/AppButton';
-import { TouchableOpacity } from 'react-native';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 let _markingContentLoaded = false;
 
@@ -62,6 +62,14 @@ const EatingHabitsPerformanceNoLottie = () => {
 	const [isContentVisible, setIsContentVisible] = useState(_markingContentLoaded);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const isArabic = language === 'ar';
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_no_lottie)} />,
+		});
+	}, [navigation, translate]);
 
 	// Performance timing
 	const mountTimeRef = useRef<number>(performance.now());
@@ -170,7 +178,13 @@ const EatingHabitsPerformanceNoLottie = () => {
 						}}
 					>
 						<DebugView title="Performance (No Lottie)" logs={debugLogs} isVisible />
-						<Text style={{ ...eatingHabitsStyles.body1, color: theme.screen.text }}>
+						<Text
+							style={{
+								...eatingHabitsStyles.body1,
+								color: theme.screen.text,
+								...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+							}}
+						>
 							{readMore
 								? translate(TranslationKeys.eatinghabits_introduction)
 								: excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}

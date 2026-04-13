@@ -116,7 +116,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 				{value ? (
 					<View
 						style={[
-							styles.valueContainer,
+							// styles.valueContainer,
 							reverseLayout && titleTextAlign !== 'right' ? styles.valueContainerReverse : null,
 						]}
 					>

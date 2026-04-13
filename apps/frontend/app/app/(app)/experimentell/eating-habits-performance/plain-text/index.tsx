@@ -8,7 +8,7 @@
  * Purpose: establish a baseline render time for the raw marking data.
  */
 import { SafeAreaView, ScrollView, Text, View } from 'react-native';
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -17,6 +17,8 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import DebugView from '@/components/DebugView';
+import { useNavigation } from 'expo-router';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 const EatingHabitsPlainText = () => {
 	useSetPageTitle(TranslationKeys.eating_habits_performance_plain_text);
@@ -24,6 +26,14 @@ const EatingHabitsPlainText = () => {
 	const { translate, language } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const isArabic = language === 'ar';
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance_plain_text)} />,
+		});
+	}, [navigation, translate]);
 
 	const mountTimeRef = useRef<number>(performance.now());
 	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);
@@ -51,15 +61,38 @@ const EatingHabitsPlainText = () => {
 								key={marking.id}
 								style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: theme.screen.text + '22', paddingBottom: 8 }}
 							>
-								<Text style={{ color: theme.screen.text, fontWeight: 'bold', fontSize: 14 }}>
+								<Text
+									style={{
+										color: theme.screen.text,
+										fontWeight: 'bold',
+										fontSize: 14,
+										...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+									}}
+								>
 									{name || marking.alias || marking.id}
 								</Text>
 								{!!description && (
-									<Text style={{ color: theme.screen.text, fontSize: 12, marginTop: 2, opacity: 0.7 }}>
+									<Text
+										style={{
+											color: theme.screen.text,
+											fontSize: 12,
+											marginTop: 2,
+											opacity: 0.7,
+											...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+										}}
+									>
 										{description}
 									</Text>
 								)}
-								<Text style={{ color: theme.screen.text, fontSize: 10, marginTop: 2, opacity: 0.4 }}>
+								<Text
+									style={{
+										color: theme.screen.text,
+										fontSize: 10,
+										marginTop: 2,
+										opacity: 0.4,
+										...(isArabic ? { textAlign: 'right', writingDirection: 'rtl', alignSelf: 'flex-end' } : {}),
+									}}
+								>
 									{`id: ${marking.id}`}
 								</Text>
 							</View>
