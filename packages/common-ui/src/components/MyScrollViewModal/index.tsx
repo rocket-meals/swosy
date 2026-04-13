@@ -45,7 +45,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
 
-	React.useEffect(() => () => onClose?.(), [onClose]);
+	const onCloseRef = React.useRef(onClose);
+	React.useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+	React.useEffect(() => () => { onCloseRef.current?.(); }, []);
 
 	const headerComponent = (
 		<>

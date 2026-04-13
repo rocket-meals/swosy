@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-01T13:14:46.475Z",
+  "report_timestamp": "2026-04-13T00:30:48.362Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.608768267223382,
-          "amountSavedValuesForKeys": 3853,
+          "average": 1.6119221411192215,
+          "amountSavedValuesForKeys": 3975,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 70,
-          "average": 2.3661290322580646,
-          "amountSavedValuesForKeys": 1467,
+          "average": 2.3541666666666665,
+          "amountSavedValuesForKeys": 1469,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 94,
-          "average": 1.622999157540017,
-          "amountSavedValuesForKeys": 3853,
-          "amountKeys": 25
+          "average": 1.6264320785597381,
+          "amountSavedValuesForKeys": 3975,
+          "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4146,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 4289,
+        "detection_time_ms": 82,
         "machine_information": {
           "os": "Linux",
-          "os_release": "6.17.0-1008-azure",
+          "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 356.51,
-          "os_memory_free": 14952026112,
-          "os_memory_total": 16770777088,
+          "os_uptime": 123.34,
+          "os_memory_free": 14990790656,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 42,
-    "amount_files_with_data_clumps": 33,
+    "amount_classes_or_interfaces_with_data_clumps": 51,
+    "amount_files_with_data_clumps": 41,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 56,
+    "fields_to_fields_data_clump": 72,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 64
+    "amount_data_clumps": 80
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "d51eeeb8b7e309e29060f3078cb2d4735eef9a8c",
-    "project_commit_hash": "d51eeeb8b7e309e29060f3078cb2d4735eef9a8c",
+    "project_version": "6c9bda189dabb800a4697b910a6608609cadc237",
+    "project_commit_hash": "6c9bda189dabb800a4697b910a6608609cadc237",
     "project_tag": null,
-    "project_commit_date": "1775049184",
+    "project_commit_date": "1775987936",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 478,
-    "number_of_classes_or_interfaces": 978,
-    "number_of_methods": 1327,
-    "number_of_data_fields": 3853,
-    "number_of_method_parameters": 1467
+    "number_of_files": 496,
+    "number_of_classes_or_interfaces": 1005,
+    "number_of_methods": 1328,
+    "number_of_data_fields": 3975,
+    "number_of_method_parameters": 1469
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -945,9 +945,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 7,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 7,
+              "endLine": 46,
               "endColumn": 14
             }
           },
@@ -970,9 +970,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 8,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 8,
+              "endLine": 47,
               "endColumn": 14
             }
           },
@@ -995,9 +995,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 9,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 9,
+              "endLine": 48,
               "endColumn": 26
             }
           },
@@ -1020,9 +1020,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 10,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 10,
+              "endLine": 49,
               "endColumn": 23
             }
           },
@@ -1045,9 +1045,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 11,
+              "startLine": 50,
               "startColumn": 2,
-              "endLine": 11,
+              "endLine": 50,
               "endColumn": 20
             }
           },
@@ -1092,9 +1092,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 60,
               "startColumn": 2,
-              "endLine": 15,
+              "endLine": 60,
               "endColumn": 21
             }
           },
@@ -1117,9 +1117,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 61,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 61,
               "endColumn": 26
             }
           },
@@ -1142,9 +1142,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 17,
+              "startLine": 62,
               "startColumn": 2,
-              "endLine": 17,
+              "endLine": 62,
               "endColumn": 23
             }
           },
@@ -1167,9 +1167,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 63,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 63,
               "endColumn": 22
             }
           },
@@ -1192,9 +1192,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 64,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 64,
               "endColumn": 22
             }
           },
@@ -1217,9 +1217,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 20,
+              "startLine": 65,
               "startColumn": 2,
-              "endLine": 20,
+              "endLine": 65,
               "endColumn": 22
             }
           },
@@ -1242,9 +1242,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 67,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 67,
               "endColumn": 15
             }
           },
@@ -1267,9 +1267,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 68,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 68,
               "endColumn": 16
             }
           },
@@ -1292,9 +1292,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 69,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 69,
               "endColumn": 25
             }
           },
@@ -1317,9 +1317,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 70,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 70,
               "endColumn": 25
             }
           },
@@ -1342,9 +1342,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 71,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 71,
               "endColumn": 23
             }
           },
@@ -1358,7 +1358,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 4,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "to_class_or_interface_name": "ComputedActivityData",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor": {
@@ -1755,9 +1852,9 @@
             "type": "{ lat: number; lng: number; }",
             "modifiers": [],
             "position": {
-              "startLine": 6,
+              "startLine": 91,
               "startColumn": 2,
-              "endLine": 6,
+              "endLine": 91,
               "endColumn": 47
             }
           },
@@ -1780,9 +1877,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 8,
+              "startLine": 93,
               "startColumn": 2,
-              "endLine": 8,
+              "endLine": 93,
               "endColumn": 24
             }
           },
@@ -1805,9 +1902,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 9,
+              "startLine": 94,
               "startColumn": 2,
-              "endLine": 9,
+              "endLine": 94,
               "endColumn": 23
             }
           },
@@ -2278,9 +2375,9 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 22
           }
         },
@@ -2303,9 +2400,9 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 37
           }
         },
@@ -2328,9 +2425,9 @@
             }
           },
           "position": {
-            "startLine": 27,
+            "startLine": 28,
             "startColumn": 2,
-            "endLine": 27,
+            "endLine": 28,
             "endColumn": 22
           }
         },
@@ -2353,9 +2450,9 @@
             }
           },
           "position": {
-            "startLine": 28,
+            "startLine": 29,
             "startColumn": 2,
-            "endLine": 28,
+            "endLine": 29,
             "endColumn": 22
           }
         }
@@ -2365,9 +2462,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/app/index.tsx",
       "from_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
@@ -2400,9 +2497,9 @@
             }
           },
           "position": {
-            "startLine": 1774,
+            "startLine": 1815,
             "startColumn": 2,
-            "endLine": 1774,
+            "endLine": 1815,
             "endColumn": 25
           }
         },
@@ -2425,9 +2522,9 @@
             }
           },
           "position": {
-            "startLine": 1775,
+            "startLine": 1816,
             "startColumn": 2,
-            "endLine": 1775,
+            "endLine": 1816,
             "endColumn": 22
           }
         },
@@ -2450,9 +2547,9 @@
             }
           },
           "position": {
-            "startLine": 1776,
+            "startLine": 1817,
             "startColumn": 2,
-            "endLine": 1776,
+            "endLine": 1817,
             "endColumn": 23
           }
         },
@@ -2475,9 +2572,9 @@
             }
           },
           "position": {
-            "startLine": 1777,
+            "startLine": 1818,
             "startColumn": 2,
-            "endLine": 1777,
+            "endLine": 1818,
             "endColumn": 26
           }
         },
@@ -2500,9 +2597,9 @@
             }
           },
           "position": {
-            "startLine": 1778,
+            "startLine": 1819,
             "startColumn": 2,
-            "endLine": 1778,
+            "endLine": 1819,
             "endColumn": 25
           }
         },
@@ -2525,9 +2622,9 @@
             }
           },
           "position": {
-            "startLine": 1779,
+            "startLine": 1820,
             "startColumn": 2,
-            "endLine": 1779,
+            "endLine": 1820,
             "endColumn": 26
           }
         },
@@ -2550,9 +2647,9 @@
             }
           },
           "position": {
-            "startLine": 1780,
+            "startLine": 1821,
             "startColumn": 2,
-            "endLine": 1780,
+            "endLine": 1821,
             "endColumn": 26
           }
         },
@@ -2575,9 +2672,9 @@
             }
           },
           "position": {
-            "startLine": 1781,
+            "startLine": 1822,
             "startColumn": 2,
-            "endLine": 1781,
+            "endLine": 1822,
             "endColumn": 25
           }
         },
@@ -2600,9 +2697,9 @@
             }
           },
           "position": {
-            "startLine": 1782,
+            "startLine": 1823,
             "startColumn": 2,
-            "endLine": 1782,
+            "endLine": 1823,
             "endColumn": 25
           }
         },
@@ -2625,10 +2722,35 @@
             }
           },
           "position": {
-            "startLine": 1783,
+            "startLine": 1824,
             "startColumn": 2,
-            "endLine": 1783,
+            "endLine": 1824,
             "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 2,
+              "endLine": 34,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 1825,
+            "startColumn": 2,
+            "endLine": 1825,
+            "endColumn": 16
           }
         }
       },
@@ -2637,9 +2759,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/app/index.tsx",
       "from_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
@@ -2665,16 +2787,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 41,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 41,
+              "endLine": 43,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1775,
+            "startLine": 1816,
             "startColumn": 2,
-            "endLine": 1775,
+            "endLine": 1816,
             "endColumn": 22
           }
         },
@@ -2690,16 +2812,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 43,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 43,
+              "endLine": 45,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1776,
+            "startLine": 1817,
             "startColumn": 2,
-            "endLine": 1776,
+            "endLine": 1817,
             "endColumn": 23
           }
         },
@@ -2715,16 +2837,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 46,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 1777,
+            "startLine": 1818,
             "startColumn": 2,
-            "endLine": 1777,
+            "endLine": 1818,
             "endColumn": 26
           }
         },
@@ -2740,16 +2862,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 47,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 1778,
+            "startLine": 1819,
             "startColumn": 2,
-            "endLine": 1778,
+            "endLine": 1819,
             "endColumn": 25
           }
         },
@@ -2765,16 +2887,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 48,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 1779,
+            "startLine": 1820,
             "startColumn": 2,
-            "endLine": 1779,
+            "endLine": 1820,
             "endColumn": 26
           }
         },
@@ -2790,16 +2912,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 49,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 1780,
+            "startLine": 1821,
             "startColumn": 2,
-            "endLine": 1780,
+            "endLine": 1821,
             "endColumn": 26
           }
         },
@@ -2815,16 +2937,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 50,
               "startColumn": 2,
-              "endLine": 48,
+              "endLine": 50,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 1781,
+            "startLine": 1822,
             "startColumn": 2,
-            "endLine": 1781,
+            "endLine": 1822,
             "endColumn": 25
           }
         },
@@ -2840,16 +2962,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 51,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 51,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 1782,
+            "startLine": 1823,
             "startColumn": 2,
-            "endLine": 1782,
+            "endLine": 1823,
             "endColumn": 25
           }
         },
@@ -2865,17 +2987,42 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 50,
+              "startLine": 52,
               "startColumn": 2,
-              "endLine": 50,
+              "endLine": 52,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 1783,
+            "startLine": 1824,
             "startColumn": 2,
-            "endLine": 1783,
+            "endLine": 1824,
             "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 2,
+              "endLine": 44,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 1825,
+            "startColumn": 2,
+            "endLine": 1825,
+            "endColumn": 16
           }
         }
       },
@@ -3009,9 +3156,9 @@
             "type": "'top' | 'middle' | 'bottom' | 'single'",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 16,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 16,
               "endColumn": 57
             }
           },
@@ -3034,9 +3181,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 17,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 17,
               "endColumn": 26
             }
           },
@@ -3059,9 +3206,9 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 18,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 18,
               "endColumn": 23
             }
           },
@@ -3497,9 +3644,9 @@
             "type": "'top' | 'middle' | 'bottom' | 'single'",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 16,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 16,
               "endColumn": 57
             }
           },
@@ -3522,9 +3669,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 17,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 17,
               "endColumn": 26
             }
           },
@@ -3547,9 +3694,9 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 18,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 18,
               "endColumn": 23
             }
           },
@@ -3601,9 +3748,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 16,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 16,
             "endColumn": 57
           }
         },
@@ -3626,9 +3773,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 17,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 17,
             "endColumn": 26
           }
         },
@@ -3651,9 +3798,9 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 18,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 18,
             "endColumn": 23
           }
         }
@@ -3698,9 +3845,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 16,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 16,
             "endColumn": 57
           }
         },
@@ -3723,9 +3870,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 17,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 17,
             "endColumn": 26
           }
         },
@@ -3748,15 +3895,137 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 18,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 18,
             "endColumn": 23
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 11,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/components/SpeechSettingsModal.tsx-apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-iconBgColorleftIconlabelmodalTitle": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SpeechSettingsModal.tsx-apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-iconBgColorleftIconlabelmodalTitle",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps",
+      "from_class_or_interface_name": "PaceMinSecInputProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps",
+      "to_class_or_interface_name": "SettingsListMyMapThemeSelectionProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/iconBgColor": {
+          "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 193,
+            "startColumn": 2,
+            "endLine": 193,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/leftIcon": {
+          "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 194,
+            "startColumn": 2,
+            "endLine": 194,
+            "endColumn": 29
+          }
+        },
+        "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/label": {
+          "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 195,
+            "startColumn": 2,
+            "endLine": 195,
+            "endColumn": 16
+          }
+        },
+        "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/modalTitle": {
+          "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/modalTitle",
+          "name": "modalTitle",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/modalTitle",
+            "name": "modalTitle",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 196,
+            "startColumn": 2,
+            "endLine": 196,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -3795,9 +4064,9 @@
             }
           },
           "position": {
-            "startLine": 194,
+            "startLine": 193,
             "startColumn": 2,
-            "endLine": 194,
+            "endLine": 193,
             "endColumn": 23
           }
         },
@@ -3820,9 +4089,9 @@
             }
           },
           "position": {
-            "startLine": 195,
+            "startLine": 194,
             "startColumn": 2,
-            "endLine": 195,
+            "endLine": 194,
             "endColumn": 29
           }
         },
@@ -3845,9 +4114,9 @@
             }
           },
           "position": {
-            "startLine": 196,
+            "startLine": 195,
             "startColumn": 2,
-            "endLine": 196,
+            "endLine": 195,
             "endColumn": 16
           }
         }
@@ -3885,16 +4154,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 60,
+              "startLine": 59,
               "startColumn": 2,
-              "endLine": 60,
+              "endLine": 59,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 198,
+            "startLine": 197,
             "startColumn": 2,
-            "endLine": 198,
+            "endLine": 197,
             "endColumn": 18
           }
         },
@@ -3910,16 +4179,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 61,
+              "startLine": 60,
               "startColumn": 2,
-              "endLine": 61,
+              "endLine": 60,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 199,
+            "startLine": 198,
             "startColumn": 2,
-            "endLine": 199,
+            "endLine": 198,
             "endColumn": 18
           }
         },
@@ -3935,16 +4204,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 63,
+              "startLine": 62,
               "startColumn": 2,
-              "endLine": 63,
+              "endLine": 62,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 203,
+            "startLine": 202,
             "startColumn": 2,
-            "endLine": 203,
+            "endLine": 202,
             "endColumn": 24
           }
         }
@@ -3982,16 +4251,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 198,
+              "startLine": 197,
               "startColumn": 2,
-              "endLine": 198,
+              "endLine": 197,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 60,
+            "startLine": 59,
             "startColumn": 2,
-            "endLine": 60,
+            "endLine": 59,
             "endColumn": 18
           }
         },
@@ -4007,16 +4276,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 199,
+              "startLine": 198,
               "startColumn": 2,
-              "endLine": 199,
+              "endLine": 198,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 61,
+            "startLine": 60,
             "startColumn": 2,
-            "endLine": 61,
+            "endLine": 60,
             "endColumn": 18
           }
         },
@@ -4032,22 +4301,216 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 203,
+              "startLine": 202,
               "startColumn": 2,
-              "endLine": 203,
+              "endLine": 202,
               "endColumn": 24
             }
           },
           "position": {
-            "startLine": 63,
+            "startLine": 62,
             "startColumn": 2,
-            "endLine": 63,
+            "endLine": 62,
             "endColumn": 23
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "from_class_or_interface_name": "ComputedActivityData",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "from_class_or_interface_name": "ComputedActivityData",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 63,
+              "startColumn": 2,
+              "endLine": 63,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 64,
+              "startColumn": 2,
+              "endLine": 64,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 2,
+              "endLine": 65,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
         "cluster_type": 3
       }
     },
@@ -4086,9 +4549,9 @@
             }
           },
           "position": {
-            "startLine": 7,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 7,
+            "endLine": 46,
             "endColumn": 14
           }
         },
@@ -4111,9 +4574,9 @@
             }
           },
           "position": {
-            "startLine": 8,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 8,
+            "endLine": 47,
             "endColumn": 14
           }
         },
@@ -4136,9 +4599,9 @@
             }
           },
           "position": {
-            "startLine": 9,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 9,
+            "endLine": 48,
             "endColumn": 26
           }
         },
@@ -4161,9 +4624,9 @@
             }
           },
           "position": {
-            "startLine": 10,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 10,
+            "endLine": 49,
             "endColumn": 23
           }
         },
@@ -4186,9 +4649,9 @@
             }
           },
           "position": {
-            "startLine": 11,
+            "startLine": 50,
             "startColumn": 2,
-            "endLine": 11,
+            "endLine": 50,
             "endColumn": 20
           }
         }
@@ -4233,9 +4696,9 @@
             }
           },
           "position": {
-            "startLine": 15,
+            "startLine": 60,
             "startColumn": 2,
-            "endLine": 15,
+            "endLine": 60,
             "endColumn": 21
           }
         },
@@ -4258,9 +4721,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 61,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 61,
             "endColumn": 26
           }
         },
@@ -4283,9 +4746,9 @@
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 62,
             "startColumn": 2,
-            "endLine": 17,
+            "endLine": 62,
             "endColumn": 23
           }
         },
@@ -4308,9 +4771,9 @@
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 63,
             "startColumn": 2,
-            "endLine": 18,
+            "endLine": 63,
             "endColumn": 22
           }
         },
@@ -4333,9 +4796,9 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 64,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 64,
             "endColumn": 22
           }
         },
@@ -4358,9 +4821,9 @@
             }
           },
           "position": {
-            "startLine": 20,
+            "startLine": 65,
             "startColumn": 2,
-            "endLine": 20,
+            "endLine": 65,
             "endColumn": 22
           }
         },
@@ -4383,9 +4846,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 67,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 67,
             "endColumn": 15
           }
         },
@@ -4408,9 +4871,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 68,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 68,
             "endColumn": 16
           }
         },
@@ -4433,9 +4896,9 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 69,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 69,
             "endColumn": 25
           }
         },
@@ -4458,9 +4921,9 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 70,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 70,
             "endColumn": 25
           }
         },
@@ -4483,16 +4946,113 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 71,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 71,
             "endColumn": 23
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 4,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "to_class_or_interface_name": "ComputedActivityData",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 63,
+            "startColumn": 2,
+            "endLine": 63,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 64,
+            "startColumn": 2,
+            "endLine": 64,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 2,
+            "endLine": 65,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution": {
@@ -4530,9 +5090,9 @@
             }
           },
           "position": {
-            "startLine": 30,
+            "startLine": 75,
             "startColumn": 2,
-            "endLine": 30,
+            "endLine": 75,
             "endColumn": 13
           }
         },
@@ -4555,9 +5115,9 @@
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 81,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 81,
             "endColumn": 24
           }
         },
@@ -4580,21 +5140,828 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 83,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 83,
             "endColumn": 24
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 14,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-startedAtroutePointssportTypeh3ResolutionhexTilesOrderedrouteId": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-startedAtroutePointssportTypeh3ResolutionhexTilesOrderedrouteId",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "from_class_or_interface_name": "SavedActivity",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot",
+      "to_class_or_interface_name": "InterruptedRecordingSnapshot",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/startedAt": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/startedAt",
+          "name": "startedAt",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/startedAt",
+            "name": "startedAt",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 76,
+            "startColumn": 2,
+            "endLine": 76,
+            "endColumn": 20
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routePoints": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routePoints",
+          "name": "routePoints",
+          "type": "RoutePoint[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routePoints",
+            "name": "routePoints",
+            "type": "RoutePoint[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 78,
+            "startColumn": 2,
+            "endLine": 78,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 81,
+            "startColumn": 2,
+            "endLine": 81,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 83,
+            "startColumn": 2,
+            "endLine": 83,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/hexTilesOrdered": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/hexTilesOrdered",
+          "name": "hexTilesOrdered",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/hexTilesOrdered",
+            "name": "hexTilesOrdered",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 94,
+            "startColumn": 2,
+            "endLine": 94,
+            "endColumn": 29
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routeId": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routeId",
+          "name": "routeId",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routeId",
+            "name": "routeId",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 112,
+            "startColumn": 2,
+            "endLine": 112,
+            "endColumn": 26
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 14,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/AudioQueueHelper.ts-apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem-apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry-textlanguageCodesource": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/AudioQueueHelper.ts-apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem-apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry-textlanguageCodesource",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem",
+      "from_class_or_interface_name": "QueueItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TTSLogStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry",
+      "to_class_or_interface_name": "TTSLogEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/text": {
+          "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/text",
+          "name": "text",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/text",
+            "name": "text",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 15
+          }
+        },
+        "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/languageCode": {
+          "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/languageCode",
+          "name": "languageCode",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/languageCode",
+            "name": "languageCode",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/source": {
+          "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/source",
+          "name": "source",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/source",
+            "name": "source",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-anchorXanchorYscaleMultiplier": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-anchorXanchorYscaleMultiplier",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride",
+      "from_class_or_interface_name": "SpriteAnchorOverride",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride",
+      "to_class_or_interface_name": "TextureSpriteAnchorOverride",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX",
+          "name": "anchorX",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX",
+            "name": "anchorX",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY",
+          "name": "anchorY",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY",
+            "name": "anchorY",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier",
+          "name": "scaleMultiplier",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier",
+            "name": "scaleMultiplier",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 27
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 16,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-anchorXanchorYscaleMultiplier": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-anchorXanchorYscaleMultiplier",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride",
+      "from_class_or_interface_name": "TextureSpriteAnchorOverride",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride",
+      "to_class_or_interface_name": "SpriteAnchorOverride",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX",
+          "name": "anchorX",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX",
+            "name": "anchorX",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY",
+          "name": "anchorY",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY",
+            "name": "anchorY",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier",
+          "name": "scaleMultiplier",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier",
+            "name": "scaleMultiplier",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 27
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 16,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/HexTileStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord",
+      "from_class_or_interface_name": "HexTileRecord",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/store/hexTileSlice.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload",
+      "to_class_or_interface_name": "HexTileCustomizationPayload",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage",
+          "name": "tileImage",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage",
+            "name": "tileImage",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 136,
+            "startColumn": 2,
+            "endLine": 136,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard",
+          "name": "billboard",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard",
+            "name": "billboard",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 142,
+            "startColumn": 2,
+            "endLine": 142,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor",
+          "name": "billboardAnchorColor",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor",
+            "name": "billboardAnchorColor",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 148,
+            "startColumn": 2,
+            "endLine": 148,
+            "endColumn": 39
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards",
+          "name": "billboards",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards",
+            "name": "billboards",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 155,
+            "startColumn": 2,
+            "endLine": 155,
+            "endColumn": 45
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat",
+          "name": "billboardsFlat",
+          "type": "Record<string, boolean>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat",
+            "name": "billboardsFlat",
+            "type": "Record<string, boolean>",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 163,
+            "startColumn": 2,
+            "endLine": 163,
+            "endColumn": 43
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture",
+          "name": "billboardsTexture",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture",
+            "name": "billboardsTexture",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 52
+            }
+          },
+          "position": {
+            "startLine": 172,
+            "startColumn": 2,
+            "endLine": 172,
+            "endColumn": 52
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 17,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-startedAtroutePointshexTilesOrderedh3ResolutionsportTyperouteId": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-startedAtroutePointshexTilesOrderedh3ResolutionsportTyperouteId",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot",
+      "from_class_or_interface_name": "InterruptedRecordingSnapshot",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "to_class_or_interface_name": "SavedActivity",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/startedAt": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/startedAt",
+          "name": "startedAt",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/startedAt",
+            "name": "startedAt",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 76,
+              "startColumn": 2,
+              "endLine": 76,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 20
+          }
+        },
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routePoints": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routePoints",
+          "name": "routePoints",
+          "type": "RoutePoint[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routePoints",
+            "name": "routePoints",
+            "type": "RoutePoint[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 78,
+              "startColumn": 2,
+              "endLine": 78,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/hexTilesOrdered": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/hexTilesOrdered",
+          "name": "hexTilesOrdered",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/hexTilesOrdered",
+            "name": "hexTilesOrdered",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 94,
+              "startColumn": 2,
+              "endLine": 94,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 83,
+              "startColumn": 2,
+              "endLine": 83,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 81,
+              "startColumn": 2,
+              "endLine": 81,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routeId": {
+          "key": "apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot/memberField/routeId",
+          "name": "routeId",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/routeId",
+            "name": "routeId",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 112,
+              "startColumn": 2,
+              "endLine": 112,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 26
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 14,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-namecountclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-namecountclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
@@ -4620,17 +5987,42 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1775,
+              "startLine": 1816,
               "startColumn": 2,
-              "endLine": 1775,
+              "endLine": 1816,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 41,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 41,
+            "endLine": 43,
             "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 1825,
+              "startColumn": 2,
+              "endLine": 1825,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 2,
+            "endLine": 44,
+            "endColumn": 16
           }
         },
         "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/class": {
@@ -4645,16 +6037,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1776,
+              "startLine": 1817,
               "startColumn": 2,
-              "endLine": 1776,
+              "endLine": 1817,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 43,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 43,
+            "endLine": 45,
             "endColumn": 23
           }
         },
@@ -4670,16 +6062,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1777,
+              "startLine": 1818,
               "startColumn": 2,
-              "endLine": 1777,
+              "endLine": 1818,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 44,
+            "endLine": 46,
             "endColumn": 26
           }
         },
@@ -4695,16 +6087,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1778,
+              "startLine": 1819,
               "startColumn": 2,
-              "endLine": 1778,
+              "endLine": 1819,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 47,
             "endColumn": 25
           }
         },
@@ -4720,16 +6112,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1779,
+              "startLine": 1820,
               "startColumn": 2,
-              "endLine": 1779,
+              "endLine": 1820,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 48,
             "endColumn": 26
           }
         },
@@ -4745,16 +6137,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1780,
+              "startLine": 1821,
               "startColumn": 2,
-              "endLine": 1780,
+              "endLine": 1821,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 49,
             "endColumn": 26
           }
         },
@@ -4770,16 +6162,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1781,
+              "startLine": 1822,
               "startColumn": 2,
-              "endLine": 1781,
+              "endLine": 1822,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 50,
             "startColumn": 2,
-            "endLine": 48,
+            "endLine": 50,
             "endColumn": 25
           }
         },
@@ -4795,16 +6187,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1782,
+              "startLine": 1823,
               "startColumn": 2,
-              "endLine": 1782,
+              "endLine": 1823,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 51,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 51,
             "endColumn": 25
           }
         },
@@ -4820,16 +6212,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1783,
+              "startLine": 1824,
               "startColumn": 2,
-              "endLine": 1783,
+              "endLine": 1824,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 50,
+            "startLine": 52,
             "startColumn": 2,
-            "endLine": 50,
+            "endLine": 52,
             "endColumn": 25
           }
         }
@@ -4839,9 +6231,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-namecountclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-namecountclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
@@ -4874,10 +6266,35 @@
             }
           },
           "position": {
-            "startLine": 41,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 41,
+            "endLine": 43,
             "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 2,
+              "endLine": 34,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 2,
+            "endLine": 44,
+            "endColumn": 16
           }
         },
         "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/class": {
@@ -4899,9 +6316,9 @@
             }
           },
           "position": {
-            "startLine": 43,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 43,
+            "endLine": 45,
             "endColumn": 23
           }
         },
@@ -4924,9 +6341,9 @@
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 44,
+            "endLine": 46,
             "endColumn": 26
           }
         },
@@ -4949,9 +6366,9 @@
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 47,
             "endColumn": 25
           }
         },
@@ -4974,9 +6391,9 @@
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 48,
             "endColumn": 26
           }
         },
@@ -4999,9 +6416,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 49,
             "endColumn": 26
           }
         },
@@ -5024,9 +6441,9 @@
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 50,
             "startColumn": 2,
-            "endLine": 48,
+            "endLine": 50,
             "endColumn": 25
           }
         },
@@ -5049,9 +6466,9 @@
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 51,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 51,
             "endColumn": 25
           }
         },
@@ -5074,9 +6491,9 @@
             }
           },
           "position": {
-            "startLine": 50,
+            "startLine": 52,
             "startColumn": 2,
-            "endLine": 50,
+            "endLine": 52,
             "endColumn": 25
           }
         }
@@ -5086,9 +6503,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
@@ -5114,9 +6531,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1774,
+              "startLine": 1815,
               "startColumn": 2,
-              "endLine": 1774,
+              "endLine": 1815,
               "endColumn": 25
             }
           },
@@ -5139,9 +6556,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1775,
+              "startLine": 1816,
               "startColumn": 2,
-              "endLine": 1775,
+              "endLine": 1816,
               "endColumn": 22
             }
           },
@@ -5164,9 +6581,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1776,
+              "startLine": 1817,
               "startColumn": 2,
-              "endLine": 1776,
+              "endLine": 1817,
               "endColumn": 23
             }
           },
@@ -5189,9 +6606,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1777,
+              "startLine": 1818,
               "startColumn": 2,
-              "endLine": 1777,
+              "endLine": 1818,
               "endColumn": 26
             }
           },
@@ -5214,9 +6631,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1778,
+              "startLine": 1819,
               "startColumn": 2,
-              "endLine": 1778,
+              "endLine": 1819,
               "endColumn": 25
             }
           },
@@ -5239,9 +6656,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1779,
+              "startLine": 1820,
               "startColumn": 2,
-              "endLine": 1779,
+              "endLine": 1820,
               "endColumn": 26
             }
           },
@@ -5264,9 +6681,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1780,
+              "startLine": 1821,
               "startColumn": 2,
-              "endLine": 1780,
+              "endLine": 1821,
               "endColumn": 26
             }
           },
@@ -5289,9 +6706,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1781,
+              "startLine": 1822,
               "startColumn": 2,
-              "endLine": 1781,
+              "endLine": 1822,
               "endColumn": 25
             }
           },
@@ -5314,9 +6731,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1782,
+              "startLine": 1823,
               "startColumn": 2,
-              "endLine": 1782,
+              "endLine": 1823,
               "endColumn": 25
             }
           },
@@ -5339,9 +6756,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1783,
+              "startLine": 1824,
               "startColumn": 2,
-              "endLine": 1783,
+              "endLine": 1824,
               "endColumn": 25
             }
           },
@@ -5351,6 +6768,31 @@
             "endLine": 32,
             "endColumn": 25
           }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 1825,
+              "startColumn": 2,
+              "endLine": 1825,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 2,
+            "endLine": 34,
+            "endColumn": 16
+          }
         }
       },
       "data_clump_type_additional": {
@@ -5358,9 +6800,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenity",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-nameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
@@ -5386,9 +6828,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 41,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 41,
+              "endLine": 43,
               "endColumn": 22
             }
           },
@@ -5411,9 +6853,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 43,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 43,
+              "endLine": 45,
               "endColumn": 23
             }
           },
@@ -5436,9 +6878,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 46,
               "endColumn": 26
             }
           },
@@ -5461,9 +6903,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 47,
               "endColumn": 25
             }
           },
@@ -5486,9 +6928,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 48,
               "endColumn": 26
             }
           },
@@ -5511,9 +6953,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 49,
               "endColumn": 26
             }
           },
@@ -5536,9 +6978,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 50,
               "startColumn": 2,
-              "endLine": 48,
+              "endLine": 50,
               "endColumn": 25
             }
           },
@@ -5561,9 +7003,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 51,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 51,
               "endColumn": 25
             }
           },
@@ -5586,9 +7028,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 50,
+              "startLine": 52,
               "startColumn": 2,
-              "endLine": 50,
+              "endLine": 52,
               "endColumn": 25
             }
           },
@@ -5597,6 +7039,31 @@
             "startColumn": 2,
             "endLine": 32,
             "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/count",
+          "name": "count",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/count",
+            "name": "count",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 2,
+              "endLine": 44,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 2,
+            "endLine": 34,
+            "endColumn": 16
           }
         }
       },
@@ -5633,9 +7100,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 30,
+              "startLine": 75,
               "startColumn": 2,
-              "endLine": 30,
+              "endLine": 75,
               "endColumn": 13
             }
           },
@@ -5658,9 +7125,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 83,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 83,
               "endColumn": 24
             }
           },
@@ -5683,9 +7150,9 @@
             "type": "SportType",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 81,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 81,
               "endColumn": 24
             }
           },
@@ -5699,12 +7166,12 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 14,
-        "cluster_type": 2
+        "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRateannouncePaceAvgannounceSpeedAvg": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRateannouncePaceAvgannounceSpeedAvg",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/TTSHelper.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent",
@@ -5730,16 +7197,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 43,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 186,
+            "startLine": 193,
             "startColumn": 2,
-            "endLine": 186,
+            "endLine": 193,
             "endColumn": 28
           }
         },
@@ -5755,16 +7222,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 44,
               "endColumn": 24
             }
           },
           "position": {
-            "startLine": 187,
+            "startLine": 194,
             "startColumn": 2,
-            "endLine": 187,
+            "endLine": 194,
             "endColumn": 24
           }
         },
@@ -5780,16 +7247,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 45,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 188,
+            "startLine": 195,
             "startColumn": 2,
-            "endLine": 188,
+            "endLine": 195,
             "endColumn": 28
           }
         },
@@ -5805,16 +7272,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 48,
+              "endLine": 46,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 189,
+            "startLine": 196,
             "startColumn": 2,
-            "endLine": 189,
+            "endLine": 196,
             "endColumn": 25
           }
         },
@@ -5830,16 +7297,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 47,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 190,
+            "startLine": 197,
             "startColumn": 2,
-            "endLine": 190,
+            "endLine": 197,
             "endColumn": 28
           }
         },
@@ -5855,17 +7322,164 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 50,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 50,
+              "endLine": 48,
               "endColumn": 29
             }
           },
           "position": {
-            "startLine": 191,
+            "startLine": 198,
             "startColumn": 2,
-            "endLine": 191,
+            "endLine": 198,
             "endColumn": 29
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePaceAvg": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePaceAvg",
+          "name": "announcePaceAvg",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePaceAvg",
+            "name": "announcePaceAvg",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 50,
+              "startColumn": 2,
+              "endLine": 50,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 199,
+            "startColumn": 2,
+            "endLine": 199,
+            "endColumn": 27
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeedAvg": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeedAvg",
+          "name": "announceSpeedAvg",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeedAvg",
+            "name": "announceSpeedAvg",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 52,
+              "startColumn": 2,
+              "endLine": 52,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 200,
+            "startColumn": 2,
+            "endLine": 200,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 18,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSLogStorage.ts-apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry-apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem-textlanguageCodesource": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSLogStorage.ts-apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry-apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem-textlanguageCodesource",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TTSLogStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry",
+      "from_class_or_interface_name": "TTSLogEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem",
+      "to_class_or_interface_name": "QueueItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/text": {
+          "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/text",
+          "name": "text",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/text",
+            "name": "text",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 15
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/languageCode": {
+          "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/languageCode",
+          "name": "languageCode",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/languageCode",
+            "name": "languageCode",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/source": {
+          "key": "apps/geonexia/frontend/helpers/TTSLogStorage.ts/interface/TTSLogEntry/memberField/source",
+          "name": "source",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/AudioQueueHelper.ts/interface/QueueItem/memberField/source",
+            "name": "source",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 17
           }
         }
       },
@@ -5909,9 +7523,9 @@
             }
           },
           "position": {
-            "startLine": 521,
+            "startLine": 537,
             "startColumn": 2,
-            "endLine": 521,
+            "endLine": 537,
             "endColumn": 17
           }
         },
@@ -5934,9 +7548,9 @@
             }
           },
           "position": {
-            "startLine": 523,
+            "startLine": 539,
             "startColumn": 2,
-            "endLine": 523,
+            "endLine": 539,
             "endColumn": 17
           }
         },
@@ -5959,9 +7573,9 @@
             }
           },
           "position": {
-            "startLine": 525,
+            "startLine": 541,
             "startColumn": 2,
-            "endLine": 525,
+            "endLine": 541,
             "endColumn": 17
           }
         },
@@ -5984,15 +7598,15 @@
             }
           },
           "position": {
-            "startLine": 527,
+            "startLine": 543,
             "startColumn": 2,
-            "endLine": 527,
+            "endLine": 543,
             "endColumn": 17
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -6024,16 +7638,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 426,
+              "startLine": 429,
               "startColumn": 2,
-              "endLine": 426,
+              "endLine": 429,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 521,
+            "startLine": 537,
             "startColumn": 2,
-            "endLine": 521,
+            "endLine": 537,
             "endColumn": 17
           }
         },
@@ -6049,16 +7663,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 428,
+              "startLine": 431,
               "startColumn": 2,
-              "endLine": 428,
+              "endLine": 431,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 523,
+            "startLine": 539,
             "startColumn": 2,
-            "endLine": 523,
+            "endLine": 539,
             "endColumn": 17
           }
         },
@@ -6074,16 +7688,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 430,
+              "startLine": 433,
               "startColumn": 2,
-              "endLine": 430,
+              "endLine": 433,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 525,
+            "startLine": 541,
             "startColumn": 2,
-            "endLine": 525,
+            "endLine": 541,
             "endColumn": 17
           }
         },
@@ -6099,16 +7713,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 432,
+              "startLine": 435,
               "startColumn": 2,
-              "endLine": 432,
+              "endLine": 435,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 527,
+            "startLine": 543,
             "startColumn": 2,
-            "endLine": 527,
+            "endLine": 543,
             "endColumn": 17
           }
         },
@@ -6124,16 +7738,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 436,
+              "startLine": 439,
               "startColumn": 2,
-              "endLine": 436,
+              "endLine": 439,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 529,
+            "startLine": 545,
             "startColumn": 2,
-            "endLine": 529,
+            "endLine": 545,
             "endColumn": 20
           }
         },
@@ -6149,22 +7763,22 @@
             "type": "MapFeatureFilterOptions",
             "modifiers": [],
             "position": {
-              "startLine": 438,
+              "startLine": 441,
               "startColumn": 2,
-              "endLine": 438,
+              "endLine": 441,
               "endColumn": 42
             }
           },
           "position": {
-            "startLine": 531,
+            "startLine": 547,
             "startColumn": 2,
-            "endLine": 531,
+            "endLine": 547,
             "endColumn": 42
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -6196,9 +7810,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 521,
+              "startLine": 537,
               "startColumn": 2,
-              "endLine": 521,
+              "endLine": 537,
               "endColumn": 17
             }
           },
@@ -6221,9 +7835,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 523,
+              "startLine": 539,
               "startColumn": 2,
-              "endLine": 523,
+              "endLine": 539,
               "endColumn": 17
             }
           },
@@ -6246,9 +7860,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 525,
+              "startLine": 541,
               "startColumn": 2,
-              "endLine": 525,
+              "endLine": 541,
               "endColumn": 17
             }
           },
@@ -6271,9 +7885,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 527,
+              "startLine": 543,
               "startColumn": 2,
-              "endLine": 527,
+              "endLine": 543,
               "endColumn": 17
             }
           },
@@ -6286,7 +7900,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -6318,9 +7932,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 426,
+              "startLine": 429,
               "startColumn": 2,
-              "endLine": 426,
+              "endLine": 429,
               "endColumn": 17
             }
           },
@@ -6343,9 +7957,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 428,
+              "startLine": 431,
               "startColumn": 2,
-              "endLine": 428,
+              "endLine": 431,
               "endColumn": 17
             }
           },
@@ -6368,9 +7982,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 430,
+              "startLine": 433,
               "startColumn": 2,
-              "endLine": 430,
+              "endLine": 433,
               "endColumn": 17
             }
           },
@@ -6393,9 +8007,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 432,
+              "startLine": 435,
               "startColumn": 2,
-              "endLine": 432,
+              "endLine": 435,
               "endColumn": 17
             }
           },
@@ -6408,7 +8022,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -6440,16 +8054,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 521,
+              "startLine": 537,
               "startColumn": 2,
-              "endLine": 521,
+              "endLine": 537,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 426,
+            "startLine": 429,
             "startColumn": 2,
-            "endLine": 426,
+            "endLine": 429,
             "endColumn": 17
           }
         },
@@ -6465,16 +8079,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 523,
+              "startLine": 539,
               "startColumn": 2,
-              "endLine": 523,
+              "endLine": 539,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 428,
+            "startLine": 431,
             "startColumn": 2,
-            "endLine": 428,
+            "endLine": 431,
             "endColumn": 17
           }
         },
@@ -6490,16 +8104,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 525,
+              "startLine": 541,
               "startColumn": 2,
-              "endLine": 525,
+              "endLine": 541,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 430,
+            "startLine": 433,
             "startColumn": 2,
-            "endLine": 430,
+            "endLine": 433,
             "endColumn": 17
           }
         },
@@ -6515,16 +8129,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 527,
+              "startLine": 543,
               "startColumn": 2,
-              "endLine": 527,
+              "endLine": 543,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 432,
+            "startLine": 435,
             "startColumn": 2,
-            "endLine": 432,
+            "endLine": 435,
             "endColumn": 17
           }
         },
@@ -6540,16 +8154,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 529,
+              "startLine": 545,
               "startColumn": 2,
-              "endLine": 529,
+              "endLine": 545,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 436,
+            "startLine": 439,
             "startColumn": 2,
-            "endLine": 436,
+            "endLine": 439,
             "endColumn": 20
           }
         },
@@ -6565,22 +8179,22 @@
             "type": "MapFeatureFilterOptions",
             "modifiers": [],
             "position": {
-              "startLine": 531,
+              "startLine": 547,
               "startColumn": 2,
-              "endLine": 531,
+              "endLine": 547,
               "endColumn": 42
             }
           },
           "position": {
-            "startLine": 438,
+            "startLine": 441,
             "startColumn": 2,
-            "endLine": 438,
+            "endLine": 441,
             "endColumn": 42
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -6619,9 +8233,9 @@
             }
           },
           "position": {
-            "startLine": 426,
+            "startLine": 429,
             "startColumn": 2,
-            "endLine": 426,
+            "endLine": 429,
             "endColumn": 17
           }
         },
@@ -6644,9 +8258,9 @@
             }
           },
           "position": {
-            "startLine": 428,
+            "startLine": 431,
             "startColumn": 2,
-            "endLine": 428,
+            "endLine": 431,
             "endColumn": 17
           }
         },
@@ -6669,9 +8283,9 @@
             }
           },
           "position": {
-            "startLine": 430,
+            "startLine": 433,
             "startColumn": 2,
-            "endLine": 430,
+            "endLine": 433,
             "endColumn": 17
           }
         },
@@ -6694,21 +8308,193 @@
             }
           },
           "position": {
-            "startLine": 432,
+            "startLine": 435,
             "startColumn": 2,
-            "endLine": 432,
+            "endLine": 435,
             "endColumn": 17
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/store/hexTileSlice.ts-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/store/hexTileSlice.ts-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/store/hexTileSlice.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload",
+      "from_class_or_interface_name": "HexTileCustomizationPayload",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/HexTileStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord",
+      "to_class_or_interface_name": "HexTileRecord",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage",
+          "name": "tileImage",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage",
+            "name": "tileImage",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 136,
+              "startColumn": 2,
+              "endLine": 136,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard",
+          "name": "billboard",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard",
+            "name": "billboard",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 142,
+              "startColumn": 2,
+              "endLine": 142,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor",
+          "name": "billboardAnchorColor",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor",
+            "name": "billboardAnchorColor",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 148,
+              "startColumn": 2,
+              "endLine": 148,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 39
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards",
+          "name": "billboards",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards",
+            "name": "billboards",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 155,
+              "startColumn": 2,
+              "endLine": 155,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 45
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat",
+          "name": "billboardsFlat",
+          "type": "Record<string, boolean>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat",
+            "name": "billboardsFlat",
+            "type": "Record<string, boolean>",
+            "modifiers": [],
+            "position": {
+              "startLine": 163,
+              "startColumn": 2,
+              "endLine": 163,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 43
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture",
+          "name": "billboardsTexture",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture",
+            "name": "billboardsTexture",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 172,
+              "startColumn": 2,
+              "endLine": 172,
+              "endColumn": 52
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 52
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 17,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRateannouncePaceAvgannounceSpeedAvg": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRateannouncePaceAvgannounceSpeedAvg",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/store/speechSettingsSlice.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState",
@@ -6734,16 +8520,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 186,
+              "startLine": 193,
               "startColumn": 2,
-              "endLine": 186,
+              "endLine": 193,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 43,
             "endColumn": 28
           }
         },
@@ -6759,16 +8545,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 187,
+              "startLine": 194,
               "startColumn": 2,
-              "endLine": 187,
+              "endLine": 194,
               "endColumn": 24
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 44,
             "endColumn": 24
           }
         },
@@ -6784,16 +8570,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 188,
+              "startLine": 195,
               "startColumn": 2,
-              "endLine": 188,
+              "endLine": 195,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 45,
             "endColumn": 28
           }
         },
@@ -6809,16 +8595,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 189,
+              "startLine": 196,
               "startColumn": 2,
-              "endLine": 189,
+              "endLine": 196,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 48,
+            "endLine": 46,
             "endColumn": 25
           }
         },
@@ -6834,16 +8620,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 190,
+              "startLine": 197,
               "startColumn": 2,
-              "endLine": 190,
+              "endLine": 197,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 47,
             "endColumn": 28
           }
         },
@@ -6859,22 +8645,72 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 191,
+              "startLine": 198,
               "startColumn": 2,
-              "endLine": 191,
+              "endLine": 198,
               "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 2,
+            "endLine": 48,
+            "endColumn": 29
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePaceAvg": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePaceAvg",
+          "name": "announcePaceAvg",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePaceAvg",
+            "name": "announcePaceAvg",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 199,
+              "startColumn": 2,
+              "endLine": 199,
+              "endColumn": 27
             }
           },
           "position": {
             "startLine": 50,
             "startColumn": 2,
             "endLine": 50,
-            "endColumn": 29
+            "endColumn": 27
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeedAvg": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeedAvg",
+          "name": "announceSpeedAvg",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeedAvg",
+            "name": "announceSpeedAvg",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 200,
+              "startColumn": 2,
+              "endLine": 200,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 52,
+            "startColumn": 2,
+            "endLine": 52,
+            "endColumn": 28
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7068,7 +8904,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -7165,7 +9001,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -7204,9 +9040,9 @@
             }
           },
           "position": {
-            "startLine": 6,
+            "startLine": 91,
             "startColumn": 2,
-            "endLine": 6,
+            "endLine": 91,
             "endColumn": 47
           }
         },
@@ -7229,9 +9065,9 @@
             }
           },
           "position": {
-            "startLine": 8,
+            "startLine": 93,
             "startColumn": 2,
-            "endLine": 8,
+            "endLine": 93,
             "endColumn": 24
           }
         },
@@ -7254,9 +9090,9 @@
             }
           },
           "position": {
-            "startLine": 9,
+            "startLine": 94,
             "startColumn": 2,
-            "endLine": 9,
+            "endLine": 94,
             "endColumn": 23
           }
         }
@@ -8367,6 +10203,225 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps-labelmodalTitleleftIconiconBgColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps-labelmodalTitleleftIconiconBgColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps",
+      "from_class_or_interface_name": "SettingsListMyMapThemeSelectionProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps",
+      "to_class_or_interface_name": "PaceMinSecInputProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 195,
+              "startColumn": 2,
+              "endLine": 195,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/modalTitle": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/modalTitle",
+          "name": "modalTitle",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/modalTitle",
+            "name": "modalTitle",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 196,
+              "startColumn": 2,
+              "endLine": 196,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 194,
+              "startColumn": 2,
+              "endLine": 194,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 29
+          }
+        },
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 193,
+              "startColumn": 2,
+              "endLine": 193,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-labelleftIconiconBgColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-labelleftIconiconBgColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps",
+      "from_class_or_interface_name": "SettingsListMyMapThemeSelectionProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsList/types.ts",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps",
+      "to_class_or_interface_name": "SettingsListItemBaseProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 4,
+              "startColumn": 2,
+              "endLine": 4,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 29
+          }
+        },
+        "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor": {
+          "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx-packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-placeholdersaveLabelsuffixprefix": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx-packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-placeholdersaveLabelsuffixprefix",
@@ -8711,9 +10766,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 26,
               "endColumn": 22
             }
           },
@@ -8736,9 +10791,9 @@
             "type": "KeyboardTypeOptions",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 27,
               "endColumn": 37
             }
           },
@@ -8761,9 +10816,9 @@
             "type": "object",
             "modifiers": [],
             "position": {
-              "startLine": 27,
+              "startLine": 28,
               "startColumn": 2,
-              "endLine": 27,
+              "endLine": 28,
               "endColumn": 22
             }
           },
@@ -8786,9 +10841,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 28,
+              "startLine": 29,
               "startColumn": 2,
-              "endLine": 28,
+              "endLine": 29,
               "endColumn": 22
             }
           },
@@ -8930,9 +10985,9 @@
             "type": "React.ReactNode",
             "modifiers": [],
             "position": {
-              "startLine": 195,
+              "startLine": 194,
               "startColumn": 2,
-              "endLine": 195,
+              "endLine": 194,
               "endColumn": 29
             }
           },
@@ -8955,9 +11010,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 194,
+              "startLine": 193,
               "startColumn": 2,
-              "endLine": 194,
+              "endLine": 193,
               "endColumn": 23
             }
           },
@@ -8980,10 +11035,107 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 196,
+              "startLine": 195,
               "startColumn": 2,
-              "endLine": 196,
+              "endLine": 195,
               "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsList/types.ts-packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-leftIconiconBgColorlabel": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsList/types.ts-packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps-leftIconiconBgColorlabel",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsList/types.ts",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps",
+      "from_class_or_interface_name": "SettingsListItemBaseProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps",
+      "to_class_or_interface_name": "SettingsListMyMapThemeSelectionProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/leftIcon": {
+          "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 4,
+            "startColumn": 2,
+            "endLine": 4,
+            "endColumn": 29
+          }
+        },
+        "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/iconBgColor": {
+          "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListMyMapThemeSelection/index.tsx/interface/SettingsListMyMapThemeSelectionProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 17
             }
           },
           "position": {

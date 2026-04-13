@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	Alert,
 	Animated,
 	AppState,
 	PanResponder,
@@ -9,7 +8,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
-	Switch,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -22,31 +20,38 @@ import { isRunningInExpoGo } from 'expo';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, isPentagon, getPentagons } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId } from '../helpers/ActivityMapRebuildHelper';
+import { mergeHexTileFeatureCache, loadHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
-import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
+import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, HexTileCustomizationPayload } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
-import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
-import * as Speech from 'expo-speech';
+import { setHomeHexTile } from '../store/playerInformationSlice';
+import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { clearAudioQueue } from '../helpers/AudioQueueHelper';
+import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
+import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
 import type { PaceHintState } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
 import { useDebugMode } from '../hooks/useDebugMode';
+import useGeonexiaAlert from '../hooks/useGeonexiaAlert';
 
 /** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
 function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
@@ -63,19 +68,53 @@ function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)
  * merging the new `billboards` field with the legacy `billboard`/`billboardAnchorColor` pair.
  * The new `billboards` field takes precedence when present.
  */
-function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorColor, string> {
+function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorPosition, string> {
 	const result: Record<string, string> = {};
 	if (record.billboards) {
 		for (const [ac, bk] of Object.entries(record.billboards)) {
 			if (bk) result[ac] = bk;
 		}
 	} else if (record.billboard) {
-		result[record.billboardAnchorColor ?? BillboardAnchorColor.Purple] = record.billboard;
+		result[record.billboardAnchorColor ?? BillboardAnchorPosition.CENTER] = record.billboard;
 	}
-	return result as Record<BillboardAnchorColor, string>;
+	return result as Record<BillboardAnchorPosition, string>;
+}
+
+/**
+ * Return the effective per-anchor flat-rendering flag map for a hex tile record.
+ */
+function getEffectiveBillboardsFlat(record: { billboardsFlat?: Record<string, boolean> }): Record<string, boolean> {
+	return record.billboardsFlat ?? {};
+}
+
+/**
+ * Return the effective per-anchor Hex Texture Adaption map for a hex tile record.
+ * These are always rendered flat on the map surface (pitch-alignment = 'map').
+ */
+function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<string, string | null> }): Record<BillboardAnchorPosition, string> {
+	const result: Record<string, string> = {};
+	if (record.billboardsTexture) {
+		for (const [ac, bk] of Object.entries(record.billboardsTexture)) {
+			if (bk) result[ac] = bk;
+		}
+	}
+	return result as Record<BillboardAnchorPosition, string>;
+}
+
+/**
+ * Parse the rotation angle (in degrees) from a BillboardAnchorPosition value,
+ * after reflecting across the 300°–120° axis (new = (240 - original + 360) % 360).
+ * Values like 'outer_30', 'middle_120' yield their reflected angle; 'center' yields 0.
+ */
+function getAnchorAngleDeg(anchorPosition: string): number {
+	const match = anchorPosition.match(/_(\d+)$/);
+	return match ? (240 - parseInt(match[1], 10) + 360) % 360 : 0;
 }
 
 const PRIMARY_COLOR = '#2563eb';
+
+/** Billboard key for the castle2 sprite. Used to mark the player's home tile. */
+const BILLBOARD_CASTLE2_KEY = 'objects:12';
 
 // Debug status indicator colours
 const STATUS_SUCCESS_COLOR = '#22c55e';
@@ -140,17 +179,33 @@ const BILLBOARD_MIN_SIZE_PX = 8;
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
 
-// Billboard anchor color options. Each maps to a position within the hex cell.
-// Colors match the debug point layer colors in hexTileScript.ts.
+// Billboard anchor position options. Each maps to a position within the hex cell.
 const BILLBOARD_ANCHOR_COLORS = [
-	{ id: BillboardAnchorColor.Purple, hex: '#a855f7', label: 'Center (Purple)' },
-	{ id: BillboardAnchorColor.Green, hex: '#22c55e', label: 'Vertex (Green)' },
-	{ id: BillboardAnchorColor.Red, hex: '#ef4444', label: 'Midpoint 1 (Red)' },
-	{ id: BillboardAnchorColor.Orange, hex: '#f97316', label: 'Midpoint 2 (Orange)' },
-	{ id: BillboardAnchorColor.Yellow, hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
-	{ id: BillboardAnchorColor.Blue, hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
-	{ id: BillboardAnchorColor.White, hex: '#ffffff', label: 'Midpoint 5 (White)' },
-	{ id: BillboardAnchorColor.Black, hex: '#000000', label: 'Midpoint 6 (Black)' },
+	{ id: BillboardAnchorPosition.CENTER,        hex: '#a855f7', label: 'Center' },
+	{ id: BillboardAnchorPosition.OUTER_0_DEGREE,   hex: '#ffffff', label: 'Outer 0°' },
+	{ id: BillboardAnchorPosition.OUTER_30_DEGREE,  hex: '#f43f5e', label: 'Outer 30°' },
+	{ id: BillboardAnchorPosition.OUTER_60_DEGREE,  hex: '#22c55e', label: 'Outer 60°' },
+	{ id: BillboardAnchorPosition.OUTER_90_DEGREE,  hex: '#f59e0b', label: 'Outer 90°' },
+	{ id: BillboardAnchorPosition.OUTER_120_DEGREE, hex: '#10b981', label: 'Outer 120°' },
+	{ id: BillboardAnchorPosition.OUTER_150_DEGREE, hex: '#06b6d4', label: 'Outer 150°' },
+	{ id: BillboardAnchorPosition.OUTER_180_DEGREE, hex: '#ffffff', label: 'Outer 180°' },
+	{ id: BillboardAnchorPosition.OUTER_210_DEGREE, hex: '#8b5cf6', label: 'Outer 210°' },
+	{ id: BillboardAnchorPosition.OUTER_240_DEGREE, hex: '#ffffff', label: 'Outer 240°' },
+	{ id: BillboardAnchorPosition.OUTER_270_DEGREE, hex: '#ec4899', label: 'Outer 270°' },
+	{ id: BillboardAnchorPosition.OUTER_300_DEGREE, hex: '#ffffff', label: 'Outer 300°' },
+	{ id: BillboardAnchorPosition.OUTER_330_DEGREE, hex: '#f43f5e', label: 'Outer 330°' },
+	{ id: BillboardAnchorPosition.MIDDLE_0_DEGREE,   hex: '#ffffff', label: 'Middle 0°' },
+	{ id: BillboardAnchorPosition.MIDDLE_30_DEGREE,  hex: '#f43f5e', label: 'Middle 30°' },
+	{ id: BillboardAnchorPosition.MIDDLE_60_DEGREE,  hex: '#ef4444', label: 'Middle 60°' },
+	{ id: BillboardAnchorPosition.MIDDLE_90_DEGREE,  hex: '#f97316', label: 'Middle 90°' },
+	{ id: BillboardAnchorPosition.MIDDLE_120_DEGREE, hex: '#eab308', label: 'Middle 120°' },
+	{ id: BillboardAnchorPosition.MIDDLE_150_DEGREE, hex: '#10b981', label: 'Middle 150°' },
+	{ id: BillboardAnchorPosition.MIDDLE_180_DEGREE, hex: '#3b82f6', label: 'Middle 180°' },
+	{ id: BillboardAnchorPosition.MIDDLE_210_DEGREE, hex: '#8b5cf6', label: 'Middle 210°' },
+	{ id: BillboardAnchorPosition.MIDDLE_240_DEGREE, hex: '#6366f1', label: 'Middle 240°' },
+	{ id: BillboardAnchorPosition.MIDDLE_270_DEGREE, hex: '#ec4899', label: 'Middle 270°' },
+	{ id: BillboardAnchorPosition.MIDDLE_300_DEGREE, hex: '#000000', label: 'Middle 300°' },
+	{ id: BillboardAnchorPosition.MIDDLE_330_DEGREE, hex: '#64748b', label: 'Middle 330°' },
 ] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
@@ -523,8 +578,9 @@ const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
 const SPEED_WARMUP_MS = 10_000;
+const SPEED_WINDOW_SIZE = 5;
 const GPS_TIME_INTERVAL_MS = 1000;
-const GPS_DISTANCE_INTERVAL_METERS = 5;
+const GPS_DISTANCE_INTERVAL_METERS = 0;
 /**
  * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
  * (i.e. the straight-line H3 path between two accepted GPS fixes is longer than 1
@@ -603,15 +659,21 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * Given a completed run route, find all H3 cells that are enclosed by the
  * route polygon (i.e. inside the loop). Returns an empty array when:
  *   – the route has fewer than 3 points,
- *   – the start and end are more than 300 m apart (not a loop), or
+ *   – the first and last GPS points do not map to adjacent hex tiles (not a loop), or
  *   – the H3 library is unavailable.
  */
 function findEnclosedCells(routePoints: RoutePoint[], resolution: number): string[] {
 	if (!isH3Available() || routePoints.length < 3) return [];
 
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+
+	// Check loop closure: first and last GPS points must map to the same hex tile
+	// or to adjacent hex tiles.
 	const first = routePoints[0];
 	const last = routePoints[routePoints.length - 1];
-	if (haversineKm(first.lat, first.lng, last.lat, last.lng) > 0.3) return [];
+	const firstCell = latLngToCell(first.lat, first.lng, h3Res);
+	const lastCell = latLngToCell(last.lat, last.lng, h3Res);
+	if (firstCell !== lastCell && !areNeighborCells(firstCell, lastCell)) return [];
 
 	// Route polygon in [lng, lat] order (same as GeoJSON).
 	const polygon: Array<[number, number]> = routePoints.map((p) => [p.lng, p.lat]);
@@ -630,7 +692,6 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	// as buildH3GeoJson, but with showAlways=true and a high zoom.
 	// Use Math.floor to match buildH3GeoJson's base-resolution logic for
 	// fractional resolutions (e.g. 10.5 → base res 10).
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
@@ -807,8 +868,15 @@ function computeStats(points: RoutePoint[]): RunStats {
 
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
-	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
-	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
+	const windowedSpeeds: number[] = [];
+	let windowSum = 0;
+	for (let i = 0; i < speedsKmh.length; i++) {
+		windowSum += speedsKmh[i];
+		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
+		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
+	}
+	const maxSpeedKmh = windowedSpeeds.length > 0 ? Math.max(...windowedSpeeds) : 0;
+	const minSpeedKmh = windowedSpeeds.length > 0 ? Math.min(...windowedSpeeds) : 0;
 	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
 	const medianSpeedKmh = (() => {
 		if (speedsKmh.length === 0) return 0;
@@ -906,10 +974,8 @@ type DebugInfoContentProps = {
 	onShowDebugPointsChange: (val: boolean) => void;
 	onExportMapSettings: () => void;
 	onImportMapSettings: (json: string) => void;
+	onFlyToCell: (lat: number, lng: number) => void;
 };
-
-// Precision factor for rounding fractional H3 resolution values (1 decimal place).
-const H3_RESOLUTION_DECIMAL_PRECISION = 10;
 
 function DebugInfoContent({
 	info,
@@ -933,6 +999,7 @@ function DebugInfoContent({
 	onShowDebugPointsChange,
 	onExportMapSettings,
 	onImportMapSettings,
+	onFlyToCell,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -951,39 +1018,6 @@ function DebugInfoContent({
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
 
-	const adjustResolution = useCallback((delta: number) => {
-		setH3Resolution((prev) => {
-			const next = Math.round((prev + delta) * H3_RESOLUTION_DECIMAL_PRECISION) / H3_RESOLUTION_DECIMAL_PRECISION;
-			const clamped = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, next));
-			onH3ResolutionChange(clamped);
-			return clamped;
-		});
-	}, [onH3ResolutionChange]);
-
-	const adjustMinZoom = useCallback((delta: number) => {
-		setMinZoom((prev) => {
-			const next = Math.max(0, Math.min(22, prev + delta));
-			onMinZoomChange(next);
-			return next;
-		});
-	}, [onMinZoomChange]);
-
-	const handleSpeedTextChange = useCallback((text: string) => {
-		setSpeedText(text);
-		const parsed = parseFloat(text);
-		if (!isNaN(parsed) && parsed > 0) {
-			onSpeedChange(Math.min(parsed, DEBUG_MOVE_SPEED_MAX_KMH));
-		}
-	}, [onSpeedChange]);
-
-	const adjustBillboardScale = useCallback((delta: number) => {
-		setBillboardScale((prev) => {
-			const next = Math.max(0.1, Math.round((prev + delta) * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
-			onBillboardScaleChange(next);
-			return next;
-		});
-	}, [onBillboardScaleChange]);
-
 	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
 		setBillboardFaceCamera(val);
 		onBillboardFaceCameraChange(val);
@@ -998,6 +1032,12 @@ function DebugInfoContent({
 		setShowDebugPoints(val);
 		onShowDebugPointsChange(val);
 	}, [onShowDebugPointsChange]);
+
+	const pentagons = useMemo(() => {
+		const res = Math.round(h3Resolution);
+		if (!isH3Available() || res < H3_RESOLUTION_MIN || res > H3_RESOLUTION_MAX) return [];
+		return getPentagons(res);
+	}, [h3Resolution]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= minZoom);
 
@@ -1045,74 +1085,63 @@ function DebugInfoContent({
 				</Text>
 			</View>
 
-			{/* Show Grid Always toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Grid Always</Text>
-				<Switch
-					value={showGridAlways}
-					onValueChange={handleShowGridAlwaysChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
+			{/* Show Grid Always */}
+			<SettingsListBoolean
+				label="Show Grid Always"
+				isEnabled={showGridAlways}
+				onToggle={() => handleShowGridAlwaysChange(!showGridAlways)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
+
+			{/* H3 Grid Resolution */}
+			<SettingsListNumberInput
+				label="H3 Grid Resolution"
+				value={Number.isInteger(h3Resolution) ? String(h3Resolution) : h3Resolution.toFixed(1)}
+				initialValue={h3Resolution}
+				min={H3_RESOLUTION_MIN}
+				max={H3_RESOLUTION_MAX}
+				step={1}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="H3 Grid Resolution"
+				saveLabel="Apply"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const clamped = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, val));
+					setH3Resolution(clamped);
+					onH3ResolutionChange(clamped);
+				}}
+			/>
+
+			{/* Min Zoom for Tiles */}
+			{!showGridAlways && (
+				<SettingsListNumberInput
+					label="Min Zoom for Tiles"
+					value={String(minZoom)}
+					initialValue={minZoom}
+					min={0}
+					max={22}
+					step={1}
+					groupPosition="single"
+					modalTitle="Min Zoom for Tiles"
+					saveLabel="Apply"
+					primaryColor={PRIMARY_COLOR}
+					onSave={(val) => {
+						const clamped = Math.max(0, Math.min(22, val));
+						setMinZoom(clamped);
+						onMinZoomChange(clamped);
+					}}
 				/>
-			</View>
-
-			{/* H3 Grid Resolution picker */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>H3 Grid Resolution</Text>
-				<View style={styles.resolutionPickerMultiRow}>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-1)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{Number.isInteger(h3Resolution) ? h3Resolution : h3Resolution.toFixed(1)}
-						</Text>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(1)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-0.5)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.5</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-0.1)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(0.1)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(0.5)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.5</Text>
-						</TouchableOpacity>
-					</View>
+			)}
+			{showGridAlways && (
+				<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+					<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
 				</View>
-			</View>
+			)}
 
-			{/* Zoom Level row with ±0.1 buttons */}
+			{/* Zoom Level */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Zoom Level</Text>
 				<View style={styles.resolutionPicker}>
@@ -1134,119 +1163,71 @@ function DebugInfoContent({
 				</View>
 			</View>
 
-			{/* Joystick Speed row */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Joystick Speed (km/h)</Text>
-				<TextInput
-					style={[styles.debugSpeedInput, { color: theme.screen.text, borderColor: theme.screen.text + '44' }]}
-					value={speedText}
-					onChangeText={handleSpeedTextChange}
-					keyboardType="decimal-pad"
-					returnKeyType="done"
-					selectTextOnFocus
-				/>
-			</View>
+			{/* Joystick Speed */}
+			<SettingsListNumberInput
+				label="Joystick Speed (km/h)"
+				value={speedText}
+				initialValue={parseFloat(speedText) || initialSpeed}
+				min={0.1}
+				max={DEBUG_MOVE_SPEED_MAX_KMH}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="Joystick Speed (km/h)"
+				saveLabel="Apply"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const clamped = Math.min(val, DEBUG_MOVE_SPEED_MAX_KMH);
+					setSpeedText(String(clamped));
+					onSpeedChange(clamped);
+				}}
+			/>
 
-			{/* Billboard Scale row */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
-				<View style={styles.resolutionPickerMultiRow}>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-							onPress={() => adjustBillboardScale(-0.5)}
-							disabled={billboardScale <= 0.1}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{billboardScale.toFixed(1)}×
-						</Text>
-						<TouchableOpacity
-							style={styles.resolutionButton}
-							onPress={() => adjustBillboardScale(0.5)}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-							onPress={() => adjustBillboardScale(-0.1)}
-							disabled={billboardScale <= 0.1}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={styles.resolutionFineButton}
-							onPress={() => adjustBillboardScale(0.1)}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</View>
+			{/* Billboard Scale */}
+			<SettingsListNumberInput
+				label="Billboard Scale"
+				value={`${billboardScale.toFixed(1)}×`}
+				initialValue={billboardScale}
+				min={0.1}
+				step={0.1}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="Billboard Scale"
+				saveLabel="Apply"
+				suffix="×"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const next = Math.max(0.1, Math.round(val * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
+					setBillboardScale(next);
+					onBillboardScaleChange(next);
+				}}
+			/>
 
-			{/* Billboard Face Camera toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Face Camera</Text>
-				<Switch
-					value={billboardFaceCamera}
-					onValueChange={handleBillboardFaceCameraChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
+			{/* Billboard Face Camera */}
+			<SettingsListBoolean
+				label="Billboard Face Camera"
+				isEnabled={billboardFaceCamera}
+				onToggle={() => handleBillboardFaceCameraChange(!billboardFaceCamera)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
-			{/* Show Billboard Anchor Points toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Anchor Points</Text>
-				<Switch
-					value={showBillboardAnchors}
-					onValueChange={handleShowBillboardAnchorsChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
+			{/* Show Billboard Anchor Points */}
+			<SettingsListBoolean
+				label="Show Anchor Points"
+				isEnabled={showBillboardAnchors}
+				onToggle={() => handleShowBillboardAnchorsChange(!showBillboardAnchors)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
-			{/* Show Debug Points toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Debug Points</Text>
-				<Switch
-					value={showDebugPoints}
-					onValueChange={handleShowDebugPointsChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
-
-			{/* Min Zoom for Tiles row with ±1 buttons */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
-				{showGridAlways ? (
-					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
-				) : (
-					<View style={styles.resolutionPicker}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: minZoom <= 0 ? 0.4 : 1 }]}
-							onPress={() => adjustMinZoom(-1)}
-							disabled={minZoom <= 0}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{minZoom}
-						</Text>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: minZoom >= 22 ? 0.4 : 1 }]}
-							onPress={() => adjustMinZoom(1)}
-							disabled={minZoom >= 22}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-				)}
-			</View>
+			{/* Show Debug Points */}
+			<SettingsListBoolean
+				label="Show Debug Points"
+				isEnabled={showDebugPoints}
+				onToggle={() => handleShowDebugPointsChange(!showDebugPoints)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
 			{/* Viewport rows */}
 			{viewportRows.map((row) => (
@@ -1313,6 +1294,30 @@ function DebugInfoContent({
 					</View>
 				)}
 			</View>
+
+			{/* Pentagon tiles fly-to */}
+			{pentagons.length > 0 && (
+				<>
+					<SettingsListGroupTitle title={`⬠ Pentagon Tiles (Res ${Math.round(h3Resolution)})`} />
+					{pentagons.map((cell, i) => {
+						const [lat, lng] = cellToLatLng(cell);
+						const position: 'top' | 'middle' | 'bottom' | 'single' =
+							pentagons.length === 1 ? 'single' : i === 0 ? 'top' : i === pentagons.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={cell}
+								label={`Pentagon #${i + 1} (${lat.toFixed(2)}, ${lng.toFixed(2)})`}
+								leftIcon={<MaterialIcons name="navigation" size={20} color="#ffffff" />}
+								iconBgColor={PRIMARY_COLOR}
+								isSelected={false}
+								selectionColor={PRIMARY_COLOR}
+								groupPosition={position}
+								onPress={() => onFlyToCell(lat, lng)}
+							/>
+						);
+					})}
+				</>
+			)}
 		</View>
 	);
 }
@@ -1351,10 +1356,11 @@ function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme:
 	const compact = JSON.stringify(shareData);
 	const pretty = JSON.stringify(shareData, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
+	const { showAlert } = useGeonexiaAlert();
 
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
-		Alert.alert('Copied', 'Run data copied to clipboard.');
+		showAlert('Copied', 'Run data copied to clipboard.');
 	}, [compact]);
 
 	return (
@@ -1443,12 +1449,13 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 type MeasureResultContentProps = {
 	routeLengthInTiles: number;
 	enclosedTileCount: number;
+	enclosedCells: string[];
 	routeCells: string[];
 	h3Resolution: number;
 	theme: ReturnType<typeof useTheme>['theme'];
 	savedActivities: SavedActivity[];
 	selectedSportType: SportType;
-	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onSaveAsActivity: (routeCells: string[], enclosedCells: string[]) => void;
 	onSaveAsRoute: (routeCells: string[], name: string) => void;
 	onClose: () => void;
 };
@@ -1456,6 +1463,7 @@ type MeasureResultContentProps = {
 function MeasureResultContent({
 	routeLengthInTiles,
 	enclosedTileCount,
+	enclosedCells,
 	routeCells,
 	h3Resolution,
 	theme,
@@ -1569,7 +1577,7 @@ function MeasureResultContent({
 			{routeCells.length >= 2 && (
 				<TouchableOpacity
 					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
-					onPress={() => { onSaveAsActivity(routeCells, enclosedTileCount); onClose(); }}
+					onPress={() => { onSaveAsActivity(routeCells, enclosedCells); onClose(); }}
 					activeOpacity={0.8}
 				>
 					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
@@ -1620,11 +1628,15 @@ function formatTimestamp(ts: number | null): string {
 }
 
 // ── Hex Anchor Picker ──────────────────────────────────────────────────────────
-// Pointy-top hexagon with 9 interactive anchor points:
-//   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
-//   between the center and each of the 6 vertices.
+// Pointy-top hexagon showing all 25 anchor positions:
+//   CENTER (hex centroid), 12 OUTER positions (6 vertices + 6 edge midpoints),
+//   and 12 MIDDLE positions (midpoints between CENTER and each OUTER point).
+//
+// Degree convention: 0° = vertex[0] (top), clockwise.
+//   Vertices at 0°, 60°, 120°, 180°, 240°, 300°.
+//   Edge midpoints at 30°, 90°, 150°, 210°, 270°, 330°.
 
-const HEX_PICKER_SIZE = 180;
+const HEX_PICKER_SIZE = 260;
 const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
 const HEX_PICKER_CX = HEX_PICKER_SIZE / 2;
 const HEX_PICKER_CY = HEX_PICKER_SIZE / 2;
@@ -1633,22 +1645,51 @@ const HEX_DOT_SELECTED_SIZE = 26;
 
 // √3/4
 const SQRT3_4 = Math.sqrt(3) / 4;
+// √3/8
+const SQRT3_8 = Math.sqrt(3) / 8;
 // √3/2
 const SQRT3_2 = Math.sqrt(3) / 2;
 
-// Positions for each BILLBOARD_ANCHOR_COLOR entry.
-// Midpoints are rotated one step clockwise vs. the original layout so that black
-// lands at the top (directly above the center).
-// Green vertex has been moved one step clockwise to vertex[1] (upper-right).
+// Positions for each BillboardAnchorPosition entry keyed by the enum string value.
+// All coordinates are in the local HEX_PICKER coordinate system (pointy-top hex, 0° at top, clockwise).
+// For angle θ clockwise from top: x = CX + d*sin(θ),  y = CY − d*cos(θ)
+// Outer vertices: d = R,  outer edge midpoints: d = R*√3/2,  middle vertices: d = R/2,  middle edge midpoints: d = R*√3/4
+// √3/2 ≈ 0.866,  √3/4 ≈ 0.433,  √3/8 ≈ 0.217
 const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
-	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
-	green:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // vertex[1] upper-right
-	black:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint[0] top
-	red:    { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[1] upper-right
-	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[2] lower-right
-	yellow: { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint[3] bottom
-	blue:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[4] lower-left
-	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[5] upper-left
+	// ── Center ──────────────────────────────────────────────────────────────────
+	[BillboardAnchorPosition.CENTER]: { x: HEX_PICKER_CX, y: HEX_PICKER_CY },
+
+	// ── Outer ring: vertices (0° = top, clockwise) ──────────────────────────────
+	[BillboardAnchorPosition.OUTER_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R },                // 0°: vertex top
+	[BillboardAnchorPosition.OUTER_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // 60°: vertex upper-right
+	[BillboardAnchorPosition.OUTER_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // 120°: vertex lower-right
+	[BillboardAnchorPosition.OUTER_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R },                // 180°: vertex bottom
+	[BillboardAnchorPosition.OUTER_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // 240°: vertex lower-left
+	[BillboardAnchorPosition.OUTER_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // 300°: vertex upper-left
+
+	// ── Outer ring: edge midpoints ───────────────────────────────────────────────
+	[BillboardAnchorPosition.OUTER_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // 30°: edge top-right
+	[BillboardAnchorPosition.OUTER_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // 90°: edge right
+	[BillboardAnchorPosition.OUTER_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // 150°: edge lower-right
+	[BillboardAnchorPosition.OUTER_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // 210°: edge lower-left
+	[BillboardAnchorPosition.OUTER_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // 270°: edge left
+	[BillboardAnchorPosition.OUTER_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // 330°: edge top-left
+
+	// ── Middle ring: toward vertices ─────────────────────────────────────────────
+	[BillboardAnchorPosition.MIDDLE_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // 0°: toward top
+	[BillboardAnchorPosition.MIDDLE_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // 60°: toward upper-right
+	[BillboardAnchorPosition.MIDDLE_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // 120°: toward lower-right
+	[BillboardAnchorPosition.MIDDLE_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // 180°: toward bottom
+	[BillboardAnchorPosition.MIDDLE_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // 240°: toward lower-left
+	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // 300°: toward upper-left
+
+	// ── Middle ring: toward edge midpoints ───────────────────────────────────────
+	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // 30°: toward top-right edge
+	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // 90°: toward right edge
+	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // 150°: toward lower-right edge
+	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // 210°: toward lower-left edge
+	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // 270°: toward left edge
+	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // 330°: toward top-left edge
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
@@ -1660,7 +1701,7 @@ const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
 	};
 });
 
-function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorColor; onSelect: (id: BillboardAnchorColor) => void; occupiedAnchors?: Record<string, string | null> }) {
+function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorPosition; onSelect: (id: BillboardAnchorPosition) => void; occupiedAnchors?: Record<string, string | null> }) {
 	const { theme } = useTheme();
 	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
 
@@ -1711,8 +1752,8 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: Bi
 									left: pos.x - dotSize / 2,
 									top: pos.y - dotSize / 2,
 									backgroundColor: ac.hex,
-									borderColor: isSelected ? PRIMARY_COLOR : (ac.id === 'white' ? '#d1d5db' : 'transparent'),
-									borderWidth: isSelected ? 3 : (ac.id === 'white' ? 1 : 0),
+									borderColor: isSelected ? PRIMARY_COLOR : (ac.hex === '#ffffff' ? '#d1d5db' : 'transparent'),
+									borderWidth: isSelected ? 3 : (ac.hex === '#ffffff' ? 1 : 0),
 									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
 									shadowOpacity: isSelected ? 0.6 : 0,
 									shadowRadius: 4,
@@ -1781,6 +1822,7 @@ type MapFeatureInfo = {
 	natural: string | null;
 	landuse: string | null;
 	amenity: string | null;
+	count: number;
 };
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
@@ -1788,7 +1830,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
-	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
+	const [selectedObjectAnchor, setSelectedObjectAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
+	const [selectedTextureAdaptionAnchor, setSelectedTextureAdaptionAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [featuresLoading, setFeaturesLoading] = useState(false);
 	const runIdRef = useRef(0);
@@ -1809,10 +1852,27 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
-	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
-	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorColor, string>;
-	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
-	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
+	const effectiveBillboardsObjects = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
+	const currentObjectAnchorBillboard = effectiveBillboardsObjects[selectedObjectAnchor] ?? null;
+	const parsedCurrentObjectBillboard = currentObjectAnchorBillboard ? parseBillboardKey(currentObjectAnchorBillboard) : null;
+	const effectiveBillboardsTexture = record ? getEffectiveBillboardsTexture(record) : {} as Record<BillboardAnchorPosition, string>;
+	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAdaptionAnchor] ?? null;
+	const parsedCurrentTextureBillboard = currentTextureAnchorBillboard ? parseBillboardKey(currentTextureAnchorBillboard) : null;
+
+	const parentInfo = useMemo(() => {
+		if (!isH3Available() || !isValidCell(h3Index)) return null;
+		const res = getResolution(h3Index);
+		if (res <= 0) return null;
+		const parentIndex = cellToParent(h3Index, res - 1);
+		if (!parentIndex) return null;
+		const siblings = cellToChildren(parentIndex, res).sort();
+		const childNumber = siblings.indexOf(h3Index);
+		return {
+			parentIndex,
+			childNumber: childNumber >= 0 ? childNumber + 1 : null,
+			totalChildren: siblings.length,
+		};
+	}, [h3Index]);
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -1820,8 +1880,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
 		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
+		{ label: 'Avenue Count', value: record ? String(record.avenueCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
+		...(parentInfo ? [
+			{ label: 'Parent H3', value: parentInfo.parentIndex },
+			{ label: 'Nr. im Parent', value: parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—' },
+		] : []),
 	];
 
 	const openTileSelection = useCallback(() => {
@@ -1863,28 +1928,27 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		});
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
-	const openBillboardSelection = useCallback(() => {
-		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor;
+	const openObjectSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor;
 		showModal({
-			title: `🏗️ Select Billboard — ${anchorLabel}`,
+			title: `🏠 Select Hex Object — ${anchorLabel}`,
 			onClose: closeModal,
 			children: (
 				<View style={{ paddingBottom: 20 }}>
-					{/* None option at the top */}
 					<SettingsListSelectOptionSingle
 						key="none"
 						label="None (clear)"
-						isSelected={!currentAnchorBillboard}
+						isSelected={!currentObjectAnchorBillboard}
 						selectionColor={PRIMARY_COLOR}
 						onPress={() => {
-							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: null }));
+							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: null }));
 							closeModal();
 						}}
 						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
 					/>
 					{OBJECT_SPRITES.map((sprite, idx) => {
 						const key = `objects:${idx}`;
-						const isSelected = currentAnchorBillboard === key;
+						const isSelected = currentObjectAnchorBillboard === key;
 						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
 						return (
 							<SettingsListBillboard
@@ -1894,7 +1958,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 								isSelected={isSelected}
 								selectionColor={PRIMARY_COLOR}
 								onPress={() => {
-									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: key }));
+									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: key }));
 									closeModal();
 								}}
 								groupPosition={position}
@@ -1904,7 +1968,49 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			),
 		});
-	}, [showModal, closeModal, currentAnchorBillboard, h3Index, dispatch, selectedAnchorColor]);
+	}, [showModal, closeModal, currentObjectAnchorBillboard, h3Index, dispatch, selectedObjectAnchor]);
+
+	const openTextureAdaptionSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor;
+		showModal({
+			title: `🖼️ Select Texture Adaption — ${anchorLabel}`,
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					<SettingsListSelectOptionSingle
+						key="none"
+						label="None (clear)"
+						isSelected={!currentTextureAnchorBillboard}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAdaptionAnchor, billboard: null }));
+							closeModal();
+						}}
+						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
+					/>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const key = `objects:${idx}`;
+						const isSelected = currentTextureAnchorBillboard === key;
+						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListBillboard
+								key={key}
+								spriteIndex={idx}
+								title={sprite.name}
+								isSelected={isSelected}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAdaptionAnchor, billboard: key }));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentTextureAnchorBillboard, h3Index, dispatch, selectedTextureAdaptionAnchor]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1923,26 +2029,40 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			))}
 
-			{/* ── Tile Image section ── */}
-			<SettingsListGroupTitle title="Tile Image" />
+			{/* ── Hex Textur section (terrain fill image) ── */}
+			<SettingsListGroupTitle title="Hex Textur" />
 			<SettingsListHexTile
 				tileImageKey={currentTileImage}
-				title="Tile Image"
+				title="Hex Textur"
 				onPress={openTileSelection}
 				groupPosition="single"
 			/>
 
-			{/* ── Billboard / Object section (per anchor) ── */}
-			<SettingsListGroupTitle title="Objects (per Anchor)" />
+			{/* ── Hex Texture Adaption section (flat sprites at anchor positions) ── */}
+			<SettingsListGroupTitle title="Hex Texture Adaption" />
 			<HexAnchorPicker
-				selected={selectedAnchorColor}
-				onSelect={setSelectedAnchorColor}
-				occupiedAnchors={effectiveBillboards}
+				selected={selectedTextureAdaptionAnchor}
+				onSelect={setSelectedTextureAdaptionAnchor}
+				occupiedAnchors={effectiveBillboardsTexture}
 			/>
 			<SettingsListBillboard
-				spriteIndex={parsedCurrentBillboard?.idx ?? null}
-				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
-				onPress={openBillboardSelection}
+				spriteIndex={parsedCurrentTextureBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor}
+				onPress={openTextureAdaptionSelection}
+				groupPosition="single"
+			/>
+
+			{/* ── Hex Feld Object Set section (face-camera objects at anchor positions) ── */}
+			<SettingsListGroupTitle title="Hex Feld Object Set" />
+			<HexAnchorPicker
+				selected={selectedObjectAnchor}
+				onSelect={setSelectedObjectAnchor}
+				occupiedAnchors={effectiveBillboardsObjects}
+			/>
+			<SettingsListBillboard
+				spriteIndex={parsedCurrentObjectBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor}
+				onPress={openObjectSelection}
 				groupPosition="single"
 			/>
 
@@ -1985,6 +2105,7 @@ const MAGNIFY_COLOR = '#3b82f6';
 
 function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
+	const { showAlert } = useGeonexiaAlert();
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -2051,7 +2172,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 		if (!features) return;
 		const json = JSON.stringify(features, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
+		showAlert('Kopiert', 'JSON in Zwischenablage kopiert.');
 	}, [features]);
 
 	return (
@@ -2241,12 +2362,327 @@ const magnifyStyles = StyleSheet.create({
 	},
 });
 
+// ─── Map Search ───────────────────────────────────────────────────────────────
+
+/**
+ * Converts a MapFeatureInfo into a display key used for search filtering.
+ * Format: "class/subclass" when both are present, otherwise whichever is non-null.
+ */
+function featureToSearchKey(f: { class: string | null; subclass: string | null; layerId: string | null }): string {
+	const parts = [f.class, f.subclass].filter((v): v is string => v !== null && v.length > 0);
+	if (parts.length > 0) return parts.join('/');
+	return f.layerId ?? 'unknown';
+}
+
+function MapSearchModalContent({ availableKeys }: { availableKeys: string[] }) {
+	const dispatch = useDispatch();
+	const searchState = useSelector((state: RootState) => state.mapSearch.searchState);
+	const enabledKeys = searchState?.enabledKeys ?? [];
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Suche zurücksetzen" />
+			<SettingsList
+				leftIcon={<MaterialIcons name="refresh" size={22} color="#ffffff" />}
+				iconBgColor="#ef4444"
+				label="Suche zurücksetzen"
+				groupPosition="single"
+				handleFunction={() => dispatch(resetMapSearchState())}
+			/>
+			<SettingsListGroupTitle title="Name der Suche" />
+			<SettingsListTextInput
+				title="Name"
+				placeholder="z.B. Parks & Grünflächen"
+				modalTitle="Suche benennen"
+				groupPosition="single"
+				value={searchState?.name ?? ''}
+				initialValue={searchState?.name ?? ''}
+				onSave={(name) => { dispatch(setMapSearchName(name.trim())); }}
+			/>
+			{availableKeys.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Map Features" />
+					{availableKeys.map((key, idx) => (
+						<SettingsListBoolean
+							key={key}
+							label={key}
+							isEnabled={enabledKeys.includes(key)}
+							onToggle={() => dispatch(toggleMapSearchKey(key))}
+							groupPosition={
+								availableKeys.length === 1
+									? 'single'
+									: idx === 0
+										? 'top'
+										: idx === availableKeys.length - 1
+											? 'bottom'
+											: 'middle'
+							}
+						/>
+					))}
+				</>
+			)}
+		</>
+	);
+}
+
+// ─── Interrupted Recording Reconstruction ────────────────────────────────────
+
+/**
+ * Reconstruct an interrupted recording by matching it against a saved route.
+ * The interrupted activity's hex tiles are compared to the route's hex tiles.
+ * For the portion of the route that the user hadn't reached yet (the "gap"),
+ * synthetic GPS points are generated at hex tile centers using the average pace
+ * observed during the recorded portion.
+ *
+ * @returns A new `RoutePoint[]` array containing the original points plus
+ *          synthetic points for the gap, or `null` if reconstruction is not possible.
+ */
+function reconstructInterruptedRoute(
+	snapshot: InterruptedRecordingSnapshot,
+	route: SavedRoute,
+): RoutePoint[] | null {
+	if (snapshot.routePoints.length < 2 || route.hexTiles.length < 2) return null;
+	if (snapshot.hexTilesOrdered.length === 0) return null;
+
+	const recordedSet = new Set(snapshot.hexTilesOrdered);
+
+	// Find where the interrupted recording diverges from the route.
+	// Walk through the route's hex tiles and find the last one that appears
+	// in the recorded tiles (in order).
+	let lastMatchIndex = -1;
+	for (let i = 0; i < route.hexTiles.length; i++) {
+		if (recordedSet.has(route.hexTiles[i])) {
+			lastMatchIndex = i;
+		}
+	}
+
+	if (lastMatchIndex < 0) return null; // No overlap at all
+
+	// The remaining route tiles that were NOT visited form the gap.
+	const gapTiles: string[] = [];
+	for (let i = lastMatchIndex + 1; i < route.hexTiles.length; i++) {
+		if (!recordedSet.has(route.hexTiles[i])) {
+			gapTiles.push(route.hexTiles[i]);
+		}
+	}
+
+	if (gapTiles.length === 0) return null; // Route was fully covered
+
+	// Use current time as the end timestamp for the reconstructed activity so
+	// that the saved activity reflects when the user performed the recovery.
+	const nowMs = Date.now();
+	const lastRecordedPoint = snapshot.routePoints[snapshot.routePoints.length - 1];
+	const firstGpsTimestamp = snapshot.routePoints[0].timestamp;
+
+	// Average speed (m/s) = total recorded distance / elapsed time from the
+	// first GPS point to now (the moment the user assigns the route).
+	const totalRecordedDistanceKm = computeRoutePointsDistance(snapshot.routePoints);
+	const totalElapsedSec = (nowMs - firstGpsTimestamp) / 1000;
+	if (totalElapsedSec <= 0) return null;
+	// Fall back to a typical walking pace if no distance was recorded.
+	const avgSpeedMs = totalRecordedDistanceKm > 0
+		? (totalRecordedDistanceKm * 1000) / totalElapsedSec
+		: 1.4; // ~5 km/h walking pace
+
+	// Pre-pass: resolve hex-center coordinates and total gap distance so the
+	// remaining time budget (lastRecordedPoint → nowMs) can be distributed
+	// proportionally to distance across the synthetic points.
+	const gapCoords: Array<[number, number]> = [];
+	let prevLat = lastRecordedPoint.lat;
+	let prevLng = lastRecordedPoint.lng;
+	let totalGapKm = 0;
+	for (const hexId of gapTiles) {
+		const [lat, lng] = cellToLatLng(hexId);
+		gapCoords.push([lat, lng]);
+		if (lat !== 0 || lng !== 0) {
+			totalGapKm += haversineKm(prevLat, prevLng, lat, lng);
+			prevLat = lat;
+			prevLng = lng;
+		}
+	}
+
+	// Time budget available for the interpolated section.
+	const gapMs = nowMs - lastRecordedPoint.timestamp;
+
+	// Generate interpolated GPS points along the gap tiles using their hex
+	// center coordinates. Each point is flagged as `interpolated: true` to
+	// indicate it was synthetically created to compensate for the GPS gap.
+	prevLat = lastRecordedPoint.lat;
+	prevLng = lastRecordedPoint.lng;
+	let currentTimestamp = lastRecordedPoint.timestamp;
+	const syntheticPoints: RoutePoint[] = [];
+
+	for (let i = 0; i < gapTiles.length; i++) {
+		const [lat, lng] = gapCoords[i];
+		if (lat === 0 && lng === 0) continue;
+		const segmentKm = haversineKm(prevLat, prevLng, lat, lng);
+		// Distribute timestamps proportionally to distance so the last synthetic
+		// point lands exactly at nowMs.
+		const segmentMs = totalGapKm > 0
+			? (segmentKm / totalGapKm) * gapMs
+			: gapMs / gapTiles.length;
+		currentTimestamp += segmentMs;
+		syntheticPoints.push({
+			lat,
+			lng,
+			altitude: null,
+			speed: avgSpeedMs, // m/s, as per the Location API convention
+			timestamp: currentTimestamp,
+			interpolated: true,
+		});
+		prevLat = lat;
+		prevLng = lng;
+	}
+
+	return [...snapshot.routePoints, ...syntheticPoints];
+}
+
+/**
+ * Compute the total distance in km from an array of RoutePoint.
+ */
+function computeRoutePointsDistance(points: RoutePoint[]): number {
+	let totalKm = 0;
+	for (let i = 1; i < points.length; i++) {
+		totalKm += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+	}
+	return totalKm;
+}
+
+// ─── Interrupted Recovery Content ────────────────────────────────────────────
+
+function InterruptedRecoveryContent({
+	snapshot,
+	theme,
+	onDiscard,
+	onSave,
+}: {
+	snapshot: InterruptedRecordingSnapshot;
+	theme: ReturnType<typeof useTheme>['theme'];
+	onDiscard: () => void;
+	onSave: (activity: SavedActivity) => void;
+}) {
+	const [routes, setRoutes] = useState<SavedRoute[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		loadRoutes().then((r) => {
+			setRoutes(r);
+			setLoading(false);
+		});
+	}, []);
+
+	const durationSec = snapshot.accumulatedSeconds +
+		(snapshot.routePoints.length > 1
+			? (snapshot.routePoints[snapshot.routePoints.length - 1].timestamp - snapshot.routePoints[0].timestamp) / 1000
+			: 0);
+	const distKm = computeRoutePointsDistance(snapshot.routePoints);
+	const dateStr = new Date(snapshot.startedAt).toLocaleString();
+
+	const handleSaveAsIs = useCallback(() => {
+		const stats = computeStats(snapshot.routePoints);
+		const activity: SavedActivity = {
+			id: String(snapshot.startedAt),
+			startedAt: snapshot.startedAt,
+			endedAt: snapshot.savedAt,
+			routePoints: snapshot.routePoints,
+			stats,
+			sportType: snapshot.sportType,
+			h3Resolution: snapshot.h3Resolution,
+			visitedTileCount: snapshot.hexTilesOrdered.length,
+			enclosedTileCount: 0,
+			hexTilesOrdered: snapshot.hexTilesOrdered,
+			routeId: snapshot.routeId,
+		};
+		activity.computed = computeActivityData(activity, []);
+		onSave(activity);
+	}, [snapshot, onSave]);
+
+	const handleReconstructWithRoute = useCallback((route: SavedRoute) => {
+		const reconstructed = reconstructInterruptedRoute(snapshot, route);
+		const points = reconstructed ?? snapshot.routePoints;
+		const stats = computeStats(points);
+		const activity: SavedActivity = {
+			id: String(snapshot.startedAt),
+			startedAt: snapshot.startedAt,
+			endedAt: Date.now(),
+			routePoints: points,
+			stats,
+			sportType: snapshot.sportType,
+			h3Resolution: snapshot.h3Resolution,
+			visitedTileCount: snapshot.hexTilesOrdered.length,
+			enclosedTileCount: 0,
+			hexTilesOrdered: snapshot.hexTilesOrdered,
+			routeId: route.id,
+		};
+		activity.computed = computeActivityData(activity, []);
+		onSave(activity);
+	}, [snapshot, onSave]);
+
+	const matchingRoutes = useMemo(() => {
+		if (routes.length === 0 || snapshot.hexTilesOrdered.length === 0) return [];
+		return findMatchingRoutes(snapshot.hexTilesOrdered, routes, snapshot.h3Resolution, 0.3);
+	}, [routes, snapshot]);
+
+	return (
+		<View style={{ paddingTop: 8, gap: 12 }}>
+			<Text style={{ color: theme.screen.text, fontSize: 15, lineHeight: 22 }}>
+				Eine Aktivität vom {dateStr} wurde durch einen App-Absturz unterbrochen.{'\n'}
+				{snapshot.routePoints.length} GPS-Punkte, {distKm.toFixed(2)} km, {Math.round(durationSec)}s aufgezeichnet.
+			</Text>
+
+			<TouchableOpacity
+				style={{ backgroundColor: '#2563eb', paddingVertical: 12, borderRadius: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 }}
+				onPress={handleSaveAsIs}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="save" size={18} color="#ffffff" />
+				<Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '600' }}>Aktivität speichern (wie aufgezeichnet)</Text>
+			</TouchableOpacity>
+
+			{loading ? (
+				<Text style={{ color: theme.screen.text, opacity: 0.5 }}>Routen werden geladen…</Text>
+			) : matchingRoutes.length > 0 ? (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 14, fontWeight: '600' }}>
+						Route zuordnen und fehlende Strecke ergänzen:
+					</Text>
+					{matchingRoutes.map((match) => (
+						<TouchableOpacity
+							key={match.route.id}
+							style={{ backgroundColor: '#16a34a', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }}
+							onPress={() => handleReconstructWithRoute(match.route)}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons name="route" size={18} color="#ffffff" />
+							<Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', flex: 1 }}>
+								{match.route.name} ({Math.round(match.overlap * 100)}% Übereinstimmung)
+							</Text>
+						</TouchableOpacity>
+					))}
+				</>
+			) : null}
+
+			<TouchableOpacity
+				style={{ paddingVertical: 12, alignItems: 'center' }}
+				onPress={onDiscard}
+				activeOpacity={0.8}
+			>
+				<Text style={{ color: theme.screen.text, fontSize: 15, fontWeight: '500' }}>Verwerfen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
+	const { show: showRecoveryModal, close: closeRecoveryModal } = useMyScrollViewModal();
+	const { show: showSearchModal, close: closeSearchModal } = useMyScrollViewModal();
+	const { show: showDebugReplayModal, close: closeDebugReplayModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -2256,14 +2692,20 @@ export default function RecordScreen() {
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
-	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const isDebugMode = useDebugMode();
-	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
 	const speechSettings = useSelector((state: RootState) => state.speechSettings);
+	const hexTextureOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureOpacity);
+	const hexTextureAdaptionOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureAdaptionOpacity);
+	const hexObjectOpacity = useSelector((state: RootState) => state.displaySettings.hexObjectOpacity);
+	const mapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
+	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
+	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
+	const homeHexTile = useSelector((state: RootState) => state.playerInformation.homeHexTile);
+	const searchState = useSelector((state: RootState) => state.mapSearch.searchState);
 	const prevResetTokenRef = useRef<number | null>(null);
 
 	const activeSport = useMemo(
@@ -2285,11 +2727,14 @@ export default function RecordScreen() {
 	const [isMagnifyMode, setIsMagnifyMode] = useState(false);
 	const isMagnifyModeRef = useRef(false);
 
+	// Search highlight (debug only): track viewport cells and cached features for red-border overlay
+	const currentViewportCellsRef = useRef<string[]>([]);
+	const searchFeatureCacheRef = useRef<Map<string, MapFeatureInfo[]>>(new Map());
+	const searchHighlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
 	const lastAnnouncedKmRef = useRef(0);
-	const isTTSEnabledRef = useRef(isTTSEnabled);
-	isTTSEnabledRef.current = isTTSEnabled;
 	const announceAppInBackgroundRef = useRef(announceAppInBackground);
 	announceAppInBackgroundRef.current = announceAppInBackground;
 	const speechSettingsRef = useRef(speechSettings);
@@ -2320,6 +2765,13 @@ export default function RecordScreen() {
 	const selectedRouteRef = useRef<SavedRoute | null>(null);
 	selectedRouteRef.current = selectedRoute;
 
+	// Debug replay: selected activity to replay instead of using real GPS (debug mode only).
+	const [debugReplayActivity, setDebugReplayActivity] = useState<SavedActivity | null>(null);
+	const debugReplayActivityRef = useRef<SavedActivity | null>(null);
+	debugReplayActivityRef.current = debugReplayActivity;
+	// Timeout handles for the replay ticker – cleared when recording stops.
+	const debugReplayTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
 	// Coloring tool state:
 	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
 	// - coloringTileImageRef: ref copy for use in map message callbacks (avoids stale closures).
@@ -2329,6 +2781,11 @@ export default function RecordScreen() {
 	const coloringTileImageRef = useRef<string | null>(null);
 	const coloringSelectionMadeRef = useRef(false);
 	coloringTileImageRef.current = coloringTileImage;
+
+	// Set-home mode: when active, the next hex tile tap sets that tile as the player's home.
+	const [isSettingHome, setIsSettingHome] = useState(false);
+	const isSettingHomeRef = useRef(false);
+	isSettingHomeRef.current = isSettingHome;
 
 	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
 	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
@@ -2374,16 +2831,16 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.billboard || r.billboards)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}`)
+			.filter(([, r]) => r.tileImage || r.billboard || r.billboards || r.billboardsTexture)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}|${JSON.stringify(r.billboardsTexture ?? {})}`)
 			.sort()
 			.join('\n'),
 	);
 
 	// Stable key for billboard anchor config changes so the map is updated when
-	// anchor overrides are adjusted in the Billboard Config screen.
+	// anchor overrides are adjusted in the Billboard Config or Hex Texture Config screens.
 	const billboardConfigKey = useSelector((state: RootState) =>
-		JSON.stringify(state.billboardConfig.spriteAnchors),
+		JSON.stringify(state.billboardConfig.spriteAnchors) + '|' + JSON.stringify(state.hexTextureConfig.spriteAnchors),
 	);
 
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
@@ -2422,12 +2879,16 @@ export default function RecordScreen() {
 
 		const records = store.getState().hexTiles.records;
 		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
+		const textureAnchors = store.getState().hexTextureConfig.spriteAnchors;
+		const currentHexTextureOpacity = store.getState().displaySettings.hexTextureOpacity;
+		const currentHexTextureAdaptionOpacity = store.getState().displaySettings.hexTextureAdaptionOpacity;
+		const currentHexObjectOpacity = store.getState().displaySettings.hexObjectOpacity;
 
-		// Flat lookup: terrain asset key → module ID
-		const terrainLookup = new Map<string, number>();
+		// Flat lookup: terrain asset key → { moduleId, mimeType }
+		const terrainLookup = new Map<string, { moduleId: number; mimeType: string }>();
 		for (const assets of Object.values(TERRAIN_ASSETS)) {
 			for (const entry of assets) {
-				terrainLookup.set(entry.key, entry.source as number);
+				terrainLookup.set(entry.key, { moduleId: entry.source as number, mimeType: entry.mimeType ?? 'image/svg+xml' });
 			}
 		}
 
@@ -2448,9 +2909,9 @@ export default function RecordScreen() {
 		for (const [h3Index, record] of Object.entries(records)) {
 			// ── Tile image overlay ──────────────────────────────────────────────
 			if (record.tileImage) {
-				const moduleId = terrainLookup.get(record.tileImage);
-				if (moduleId !== undefined) {
-					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/svg+xml');
+				const terrainEntry = terrainLookup.get(record.tileImage);
+				if (terrainEntry !== undefined) {
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
 					if (url) {
 						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
 						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
@@ -2474,17 +2935,38 @@ export default function RecordScreen() {
 							const dlat = v0[0] - centerLat;
 							const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
 							const rotation = Math.atan2(dlng, dlat); // radians CW from North
+
+							// Apply per-terrain anchor/scale overrides from hex texture config.
+							const terrainOverride = textureAnchors[record.tileImage];
+							const texAnchorX = terrainOverride?.anchorX ?? 0.5;
+							const texAnchorY = terrainOverride?.anchorY ?? 0.5;
+							const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
+							const bboxW = maxLng - minLng;
+							const bboxH = maxLat - minLat;
+							// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
+							// portion of the texture (matching the HexFieldPreview behaviour).
+							const scaledW = bboxW * texScale;
+							const scaledH = bboxH * texScale;
+							// Pin the anchor fraction of the image to the hex center.
+							// This keeps the texture centred at scale 1 and lets the anchor
+							// shift which part of the image is visible at other scales.
+							// centerLng/centerLat are already computed above for the rotation calc.
+							const adjMinLng = centerLng - texAnchorX * scaledW;
+							const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
+							const adjMinLat = centerLat - texAnchorY * scaledH;
+							const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
+
 							imageOverlays.push({
 								id: `tile-img-${h3Index}`,
 								url,
 								// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
 								coordinates: [
-									[minLng, maxLat],
-									[maxLng, maxLat],
-									[maxLng, minLat],
-									[minLng, minLat],
+									[adjMinLng, adjMaxLat],
+									[adjMaxLng, adjMaxLat],
+									[adjMaxLng, adjMinLat],
+									[adjMinLng, adjMinLat],
 								],
-								opacity: 0.9,
+								opacity: currentHexTextureOpacity,
 								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
 								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
 								rotation,
@@ -2522,17 +3004,70 @@ export default function RecordScreen() {
 		type BillboardFeature = {
 			type: 'Feature';
 			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number; flat: boolean };
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
-		// Midpoint anchor colors in the order they map to hex vertices 0–5.
-		const MIDPOINT_ANCHOR_COLORS = [BillboardAnchorColor.Red, BillboardAnchorColor.Orange, BillboardAnchorColor.Yellow, BillboardAnchorColor.Blue, BillboardAnchorColor.White, BillboardAnchorColor.Black];
+		// Geometric lookup for all 12 degree positions (index = degree / 30).
+		// type 'vertex': use boundary[idx] directly.
+		// type 'edge':   midpoint of boundary[idx] and boundary[(idx+1)%n].
+		const DEGREE_POSITION_GEO: Array<{ type: 'vertex' | 'edge'; idx: number }> = [
+			{ type: 'vertex', idx: 0 },  // 0°   vertex[0] top
+			{ type: 'edge',   idx: 0 },  // 30°  edge[0] (vertex[0]→vertex[1])
+			{ type: 'vertex', idx: 1 },  // 60°  vertex[1]
+			{ type: 'edge',   idx: 1 },  // 90°  edge[1]
+			{ type: 'vertex', idx: 2 },  // 120° vertex[2]
+			{ type: 'edge',   idx: 2 },  // 150° edge[2]
+			{ type: 'vertex', idx: 3 },  // 180° vertex[3]
+			{ type: 'edge',   idx: 3 },  // 210° edge[3]
+			{ type: 'vertex', idx: 4 },  // 240° vertex[4]
+			{ type: 'edge',   idx: 4 },  // 270° edge[4]
+			{ type: 'vertex', idx: 5 },  // 300° vertex[5]
+			{ type: 'edge',   idx: 5 },  // 330° edge[5] (vertex[5]→vertex[0])
+		];
+
+		// OUTER ring: 12 positions at 0°, 30°, …, 330°
+		const OUTER_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+			BillboardAnchorPosition.OUTER_0_DEGREE,
+			BillboardAnchorPosition.OUTER_30_DEGREE,
+			BillboardAnchorPosition.OUTER_60_DEGREE,
+			BillboardAnchorPosition.OUTER_90_DEGREE,
+			BillboardAnchorPosition.OUTER_120_DEGREE,
+			BillboardAnchorPosition.OUTER_150_DEGREE,
+			BillboardAnchorPosition.OUTER_180_DEGREE,
+			BillboardAnchorPosition.OUTER_210_DEGREE,
+			BillboardAnchorPosition.OUTER_240_DEGREE,
+			BillboardAnchorPosition.OUTER_270_DEGREE,
+			BillboardAnchorPosition.OUTER_300_DEGREE,
+			BillboardAnchorPosition.OUTER_330_DEGREE,
+		];
+
+		// MIDDLE ring: 12 positions at 0°, 30°, …, 330°
+		const MIDDLE_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+			BillboardAnchorPosition.MIDDLE_0_DEGREE,
+			BillboardAnchorPosition.MIDDLE_30_DEGREE,
+			BillboardAnchorPosition.MIDDLE_60_DEGREE,
+			BillboardAnchorPosition.MIDDLE_90_DEGREE,
+			BillboardAnchorPosition.MIDDLE_120_DEGREE,
+			BillboardAnchorPosition.MIDDLE_150_DEGREE,
+			BillboardAnchorPosition.MIDDLE_180_DEGREE,
+			BillboardAnchorPosition.MIDDLE_210_DEGREE,
+			BillboardAnchorPosition.MIDDLE_240_DEGREE,
+			BillboardAnchorPosition.MIDDLE_270_DEGREE,
+			BillboardAnchorPosition.MIDDLE_300_DEGREE,
+			BillboardAnchorPosition.MIDDLE_330_DEGREE,
+		];
 
 		for (const [h3Index, record] of Object.entries(records)) {
-			// Build an effective billboard map using the shared helper.
+			// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
 			const effectiveBillboards = getEffectiveBillboards(record);
-			if (Object.keys(effectiveBillboards).length === 0) continue;
+			const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
+			// Per-anchor flat flags (legacy; used only for old `billboards` data).
+			const effectiveFlat = getEffectiveBillboardsFlat(record);
+
+			const hasBillboards = Object.keys(effectiveBillboards).length > 0;
+			const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
+			if (!hasBillboards && !hasTextureAdaptions) continue;
 
 			// Compute hex boundary (centroid + vertices) once per tile.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
@@ -2552,7 +3087,80 @@ export default function RecordScreen() {
 			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
 			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
 
-			// Render one billboard feature per occupied anchor position.
+			/**
+			 * Resolve the geographic [lng, lat] for a given anchor position string.
+			 */
+			function resolveAnchorPosition(anchorColor: string): [number, number] {
+				let lng = centerLng;
+				let lat = centerLat;
+				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+				if (outerIdx >= 0) {
+					// H3's cellToBoundary places boundary[0] at the visual 300° position.
+					// Positions are reflected across the 300°–120° axis: the formula
+					// (10 - idx + 12) % 12 applies both the boundary[0] offset and the
+					// axis reflection in one step.
+					const geo = DEGREE_POSITION_GEO[(10 - outerIdx + 12) % 12];
+					if (geo.type === 'vertex' && geo.idx < n) {
+						[lng, lat] = boundary[geo.idx] as [number, number];
+					} else if (geo.type === 'edge' && geo.idx < n) {
+						const [lng1, lat1] = boundary[geo.idx] as [number, number];
+						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
+						lng = (lng1 + lng2) / 2;
+						lat = (lat1 + lat2) / 2;
+					}
+				} else if (middleIdx >= 0) {
+					// Same reflection formula as for the outer ring.
+					const geo = DEGREE_POSITION_GEO[(10 - middleIdx + 12) % 12];
+					let outerLng = centerLng;
+					let outerLat = centerLat;
+					if (geo.type === 'vertex' && geo.idx < n) {
+						[outerLng, outerLat] = boundary[geo.idx] as [number, number];
+					} else if (geo.type === 'edge' && geo.idx < n) {
+						const [lng1, lat1] = boundary[geo.idx] as [number, number];
+						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
+						outerLng = (lng1 + lng2) / 2;
+						outerLat = (lat1 + lat2) / 2;
+					}
+					lng = (centerLng + outerLng) / 2;
+					lat = (centerLat + outerLat) / 2;
+				}
+				// else: CENTER → use centerLng/centerLat (already set above)
+				return [lng, lat];
+			}
+
+			// ── Hex Texture Adaptions (always flat on the map surface) ────────────
+			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
+				const parsed = parseBillboardKey(billboardKey);
+				if (!parsed) continue;
+				const { sprite, idx } = parsed;
+				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+				if (!url) continue;
+
+				const iconKey = `billboard-${billboardKey}`;
+				const anchorOverride = spriteAnchors[idx];
+				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+				const [lng, lat] = resolveAnchorPosition(anchorColor);
+				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+				));
+				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+				if (!billboardImages[iconKey]) {
+					billboardImages[iconKey] = { url };
+				}
+				// Hex Texture Adaptions are always flat and rotated by the position angle.
+				const textureRotation = getAnchorAngleDeg(anchorColor);
+				billboardFeatures.push({
+					type: 'Feature',
+					geometry: { type: 'Point', coordinates: [lng, lat] },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation },
+				});
+			}
+
+			// ── Hex Objects (face-camera; legacy billboardsFlat flag still respected) ──
 			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
 				const parsed = parseBillboardKey(billboardKey);
 				if (!parsed) continue;
@@ -2561,41 +3169,19 @@ export default function RecordScreen() {
 				if (!url) continue;
 
 				const iconKey = `billboard-${billboardKey}`;
-
-				// Look up global anchor overrides for this sprite type.
 				const anchorOverride = spriteAnchors[idx];
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-
-				// Determine billboard placement position based on anchor color.
-				// Matches debug point positions: purple=center, green=vertex[0],
-				// red/orange/yellow/blue/white/black = midpoints 0–5.
-				let lng = centerLng;
-				let lat = centerLat;
-				if (anchorColor === BillboardAnchorColor.Green && n > 0) {
-					// Use the first vertex (corner) of the hex polygon.
-					const [vLng, vLat] = boundary[0] as [number, number];
-					lng = vLng;
-					lat = vLat;
-				} else if (anchorColor !== BillboardAnchorColor.Purple) {
-					// Midpoint between center and a corner vertex.
-					const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
-					if (midIdx >= 0 && midIdx < n) {
-						const [vLng, vLat] = boundary[midIdx] as [number, number];
-						lng = (centerLng + vLng) / 2;
-						lat = (centerLat + vLat) / 2;
-					}
-				}
-
-				// Per-sprite scale multiplier from the billboard config screen (default 1.0).
+				const [lng, lat] = resolveAnchorPosition(anchorColor);
 				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-				// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
 				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
 					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
 				));
-				// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
-				// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
 				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+				// Hex Objects are face-camera by default; legacy per-anchor flat flag
+				// is still respected for backward compatibility with existing data.
+				const flat = effectiveFlat[anchorColor] === true;
 
 				if (!billboardImages[iconKey]) {
 					billboardImages[iconKey] = { url };
@@ -2603,7 +3189,7 @@ export default function RecordScreen() {
 				billboardFeatures.push({
 					type: 'Feature',
 					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat, opacity: currentHexObjectOpacity },
 				});
 			}
 		}
@@ -2614,7 +3200,9 @@ export default function RecordScreen() {
 			mapMarkers: [],
 			billboards: {
 				images: billboardImages,
-				features: billboardFeatures,
+				// Sort features so flat objects are rendered first (under normal objects).
+				// Render order: hex tiles → flat objects → normal objects.
+				features: billboardFeatures.slice().sort((a, b) => (a.properties.flat ? 0 : 1) - (b.properties.flat ? 0 : 1)),
 			},
 		});
 	}, [loadAssetUrl]);
@@ -2626,6 +3214,58 @@ export default function RecordScreen() {
 		loadAndSendCustomizations();
 	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
+	// Send updated hex grid line opacity to the map whenever the setting changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexLineOpacity });
+	}, [hexLineOpacity]);
+
+	// Send updated hex grid line width to the map whenever the setting changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexLineWidth });
+	}, [hexLineWidth]);
+
+	// Re-send customizations when any of the three layer opacities change:
+	// hexTextureOpacity (terrain image overlays), hexTextureAdaptionOpacity (flat sprites),
+	// or hexObjectOpacity (face-camera sprites).
+	useEffect(() => {
+		loadAndSendCustomizations();
+	}, [hexTextureOpacity, hexTextureAdaptionOpacity, hexObjectOpacity, loadAndSendCustomizations]);
+
+	// Re-apply display settings when the screen comes back into focus.
+	// While the recording screen is hidden behind a drawer screen (e.g. Settings),
+	// the WebView does not process injected JavaScript messages, so any opacity
+	// changes dispatched from the settings screen are silently dropped.
+	// Re-sending them on focus ensures the map is always in sync with the current settings.
+	useFocusEffect(
+		useCallback(() => {
+			if (!mapWebViewReadyRef.current) return;
+			const { hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth } = store.getState().displaySettings;
+			mapRef.current?.sendToMap({ hexLineOpacity: currentHexLineOpacity });
+			mapRef.current?.sendToMap({ hexLineWidth: currentHexLineWidth });
+			loadAndSendCustomizations();
+			// Refresh hex tile data and route track so the map shows the latest state
+			// when returning from a drawer screen (e.g. Settings).  The WebView may not
+			// have processed messages while it was covered, so re-send everything.
+			const vp = debugViewportRef.current;
+			if (vp) {
+				refreshNormalTileDisplay(vp);
+			}
+			if (isRecordingRef.current && routePointsRef.current.length > 0) {
+				sendRouteToMap(routePointsRef.current);
+			}
+			// Center the map on the current player position so it snaps back after
+			// the user returns from another screen.
+			const pos = debugPlayerPositionRef.current
+				?? (routePointsRef.current.length > 0
+					? routePointsRef.current[routePointsRef.current.length - 1]
+					: null);
+			if (pos) {
+				centerMapOnPosition({ lat: pos.lat, lng: pos.lng });
+			}
+		}, [loadAndSendCustomizations, refreshNormalTileDisplay, sendRouteToMap, centerMapOnPosition]),
+	);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -2691,15 +3331,57 @@ export default function RecordScreen() {
 	// Ref mirror of selectedSportType so callbacks can read it without stale closures.
 	const selectedSportTypeRef = useRef<SportType>(selectedSportType);
 	selectedSportTypeRef.current = selectedSportType;
+	// Timestamp of the last recording snapshot persisted to disk (crash recovery).
+	const lastSnapshotSaveRef = useRef(0);
 
-	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
+	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }, zoom?: number) => {
 		if (!mapRef.current) return;
 		mapRef.current.sendToMap({ userLocation: { lat: pos.lat, lng: pos.lng } });
 		mapRef.current.sendToMap({
 			mapCenterPosition: { lat: pos.lat, lng: pos.lng },
+			...(zoom != null ? { zoom } : {}),
 			easeAnimation: true,
 			easeDuration: 800,
 		});
+	}, []);
+
+	const refreshSearchHighlight = useCallback((cells: string[]) => {
+		currentViewportCellsRef.current = cells;
+		if (searchHighlightTimerRef.current) clearTimeout(searchHighlightTimerRef.current);
+		searchHighlightTimerRef.current = setTimeout(async () => {
+			const enabledKeys = store.getState().mapSearch.searchState?.enabledKeys ?? [];
+			if (enabledKeys.length === 0) {
+				mapRef.current?.sendToMap({ hexSearchHighlightGeoJson: { type: 'FeatureCollection', features: [] } });
+				return;
+			}
+			const cache = searchFeatureCacheRef.current;
+			const uncachedCells = cells.filter((c) => !cache.has(c));
+			await Promise.all(
+				uncachedCells.map(async (cell) => {
+					try {
+						const features = await queryTileFeaturesForHexCell(cell);
+						cache.set(cell, features);
+					} catch {
+						cache.set(cell, []);
+					}
+				}),
+			);
+			const matchingCells = cells.filter((cell) => {
+				const features = cache.get(cell) ?? [];
+				return features.some((f) => enabledKeys.includes(featureToSearchKey(f)));
+			});
+			const highlightFeatures = matchingCells.map((h3Index) => {
+				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+					properties: { h3Index },
+				};
+			});
+			mapRef.current?.sendToMap({
+				hexSearchHighlightGeoJson: { type: 'FeatureCollection', features: highlightFeatures },
+			});
+		}, 400);
 	}, []);
 
 	/**
@@ -2722,7 +3404,8 @@ export default function RecordScreen() {
 		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
-	}, []);
+		refreshSearchHighlight(viewportCells);
+	}, [refreshSearchHighlight]);
 
 	// Load persisted OSM consent on mount
 	useEffect(() => {
@@ -2742,22 +3425,69 @@ export default function RecordScreen() {
 		};
 	}, []);
 
+	// ── Check for an interrupted recording from a previous crash ──
+	useEffect(() => {
+		void (async () => {
+			try {
+				const snapshot = await loadRecordingSnapshot();
+				if (!snapshot || snapshot.routePoints.length < 2) {
+					// No interrupted recording or too few points – nothing to recover.
+					clearRecordingSnapshot();
+					return;
+				}
+				const ageMs = Date.now() - snapshot.savedAt;
+				// Discard snapshots older than 24 hours – they are likely stale.
+				if (ageMs > 24 * 60 * 60 * 1000) {
+					clearRecordingSnapshot();
+					return;
+				}
+
+				showRecoveryModal({
+					title: '🔄 Unterbrochene Aktivität',
+					children: (
+						<InterruptedRecoveryContent
+							snapshot={snapshot}
+							theme={theme}
+							onDiscard={() => {
+								clearRecordingSnapshot();
+								closeRecoveryModal();
+							}}
+							onSave={(activity) => {
+								try { saveActivity(activity); } catch (err) { console.warn('[RecordScreen] Failed to save recovered activity:', err); }
+								clearRecordingSnapshot();
+								closeRecoveryModal();
+								router.push(`/activities/${activity.id}`);
+							}}
+						/>
+					),
+				});
+			} catch (err) {
+				console.warn('[RecordScreen] Interrupted recording check failed:', err);
+			}
+		})();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	// ── Announce when the app moves to the background during an active recording
 	useEffect(() => {
 		const subscription = AppState.addEventListener('change', (nextAppState) => {
 			if (
 				nextAppState === 'background' &&
 				isRecordingRef.current &&
-				isTTSEnabledRef.current &&
+				speechSettingsRef.current.enabled &&
 				announceAppInBackgroundRef.current
 			) {
 				const locale = getLocales()[0]?.languageTag ?? 'en-US';
 				const langCode = locale.split('-')[0].toLowerCase();
 				const text = buildBackgroundAnnouncement(locale);
 				const curSs = speechSettingsRef.current;
-				speakAnnouncement(text, langCode, {
-					rate: speechRateToNumber(curSs.speechRate),
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						rate: speechRateToNumber(curSs.speechRate),
+					}, 'background');
+				} catch (err) {
+					console.warn('[RecordScreen] Background announcement failed:', err);
+				}
 			}
 		});
 		return () => subscription.remove();
@@ -2766,7 +3496,8 @@ export default function RecordScreen() {
 	// ── Refresh map display when returning from background during a recording ──
 	// While the screen is off the WebView may not process messages, so hex tiles,
 	// walk paths and the route line can be stale.  Re-send them once the app
-	// becomes active again.
+	// becomes active again.  Also re-centre the camera on the current player
+	// position so the map snaps back to the user after the screen was off.
 	useEffect(() => {
 		const subscription = AppState.addEventListener('change', (nextAppState) => {
 			if (nextAppState === 'active' && isRecordingRef.current && mapRef.current) {
@@ -2779,10 +3510,18 @@ export default function RecordScreen() {
 				if (vp) {
 					refreshNormalTileDisplay(vp);
 				}
+				// Re-centre the map on the current player position
+				const pos = debugPlayerPositionRef.current
+					?? (routePointsRef.current.length > 0
+						? routePointsRef.current[routePointsRef.current.length - 1]
+						: null);
+				if (pos) {
+					centerMapOnPosition({ lat: pos.lat, lng: pos.lng });
+				}
 			}
 		});
 		return () => subscription.remove();
-	}, [sendRouteToMap, refreshNormalTileDisplay]);
+	}, [sendRouteToMap, refreshNormalTileDisplay, centerMapOnPosition]);
 
 	// ── Route preview: when a route is selected before recording, show only the
 	// route's hex tiles and walk path on the map (hiding all other visited tiles).
@@ -2995,6 +3734,28 @@ export default function RecordScreen() {
 		setIsMagnifyMode(false);
 	}, []);
 
+	const openSearchModal = useCallback(async () => {
+		const featureCache = await loadHexTileFeatureCache();
+		const keySet = new Set<string>();
+		for (const features of Object.values(featureCache)) {
+			for (const f of features) {
+				const key = featureToSearchKey(f);
+				if (key !== 'unknown') keySet.add(key);
+			}
+		}
+		const availableKeys = Array.from(keySet).sort((a, b) => a.localeCompare(b));
+		showSearchModal({
+			title: 'Karten-Suche',
+			children: <MapSearchModalContent availableKeys={availableKeys} />,
+			onClose: closeSearchModal,
+		});
+	}, [showSearchModal, closeSearchModal]);
+
+	// Re-trigger search highlight whenever the active search state changes.
+	useEffect(() => {
+		refreshSearchHighlight(currentViewportCellsRef.current);
+	}, [searchState, refreshSearchHighlight]);
+
 	const undoMeasurePoint = useCallback(() => {
 		const prev = measureWaypointsRef.current.slice(0, -1);
 		measureWaypointsRef.current = prev;
@@ -3003,7 +3764,7 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ measurePoints: coords });
 	}, []);
 
-	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCount: number) => {
+	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCells: string[]) => {
 		if (routeCells.length < 2) return;
 		const startTimestamp = Date.now();
 		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
@@ -3020,17 +3781,37 @@ export default function RecordScreen() {
 			sportType: selectedSportTypeRef.current,
 			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			visitedTileCount: routeCells.length,
-			enclosedTileCount: enclosedCount,
+			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered: routeCells,
 		};
+		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
 			saveActivity(activity);
-			Alert.alert(
+			showAlert(
 				'Activity Saved',
-				`Route saved: ${routeCells.length} hex tiles, ${enclosedCount} enclosed.`,
+				`Route saved: ${routeCells.length} hex tiles, ${enclosedCells.length} enclosed.`,
 			);
 		} catch {
-			Alert.alert('Error', 'Failed to save activity.');
+			showAlert('Error', 'Failed to save activity.');
+		}
+		// Fire-and-forget: fetch and cache map features for enclosed cells so that
+		// the next map rebuild can apply the pine tree billboard on forest tiles.
+		if (enclosedCells.length > 0) {
+			void (async () => {
+				try {
+					const newEntries: HexTileFeatureCache = {};
+					for (const hexId of enclosedCells) {
+						try {
+							newEntries[hexId] = await queryTileFeaturesForHexCell(hexId);
+						} catch {
+							// ignore per-cell errors
+						}
+					}
+					await mergeHexTileFeatureCache(newEntries);
+				} catch (err) {
+					console.warn('[MeasureSave] Feature cache update failed:', err);
+				}
+			})();
 		}
 	}, []);
 
@@ -3048,16 +3829,16 @@ export default function RecordScreen() {
 		};
 		try {
 			saveRoute(route);
-			Alert.alert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
+			showAlert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
 		} catch {
-			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 		}
 	}, []);
 
 	const finishMeasurement = useCallback(async () => {
 		const waypoints = measureWaypointsRef.current;
 		if (waypoints.length < 2) {
-			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
+			showAlert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
 			return;
 		}
 
@@ -3068,12 +3849,14 @@ export default function RecordScreen() {
 		const routeAsPoints: RoutePoint[] = waypoints.map((w, i) => ({
 			lat: w.lat, lng: w.lng, altitude: null, speed: null, timestamp: Date.now() + i * 1000,
 		}));
+		let enclosedCells: string[] = [];
 		let enclosedTileCount = 0;
 		try {
 			const allEnclosed = findEnclosedCells(routeAsPoints, h3ResolutionRef.current);
 			// Exclude cells that are part of the route itself
 			const routeCellSet = new Set(routeCells);
-			enclosedTileCount = allEnclosed.filter((c) => !routeCellSet.has(c)).length;
+			enclosedCells = allEnclosed.filter((c) => !routeCellSet.has(c));
+			enclosedTileCount = enclosedCells.length;
 		} catch {
 			// ignore
 		}
@@ -3091,6 +3874,7 @@ export default function RecordScreen() {
 				<MeasureResultContent
 					routeLengthInTiles={routeLengthInTiles}
 					enclosedTileCount={enclosedTileCount}
+					enclosedCells={enclosedCells}
 					routeCells={routeCells}
 					h3Resolution={h3ResolutionRef.current}
 					theme={theme}
@@ -3152,8 +3936,9 @@ export default function RecordScreen() {
 			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
+			const { hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)' },
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: 0, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
@@ -3190,7 +3975,19 @@ export default function RecordScreen() {
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
 			if (clickedMsg.h3Index) {
-				if (coloringTileImageRef.current !== null) {
+				if (isSettingHomeRef.current) {
+					// Set-home mode: place castle2 at the center of the selected tile
+					// and store it as the player's home.
+					const newHomeHex = clickedMsg.h3Index;
+					dispatch(setBillboardAtAnchor({
+						h3Index: newHomeHex,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_CASTLE2_KEY,
+					}));
+					dispatch(setHomeHexTile(newHomeHex));
+					isSettingHomeRef.current = false;
+					setIsSettingHome(false);
+				} else if (coloringTileImageRef.current !== null) {
 					// Coloring mode active: directly apply the selected tile image.
 					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
 				} else if (isMagnifyModeRef.current) {
@@ -3210,22 +4007,25 @@ export default function RecordScreen() {
 				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch, refreshNormalTileDisplay]);
 
 	const handleExportMapSettings = useCallback(async () => {
-		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
+		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string>; billboardsTexture?: Record<string, string> }> = {};
 		for (const [h3Index, record] of Object.entries(hexTileRecords)) {
 			const billboards = getEffectiveBillboards(record);
+			const billboardsTexture = getEffectiveBillboardsTexture(record);
 			const hasBillboards = Object.keys(billboards).length > 0;
-			if (record.tileImage || hasBillboards) {
+			const hasBillboardsTexture = Object.keys(billboardsTexture).length > 0;
+			if (record.tileImage || hasBillboards || hasBillboardsTexture) {
 				exportData[h3Index] = {};
 				if (record.tileImage) exportData[h3Index].tileImage = record.tileImage;
 				if (hasBillboards) exportData[h3Index].billboards = billboards;
+				if (hasBillboardsTexture) exportData[h3Index].billboardsTexture = billboardsTexture;
 			}
 		}
 		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
+		showAlert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
 	}, [hexTileRecords]);
 
 	const handleImportMapSettings = useCallback((json: string) => {
@@ -3233,16 +4033,16 @@ export default function RecordScreen() {
 		try {
 			parsed = JSON.parse(json);
 		} catch {
-			Alert.alert('Import Failed', 'The text is not valid JSON.');
+			showAlert('Import Failed', 'The text is not valid JSON.');
 			return;
 		}
-		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }> };
+		const data = parsed as { version?: number; hexTiles?: Record<string, HexTileCustomizationPayload> };
 		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
-			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
+			showAlert('Import Failed', 'No "hexTiles" object found in the data.');
 			return;
 		}
 		dispatch(applyMapCustomizations(data.hexTiles));
-		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
+		showAlert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
 	}, [dispatch]);
 
 	const showDebugModal = useCallback(() => {
@@ -3273,10 +4073,11 @@ export default function RecordScreen() {
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 					onExportMapSettings={handleExportMapSettings}
 					onImportMapSettings={handleImportMapSettings}
+					onFlyToCell={(lat, lng) => centerMapOnPosition({ lat, lng })}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings, centerMapOnPosition]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -3363,9 +4164,24 @@ export default function RecordScreen() {
 
 			const lastAccepted = lastAcceptedGpsPointRef.current;
 			if (lastAccepted) {
-				const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
 				const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
+
+				// ── GPS time-interval filter ──────────────────────────────────────────
+				// During recording, skip this point if the elapsed time since the last
+				// accepted GPS fix is less than 95 % of the configured GPS interval.
+				// This prevents the platform from delivering points more frequently than
+				// the user-selected accuracy setting, which would result in too many
+				// recorded GPS points.
+				if (isRecordingRef.current) {
+					const gpsIntervalSeconds = store.getState().gpsInterval.intervalSeconds;
+					const minElapsedSec = gpsIntervalSeconds * 0.95;
+					if (dtSec < minElapsedSec) {
+						return;
+					}
+				}
+
 				if (dtSec > 0) {
+					const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
 					const impliedSpeedKmh = (distKm / dtSec) * 3600;
 					const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
 					const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
@@ -3472,7 +4288,7 @@ export default function RecordScreen() {
 		setLiveDistanceKm(d);
 
 		// Announce each whole-km milestone via TTS when enabled.
-		if (isTTSEnabledRef.current) {
+		if (speechSettingsRef.current.enabled) {
 			const crossedKm = Math.floor(d);
 			if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
 				lastAnnouncedKmRef.current = crossedKm;
@@ -3487,20 +4303,30 @@ export default function RecordScreen() {
 					announcePace: curSs.announcePace,
 					announceSpeedKmh: curSs.announceSpeed,
 				});
-				speakAnnouncement(text, langCode, {
-					rate: speechRateToNumber(curSs.speechRate),
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						rate: speechRateToNumber(curSs.speechRate),
+					}, 'km_milestone');
+				} catch (err) {
+					console.warn('[RecordScreen] Km milestone announcement failed:', err);
+				}
 			}
 		}
 
 		// ── Pace hint announcements with hysteresis threshold ────────────
-		if (isTTSEnabledRef.current && d > 0) {
+		if (speechSettingsRef.current.enabled && d > 0) {
 			const curSs = speechSettingsRef.current;
 			if (curSs.paceTargetEnabled) {
+				// Use instantaneous GPS speed for comparison so the hint reflects
+				// the runner's current speed rather than the session average.
+				// Fall back to the average pace when GPS speed is unavailable.
 				const elapsedSec = startTimeRef.current > 0
 					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 					: accumulatedSecondsRef.current;
-				const currentPace = elapsedSec > 0 ? elapsedSec / 60 / d : null;
+				const currentPace =
+					point.speed != null && point.speed > 0.5
+						? 1000 / (point.speed * 60) // instantaneous pace: min/km from m/s
+						: elapsedSec > 0 ? elapsedSec / 60 / d : null; // average fallback
 				if (currentPace != null) {
 					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
 					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
@@ -3520,23 +4346,42 @@ export default function RecordScreen() {
 						next = 'too_slow';
 					}
 
-					// Announce only on a *transition* into a warning state from on_target
-					// and only if the cooldown has elapsed.
 					const now = Date.now();
+					const locale = getLocales()[0]?.languageTag ?? 'en-US';
+					const langCode = locale.split('-')[0].toLowerCase();
+
+					// Announce "too fast" / "too slow" only on transition from on_target.
 					if (
 						next !== 'on_target' &&
 						prev === 'on_target' &&
 						now - lastPaceHintTimeRef.current >= PACE_HINT_COOLDOWN_MS
 					) {
-						const locale = getLocales()[0]?.languageTag ?? 'en-US';
-						const langCode = locale.split('-')[0].toLowerCase();
 						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
-						speakAnnouncement(text, langCode, {
-							volume: curSs.volume,
-							rate: speechRateToNumber(curSs.speechRate),
-							useApplicationAudioSession: curSs.duckMusicDuringTTS,
-						});
+						try {
+							speakAnnouncement(text, langCode, {
+								volume: curSs.volume,
+								rate: speechRateToNumber(curSs.speechRate),
+								useApplicationAudioSession: curSs.duckMusicDuringTTS,
+							}, 'pace_hint');
+						} catch (err) {
+							console.warn('[RecordScreen] Pace hint announcement failed:', err);
+						}
 						lastPaceHintTimeRef.current = now;
+					}
+
+					// Announce "Zielgeschwindigkeit erreicht" when returning to on_target
+					// after a warning state.
+					if (next === 'on_target' && prev !== 'on_target') {
+						const text = buildOnTargetAnnouncement(locale);
+						try {
+							speakAnnouncement(text, langCode, {
+								volume: curSs.volume,
+								rate: speechRateToNumber(curSs.speechRate),
+								useApplicationAudioSession: curSs.duckMusicDuringTTS,
+							}, 'pace_hint_on_target');
+						} catch (err) {
+							console.warn('[RecordScreen] On-target announcement failed:', err);
+						}
 					}
 
 					paceHintStateRef.current = next;
@@ -3571,8 +4416,29 @@ export default function RecordScreen() {
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			refreshSearchHighlight(viewportCells);
 		}
-	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
+
+		// ── Periodically persist a recording snapshot for crash recovery ──
+		if (isRecordingRef.current && !isPausedRef.current) {
+			const now = Date.now();
+			// Save a snapshot at most every 10 seconds to limit I/O.
+			if (now - lastSnapshotSaveRef.current >= 10_000) {
+				lastSnapshotSaveRef.current = now;
+				saveRecordingSnapshot({
+					startedAt: startTimeRef.current,
+					accumulatedSeconds: accumulatedSecondsRef.current,
+					segmentStart: startTimeRef.current,
+					routePoints: routePointsRef.current,
+					hexTilesOrdered: orderedHexTilesRef.current,
+					h3Resolution: Math.floor(h3ResolutionRef.current),
+					sportType: selectedSportTypeRef.current,
+					routeId: selectedRouteRef.current?.id ?? null,
+					savedAt: now,
+				});
+			}
+		}
+	}, [centerMapOnPosition, sendRouteToMap, dispatch, refreshSearchHighlight]);
 
 	// Moves the player to a new position (used by the debug gamepad).
 	// During recording the joystick acts as a GPS substitute: every movement is
@@ -3634,9 +4500,8 @@ export default function RecordScreen() {
 		if (intervalSec <= 0) return;
 
 		periodicAnnouncementTimerRef.current = setInterval(() => {
-			if (!isRecordingRef.current || isPausedRef.current || !isTTSEnabledRef.current) return;
+			if (!isRecordingRef.current || isPausedRef.current || !speechSettingsRef.current.enabled) return;
 			const curSs = speechSettingsRef.current;
-			if (!curSs.enabled) return;
 
 			const elapsedSec = startTimeRef.current > 0
 				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
@@ -3664,20 +4529,26 @@ export default function RecordScreen() {
 				announceSpeed: curSs.announceSpeed,
 				announceCalories: curSs.announceCalories,
 				announceHeartRate: curSs.announceHeartRate,
+				announcePaceAvg: curSs.announcePaceAvg,
+				announceSpeedAvg: curSs.announceSpeedAvg,
 			});
 			if (text.length > 0) {
-				speakAnnouncement(text, langCode, {
-					volume: curSs.volume,
-					rate: speechRateToNumber(curSs.speechRate),
-					useApplicationAudioSession: curSs.duckMusicDuringTTS,
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						volume: curSs.volume,
+						rate: speechRateToNumber(curSs.speechRate),
+						useApplicationAudioSession: curSs.duckMusicDuringTTS,
+					}, 'periodic');
+				} catch (err) {
+					console.warn('[RecordScreen] Periodic announcement failed:', err);
+				}
 			}
 		}, intervalSec * 1000);
 	}, [stopPeriodicAnnouncementTimer]);
 
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
-		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
+		const gpsTimeIntervalMs = store.getState().gpsInterval.intervalSeconds * 1000;
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
 
 		// Cancel measure mode before starting a recording
@@ -3693,7 +4564,7 @@ export default function RecordScreen() {
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
 			console.log('[RecordScreen] Foreground permission status:', fgStatus);
 			if (fgStatus !== 'granted') {
-				Alert.alert('GPS', 'Location permission is required for run recording.');
+				showAlert('GPS', 'Location permission is required for run recording.');
 				return;
 			}
 
@@ -3706,6 +4577,7 @@ export default function RecordScreen() {
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
+			lastSnapshotSaveRef.current = 0;
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -3716,7 +4588,9 @@ export default function RecordScreen() {
 			setLiveSpeedKmh(null);
 			lastAnnouncedKmRef.current = 0;
 			paceHintStateRef.current = 'on_target';
-			lastPaceHintTimeRef.current = 0;
+			// Initialise to now so the first pace-hint announcement is delayed by
+			// PACE_HINT_COOLDOWN_MS (same warm-up concept as SPEED_WARMUP_MS).
+			lastPaceHintTimeRef.current = Date.now();
 			isRecordingRef.current = true;
 			setIsRecording(true);
 			setFollowMode(true);
@@ -3735,6 +4609,29 @@ export default function RecordScreen() {
 
 			// Start periodic (time-based) speech announcements if enabled
 			startPeriodicAnnouncementTimer();
+
+			// ── Debug replay: emit GPS points from a recorded activity instead of real GPS ──
+			if (isDebugMode && debugReplayActivityRef.current && debugReplayActivityRef.current.routePoints.length > 0) {
+				const activity = debugReplayActivityRef.current;
+				console.log('[RecordScreen] Debug replay mode: replaying activity', activity.id, 'with', activity.routePoints.length, 'points');
+				const replayStartWallTime = Date.now();
+				const activityStartTime = activity.routePoints[0].timestamp;
+				const timeouts = activity.routePoints.map((point) => {
+					const delay = Math.max(0, point.timestamp - activityStartTime);
+					return setTimeout(() => {
+						if (!isRecordingRef.current) return;
+						handleLocationUpdate({
+							lat: point.lat,
+							lng: point.lng,
+							altitude: point.altitude,
+							speed: point.speed,
+							timestamp: replayStartWallTime + delay,
+						});
+					}, delay);
+				});
+				debugReplayTimeoutsRef.current = timeouts;
+				return;
+			}
 
 			if (expoGo) {
 				console.log('[RecordScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
@@ -3825,7 +4722,7 @@ export default function RecordScreen() {
 			if (err instanceof Error) {
 				console.error('[RecordScreen] Error name:', err.name, '| message:', err.message);
 			}
-			Alert.alert('Error', 'Run recording could not be started.');
+			showAlert('Error', 'Run recording could not be started.');
 			isRecordingRef.current = false;
 			setIsRecording(false);
 			if (timerRef.current) {
@@ -3834,7 +4731,7 @@ export default function RecordScreen() {
 			}
 			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer, refreshSearchHighlight, isDebugMode]);
 
 	// Show a modal to select a saved route before starting a recording.
 	const showRouteSelectionModal = useCallback(async () => {
@@ -3845,7 +4742,7 @@ export default function RecordScreen() {
 			// ignore
 		}
 		if (routes.length === 0) {
-			Alert.alert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
+			showAlert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
 			return;
 		}
 		showRouteModal({
@@ -3886,12 +4783,68 @@ export default function RecordScreen() {
 		});
 	}, [showRouteModal, closeRouteModal, selectedRoute]);
 
+	// Show a modal to select a saved activity for debug replay.
+	const showDebugActivitySelectionModal = useCallback(async (onSelected: (activity: SavedActivity | null) => void) => {
+		let activities: SavedActivity[] = [];
+		try {
+			activities = await loadActivities();
+		} catch {
+			// ignore
+		}
+		showDebugReplayModal({
+			title: '🔄 Replay Activity (Debug)',
+			onClose: closeDebugReplayModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Select a recorded activity" />
+					<SettingsListSelectOptionSingle
+						key="__none__"
+						label="No Replay (Normal GPS)"
+						isSelected={debugReplayActivityRef.current === null}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							onSelected(null);
+							closeDebugReplayModal();
+						}}
+						groupPosition={activities.length === 0 ? 'single' : 'top'}
+					/>
+					{activities.map((activity, i) => {
+						const date = new Date(activity.startedAt);
+						const label = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${activity.stats.distanceKm.toFixed(2)} km · ${activity.routePoints.length} Points`;
+						const position = i === activities.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={activity.id}
+								label={label}
+								isSelected={debugReplayActivityRef.current?.id === activity.id}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									onSelected(activity);
+									closeDebugReplayModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showDebugReplayModal, closeDebugReplayModal]);
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
 		_onLocationUpdate = null;
 		fgSubRef.current?.remove();
 		fgSubRef.current = null;
+
+		// Clear any scheduled debug replay timeouts.
+		for (const t of debugReplayTimeoutsRef.current) {
+			clearTimeout(t);
+		}
+		debugReplayTimeoutsRef.current = [];
+
+		// Clear the crash-recovery snapshot since this is a clean stop.
+		clearRecordingSnapshot();
 
 		if (timerRef.current) {
 			clearInterval(timerRef.current);
@@ -3916,7 +4869,7 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
-		Speech.stop();
+		clearAudioQueue();
 		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
@@ -3928,7 +4881,7 @@ export default function RecordScreen() {
 		const points = routePointsRef.current;
 		console.log('[RecordScreen] Recorded points count:', points.length);
 		if (points.length < 2) {
-			Alert.alert('Run finished', 'Too few GPS points were recorded.');
+			showAlert('Run finished', 'Too few GPS points were recorded.');
 			return;
 		}
 
@@ -3943,6 +4896,36 @@ export default function RecordScreen() {
 			enclosedCells = allEnclosed.filter((cell) => !visitedHexIdsRef.current.has(cell));
 			if (enclosedCells.length > 0) {
 				dispatch(markEnclosed({ h3Indices: enclosedCells, timestamp: endedAt }));
+				// Fire-and-forget: fetch map features for enclosed cells, cache them,
+				// and immediately apply the pine tree billboard on forest tiles.
+				void (async () => {
+					try {
+						const newEntries: HexTileFeatureCache = {};
+						for (const hexId of enclosedCells) {
+							try {
+								const features = await queryTileFeaturesForHexCell(hexId);
+								newEntries[hexId] = features;
+								if (hasForestFeature(features)) {
+									dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: BillboardAnchorPosition.CENTER,
+										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+									dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: getSmallTreeAnchorForHexId(hexId),
+										billboard: BILLBOARD_PINE_TREE_SMALL,
+									}));
+								}
+							} catch {
+								// ignore per-cell errors
+							}
+						}
+						await mergeHexTileFeatureCache(newEntries);
+					} catch (err) {
+						console.warn('[RecordScreen] Feature cache update failed:', err);
+					}
+				})();
 			}
 		} catch (err) {
 			console.warn('[RecordScreen] Enclosed tile detection failed:', err);
@@ -3961,6 +4944,7 @@ export default function RecordScreen() {
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			refreshSearchHighlight(viewportCells);
 		}
 
 		// Save activity to persistent storage (including ordered hex tiles for route matching)
@@ -3979,6 +4963,7 @@ export default function RecordScreen() {
 			hexTilesOrdered,
 			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
+		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
 			saveActivity(activity);
 		} catch (err) {
@@ -4018,6 +5003,24 @@ export default function RecordScreen() {
 		setIsPaused(false);
 	}, [startPeriodicAnnouncementTimer]);
 
+	// Handle the record button press. In debug mode, show a replay selection modal first.
+	// Outside debug mode (or if already recording), delegate directly to startRecording.
+	const handleRecordButtonPress = useCallback(async () => {
+		if (!isDebugMode) {
+			startRecording();
+			return;
+		}
+		// In debug mode: ask the user whether to start normally or replay an activity.
+		await showDebugActivitySelectionModal((activity) => {
+			// Update both the ref (for immediate synchronous access in startRecording) and
+			// the state (for UI reactivity).
+			debugReplayActivityRef.current = activity;
+			setDebugReplayActivity(activity);
+			// Start recording after the modal closes (slight delay lets the modal animate out).
+			setTimeout(() => startRecording(), 50);
+		});
+	}, [isDebugMode, startRecording, showDebugActivitySelectionModal]);
+
 	/**
 	 * Compass / North button handler:
 	 *   – During a run: toggles between heading mode (map follows movement direction)
@@ -4055,7 +5058,7 @@ export default function RecordScreen() {
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
 				{mapCanRender && (
-					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} loadingOverlay={<MapLoadingOverlay />} mapStyleKey={mapTheme as MapStyleKey} />
 				)}
 
 				{/* Map overlay buttons – top-right */}
@@ -4088,6 +5091,54 @@ export default function RecordScreen() {
 							setFollowMode(true);
 						}}
 					/>
+					<View style={styles.buttonSpacer} />
+					{/* Set Home button – always visible when not recording */}
+					{!isRecording && (
+						<>
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isSettingHome && { backgroundColor: STATUS_WARNING_COLOR },
+									!isSettingHome && homeHexTile !== null && { backgroundColor: STATUS_SUCCESS_COLOR + '22' },
+								]}
+								onPress={() => {
+									if (!isSettingHome && homeHexTile !== null) {
+										const [lat, lng] = cellToLatLng(homeHexTile);
+										mapRef.current?.sendToMap({
+											mapCenterPosition: { lat, lng },
+											zoom: 17,
+										});
+									} else {
+										isSettingHomeRef.current = !isSettingHome;
+										setIsSettingHome(!isSettingHome);
+									}
+								}}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons
+									name="home"
+									size={20}
+									color={isSettingHome ? '#ffffff' : homeHexTile !== null ? STATUS_SUCCESS_COLOR : '#555555'}
+								/>
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+						</>
+					)}
+					{/* Search highlight button – always visible in RecordScreen */}
+					<TouchableOpacity
+						style={[
+							styles.debugButton,
+							searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
+						]}
+						onPress={() => { void openSearchModal(); }}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons
+							name="search"
+							size={20}
+							color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
+						/>
+					</TouchableOpacity>
 					<View style={styles.buttonSpacer} />
 					{isDebugMode && !isRecording && (
 						<>
@@ -4123,17 +5174,6 @@ export default function RecordScreen() {
 								activeOpacity={0.8}
 							>
 								<MaterialIcons name="bug-report" size={20} color="#555555" />
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									isMagnifyMode && { backgroundColor: '#3b82f6' },
-								]}
-								onPress={isMagnifyMode ? cancelMagnifyMode : startMagnifyMode}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="search" size={20} color={isMagnifyMode ? '#ffffff' : '#555555'} />
 							</TouchableOpacity>
 						</>
 					)}
@@ -4237,6 +5277,20 @@ export default function RecordScreen() {
 							</View>
 						)}
 
+						{/* Debug replay indicator (shown in debug mode before recording starts) */}
+						{isDebugMode && !isRecording && debugReplayActivity && (
+							<View style={styles.selectedRouteRow}>
+								<MaterialIcons name="replay" size={14} color="#f97316" />
+								<Text style={[styles.selectedRouteText, { color: '#f97316' }]} numberOfLines={1}>
+									{'🔄 Replay: ' + new Date(debugReplayActivity.startedAt).toLocaleDateString() + ' ' + new Date(debugReplayActivity.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+								</Text>
+								<TouchableOpacity onPress={() => setDebugReplayActivity(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						)}
+
+
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
 							{/* Left side: stop button when recording, activity type picker otherwise */}
@@ -4286,7 +5340,7 @@ export default function RecordScreen() {
 								]}
 								onPress={
 									!isRecording
-										? startRecording
+										? handleRecordButtonPress
 										: isPaused
 										? resumeRecording
 										: pauseRecording

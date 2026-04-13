@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,9 +18,10 @@ import { useSelector } from 'react-redux';
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
+import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, haversineKm, type CoordPair } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
@@ -28,6 +29,7 @@ import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import type { RootState } from '../../store/store';
 import { useDebugMode } from '../../hooks/useDebugMode';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
@@ -88,6 +90,7 @@ export default function RouteDetailScreen() {
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDebugMode = useDebugMode();
+	const { showAlert } = useGeonexiaAlert();
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
 	const { show: showHexTileModal } = useMyScrollViewModal();
 	const { show: showAggregatedModal } = useMyScrollViewModal();
@@ -156,11 +159,12 @@ export default function RouteDetailScreen() {
 		}, [resetTileQueryState])
 	);
 
-	// Show back arrow in header
+	// Show back arrow and route name in header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
+			title: route?.name ?? '',
 			headerLeft: () => (
 				<TouchableOpacity
 					onPress={() => router.navigate('/routes')}
@@ -171,7 +175,7 @@ export default function RouteDetailScreen() {
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, router, theme.header.background, theme.header.text]);
+	}, [navigation, router, theme.header.background, theme.header.text, route?.name]);
 
 	// Load route by id
 	useEffect(() => {
@@ -320,11 +324,8 @@ export default function RouteDetailScreen() {
 					if (firstTile && lastTile && route.hexTiles.length >= 3) {
 						const res = getResolution(firstTile);
 
-						// Check loop closure: first and last tile centers must be ≤ 300 m apart
-						// (same threshold used by findEnclosedCells when finishing an activity).
-						const distKm = haversineKm(cellToLatLng(firstTile), cellToLatLng(lastTile));
-
-						if (distKm <= 0.3) {
+						// Check loop closure: first and last tiles must be adjacent (neighbors).
+						if (areNeighborCells(firstTile, lastTile)) {
 							// Build closed ring from ordered tile center points [lat, lng]
 							const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
 							ring.push(ring[0]); // close the ring
@@ -550,7 +551,7 @@ export default function RouteDetailScreen() {
 			}
 		};
 		if (hasUnsavedChanges) {
-			Alert.alert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
+			showAlert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
 				{ text: 'Weiter bearbeiten', style: 'cancel' },
 				{
 					text: 'Verwerfen',
@@ -586,7 +587,7 @@ export default function RouteDetailScreen() {
 				mapRef.current.sendToMap({ routeEditNeighbors: null });
 			}
 		} catch {
-			Alert.alert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
 		}
 	}, [route, editedHexTiles, resetTileQueryState]);
 
@@ -649,7 +650,7 @@ export default function RouteDetailScreen() {
 
 	const handleDelete = useCallback(() => {
 		if (!route) return;
-		Alert.alert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
+		showAlert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
 			{ text: 'Abbrechen', style: 'cancel' },
 			{
 				text: 'Löschen',
@@ -822,7 +823,7 @@ export default function RouteDetailScreen() {
 						try {
 							saveRoute(updated);
 						} catch {
-							Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
+							showAlert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
 							return;
 						}
 						setRoute(updated);
@@ -847,6 +848,7 @@ export default function RouteDetailScreen() {
 					iconBackgroundColor={PRIMARY_COLOR}
 					title="Aktivitäten"
 					value={String(routeActivities.length)}
+					rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
 					groupPosition="single"
 					onPress={() => {
 						showActivitiesModal({
@@ -871,6 +873,14 @@ export default function RouteDetailScreen() {
 						});
 					}}
 				/>
+
+				{/* ── Route Statistics ────────────────────────────────────── */}
+				{routeActivities.length > 0 && (
+					<>
+						<SettingsListGroupTitle title="Statistiken" />
+						<ActivityAggregateStatsSection activities={routeActivities} />
+					</>
+				)}
 
 				{/* ── Hex Tile Feature Map (debug only) ───────────────────── */}
 				{isDebugMode && featuresLoading && (
@@ -948,13 +958,13 @@ export default function RouteDetailScreen() {
 			})()}
 
 			{/* ── Enclosed Area Aggregated Features ───────────────────── */}
-			{enclosedFeaturesLoading && (
+			{isDebugMode && enclosedFeaturesLoading && (
 				<View style={styles.loadingFeatures}>
 					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
 					<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Features der eingeschlossenen Fläche…</Text>
 				</View>
 			)}
-			{!enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
+			{isDebugMode && !enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
 				const entries = Object.entries(aggregatedEnclosedFeatures).sort((a, b) => b[1].count - a[1].count);
 				return (
 					<>
@@ -985,6 +995,7 @@ export default function RouteDetailScreen() {
 				);
 			})()}
 
+				{isDebugMode && (
 				<TouchableOpacity
 					style={styles.deleteButton}
 					onPress={handleDelete}
@@ -993,6 +1004,7 @@ export default function RouteDetailScreen() {
 					<MaterialIcons name="delete-outline" size={18} color="#ef4444" />
 					<Text style={styles.deleteButtonText}>Route löschen</Text>
 				</TouchableOpacity>
+			)}
 			</View>
 		</ScrollView>
 	);

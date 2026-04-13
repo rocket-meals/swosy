@@ -27,18 +27,20 @@ export const HEX_TILE_SCRIPT = `
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: light gray, low opacity
   var hexTileStrokeColor = '#d1d5db';
-  // Level-based fill colours: level 1 = lightest green, level 10 = darkest green.
-  // Levels 1–10 are interpolated linearly between these two endpoints.
-  var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green
-  var HEX_COLOR_LEVEL_MAX = '#15803d'; // level 10 – dark forest green
-  var HEX_OPACITY_LEVEL_MIN = 0.45;   // level  1
-  var HEX_OPACITY_LEVEL_MAX = 0.65;   // level 10
+  // Level-based fill colours: transparent by default; hex textures replace the coloured fill.
+  var HEX_COLOR_LEVEL_MIN = 'rgba(0,0,0,0)';
+  var HEX_COLOR_LEVEL_MAX = 'rgba(0,0,0,0)';
+  var HEX_OPACITY_LEVEL_MIN = 0.0;
+  var HEX_OPACITY_LEVEL_MAX = 0.0;
+  // Hex grid line appearance (user-adjustable via hexLineOpacity / hexLineWidth messages)
+  var HEX_LINE_OPACITY_SCALE = 1.0;  // multiplier applied to the zoom-dependent base opacity
+  var HEX_LINE_WIDTH_SCALE = 1.0;    // multiplier applied to the zoom-dependent base width
   // Territory border: thick, dark line between level-0 and level>0 tiles
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
   var HEX_BORDER_OPACITY = 0.85;
-  // Walk path: sandy brown/earth tone for tiles the user has physically walked on
-  var WALK_PATH_COLOR = 'rgba(180, 130, 60, 0.85)';
+  // Walk path: red for tiles the user has physically walked on
+  var WALK_PATH_COLOR = 'rgba(220, 38, 38, 0.85)';
   var WALK_PATH_WIDTH = 2.5;
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
@@ -59,7 +61,7 @@ export const HEX_TILE_SCRIPT = `
   var HEX_ENCLOSED_SOURCE = 'hex-enclosed-source';
   var HEX_ENCLOSED_FILL_LAYER = 'hex-enclosed-fill';
   var HEX_ENCLOSED_STROKE_LAYER = 'hex-enclosed-stroke';
-  var HEX_ENCLOSED_FILL_COLOR = 'rgba(59, 130, 246, 0.18)'; // semi-transparent blue
+  var HEX_ENCLOSED_FILL_COLOR = 'rgba(0, 0, 0, 0)'; // transparent; hex textures replace the coloured fill
   var HEX_ENCLOSED_STROKE_COLOR = '#3b82f6'; // blue
   // Measure mode: draw tapped waypoints and the connecting polyline
   var MEASURE_ROUTE_SOURCE = 'measure-route-source';
@@ -75,6 +77,10 @@ export const HEX_TILE_SCRIPT = `
   // computed from tile count alone (outer-boundary only, ignoring level), and
   // the enclosed-area stroke is hidden.
   var routeOutlineMode = false;
+  // ── Search highlight: red border for tiles matching the active search ─────
+  var HEX_SEARCH_HIGHLIGHT_SOURCE = 'hex-search-highlight-source';
+  var HEX_SEARCH_HIGHLIGHT_LAYER = 'hex-search-highlight-layer';
+  var HEX_SEARCH_HIGHLIGHT_COLOR = '#ef4444'; // red
   // ── Route edit overlay: neighbor highlight + action labels ───────────────
   var ROUTE_EDIT_NEIGHBOR_SOURCE = 'route-edit-neighbor-source';
   var ROUTE_EDIT_NEIGHBOR_FILL_LAYER = 'route-edit-neighbor-fill';
@@ -451,8 +457,8 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'line-color': hexTileStrokeColor,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 12, 1.0, 15, 0.7],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.8 * HEX_LINE_WIDTH_SCALE, 12, 2.0 * HEX_LINE_WIDTH_SCALE, 15, 1.4 * HEX_LINE_WIDTH_SCALE],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5 * HEX_LINE_OPACITY_SCALE, 12, 0.4 * HEX_LINE_OPACITY_SCALE, 15, 0.3 * HEX_LINE_OPACITY_SCALE],
       },
     });
     // Territory border: separate source/layer for thick dark boundary lines
@@ -467,7 +473,7 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': HEX_BORDER_OPACITY,
       },
     });
-    // Walk path: sandy brown lines connecting centres of adjacent visited tiles
+    // Walk path: red lines connecting centres of adjacent visited tiles
     map.addSource(HEX_WALK_PATH_SOURCE, { type: 'geojson', data: EMPTY_FC });
     map.addLayer({
       id: HEX_WALK_PATH_LAYER,
@@ -529,13 +535,24 @@ export const HEX_TILE_SCRIPT = `
         'circle-opacity': 0.9,
       },
     });
+    // Search highlight: red border drawn on top of hex tiles for tiles matching
+    // the active debug search filter. Raised above hex layers but below routes.
+    map.addSource(HEX_SEARCH_HIGHLIGHT_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_SEARCH_HIGHLIGHT_LAYER,
+      type: 'line',
+      source: HEX_SEARCH_HIGHLIGHT_SOURCE,
+      paint: {
+        'line-color': HEX_SEARCH_HIGHLIGHT_COLOR,
+        'line-width': 3,
+        'line-opacity': 0.9,
+      },
+    });
     // Raise any route track / segment layers above the hex tile layers so the
-    // GPS route is always rendered on top of the hex grid.  These layers are
-    // created lazily (only once the first routeCoordinates message arrives), so
-    // they may not exist yet – the guard keeps this a no-op in that case.
+    // Raise the speed-coloured route-segments layers (activity detail view)
+    // above the hex tile layers.  The live GPS route track is now drawn on an
+    // HTML canvas overlay and has no MapLibre layers to move.
     var ROUTE_LAYER_IDS = [
-      'route-track-layer-border',
-      'route-track-layer',
       'route-seg-border-layer',
       'route-seg-color-layer',
     ];
@@ -570,7 +587,151 @@ export const HEX_TILE_SCRIPT = `
     if (map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) map.removeLayer(HEX_ENCLOSED_STROKE_LAYER);
     if (map.getLayer(HEX_ENCLOSED_FILL_LAYER)) map.removeLayer(HEX_ENCLOSED_FILL_LAYER);
     if (map.getSource(HEX_ENCLOSED_SOURCE)) map.removeSource(HEX_ENCLOSED_SOURCE);
+    if (map.getLayer(HEX_SEARCH_HIGHLIGHT_LAYER)) map.removeLayer(HEX_SEARCH_HIGHLIGHT_LAYER);
+    if (map.getSource(HEX_SEARCH_HIGHLIGHT_SOURCE)) map.removeSource(HEX_SEARCH_HIGHLIGHT_SOURCE);
   }
+
+  // ── Replay Animation (Rückblenden-Modus) ─────────────────────────────────
+  //
+  // ZUSAMMENFASSUNG DER BISHERIGEN VERSUCHE (warum der Marker sich nicht bewegt hat):
+  //
+  // Versuch 1 (PR #2457, #2460): Die Animation lief auf der React-Native-Seite
+  //   per setTimeout-Kette. Jedes Frame sendete einzeln userLocation + userHeading
+  //   über die React-Native ↔ WebView-Bridge. Die Kamera folgte per easeTo.
+  //   Problem: Die auto-rotate Funktion (setBearing in einer Schleife) hat die
+  //   camera-follow easeTo-Animationen kontinuierlich abgebrochen, sodass der
+  //   Marker optisch stehen blieb.
+  //
+  // Versuch 2 (PR #2463): Die Kamera wurde auf fitBounds (Übersicht der ganzen
+  //   Route) umgestellt, statt der Kamera dem Marker zu folgen. Die Animation
+  //   lief weiterhin per React-Native setTimeout + userLocation-Messages.
+  //   Problem: Bei Overview-Zoom (fitBounds) ist die Positionsänderung pro Frame
+  //   sub-pixel (<0.03 px/Frame), sodass der Marker visuell stehen bleibt.
+  //
+  // Versuch 3 (PR #2466): Die Animation wurde in die WebView verschoben
+  //   (hexTileScript, setInterval + source.setData, Timestamp-basiert). Dazu
+  //   wurde auch in index.html eine zweite Replay-Animation mit
+  //   CAR_SPEED_DEG_PER_FRAME (räumliche Geschwindigkeit) eingebaut.
+  //   Problem: Die index.html-Version hatte einen Bug (replayParticle wurde durch
+  //   removeReplayLayer() auf null gesetzt bevor addReplayLayer() aufgerufen
+  //   wurde), sodass sie nie gerendert wurde. Die hexTileScript-Version war
+  //   korrekt, aber die [id].tsx-Seite sendete fitBounds (Overview-Zoom) → wieder
+  //   sub-pixel Bewegung, visuell unsichtbar.
+  //
+  // Versuch 4 (PR #2469): Weitere Duplicate-Replay-Code in index.html mit
+  //   falschem Algorithmus (CAR_SPEED_DEG_PER_FRAME statt Zeitstempel).
+  //   Gleicher Bug: replayParticle = null vor addReplayLayer. Gleiche Konsequenz.
+  //
+  // AKTUELLE LÖSUNG:
+  //   - Der doppelte Replay-Code in index.html wurde entfernt (war toter Code).
+  //   - Die Animation läuft nur hier in hexTileScript mit Timestamp-Interpolation.
+  //   - Die Kamera bleibt beim Replay-Start unverändert (kein flyTo/easeTo).
+  //     Der Marker bewegt sich auf der Karte, aber die Kamera dreht sich wie im
+  //     Übersichtsmodus weiterhin automatisch um die Route-Mitte (auto-rotate).
+  //   - [id].tsx sendet weiterhin fitBounds für die Übersicht; die Kamera
+  //     wird nach dem Replay-Start nicht vom WebView verändert.
+  //
+  var REPLAY_PLAYER_SOURCE = 'replay-player-source';
+  var REPLAY_PLAYER_LAYER = 'replay-player-layer';
+  var REPLAY_PLAYER_COLOR = '#7c3aed';
+  var REPLAY_PLAYER_RADIUS = 8;
+  var REPLAY_PLAYER_STROKE_COLOR = '#ffffff';
+  var REPLAY_PLAYER_STROKE_WIDTH = 2;
+  var REPLAY_ANIM_MS = 50; // ~20 fps
+
+  var replayAnimInterval = null;
+  var replayAnimState = null;
+
+  function replayPointToGeoJSON(lng, lat) {
+    return {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+        properties: {}
+      }]
+    };
+  }
+
+  /** Returns compass bearing in degrees (0-360) from point A to point B. */
+  function replayBearingTo(lat1, lng1, lat2, lng2) {
+    var toRad = Math.PI / 180;
+    var phi1 = lat1 * toRad;
+    var phi2 = lat2 * toRad;
+    var dLambda = (lng2 - lng1) * toRad;
+    var y = Math.sin(dLambda) * Math.cos(phi2);
+    var x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLambda);
+    return ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360;
+  }
+
+  function stopReplayAnimation() {
+    if (replayAnimInterval) { clearInterval(replayAnimInterval); replayAnimInterval = null; }
+    replayAnimState = null;
+    if (map) {
+      if (map.getLayer(REPLAY_PLAYER_LAYER)) map.removeLayer(REPLAY_PLAYER_LAYER);
+      if (map.getSource(REPLAY_PLAYER_SOURCE)) map.removeSource(REPLAY_PLAYER_SOURCE);
+    }
+  }
+
+  function startReplayAnimation(points, speed) {
+    stopReplayAnimation();
+    if (!points || points.length < 2 || !map) return;
+    var duration = points[points.length - 1].timestamp - points[0].timestamp;
+    if (duration <= 0) return;
+    replayAnimState = {
+      points: points,
+      speed: speed,
+      startWallTime: Date.now(),
+      startReplayTime: points[0].timestamp,
+      duration: duration,
+    };
+    var geojson = replayPointToGeoJSON(points[0].lng, points[0].lat);
+    if (map.getSource(REPLAY_PLAYER_SOURCE)) {
+      map.getSource(REPLAY_PLAYER_SOURCE).setData(geojson);
+    } else {
+      map.addSource(REPLAY_PLAYER_SOURCE, { type: 'geojson', data: geojson });
+      map.addLayer({
+        id: REPLAY_PLAYER_LAYER,
+        type: 'circle',
+        source: REPLAY_PLAYER_SOURCE,
+        paint: {
+          'circle-radius': REPLAY_PLAYER_RADIUS,
+          'circle-color': REPLAY_PLAYER_COLOR,
+          'circle-opacity': 0.9,
+          'circle-stroke-width': REPLAY_PLAYER_STROKE_WIDTH,
+          'circle-stroke-color': REPLAY_PLAYER_STROKE_COLOR,
+        },
+      });
+    }
+    // Do not move the camera when replay starts. The map stays at the overview
+    // fitBounds position so the auto-rotate continues to spin around the route
+    // center, exactly as in the non-replay overview mode.
+    replayAnimInterval = setInterval(function () {
+      if (!replayAnimState || !map || !map.getSource(REPLAY_PLAYER_SOURCE)) return;
+      var pts = replayAnimState.points;
+      var dur = replayAnimState.duration;
+      var elapsed = Date.now() - replayAnimState.startWallTime;
+      var replayOffset = (elapsed * replayAnimState.speed) % dur;
+      var replayTime = replayAnimState.startReplayTime + replayOffset;
+      // Binary search for the segment containing replayTime
+      var lo = 0, hi = pts.length - 2;
+      while (lo < hi) {
+        var mid = Math.floor((lo + hi + 1) / 2);
+        if (pts[mid].timestamp <= replayTime) { lo = mid; } else { hi = mid - 1; }
+      }
+      var p1 = pts[lo];
+      var p2 = pts[lo + 1] || p1;
+      var segDur = p2.timestamp - p1.timestamp;
+      var t = segDur > 0 ? (replayTime - p1.timestamp) / segDur : 0;
+      t = Math.max(0, Math.min(1, t));
+      var lng = p1.lng + (p2.lng - p1.lng) * t;
+      var lat = p1.lat + (p2.lat - p1.lat) * t;
+      // Only update the marker position. The camera is not moved so the
+      // auto-rotate keeps spinning around the map center (overview behaviour).
+      map.getSource(REPLAY_PLAYER_SOURCE).setData(replayPointToGeoJSON(lng, lat));
+    }, REPLAY_ANIM_MS);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   // ── Extension hooks ───────────────────────────────────────────────────────
   window._mapExtensions = window._mapExtensions || {};
@@ -589,12 +750,44 @@ export const HEX_TILE_SCRIPT = `
       if (data.hexTileLayer) {
         if (data.hexTileLayer.color) hexTileColor = data.hexTileLayer.color;
         if (data.hexTileLayer.strokeColor) hexTileStrokeColor = data.hexTileLayer.strokeColor;
+        if (typeof data.hexTileLayer.opacityMax === 'number') {
+          HEX_OPACITY_LEVEL_MAX = data.hexTileLayer.opacityMax;
+          HEX_OPACITY_LEVEL_MIN = data.hexTileLayer.opacityMax * 0.7;
+        }
+        if (typeof data.hexTileLayer.lineOpacity === 'number') {
+          HEX_LINE_OPACITY_SCALE = Math.min(1, Math.max(0, data.hexTileLayer.lineOpacity));
+        }
+        if (typeof data.hexTileLayer.lineWidth === 'number') {
+          HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0, data.hexTileLayer.lineWidth));
+        }
         hexTileActive = true;
         removeHexTileLayer();
         addHexTileLayer();
       } else {
         hexTileActive = false;
         removeHexTileLayer();
+      }
+      return;
+    }
+    if (data.hexLineOpacity !== undefined) {
+      HEX_LINE_OPACITY_SCALE = Math.min(1, Math.max(0, data.hexLineOpacity));
+      if (map && map.getLayer(HEX_TILE_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_TILE_STROKE_LAYER, 'line-opacity', ['interpolate', ['linear'], ['zoom'],
+          9, 0.5 * HEX_LINE_OPACITY_SCALE,
+          12, 0.4 * HEX_LINE_OPACITY_SCALE,
+          15, 0.3 * HEX_LINE_OPACITY_SCALE
+        ]);
+      }
+      return;
+    }
+    if (data.hexLineWidth !== undefined) {
+      HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0, data.hexLineWidth));
+      if (map && map.getLayer(HEX_TILE_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_TILE_STROKE_LAYER, 'line-width', ['interpolate', ['linear'], ['zoom'],
+          9, 2.8 * HEX_LINE_WIDTH_SCALE,
+          12, 2.0 * HEX_LINE_WIDTH_SCALE,
+          15, 1.4 * HEX_LINE_WIDTH_SCALE
+        ]);
       }
       return;
     }
@@ -632,6 +825,10 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var enclosedSrc = map && map.getSource(HEX_ENCLOSED_SOURCE);
       if (enclosedSrc) enclosedSrc.setData(data.hexEnclosedGeoJson || EMPTY_FC);
+    }
+    if (data.hexSearchHighlightGeoJson !== undefined) {
+      var searchSrc = map && map.getSource(HEX_SEARCH_HIGHLIGHT_SOURCE);
+      if (searchSrc) searchSrc.setData(data.hexSearchHighlightGeoJson || EMPTY_FC);
     }
     if (data.hexDebugPoints !== undefined) {
       hexDebugPointsVisible = data.hexDebugPoints;
@@ -743,6 +940,138 @@ export const HEX_TILE_SCRIPT = `
         result[tileId] = qFeatures;
       }
       sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+    }
+    if (data.replayAnimation !== undefined) {
+      if (data.replayAnimation) {
+        startReplayAnimation(data.replayAnimation.points, data.replayAnimation.speed);
+      } else {
+        stopReplayAnimation();
+      }
+    }
+    // ── Road Snap V2 ─────────────────────────────────────────────────────────
+    // Snaps GPS coordinates to actual road geometry from loaded vector tiles.
+    // 1. Finds the source that exposes the 'transportation' source layer.
+    // 2. Queries all road segments via querySourceFeatures.
+    // 3. For each GPS point, projects it onto the nearest road segment.
+    // 4. For consecutive snapped points on different segments, inserts the
+    //    shared intersection endpoint between them so the drawn line follows
+    //    the actual road network through junctions.
+    // Sends back: { tag: 'roadSnapV2Result', requestId, coords: [[lng,lat],...] }
+    if (data.roadSnapV2 !== undefined) {
+      var v2RequestId = data.roadSnapV2.requestId;
+      var v2RawCoords = data.roadSnapV2.coords;
+      if (!map || !v2RawCoords || v2RawCoords.length === 0) {
+        sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2RawCoords || [] });
+        return;
+      }
+      // ── Find the vector source that has a 'transportation' source layer ──
+      var v2SourceName = null;
+      var v2Style = map.getStyle();
+      if (v2Style && v2Style.layers) {
+        for (var v2Li = 0; v2Li < v2Style.layers.length; v2Li++) {
+          var v2Sl = v2Style.layers[v2Li];
+          if (v2Sl['source-layer'] === 'transportation' && v2Sl.type === 'line') {
+            v2SourceName = v2Sl.source;
+            break;
+          }
+        }
+      }
+      // ── Collect road segments from loaded vector tiles ───────────────────
+      var v2Segments = []; // [{ p1:[lng,lat], p2:[lng,lat] }, ...]
+      if (v2SourceName) {
+        var v2Features = map.querySourceFeatures(v2SourceName, { sourceLayer: 'transportation' });
+        for (var v2Fi = 0; v2Fi < v2Features.length; v2Fi++) {
+          var v2Geom = v2Features[v2Fi].geometry;
+          if (!v2Geom) continue;
+          var v2Lines = v2Geom.type === 'LineString'      ? [v2Geom.coordinates]
+                      : v2Geom.type === 'MultiLineString' ? v2Geom.coordinates
+                      : [];
+          for (var v2Gi = 0; v2Gi < v2Lines.length; v2Gi++) {
+            var v2Line = v2Lines[v2Gi];
+            for (var v2Pi = 0; v2Pi < v2Line.length - 1; v2Pi++) {
+              v2Segments.push({ p1: v2Line[v2Pi], p2: v2Line[v2Pi + 1] });
+            }
+          }
+        }
+      }
+      // ── Helper: project point p onto segment [a,b], return nearest point ─
+      function v2Project(p, a, b) {
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var lenSq = dx * dx + dy * dy;
+        if (lenSq === 0) return [a[0], a[1]];
+        var t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
+        return [a[0] + t * dx, a[1] + t * dy];
+      }
+      function v2DistSq(a, b) {
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        return dx * dx + dy * dy;
+      }
+      // ── Snap each GPS point to nearest road segment ──────────────────────
+      // Max snap radius: 0.0005 degrees ≈ 55 m at the equator (cos-scaled at
+      // higher latitudes, but sufficient for typical pedestrian/cycling routes).
+      var V2_MAX_DIST_SQ = 0.0005 * 0.0005;
+      // Intersection threshold: 0.0001 degrees ≈ 11 m.  Two segment endpoints
+      // are treated as a shared junction when they are closer than this.
+      var V2_INTERSECT_SQ = 0.0001 * 0.0001;
+      var v2Snapped    = [];
+      var v2SnapSegIdx = [];
+      if (v2Segments.length === 0) {
+        // No road data available – return GPS coords unchanged
+        sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2RawCoords });
+        return;
+      }
+      for (var v2Ii = 0; v2Ii < v2RawCoords.length; v2Ii++) {
+        var v2Pt = v2RawCoords[v2Ii];
+        var v2BestDist = Infinity;
+        var v2BestPt   = v2Pt;
+        var v2BestIdx  = -1;
+        for (var v2Ji = 0; v2Ji < v2Segments.length; v2Ji++) {
+          var v2Proj = v2Project(v2Pt, v2Segments[v2Ji].p1, v2Segments[v2Ji].p2);
+          var v2D    = v2DistSq(v2Pt, v2Proj);
+          if (v2D < v2BestDist) {
+            v2BestDist = v2D;
+            v2BestPt   = v2Proj;
+            v2BestIdx  = v2Ji;
+          }
+        }
+        if (v2BestDist <= V2_MAX_DIST_SQ) {
+          v2Snapped.push(v2BestPt);
+          v2SnapSegIdx.push(v2BestIdx);
+        } else {
+          // Point too far from any road – keep original
+          v2Snapped.push(v2Pt);
+          v2SnapSegIdx.push(-1);
+        }
+      }
+      // ── Build result, routing through intersections between segments ─────
+      var v2Result = [v2Snapped[0]];
+      for (var v2Ki = 0; v2Ki < v2Snapped.length - 1; v2Ki++) {
+        var v2SA = v2SnapSegIdx[v2Ki];
+        var v2SB = v2SnapSegIdx[v2Ki + 1];
+        if (v2SA >= 0 && v2SB >= 0 && v2SA !== v2SB) {
+          // Find the closest pair of endpoints between the two segments.
+          // If they are close enough, treat it as an intersection and insert it.
+          var v2EndptsA = [v2Segments[v2SA].p1, v2Segments[v2SA].p2];
+          var v2EndptsB = [v2Segments[v2SB].p1, v2Segments[v2SB].p2];
+          var v2BestIntDist  = Infinity;
+          var v2Intersection = null;
+          for (var v2Ea = 0; v2Ea < 2; v2Ea++) {
+            for (var v2Eb = 0; v2Eb < 2; v2Eb++) {
+              var v2IntD = v2DistSq(v2EndptsA[v2Ea], v2EndptsB[v2Eb]);
+              if (v2IntD < v2BestIntDist) {
+                v2BestIntDist  = v2IntD;
+                v2Intersection = v2EndptsA[v2Ea];
+              }
+            }
+          }
+          if (v2Intersection && v2BestIntDist < V2_INTERSECT_SQ) {
+            v2Result.push(v2Intersection);
+          }
+        }
+        v2Result.push(v2Snapped[v2Ki + 1]);
+      }
+      sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2Result });
+      return;
     }
   };
 

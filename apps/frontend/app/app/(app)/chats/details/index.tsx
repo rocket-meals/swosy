@@ -22,6 +22,7 @@ import { loadFoodById } from '@/helper/FoodHelper';
 import styles from './styles';
 import { MARK_CHAT_AS_READ } from '@/redux/Types/types';
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 type LinkedFoodInfo = {
         food: DatabaseTypes.Foods;
@@ -48,6 +49,7 @@ const ChatDetailsScreen = () => {
         const [isAtBottom, setIsAtBottom] = useState(true);
         const hasAutoScrolledToBottomRef = useRef(false);
         const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
+        const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
     const foodsAreaColor = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
     const placeholderImageId = appSettings?.foods_placeholder_image ? String(appSettings.foods_placeholder_image) : undefined;
@@ -358,118 +360,147 @@ const ChatDetailsScreen = () => {
                         return null;
                 }
 
+                const { food, feedback, foodOfferId } = linkedFoodFeedback;
+                const alias = food.alias || '';
+                const fallbackName = alias ? alias.charAt(0).toUpperCase() + alias.slice(1) : undefined;
+                const foodName =
+                        getFoodName(food, language) || fallbackName || translate(TranslationKeys.unknown);
+                const imageSource =
+                        food?.image_remote_url
+                                ? { uri: food.image_remote_url }
+                                : food?.image
+                                ? { uri: getImageUrl(String(food.image)) }
+                                : defaultFoodImage
+                                ? { uri: defaultFoodImage }
+                                : undefined;
+
+                const handleFoodPress = () => {
+                        if (food?.id) {
+                                const params: Record<string, string> = {
+                                        foodId: String(food.id),
+                                };
+
+                                if (foodOfferId) {
+                                        params.id = String(foodOfferId);
+                                }
+
+                                router.push({
+                                        pathname: '/(app)/foodoffers/details',
+                                        params,
+                                });
+                        }
+                };
+
+                const ratingValueRaw = typeof feedback.rating === 'number' ? feedback.rating : Number(feedback.rating);
+                const ratingValue = Number.isFinite(ratingValueRaw)
+                        ? ratingValueRaw.toLocaleString(language, {
+                                  maximumFractionDigits: 2,
+                                  minimumFractionDigits: 0,
+                          })
+                        : null;
+                const commentValue = typeof feedback.comment === 'string' && feedback.comment.trim().length
+                        ? feedback.comment.trim()
+                        : null;
+
+                const openDetailsModal = () => {
+                        showModal({
+                                title: foodName,
+                                onClose: closeModal,
+                                children: (
+                                        <View>
+                                                <SettingsList
+                                                        label={translate(TranslationKeys.linked_elements_food_image)}
+                                                        value={foodName}
+                                                        leftIcon={
+                                                                imageSource ? (
+                                                                        <MyImage remote_image_url={imageSource.uri} style={styles.linkedFoodImage} />
+                                                                ) : (
+                                                                        <MaterialCommunityIcons
+                                                                                name="silverware-fork-knife"
+                                                                                size={20}
+                                                                                color={theme.screen.icon}
+                                                                        />
+                                                                )
+                                                        }
+                                                        rightIcon={
+                                                                <MaterialCommunityIcons
+                                                                        name="chevron-right"
+                                                                        size={24}
+                                                                        color={theme.screen.icon}
+                                                                />
+                                                        }
+                                                        onPress={food?.id ? handleFoodPress : undefined}
+                                                        iconBackgroundColor={foodsAreaColor}
+                                                        groupPosition="top"
+                                                />
+                                                <SettingsList
+                                                        label={translate(TranslationKeys.linked_elements_rating)}
+                                                        value={ratingValue ?? translate(TranslationKeys.no_value)}
+                                                        leftIcon={
+                                                                <MaterialCommunityIcons
+                                                                        name="star-circle"
+                                                                        size={20}
+                                                                        color={theme.screen.icon}
+                                                                />
+                                                        }
+                                                        iconBackgroundColor={foodsAreaColor}
+                                                        groupPosition="middle"
+                                                />
+                                                <SettingsList
+                                                        label={translate(TranslationKeys.linked_elements_comment)}
+                                                        value={commentValue ?? translate(TranslationKeys.no_value)}
+                                                        leftIcon={
+                                                                <MaterialCommunityIcons
+                                                                        name="message-text"
+                                                                        size={20}
+                                                                        color={theme.screen.icon}
+                                                                />
+                                                        }
+                                                        iconBackgroundColor={foodsAreaColor}
+                                                        groupPosition="bottom"
+                                                        showSeparator={false}
+                                                />
+                                        </View>
+                                ),
+                        });
+                };
+
                 return (
                         <View style={styles.linkedElementsContainer}>
                                 <Text style={[styles.linkedElementsTitle, { color: theme.screen.text }]}>
                                         {translate(TranslationKeys.linked_elements)}
                                 </Text>
                                 <View style={styles.linkedListWrapper}>
-                                        {(() => {
-                                                const { food, feedback, foodOfferId } = linkedFoodFeedback;
-                                                const alias = food.alias || '';
-                                                const fallbackName = alias ? alias.charAt(0).toUpperCase() + alias.slice(1) : undefined;
-                                                const foodName =
-                                                        getFoodName(food, language) || fallbackName || translate(TranslationKeys.unknown);
-                                                const imageSource =
-                                                        food?.image_remote_url
-                                                                ? { uri: food.image_remote_url }
-                                                                : food?.image
-                                                                ? { uri: getImageUrl(String(food.image)) }
-                                                                : defaultFoodImage
-                                                                ? { uri: defaultFoodImage }
-                                                                : undefined;
-
-                                                const handlePress = () => {
-                                                        if (food?.id) {
-                                                                const params: Record<string, string> = {
-                                                                        foodId: String(food.id),
-                                                                };
-
-                                                                if (foodOfferId) {
-                                                                        params.id = String(foodOfferId);
-                                                                }
-
-                                                                router.push({
-                                                                        pathname: '/(app)/foodoffers/details',
-                                                                        params,
-                                                                });
-                                                        }
-                                                };
-
-                                                const ratingValueRaw = typeof feedback.rating === 'number' ? feedback.rating : Number(feedback.rating);
-                                                const ratingValue = Number.isFinite(ratingValueRaw)
-                                                        ? ratingValueRaw.toLocaleString(language, {
-                                                                  maximumFractionDigits: 2,
-                                                                  minimumFractionDigits: 0,
-                                                          })
-                                                        : null;
-                                                const commentValue = typeof feedback.comment === 'string' && feedback.comment.trim().length
-                                                        ? feedback.comment.trim()
-                                                        : null;
-
-                                                return (
-                                                        <>
-                                                                <SettingsList
-                                                                        label={translate(TranslationKeys.linked_elements_food_image)}
-                                                                        value={foodName}
-                                                                        leftIcon={
-                                                                                imageSource ? (
-                                                                                        <MyImage remote_image_url={imageSource.uri} style={styles.linkedFoodImage} />
-                                                                                ) : (
-                                                                                        <MaterialCommunityIcons
-                                                                                                name="silverware-fork-knife"
-                                                                                                size={20}
-                                                                                                color={theme.screen.icon}
-                                                                                        />
-                                                                                )
-                                                                        }
-                                                                        rightIcon={
-                                                                                <MaterialCommunityIcons
-                                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
-                                                                                        size={24}
-                                                                                        color={theme.screen.icon}
-                                                                                />
-                                                                        }
-                                                                        onPress={food?.id ? handlePress : undefined}
-                                                                        iconBackgroundColor={foodsAreaColor}
-                                                                        groupPosition="top"
-                                                                        reverseLayout={language === 'ar'}
-                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
+                                        <SettingsList
+                                                leftIcon={
+                                                        imageSource ? (
+                                                                <MyImage remote_image_url={imageSource.uri} style={styles.linkedFoodImage} />
+                                                        ) : (
+                                                                <MaterialCommunityIcons
+                                                                        name="silverware-fork-knife"
+                                                                        size={20}
+                                                                        color={theme.screen.icon}
                                                                 />
-                                                                <SettingsList
-                                                                        label={translate(TranslationKeys.linked_elements_rating)}
-                                                                        value={ratingValue ?? translate(TranslationKeys.no_value)}
-                                                                        leftIcon={
-                                                                                <MaterialCommunityIcons
-                                                                                        name="star-circle"
-                                                                                        size={20}
-                                                                                        color={theme.screen.icon}
-                                                                                />
-                                                                        }
-                                                                        iconBackgroundColor={foodsAreaColor}
-                                                                        groupPosition="middle"
-                                                                        reverseLayout={language === 'ar'}
-                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
+                                                        )
+                                                }
+                                                title={foodName}
+                                                titleNumberOfLines={1}
+                                                rightElement={
+                                                        <View style={styles.linkedMoreInfoWrapper}>
+                                                                <Text style={[styles.linkedMoreInfoText, { color: theme.screen.placeholder }]} numberOfLines={1}>
+                                                                        {translate(TranslationKeys.show_more_information)}
+                                                                </Text>
+                                                                <MaterialCommunityIcons
+                                                                        name="chevron-right"
+                                                                        size={24}
+                                                                        color={theme.screen.icon}
                                                                 />
-                                                                <SettingsList
-                                                                        label={translate(TranslationKeys.linked_elements_comment)}
-                                                                        value={commentValue ?? translate(TranslationKeys.no_value)}
-                                                                        leftIcon={
-                                                                                <MaterialCommunityIcons
-                                                                                        name="message-text"
-                                                                                        size={20}
-                                                                                        color={theme.screen.icon}
-                                                                                />
-                                                                        }
-                                                                        iconBackgroundColor={foodsAreaColor}
-                                                                        groupPosition="bottom"
-                                                                        showSeparator={false}
-                                                                        reverseLayout={language === 'ar'}
-                                                                        titleTextAlign={language === 'ar' ? 'right' : 'left'}
-                                                                />
-                                                        </>
-                                                );
-                                        })()}
+                                                        </View>
+                                                }
+                                                onPress={openDetailsModal}
+                                                iconBackgroundColor={foodsAreaColor}
+                                                groupPosition="single"
+                                        />
                                 </View>
                         </View>
                 );

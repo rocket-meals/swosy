@@ -55,6 +55,11 @@
       },
       {
         "type": "hook",
+        "name": "base64-file-upload-hook",
+        "source": "src/base64-file-upload-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "chat-conversation-state-hook",
         "source": "src/chat-conversation-state-hook/index.ts"
       },
@@ -192,6 +197,11 @@
         "type": "hook",
         "name": "workflows-runs-sync-hook",
         "source": "src/workflows-runs-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "workflows-runs-log-cleanup-schedule",
+        "source": "src/workflows-runs-log-cleanup-schedule/index.ts"
       }
     ],
     "host": "^10.10.0"

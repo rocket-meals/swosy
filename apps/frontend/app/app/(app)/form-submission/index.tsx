@@ -44,7 +44,24 @@ import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import * as FileSystem from 'expo-file-system/legacy';
 import AppButton from '@/components/AppButton';
+
+/**
+ * Convert a file data object (from signature capture) to a base64 data URI.
+ * On web the image is already a data URI; on mobile it is a file path
+ * that needs to be read and encoded.
+ */
+async function toBase64DataUri(fileData: { name: string; type: string; image: string }): Promise<string> {
+	if (fileData.image.startsWith('data:')) {
+		return fileData.image;
+	}
+	// Mobile: read the file from the filesystem as base64
+	const base64 = await FileSystem.readAsStringAsync(fileData.image, {
+		encoding: FileSystem.EncodingType.Base64,
+	});
+	return `data:${fileData.type || 'image/png'};base64,${base64}`;
+}
 
 const parseDropdownValues = (input: unknown): string[] => {
 	if (!input) return [];
@@ -660,8 +677,16 @@ const Index = () => {
 								}
 							}
 						}
-						const directusFileId = await getDirectusUploadId(value, imageFolderId);
-						updatedValueFields = { value_image: directusFileId };
+						if (custom_id === 'signature') {
+							// Signatures: send base64 data URI directly — the backend
+							// base64-file-upload-hook will create the Directus file automatically.
+							const base64DataUri = await toBase64DataUri(value);
+							updatedValueFields = { value_image: base64DataUri };
+						} else {
+							// Regular images: upload the file first, then store the file ID
+							const directusFileId = await getDirectusUploadId(value, imageFolderId);
+							updatedValueFields = { value_image: directusFileId };
+						}
 					} else if (value === null || value === undefined) {
 						// Image/signature cleared — explicitly set to null
 						if (custom_id === 'signature' && !offlineMode) {

@@ -102,6 +102,7 @@ describe('buildAreaInfoDict', () => {
 		natural: null,
 		landuse: null,
 		amenity: null,
+		count: 1,
 	};
 
 	const roadFeature: MapFeatureInfo = {
@@ -115,6 +116,7 @@ describe('buildAreaInfoDict', () => {
 		natural: null,
 		landuse: null,
 		amenity: null,
+		count: 1,
 	};
 
 	it('aggregates features from multiple tiles', () => {
@@ -274,6 +276,7 @@ describe('suggestRouteNamesForHexTiles', () => {
 		natural: null,
 		landuse: null,
 		amenity: null,
+		count: 1,
 	};
 
 	/** Helper: mock fetch to return a style + empty PBF tiles. */

@@ -170,8 +170,18 @@ export function getCustomerConfigurations(): CustomerConfig[] {
 	];
 }
 
+// EXPO_PUBLIC_CUSTOMER is inlined into the JS bundle by Metro at build time and therefore
+// remains available after an OTA update (eas update) in the running app bundle.
+// CUSTOMER is only available in the Node context at build time (e.g. app.config.ts, icon generation)
+// but not in the app bundle itself. Both variables are needed so that the customer
+// is resolved correctly for both native builds and OTA updates.
+export function getCustomerEnvVariable(): string | undefined {
+	return process.env.EXPO_PUBLIC_CUSTOMER || process.env.CUSTOMER || undefined;
+}
+
 export function getCustomerConfig(): CustomerConfig {
-	return devConfig;
+	const customer = getCustomerEnvVariable();
+	return getCustomerConfigsDict()[customer as ConfigCustomerEnum] || devConfig;
 }
 
 export function getFinalConfig(config?: any) {
@@ -182,9 +192,9 @@ export function getFinalConfig(config?: any) {
 			slug: customerConfig.projectSlug,
 			version: getVersion(),
 			orientation: 'default',
-			icon: './assets/images/icon.png',
+			icon: './assets/generated/icon.png',
 			notification: {
-				icon: './assets/images/notification-icon.png',
+				icon: './assets/generated/notification-icon.png',
 			},
 			updates: {
 				enabled: true,
@@ -194,7 +204,7 @@ export function getFinalConfig(config?: any) {
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
-				image: './assets/images/splash.png',
+				image: './assets/generated/splash.png',
 				resizeMode: 'contain',
 				backgroundColor: '#ffffff',
 			},
@@ -269,7 +279,7 @@ export function getFinalConfig(config?: any) {
 			},
 			android: {
 				adaptiveIcon: {
-					foregroundImage: './assets/images/adaptive-icon.png',
+					foregroundImage: './assets/generated/adaptive-icon.png',
 					backgroundColor: '#ffffff',
 				},
 				package: customerConfig.bundleIdAndroid,
@@ -279,7 +289,7 @@ export function getFinalConfig(config?: any) {
 			web: {
 				bundler: 'metro',
 				output: 'static',
-				favicon: './assets/images/favicon.png',
+				favicon: './assets/generated/favicon.png',
 			},
 			plugins: [
 				'expo-router',
@@ -291,7 +301,7 @@ export function getFinalConfig(config?: any) {
 				[
 					'expo-splash-screen',
 					{
-						image: './assets/images/splash-icon.png',
+						image: './assets/generated/splash-icon.png',
 						imageWidth: 200,
 						resizeMode: 'contain',
 						backgroundColor: '#ffffff',

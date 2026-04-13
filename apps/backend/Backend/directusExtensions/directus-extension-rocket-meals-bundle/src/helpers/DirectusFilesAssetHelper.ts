@@ -18,6 +18,11 @@ export class DirectusFilesAssetHelper {
     height: 1024,
   };
 
+  public static PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL: DirectusFileTransformOptions = {
+    quality: 100,
+    fit: 'contain',
+  }
+
   private static getAssetUrl(serverUrl: string, directusFileId: string, options?: DirectusFileTransformOptions): string {
     let url = `${serverUrl}/assets/${directusFileId}`;
 

@@ -1,6 +1,5 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
-	Alert,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -19,9 +18,14 @@ import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
-import { isAvailable as isH3Available, latLngToCell, gridPathCells } from '../../helpers/H3Helper';
-import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addWalkedEdges, loadWalkedEdgesState } from '../../store/hexTileSlice';
+import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches } from '../../helpers/ActivityMapRebuildHelper';
+import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
+import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
+import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -79,6 +83,7 @@ export default function ActivitiesScreen() {
 	const navigation = useNavigation();
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -118,7 +123,7 @@ export default function ActivitiesScreen() {
 		try {
 			parsed = JSON.parse(code);
 		} catch {
-			Alert.alert('Import Failed', 'The code is not valid JSON.');
+			showAlert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
 
@@ -132,7 +137,7 @@ export default function ActivitiesScreen() {
 				typeof activity.startedAt !== 'number' ||
 				!Array.isArray(activity.routePoints)
 			) {
-				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				showAlert('Import Failed', 'One or more entries do not look like valid activities.');
 				return;
 			}
 			validActivities.push(activity);
@@ -144,25 +149,25 @@ export default function ActivitiesScreen() {
 		closeImportModal();
 		loadData();
 		const count = validActivities.length;
-		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
+		showAlert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
 
 	const handleExportAll = useCallback(async () => {
 		const allActivities = await loadActivities();
 		if (allActivities.length === 0) {
-			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			showAlert('Nothing to Export', 'There are no activities to export.');
 			return;
 		}
 		const json = JSON.stringify(allActivities, null, 2);
 		await Clipboard.setStringAsync(json);
 		const count = allActivities.length;
-		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
 	}, []);
 
 	const handleRebuildMap = useCallback(() => {
-		Alert.alert(
+		showAlert(
 			'Rebuild Map from Activities',
-			'This will recalculate the explored map from all your saved activities. Billboard and terrain tile settings will be preserved. Continue?',
+			'This will recalculate the explored map from all your saved activities. All tile customizations (including manually set tiles) will be reset. Continue?',
 			[
 				{ text: 'Cancel', style: 'cancel' },
 				{
@@ -170,83 +175,112 @@ export default function ActivitiesScreen() {
 					style: 'destructive',
 					onPress: async () => {
 						if (!isH3Available()) {
-							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							showAlert('Not Available', 'H3 library is not available on this device.');
 							return;
 						}
 						const allActivities = await loadActivities();
 						if (allActivities.length === 0) {
-							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							showAlert('No Activities', 'There are no activities to rebuild the map from.');
 							return;
 						}
 
-						// Preserve existing billboard / terrain customizations
-						const currentRecords = store.getState().hexTiles.records;
-						const customizations: Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }> = {};
-						for (const [h3Index, record] of Object.entries(currentRecords)) {
-							if (record.tileImage !== undefined || record.billboard !== undefined || record.billboardAnchorColor !== undefined || record.billboards !== undefined) {
-								customizations[h3Index] = {};
-								if (record.tileImage !== undefined) customizations[h3Index].tileImage = record.tileImage;
-								if (record.billboard !== undefined) customizations[h3Index].billboard = record.billboard;
-								if (record.billboardAnchorColor !== undefined) customizations[h3Index].billboardAnchorColor = record.billboardAnchorColor;
-								if (record.billboards !== undefined) customizations[h3Index].billboards = record.billboards;
-							}
-						}
+						// Recompute enclosed tiles for every activity that has enough walked tiles.
+						// This corrects stale stored values (e.g. open-route activities that were
+						// previously recorded with a closed loop) and fills in missing data for
+						// activities saved before the computed field was introduced.
+						// The canonical home for enclosed-tile data is computed.enclosedHexTiles.
+						// The top-level fields enclosedHexTiles / hexTilesEnclosed are legacy and
+						// must never be written; they are only kept for reading old activity files.
+						for (const activity of allActivities) {
+							let updated = false;
 
-						// Clear all tile data, then replay each activity oldest-first
-						dispatch(loadPersistedState({}));
-						dispatch(loadWalkedEdgesState([]));
-						const rebuildEdgeSet = new Set<string>();
-						const GPS_INTERPOLATION_MAX = 10;
-						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
-						for (const activity of sorted) {
-							dispatch(startRun());
-							const h3Set = new Set<string>();
-							let lastCell: string | null = null;
-							for (const point of activity.routePoints) {
-								try {
-									const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
-									if (!cell) continue;
-									// Interpolate path cells for GPS gaps
-									if (lastCell && cell !== lastCell) {
-										try {
-											const pathCells = gridPathCells(lastCell, cell);
-											if (pathCells.length - 2 <= GPS_INTERPOLATION_MAX) {
-												for (let i = 0; i < pathCells.length - 1; i++) {
-													const a = pathCells[i];
-													const b = pathCells[i + 1];
-													const edgeKey = a < b ? `${a}:${b}` : `${b}:${a}`;
-													rebuildEdgeSet.add(edgeKey);
-													if (!h3Set.has(a)) {
-														h3Set.add(a);
-														dispatch(markVisited({ h3Indices: [a], timestamp: point.timestamp }));
-													}
-												}
-											}
-										} catch {
-											// gridPathCells can throw for cells on different faces
-										}
-									}
-									if (!h3Set.has(cell)) {
-										h3Set.add(cell);
-										dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
-									}
-									lastCell = cell;
-								} catch {
-									// Skip invalid points
+							// Always recompute from the route when enough walked tiles are available.
+							// Include interpolated GPS point tiles so routes closed via route
+							// interpolation also form a proper closed loop for the polygon check.
+							// Fall back to stored values only for legacy activities without hexTilesOrdered.
+							let enclosedTiles: string[];
+							if (activity.hexTilesOrdered?.length) {
+								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+								enclosedTiles = findEnclosedCellsFromHexTiles(
+									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+									h3Res,
+								);
+							} else {
+								enclosedTiles =
+									activity.computed?.enclosedHexTiles ??
+									activity.enclosedHexTiles ??
+									activity.hexTilesEnclosed ??
+									[];
+							}
+
+							if (!activity.computed) {
+								activity.computed = computeActivityData(activity, enclosedTiles);
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
 								}
+								updated = true;
+							} else if (
+								!Array.isArray(activity.computed.enclosedHexTiles) ||
+								activity.computed.enclosedHexTiles.length !== enclosedTiles.length ||
+								activity.computed.enclosedHexTiles.some((id, i) => id !== enclosedTiles[i])
+							) {
+								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+								activity.enclosedTileCount = enclosedTiles.length;
+								updated = true;
+							}
+
+							if (updated) {
+								try { saveActivity(activity); } catch (err) { console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err); }
 							}
 						}
-						if (rebuildEdgeSet.size > 0) {
-							dispatch(addWalkedEdges(Array.from(rebuildEdgeSet)));
-						}
 
-						// Re-apply customizations preserved from before
-						if (Object.keys(customizations).length > 0) {
-							dispatch(applyMapCustomizations(customizations));
-						}
+						// Rebuild from activity data (hexTilesVisited + enclosedHexTiles),
+						// applying dirt/grass terrain automatically after counting visits.
+						// All existing tile state (including manual customizations) is discarded.
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						const hexTileFeatureCache = await loadHexTileFeatureCache();
+						const homeHexTile = store.getState().playerInformation.homeHexTile;
+						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const routes = await loadRoutes();
+						applyRouteBenches(records, sorted, routes);
+						dispatch(loadPersistedState(records));
+						dispatch(loadWalkedEdgesState(walkedEdges));
+
+						// Fire-and-forget: fetch map features for enclosed-only tiles that
+						// have no cached feature data yet, so the pine tree billboard can be
+						// applied even when the feature cache was empty or incomplete.
+						void (async () => {
+							try {
+								const enclosedWithoutCache = Object.entries(records)
+									.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
+									.map(([hexId]) => hexId);
+
+								if (enclosedWithoutCache.length === 0) return;
+
+								const newEntries: HexTileFeatureCache = {};
+								for (const hexId of enclosedWithoutCache) {
+									try {
+										const features = await queryTileFeaturesForHexCell(hexId);
+										newEntries[hexId] = features;
+										if (hasForestFeature(features)) {
+											dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: BillboardAnchorPosition.CENTER,
+												billboard: BILLBOARD_PINE_TREE_LARGE,
+											}));
+										}
+									} catch {
+										// ignore per-cell errors
+									}
+								}
+								await mergeHexTileFeatureCache(newEntries);
+							} catch (err) {
+								console.warn('[Rebuild] Feature cache update failed:', err);
+							}
+						})();
 
 						const count = allActivities.length;
-						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+						showAlert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
 					},
 				},
 			],

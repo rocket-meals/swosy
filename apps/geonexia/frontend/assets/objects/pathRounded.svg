@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Pebble path: scattered light-gray circles representing gravel/kiesel -->
+  <circle cx="20" cy="48" r="4" fill="#d1d5db" />
+  <circle cx="50" cy="44" r="5" fill="#e5e7eb" />
+  <circle cx="78" cy="46" r="3.5" fill="#d1d5db" />
+  <circle cx="108" cy="44" r="3" fill="#cacdd1" />
+  <circle cx="12" cy="60" r="4.5" fill="#d1d5db" />
+  <circle cx="26" cy="68" r="3.5" fill="#e5e7eb" />
+  <circle cx="42" cy="60" r="5" fill="#d4d8dc" />
+  <circle cx="56" cy="70" r="3" fill="#d1d5db" />
+  <circle cx="70" cy="60" r="4" fill="#e5e7eb" />
+  <circle cx="84" cy="68" r="5" fill="#cacdd1" />
+  <circle cx="100" cy="58" r="3.5" fill="#dde0e4" />
+  <circle cx="112" cy="68" r="4" fill="#e5e7eb" />
+  <circle cx="8" cy="82" r="3.5" fill="#d1d5db" />
+  <circle cx="22" cy="90" r="4.5" fill="#e5e7eb" />
+  <circle cx="38" cy="82" r="3" fill="#d4d8dc" />
+  <circle cx="66" cy="84" r="5" fill="#e5e7eb" />
+  <circle cx="95" cy="82" r="4.5" fill="#dde0e4" />
+  <circle cx="110" cy="90" r="3" fill="#d1d5db" />
+</svg>

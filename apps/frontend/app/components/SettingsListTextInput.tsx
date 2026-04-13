@@ -1,7 +1,8 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -88,7 +89,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	const { primaryColor, language } = useAppSelector((state: RootState) => state.settings);
 
 	return (
-		<TextInput
+		<BottomSheetTextInput
 			style={{
 				...styles.sheetInput,
 				color: theme.sheet.text,
@@ -100,7 +101,6 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 			autoFocus={autoFocus}
 			placeholder={placeholder}
 			placeholderTextColor={theme.sheet.placeholder}
-			cursorColor={theme.sheet.text}
 			selectionColor={primaryColor}
 			value={value}
 			onChangeText={onChangeText}
@@ -152,7 +152,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				...styles.sheetView,
 			}}
 		>
-			<TextInput
+			<BottomSheetTextInput
 				style={{
 					...styles.sheetInput,
 					color: theme.sheet.text,
@@ -164,7 +164,6 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				autoFocus={autoFocus}
 				placeholder={placeholder}
 				placeholderTextColor={theme.sheet.placeholder}
-				cursorColor={theme.sheet.text}
 				selectionColor={primaryColor}
 				value={value}
 				onChangeText={onChangeText}
@@ -186,19 +185,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 		</View>
 	);
 
-	if (Platform.OS === 'web') {
-		return Content;
-	}
-
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'position' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			<View style={styles.keyboardAvoidingContent}>{Content}</View>
-		</KeyboardAvoidingView>
-	);
+	return Content;
 };
 
 const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
@@ -290,14 +277,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		padding: 10,
 		alignItems: 'stretch',
-	},
-	keyboardAvoidingView: {
-		flex: 1,
-		width: '100%',
-	},
-	keyboardAvoidingContent: {
-		flexGrow: 1,
-		alignItems: 'center',
 	},
 	sheetHeader: {
 		width: '100%',

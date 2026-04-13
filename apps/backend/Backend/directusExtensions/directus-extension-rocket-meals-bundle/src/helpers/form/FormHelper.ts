@@ -53,6 +53,7 @@ export type FormGenerationParams = {
 
 export class FormHelper {
   private static readonly FORM_IMAGE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_HD;
+  private static readonly FORM_IMAGE_SIGNATURE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL;
 
   public static getExampleForm(): DatabaseTypes.Forms {
     return {
@@ -478,7 +479,7 @@ export class FormHelper {
       return (
         `<div style="margin:8px 0 0 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
         `<div style="display:inline-block; border-bottom:1px solid #000; min-width:200px; vertical-align:bottom; margin:2px 0 14px 0;">` +
-        `<img src="${imageUrl}" alt="${fieldName}" style="max-height:40px; width:auto; display:block;"/>` +
+        `<img src="${imageUrl}" alt="${fieldName}" style="max-height:80px; width:auto; display:block; max-width:100%;"/>` +
         `</div>\n`
       );
     }
@@ -498,11 +499,20 @@ export class FormHelper {
       if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
         assetUrl = value_image;
       } else {
-        assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
-          value_image,
-          myDatabaseHelperInterface,
-          FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
-        );
+        if(isSignature){
+          // The signature should not be in a 1:1 format and shall not use Form_IMAGE_TRANSFORM_OPTIONS
+          assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+              value_image,
+              myDatabaseHelperInterface,
+              FormHelper.FORM_IMAGE_SIGNATURE_TRANSFORM_OPTIONS,
+          );
+        } else {
+          assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+              value_image,
+              myDatabaseHelperInterface,
+              FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
+          );
+        }
       }
     }
     return this.generateHtmlForImageUrl(fieldName, assetUrl, isSignature);

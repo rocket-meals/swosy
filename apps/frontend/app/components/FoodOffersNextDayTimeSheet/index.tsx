@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useAppSelector } from '@/redux/hooks';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -19,7 +18,6 @@ const FoodOffersNextDayTimeSheet: React.FC<FoodOffersNextDayTimeSheetProps> = ({
 	const { translate } = useLanguage();
 	const primaryColor = useAppSelector(state => state.settings.primaryColor);
 	const mode = useAppSelector(state => state.settings.selectedTheme);
-	const { bottom: bottomInset } = useSafeAreaInsets();
 	const contrastColor = useMemo(() => myContrastColor(primaryColor, theme, mode === 'dark'), [mode, primaryColor, theme]);
 
 	const [value, setValue] = useState(initialValue || DEFAULT_THRESHOLD);
@@ -64,65 +62,47 @@ const FoodOffersNextDayTimeSheet: React.FC<FoodOffersNextDayTimeSheetProps> = ({
 
 	return (
 		<BottomSheetView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
-			<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={Platform.OS === 'ios' ? bottomInset : 0} style={styles.keyboardAvoidingView} contentContainerStyle={styles.keyboardAvoidingContent}>
-				<View style={styles.sheetHeader}>
-					<Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.foodoffers_next_day_time)}</Text>
-				</View>
-				<Text style={{ ...styles.description, color: theme.sheet.text, opacity: 0.75 }}>{translate(TranslationKeys.foodoffers_next_day_time_description)}</Text>
-				<View style={styles.inputContainer}>
-					<TimeInput id="foodoffers-next-day-threshold" value={value} onChange={handleChange} onError={handleError} error={error} isDisabled={false} custom_type="time" prefix={null} suffix={null} />
-				</View>
-				<View style={styles.buttonContainer}>
-					<AppButton
-						text={translate(TranslationKeys.cancel)}
-						onPress={closeSheet}
-						variant="outline"
-						style={[styles.buttonBase, styles.secondaryButton, { borderColor: primaryColor, marginRight: 12, marginVertical: 0, gap: 0, minHeight: 0, height: undefined }]}
-						textStyle={{ ...styles.buttonText, color: theme.sheet.text }}
-						usePlainText
-					/>
-					<AppButton
-						text={translate(TranslationKeys.reset)}
-						onPress={handleReset}
-						variant="outline"
-						disabled={disableReset}
-						style={[
-							styles.buttonBase,
-							styles.secondaryButton,
-							{
-								borderColor: primaryColor,
-								marginRight: 12,
-								opacity: disableReset ? 0.6 : 1,
-								marginVertical: 0,
-								gap: 0,
-								minHeight: 0,
-								height: undefined,
-							},
-						]}
-						textStyle={{ ...styles.buttonText, color: theme.sheet.text }}
-						usePlainText
-					/>
-					<AppButton
-						text={translate(TranslationKeys.save)}
-						onPress={handleSave}
-						disabled={disableSave}
-						style={[
-							styles.buttonBase,
-							styles.primaryButton,
-							{
-								backgroundColor: primaryColor,
-								opacity: disableSave ? 0.6 : 1,
-								marginVertical: 0,
-								gap: 0,
-								minHeight: 0,
-								height: undefined,
-							},
-						]}
-						textStyle={{ ...styles.buttonText, color: contrastColor }}
-						usePlainText
-					/>
-				</View>
-			</KeyboardAvoidingView>
+			<View style={styles.sheetHeader}>
+				<Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.foodoffers_next_day_time)}</Text>
+			</View>
+			<Text style={{ ...styles.description, color: theme.sheet.text, opacity: 0.75 }}>{translate(TranslationKeys.foodoffers_next_day_time_description)}</Text>
+			<View style={styles.inputContainer}>
+				<TimeInput id="foodoffers-next-day-threshold" value={value} onChange={handleChange} onError={handleError} error={error} isDisabled={false} custom_type="time" prefix={null} suffix={null} />
+			</View>
+			<View style={styles.buttonContainer}>
+				<TouchableOpacity onPress={closeSheet} style={[styles.buttonBase, styles.secondaryButton, { borderColor: primaryColor, marginRight: 12 }]}>
+					<Text style={{ ...styles.buttonText, color: theme.sheet.text }}>{translate(TranslationKeys.cancel)}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={handleReset}
+					style={[
+						styles.buttonBase,
+						styles.secondaryButton,
+						{
+							borderColor: primaryColor,
+							marginRight: 12,
+							opacity: disableReset ? 0.6 : 1,
+						},
+					]}
+					disabled={disableReset}
+				>
+					<Text style={{ ...styles.buttonText, color: theme.sheet.text }}>{translate(TranslationKeys.reset)}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={handleSave}
+					style={[
+						styles.buttonBase,
+						styles.primaryButton,
+						{
+							backgroundColor: primaryColor,
+							opacity: disableSave ? 0.6 : 1,
+						},
+					]}
+					disabled={disableSave}
+				>
+					<Text style={{ ...styles.buttonText, color: contrastColor }}>{translate(TranslationKeys.save)}</Text>
+				</TouchableOpacity>
+			</View>
 		</BottomSheetView>
 	);
 };

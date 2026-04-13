@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
@@ -13,6 +13,7 @@ import { setSpriteAnchor, setSpriteScale, resetSpriteAnchor } from '../../store/
 import type { RootState, AppDispatch } from '../../store/store';
 import type { HexTileRecord } from '../../helpers/HexTileStorage';
 import SettingsListBillboard from '../../components/SettingsListBillboard';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
 const ANCHOR_STEP = 0.05;
@@ -290,6 +291,7 @@ const previewStyles = StyleSheet.create({
 export default function BillboardConfigScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const dispatch = useDispatch<AppDispatch>();
 	const records = useSelector((state: RootState) => state.hexTiles.records);
 	const spriteAnchors = useSelector((state: RootState) => state.billboardConfig.spriteAnchors);
@@ -374,7 +376,7 @@ export default function BillboardConfigScreen() {
 	const handleCopyConfig = useCallback(async () => {
 		const json = JSON.stringify(spriteAnchors, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Copied', 'Billboard config copied to clipboard.');
+		showAlert('Copied', 'Billboard config copied to clipboard.');
 	}, [spriteAnchors]);
 
 	const selectionOptions = useMemo(() => {

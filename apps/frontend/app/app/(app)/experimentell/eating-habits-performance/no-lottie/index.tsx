@@ -89,6 +89,12 @@ const EatingHabitsPerformanceNoLottie = () => {
 					const groupId = typeof m.group === 'string' ? m.group : (m.group as DatabaseTypes.MarkingsGroups)?.id;
 					return groupId === group.id;
 				})
+				.sort((a: DatabaseTypes.Markings, b: DatabaseTypes.Markings) => {
+					const sortA = a.sort ?? Infinity;
+					const sortB = b.sort ?? Infinity;
+					if (sortA !== sortB) return sortA - sortB;
+					return (a.alias || '').localeCompare(b.alias || '');
+				})
 				.map((m: DatabaseTypes.Markings) => m.id);
 			if (groupMarkingIds.length > 0) {
 				sections.push({ group, markingIds: groupMarkingIds });

@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "3c3975ef81168db37807094abaf52386b50ff1da"
+    "version": "100f87f002074e8387ef18ea9d32265fd90d36ce"
   },
   "servers": [
     {
@@ -47006,8 +47006,9 @@
             "nullable": true,
             "type": "boolean"
           },
-          "focal_point_y": {
-            "nullable": true,
+          "filesize": {
+            "description": "Size of the file in bytes.",
+            "example": 137862,
             "type": "integer"
           },
           "focal_point_x": {
@@ -47032,28 +47033,9 @@
             "type": "integer",
             "nullable": true
           },
-          "filesize": {
-            "description": "Size of the file in bytes.",
-            "example": 137862,
+          "focal_point_y": {
+            "nullable": true,
             "type": "integer"
-          },
-          "description": {
-            "description": "Description for the file.",
-            "type": "string",
-            "nullable": true
-          },
-          "location": {
-            "description": "Where the file was created. Is automatically populated based on Exif data for images.",
-            "type": "string",
-            "nullable": true
-          },
-          "tus_data": {
-            "nullable": true
-          },
-          "metadata": {
-            "description": "IPTC, Exif, and ICC metadata extracted from file",
-            "type": "object",
-            "nullable": true
           },
           "tags": {
             "description": "Tags for the file. Is automatically populated based on Exif data for images.",
@@ -47063,10 +47045,23 @@
               "type": "string"
             }
           },
-          "type": {
-            "description": "MIME type of the file.",
-            "example": "image/jpeg",
-            "type": "string"
+          "location": {
+            "description": "Where the file was created. Is automatically populated based on Exif data for images.",
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "description": "Description for the file.",
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "description": "IPTC, Exif, and ICC metadata extracted from file",
+            "type": "object",
+            "nullable": true
+          },
+          "tus_data": {
+            "nullable": true
           },
           "title": {
             "description": "Title for the file. Is extracted from the filename on upload, but can be edited by the user.",
@@ -47104,11 +47099,10 @@
             "type": "string",
             "nullable": true
           },
-          "created_on": {
-            "description": "When the file was created.",
-            "example": "2019-12-03T00:10:15+00:00",
-            "type": "string",
-            "format": "date-time"
+          "type": {
+            "description": "MIME type of the file.",
+            "example": "image/jpeg",
+            "type": "string"
           },
           "modified_on": {
             "nullable": false,
@@ -47120,6 +47114,29 @@
             "example": "2019-12-03T00:10:15+00:00",
             "type": "string",
             "format": "date-time"
+          },
+          "created_on": {
+            "description": "When the file was created.",
+            "example": "2019-12-03T00:10:15+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "modified_by": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "id": {
+            "description": "Unique identifier for the file.",
+            "example": "8cbb43fe-4cdf-4991-8352-c461779cec02",
+            "type": "string"
           },
           "folder": {
             "description": "Virtual folder where this file resides in.",
@@ -47145,23 +47162,6 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "modified_by": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "id": {
-            "description": "Unique identifier for the file.",
-            "example": "8cbb43fe-4cdf-4991-8352-c461779cec02",
-            "type": "string"
           }
         },
         "x-collection": "directus_files"
@@ -47309,10 +47309,7 @@
             "nullable": true,
             "type": "boolean"
           },
-          "description": {
-            "description": "The user's description.",
-            "example": null,
-            "type": "string",
+          "theme_light_overrides": {
             "nullable": true
           },
           "tags": {
@@ -47327,10 +47324,13 @@
           "auth_data": {
             "nullable": true
           },
-          "theme_light_overrides": {
+          "theme_dark_overrides": {
             "nullable": true
           },
-          "theme_dark_overrides": {
+          "description": {
+            "description": "The user's description.",
+            "example": null,
+            "type": "string",
             "nullable": true
           },
           "theme_light": {
@@ -47549,11 +47549,11 @@
       "ItemsFoodoffersInfoItems": {
         "type": "object",
         "properties": {
-          "show_only_when_no_foodoffers_found": {
+          "show_on_sundays": {
             "nullable": true,
             "type": "boolean"
           },
-          "show_on_thursdays": {
+          "show_on_saturdays": {
             "nullable": true,
             "type": "boolean"
           },
@@ -47561,19 +47561,19 @@
             "nullable": true,
             "type": "boolean"
           },
+          "show_on_thursdays": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "show_on_wednesdays": {
             "nullable": true,
             "type": "boolean"
           },
+          "show_only_when_no_foodoffers_found": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "show_on_tuesdays": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_on_sundays": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_on_saturdays": {
             "nullable": true,
             "type": "boolean"
           },
@@ -47955,17 +47955,13 @@
       "ItemsAppSettingsHousingTranslations": {
         "type": "object",
         "properties": {
-          "be_source_for_translations": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
-          "id": {
-            "nullable": false,
-            "type": "integer"
+          "be_source_for_translations": {
+            "nullable": true,
+            "type": "boolean"
           },
           "app_settings_id": {
             "nullable": true,
@@ -47977,6 +47973,10 @@
                 "$ref": "#/components/schemas/ItemsAppSettings"
               }
             ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "integer"
           },
           "content": {
             "nullable": true,
@@ -47999,22 +47999,11 @@
       "ItemsAppSettings": {
         "type": "object",
         "properties": {
-          "foods_image_ai_generation_enabled": {
-            "nullable": true,
-            "description": "KI generierte Bilder für Speisen ohne Fotos erstellen?",
-            "type": "boolean"
-          },
-          "foods_enabled": {
-            "nullable": true,
-            "description": "Bereich \"Mensa\" in der App aktivieren?",
-            "type": "boolean"
-          },
-          "campus_enabled": {
-            "nullable": true,
-            "description": "Zeige in der App den Bereich Campus an",
-            "type": "boolean"
-          },
           "course_timetable_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "balance_enabled": {
             "nullable": true,
             "type": "boolean"
           },
@@ -48023,36 +48012,21 @@
             "description": "Zeige die Auslastungsprognose in der App",
             "type": "boolean"
           },
+          "campus_enabled": {
+            "nullable": true,
+            "description": "Zeige in der App den Bereich Campus an",
+            "type": "boolean"
+          },
           "notifications_ios_enabled": {
             "nullable": true,
             "type": "boolean"
           },
-          "animations_auto_start": {
+          "notifications_email_enabled": {
             "nullable": true,
             "type": "boolean"
           },
-          "balance_enabled": {
+          "notifications_android_enabled": {
             "nullable": true,
-            "type": "boolean"
-          },
-          "foods_ratings_amount_display": {
-            "nullable": true,
-            "description": "Soll die Anzahl der Bewertungen angezeigt werden?",
-            "type": "boolean"
-          },
-          "foods_ratings_average_display": {
-            "nullable": true,
-            "description": "Soll die durschnittliche Bewertung der Speisen angezeigt werden?",
-            "type": "boolean"
-          },
-          "housing_enabled": {
-            "nullable": true,
-            "description": "Zeigt den Bereich Wohnen in der App an",
-            "type": "boolean"
-          },
-          "map_enabled": {
-            "nullable": true,
-            "description": "Zeige den Lageplan in der App an",
             "type": "boolean"
           },
           "news_enabled": {
@@ -48060,11 +48034,37 @@
             "description": "Zeigt in der App den Bereich News an",
             "type": "boolean"
           },
-          "notifications_android_enabled": {
+          "map_enabled": {
             "nullable": true,
+            "description": "Zeige den Lageplan in der App an",
             "type": "boolean"
           },
-          "notifications_email_enabled": {
+          "housing_enabled": {
+            "nullable": true,
+            "description": "Zeigt den Bereich Wohnen in der App an",
+            "type": "boolean"
+          },
+          "foods_ratings_average_display": {
+            "nullable": true,
+            "description": "Soll die durschnittliche Bewertung der Speisen angezeigt werden?",
+            "type": "boolean"
+          },
+          "foods_ratings_amount_display": {
+            "nullable": true,
+            "description": "Soll die Anzahl der Bewertungen angezeigt werden?",
+            "type": "boolean"
+          },
+          "foods_enabled": {
+            "nullable": true,
+            "description": "Bereich \"Mensa\" in der App aktivieren?",
+            "type": "boolean"
+          },
+          "foods_image_ai_generation_enabled": {
+            "nullable": true,
+            "description": "KI generierte Bilder für Speisen ohne Fotos erstellen?",
+            "type": "boolean"
+          },
+          "animations_auto_start": {
             "nullable": true,
             "type": "boolean"
           },
@@ -48075,11 +48075,6 @@
           "redirect_whitelist": {
             "nullable": true,
             "description": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen"
-          },
-          "food_responsible_organization_name": {
-            "nullable": true,
-            "description": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",
-            "type": "string"
           },
           "food_responsible_organization_link": {
             "nullable": true,
@@ -48148,6 +48143,11 @@
             "nullable": true,
             "type": "string"
           },
+          "food_responsible_organization_name": {
+            "nullable": true,
+            "description": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",
+            "type": "string"
+          },
           "maintenance_start": {
             "nullable": true,
             "type": "string",
@@ -48172,18 +48172,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "housing_before_element": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsAppElements"
-              }
-            ]
           },
           "campus_before_element": {
             "nullable": true,
@@ -48222,6 +48210,18 @@
             ]
           },
           "foodoffers_list_after_element": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsAppElements"
+              }
+            ]
+          },
+          "housing_before_element": {
             "nullable": true,
             "oneOf": [
               {
@@ -48343,21 +48343,13 @@
       "ItemsAppSettingsLoginScreenTranslations": {
         "type": "object",
         "properties": {
-          "be_source_for_translations": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
-          "detailed_description": {
+          "be_source_for_translations": {
             "nullable": true,
-            "type": "string"
-          },
-          "intro_description": {
-            "nullable": true,
-            "type": "string"
+            "type": "boolean"
           },
           "app_settings_id": {
             "nullable": true,
@@ -48373,6 +48365,14 @@
           "id": {
             "nullable": false,
             "type": "integer"
+          },
+          "detailed_description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "intro_description": {
+            "nullable": true,
+            "type": "string"
           },
           "languages_code": {
             "nullable": true,
@@ -48481,11 +48481,11 @@
       "ItemsAutoTranslationSettings": {
         "type": "object",
         "properties": {
-          "active": {
+          "valid_auth_key": {
             "nullable": true,
             "type": "boolean"
           },
-          "valid_auth_key": {
+          "active": {
             "nullable": true,
             "type": "boolean"
           },
@@ -48505,12 +48505,12 @@
             "nullable": false,
             "type": "integer"
           },
-          "extra": {
+          "informations": {
             "nullable": true,
             "description": "Informations about errors will be shown here.",
             "type": "string"
           },
-          "informations": {
+          "extra": {
             "nullable": true,
             "description": "Informations about errors will be shown here.",
             "type": "string"
@@ -48538,23 +48538,28 @@
             "nullable": true,
             "type": "boolean"
           },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
           "priority": {
             "nullable": true,
             "type": "integer"
-          },
-          "content": {
-            "nullable": true,
-            "type": "string"
           },
           "response": {
             "nullable": true,
             "type": "string"
           },
-          "display_pixelratio": {
+          "content": {
+            "nullable": true,
+            "type": "string"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "display_height": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_width": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -48569,12 +48574,7 @@
             "type": "number",
             "format": "float"
           },
-          "display_width": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "display_height": {
+          "display_pixelratio": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -48779,18 +48779,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "canteen_food_feedback_report_schedules_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-              }
-            ]
-          },
           "canteens_id": {
             "nullable": true,
             "oneOf": [
@@ -48802,6 +48790,18 @@
                 "$ref": "#/components/schemas/ItemsCanteens"
               }
             ]
+          },
+          "canteen_food_feedback_report_schedules_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+              }
+            ]
           }
         },
         "x-collection": "canteen_food_feedback_report_schedules_canteens"
@@ -48809,6 +48809,14 @@
       "ItemsBusinesshours": {
         "type": "object",
         "properties": {
+          "wednesday": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "tuesday": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "thursday": {
             "nullable": true,
             "type": "boolean"
@@ -48829,14 +48837,6 @@
             "nullable": true,
             "type": "boolean"
           },
-          "wednesday": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "tuesday": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -48845,12 +48845,12 @@
             "nullable": true,
             "type": "string"
           },
-          "time_end": {
+          "time_start": {
             "nullable": true,
             "type": "string",
             "format": "time"
           },
-          "time_start": {
+          "time_end": {
             "nullable": true,
             "type": "string",
             "format": "time"
@@ -48972,26 +48972,6 @@
       "ItemsCanteenFoodFeedbackReportSchedules": {
         "type": "object",
         "properties": {
-          "show_food_feedback_labels_for_selected_period": {
-            "nullable": true,
-            "description": "Zeige Speise Label Rückmeldungen für den gewählten Zeitraum",
-            "type": "boolean"
-          },
-          "show_food_feedback_labels_for_all_time": {
-            "nullable": true,
-            "description": "Zeige Speise Label Rückmeldungen insgesammt",
-            "type": "boolean"
-          },
-          "show_canteen_feedbacks_for_all_time": {
-            "nullable": true,
-            "description": "Zeige Mensa Rückmeldungen insgesammt",
-            "type": "boolean"
-          },
-          "show_canteen_feedbacks_for_selected_period": {
-            "nullable": true,
-            "description": "Zeige Mensa Rückmeldungen für Ausgewählten Zeitraum",
-            "type": "boolean"
-          },
           "show_canteen_feedbacks_also_per_canteen": {
             "nullable": true,
             "description": "Zeige Rückmeldungen zu den Mensen pro Mensa: Labels",
@@ -49048,6 +49028,26 @@
             "description": "Zeige Speise Kommentare für den gewählten Zeitraum",
             "type": "boolean"
           },
+          "show_food_feedback_labels_for_selected_period": {
+            "nullable": true,
+            "description": "Zeige Speise Label Rückmeldungen für den gewählten Zeitraum",
+            "type": "boolean"
+          },
+          "show_food_feedback_labels_for_all_time": {
+            "nullable": true,
+            "description": "Zeige Speise Label Rückmeldungen insgesammt",
+            "type": "boolean"
+          },
+          "show_canteen_feedbacks_for_all_time": {
+            "nullable": true,
+            "description": "Zeige Mensa Rückmeldungen insgesammt",
+            "type": "boolean"
+          },
+          "show_canteen_feedbacks_for_selected_period": {
+            "nullable": true,
+            "description": "Zeige Mensa Rückmeldungen für Ausgewählten Zeitraum",
+            "type": "boolean"
+          },
           "period_days_offset": {
             "nullable": true,
             "description": "Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.",
@@ -49066,11 +49066,11 @@
             "nullable": true,
             "type": "string"
           },
-          "status": {
+          "alias": {
             "nullable": true,
             "type": "string"
           },
-          "alias": {
+          "status": {
             "nullable": true,
             "type": "string"
           },
@@ -49591,19 +49591,7 @@
       "ItemsDevices": {
         "type": "object",
         "properties": {
-          "is_android": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "is_ios": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "is_landscape": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "is_simulator": {
+          "is_web": {
             "nullable": true,
             "type": "boolean"
           },
@@ -49611,7 +49599,19 @@
             "nullable": true,
             "type": "boolean"
           },
-          "is_web": {
+          "is_simulator": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "is_landscape": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "is_ios": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "is_android": {
             "nullable": true,
             "type": "boolean"
           },
@@ -49817,11 +49817,11 @@
       "ItemsCanteensFeedbacksLabelsEntries": {
         "type": "object",
         "properties": {
-          "dislike": {
+          "like": {
             "nullable": true,
             "type": "boolean"
           },
-          "like": {
+          "dislike": {
             "nullable": true,
             "type": "boolean"
           },
@@ -49847,30 +49847,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "profile": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsProfiles"
-              }
-            ]
           },
           "canteen": {
             "nullable": true,
@@ -49912,6 +49888,30 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "profile": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsProfiles"
+              }
+            ]
           }
         },
         "x-collection": "canteens_feedbacks_labels_entries",
@@ -49926,6 +49926,10 @@
             "nullable": true,
             "type": "integer"
           },
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
           "image_thumb_hash": {
             "nullable": true,
             "type": "string"
@@ -49937,10 +49941,6 @@
           "icon": {
             "nullable": true,
             "description": "Icon from: https://icons.expo.fyi/Index",
-            "type": "string"
-          },
-          "alias": {
-            "nullable": true,
             "type": "string"
           },
           "status": {
@@ -50150,6 +50150,11 @@
             "example": "This is a comment",
             "type": "string"
           },
+          "item": {
+            "description": "The item the Comment is created for.",
+            "example": "123",
+            "type": "string"
+          },
           "collection": {
             "description": "The collection of the item the Comment is created for.",
             "example": "articles",
@@ -50161,11 +50166,6 @@
                 "$ref": "#/components/schemas/Collections"
               }
             ]
-          },
-          "item": {
-            "description": "The item the Comment is created for.",
-            "example": "123",
-            "type": "string"
           },
           "date_created": {
             "description": "When the Comment was created.",
@@ -50245,24 +50245,24 @@
       "Fields": {
         "type": "object",
         "properties": {
-          "readonly": {
-            "nullable": false,
+          "required": {
+            "nullable": true,
             "type": "boolean"
           },
           "hidden": {
             "nullable": false,
             "type": "boolean"
           },
-          "required": {
-            "nullable": true,
+          "readonly": {
+            "nullable": false,
             "type": "boolean"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
           },
           "id": {
             "nullable": false,
+            "type": "integer"
+          },
+          "sort": {
+            "nullable": true,
             "type": "integer"
           },
           "validation_message": {
@@ -50273,19 +50273,19 @@
             "nullable": true,
             "type": "string"
           },
-          "validation": {
-            "nullable": true
-          },
-          "conditions": {
-            "nullable": true
-          },
-          "translations": {
+          "options": {
             "nullable": true
           },
           "display_options": {
             "nullable": true
           },
-          "options": {
+          "translations": {
+            "nullable": true
+          },
+          "conditions": {
+            "nullable": true
+          },
+          "validation": {
             "nullable": true
           },
           "group": {
@@ -50431,6 +50431,11 @@
       "Permissions": {
         "type": "object",
         "properties": {
+          "id": {
+            "description": "Unique identifier for the permission.",
+            "example": 1,
+            "type": "integer"
+          },
           "fields": {
             "description": "CSV of fields that the user is allowed to interact with.",
             "type": "array",
@@ -50439,10 +50444,10 @@
             },
             "nullable": true
           },
-          "id": {
-            "description": "Unique identifier for the permission.",
-            "example": 1,
-            "type": "integer"
+          "permissions": {
+            "description": "JSON structure containing the permissions checks for this permission.",
+            "type": "object",
+            "nullable": true
           },
           "presets": {
             "description": "JSON structure containing the preset value for created/updated items.",
@@ -50451,11 +50456,6 @@
           },
           "validation": {
             "description": "JSON structure containing the validation checks for this permission.",
-            "type": "object",
-            "nullable": true
-          },
-          "permissions": {
-            "description": "JSON structure containing the permissions checks for this permission.",
             "type": "object",
             "nullable": true
           },
@@ -50484,6 +50484,14 @@
       "Collections": {
         "type": "object",
         "properties": {
+          "versioning": {
+            "nullable": false,
+            "type": "boolean"
+          },
+          "archive_app_filter": {
+            "nullable": false,
+            "type": "boolean"
+          },
           "singleton": {
             "nullable": false,
             "type": "boolean"
@@ -50492,27 +50500,19 @@
             "nullable": false,
             "type": "boolean"
           },
-          "versioning": {
-            "nullable": false,
-            "type": "boolean"
-          },
           "sort": {
             "nullable": true,
             "type": "integer"
           },
-          "archive_app_filter": {
-            "nullable": false,
-            "type": "boolean"
+          "note": {
+            "nullable": true,
+            "type": "string"
           },
           "translations": {
             "nullable": true
           },
           "item_duplication_fields": {
             "nullable": true
-          },
-          "note": {
-            "nullable": true,
-            "type": "string"
           },
           "preview_url": {
             "nullable": true,
@@ -50576,15 +50576,15 @@
       "Flows": {
         "type": "object",
         "properties": {
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
           "options": {
             "description": "Options of the selected trigger for the flow.",
             "type": "object",
             "example": null,
             "nullable": true
-          },
-          "description": {
-            "nullable": true,
-            "type": "string"
           },
           "accountability": {
             "description": "The permission used during the flow. One of `$public`, `$trigger`, `$full`, or UUID of a role.",
@@ -50691,12 +50691,6 @@
               "type": "string"
             }
           },
-          "one_field": {
-            "description": "Alias column that serves as the _one_ side of the relationship.",
-            "example": null,
-            "type": "string",
-            "nullable": true
-          },
           "one_deselect_action": {
             "nullable": false,
             "type": "string"
@@ -50714,6 +50708,12 @@
           "one_collection_field": {
             "nullable": true,
             "type": "string"
+          },
+          "one_field": {
+            "description": "Alias column that serves as the _one_ side of the relationship.",
+            "example": null,
+            "type": "string",
+            "nullable": true
           },
           "one_collection": {
             "description": "Collection on the _one_ side of the relationship.",
@@ -50823,13 +50823,13 @@
       "Presets": {
         "type": "object",
         "properties": {
-          "refresh_interval": {
-            "nullable": true,
-            "type": "integer"
-          },
           "id": {
             "description": "Unique identifier for this single collection preset.",
             "example": 155,
+            "type": "integer"
+          },
+          "refresh_interval": {
+            "nullable": true,
             "type": "integer"
           },
           "layout_query": {
@@ -50923,13 +50923,13 @@
       "ItemsChatMessages": {
         "type": "object",
         "properties": {
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
           "message": {
             "nullable": true,
             "type": "string"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
           },
           "status": {
             "nullable": false,
@@ -51031,14 +51031,14 @@
       "Webhooks": {
         "type": "object",
         "properties": {
+          "was_active_before_deprecation": {
+            "nullable": false,
+            "type": "boolean"
+          },
           "data": {
             "description": "If yes, send the content of what was done",
             "type": "boolean",
             "example": true
-          },
-          "was_active_before_deprecation": {
-            "nullable": false,
-            "type": "boolean"
           },
           "id": {
             "description": "The index of the webhook.",
@@ -51223,37 +51223,23 @@
             "description": "$t:fields.directus_settings.public_registration_note",
             "type": "boolean"
           },
-          "auth_login_attempts": {
-            "description": "Allowed authentication login attempts before the user's status is set to blocked.",
-            "type": "integer",
-            "example": 25
-          },
           "id": {
             "description": "Unique identifier for the setting.",
             "type": "integer",
             "example": 1
           },
-          "public_note": {
-            "description": "Note rendered on the public pages of the app.",
-            "type": "string",
-            "example": null,
+          "auth_login_attempts": {
+            "description": "Allowed authentication login attempts before the user's status is set to blocked.",
+            "type": "integer",
+            "example": 25
+          },
+          "custom_aspect_ratios": {
             "nullable": true
           },
-          "custom_css": {
-            "nullable": true,
-            "type": "string"
-          },
-          "theme_light_overrides": {
+          "module_bar": {
             "nullable": true
           },
-          "theme_dark_overrides": {
-            "nullable": true
-          },
-          "public_registration_email_filter": {
-            "nullable": true,
-            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
-          },
-          "visual_editor_urls": {
+          "basemaps": {
             "nullable": true
           },
           "storage_asset_presets": {
@@ -51337,13 +51323,27 @@
             "example": null,
             "nullable": true
           },
-          "basemaps": {
+          "visual_editor_urls": {
             "nullable": true
           },
-          "module_bar": {
+          "public_registration_email_filter": {
+            "nullable": true,
+            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
+          },
+          "custom_css": {
+            "nullable": true,
+            "type": "string"
+          },
+          "public_note": {
+            "description": "Note rendered on the public pages of the app.",
+            "type": "string",
+            "example": null,
             "nullable": true
           },
-          "custom_aspect_ratios": {
+          "theme_dark_overrides": {
+            "nullable": true
+          },
+          "theme_light_overrides": {
             "nullable": true
           },
           "report_feature_url": {
@@ -51506,13 +51506,6 @@
             "example": 1,
             "type": "integer"
           },
-          "delta": {
-            "description": "Changes between the previous and the current revision.",
-            "example": {
-              "title": "Hello, World!"
-            },
-            "type": "object"
-          },
           "data": {
             "description": "Copy of item state at time of update.",
             "example": {
@@ -51524,6 +51517,13 @@
             },
             "type": "object",
             "nullable": true
+          },
+          "delta": {
+            "description": "Changes between the previous and the current revision.",
+            "example": {
+              "title": "Hello, World!"
+            },
+            "type": "object"
           },
           "item": {
             "description": "Primary key of updated item.",
@@ -51661,6 +51661,11 @@
               }
             ]
           },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
           "profile": {
             "nullable": true,
             "oneOf": [
@@ -51672,11 +51677,6 @@
                 "$ref": "#/components/schemas/ItemsProfiles"
               }
             ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           }
         },
         "x-collection": "foods_feedbacks",
@@ -51687,6 +51687,10 @@
       "ItemsFoodoffers": {
         "type": "object",
         "properties": {
+          "is_component": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -51705,10 +51709,6 @@
             "nullable": true,
             "type": "number",
             "format": "float"
-          },
-          "category": {
-            "nullable": true,
-            "type": "string"
           },
           "status": {
             "nullable": true,
@@ -51729,7 +51729,15 @@
             "nullable": true,
             "type": "string"
           },
+          "result_hash": {
+            "nullable": true,
+            "type": "string"
+          },
           "redirect_url": {
+            "nullable": true,
+            "type": "string"
+          },
+          "category": {
             "nullable": true,
             "type": "string"
           },
@@ -52008,11 +52016,11 @@
       "ItemsFoodsAttributesGroupsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -52198,6 +52206,11 @@
             "type": "string",
             "format": "timestamp"
           },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -52222,11 +52235,6 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
           "translations": {
             "nullable": true,
             "type": "array",
@@ -52250,11 +52258,11 @@
       "ItemsFoodsCategoriesTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -52341,7 +52349,7 @@
             "nullable": true,
             "type": "boolean"
           },
-          "rating_amount": {
+          "rating_amount_legacy": {
             "nullable": true,
             "type": "integer"
           },
@@ -52349,19 +52357,23 @@
             "nullable": true,
             "type": "integer"
           },
-          "rating_amount_legacy": {
+          "rating_amount": {
             "nullable": true,
             "type": "integer"
+          },
+          "rating_average_legacy": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
           },
           "rating_average": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
-          "rating_average_legacy": {
+          "result_hash": {
             "nullable": true,
-            "type": "number",
-            "format": "float"
+            "type": "string"
           },
           "status": {
             "nullable": true,
@@ -52520,15 +52532,15 @@
             "nullable": true,
             "type": "integer"
           },
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
           "status": {
             "nullable": false,
             "type": "string"
           },
           "external_identifier": {
-            "nullable": true,
-            "type": "string"
-          },
-          "alias": {
             "nullable": true,
             "type": "string"
           },
@@ -52873,15 +52885,44 @@
             "nullable": false,
             "type": "string"
           },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "user_updated": {
             "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "id": {
+            "nullable": false,
             "type": "string",
-            "format": "timestamp"
+            "format": "uuid"
           },
           "recipient_email_field": {
             "nullable": true,
@@ -52918,35 +52959,6 @@
                 "$ref": "#/components/schemas/ItemsForms"
               }
             ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           },
           "fields": {
             "nullable": true,
@@ -53191,6 +53203,14 @@
             "nullable": true,
             "type": "integer"
           },
+          "internal_custom_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
           "icon_expo": {
             "nullable": true,
             "description": "https://icons.expo.fyi/Index",
@@ -53198,14 +53218,6 @@
           },
           "alias": {
             "nullable": true,
-            "type": "string"
-          },
-          "internal_custom_id": {
-            "nullable": true,
-            "type": "string"
-          },
-          "status": {
-            "nullable": false,
             "type": "string"
           },
           "date_updated": {
@@ -53316,10 +53328,6 @@
             "nullable": true,
             "type": "integer"
           },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
           "internal_custom_id": {
             "nullable": true,
             "type": "string"
@@ -53330,6 +53338,10 @@
           },
           "state": {
             "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "nullable": false,
             "type": "string"
           },
           "date_submitted": {
@@ -53449,11 +53461,11 @@
       "ItemsFoodsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -53514,12 +53526,12 @@
             "nullable": false,
             "type": "string"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -53739,11 +53751,11 @@
       "ItemsFoodsFeedbacksLabelsEntries": {
         "type": "object",
         "properties": {
-          "like": {
+          "dislike": {
             "nullable": true,
             "type": "boolean"
           },
-          "dislike": {
+          "like": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54183,11 +54195,11 @@
       "ItemsFormsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54196,10 +54208,6 @@
             "type": "integer"
           },
           "description": {
-            "nullable": true,
-            "type": "string"
-          },
-          "name": {
             "nullable": true,
             "type": "string"
           },
@@ -54213,6 +54221,10 @@
                 "$ref": "#/components/schemas/ItemsLanguages"
               }
             ]
+          },
+          "name": {
+            "nullable": true,
+            "type": "string"
           },
           "forms_id": {
             "nullable": true,
@@ -54232,11 +54244,11 @@
       "ItemsMarkingsGroupsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54277,11 +54289,11 @@
       "ItemsMarkingsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54436,11 +54448,11 @@
       "ItemsNewsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54756,12 +54768,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -54833,19 +54845,19 @@
       "ItemsPopupEvents": {
         "type": "object",
         "properties": {
-          "show_on_android": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "send_notification": {
             "nullable": true,
             "type": "boolean"
           },
-          "show_on_web": {
+          "show_on_android": {
             "nullable": true,
             "type": "boolean"
           },
           "show_on_ios": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "show_on_web": {
             "nullable": true,
             "type": "boolean"
           },
@@ -54891,18 +54903,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
           "user_created": {
             "nullable": true,
             "oneOf": [
@@ -54931,6 +54931,18 @@
             "nullable": false,
             "type": "string",
             "format": "uuid"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           },
           "canteens": {
             "nullable": true,
@@ -54971,7 +54983,7 @@
       "ItemsUtilizationsEntries": {
         "type": "object",
         "properties": {
-          "sort": {
+          "value_real": {
             "nullable": true,
             "type": "integer"
           },
@@ -54979,7 +54991,7 @@
             "nullable": true,
             "type": "integer"
           },
-          "value_real": {
+          "sort": {
             "nullable": true,
             "type": "integer"
           },
@@ -55081,11 +55093,11 @@
             "nullable": true,
             "type": "integer"
           },
-          "alias": {
+          "status": {
             "nullable": true,
             "type": "string"
           },
-          "status": {
+          "alias": {
             "nullable": true,
             "type": "string"
           },
@@ -55354,7 +55366,7 @@
             "nullable": true,
             "type": "string"
           },
-          "date_stated": {
+          "date_finished": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -55364,7 +55376,7 @@
             "type": "string",
             "format": "date-time"
           },
-          "date_finished": {
+          "date_stated": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -55716,18 +55728,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
           "user_created": {
             "nullable": true,
             "oneOf": [
@@ -55744,6 +55744,18 @@
             "nullable": false,
             "type": "string",
             "format": "uuid"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           }
         },
         "x-collection": "push_notifications",
@@ -55944,10 +55956,22 @@
             "nullable": true,
             "type": "integer"
           },
+          "log": {
+            "nullable": true,
+            "type": "string"
+          },
           "result_hash": {
             "nullable": true
           },
-          "log": {
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "output": {
+            "nullable": true,
+            "type": "string"
+          },
+          "input": {
             "nullable": true,
             "type": "string"
           },
@@ -55970,23 +55994,6 @@
               }
             ]
           },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "output": {
-            "nullable": true,
-            "type": "string"
-          },
-          "input": {
-            "nullable": true,
-            "type": "string"
-          },
-          "date_finished": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date_started": {
             "nullable": true,
             "type": "string",
@@ -55997,22 +56004,15 @@
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_finished": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "user_updated": {
+          "date_created": {
             "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
+            "type": "string",
+            "format": "timestamp"
           },
           "user_created": {
             "nullable": true,
@@ -56030,6 +56030,18 @@
             "nullable": false,
             "type": "string",
             "format": "uuid"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           }
         },
         "x-collection": "workflows_runs",
@@ -56133,11 +56145,11 @@
       "ItemsApartments": {
         "type": "object",
         "properties": {
-          "handicapped_accessible": {
+          "family_friendly": {
             "nullable": true,
             "type": "boolean"
           },
-          "family_friendly": {
+          "handicapped_accessible": {
             "nullable": true,
             "type": "boolean"
           },
@@ -56162,12 +56174,12 @@
             "type": "string",
             "format": "date-time"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -56237,11 +56249,11 @@
       "ItemsAppElementsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -56249,11 +56261,11 @@
             "nullable": false,
             "type": "integer"
           },
-          "popup_content": {
+          "content": {
             "nullable": true,
             "type": "string"
           },
-          "content": {
+          "popup_content": {
             "nullable": true,
             "type": "string"
           },
@@ -56304,12 +56316,12 @@
           "course_timetable": {
             "nullable": true
           },
-          "credit_balance": {
+          "credit_balance_last_transaction": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
-          "credit_balance_last_transaction": {
+          "credit_balance": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -56347,12 +56359,12 @@
             "type": "string",
             "format": "date-time"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -56487,6 +56499,14 @@
             "nullable": true,
             "type": "boolean"
           },
+          "id": {
+            "nullable": false,
+            "type": "integer"
+          },
+          "content": {
+            "nullable": true,
+            "type": "string"
+          },
           "app_settings_id": {
             "nullable": true,
             "oneOf": [
@@ -56497,14 +56517,6 @@
                 "$ref": "#/components/schemas/ItemsAppSettings"
               }
             ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "integer"
-          },
-          "content": {
-            "nullable": true,
-            "type": "string"
           },
           "languages_code": {
             "nullable": true,
@@ -56523,14 +56535,14 @@
       "ItemsCanteens": {
         "type": "object",
         "properties": {
-          "foodoffers_import_without_date": {
-            "nullable": true,
-            "description": "Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.",
-            "type": "boolean"
-          },
           "foodoffers_import_delete_all_without_dates": {
             "nullable": true,
             "description": "Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.",
+            "type": "boolean"
+          },
+          "foodoffers_import_without_date": {
+            "nullable": true,
+            "description": "Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.",
             "type": "boolean"
           },
           "sort": {
@@ -56558,18 +56570,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "utilization_group": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-              }
-            ]
           },
           "user_updated": {
             "nullable": true,
@@ -56611,6 +56611,18 @@
                 "$ref": "#/components/schemas/ItemsBuildings"
               }
             ]
+          },
+          "utilization_group": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
+              }
+            ]
           }
         },
         "x-collection": "canteens",
@@ -56621,11 +56633,11 @@
       "ItemsFoodoffersCategoriesTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -56711,11 +56723,11 @@
       "ItemsBuildings": {
         "type": "object",
         "properties": {
-          "map_marker_cluster_exclude": {
+          "map_marker_is_visible": {
             "nullable": true,
             "type": "boolean"
           },
-          "map_marker_is_visible": {
+          "map_marker_cluster_exclude": {
             "nullable": true,
             "type": "boolean"
           },
@@ -56725,18 +56737,6 @@
           },
           "coordinates": {
             "nullable": true
-          },
-          "map_marker_label": {
-            "nullable": true,
-            "type": "string"
-          },
-          "map_marker_color": {
-            "nullable": true,
-            "type": "string"
-          },
-          "url": {
-            "nullable": true,
-            "type": "string"
           },
           "status": {
             "nullable": true,
@@ -56768,6 +56768,18 @@
             "type": "string"
           },
           "map_marker_style": {
+            "nullable": true,
+            "type": "string"
+          },
+          "map_marker_label": {
+            "nullable": true,
+            "type": "string"
+          },
+          "map_marker_color": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
             "nullable": true,
             "type": "string"
           },
@@ -56926,16 +56938,16 @@
             "nullable": true,
             "type": "integer"
           },
-          "description": {
-            "nullable": true,
-            "type": "string"
-          },
           "sort": {
             "nullable": true,
             "type": "integer"
           },
           "tags": {
             "nullable": true
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
           },
           "title": {
             "nullable": true,
@@ -56959,7 +56971,12 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_created": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -56971,12 +56988,7 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_updated": {
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -56997,31 +57009,43 @@
       "ItemsCollectibleEvents": {
         "type": "object",
         "properties": {
+          "collectible_at_markings_details": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_news": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "collectible_at_foodoffers_sort": {
             "nullable": true,
             "type": "boolean"
           },
-          "repeat_every_year": {
+          "collectible_at_housing": {
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_settings_theme": {
+          "collectible_at_license_information": {
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_campus": {
+          "collectible_at_markings": {
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_notification": {
+          "collectible_at_canteen_selection": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_card_balance": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_course_timetable": {
             "nullable": true,
             "type": "boolean"
           },
           "collectible_at_data_access": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "monitor_display_number_of_collected_items": {
             "nullable": true,
             "type": "boolean"
           },
@@ -57041,18 +57065,6 @@
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_news": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_card_balance": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_canteen_selection": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "collectible_at_foodoffers_details_markings": {
             "nullable": true,
             "type": "boolean"
@@ -57065,11 +57077,7 @@
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_settings": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_markings_details": {
+          "monitor_display_number_of_collected_items": {
             "nullable": true,
             "type": "boolean"
           },
@@ -57077,19 +57085,7 @@
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_course_timetable": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_housing": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_settings_menuposition": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "collectible_at_settings_first_day_of_week": {
+          "collectible_at_settings": {
             "nullable": true,
             "type": "boolean"
           },
@@ -57097,15 +57093,31 @@
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_license_information": {
+          "collectible_at_settings_first_day_of_week": {
             "nullable": true,
             "type": "boolean"
           },
-          "collectible_at_markings": {
+          "collectible_at_settings_menuposition": {
             "nullable": true,
             "type": "boolean"
           },
           "ask_for_contact_details": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_settings_theme": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "repeat_every_year": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_notification": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "collectible_at_campus": {
             "nullable": true,
             "type": "boolean"
           },

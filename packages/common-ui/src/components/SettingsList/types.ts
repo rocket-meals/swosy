@@ -51,6 +51,10 @@ type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	 */
 	italic?: boolean;
 	/**
+	 * Maximum number of lines for the title text. Defaults to 0 (unlimited).
+	 */
+	titleNumberOfLines?: number;
+	/**
 	 * When true the item is shown with a dashed border (using the primary
 	 * color) and a semi-transparent dim overlay with a centered lock icon to
 	 * indicate that an account is required. The original left icon is kept

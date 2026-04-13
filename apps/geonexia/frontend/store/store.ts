@@ -3,20 +3,30 @@ import hexTileReducer from './hexTileSlice';
 import sportTypeReducer from './sportTypeSlice';
 import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
+import hexTextureConfigReducer from './hexTextureConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
+import displaySettingsReducer from './displaySettingsSlice';
+import playerInformationReducer from './playerInformationSlice';
+import mapSearchReducer from './mapSearchSlice';
+import replaySettingsReducer from './replaySettingsSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
-import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { HexTextureConfigState, saveHexTextureConfig } from '../helpers/HexTextureConfigStorage';
+import { saveGpsIntervalSeconds } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
+import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { saveReplaySettings } from '../helpers/ReplaySettingsStorage';
+import { PlayerInformation, savePlayerInformation } from '../helpers/PlayerInformationStorage';
 import type { SpeechSettingsState } from './speechSettingsSlice';
+import type { DisplaySettingsState } from './displaySettingsSlice';
+import type { ReplaySettingsState } from './replaySettingsSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
-import type { GpsIntervalMode } from './gpsIntervalSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -26,9 +36,14 @@ export const store = configureStore({
 		sportType: sportTypeReducer,
 		theme: themeReducer,
 		billboardConfig: billboardConfigReducer,
+		hexTextureConfig: hexTextureConfigReducer,
 		gpsInterval: gpsIntervalReducer,
 		tts: ttsReducer,
 		speechSettings: speechSettingsReducer,
+		displaySettings: displaySettingsReducer,
+		playerInformation: playerInformationReducer,
+		mapSearch: mapSearchReducer,
+		replaySettings: replaySettingsReducer,
 	},
 });
 
@@ -49,8 +64,12 @@ let _lastSavedThemeMode: ThemeMode | null = null;
 let _bbConfigTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedBbConfig: BillboardConfigState | null = null;
 
-// Auto-persist GPS interval mode to disk whenever it changes.
-let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
+// Auto-persist hex texture config to disk whenever anchor overrides change.
+let _hexTextureConfigTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedHexTextureConfig: HexTextureConfigState | null = null;
+
+// Auto-persist GPS interval seconds to disk whenever it changes.
+let _lastSavedGpsIntervalSeconds: number | null = null;
 
 // Auto-persist TTS enabled flag to disk whenever it changes.
 let _lastSavedTTSEnabled: boolean | null = null;
@@ -58,6 +77,17 @@ let _lastSavedTTSEnabled: boolean | null = null;
 // Auto-persist speech settings to disk whenever they change.
 let _speechSettingsTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
+
+// Auto-persist display settings to disk whenever they change.
+let _displaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedDisplaySettings: DisplaySettingsState | null = null;
+
+// Auto-persist replay settings to disk whenever they change.
+let _replaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedReplaySettings: ReplaySettingsState | null = null;
+
+// Auto-persist player information to disk whenever it changes.
+let _lastSavedPlayerInformation: PlayerInformation | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -115,10 +145,20 @@ store.subscribe(() => {
 		}, 500);
 	}
 
-	const { selectedMode: gpsMode } = state.gpsInterval;
-	if (gpsMode !== _lastSavedGpsIntervalMode) {
-		_lastSavedGpsIntervalMode = gpsMode;
-		saveGpsIntervalMode(gpsMode);
+	const { spriteAnchors: textureAnchors } = state.hexTextureConfig;
+	if (textureAnchors !== _lastSavedHexTextureConfig) {
+		_lastSavedHexTextureConfig = textureAnchors;
+		if (_hexTextureConfigTimer) clearTimeout(_hexTextureConfigTimer);
+		_hexTextureConfigTimer = setTimeout(() => {
+			saveHexTextureConfig(textureAnchors);
+			_hexTextureConfigTimer = null;
+		}, 500);
+	}
+
+	const { intervalSeconds: gpsSeconds } = state.gpsInterval;
+	if (gpsSeconds !== _lastSavedGpsIntervalSeconds) {
+		_lastSavedGpsIntervalSeconds = gpsSeconds;
+		saveGpsIntervalSeconds(gpsSeconds);
 	}
 
 	const { ttsEnabled } = state.tts;
@@ -134,6 +174,32 @@ store.subscribe(() => {
 		_speechSettingsTimer = setTimeout(() => {
 			saveSpeechSettings(speechSettings);
 			_speechSettingsTimer = null;
+		}, 500);
+	}
+
+	const displaySettings = state.displaySettings;
+	if (displaySettings !== _lastSavedDisplaySettings) {
+		_lastSavedDisplaySettings = displaySettings;
+		if (_displaySettingsTimer) clearTimeout(_displaySettingsTimer);
+		_displaySettingsTimer = setTimeout(() => {
+			saveDisplaySettings(displaySettings);
+			_displaySettingsTimer = null;
+		}, 500);
+	}
+
+	const { homeHexTile } = state.playerInformation;
+	if (state.playerInformation !== _lastSavedPlayerInformation) {
+		_lastSavedPlayerInformation = state.playerInformation;
+		savePlayerInformation({ homeHexTile });
+	}
+
+	const replaySettings = state.replaySettings;
+	if (replaySettings !== _lastSavedReplaySettings) {
+		_lastSavedReplaySettings = replaySettings;
+		if (_replaySettingsTimer) clearTimeout(_replaySettingsTimer);
+		_replaySettingsTimer = setTimeout(() => {
+			saveReplaySettings(replaySettings);
+			_replaySettingsTimer = null;
 		}, 500);
 	}
 });

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
@@ -8,6 +8,7 @@ import { isAvailable as isH3Available, cellToLatLng, cellToBoundary, getResoluti
 import { queryTileFeaturesForArea } from '../../../helpers/TileFeatureHelper';
 import type { MapFeatureInfo } from '../../../helpers/RouteNameSuggestionHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../../helpers/OpenMapTilesSchema';
+import useGeonexiaAlert from '../../../hooks/useGeonexiaAlert';
 
 const HEX_ID = '8a1f10d5061ffff';
 const EXPERIMENTAL_COLOR = '#7c3aed';
@@ -68,6 +69,7 @@ const BOUNDS_RECT_SCRIPT = `
 
 export default function HexTileInfoScreen() {
 	const { theme } = useTheme();
+	const { showAlert } = useGeonexiaAlert();
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -173,7 +175,7 @@ export default function HexTileInfoScreen() {
 		if (!features) return;
 		const json = JSON.stringify(features, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
+		showAlert('Kopiert', 'JSON in Zwischenablage kopiert.');
 	}, [features]);
 
 	const mapInitialCenter = center ? { lat: center[0], lng: center[1] } : undefined;

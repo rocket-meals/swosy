@@ -1,4 +1,5 @@
-import { Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React, { useRef, useState, useEffect } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -137,7 +138,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 				)}
 
 				{/* Editable TextInput */}
-				<TextInput
+				<BottomSheetTextInput
 					style={[
 						styles.input,
 						flag
@@ -151,14 +152,12 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 						{ color: theme.screen.text },
 						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
-					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={validateDateTime}
 					value={localValue}
 					editable={!isDisabled}
 					placeholder="DD.MM.YYYY HH:MM"
 					autoCapitalize="none"
-					enterKeyHint="next"
 				/>
 
 				{/* Calendar open button on the right */}
@@ -263,7 +262,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 				)}
 
 				{/* Editable TextInput */}
-				<TextInput
+				<BottomSheetTextInput
 					style={[
 						styles.input,
 						flag
@@ -277,14 +276,12 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 						{ color: theme.screen.text },
 						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
-					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={onLocalTextChange}
 					value={localValue}
 					editable={!isDisabled}
 					placeholder="DD.MM.YYYY"
 					autoCapitalize="none"
-					enterKeyHint="next"
 				/>
 
 				{/* Calendar open button on the right */}
@@ -377,7 +374,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
-				<TextInput
+				<BottomSheetTextInput
 					style={[
 						styles.input,
 						flag
@@ -391,14 +388,12 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 						{ color: theme.screen.text },
 						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
-					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={text => validateTime(text)}
 					value={value}
 					editable={!isDisabled}
 					placeholder="HH:MM"
 					autoCapitalize="none"
-					enterKeyHint="next"
 				/>
 				{suffix && (
 					<View
@@ -517,7 +512,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
-				<TextInput
+				<BottomSheetTextInput
 					style={[
 						styles.input,
 						flag
@@ -531,14 +526,12 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 						{ color: theme.screen.text },
 						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
-					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={validateTimestamp}
 					value={value}
 					editable={!isDisabled}
 					placeholder="DD.MM.YYYY HH:MM:SS"
 					autoCapitalize="none"
-					enterKeyHint="next"
 				/>
 				{suffix && (
 					<View

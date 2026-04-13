@@ -21,11 +21,11 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		slug: 'geonexia',
 		version: `1.0.${buildNumber}`,
 		orientation: 'default',
-		icon: './assets/icon.png',
+		icon: './assets/generated/icon.png',
 		scheme: 'geonexia',
 		userInterfaceStyle: 'automatic',
 		splash: {
-			image: './assets/splash.png',
+			image: './assets/generated/splash.png',
 			resizeMode: 'contain',
 			backgroundColor: '#ffffff',
 		},
@@ -96,7 +96,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		},
 		android: {
 			adaptiveIcon: {
-				foregroundImage: './assets/adaptive-icon.png',
+				foregroundImage: './assets/generated/adaptive-icon.png',
 				backgroundColor: '#ffffff',
 			},
 			package: 'com.geonexia.app',
@@ -106,7 +106,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		web: {
 			bundler: 'metro',
 			output: 'static',
-			favicon: './assets/favicon.png',
+			favicon: './assets/generated/favicon.png',
 		},
 		plugins: [
 			'expo-router',
@@ -133,7 +133,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 			[
 				'expo-splash-screen',
 				{
-					image: './assets/splash.png',
+					image: './assets/generated/splash.png',
 					imageWidth: 200,
 					resizeMode: 'contain',
 					backgroundColor: '#ffffff',

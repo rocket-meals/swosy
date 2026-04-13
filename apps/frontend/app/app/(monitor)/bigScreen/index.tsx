@@ -52,6 +52,8 @@ const Index = () => {
 	const [isConnected, setIsConnected] = useState(true);
 	const progressAnim = useRef(new Animated.Value(0)).current;
 	const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	const mountTimeRef = useRef(Date.now());
+	const lastNonEmptyFoodsFetchTimeRef = useRef<number | null>(null);
 	const { canteensDict } = useAppSelector((state) => state.canteenReducer);
 	const canteens = useMemo(() => Object.values(canteensDict || {}), [canteensDict]);
 	const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
@@ -135,6 +137,8 @@ const Index = () => {
 		fetchSelectedCanteen();
 	}, [params?.canteens_id, canteens]);
 
+	const THIRTY_MINUTES_MS = 30 * 60 * 1000;
+
 	const fetchFoods = async () => {
 		try {
 			const todayDate = new Date().toISOString().split('T')[0];
@@ -154,11 +158,17 @@ const Index = () => {
 				filteredData = offerFiltered.length > 0 ? offerFiltered : [];
 			}
 
-			setFoods(filteredData);
 			if (filteredData?.length > 0) {
+				setFoods(filteredData);
+				lastNonEmptyFoodsFetchTimeRef.current = Date.now();
 				setCurrentFood(filteredData[0]);
 				setCurrentFoodIndex(0);
 				startProgressAnimation();
+			} else {
+				const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
+				if (Date.now() - referenceTime >= THIRTY_MINUTES_MS) {
+					setFoods([]);
+				}
 			}
 		} catch (error) {
 			console.error('Error fetching Food Offers:', error);
