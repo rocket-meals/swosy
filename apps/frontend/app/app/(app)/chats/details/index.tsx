@@ -424,7 +424,7 @@ const ChatDetailsScreen = () => {
                                                         }
                                                         rightIcon={
                                                                 <MaterialCommunityIcons
-                                                                        name="chevron-right"
+                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
                                                                         size={24}
                                                                         color={theme.screen.icon}
                                                                 />
@@ -432,6 +432,8 @@ const ChatDetailsScreen = () => {
                                                         onPress={food?.id ? handleFoodPress : undefined}
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="top"
+							reverseLayout={language === 'ar'}
+							titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                 />
                                                 <SettingsList
                                                         label={translate(TranslationKeys.linked_elements_rating)}
@@ -445,6 +447,8 @@ const ChatDetailsScreen = () => {
                                                         }
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="middle"
+							reverseLayout={language === 'ar'}
+							titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                 />
                                                 <SettingsList
                                                         label={translate(TranslationKeys.linked_elements_comment)}
@@ -459,6 +463,8 @@ const ChatDetailsScreen = () => {
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="bottom"
                                                         showSeparator={false}
+							reverseLayout={language === 'ar'}
+							titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                                 />
                                         </View>
                                 ),
@@ -467,7 +473,15 @@ const ChatDetailsScreen = () => {
 
                 return (
                         <View style={styles.linkedElementsContainer}>
-                                <Text style={[styles.linkedElementsTitle, { color: theme.screen.text }]}>
+                                <Text
+					style={[
+						styles.linkedElementsTitle,
+						{
+							color: theme.screen.text,
+							...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
+						},
+					]}
+				>
                                         {translate(TranslationKeys.linked_elements)}
                                 </Text>
                                 <View style={styles.linkedListWrapper}>
@@ -486,12 +500,19 @@ const ChatDetailsScreen = () => {
                                                 title={foodName}
                                                 titleNumberOfLines={1}
                                                 rightElement={
-                                                        <View style={styles.linkedMoreInfoWrapper}>
-                                                                <Text style={[styles.linkedMoreInfoText, { color: theme.screen.placeholder }]} numberOfLines={1}>
+                                                        <View style={[styles.linkedMoreInfoWrapper, language === 'ar' ? { flexDirection: 'row-reverse' } : null]}>
+                                                                <Text
+									style={[
+										styles.linkedMoreInfoText,
+										{ color: theme.screen.placeholder },
+										language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null,
+									]}
+									numberOfLines={1}
+								>
                                                                         {translate(TranslationKeys.show_more_information)}
                                                                 </Text>
                                                                 <MaterialCommunityIcons
-                                                                        name="chevron-right"
+                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
                                                                         size={24}
                                                                         color={theme.screen.icon}
                                                                 />
@@ -500,6 +521,8 @@ const ChatDetailsScreen = () => {
                                                 onPress={openDetailsModal}
                                                 iconBackgroundColor={foodsAreaColor}
                                                 groupPosition="single"
+						reverseLayout={language === 'ar'}
+						titleTextAlign={language === 'ar' ? 'right' : 'left'}
                                         />
                                 </View>
                         </View>

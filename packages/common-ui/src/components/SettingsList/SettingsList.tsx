@@ -103,7 +103,15 @@ const SettingsList: React.FC<SettingsListProps> = ({
 			{shouldReserveIconSpace ? <View style={[styles.iconPlaceholder, reverseLayout ? styles.iconPlaceholderReverse : null]} /> : null}
 			<View style={[styles.textWrapper, reverseLayout ? styles.textWrapperReverse : null]}>
 				<View style={styles.titleContainer}>
-					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={titleNumberOfLines} ellipsizeMode="tail">
+					<Text
+						selectable
+						style={[
+							styles.title,
+							{ color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal', textAlign: titleTextAlign } as TextStyle,
+						]}
+						numberOfLines={titleNumberOfLines}
+						ellipsizeMode="tail"
+					>
 						{title || label}
 					</Text>
 				</View>
