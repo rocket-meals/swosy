@@ -1015,7 +1015,9 @@ const OsmVectorMapScreen: React.FC = () => {
 			pendingNavigateRef.current = true;
 		}
 		setSearchQuery('');
-		Keyboard.dismiss();
+		if (Platform.OS !== 'web') {
+			Keyboard.dismiss();
+		}
 	}, []);
 
 	const selectedStyleUrl = MAP_STYLE_DEFINITIONS[selectedStyleKey]?.styleUrl ?? MAP_STYLE_DEFINITIONS[MapStyleKey.DEFAULT].styleUrl;
@@ -1521,6 +1523,55 @@ const OsmVectorMapScreen: React.FC = () => {
 	}, [show, translate, isRtl, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
+
+	const [locationWatcher, setLocationWatcher] = useState<Location.LocationSubscription | null>(null);
+
+	const startLocationTracking = useCallback(async () => {
+		try {
+			const { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				Alert.alert('Standort', 'Standortberechtigung wurde verweigert.');
+				return;
+			}
+
+			const watcher = await Location.watchPositionAsync(
+				{
+					accuracy: Location.Accuracy.BestForNavigation,
+					timeInterval: 1000,
+					distanceInterval: 1,
+				},
+				(newLocation) => {
+					const { latitude, longitude } = newLocation.coords;
+					setUserLocation({ lat: latitude, lng: longitude });
+					addLog(`Tracking: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+				},
+			);
+			if (Platform.OS !== 'web') {
+				setLocationWatcher(watcher);
+			}
+			addLog('Standortverfolgung gestartet.');
+		} catch (error) {
+			console.error('Location tracking error:', error);
+			Alert.alert('Standort', 'Standortverfolgung konnte nicht gestartet werden.');
+		}
+	}, [addLog]);
+
+	const stopLocationTracking = useCallback(() => {
+		if (locationWatcher && Platform.OS !== 'web') {
+			locationWatcher.remove();
+		}
+		setLocationWatcher(null);
+		setUserLocation(null);
+		addLog('Standortverfolgung beendet.');
+	}, [locationWatcher, addLog]);
+
+	useEffect(() => {
+		return () => {
+			if (locationWatcher && Platform.OS !== 'web') {
+				locationWatcher.remove();
+			}
+		};
+	}, [locationWatcher]);
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>

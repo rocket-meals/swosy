@@ -1,5 +1,7 @@
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import React, { useRef, useState, useEffect } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -138,7 +140,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 				)}
 
 				{/* Editable TextInput */}
-				<BottomSheetTextInput
+				<InputComponent
 					style={[
 						styles.input,
 						flag
@@ -262,7 +264,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 				)}
 
 				{/* Editable TextInput */}
-				<BottomSheetTextInput
+				<InputComponent
 					style={[
 						styles.input,
 						flag
@@ -374,7 +376,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
-				<BottomSheetTextInput
+				<InputComponent
 					style={[
 						styles.input,
 						flag
@@ -512,7 +514,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
-				<BottomSheetTextInput
+				<InputComponent
 					style={[
 						styles.input,
 						flag

@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { MapStyleKey, MAP_STYLE_DEFINITIONS } from '../MyMap/MyMapHelper';
 import MyMap from '../MyMap';
 import SettingsList from '../SettingsList';
 import CardWithText from '../CardWithText';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const DEFAULT_MAP_PREVIEW_CENTER = { lat: 52.662231, lng: 8.1244 };
 const DEFAULT_MAP_PREVIEW_ZOOM = 14;
@@ -41,6 +42,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { theme } = useTheme();
+	const { language } = useLanguage();
 
 	const handleOpenSelection = useCallback(() => {
 		showModal({
@@ -109,9 +111,11 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 			iconBgColor={iconBgColor}
 			label={label}
 			value={MAP_STYLE_DEFINITIONS[selectedMapStyleKey]?.label ?? ''}
-			rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+			rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />}
 			onPress={handleOpenSelection}
 			groupPosition={groupPosition}
+			titleTextAlign={language === 'ar' ? 'right' : 'left'}
+			reverseLayout={language === 'ar'}
 		/>
 	);
 };

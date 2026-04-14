@@ -1,6 +1,6 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, View, TextInput } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -88,8 +88,10 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	const { theme } = useTheme();
 	const { primaryColor, language } = useAppSelector((state: RootState) => state.settings);
 
+	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+
 	return (
-		<BottomSheetTextInput
+		<InputComponent
 			style={{
 				...styles.sheetInput,
 				color: theme.sheet.text,
@@ -136,15 +138,21 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
 		if (disableSave && !allowSubmitWhenDisabled) return;
-		Keyboard.dismiss();
+		if (Platform.OS !== 'web') {
+			Keyboard.dismiss();
+		}
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, multiline, onSave]);
 
 	const handlePressSave = useCallback(() => {
 		if (disableSave && !allowSubmitWhenDisabled) return;
-		Keyboard.dismiss();
+		if (Platform.OS !== 'web') {
+			Keyboard.dismiss();
+		}
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, onSave]);
+
+	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 
 	const Content = (
 		<View
@@ -152,7 +160,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				...styles.sheetView,
 			}}
 		>
-			<BottomSheetTextInput
+			<InputComponent
 				style={{
 					...styles.sheetInput,
 					color: theme.sheet.text,

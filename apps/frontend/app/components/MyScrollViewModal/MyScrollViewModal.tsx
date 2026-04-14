@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Platform, View, Text, useWindowDimensions } from 'react-native';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
@@ -45,6 +45,11 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // On web browsers the safe-area bottom inset is 0 and the bottom-sheet scroll
   // area is clipped by browser chrome.  Add this ratio of the window height as an
@@ -86,6 +91,10 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const scrollInsets = { bottom: insets.bottom };
 
   const containerStyle = { backgroundColor: resolvedBackgroundColor };
+
+  if (!isClient) {
+    return <View style={containerStyle} />;
+  }
 
   if (useFlatList && renderItem && keyExtractor) {
     return (

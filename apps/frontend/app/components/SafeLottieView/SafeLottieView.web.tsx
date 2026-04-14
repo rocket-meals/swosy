@@ -1,6 +1,5 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef, useMemo, useState, useEffect } from 'react';
 import { View } from 'react-native';
-import { Player } from '@lottiefiles/react-lottie-player';
 
 type SafeLottieViewProps = {
 	style?: any;
@@ -11,6 +10,16 @@ type SafeLottieViewProps = {
 };
 
 const SafeLottieView = forwardRef<any, SafeLottieViewProps>(({ style, source, autoPlay, loop }, _ref) => {
+	const [LottiePlayer, setLottiePlayer] = useState<any>(null);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			import('@lottiefiles/react-lottie-player').then(mod => {
+				setLottiePlayer(() => mod.Player);
+			});
+		}
+	}, []);
+
 	const { width, height } = useMemo(() => {
 		const w = typeof style?.width === 'number' ? style.width : 220;
 		const h = typeof style?.height === 'number' ? style.height : 220;
@@ -23,12 +32,14 @@ const SafeLottieView = forwardRef<any, SafeLottieViewProps>(({ style, source, au
 
 	return (
 		<View style={[style, { width, height }]}>
-			<Player
-				autoplay={!!autoPlay}
-				loop={!!loop}
-				src={source}
-				style={{ width, height }}
-			/>
+			{LottiePlayer && (
+				<LottiePlayer
+					autoplay={!!autoPlay}
+					loop={!!loop}
+					src={source}
+					style={{ width, height }}
+				/>
+			)}
 		</View>
 	);
 });

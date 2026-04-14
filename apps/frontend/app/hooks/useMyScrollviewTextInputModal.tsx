@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 import { SettingsListTextInputSheet } from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -89,7 +89,9 @@ const useMyScrollviewTextInputModal = () => {
 	const isRtl = language === 'ar';
 
 	const closeModal = useCallback(() => {
-		Keyboard.dismiss();
+		if (Platform.OS !== 'web') {
+			Keyboard.dismiss();
+		}
 		close();
 	}, [close]);
 
