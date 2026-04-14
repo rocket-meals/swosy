@@ -37,7 +37,7 @@ const RssFeedConfig = () => {
 						},
 					]}
 				>
-					RSS Feed URLs
+					{translate(TranslationKeys.rss_feed_urls)}
 				</Text>
 				{urls.map((url, index) => (
 					<TextInput
@@ -53,7 +53,7 @@ const RssFeedConfig = () => {
 						]}
 						value={url}
 						onChangeText={text => updateUrl(index, text)}
-						placeholder="https://example.com/feed"
+						placeholder={translate(TranslationKeys.rss_feed_placeholder)}
 						placeholderTextColor={theme.screen.icon}
 					/>
 				))}
@@ -67,7 +67,7 @@ const RssFeedConfig = () => {
 						},
 					]}
 				>
-					Beispiel: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml
+					{translate(TranslationKeys.rss_feed_example)}
 				</Text>
 				<AppButton
 					variant="ghost"
@@ -89,7 +89,7 @@ const RssFeedConfig = () => {
 						},
 					]}
 				>
-					Switch Interval (seconds)
+					{translate(TranslationKeys.switch_interval_seconds)}
 				</Text>
 				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }, { textAlign: language === 'ar' ? 'right' : 'left' }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
 			</View>

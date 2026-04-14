@@ -414,7 +414,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<AppButton
 									variant="ghost"
 									usePlainText
-									text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
+									text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || translate(TranslationKeys.food_offers)}
 									onPress={() => openSheet('canteen')}
 									style={{ marginVertical: 0 }}
 									textStyle={[styles.heading, { color: theme.header.text }]}

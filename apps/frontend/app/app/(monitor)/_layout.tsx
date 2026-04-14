@@ -91,21 +91,21 @@ export default function MonitorLayout() {
 			<Stack.Screen
 				name="statistics/index"
 				options={{
-					title: 'statistics',
-					header: () => <CustomStackHeader label={'Statistics'} key={'statistics'} />,
+					title: translate(TranslationKeys.statistics),
+					header: () => <CustomStackHeader label={translate(TranslationKeys.statistics)} key={'statistics'} />,
 				}}
 			/>
 			<Stack.Screen
 				name="foodPlanWeek/index"
 				options={{
-					title: 'FoodPlan:Week',
+					title: translate(TranslationKeys.Food_Plan_Week),
 					header: () => <CustomStackHeader label={translate(TranslationKeys.Food_Plan_Week)} key={'foodPlanWeek'} />,
 				}}
 			/>
 			<Stack.Screen
 				name="list-week-screen"
 				options={{
-					title: 'list-week-screen',
+					title: translate(TranslationKeys.list_week_screen),
 					headerShown: false,
 				}}
 			/>
@@ -124,7 +124,7 @@ export default function MonitorLayout() {
 			<Stack.Screen
 				name="foodPlanList/index"
 				options={{
-					title: 'foodPlan:List',
+					title: translate(TranslationKeys.Food_Plan_List),
 					header: () => <CustomStackHeader label={translate(TranslationKeys.Food_Plan_List)} key={'foodPlanList'} />,
 				}}
 			/>
@@ -143,15 +143,15 @@ export default function MonitorLayout() {
 			<Stack.Screen
 				name="labels/index"
 				options={{
-					title: 'Labels',
+					title: translate(TranslationKeys.labels),
 					header: () => <CustomStackHeader label={translate(TranslationKeys.markings)} key={'labels'} />,
 				}}
 			/>
 			<Stack.Screen
 				name="rss-feed-config/index"
 				options={{
-					title: 'RSS Feed Config',
-					header: () => <CustomStackHeader label={`${translate(TranslationKeys.rss_feed)} Config`} key={'rss-feed-config'} />,
+					title: translate(TranslationKeys.rss_feed_config),
+					header: () => <CustomStackHeader label={`${translate(TranslationKeys.rss_feed)} ${translate(TranslationKeys.config)}`} key={'rss-feed-config'} />,
 				}}
 			/>
 		</Stack>

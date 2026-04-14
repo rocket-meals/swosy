@@ -105,16 +105,16 @@ const Index = () => {
 					<SettingsList
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="food-variant" size={24} color={theme.screen.icon} />}
-						label="Speiseangebot Kategorie (optional)"
+						label={translate(TranslationKeys.meal_offer_category_optional)}
 						value={dayPlan?.mealOfferCategory?.alias || ''}
 						rightIcon={<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />}
-						handleFunction={() => openFoodCategoryModal('Speiseangebot', 'Speiseangebot Kategorie Wählen')}
+						handleFunction={() => openFoodCategoryModal('Speiseangebot', translate(TranslationKeys.select_meal_offer_category))}
 						groupPosition="middle"
 					/>
 					<SettingsListBoolean
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="tag-text-outline" size={24} color={theme.screen.icon} />}
-						label="Zeige Speiseangebot Kateogrie Name"
+						label={translate(TranslationKeys.show_meal_offer_category_name)}
 						isEnabled={dayPlan.isMenuCategory}
 						onToggle={toggleMenuSwitch}
 						groupPosition="middle"
@@ -122,7 +122,7 @@ const Index = () => {
 					<SettingsListBoolean
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="image-filter-center-focus-strong" size={24} color={theme.screen.icon} />}
-						label="Markings auf Bild anzeigen"
+						label={translate(TranslationKeys.show_markings_on_image)}
 						isEnabled={dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard}
 						onToggle={toggleMarkingsOnCardSwitch}
 						groupPosition="middle"
@@ -130,9 +130,9 @@ const Index = () => {
 					<SettingsListTextInput
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="timer-outline" size={24} color={theme.screen.icon} />}
-						label="Next Food Interval"
+						label={translate(TranslationKeys.next_food_interval)}
 						value={dayPlan?.nextFoodInterval != null ? String(dayPlan.nextFoodInterval) : ''}
-						modalTitle="Next Food Interval"
+						modalTitle={translate(TranslationKeys.next_food_interval)}
 						placeholder="0"
 						keyboardType="number-pad"
 						checkTextInput={numericCheckTextInput}
@@ -147,9 +147,9 @@ const Index = () => {
 					<SettingsListTextInput
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="refresh" size={24} color={theme.screen.icon} />}
-						label="Refresh Food Offers Interval"
+						label={translate(TranslationKeys.refresh_food_offers_interval)}
 						value={dayPlan?.refreshInterval != null ? String(dayPlan.refreshInterval) : ''}
-						modalTitle="Refresh Food Offers Interval"
+						modalTitle={translate(TranslationKeys.refresh_food_offers_interval)}
 						placeholder="0"
 						keyboardType="number-pad"
 						checkTextInput={numericCheckTextInput}
@@ -164,7 +164,7 @@ const Index = () => {
 					<SettingsListBoolean
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="fullscreen" size={24} color={theme.screen.icon} />}
-						label="Full Screen"
+						label={translate(TranslationKeys.fullscreen)}
 						isEnabled={dayPlan.isFullScreen}
 						onToggle={toggleFullScreenSwitch}
 						groupPosition="middle"
@@ -172,16 +172,16 @@ const Index = () => {
 					<SettingsList
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="food" size={24} color={theme.screen.icon} />}
-						label="Speise Kategorie (optional)"
+						label={translate(TranslationKeys.food_category_optional)}
 						value={dayPlan?.foodCategory?.alias || ''}
 						rightIcon={<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />}
-						handleFunction={() => openFoodCategoryModal('Speise', 'Speise Kategorie Wählen')}
+						handleFunction={() => openFoodCategoryModal('Speise', translate(TranslationKeys.select_food_category))}
 						groupPosition="middle"
 					/>
 					<SettingsListBoolean
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="tag-text" size={24} color={theme.screen.icon} />}
-						label="Zeige Speiseangebot Kateogrie Name"
+						label={translate(TranslationKeys.show_meal_offer_category_name)}
 						isEnabled={dayPlan.isMenuCategoryName}
 						onToggle={toggleMenuNameSwitch}
 						groupPosition="bottom"
@@ -191,7 +191,7 @@ const Index = () => {
 					<SettingsList
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="monitor" size={24} color={theme.screen.icon} />}
-						label="BigScreen"
+						label={translate(TranslationKeys.big_screen)}
 						rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={22} color={theme.screen.icon} />}
 						handleFunction={
 							canOpenBigScreen

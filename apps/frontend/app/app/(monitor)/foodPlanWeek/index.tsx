@@ -94,7 +94,7 @@ const Index = () => {
 					}}
 				>
 					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>Allergene Anzeigen</Text>
+						<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.show_allergens)}</Text>
 					</View>
 					<View style={styles.col2}>
 						<Switch
@@ -124,7 +124,7 @@ const Index = () => {
 					}}
 				>
 					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>BigScreen</Text>
+						<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.big_screen)}</Text>
 					</View>
 					<View style={styles.col2}>
 						<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={22} color={theme.screen.icon} />

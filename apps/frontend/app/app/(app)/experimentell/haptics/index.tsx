@@ -28,37 +28,37 @@ const HapticsScreen = () => {
 	const options = [
 		{
 			key: 'selection',
-			label: 'Selection',
+			label: translate(TranslationKeys.haptic_selection),
 			action: () => Haptics.selectionAsync(),
 		},
 		{
 			key: 'impact-light',
-			label: 'Impact Light',
+			label: translate(TranslationKeys.haptic_impact_light),
 			action: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
 		},
 		{
 			key: 'impact-medium',
-			label: 'Impact Medium',
+			label: translate(TranslationKeys.haptic_impact_medium),
 			action: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
 		},
 		{
 			key: 'impact-heavy',
-			label: 'Impact Heavy',
+			label: translate(TranslationKeys.haptic_impact_heavy),
 			action: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
 		},
 		{
 			key: 'notification-success',
-			label: 'Notification Success',
+			label: translate(TranslationKeys.haptic_notification_success),
 			action: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
 		},
 		{
 			key: 'notification-warning',
-			label: 'Notification Warning',
+			label: translate(TranslationKeys.haptic_notification_warning),
 			action: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
 		},
 		{
 			key: 'notification-error',
-			label: 'Notification Error',
+			label: translate(TranslationKeys.haptic_notification_error),
 			action: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
 		},
 	];

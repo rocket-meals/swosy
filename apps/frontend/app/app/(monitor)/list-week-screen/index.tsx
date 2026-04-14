@@ -12,9 +12,12 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import AppButton from '@/components/AppButton';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const Index = () => {
-	useSetPageTitle('FoodPlan:Week');
+	const { translate } = useLanguage();
+	useSetPageTitle(TranslationKeys.food_plan_week);
 	const currentYear: number = moment().year();
 	const { theme } = useTheme();
 	const router = useRouter();
@@ -120,7 +123,7 @@ const Index = () => {
 					iconLeft={<View />}
 					iconRight={
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-							<Text style={{ ...styles.headerText, color: contrastColor }}>Immer Aktuelle Woche</Text>
+							<Text style={{ ...styles.headerText, color: contrastColor }}>{translate(TranslationKeys.always_current_week)}</Text>
 							<FontAwesome6 name="arrow-up-right-from-square" size={16} color={contrastColor} />
 						</View>
 					}
@@ -162,7 +165,7 @@ const Index = () => {
 							key={week.weekNumber}
 							variant="ghost"
 							usePlainText
-							text={`Week ${week.weekNumber} (${week.dateRange})`}
+							text={`${translate(TranslationKeys.week)} ${week.weekNumber} (${week.dateRange})`}
 							style={[
 								styles.weekButton,
 								selectedWeek === week.weekNumber

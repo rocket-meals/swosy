@@ -34,62 +34,62 @@ const ExpoUpdateTest = () => {
 
         const guardMobileRuntime = useCallback(() => {
                 if (!isSmartPhone()) {
-                        appendLog('Skipped: not running on a smartphone.');
+                        appendLog(translate(TranslationKeys.skipped_not_running_on_smartphone));
                         return false;
                 }
 
                 if (isInExpoGo()) {
-                        appendLog('Skipped: not available inside Expo Go.');
+                        appendLog(translate(TranslationKeys.skipped_not_available_inside_expo_go));
                         return false;
                 }
 
                 return true;
-        }, [appendLog, isSmartPhone]);
+        }, [appendLog, isSmartPhone, translate]);
 
         const runCheckForUpdates = useCallback(async () => {
                 if (!guardMobileRuntime()) return;
                 setRunning(TranslationKeys.CHECK_FOR_APP_UPDATES);
                 try {
-                        appendLog('Checking for updates…');
+                        appendLog(translate(TranslationKeys.checking_for_updates));
                         const update = await Updates.checkForUpdateAsync();
-                        appendLog(update.isAvailable ? 'Update available' : 'No update available');
+                        appendLog(update.isAvailable ? translate(TranslationKeys.update_available) : translate(TranslationKeys.no_update_available));
                 } catch (error) {
                         appendLog(`Check failed: ${(error as Error).message}`);
                 } finally {
                         setRunning(null);
                 }
-        }, [appendLog, guardMobileRuntime]);
+        }, [appendLog, guardMobileRuntime, translate]);
 
         const runDownloadUpdate = useCallback(async () => {
                 if (!guardMobileRuntime()) return;
                 setRunning(TranslationKeys.DOWNLOAD_NEW_APP_UPDATE);
                 try {
-                        appendLog('Downloading available update…');
+                        appendLog(translate(TranslationKeys.downloading_available_update));
                         const result = await Updates.fetchUpdateAsync();
                         if (result?.isNew) {
-                                appendLog('Download finished: new update fetched');
+                                appendLog(translate(TranslationKeys.download_finished_new_update_fetched));
                         } else {
-                                appendLog('No update downloaded');
+                                appendLog(translate(TranslationKeys.no_update_downloaded));
                         }
                 } catch (error) {
                         appendLog(`Download failed: ${(error as Error).message}`);
                 } finally {
                         setRunning(null);
                 }
-        }, [appendLog, guardMobileRuntime]);
+        }, [appendLog, guardMobileRuntime, translate]);
 
         const runReloadApp = useCallback(async () => {
                 if (!guardMobileRuntime()) return;
                 setRunning(TranslationKeys.RELOAD_APP);
                 try {
-                        appendLog('Reloading app with newest update…');
+                        appendLog(translate(TranslationKeys.reloading_app_with_newest_update));
                         await Updates.reloadAsync();
                 } catch (error) {
                         appendLog(`Reload failed: ${(error as Error).message}`);
                 } finally {
                         setRunning(null);
                 }
-        }, [appendLog, guardMobileRuntime]);
+        }, [appendLog, guardMobileRuntime, translate]);
 
         const steps: StepConfig[] = useMemo(
                 () => [
@@ -179,7 +179,7 @@ const ExpoUpdateTest = () => {
                                                 </Text>
                                         </View>
                                         {logs.length === 0 ? (
-                                                <Text style={{ ...styles.logEntry, color: theme.screen.text }}>No logs yet</Text>
+                                                <Text style={{ ...styles.logEntry, color: theme.screen.text }}>{translate(TranslationKeys.no_logs_yet)}</Text>
                                         ) : (
                                                 logs.map((log, index) => (
                                                         <Text key={index} style={{ ...styles.logEntry, color: theme.screen.text }}>

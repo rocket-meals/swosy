@@ -217,7 +217,7 @@ const Index = () => {
 								writingDirection: isArabic ? 'rtl' : 'ltr',
 							}}
 						>
-							Optional: Zusätzliche Mensa/Cafeteria
+							{translate(TranslationKeys.optional_additional_canteen)}
 						</Text>
 					</View>
 					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
@@ -242,7 +242,7 @@ const Index = () => {
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
-					onPress={() => openIntervalSheet('foodInterval', 'Next Food Interval')}
+					onPress={() => openIntervalSheet('foodInterval', translate(TranslationKeys.next_food_interval))}
 				>
 					<View style={[styles.col1, isArabic ? { justifyContent: 'flex-end' } : undefined]}>
 						<Text
@@ -253,7 +253,7 @@ const Index = () => {
 								writingDirection: isArabic ? 'rtl' : 'ltr',
 							}}
 						>
-							Next Food Interval
+							{translate(TranslationKeys.next_food_interval)}
 						</Text>
 					</View>
 					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
@@ -269,7 +269,7 @@ const Index = () => {
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
-					onPress={() => openIntervalSheet('refreshFoodInterval', 'Refresh Food Offers Interval')}
+					onPress={() => openIntervalSheet('refreshFoodInterval', translate(TranslationKeys.refresh_food_offers_interval))}
 				>
 					<View style={[styles.col1, isArabic ? { justifyContent: 'flex-end' } : undefined]}>
 						<Text
@@ -280,7 +280,7 @@ const Index = () => {
 								writingDirection: isArabic ? 'rtl' : 'ltr',
 							}}
 						>
-							Refresh Data Interval (seconds)
+							{translate(TranslationKeys.refresh_data_interval_seconds)}
 						</Text>
 					</View>
 					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
@@ -354,7 +354,7 @@ const Index = () => {
 				<AppButton
 					variant="ghost"
 					usePlainText
-					text="DayScreen"
+					text={translate(TranslationKeys.day_screen)}
 					onPress={() => {
 						if (foodPlan?.selectedCanteen?.alias) {
 							const selectedAttributes = foodAttributes

@@ -95,7 +95,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <AppButton
                         variant="ghost"
                         usePlainText
-                        text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
+                        text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || translate(TranslationKeys.food_offers)}
                         onPress={() => openSheet('canteen')}
                         style={[iconPaddingStyle, { marginVertical: 0 }]}
                         textStyle={[styles.heading, { color: theme.header.text }]}

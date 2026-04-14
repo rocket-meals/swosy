@@ -163,10 +163,10 @@ export default function ImageFullScreen() {
 					url: uri,
 					message: uri,
 				});
-				toast('Image downloaded', 'success');
+				toast(translate(TranslationKeys.image_downloaded), 'success');
 			}
 		} catch (e) {
-			toast('Download failed', 'error');
+			toast(translate(TranslationKeys.download_failed), 'error');
 		}
 	};
 
@@ -215,7 +215,7 @@ export default function ImageFullScreen() {
 				<BaseBottomModal onClose={() => setModalVisible(false)}>
 					<SettingsList
 						leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />}
-						label="Download Image"
+						label={translate(TranslationKeys.download_image)}
 						handleFunction={() => {
 							setModalVisible(false);
 							downloadImage();

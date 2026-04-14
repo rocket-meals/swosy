@@ -132,7 +132,7 @@ const Index = () => {
 			return [
 				{
 					key: 'day',
-					title: 'Day',
+					title: translate(TranslationKeys.day),
 					isFixed: true,
 					flex: dayFlexDesign,
 				},
@@ -191,7 +191,7 @@ const Index = () => {
 			// Day column with fixed flex
 			{
 				key: 'day',
-				title: 'Day',
+				title: translate(TranslationKeys.day),
 				isFixed: true,
 				flex: dayFlexDynamic,
 			}, // <-- Ensure day column has its fixed flex
@@ -383,7 +383,7 @@ const Index = () => {
 							alignItems: 'center',
 						}}
 					>
-						<Text style={{ ...styles.noDataFound, color: theme.screen.text }}>Keine Angebote an diesem Tag gefunden.</Text>
+						<Text style={{ ...styles.noDataFound, color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
 					</View>
 				) : (
 					<ScrollView

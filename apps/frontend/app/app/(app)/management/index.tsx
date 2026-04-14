@@ -141,7 +141,7 @@ const Index = () => {
                                         />
                                 </View>
 
-                                <SettingsGroupTitle>{translate(TranslationKeys.statistiken)}</SettingsGroupTitle>
+                                <SettingsGroupTitle>{translate(TranslationKeys.statistics)}</SettingsGroupTitle>
                                 <View style={styles.groupContainer}>
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="calendar" size={24} />}

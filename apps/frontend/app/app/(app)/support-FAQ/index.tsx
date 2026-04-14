@@ -75,8 +75,7 @@ const SupportFaq = () => {
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="feedback" size={24} color={theme.screen.icon} />} label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/feedback-support')} groupPosition={profile?.id ? 'top' : 'single'} />
 						{profile?.id && <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="email" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.my_support_tickets)} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-ticket')} groupPosition="bottom" />}
 					</View>
-
-					<Text style={{ ...styles.groupHeading, color: theme.screen.text }}>App</Text>
+					<Text style={{ ...styles.groupHeading, color: theme.screen.text }}>{translate(TranslationKeys.app)}</Text>
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
 						<SettingsList
 							iconBgColor={primaryColor}

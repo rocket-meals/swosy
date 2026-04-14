@@ -6,6 +6,8 @@ import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -155,20 +157,21 @@ type RunStatsContentProps = { stats: RunStats };
 
 const RunStatsContent: React.FC<RunStatsContentProps> = ({ stats }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
 
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
-		{ iconName: 'straighten', label: 'Entfernung', value: formatDistance(stats.distanceKm) },
-		{ iconName: 'timer', label: 'Dauer', value: formatDuration(stats.durationSeconds) },
-		{ iconName: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) },
-		{ iconName: 'speed', label: 'Durchschnittsgeschwindigkeit', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
-		{ iconName: 'speed', label: 'Max. Geschwindigkeit', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
-		{ iconName: 'speed', label: 'Min. Geschwindigkeit', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
-		{ iconName: 'local-fire-department', label: 'Kalorien', value: `${stats.kcal} kcal` },
-		{ iconName: 'directions-walk', label: 'Schritte (geschätzt)', value: stats.steps.toLocaleString() },
-		{ iconName: 'trending-up', label: 'Höhenmeter aufwärts', value: `${Math.round(stats.elevationGainM)} m` },
-		{ iconName: 'trending-down', label: 'Höhenmeter abwärts', value: `${Math.round(stats.elevationLossM)} m` },
-		{ iconName: 'water-drop', label: 'Flüssigkeitsbedarf', value: `${stats.fluidNeedsMl} ml` },
+		{ iconName: 'straighten', label: translate(TranslationKeys.distance), value: formatDistance(stats.distanceKm) },
+		{ iconName: 'timer', label: translate(TranslationKeys.duration), value: formatDuration(stats.durationSeconds) },
+		{ iconName: 'speed', label: translate(TranslationKeys.pace), value: formatPace(stats.paceMinPerKm) },
+		{ iconName: 'speed', label: translate(TranslationKeys.average_speed), value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
+		{ iconName: 'speed', label: translate(TranslationKeys.max_speed), value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
+		{ iconName: 'speed', label: translate(TranslationKeys.min_speed), value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
+		{ iconName: 'local-fire-department', label: translate(TranslationKeys.calories), value: `${stats.kcal} kcal` },
+		{ iconName: 'directions-walk', label: translate(TranslationKeys.steps_estimated), value: stats.steps.toLocaleString() },
+		{ iconName: 'trending-up', label: translate(TranslationKeys.elevation_gain), value: `${Math.round(stats.elevationGainM)} m` },
+		{ iconName: 'trending-down', label: translate(TranslationKeys.elevation_loss), value: `${Math.round(stats.elevationLossM)} m` },
+		{ iconName: 'water-drop', label: translate(TranslationKeys.fluid_needs), value: `${stats.fluidNeedsMl} ml` },
 	];
 
 	return (
@@ -234,6 +237,7 @@ export type JoggingOverlayProps = {
 const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
+	const { translate } = useLanguage();
 	const isRtl = useAppSelector((state) => state.settings.language) === 'ar';
 
 	const [isRecording, setIsRecording] = useState(false);
@@ -265,7 +269,7 @@ const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				Alert.alert('GPS', 'Standortberechtigung ist für die Laufaufnahme notwendig.');
+				Alert.alert('GPS', translate(TranslationKeys.gps_permission_required));
 				return;
 			}
 
@@ -324,10 +328,10 @@ const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 			locationSubRef.current = sub;
 		} catch (err) {
 			console.error('JoggingOverlay startRecording error:', err);
-			Alert.alert('Fehler', 'Die Laufaufnahme konnte nicht gestartet werden.');
+			Alert.alert(translate(TranslationKeys.error), translate(TranslationKeys.run_recording_start_failed));
 			setIsRecording(false);
 		}
-	}, [mapRef, sendRouteToMap]);
+	}, [mapRef, sendRouteToMap, translate]);
 
 	const stopRecording = useCallback(() => {
 		// Stop GPS watch
@@ -344,19 +348,19 @@ const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 
 		const points = routePointsRef.current;
 		if (points.length < 2) {
-			Alert.alert('Lauf beendet', 'Es wurden zu wenige GPS-Punkte aufgezeichnet.');
+			Alert.alert(translate(TranslationKeys.run_finished), translate(TranslationKeys.too_few_gps_points));
 			return;
 		}
 
 		const stats = computeStats(points);
 
 		show({
-			title: '🏃 Lauf Statistiken',
+			title: translate(TranslationKeys.run_statistics),
 			titleTextAlign: isRtl ? 'right' : 'left',
 			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <RunStatsContent stats={stats} />,
 		});
-	}, [isRtl, show]);
+	}, [isRtl, show, translate]);
 
 	return (
 		<>

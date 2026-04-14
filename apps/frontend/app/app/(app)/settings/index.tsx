@@ -502,15 +502,15 @@ const Settings = () => {
 			key: 'section-map-settings',
 			element: (
 				<View style={sectionStyle}>
-					<SettingsGroupTitle>Karte</SettingsGroupTitle>
+					<SettingsGroupTitle>{translate(TranslationKeys.map)}</SettingsGroupTitle>
 					<View style={groupStyle}>
 						<SettingsListMyMapThemeSelection
 							selectedMapStyleKey={osmVectorMapStyleKey}
 							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
-							label="Karten Material"
-							modalTitle="🗺️ Karten Material"
+							label={translate(TranslationKeys.map_material)}
+							modalTitle={translate(TranslationKeys.map_material_modal_title)}
 							groupPosition="single"
 						/>
 					</View>
@@ -648,7 +648,7 @@ const Settings = () => {
 						<SettingsListBoolean
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />}
-							label="Use WebP images"
+							label={translate(TranslationKeys.use_webp_images)}
 							isEnabled={useWebpForAssets}
 							onToggle={toggleWebpForAssets}
 							groupPosition="middle"
@@ -681,7 +681,7 @@ const Settings = () => {
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />}
-					label="Version"
+					label={translate(TranslationKeys.version)}
 					value={getVersionInternalForAppsettingsScreen().toString()}
 					handleFunction={() => {}}
 					groupPosition="single"

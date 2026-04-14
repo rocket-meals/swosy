@@ -70,12 +70,13 @@ const DebugSection: React.FC<DebugSectionProps> = ({
         nextCollectibleKey,
         debugSpotLabel,
 }) => {
+        const { translate } = useLanguage();
         return (
             <View style={{ marginTop: 16 }}>
-                    <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
+                    <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>{translate(TranslationKeys.debug)}</Text>
                     <View style={{ marginTop: 12, gap: 8 }}>
                             <AppButton
-                                text="Reset current event found collectible"
+                                text={translate(TranslationKeys.reset_current_event_found_collectible)}
                                 onPress={resetCurrentCollectibles}
                                 style={{ ...styles.button, backgroundColor: buttonColor, opacity: 0.9, marginVertical: 0 }}
                                 textStyle={{ ...styles.buttonText, color: theme.dark }}
@@ -83,7 +84,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                             />
 
                             <AppButton
-                                text="Reset all event participations"
+                                text={translate(TranslationKeys.reset_all_event_participations)}
                                 onPress={resetAllParticipations}
                                 style={{ ...styles.button, backgroundColor: theme.accent, opacity: 0.9, marginVertical: 0 }}
                                 textStyle={{ ...styles.buttonText, color: theme.dark }}
@@ -101,7 +102,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                     {activeCollectibleEvent ? (
                         <View style={{ marginTop: 12 }}>
                                 <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
-                                        Event Details
+                                        {translate(TranslationKeys.event_details)}
                                 </Text>
                                 <SettingsList
                                     key="event-id"
@@ -608,15 +609,15 @@ const CollectibleEventScreen = () => {
                                     <View style={{ marginTop: 16 }}>
                                             <Text
                                                 style={{
-                                                        ...styles.label,
-                                                        color: theme.screen.text,
-                                                        marginBottom: 8,
-                                                }}
-                                            >
-                                                    Debug Logs
-                                            </Text>
-                                            <View style={{ gap: 6 }}>
-                                                    {debugLogs.map((log, index) => (
+                                                    ...styles.label,
+                                                    color: theme.screen.text,
+                                                    marginBottom: 8,
+                                            }}
+                                        >
+                                                {translate(TranslationKeys.debug_logs)}
+                                        </Text>
+                                        <View style={{ gap: 6 }}>
+                                                {debugLogs.map((log, index) => (
                                                         <Text
                                                             // eslint-disable-next-line react/no-array-index-key
                                                             key={`debug-log-${index}`}
@@ -624,10 +625,10 @@ const CollectibleEventScreen = () => {
                                                         >
                                                                 {log}
                                                         </Text>
-                                                    ))}
-                                            </View>
-                                    </View>
-                            </DebugView>
+                                                ))}
+                                        </View>
+                                </View>
+                        </DebugView>
 
                             {isLoading ? (
                                 <View style={[styles.inline, { justifyContent: 'flex-start' }]}>

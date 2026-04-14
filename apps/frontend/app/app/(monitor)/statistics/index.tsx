@@ -17,10 +17,10 @@ import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
-	useSetPageTitle(TranslationKeys.statistiken);
+	useSetPageTitle(TranslationKeys.statistics);
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const { language } = useLanguage();
+	const { translate, language } = useLanguage();
 	const isArabic = language === 'ar';
 	const [isActive, setIsActive] = useState(false);
 	const [selectedFoodId, setSelectedFoodId] = useState('');
@@ -92,12 +92,12 @@ const Index = () => {
 				}}
 			>
 				<View style={styles.topContainer}>
-					<Text style={{ ...styles.heading, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>Top 10</Text>
+					<Text style={{ ...styles.heading, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>{translate(TranslationKeys.top_10)}</Text>
 					<ScrollView>{mostLikedFoods && mostLikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
 				</View>
 
 				<View style={styles.worstContainer}>
-					<Text style={{ ...styles.heading, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>Worst 10</Text>
+					<Text style={{ ...styles.heading, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>{translate(TranslationKeys.worst_10)}</Text>
 					<ScrollView>{mostDislikedFoods && mostDislikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
 				</View>
 			</View>

@@ -606,7 +606,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name={AppScreens.FOOD_OFFERS}
 					options={{
-						title: 'Canteens',
+						title: translate(TranslationKeys.canteens),
 						headerShown: false,
 					}}
 				/>
@@ -620,21 +620,21 @@ export default function Layout() {
 				<Drawer.Screen
 					name="campus"
 					options={{
-						title: 'Campus',
+						title: translate(TranslationKeys.campus),
 						headerShown: false,
 					}}
 				/>
 				<Drawer.Screen
 					name="housing"
 					options={{
-						title: 'Housing',
+						title: translate(TranslationKeys.housing),
 						headerShown: false,
 					}}
 				/>
 				<Drawer.Screen
 					name="news/index"
 					options={{
-						title: 'News',
+						title: translate(TranslationKeys.news),
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.news)} key={'News'} />,
 					}}
 				/>
@@ -642,26 +642,26 @@ export default function Layout() {
 					name="course-timetable/index"
 					options={{
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.course_timetable)} key={'course_timetable'} />,
-						title: 'Course Timetable',
+						title: translate(TranslationKeys.course_timetable),
 					}}
 				/>
 				<Drawer.Screen
 					name="settings/index"
 					options={{
-						title: 'Settings',
+						title: translate(TranslationKeys.settings),
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.settings)} key={'settings'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="faq-food/index"
 					options={{
-						title: 'FAQ-Food',
+						title: translate(TranslationKeys.faq_food),
 					}}
 				/>
 				<Drawer.Screen
 					name="faq-living/index"
 					options={{
-						title: 'FAQ-Living',
+						title: translate(TranslationKeys.faq_living),
 					}}
 				/>
 
@@ -669,7 +669,7 @@ export default function Layout() {
 					name="management/index"
 					options={{
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.role_management)} key={'Management'} />,
-						title: 'Management',
+						title: translate(TranslationKeys.management),
 					}}
 				/>
 				<Drawer.Screen
@@ -682,8 +682,8 @@ export default function Layout() {
 				<Drawer.Screen
 					name="experimentell/account-required-example/index"
 					options={{
-						header: () => <CustomStackHeader label="Account Required Example" key={'account_required_example'} />,
-						title: "Account Required Example",
+						header: () => <CustomStackHeader label={translate(TranslationKeys.account_required_example)} key={'account_required_example'} />,
+						title: translate(TranslationKeys.account_required_example),
 					}}
 				/>
 				<Drawer.Screen
@@ -724,8 +724,8 @@ export default function Layout() {
 				<Drawer.Screen
 					name="experimentell/map-with-custom-images-and-buildings/index"
 					options={{
-						header: () => <CustomStackHeader label={'Map – Custom Images & Buildings'} key={'map_with_custom_images_and_buildings'} />,
-						title: 'Map – Custom Images & Buildings',
+						header: () => <CustomStackHeader label={translate(TranslationKeys.map_custom_images_and_buildings)} key={'map_with_custom_images_and_buildings'} />,
+						title: translate(TranslationKeys.map_custom_images_and_buildings),
 					}}
 				/>
 				<Drawer.Screen
@@ -787,8 +787,8 @@ export default function Layout() {
 				<Drawer.Screen
 					name="experimentell/settings-list-components/index"
 					options={{
-						header: () => <CustomStackHeader label={'SettingsList Komponenten'} key={'settings_list_components'} />,
-						title: 'SettingsList Komponenten',
+						header: () => <CustomStackHeader label={translate(TranslationKeys.settings_list_components)} key={'settings_list_components'} />,
+						title: translate(TranslationKeys.settings_list_components),
 					}}
 				/>
 				<Drawer.Screen
@@ -873,7 +873,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="feedback-support/index"
 					options={{
-						title: 'Feedback & Support',
+						title: translate(TranslationKeys.feedback_and_support),
 						header: () => <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />,
 					}}
 				/>
@@ -889,7 +889,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="support-ticket"
 					options={{
-						title: 'Support Ticket',
+						title: translate(TranslationKeys.support_ticket),
 						headerShown: false,
 					}}
 				/>
@@ -898,14 +898,14 @@ export default function Layout() {
 					name="licenseInformation/index"
 					options={{
 						header: () => <CustomStackHeader label={translate(TranslationKeys.license_information)} key={'license_information'} />,
-						title: 'License Information',
+						title: translate(TranslationKeys.license_information),
 					}}
 				/>
 
 				<Drawer.Screen
 					name="data-access/index"
 					options={{
-						title: 'Data Access',
+						title: translate(TranslationKeys.dataAccess),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.dataAccess)} key={'Data Access'} />,
 					}}
 				/>
@@ -913,14 +913,14 @@ export default function Layout() {
 				<Drawer.Screen
 					name="eating-habits/index"
 					options={{
-						title: 'Eating Habits',
+						title: translate(TranslationKeys.eating_habits),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits)} key={'Eating Habits'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="price-group/index"
 					options={{
-						title: 'Price Group',
+						title: translate(TranslationKeys.price_group),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.price_group)} key={'Price Group'} />,
 					}}
 				/>
