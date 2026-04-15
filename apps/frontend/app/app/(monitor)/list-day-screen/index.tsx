@@ -67,6 +67,7 @@ const Index = () => {
 	const [foodAttributesColumn, setFoodAttributesColumn] = useState<any>([]);
 	
 	const [foodAttributesDataFull, setFoodAttributesDataFull] = useState<any>(null);
+	const [mainFoodAttributes, setMainFoodAttributes] = useState<any>(null);
 	const [optionalFoodAttributes, setOptionalFoodAttributes] = useState<any>(null);
 
 	const foodsScrollRef = useRef<ScrollView>(null);
@@ -335,14 +336,16 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			if (foods) {
+				const filteredAttributes = filterFoodAttributes(foods);
+				setMainFoodAttributes(filteredAttributes);
+			}
 			if (optionalFoods) {
 				const filteredAttributes = filterFoodAttributes(optionalFoods);
 				setOptionalFoodAttributes(filteredAttributes);
 			}
-			return () => {
-				// setOptionalFoodAttributes(null);
-			};
-		}, [optionalFoods, foodAttributesDataFull])
+			return () => {};
+		}, [foods, optionalFoods, foodAttributesDataFull])
 	);
 
 	const sortFoodOffers = useCallback(
@@ -430,7 +433,9 @@ const Index = () => {
 
 			const newMarkings: any = {};
 			foodList.forEach((food: any) => {
-				const markingIds = food?.markings?.map((mark: any) => mark.markings_id) || [];
+				// Deduplicate marking IDs to prevent the same marking appearing twice
+				const markingIdsRaw = food?.markings?.map((mark: any) => mark.markings_id) || [];
+				const markingIds = [...new Set(markingIdsRaw)];
 				let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
 
 				// Sort the filtered markings using sortMarkingsByGroup
@@ -478,7 +483,7 @@ const Index = () => {
 	useEffect(() => {
 		if (foods?.length > 0) fetchFoodMarkingLabels(foods, setFoodMarkings);
 		if (optionalFoods?.length > 0) fetchFoodMarkingLabels(optionalFoods, setOptionalFoodMarkings);
-	}, [foods, optionalFoods]);
+	}, [foods, optionalFoods, fetchFoodMarkingLabels]);
 
 	useEffect(() => {
 		if (foods?.length > 0 && nextPageIntervalInSeconds) {
@@ -643,7 +648,7 @@ const Index = () => {
 									foods?.map((item: any, index) => {
 										return (
 											<View
-												key={index}
+												key={item.id || index}
 												style={[
 													styles.dataRow,
 													{
@@ -691,13 +696,13 @@ const Index = () => {
 															return <MarkingIcon key={idx} marking={marking} size={24} color={m.color} compact />;
 														})}
 												</View>
-												{filterFoodAttributes(foods)[item?.id] &&
-													filterFoodAttributes(foods)[item?.id]?.map((attr: any) => {
-														const attributeColumnWidth = (Number(columnPercentages.attributes) / filterFoodAttributes(foods)[item?.id].length).toFixed(2);
+												{mainFoodAttributes?.[item?.id] &&
+													mainFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
+														const attributeColumnWidth = (Number(columnPercentages.attributes) / mainFoodAttributes[item?.id].length).toFixed(2);
 														if (!attr?.value) {
 															return (
 																<Text
-																	key={`${item.id}`}
+																	key={`${item.id}-attr-${attrIdx}`}
 																	style={[
 																		styles.cell,
 																		{
@@ -716,7 +721,7 @@ const Index = () => {
 														if (number_value === undefined || number_value === null) {
 															return (
 																<Text
-																	key={`${item.id}`}
+																	key={`${item.id}-attr-${attrIdx}`}
 																	style={[
 																		styles.cell,
 																		{
@@ -736,7 +741,7 @@ const Index = () => {
 
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -782,7 +787,7 @@ const Index = () => {
 								{optionalFoods &&
 									optionalFoods?.map((item: any, index) => (
 										<View
-											key={index}
+											key={item.id || index}
 											style={[
 												styles.dataRow,
 												{
@@ -830,13 +835,13 @@ const Index = () => {
 														return <MarkingIcon key={idx} marking={marking} size={24} color={mark.color} compact />;
 													})}
 											</View>
-											{optionalFoodAttributes[item?.id] &&
-												optionalFoodAttributes[item?.id]?.map((attr: any) => {
+											{optionalFoodAttributes?.[item?.id] &&
+												optionalFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
 													const attributeColumnWidth = (Number(columnPercentages.attributes) / optionalFoodAttributes[item?.id].length).toFixed(2);
 													if (!attr?.value) {
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -855,7 +860,7 @@ const Index = () => {
 													if (number_value === undefined || number_value === null) {
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -875,7 +880,7 @@ const Index = () => {
 
 													return (
 														<Text
-															key={`${item.id}`}
+															key={`${item.id}-attr-${attrIdx}`}
 															style={[
 																styles.cell,
 																{
