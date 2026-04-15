@@ -23,7 +23,6 @@ import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
-import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import { addDays, format } from 'date-fns';
@@ -211,6 +210,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, []);
 
 	const requestPermissions = async () => {
+		const Notifications = await import('expo-notifications');
 		const { status } = await Notifications.getPermissionsAsync();
 		if (status !== 'granted') {
 			await Notifications.requestPermissionsAsync();
@@ -414,7 +414,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<AppButton
 									variant="ghost"
 									usePlainText
-									text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
+									text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || translate(TranslationKeys.food_offers)}
 									onPress={() => openSheet('canteen')}
 									style={{ marginVertical: 0 }}
 									textStyle={[styles.heading, { color: theme.header.text }]}
