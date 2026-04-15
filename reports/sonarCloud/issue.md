@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6835 | 46 |
+| 🔒 Security | 10 | 10 |
+| 🐛 Reliability | 6835 | 40 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16839 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16845 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (4/4)
+## 🔒 Security (10/10)
 
 - **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:22
@@ -30,7 +30,31 @@
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
 
-## 🐛 Reliability (46/6835)
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:234
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L234
+
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:237
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L237
+
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:240
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L240
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L117
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:132
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L132
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:147
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
+
+## 🐛 Reliability (40/6835)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -191,28 +215,4 @@
 - **Use `Math.trunc` instead of `>> 0`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:191
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L191
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `~~`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `~~`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:217
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L217
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:219
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L219
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:312
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L312
 
