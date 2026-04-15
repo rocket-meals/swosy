@@ -6,7 +6,7 @@
   "private": true,
   "peerDependencies": {
     "@expo/vector-icons": "*",
-    "@gorhom/bottom-sheet": "*",
+    "@gorhom/bottom-sheet": "^5.2.9",
     "expo-asset": "*",
     "expo-file-system": "*",
     "expo-location": "*",
