@@ -48,6 +48,7 @@ const Index = () => {
 	const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
 	const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
 	const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
+	const [selectedAdditionalCanteen, setSelectedAdditionalCanteen] = useState<DatabaseTypes.Canteens | null>(null);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
@@ -284,6 +285,24 @@ const Index = () => {
 	useEffect(() => {
 		fetchSelectedCanteen();
 	}, [canteens_id, canteens]);
+
+	const fetchAdditionalCanteen = useCallback(async () => {
+		if (!monitor_additional_canteens_id) return;
+		let canteensData: DatabaseTypes.Canteens[] = [];
+		if (!canteens || canteens.length === 0) {
+			canteensData = await getCanteensWithBuildings();
+		} else {
+			canteensData = canteens;
+		}
+		const foundCanteen = canteensData?.find((canteen: any) => canteen.id === monitor_additional_canteens_id);
+		if (foundCanteen) {
+			setSelectedAdditionalCanteen(foundCanteen);
+		}
+	}, [monitor_additional_canteens_id, canteens]);
+
+	useEffect(() => {
+		fetchAdditionalCanteen();
+	}, [fetchAdditionalCanteen]);
 
 	const filterFoodAttributes = (foodOffers: any) => {
 		if (!foodOffers || !foodAttributesDataFull) return {};
@@ -769,8 +788,9 @@ const Index = () => {
 							</View>
 						</ScrollView>
 						{optionalFoods?.length > 0 && (
-							<View style={{ ...styles.row, backgroundColor: foods_area_color }}>
-								<Text style={{ ...styles.body, color: contrastColor }}>{`${translate(TranslationKeys.foods)}: ${optionalFoods?.length} / ${optionalFoods?.length}`}</Text>
+							<View style={[styles.rowSpaceBetween, { backgroundColor: foods_area_color }]}>
+								<Text style={[styles.body, { color: contrastColor }]}>{selectedAdditionalCanteen?.alias || ''}</Text>
+								<Text style={[styles.body, { color: contrastColor }]}>{`${translate(TranslationKeys.foods)}: ${optionalFoods?.length} / ${optionalFoods?.length}`}</Text>
 							</View>
 						)}
 						<ScrollView
