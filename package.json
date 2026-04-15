@@ -22,6 +22,7 @@
   "workspaces": [
     "apps/frontend/app",
     "apps/geonexia/frontend",
+    "apps/score-tracker/frontend",
     "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle",
     "apps/scripts",
     "apps/*",
