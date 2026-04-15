@@ -87,6 +87,14 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		padding: 10,
 	},
+	rowSpaceBetween: {
+		width: '100%',
+		height: 25,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		padding: 10,
+	},
 	body: {
 		fontSize: 14,
 		fontFamily: 'Poppins_400Regular',

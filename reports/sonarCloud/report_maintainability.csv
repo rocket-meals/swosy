@@ -1,4 +1,7 @@
 Key,Message,Component,Line
+"AZ2QEOo8AG2S4uDQLSjb","`markingIds` should be a `Set`, and use `markingIds.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",457
+"AZ2QEOo8AG2S4uDQLSjc","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",718
+"AZ2QEOo8AG2S4uDQLSjd","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",858
 "AZ2BHs-As0Fbzs2jkByN","`FILE_FIELD_SPECIALS` should be a `Set`, and use `FILE_FIELD_SPECIALS.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts",15
 "AZ18sLYoyfA2bFfvidgb","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1828
 "AZ17K3SPSTzC4JOH8LEH","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",471
@@ -8718,7 +8721,6 @@ Key,Message,Component,Line
 "AZ0Tpk31ufp2jxPAhSxq","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",668
 "AZ0Tpk31ufp2jxPAhSx1","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",687
 "AZ0Tpk3aufp2jxPAhSxY","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",594
-"AZ0Tpk6rufp2jxPAhSyo","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",694
 "AZ0Tpkzkufp2jxPAhSwg","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers-scroll/index.tsx",166
 "AZ0Tpk6Iufp2jxPAhSye","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",83
 "AZ0Tpk7Fufp2jxPAhSys","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanWeek/index.tsx",46
@@ -9314,8 +9316,8 @@ Key,Message,Component,Line
 "AZkUSvNRS4VhJojFFAY2","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts",11
 "AZkUSvNkS4VhJojFFAY8","Update this function so that its implementation is not identical to the one on line 8.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts",15
 "AZkUSvNbS4VhJojFFAY5","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",295
-"AZkUSvSVS4VhJojFFAgE","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",642
-"AZkUSvSVS4VhJojFFAgK","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",782
+"AZkUSvSVS4VhJojFFAgE","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",666
+"AZkUSvSVS4VhJojFFAgK","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",807
 "AZkUSv25S4VhJojFFCsN","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/ServerHelper.ts",6
 "AZkUSv25S4VhJojFFCsO","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/ServerHelper.ts",10
 "AZkUSv25S4VhJojFFCsP","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/ServerHelper.ts",14
@@ -9439,19 +9441,18 @@ Key,Message,Component,Line
 "AZlyj_f60YdgFOBafBL_","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",240
 "AZkUSvRDS4VhJojFFAdu","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/labels/index.tsx",86
 "AZkUSvSVS4VhJojFFAfT","Remove this useless assignment to variable ""foodOfferCategories"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",46
-"AZ0Tpk6rufp2jxPAhSyk","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",103
-"AZ0Tpk6rufp2jxPAhSyl","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",114
-"AZ0Tpk6rufp2jxPAhSym","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",182
-"AZ0Tpk6rufp2jxPAhSyn","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",215
-"AZkUSvSVS4VhJojFFAgD","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",603
-"AZkUSvSVS4VhJojFFAgG","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",682
-"AZkUSvSVS4VhJojFFAgH","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",691
-"AZkUSvSVS4VhJojFFAgJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",775
-"AZkUSvSVS4VhJojFFAgM","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",821
-"AZkUSvSVS4VhJojFFAgN","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",830
-"AZkUSvSVS4VhJojFFAgO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",833
-"AZkUSvSVS4VhJojFFAgQ","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",920
-"AZkUSvSVS4VhJojFFAgS","Remove this useless assignment to variable ""markingImage"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",924
+"AZ0Tpk6rufp2jxPAhSyk","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",105
+"AZ0Tpk6rufp2jxPAhSyl","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",116
+"AZ0Tpk6rufp2jxPAhSym","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",184
+"AZ0Tpk6rufp2jxPAhSyn","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",217
+"AZkUSvSVS4VhJojFFAgD","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",627
+"AZkUSvSVS4VhJojFFAgG","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",706
+"AZkUSvSVS4VhJojFFAgH","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",715
+"AZkUSvSVS4VhJojFFAgJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",800
+"AZkUSvSVS4VhJojFFAgM","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",846
+"AZkUSvSVS4VhJojFFAgN","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",855
+"AZkUSvSVS4VhJojFFAgQ","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",945
+"AZkUSvSVS4VhJojFFAgS","Remove this useless assignment to variable ""markingImage"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",949
 "AZkUSvRlS4VhJojFFAeq","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/_layout.tsx",22
 "AZ0Tpk5fufp2jxPAhSyX","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx",103
 "AZ0Tpk5fufp2jxPAhSyY","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx",213
@@ -9859,9 +9860,9 @@ Key,Message,Component,Line
 "AZkUSu8DS4VhJojFFAO1","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",26
 "AZlyj__n0YdgFOBafBOu","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/screenshotGenerator/src/helpers.ts",1
 "AZkUSvVFS4VhJojFFAiG","Member 'dismissedEvents' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/PopupEventHelper.ts",2
-"AZkUSvSVS4VhJojFFAfw","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",237
-"AZkUSvSVS4VhJojFFAfx","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",260
-"AZkUSvSVS4VhJojFFAfy","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",261
+"AZkUSvSVS4VhJojFFAfw","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",239
+"AZkUSvSVS4VhJojFFAfx","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",262
+"AZkUSvSVS4VhJojFFAfy","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",263
 "AZkUSvQ4S4VhJojFFAdm","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx",31
 "AZkUSvJTS4VhJojFFAT_","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",23
 "AZkUSvJTS4VhJojFFAUE","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/RssFeed/index.tsx",26
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvL-S4VhJojFFAW0","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",123
 "AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",129
 "AZkUSvQJS4VhJojFFAdN","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",128
-"AZkUSvN8S4VhJojFFAZv","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",38
