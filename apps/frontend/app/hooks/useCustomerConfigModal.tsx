@@ -16,7 +16,7 @@ type CustomerConfigModalProps = {
 
 const useCustomerConfigModal = () => {
         const { show, close } = useMyScrollViewModal();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
         const { primaryColor } = useAppSelector((state) => state.settings);
 
         const servers = useMemo(() => getCustomerConfigurations(), []);
@@ -31,6 +31,7 @@ const useCustomerConfigModal = () => {
                         show({
                                 title: translate(TranslationKeys.backend_server),
                                 onClose: close,
+                                titleTextAlign: language === 'ar' ? 'right' : 'left',
                                 children: (
                                         <View style={{ width: '100%' }}>
                                                 <SettingsListSelectOption

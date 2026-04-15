@@ -132,7 +132,7 @@ const TestUseModalScreen = () => {
                                         />
                                 </View>
                                 <View style={[styles.debugCard, { backgroundColor: theme.screen.iconBg }]}>
-                                        <Text style={[styles.debugTitle, { color: theme.screen.text }]}>useModal debug</Text>
+                                        <Text style={[styles.debugTitle, { color: theme.screen.text }]}>{translate(TranslationKeys.useModalDebugTitle)}</Text>
                                         <Text selectable style={[styles.debugText, { color: theme.screen.text }]}>
                                                 {JSON.stringify(debug, null, 2)}
                                         </Text>

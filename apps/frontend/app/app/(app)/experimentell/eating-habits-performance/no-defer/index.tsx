@@ -229,7 +229,7 @@ const EatingHabitsPerformanceNoDefer = () => {
 							width: isWeb ? (screenWidth > 600 ? '80%' : '100%') : '100%',
 						}}
 					>
-						<DebugView title="Performance (No Defer)" logs={debugLogs} isVisible />
+						<DebugView title={translate(TranslationKeys.performanceNoDefer)} logs={debugLogs} isVisible />
 						<Text style={{ 
 							...eatingHabitsStyles.body1, 
 							color: theme.screen.text,

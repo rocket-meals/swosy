@@ -639,7 +639,7 @@ const Index = () => {
 				if (isRequired && (!value || value.trim() === '')) {
 					hasError = true;
 					const fieldName = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias;
-					toast(`Field "${fieldName}" is required`, 'error');
+					toast(translate(TranslationKeys.fieldIsRequired).replace('${fieldName}', String(fieldName ?? '')), 'error');
 					return null;
 				}
 
@@ -775,7 +775,7 @@ const Index = () => {
 			} catch (error) {
 				console.error('Error updating form answers:', error);
 				const errorMessage = error instanceof Error ? error.message : String(error);
-				toast(errorMessage || 'An error occurred while updating form answers', 'error');
+				toast(errorMessage || translate(TranslationKeys.errorUpdatingFormAnswers), 'error');
 				setSubmissionLoading(false);
 				handleAddToQueue();
 			}
@@ -1047,7 +1047,7 @@ const Index = () => {
 										</View>
 									);
 								})}
-							<DebugView title="Form Data">
+							<DebugView title={translate(TranslationKeys.formData)}>
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
 							</DebugView>
 						</View>

@@ -27,7 +27,7 @@ const LocationInformation: React.FC<any> = ({ campusDetails }) => {
 		const googleMapsUrl = campusDetails?.url;
 		const copied = await Clipboard.setStringAsync(googleMapsUrl);
 		if (copied) {
-			toast('Copied', 'success');
+			toast(translate(TranslationKeys.copied), 'success');
 		}
 	};
 

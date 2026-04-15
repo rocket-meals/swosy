@@ -12,11 +12,14 @@ import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resour
 import AppButton from '../AppButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
 	const { language } = useAppSelector((state) => state.settings);
+	const { translate } = useLanguage();
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
 
@@ -36,7 +39,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				<AppButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
+				<AppButton text={translate(TranslationKeys.closeAndDontShowAgain)} onPress={handleClose} />
 			</View>
 			<View
 				style={{

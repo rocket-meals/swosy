@@ -381,7 +381,7 @@ const Index = () => {
 												fontSize: screenWidth > 600 ? 14 : 12,
 											}}
 										>
-											{'Offline'}
+											{translate(TranslationKeys.offline)}
 										</Text>
 									</View>
 								)}

@@ -148,7 +148,7 @@ const Index: React.FC = () => {
 			}
 			return null;
 		} catch (e) {
-			toast('Please select canteen', 'error');
+			toast(translate(TranslationKeys.please_select_your_canteen), 'error');
 			return null;
 		}
 	}, [buildingsHelper, selectedCanteen, toast]);
@@ -203,7 +203,7 @@ const Index: React.FC = () => {
 				setHasLoaded(true);
 			} catch (e) {
 				console.error('fetchAllCampuses error', e);
-				toast('Failed to load campuses', 'error');
+			toast(translate(TranslationKeys.failedToLoadCampuses), 'error');
 			} finally {
 				if (showLoading) setLoading(false);
 			}
@@ -262,7 +262,7 @@ const Index: React.FC = () => {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				toast('Permission denied', 'error');
+				toast(translate(TranslationKeys.permission_denied_title), 'error');
 				return;
 			}
 			const loc = await Location.getCurrentPositionAsync({});

@@ -40,7 +40,7 @@ const Index = () => {
 		},
 		{
 			key: 'map-with-custom-images-and-buildings',
-			label: 'Map – Custom Images & Buildings',
+			label: translate(TranslationKeys.map_custom_images_and_buildings),
 			leftIcon: <MaterialCommunityIcons name="layers" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/map-with-custom-images-and-buildings'),
 		},
@@ -113,7 +113,7 @@ const Index = () => {
 
 		{
 			key: 'settings-list-components',
-			label: 'SettingsList Komponenten',
+			label: translate(TranslationKeys.settings_list_components),
 			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/settings-list-components'),
 		},

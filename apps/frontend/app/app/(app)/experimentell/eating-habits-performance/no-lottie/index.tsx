@@ -183,7 +183,7 @@ const EatingHabitsPerformanceNoLottie = () => {
 							width: isWeb ? (screenWidth > 600 ? '80%' : '100%') : '100%',
 						}}
 					>
-						<DebugView title="Performance (No Lottie)" logs={debugLogs} isVisible />
+						<DebugView title={translate(TranslationKeys.performanceNoLottie)} logs={debugLogs} isVisible />
 						<Text
 							style={{
 								...eatingHabitsStyles.body1,

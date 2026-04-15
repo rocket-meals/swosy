@@ -72,7 +72,7 @@ const RssFeedConfig = () => {
 				<AppButton
 					variant="ghost"
 					usePlainText
-					text="Add URL"
+					text={translate(TranslationKeys.add_url)}
 					onPress={addUrlField}
 					style={[styles.addButton, { backgroundColor: theme.screen.iconBg, marginVertical: 0 }]}
 					textStyle={[styles.addButtonText, { color: theme.screen.text }]}

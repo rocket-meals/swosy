@@ -176,7 +176,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           } else {
             const supported = await Linking.canOpenURL(url);
             if (supported) await Linking.openURL(url);
-            else toast(`Cannot open URL: ${url}`, 'error');
+            else toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', url), 'error');
           }
         } catch (error) {
           console.error('URL open error:', error);
@@ -231,7 +231,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
             openAccountRequiredModal();
           } else {
             console.error('Failed to update rating:', err);
-            toast('Could not update rating', 'error');
+            toast(translate(TranslationKeys.couldNotUpdateRating), 'error');
           }
         }
       },

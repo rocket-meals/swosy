@@ -8,6 +8,7 @@ import CardWithText from '../CardWithText';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const DEFAULT_MAP_PREVIEW_CENTER = { lat: 52.662231, lng: 8.1244 };
 const DEFAULT_MAP_PREVIEW_ZOOM = 14;
@@ -35,18 +36,23 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	groupPosition = 'single',
 	mapPreviewCenter = DEFAULT_MAP_PREVIEW_CENTER,
 	mapPreviewZoom = DEFAULT_MAP_PREVIEW_ZOOM,
-	label = 'Map Style',
-	modalTitle = '🗺️ Map Style',
+	label,
+	modalTitle,
 	leftIcon,
 	iconBgColor,
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { theme } = useTheme();
-	const { language } = useLanguage();
+	const { language, translate, translateDynamic } = useLanguage();
+
+	const resolvedLabel = label ? translateDynamic(label) : translate(TranslationKeys.map_style);
+	const resolvedModalTitle = modalTitle
+		? translateDynamic(modalTitle)
+		: translate(TranslationKeys.map_style_modal_title);
 
 	const handleOpenSelection = useCallback(() => {
 		showModal({
-			title: modalTitle,
+			title: resolvedModalTitle,
 			disableHorizontalPadding: true,
 			children: (
 				<View style={styles.mapThemeGrid}>
@@ -103,13 +109,13 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 				</View>
 			),
 		});
-	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, theme, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle]);
+	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, theme, accentColor, mapPreviewCenter, mapPreviewZoom, resolvedModalTitle]);
 
 	return (
 		<SettingsList
 			leftIcon={leftIcon}
 			iconBgColor={iconBgColor}
-			label={label}
+			label={resolvedLabel}
 			value={MAP_STYLE_DEFINITIONS[selectedMapStyleKey]?.label ?? ''}
 			rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />}
 			onPress={handleOpenSelection}

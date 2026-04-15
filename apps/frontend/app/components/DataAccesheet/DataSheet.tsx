@@ -9,7 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { language } = useLanguage();
 	const isRtl = language === 'ar';
 	console.log('Content Value', content?.value);
 	return (
@@ -32,7 +32,7 @@ const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 						...(isRtl ? { writingDirection: 'rtl' as const } : {}),
 					}}
 				>
-					{translate(content?.label)}
+					{content?.label}
 				</Text>
 			</View>
 

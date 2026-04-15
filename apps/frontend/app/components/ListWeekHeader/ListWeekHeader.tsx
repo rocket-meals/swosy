@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
+import { TranslationKeys } from '@/locales/keys';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
@@ -48,7 +49,7 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 							<TouchableOpacity onPress={() => router.navigate('/list-week-screen')}>
 								<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={24} color={theme.screen.icon} />
 							</TouchableOpacity>
-							<Text style={[styles.title, { color: theme.header.text }, isArabicRight ? { textAlign: 'right' } : undefined]}>Food Plan: Week</Text>
+							<Text style={[styles.title, { color: theme.header.text }, isArabicRight ? { textAlign: 'right' } : undefined]}>{translate(TranslationKeys.foodPlanWeekTitle)}</Text>
 						</View>
 						<View style={{ ...styles.icons, gap: isMobile ? 10 : 20, ...(isArabicRight ? { justifyContent: 'flex-start' } : {}) }}>
 							<TouchableOpacity onPress={() => router.navigate('/foodPlanWeek')}>

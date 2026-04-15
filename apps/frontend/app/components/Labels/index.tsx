@@ -119,7 +119,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
 			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
 
-			<DebugView title="Foodoffer Components">
+			<DebugView title={translate(TranslationKeys.foodofferComponents)}>
 			{foodofferComponents.map((component: any) => {
 				const componentFoodoffer = component?.component_foodoffers_id;
 				if (!componentFoodoffer) return null;
@@ -134,7 +134,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 					<View key={componentFoodoffer?.id}>
 						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
 						{componentMarkingIds.length === 0 ? (
-							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
+							<SettingsList title={translate(TranslationKeys.noFoodofferMarkingsDataProvided)} italic noIconIndent groupPosition="single" showSeparator={false} />
 						) : (
 							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
 						)}
@@ -149,7 +149,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			)}
 		</DebugView>
 
-			<DebugView title="Foodoffer Markings Data">
+			<DebugView title={translate(TranslationKeys.foodofferMarkingsData)}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
 					{JSON.stringify(
 						{
@@ -163,7 +163,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				</Text>
 			</DebugView>
 
-			<DebugView title="Foodoffer Markings Count">
+			<DebugView title={translate(TranslationKeys.foodofferMarkingsCount)}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOfferDetails?.markings?.length ?? foodOffer?.markings?.length ?? 0}</Text>
 			</DebugView>
 

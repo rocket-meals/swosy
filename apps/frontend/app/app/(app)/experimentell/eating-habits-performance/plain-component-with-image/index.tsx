@@ -134,7 +134,7 @@ const EatingHabitsPlainComponentWithImage = () => {
 				style={{ backgroundColor: theme.screen.background }}
 				contentContainerStyle={{ padding: 16 }}
 			>
-				<DebugView title="Plain: Component with Image & Text" logs={debugLogs} isVisible />
+				<DebugView title={translate(TranslationKeys.plainComponentWithImageAndTextDebugTitle)} logs={debugLogs} isVisible />
 				<View>
 					{(markings ?? []).map((marking: DatabaseTypes.Markings) => {
 						const name = getTextFromTranslation(marking.translations, language) || marking.alias || marking.id;

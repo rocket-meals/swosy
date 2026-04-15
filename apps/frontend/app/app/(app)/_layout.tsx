@@ -600,7 +600,7 @@ export default function Layout() {
 					name="index"
 					options={{
 						title: translate(TranslationKeys.please_select_your_canteen),
-						headerLeft: () => null,
+						header: () => <CustomMenuHeader label={translate(TranslationKeys.please_select_your_canteen)} key={'Select-Canteen'} />,
 					}}
 				/>
 				<Drawer.Screen

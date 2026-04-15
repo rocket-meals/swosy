@@ -157,7 +157,6 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 					</View>
 					<View style={{ width: '100%' }}>{parseMarkdown(dataAccessText, theme, isRtl)}</View>
 				</View>
-				<SettingsGroupTitle>{translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}</SettingsGroupTitle>
 				{/* Info Items List */}
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_data_access} />
 				<View
@@ -165,6 +164,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
 					}}
 				>
+					<SettingsGroupTitle>{translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}</SettingsGroupTitle>
 					{infoItems.map((item, index) => {
 						const last = index === infoItems.length - 1;
 						const first = index === 0;

@@ -67,7 +67,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 						...styles.inputContainer,
 					}}
 				>
-					<TextInput style={[styles.input, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder="Type here..." />
+					<TextInput style={[styles.input, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder={translate(TranslationKeys.type_here)} />
 				</View>
 				<View style={styles.actionContainer}>
 					<AppButton

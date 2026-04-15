@@ -370,14 +370,14 @@
     "zh": "时间格式无效（例如 HH:MM）"
   },
   "backend_server": {
-    "de": "Kunden Konfiguration",
+    "de": "Kundenkonfiguration",
     "en": "Customer Configuration",
-    "ar": "Customer Configuration",
-    "es": "Customer Configuration",
-    "fr": "Customer Configuration",
-    "ru": "Customer Configuration",
-    "tr": "Customer Configuration",
-    "zh": "Customer Configuration"
+    "ar": "تكوين العميل",
+    "es": "Configuración del cliente",
+    "fr": "Configuration du client",
+    "ru": "Конфигурация клиента",
+    "tr": "Müşteri Yapılandırması",
+    "zh": "客户配置"
   },
   "developer_homepage": {
     "de": "Entwickler-Homepage",
@@ -1648,16 +1648,6 @@
     "ru": "Год строительства",
     "tr": "İnşaat Yılı",
     "zh": "建造年份"
-  },
-  "unknown": {
-    "de": "Unbekannt",
-    "en": "Unknown",
-    "ar": "مجهول",
-    "es": "Desconocido",
-    "fr": "Inconnu",
-    "ru": "Неизвестный",
-    "tr": "Bilinmeyen",
-    "zh": "未知"
   },
   "animation": {
     "de": "Animation",
@@ -3235,23 +3225,23 @@
   },
   "experimentell": {
     "de": "Experimentell",
-    "en": "Experimentell",
-    "ar": "Experimentell",
-    "es": "Experimentell",
-    "fr": "Experimentell",
-    "ru": "Experimentell",
-    "tr": "Experimentell",
-    "zh": "Experimentell"
+    "en": "Experimental",
+    "ar": "تجريبي",
+    "es": "Experimental",
+    "fr": "Expérimental",
+    "ru": "Экспериментальное",
+    "tr": "Deneysel",
+    "zh": "实验"
   },
   "debug_logout": {
-    "de": "Debug Logout",
-    "en": "Debug Logout",
-    "ar": "Debug Logout",
-    "es": "Debug Logout",
-    "fr": "Debug Logout",
-    "ru": "Debug Logout",
-    "tr": "Debug Logout",
-    "zh": "Debug Logout"
+    "de": "Debug-Abmeldung",
+    "en": "Debug logout",
+    "ar": "تسجيل الخروج (تصحيح)",
+    "es": "Cerrar sesión (debug)",
+    "fr": "Déconnexion (debug)",
+    "ru": "Выход (отладка)",
+    "tr": "Hata ayıklama çıkışı",
+    "zh": "调试登出"
   },
   "rate_app": {
     "de": "App bewerten",
@@ -3285,13 +3275,13 @@
   },
   "app_download": {
     "de": "App-Download",
-    "en": "App Download",
-    "ar": "App Download",
-    "es": "App Download",
-    "fr": "App Download",
-    "ru": "App Download",
-    "tr": "App Download",
-    "zh": "App Download"
+    "en": "App download",
+    "ar": "تنزيل التطبيق",
+    "es": "Descargar app",
+    "fr": "Télécharger l'application",
+    "ru": "Скачать приложение",
+    "tr": "Uygulamayı indir",
+    "zh": "下载应用"
   },
   "react_native_qrcode_svg": {
     "de": "React Native QRCode SVG",
@@ -3306,92 +3296,92 @@
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",
-    "ar": "Test useModal",
-    "es": "Test useModal",
+    "ar": "اختبار useModal",
+    "es": "Prueba de useModal",
     "fr": "Test useModal",
-    "ru": "Test useModal",
-    "tr": "Test useModal",
-    "zh": "Test useModal"
+    "ru": "Тест useModal",
+    "tr": "useModal testi",
+    "zh": "useModal 测试"
   },
   "haptics_test": {
-    "de": "Haptics-Test",
-    "en": "Haptics Test",
-    "ar": "Haptics Test",
-    "es": "Haptics Test",
-    "fr": "Haptics Test",
-    "ru": "Haptics Test",
-    "tr": "Haptics Test",
-    "zh": "Haptics Test"
+    "de": "Haptik-Test",
+    "en": "Haptics test",
+    "ar": "اختبار الاهتزاز",
+    "es": "Prueba de hápticos",
+    "fr": "Test haptique",
+    "ru": "Тест вибрации",
+    "tr": "Titreşim testi",
+    "zh": "触觉测试"
   },
   "haptics_test_description": {
     "de": "Tippe auf einen Eintrag, um verschiedene Haptics auszuprobieren.",
     "en": "Tap an entry to try different haptic feedback types.",
-    "ar": "Tap an entry to try different haptic feedback types.",
-    "es": "Tap an entry to try different haptic feedback types.",
-    "fr": "Tap an entry to try different haptic feedback types.",
-    "ru": "Tap an entry to try different haptic feedback types.",
-    "tr": "Tap an entry to try different haptic feedback types.",
-    "zh": "Tap an entry to try different haptic feedback types."
+    "ar": "اضغط على عنصر لتجربة أنواع مختلفة من الاهتزاز.",
+    "es": "Toca una entrada para probar distintos tipos de respuesta háptica.",
+    "fr": "Appuyez sur un élément pour essayer différents types de retour haptique.",
+    "ru": "Нажмите на элемент, чтобы попробовать разные типы виброотклика.",
+    "tr": "Farklı titreşim türlerini denemek için bir öğeye dokunun.",
+    "zh": "点击条目以尝试不同的触觉反馈类型。"
   },
   "haptics_test_empty": {
     "de": "Noch kein Haptic ausgelöst.",
     "en": "No haptic triggered yet.",
-    "ar": "No haptic triggered yet.",
-    "es": "No haptic triggered yet.",
-    "fr": "No haptic triggered yet.",
-    "ru": "No haptic triggered yet.",
-    "tr": "No haptic triggered yet.",
-    "zh": "No haptic triggered yet."
+    "ar": "لم يتم تشغيل أي اهتزاز بعد.",
+    "es": "Aún no se ha activado ningún háptico.",
+    "fr": "Aucun retour haptique pour le moment.",
+    "ru": "Пока вибрация не срабатывала.",
+    "tr": "Henüz titreşim tetiklenmedi.",
+    "zh": "尚未触发触觉反馈。"
   },
   "date_helper_preview": {
     "de": "DateHelper-Vorschau",
     "en": "DateHelper preview",
-    "ar": "DateHelper preview",
-    "es": "DateHelper preview",
-    "fr": "DateHelper preview",
-    "ru": "DateHelper preview",
-    "tr": "DateHelper preview",
-    "zh": "DateHelper preview"
+    "ar": "معاينة مساعد التاريخ",
+    "es": "Vista previa de DateHelper",
+    "fr": "Aperçu de DateHelper",
+    "ru": "Предпросмотр DateHelper",
+    "tr": "DateHelper önizleme",
+    "zh": "DateHelper 预览"
   },
   "last_haptic_event": {
-    "de": "Letztes Haptic-Ereignis",
+    "de": "Letztes haptisches Ereignis",
     "en": "Last haptic event",
-    "ar": "Last haptic event",
-    "es": "Last haptic event",
-    "fr": "Last haptic event",
-    "ru": "Last haptic event",
-    "tr": "Last haptic event",
-    "zh": "Last haptic event"
+    "ar": "آخر حدث لمسي",
+    "es": "Último evento háptico",
+    "fr": "Dernier événement haptique",
+    "ru": "Последнее тактильное событие",
+    "tr": "Son dokunsal olay",
+    "zh": "最近的触觉事件"
   },
   "open_modal_example": {
     "de": "Beispiel-Modal öffnen",
     "en": "Open example modal",
-    "ar": "Open example modal",
-    "es": "Open example modal",
-    "fr": "Open example modal",
-    "ru": "Open example modal",
-    "tr": "Open example modal",
-    "zh": "Open example modal"
+    "ar": "افتح نافذة مثال",
+    "es": "Abrir modal de ejemplo",
+    "fr": "Ouvrir la fenêtre d'exemple",
+    "ru": "Открыть пример модального окна",
+    "tr": "Örnek pencereyi aç",
+    "zh": "打开示例弹窗"
   },
   "modal_example_body": {
     "de": "Dies ist ein Beispiel dafür, wie der useModal-Hook Inhalte anzeigen kann.",
     "en": "This is an example of how the useModal hook can display content.",
-    "ar": "This is an example of how the useModal hook can display content.",
-    "es": "This is an example of how the useModal hook can display content.",
-    "fr": "This is an example of how the useModal hook can display content.",
-    "ru": "This is an example of how the useModal hook can display content.",
-    "tr": "This is an example of how the useModal hook can display content.",
-    "zh": "This is an example of how the useModal hook can display content."
+    "ar": "هذا مثال على كيفية عرض المحتوى باستخدام useModal.",
+    "es": "Este es un ejemplo de cómo el hook useModal puede mostrar contenido.",
+    "fr": "Ceci est un exemple montrant comment le hook useModal peut afficher du contenu.",
+    "ru": "Это пример того, как хук useModal может отображать контент.",
+    "tr": "Bu, useModal hook'unun içeriği nasıl gösterebileceğine bir örnektir.",
+    "zh": "这是一个示例，展示 useModal 钩子如何显示内容。"
   },
   "close_modal": {
     "de": "Modal schließen",
     "en": "Close modal",
-    "ar": "Close modal",
-    "es": "Close modal",
-    "fr": "Close modal",
-    "ru": "Close modal",
-    "tr": "Close modal",
-    "zh": "Close modal"
+    "ar": "إغلاق النافذة",
+    "es": "Cerrar modal",
+    "fr": "Fermer la fenêtre",
+    "ru": "Закрыть окно",
+    "tr": "Pencereyi kapat",
+    "zh": "关闭弹窗"
   },
   "modal_text_input_label": {
     "de": "useMyScrollviewTextInputModal Test",
@@ -4086,12 +4076,12 @@
   "deselect": {
     "de": "Abwählen",
     "en": "Deselect",
-    "ar": "Deselect",
-    "es": "Deselect",
-    "fr": "Deselect",
-    "ru": "Deselect",
-    "tr": "Deselect",
-    "zh": "Deselect"
+    "ar": "إلغاء التحديد",
+    "es": "Anular selección",
+    "fr": "Désélectionner",
+    "ru": "Снять выбор",
+    "tr": "Seçimi kaldır",
+    "zh": "取消选择"
   },
   "upload": {
     "de": "Hochladen",
@@ -5076,12 +5066,12 @@
   "game_ideas": {
     "de": "Spielideen",
     "en": "Game Ideas",
-    "ar": "Game Ideas",
-    "es": "Game Ideas",
-    "fr": "Game Ideas",
-    "ru": "Game Ideas",
-    "tr": "Game Ideas",
-    "zh": "Game Ideas"
+    "ar": "أفكار ألعاب",
+    "es": "Ideas de juegos",
+    "fr": "Idées de jeux",
+    "ru": "Идеи игр",
+    "tr": "Oyun fikirleri",
+    "zh": "游戏点子"
   },
   "last_offered_in_canteen": {
     "de": "Zuletzt angeboten",
@@ -5096,17 +5086,17 @@
   "food_wishlist": {
     "de": "Speisen-Wunschliste",
     "en": "Food Wishlist",
-    "ar": "Food Wishlist",
-    "es": "Food Wishlist",
-    "fr": "Food Wishlist",
-    "ru": "Food Wishlist",
-    "tr": "Food Wishlist",
-    "zh": "Food Wishlist"
+    "ar": "قائمة رغبات الطعام",
+    "es": "Lista de deseos de comida",
+    "fr": "Liste de souhaits de nourriture",
+    "ru": "Список желаемых блюд",
+    "tr": "Yemek istek listesi",
+    "zh": "食物愿望清单"
   },
   "guess_better_rated_dish": {
     "de": "Rate, welches Gericht besser bewertet ist",
     "en": "Guess which dish is better rated",
-    "ar": "Guess which dish is better rated",
+    "ar": "خمن أي طبق تقييمه أعلى",
     "es": "Adivina qué plato está mejor valorado",
     "fr": "Devine quel plat est mieux noté",
     "ru": "Угадай, какое блюдо оценено выше",
@@ -5116,7 +5106,7 @@
   "guess_most_disliked_marking": {
     "de": "Rate, welches Kennzeichen am häufigsten abgelehnt wird",
     "en": "Guess which marking is most disliked",
-    "ar": "Guess which marking is most disliked",
+    "ar": "خمن أي وسم هو الأكثر كراهية",
     "es": "Adivina qué marcado es más rechazado",
     "fr": "Devine quel marquage est le plus détesté",
     "ru": "Угадай, какая маркировка не нравится чаще всего",
@@ -5126,7 +5116,7 @@
   "food_memory_game": {
     "de": "Memory-Spiel mit Speisen (5x5)",
     "en": "Food memory game (5x5)",
-    "ar": "Food memory game (5x5)",
+    "ar": "لعبة ذاكرة الطعام (5×5)",
     "es": "Juego de memoria de comida (5x5)",
     "fr": "Jeu de mémoire alimentaire (5x5)",
     "ru": "Игра на память о еде (5x5)",
@@ -5136,12 +5126,102 @@
   "guess_more_expensive_dish": {
     "de": "Rate, welches Gericht teurer ist",
     "en": "Guess which dish is more expensive",
-    "ar": "Guess which dish is more expensive",
+    "ar": "خمن أي طبق أغلى",
     "es": "Adivina qué plato es más caro",
     "fr": "Devine quel plat est plus cher",
     "ru": "Угадай, какое блюдо дороже",
     "tr": "Hangi yemeğin daha pahalı olduğunu tahmin et",
     "zh": "猜哪个菜更贵"
+  },
+  "demo_dish_pasta": {
+    "de": "Pasta",
+    "en": "Pasta",
+    "ar": "باستا",
+    "es": "Pasta",
+    "fr": "Pâtes",
+    "ru": "Паста",
+    "tr": "Makarna",
+    "zh": "意大利面"
+  },
+  "demo_dish_burger": {
+    "de": "Burger",
+    "en": "Burger",
+    "ar": "برغر",
+    "es": "Hamburguesa",
+    "fr": "Burger",
+    "ru": "Бургер",
+    "tr": "Burger",
+    "zh": "汉堡"
+  },
+  "demo_dish_salad": {
+    "de": "Salat",
+    "en": "Salad",
+    "ar": "سلطة",
+    "es": "Ensalada",
+    "fr": "Salade",
+    "ru": "Салат",
+    "tr": "Salata",
+    "zh": "沙拉"
+  },
+  "demo_dish_sushi": {
+    "de": "Sushi",
+    "en": "Sushi",
+    "ar": "سوشي",
+    "es": "Sushi",
+    "fr": "Sushi",
+    "ru": "Суши",
+    "tr": "Suşi",
+    "zh": "寿司"
+  },
+  "demo_dish_pizza": {
+    "de": "Pizza",
+    "en": "Pizza",
+    "ar": "بيتزا",
+    "es": "Pizza",
+    "fr": "Pizza",
+    "ru": "Пицца",
+    "tr": "Pizza",
+    "zh": "披萨"
+  },
+  "demo_dish_soup": {
+    "de": "Suppe",
+    "en": "Soup",
+    "ar": "شوربة",
+    "es": "Sopa",
+    "fr": "Soupe",
+    "ru": "Суп",
+    "tr": "Çorba",
+    "zh": "汤"
+  },
+  "demo_marking_too_spicy": {
+    "de": "Zu scharf",
+    "en": "Too spicy",
+    "ar": "حار جدًا",
+    "es": "Demasiado picante",
+    "fr": "Trop épicé",
+    "ru": "Слишком остро",
+    "tr": "Çok acı",
+    "zh": "太辣"
+  },
+  "demo_marking_too_salty": {
+    "de": "Zu salzig",
+    "en": "Too salty",
+    "ar": "مالح جدًا",
+    "es": "Demasiado salado",
+    "fr": "Trop salé",
+    "ru": "Слишком солёно",
+    "tr": "Çok tuzlu",
+    "zh": "太咸"
+  },
+  "demo_marking_too_sweet": {
+    "de": "Zu süß",
+    "en": "Too sweet",
+    "ar": "حلو جدًا",
+    "es": "Demasiado dulce",
+    "fr": "Trop sucré",
+    "ru": "Слишком сладко",
+    "tr": "Çok tatlı",
+    "zh": "太甜"
   },
   "feedback_and_support": {
     "de": "Feedback & Support",
@@ -5194,9 +5274,9 @@
     "zh": "调试错误"
   },
   "markdown_test": {
-    "de": "Markdown Test",
+    "de": "Markdown-Test",
     "en": "Markdown test",
-    "ar": "Markdown test",
+    "ar": "اختبار ماركداون",
     "es": "Prueba de Markdown",
     "fr": "Test Markdown",
     "ru": "Тест Markdown",
@@ -5206,7 +5286,7 @@
   "markdown_test_description": {
     "de": "Teste hier verschiedene Markdown-Inhalte und Zeilenumbrüche.",
     "en": "Test different markdown snippets and line breaks here.",
-    "ar": "Test different markdown snippets and line breaks here.",
+    "ar": "اختبر هنا مقتطفات ماركداون وفواصل الأسطر المختلفة.",
     "es": "Prueba aquí diferentes fragmentos de markdown y saltos de línea.",
     "fr": "Testez ici différents extraits markdown et retours à la ligne.",
     "ru": "Тестируйте здесь разные фрагменты markdown и переносы строк.",
@@ -5215,28 +5295,28 @@
   },
   "markdown_custom_input": {
     "de": "Eigenes Markdown",
-    "en": "Custom markdown",
-    "ar": "Custom markdown",
+    "en": "Custom Markdown",
+    "ar": "Markdown مخصص",
     "es": "Markdown personalizado",
     "fr": "Markdown personnalisé",
-    "ru": "Свой markdown",
-    "tr": "Özel markdown",
+    "ru": "Пользовательский Markdown",
+    "tr": "Özel Markdown",
     "zh": "自定义 Markdown"
   },
   "markdown_custom_input_placeholder": {
     "de": "Gib dein Markdown ein",
-    "en": "Enter your markdown",
-    "ar": "Enter your markdown",
-    "es": "Introduce tu markdown",
-    "fr": "Saisissez votre markdown",
-    "ru": "Введите ваш markdown",
+    "en": "Enter your Markdown",
+    "ar": "أدخل Markdown الخاص بك",
+    "es": "Introduce tu Markdown",
+    "fr": "Saisissez votre Markdown",
+    "ru": "Введите ваш Markdown",
     "tr": "Markdown metninizi girin",
     "zh": "输入你的 Markdown"
   },
   "markdown_custom_output": {
     "de": "Ausgabe",
     "en": "Output",
-    "ar": "Output",
+    "ar": "الإخراج",
     "es": "Salida",
     "fr": "Sortie",
     "ru": "Результат",
@@ -5245,8 +5325,8 @@
   },
   "markdown_example_line_breaks": {
     "de": "Beispiel: Zeilenumbrüche",
-    "en": "Example: line breaks",
-    "ar": "Example: line breaks",
+    "en": "Example: Line Breaks",
+    "ar": "مثال: فواصل الأسطر",
     "es": "Ejemplo: saltos de línea",
     "fr": "Exemple : retours à la ligne",
     "ru": "Пример: переносы строк",
@@ -5255,8 +5335,8 @@
   },
   "markdown_example_list": {
     "de": "Beispiel: Liste",
-    "en": "Example: list",
-    "ar": "Example: list",
+    "en": "Example: List",
+    "ar": "مثال: قائمة",
     "es": "Ejemplo: lista",
     "fr": "Exemple : liste",
     "ru": "Пример: список",
@@ -5265,8 +5345,8 @@
   },
   "markdown_example_links": {
     "de": "Beispiel: Links",
-    "en": "Example: links",
-    "ar": "Example: links",
+    "en": "Example: Links",
+    "ar": "مثال: روابط",
     "es": "Ejemplo: enlaces",
     "fr": "Exemple : liens",
     "ru": "Пример: ссылки",
@@ -5276,22 +5356,22 @@
   "food_wishlist_planned": {
     "de": "Geplante Speisen",
     "en": "Planned Foods",
-    "ar": "Planned Foods",
-    "es": "Planned Foods",
-    "fr": "Planned Foods",
-    "ru": "Planned Foods",
-    "tr": "Planned Foods",
-    "zh": "Planned Foods"
+    "ar": "الأطعمة المخططة",
+    "es": "Comidas planificadas",
+    "fr": "Aliments planifiés",
+    "ru": "Запланированные блюда",
+    "tr": "Planlanan yemekler",
+    "zh": "已计划的食物"
   },
   "food_wishlist_not_planned": {
     "de": "Aktuell nicht geplante Speisen",
     "en": "Currently Not Planned Foods",
-    "ar": "Currently Not Planned Foods",
-    "es": "Currently Not Planned Foods",
-    "fr": "Currently Not Planned Foods",
-    "ru": "Currently Not Planned Foods",
-    "tr": "Currently Not Planned Foods",
-    "zh": "Currently Not Planned Foods"
+    "ar": "الأطعمة غير المخططة حاليًا",
+    "es": "Comidas no planificadas actualmente",
+    "fr": "Aliments non planifiés actuellement",
+    "ru": "В настоящее время не запланированные блюда",
+    "tr": "Şu anda planlanmamış yemekler",
+    "zh": "当前未计划的食物"
   },
   "food_offer_contains_disliked_markings": {
     "de": "Diese Speise enthält Kennzeichnungen, welche ggf. nicht gewünscht sind.",
@@ -5306,12 +5386,12 @@
   "offered_on": {
     "de": "Angeboten am",
     "en": "Offered on",
-    "ar": "Offered on",
-    "es": "Offered on",
-    "fr": "Offered on",
-    "ru": "Offered on",
-    "tr": "Offered on",
-    "zh": "Offered on"
+    "ar": "مُقدم في",
+    "es": "Ofrecido el",
+    "fr": "Proposé le",
+    "ru": "Предложено",
+    "tr": "Sunulduğu tarih",
+    "zh": "提供于"
   },
   "optional_device_data_description": {
     "de": "Optionale Gerätedaten – können angepasst werden, helfen aber bei der Lösung der Anfrage.",
@@ -5324,174 +5404,174 @@
     "zh": "可选设备数据 – 可以调整，但有助于解决请求。"
   },
   "account_required_example": {
-    "de": "Account Required Beispiel",
+    "de": "Beispiel für erforderliches Konto",
     "en": "Account Required Example",
-    "ar": "Account Required Example",
-    "es": "Account Required Example",
-    "fr": "Account Required Example",
-    "ru": "Account Required Example",
-    "tr": "Account Required Example",
-    "zh": "Account Required Example"
+    "ar": "مثال على حساب مطلوب",
+    "es": "Ejemplo de cuenta requerida",
+    "fr": "Exemple de compte requis",
+    "ru": "Пример требуемой учетной записи",
+    "tr": "Gerekli hesap örneği",
+    "zh": "需要账户示例"
   },
   "eating_habits_performance": {
-    "de": "Essgewohnheiten Performance",
+    "de": "Leistung der Essgewohnheiten",
     "en": "Eating Habits Performance",
-    "ar": "Eating Habits Performance",
-    "es": "Eating Habits Performance",
-    "fr": "Eating Habits Performance",
-    "ru": "Eating Habits Performance",
-    "tr": "Eating Habits Performance",
-    "zh": "Eating Habits Performance"
+    "ar": "أداء عادات الأكل",
+    "es": "Rendimiento de los hábitos alimenticios",
+    "fr": "Performance des habitudes alimentaires",
+    "ru": "Производительность пищевых привычек",
+    "tr": "Yeme alışkanlıklarının performansı",
+    "zh": "饮食习惯表现"
   },
   "eating_habits_performance_full": {
     "de": "Vollständig (mit Debug)",
     "en": "Full (with Debug)",
-    "ar": "Full (with Debug)",
-    "es": "Full (with Debug)",
-    "fr": "Full (with Debug)",
-    "ru": "Full (with Debug)",
-    "tr": "Full (with Debug)",
-    "zh": "Full (with Debug)"
+    "ar": "كامل (مع التصحيح)",
+    "es": "Completo (con depuración)",
+    "fr": "Complet (avec débogage)",
+    "ru": "Полный (с отладкой)",
+    "tr": "Tam (hata ayıklama ile)",
+    "zh": "完整（含调试）"
   },
   "eating_habits_performance_no_lottie": {
     "de": "Ohne Lottie-Animation",
     "en": "Without Lottie Animation",
-    "ar": "Without Lottie Animation",
-    "es": "Without Lottie Animation",
-    "fr": "Without Lottie Animation",
-    "ru": "Without Lottie Animation",
-    "tr": "Without Lottie Animation",
-    "zh": "Without Lottie Animation"
+    "ar": "بدون رسوم Lottie المتحركة",
+    "es": "Sin animación Lottie",
+    "fr": "Sans animation Lottie",
+    "ru": "Без анимации Lottie",
+    "tr": "Lottie animasyonu olmadan",
+    "zh": "无 Lottie 动画"
   },
   "eating_habits_performance_no_defer": {
     "de": "Ohne verzögertes Rendern",
     "en": "Without Deferred Render",
-    "ar": "Without Deferred Render",
-    "es": "Without Deferred Render",
-    "fr": "Without Deferred Render",
-    "ru": "Without Deferred Render",
-    "tr": "Without Deferred Render",
-    "zh": "Without Deferred Render"
+    "ar": "بدون العرض المؤجل",
+    "es": "Sin renderizado diferido",
+    "fr": "Sans rendu différé",
+    "ru": "Без отложенного рендеринга",
+    "tr": "Gecikmeli render olmadan",
+    "zh": "无延迟渲染"
   },
   "eating_habits_performance_plain_text": {
-    "de": "Plain: Nur Text & Übersetzungen",
+    "de": "Einfach: Nur Text & Übersetzungen",
     "en": "Plain: Text & Translations Only",
-    "ar": "Plain: Text & Translations Only",
-    "es": "Plain: Text & Translations Only",
-    "fr": "Plain: Text & Translations Only",
-    "ru": "Plain: Text & Translations Only",
-    "tr": "Plain: Text & Translations Only",
-    "zh": "Plain: Text & Translations Only"
+    "ar": "بسيط: نص وترجمات فقط",
+    "es": "Simple: Solo texto y traducciones",
+    "fr": "Simple : texte et traductions uniquement",
+    "ru": "Просто: только текст и переводы",
+    "tr": "Basit: Yalnızca metin ve çeviriler",
+    "zh": "简单：仅文本和翻译"
   },
   "eating_habits_performance_plain_text_image": {
-    "de": "Plain: Text, Übersetzung & Bild",
+    "de": "Einfach: Text, Übersetzung & Bild",
     "en": "Plain: Text, Translation & Image",
-    "ar": "Plain: Text, Translation & Image",
-    "es": "Plain: Text, Translation & Image",
-    "fr": "Plain: Text, Translation & Image",
-    "ru": "Plain: Text, Translation & Image",
-    "tr": "Plain: Text, Translation & Image",
-    "zh": "Plain: Text, Translation & Image"
+    "ar": "بسيط: نص وترجمة وصورة",
+    "es": "Simple: Texto, traducción e imagen",
+    "fr": "Simple : texte, traduction et image",
+    "ru": "Просто: текст, перевод и изображение",
+    "tr": "Basit: Metin, çeviri ve görsel",
+    "zh": "简单：文本、翻译和图片"
   },
   "eating_habits_performance_plain_each_component": {
-    "de": "Plain: Jede Markierung als eigene Komponente",
+    "de": "Einfach: Jede Markierung als eigene Komponente",
     "en": "Plain: Each Marking as Own Component",
-    "ar": "Plain: Each Marking as Own Component",
-    "es": "Plain: Each Marking as Own Component",
-    "fr": "Plain: Each Marking as Own Component",
-    "ru": "Plain: Each Marking as Own Component",
-    "tr": "Plain: Each Marking as Own Component",
-    "zh": "Plain: Each Marking as Own Component"
+    "ar": "بسيط: كل علامة كمكون مستقل",
+    "es": "Simple: Cada marca como componente independiente",
+    "fr": "Simple : chaque élément comme composant séparé",
+    "ru": "Просто: каждый элемент как отдельный компонент",
+    "tr": "Basit: Her işaret ayrı bir bileşen olarak",
+    "zh": "简单：每个标记作为独立组件"
   },
   "eating_habits_performance_plain_component_with_image": {
-    "de": "Plain: Komponente mit Bild & Text",
+    "de": "Einfach: Komponente mit Bild & Text",
     "en": "Plain: Component with Image & Text",
-    "ar": "Plain: Component with Image & Text",
-    "es": "Plain: Component with Image & Text",
-    "fr": "Plain: Component with Image & Text",
-    "ru": "Plain: Component with Image & Text",
-    "tr": "Plain: Component with Image & Text",
-    "zh": "Plain: Component with Image & Text"
+    "ar": "بسيط: مكون مع صورة ونص",
+    "es": "Simple: Componente con imagen y texto",
+    "fr": "Simple : composant avec image et texte",
+    "ru": "Просто: компонент с изображением и текстом",
+    "tr": "Basit: Görsel ve metin içeren bileşen",
+    "zh": "简单：带图片和文本的组件"
   },
   "eating_habits_performance_plain_component_full": {
-    "de": "Plain: Vollständige Komponente mit Like-Status",
+    "de": "Einfach: Vollständige Komponente mit Like-Status",
     "en": "Plain: Full Component with Like State",
-    "ar": "Plain: Full Component with Like State",
-    "es": "Plain: Full Component with Like State",
-    "fr": "Plain: Full Component with Like State",
-    "ru": "Plain: Full Component with Like State",
-    "tr": "Plain: Full Component with Like State",
-    "zh": "Plain: Full Component with Like State"
+    "ar": "بسيط: مكون كامل مع حالة الإعجاب",
+    "es": "Simple: Componente completo con estado de me gusta",
+    "fr": "Simple : composant complet avec état de mention j’aime",
+    "ru": "Просто: полный компонент со статусом лайка",
+    "tr": "Basit: Beğeni durumu olan tam bileşen",
+    "zh": "简单：带点赞状态的完整组件"
   },
   "eating_habits_performance_settings_list": {
     "de": "SettingsList: Bild, Name & Like-Status",
     "en": "SettingsList: Image, Name & Like Status",
-    "ar": "SettingsList: Image, Name & Like Status",
-    "es": "SettingsList: Image, Name & Like Status",
-    "fr": "SettingsList: Image, Name & Like Status",
-    "ru": "SettingsList: Image, Name & Like Status",
-    "tr": "SettingsList: Image, Name & Like Status",
-    "zh": "SettingsList: Image, Name & Like Status"
+    "ar": "قائمة الإعدادات: صورة، اسم وحالة الإعجاب",
+    "es": "Lista de ajustes: Imagen, nombre y estado de me gusta",
+    "fr": "Liste des paramètres : image, nom et état de mention j’aime",
+    "ru": "Список настроек: изображение, имя и статус лайка",
+    "tr": "Ayarlar listesi: Görsel, ad ve beğeni durumu",
+    "zh": "设置列表：图片、名称和点赞状态"
   },
   "eating_habits_performance_settings_list_fast": {
     "de": "SettingsListFast: Ohne Tooltips (schnell)",
     "en": "SettingsListFast: No Tooltips (fast)",
-    "ar": "SettingsListFast: No Tooltips (fast)",
-    "es": "SettingsListFast: No Tooltips (fast)",
-    "fr": "SettingsListFast: No Tooltips (fast)",
-    "ru": "SettingsListFast: No Tooltips (fast)",
-    "tr": "SettingsListFast: No Tooltips (fast)",
-    "zh": "SettingsListFast: No Tooltips (fast)"
+    "ar": "قائمة إعدادات سريعة: بدون تلميحات (سريع)",
+    "es": "Lista rápida de ajustes: Sin tooltips (rápido)",
+    "fr": "Liste rapide : sans info-bulles (rapide)",
+    "ru": "Быстрый список настроек: без подсказок (быстро)",
+    "tr": "Hızlı ayarlar listesi: Araç ipuçları olmadan (hızlı)",
+    "zh": "快速设置列表：无提示（快速）"
   },
   "eating_habits_performance_settings_list_flash": {
     "de": "SettingsListFlash: FlashList (kein ScrollView)",
     "en": "SettingsListFlash: FlashList (no ScrollView)",
-    "ar": "SettingsListFlash: FlashList (no ScrollView)",
-    "es": "SettingsListFlash: FlashList (no ScrollView)",
-    "fr": "SettingsListFlash: FlashList (no ScrollView)",
-    "ru": "SettingsListFlash: FlashList (no ScrollView)",
-    "tr": "SettingsListFlash: FlashList (no ScrollView)",
-    "zh": "SettingsListFlash: FlashList (no ScrollView)"
+    "ar": "قائمة إعدادات FlashList (بدون ScrollView)",
+    "es": "Lista: FlashList (sin ScrollView)",
+    "fr": "Liste: FlashList (sans ScrollView)",
+    "ru": "список настроек: FlashList (без ScrollView)",
+    "tr": "ayarlar listesi: FlashList (ScrollView yok)",
+    "zh": "设置列表：FlashList（无 ScrollView）"
   },
   "eating_habits_debug_mount_time": {
     "de": "Screen-Mount-Zeit",
     "en": "Screen mount time",
-    "ar": "Screen mount time",
-    "es": "Screen mount time",
-    "fr": "Screen mount time",
-    "ru": "Screen mount time",
-    "tr": "Screen mount time",
-    "zh": "Screen mount time"
+    "ar": "وقت تحميل الشاشة",
+    "es": "Tiempo de montaje de pantalla",
+    "fr": "Temps de montage de l’écran",
+    "ru": "Время монтирования экрана",
+    "tr": "Ekran yükleme süresi",
+    "zh": "屏幕加载时间"
   },
   "eating_habits_debug_animation_time": {
     "de": "Animation bereit nach",
     "en": "Animation ready after",
-    "ar": "Animation ready after",
-    "es": "Animation ready after",
-    "fr": "Animation ready after",
-    "ru": "Animation ready after",
-    "tr": "Animation ready after",
-    "zh": "Animation ready after"
+    "ar": "جاهزية الرسوم المتحركة بعد",
+    "es": "Animación lista después de",
+    "fr": "Animation prête après",
+    "ru": "Анимация готова через",
+    "tr": "Animasyon hazır olma süresi",
+    "zh": "动画准备完成时间"
   },
   "eating_habits_debug_content_time": {
     "de": "Markierungen sichtbar nach",
     "en": "Markings visible after",
-    "ar": "Markings visible after",
-    "es": "Markings visible after",
-    "fr": "Markings visible after",
-    "ru": "Markings visible after",
-    "tr": "Markings visible after",
-    "zh": "Markings visible after"
+    "ar": "ظهور العلامات بعد",
+    "es": "Marcas visibles después de",
+    "fr": "Éléments visibles après",
+    "ru": "Метки становятся видимыми через",
+    "tr": "İşaretlerin görünme süresi",
+    "zh": "标记显示时间"
   },
   "eating_habits_debug_markings_count": {
     "de": "Anzahl Markierungen",
     "en": "Markings count",
-    "ar": "Markings count",
-    "es": "Markings count",
-    "fr": "Markings count",
-    "ru": "Markings count",
-    "tr": "Markings count",
-    "zh": "Markings count"
+    "ar": "عدد العلامات",
+    "es": "Cantidad de marcas",
+    "fr": "Nombre d’éléments",
+    "ru": "Количество меток",
+    "tr": "İşaret sayısı",
+    "zh": "标记数量"
   },
   "map_variants": {
     "de": "Karten-Varianten",
@@ -5853,15 +5933,115 @@
     "tr": "Özellik isteğiniz şu anda inceleniyor (örn. ihlaller veya uygunsuz dil için) ve daha sonra yayınlanacak.",
     "zh": "您的功能愿望正在审核中（例如检查违规或不当语言），之后将会发布。"
   },
+  "featureWishSampleDarkModeTitle": {
+    "de": "Dunkelmodus",
+    "en": "Dark mode",
+    "ar": "الوضع الداكن",
+    "es": "Modo oscuro",
+    "fr": "Mode sombre",
+    "ru": "Тёмный режим",
+    "tr": "Karanlık mod",
+    "zh": "深色模式"
+  },
+  "featureWishSampleDarkModeDescription": {
+    "de": "Füge einen Dunkelmodus für die gesamte App hinzu, um die Augen zu entlasten und Akku zu sparen.",
+    "en": "Add a dark mode for the entire app to reduce eye strain and save battery life.",
+    "ar": "أضف وضعًا داكنًا للتطبيق بالكامل لتقليل إجهاد العين وتوفير البطارية.",
+    "es": "Añade un modo oscuro para toda la app para reducir la fatiga visual y ahorrar batería.",
+    "fr": "Ajoutez un mode sombre pour toute l’application afin de réduire la fatigue oculaire et économiser la batterie.",
+    "ru": "Добавьте тёмный режим для всего приложения, чтобы снизить нагрузку на глаза и экономить заряд батареи.",
+    "tr": "Göz yorgunluğunu azaltmak ve pil ömrünü uzatmak için tüm uygulama için karanlık mod ekleyin.",
+    "zh": "为整个应用添加深色模式，以减轻眼睛疲劳并节省电量。"
+  },
+  "featureWishSampleWeeklyPlanWidgetTitle": {
+    "de": "Wochenplan-Widget",
+    "en": "Weekly plan widget",
+    "ar": "أداة خطة الأسبوع",
+    "es": "Widget del plan semanal",
+    "fr": "Widget du plan hebdomadaire",
+    "ru": "Виджет недельного плана",
+    "tr": "Haftalık plan widget’ı",
+    "zh": "每周计划小组件"
+  },
+  "featureWishSampleWeeklyPlanWidgetDescription": {
+    "de": "Zeige den Wochen-Speiseplan als Startbildschirm-Widget, damit man das Angebot auf einen Blick sieht.",
+    "en": "Show the weekly meal plan as a home screen widget so users can see what’s available at a glance.",
+    "ar": "اعرض خطة الوجبات الأسبوعية كأداة على الشاشة الرئيسية ليتمكن المستخدمون من رؤية المتاح بسرعة.",
+    "es": "Muestra el plan semanal de comidas como un widget en la pantalla de inicio para ver lo disponible de un vistazo.",
+    "fr": "Affichez le plan des repas de la semaine en widget sur l’écran d’accueil pour voir l’offre d’un coup d’œil.",
+    "ru": "Показывайте недельный план питания в виде виджета на главном экране, чтобы сразу видеть, что доступно.",
+    "tr": "Haftalık yemek planını ana ekran widget’ı olarak gösterin; kullanıcılar nelerin olduğunu bir bakışta görsün.",
+    "zh": "将每周菜单以主屏幕小组件显示，让用户一眼看到当天/本周有什么。"
+  },
+  "featureWishSampleCalorieCounterTitle": {
+    "de": "Kalorienzähler",
+    "en": "Calorie counter",
+    "ar": "عداد السعرات الحرارية",
+    "es": "Contador de calorías",
+    "fr": "Compteur de calories",
+    "ru": "Счётчик калорий",
+    "tr": "Kalori sayacı",
+    "zh": "卡路里计数器"
+  },
+  "featureWishSampleCalorieCounterDescription": {
+    "de": "Füge eine Funktion hinzu, mit der man die tägliche Kalorienaufnahme basierend auf den gegessenen Mensa-Gerichten verfolgen kann.",
+    "en": "Add a feature to track daily calorie intake based on the meals consumed in the canteen.",
+    "ar": "أضف ميزة لتتبع السعرات الحرارية اليومية بناءً على الوجبات التي يتم تناولها في المقصف.",
+    "es": "Añade una función para registrar la ingesta diaria de calorías según las comidas consumidas en el comedor.",
+    "fr": "Ajoutez une fonctionnalité pour suivre l’apport calorique quotidien selon les repas consommés à la cantine.",
+    "ru": "Добавьте функцию для отслеживания суточного потребления калорий на основе блюд, съеденных в столовой.",
+    "tr": "Kantinde tüketilen öğünlere göre günlük kalori alımını takip etmeye yarayan bir özellik ekleyin.",
+    "zh": "添加功能：根据在食堂吃过的餐食，记录每日卡路里摄入。"
+  },
+  "featureWishSampleFavoritesListTitle": {
+    "de": "Favoritenliste",
+    "en": "Favorites list",
+    "ar": "قائمة المفضلة",
+    "es": "Lista de favoritos",
+    "fr": "Liste des favoris",
+    "ru": "Список избранного",
+    "tr": "Favoriler listesi",
+    "zh": "收藏列表"
+  },
+  "featureWishSampleFavoritesListDescription": {
+    "de": "Erlaube es, Gerichte als Favoriten zu markieren und eine persönliche Liste der Lieblingsgerichte zu erstellen.",
+    "en": "Allow users to mark dishes as favorites and create a personal list of favorite meals.",
+    "ar": "اسمح للمستخدمين بوضع الأطباق في المفضلة وإنشاء قائمة شخصية بوجباتهم المفضلة.",
+    "es": "Permite marcar platos como favoritos y crear una lista personal de comidas favoritas.",
+    "fr": "Permettez de marquer des plats en favoris et de créer une liste personnelle de repas préférés.",
+    "ru": "Позвольте отмечать блюда как избранные и создавать персональный список любимых блюд.",
+    "tr": "Kullanıcıların yemekleri favorilere eklemesine ve kişisel bir favori yemekler listesi oluşturmasına izin verin.",
+    "zh": "允许用户将菜品加入收藏，并创建个人的喜爱菜品列表。"
+  },
+  "featureWishSamplePushNotificationsTitle": {
+    "de": "Push-Benachrichtigungen für Lieblingsgerichte",
+    "en": "Push notifications for favorites",
+    "ar": "إشعارات للأطباق المفضلة",
+    "es": "Notificaciones para favoritos",
+    "fr": "Notifications pour les favoris",
+    "ru": "Уведомления об избранных блюдах",
+    "tr": "Favoriler için bildirimler",
+    "zh": "收藏菜品通知"
+  },
+  "featureWishSamplePushNotificationsDescription": {
+    "de": "Erhalte eine Benachrichtigung, wenn ein bestimmtes Lieblingsgericht auf dem Speiseplan verfügbar ist.",
+    "en": "Get notified when a specific favorite dish is available on the menu.",
+    "ar": "تلقَّ إشعارًا عندما يصبح طبقك المفضل متاحًا في قائمة الطعام.",
+    "es": "Recibe una notificación cuando un plato favorito específico esté disponible en el menú.",
+    "fr": "Recevez une notification lorsqu’un plat favori précis est disponible au menu.",
+    "ru": "Получайте уведомление, когда выбранное любимое блюдо появляется в меню.",
+    "tr": "Belirli bir favori yemeğiniz menüde olduğunda bildirim alın.",
+    "zh": "当某个收藏菜品出现在菜单中时接收通知。"
+  },
   "edge_speech_test": {
-    "de": "Edge Speech Test",
+    "de": "Edge-Sprachtest",
     "en": "Edge Speech Test",
-    "ar": "Edge Speech Test",
-    "es": "Edge Speech Test",
-    "fr": "Edge Speech Test",
-    "ru": "Edge Speech Test",
-    "tr": "Edge Speech Test",
-    "zh": "Edge Speech Test"
+    "ar": "اختبار النطق (Edge)",
+    "es": "Prueba de Edge Speech",
+    "fr": "Test Edge Speech",
+    "ru": "Тест Edge Speech",
+    "tr": "Edge Speech testi",
+    "zh": "Edge Speech 测试"
   },
   "edge_speech_test_description": {
     "de": "Teste Microsoft Edge TTS mit über 400 natürlichen Stimmen.",
@@ -6134,14 +6314,14 @@
     "zh": "隐私"
   },
   "revoke_osm_consent": {
-    "de": "OpenStreetMap-Zustimmung widerrufen",
-    "en": "Revoke OpenStreetMap Consent",
-    "ar": "إلغاء الموافقة على OpenStreetMap",
-    "es": "Revocar el consentimiento de OpenStreetMap",
-    "fr": "Révoquer le consentement OpenStreetMap",
-    "ru": "Отозвать согласие OpenStreetMap",
-    "tr": "OpenStreetMap Onayını Geri Çek",
-    "zh": "撤销 OpenStreetMap 同意"
+    "de": "Zustimmung zu Open Street Map widerrufen",
+    "en": "Revoke Open Street Map Consent",
+    "ar": "إلغاء الموافقة على Open Street Map",
+    "es": "Revocar el consentimiento de Open Street Map",
+    "fr": "Révoquer le consentement de Open Street Map",
+    "ru": "Отозвать согласие на Open Street Map",
+    "tr": "Open Street Map onayını geri çek",
+    "zh": "撤销 Open Street Map 的同意"
   },
   "map_not_loaded_afterwards": {
     "de": "Karte wird danach nicht mehr geladen",
@@ -6294,24 +6474,24 @@
     "zh": "不再显示此提示"
   },
   "map_display_with_osm": {
-    "de": "Kartenanzeige mit OpenStreetMap",
-    "en": "Map Display with OpenStreetMap",
-    "ar": "عرض الخريطة مع OpenStreetMap",
-    "es": "Visualización del mapa con OpenStreetMap",
-    "fr": "Affichage de la carte avec OpenStreetMap",
-    "ru": "Отображение карты с помощью OpenStreetMap",
-    "tr": "OpenStreetMap ile Harita Görüntüleme",
-    "zh": "使用 OpenStreetMap 显示地图"
+    "de": "Kartenanzeige mit Open Street Map",
+    "en": "Map Display with Open Street Map",
+    "ar": "عرض الخريطة باستخدام Open Street Map",
+    "es": "Visualización del mapa con Open Street Map",
+    "fr": "Affichage de la carte avec Open Street Map",
+    "ru": "Отображение карты с помощью Open Street Map",
+    "tr": "Open Street Map ile Harita Görüntüleme",
+    "zh": "使用 Open Street Map 显示地图"
   },
   "osm_consent_description": {
-    "de": "Diese Karte lädt Kartendaten von OpenStreetMap (openstreetmap.org) und OpenFreeMap (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.",
-    "en": "This map loads map data from OpenStreetMap (openstreetmap.org) and OpenFreeMap (openfreemap.org). Data such as your IP address is transmitted to servers of the OpenStreetMap Foundation and Protomaps LLC.",
-    "ar": "تقوم هذه الخريطة بتحميل بيانات الخريطة من OpenStreetMap (openstreetmap.org) و OpenFreeMap (openfreemap.org). يتم نقل بيانات مثل عنوان IP الخاص بك إلى خوادم مؤسسة OpenStreetMap و Protomaps LLC.",
-    "es": "Este mapa carga datos de OpenStreetMap (openstreetmap.org) y OpenFreeMap (openfreemap.org). Datos como su dirección IP se transmiten a los servidores de la OpenStreetMap Foundation y Protomaps LLC.",
-    "fr": "Cette carte charge des données cartographiques d'OpenStreetMap (openstreetmap.org) et d'OpenFreeMap (openfreemap.org). Des données telles que votre adresse IP sont transmises aux serveurs de la fondation OpenStreetMap et de Protomaps LLC.",
-    "ru": "Эта карта загружает данные OpenStreetMap (openstreetmap.org) и OpenFreeMap (openfreemap.org). Такие данные, как ваш IP-адрес, передаются на серверы OpenStreetMap Foundation и Protomaps LLC.",
-    "tr": "Bu harita OpenStreetMap (openstreetmap.org) ve OpenFreeMap (openfreemap.org) üzerinden harita verilerini yükler. IP adresiniz gibi veriler OpenStreetMap Foundation ve Protomaps LLC sunucularına iletilir.",
-    "zh": "此地图加载来自 OpenStreetMap (openstreetmap.org) 和 OpenFreeMap (openfreemap.org) 的地图数据。您的 IP 地址等数据将传输到 OpenStreetMap 基金会和 Protomaps LLC 的服务器。"
+    "de": "Diese Karte lädt Kartendaten von Open Street Map (openstreetmap.org) und Open Free Map (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der Open Street Map Foundation und Protomaps LLC übertragen.",
+    "en": "This map loads map data from Open Street Map (openstreetmap.org) and Open Free Map (openfreemap.org). Data such as your IP address is transmitted to servers of the Open Street Map Foundation and Protomaps LLC.",
+    "ar": "تقوم هذه الخريطة بتحميل بيانات الخريطة من Open Street Map (openstreetmap.org) و Open Free Map (openfreemap.org). يتم نقل بيانات مثل عنوان IP الخاص بك إلى خوادم مؤسسة Open Street Map و Protomaps LLC.",
+    "es": "Este mapa carga datos de Open Street Map (openstreetmap.org) y Open Free Map (openfreemap.org). Datos como su dirección IP se transmiten a los servidores de la Open Street Map Foundation y Protomaps LLC.",
+    "fr": "Cette carte charge des données cartographiques d'Open Street Map (openstreetmap.org) et d'Open Free Map (openfreemap.org). Des données telles que votre adresse IP sont transmises aux serveurs de la fondation Open Street Map et de Protomaps LLC.",
+    "ru": "Эта карта загружает данные Open Street Map (openstreetmap.org) и Open Free Map (openfreemap.org). Такие данные, как ваш IP-адрес, передаются на серверы Open Street Map Foundation и Protomaps LLC.",
+    "tr": "Bu harita Open Street Map (openstreetmap.org) ve Open Free Map (openfreemap.org) üzerinden harita verilerini yükler. IP adresiniz gibi veriler Open Street Map Foundation ve Protomaps LLC sunucularına iletilir.",
+    "zh": "此地图加载来自 Open Street Map (openstreetmap.org) 和 Open Free Map (openfreemap.org) 的地图数据。您的 IP 地址等数据将传输到 Open Street Map 基金会和 Protomaps LLC 的服务器。"
   },
   "consent_saved_info": {
     "de": "Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.",
@@ -6626,7 +6806,7 @@
   "rss_feed_example": {
     "de": "Beispiel: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
     "en": "Example: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
-    "ar": "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml مثال:",
+    "ar": "مثال: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
     "es": "Ejemplo: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
     "fr": "Exemple : https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
     "ru": "Пример: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml",
@@ -6802,6 +6982,26 @@
     "ru": "🗺️ Материал карты",
     "tr": "🗺️ Harita Materyali",
     "zh": "🗺️ 地图材质"
+  },
+  "map_style": {
+    "de": "Kartenstil",
+    "en": "Map Style",
+    "ar": "نمط الخريطة",
+    "es": "Estilo del mapa",
+    "fr": "Style de carte",
+    "ru": "Стиль карты",
+    "tr": "Harita Stili",
+    "zh": "地图样式"
+  },
+  "map_style_modal_title": {
+    "de": "🗺️ Kartenstil",
+    "en": "🗺️ Map Style",
+    "ar": "🗺️ نمط الخريطة",
+    "es": "🗺️ Estilo del mapa",
+    "fr": "🗺️ Style de carte",
+    "ru": "🗺️ Стиль карты",
+    "tr": "🗺️ Harita Stili",
+    "zh": "🗺️ 地图样式"
   },
   "use_webp_images": {
     "de": "WebP-Bilder verwenden",
@@ -7712,5 +7912,725 @@
     "ru": "Возникла проблема при проверке обновлений.",
     "tr": "Güncellemeler kontrol edilirken bir sorun oluştu.",
     "zh": "检查更新时出现问题。"
+  },
+  "permission_denied_title": {
+    "de": "Berechtigung verweigert",
+    "en": "Permission denied",
+    "ar": "تم رفض الإذن",
+    "es": "Permiso denegado",
+    "fr": "Autorisation refusée",
+    "ru": "Доступ запрещен",
+    "tr": "İzin reddedildi",
+    "zh": "权限被拒绝"
+  },
+  "camera_gallery_permission_message": {
+    "de": "Bitte erlaube den Zugriff auf Kamera oder Galerie.",
+    "en": "Please grant permission to access the camera or gallery.",
+    "ar": "يرجى منح الإذن للوصول إلى الكاميرا أو المعرض.",
+    "es": "Por favor, concede permiso para acceder a la cámara o la galería.",
+    "fr": "Veuillez autoriser l’accès à la caméra ou à la galerie.",
+    "ru": "Пожалуйста, разрешите доступ к камере или галерее.",
+    "tr": "Lütfen kameraya veya galeriye erişim izni verin.",
+    "zh": "请授予访问相机或相册的权限。"
+  },
+  "image_picker_canceled": {
+    "de": "Bildauswahl abgebrochen",
+    "en": "Image selection canceled",
+    "ar": "تم إلغاء اختيار الصورة",
+    "es": "Selección de imagen cancelada",
+    "fr": "Sélection d’image annulée",
+    "ru": "Выбор изображения отменен",
+    "tr": "Resim seçimi iptal edildi",
+    "zh": "已取消选择图片"
+  },
+  "upload_error_message": {
+    "de": "Fehler beim Hochladen: ${errorMessage}",
+    "en": "Upload error: ${errorMessage}",
+    "ar": "خطأ أثناء الرفع: ${errorMessage}",
+    "es": "Error al subir: ${errorMessage}",
+    "fr": "Erreur de téléversement : ${errorMessage}",
+    "ru": "Ошибка загрузки: ${errorMessage}",
+    "tr": "Yükleme hatası: ${errorMessage}",
+    "zh": "上传错误：${errorMessage}"
+  },
+  "cannotOpenUrl": {
+    "de": "URL kann nicht geöffnet werden: ${url}",
+    "en": "Cannot open URL: ${url}",
+    "ar": "تعذر فتح الرابط: ${url}",
+    "es": "No se puede abrir la URL: ${url}",
+    "fr": "Impossible d’ouvrir l’URL : ${url}",
+    "ru": "Не удалось открыть URL: ${url}",
+    "tr": "URL açılamıyor: ${url}",
+    "zh": "无法打开链接：${url}"
+  },
+  "offline": {
+    "de": "Offline",
+    "en": "Offline",
+    "ar": "غير متصل",
+    "es": "Sin conexión",
+    "fr": "Hors ligne",
+    "ru": "Не в сети",
+    "tr": "Çevrimdışı",
+    "zh": "离线"
+  },
+  "invalidCredentials": {
+    "de": "Ungültige Anmeldedaten",
+    "en": "Invalid credentials",
+    "ar": "بيانات الدخول غير صحيحة",
+    "es": "Credenciales inválidas",
+    "fr": "Identifiants invalides",
+    "ru": "Неверные учетные данные",
+    "tr": "Geçersiz kimlik bilgileri",
+    "zh": "凭据无效"
+  },
+  "failedToLoadCampuses": {
+    "de": "Campusse konnten nicht geladen werden",
+    "en": "Failed to load campuses",
+    "ar": "تعذر تحميل الحُرم الجامعية",
+    "es": "No se pudieron cargar los campus",
+    "fr": "Impossible de charger les campus",
+    "ru": "Не удалось загрузить кампусы",
+    "tr": "Kampüsler yüklenemedi",
+    "zh": "无法加载校区"
+  },
+  "failedToLoadApartments": {
+    "de": "Apartments konnten nicht geladen werden",
+    "en": "Failed to load apartments",
+    "ar": "تعذر تحميل الشقق",
+    "es": "No se pudieron cargar los apartamentos",
+    "fr": "Impossible de charger les appartements",
+    "ru": "Не удалось загрузить квартиры",
+    "tr": "Daireler yüklenemedi",
+    "zh": "无法加载公寓"
+  },
+  "noApartmentFound": {
+    "de": "Keine Apartments gefunden",
+    "en": "No apartments found",
+    "ar": "لم يتم العثور على شقق",
+    "es": "No se encontraron apartamentos",
+    "fr": "Aucun appartement trouvé",
+    "ru": "Квартиры не найдены",
+    "tr": "Daire bulunamadı",
+    "zh": "未找到公寓"
+  },
+  "feedbackSubmittedSuccessMessage": {
+    "de": "Feedback erfolgreich gesendet! Vielen Dank für dein Feedback.",
+    "en": "Feedback submitted successfully! Thank you for your input.",
+    "ar": "تم إرسال الملاحظات بنجاح! شكرًا لمساهمتك.",
+    "es": "¡Comentarios enviados correctamente! Gracias por tu aporte.",
+    "fr": "Retour envoyé avec succès ! Merci pour votre contribution.",
+    "ru": "Отзыв успешно отправлен! Спасибо за ваш вклад.",
+    "tr": "Geri bildirim başarıyla gönderildi! Katkınız için teşekkürler.",
+    "zh": "反馈提交成功！感谢你的意见。"
+  },
+  "feedbackUpdatedSuccessMessage": {
+    "de": "Feedback erfolgreich aktualisiert! Vielen Dank für dein Feedback.",
+    "en": "Feedback updated successfully! Thank you for your input.",
+    "ar": "تم تحديث الملاحظات بنجاح! شكرًا لمساهمتك.",
+    "es": "¡Comentarios actualizados correctamente! Gracias por tu aporte.",
+    "fr": "Retour mis à jour avec succès ! Merci pour votre contribution.",
+    "ru": "Отзыв успешно обновлен! Спасибо за ваш вклад.",
+    "tr": "Geri bildirim başarıyla güncellendi! Katkınız için teşekkürler.",
+    "zh": "反馈更新成功！感谢你的意见。"
+  },
+  "profileId": {
+    "de": "Profil-ID",
+    "en": "Profile ID",
+    "ar": "معرّف الملف الشخصي",
+    "es": "ID de perfil",
+    "fr": "ID de profil",
+    "ru": "ID профиля",
+    "tr": "Profil Kimliği",
+    "zh": "个人资料 ID"
+  },
+  "fieldIsRequired": {
+    "de": "Feld \"${fieldName}\" ist erforderlich",
+    "en": "Field \"${fieldName}\" is required",
+    "ar": "الحقل \"${fieldName}\" مطلوب",
+    "es": "El campo \"${fieldName}\" es obligatorio",
+    "fr": "Le champ \"${fieldName}\" est requis",
+    "ru": "Поле \"${fieldName}\" обязательно",
+    "tr": "\"${fieldName}\" alanı zorunludur",
+    "zh": "字段“${fieldName}”为必填项"
+  },
+  "errorUpdatingFormAnswers": {
+    "de": "Beim Aktualisieren der Formularantworten ist ein Fehler aufgetreten",
+    "en": "An error occurred while updating form answers",
+    "ar": "حدث خطأ أثناء تحديث إجابات النموذج",
+    "es": "Se produjo un error al actualizar las respuestas del formulario",
+    "fr": "Une erreur s'est produite lors de la mise à jour des réponses du formulaire",
+    "ru": "Произошла ошибка при обновлении ответов формы",
+    "tr": "Form yanıtları güncellenirken bir hata oluştu",
+    "zh": "更新表单答案时发生错误"
+  },
+  "formData": {
+    "de": "Formulardaten",
+    "en": "Form data",
+    "ar": "بيانات النموذج",
+    "es": "Datos del formulario",
+    "fr": "Données du formulaire",
+    "ru": "Данные формы",
+    "tr": "Form verileri",
+    "zh": "表单数据"
+  },
+  "couldNotUpdateRating": {
+    "de": "Bewertung konnte nicht aktualisiert werden",
+    "en": "Could not update rating",
+    "ar": "تعذر تحديث التقييم",
+    "es": "No se pudo actualizar la valoración",
+    "fr": "Impossible de mettre à jour la note",
+    "ru": "Не удалось обновить оценку",
+    "tr": "Puan güncellenemedi",
+    "zh": "无法更新评分"
+  },
+  "commentShouldBeLessThan500Characters": {
+    "de": "Kommentar darf höchstens 500 Zeichen lang sein",
+    "en": "Comment should be less than 500 characters",
+    "ar": "يجب ألا يزيد التعليق عن 500 حرف",
+    "es": "El comentario debe tener menos de 500 caracteres",
+    "fr": "Le commentaire doit contenir moins de 500 caractères",
+    "ru": "Комментарий должен быть короче 500 символов",
+    "tr": "Yorum 500 karakterden kısa olmalıdır",
+    "zh": "评论应少于 500 个字符"
+  },
+  "now": {
+    "de": "Jetzt",
+    "en": "Now",
+    "ar": "الآن",
+    "es": "Ahora",
+    "fr": "Maintenant",
+    "ru": "Сейчас",
+    "tr": "Şimdi",
+    "zh": "现在"
+  },
+  "enterAValue": {
+    "de": "Wert eingeben",
+    "en": "Enter a value",
+    "ar": "أدخل قيمة",
+    "es": "Introduce un valor",
+    "fr": "Saisissez une valeur",
+    "ru": "Введите значение",
+    "tr": "Bir değer girin",
+    "zh": "输入一个值"
+  },
+  "pleaseEnterTimeInHhMmFormat": {
+    "de": "Bitte gib die Zeit im Format HH:MM ein (z. B. 08:30)",
+    "en": "Please enter time in HH:MM format (e.g., 08:30)",
+    "ar": "يرجى إدخال الوقت بصيغة HH:MM (مثال: 08:30)",
+    "es": "Introduce la hora en formato HH:MM (p. ej., 08:30)",
+    "fr": "Veuillez saisir l’heure au format HH:MM (ex. : 08:30)",
+    "ru": "Введите время в формате ЧЧ:ММ (например, 08:30)",
+    "tr": "Lütfen saati SS:DD formatında girin (örn. 08:30)",
+    "zh": "请输入 HH:MM 格式的时间（例如 08:30）"
+  },
+  "startTimeMustBeEarlierThanEndTime": {
+    "de": "Die Startzeit muss vor der Endzeit liegen.",
+    "en": "Start time must be earlier than end time.",
+    "ar": "يجب أن يكون وقت البدء قبل وقت الانتهاء.",
+    "es": "La hora de inicio debe ser anterior a la hora de fin.",
+    "fr": "L’heure de début doit être antérieure à l’heure de fin.",
+    "ru": "Время начала должно быть раньше времени окончания.",
+    "tr": "Başlangıç saati bitiş saatinden önce olmalıdır.",
+    "zh": "开始时间必须早于结束时间。"
+  },
+  "foodofferComponents": {
+    "de": "Foodoffer-Komponenten",
+    "en": "Food offer components",
+    "ar": "مكونات عرض الطعام",
+    "es": "Componentes de la oferta de comida",
+    "fr": "Composants de l’offre de repas",
+    "ru": "Компоненты предложения еды",
+    "tr": "Yemek teklifi bileşenleri",
+    "zh": "餐食供应组件"
+  },
+  "noFoodofferMarkingsDataProvided": {
+    "de": "Keine Lebensmittelkennzeichnungsdaten übermittelt worden",
+    "en": "No food labeling data was provided",
+    "ar": "لم يتم توفير بيانات وسم الأغذية",
+    "es": "No se proporcionaron datos de etiquetado de alimentos",
+    "fr": "Aucune donnée d’étiquetage alimentaire fournie",
+    "ru": "Данные о маркировке продуктов не предоставлены",
+    "tr": "Gıda etiketleme verisi sağlanmadı",
+    "zh": "未提供食品标识数据"
+  },
+  "foodofferMarkingsData": {
+    "de": "Foodoffer-Markierungen: Daten",
+    "en": "Food offer markings data",
+    "ar": "بيانات علامات عرض الطعام",
+    "es": "Datos de marcas de la oferta de comida",
+    "fr": "Données de marquages de l’offre de repas",
+    "ru": "Данные маркировок предложения еды",
+    "tr": "Yemek teklifi işaretlemeleri verisi",
+    "zh": "餐食供应标记数据"
+  },
+  "foodofferMarkingsCount": {
+    "de": "Foodoffer-Markierungen: Anzahl",
+    "en": "Food offer markings count",
+    "ar": "عدد علامات عرض الطعام",
+    "es": "Cantidad de marcas de la oferta de comida",
+    "fr": "Nombre de marquages de l’offre de repas",
+    "ru": "Количество маркировок предложения еды",
+    "tr": "Yemek teklifi işaretleme sayısı",
+    "zh": "餐食供应标记数量"
+  },
+  "closeAndDontShowAgain": {
+    "de": "Schließen und nicht erneut anzeigen",
+    "en": "Close and don’t show again",
+    "ar": "إغلاق وعدم العرض مرة أخرى",
+    "es": "Cerrar y no volver a mostrar",
+    "fr": "Fermer et ne plus afficher",
+    "ru": "Закрыть и больше не показывать",
+    "tr": "Kapat ve tekrar gösterme",
+    "zh": "关闭并不再显示"
+  },
+  "modalTitle": {
+    "de": "Modal-Titel",
+    "en": "Modal title",
+    "ar": "عنوان النافذة",
+    "es": "Título del modal",
+    "fr": "Titre de la fenêtre",
+    "ru": "Заголовок модального окна",
+    "tr": "Modal başlığı",
+    "zh": "弹窗标题"
+  },
+  "formEditedByAnotherUserWarning": {
+    "de": "Dieses Formular wird derzeit von einem anderen Benutzer bearbeitet. Wenn du fortfährst, könnten seine Änderungen überschrieben werden. Möchtest du trotzdem fortfahren?",
+    "en": "This form is currently being edited by another user. Proceeding may overwrite their changes. Do you still want to continue?",
+    "ar": "هذا النموذج يتم تحريره حاليًا بواسطة مستخدم آخر. قد يؤدي المتابعة إلى الكتابة فوق تعديلاته. هل تريد المتابعة؟",
+    "es": "Este formulario está siendo editado por otro usuario. Continuar puede sobrescribir sus cambios. ¿Deseas continuar?",
+    "fr": "Ce formulaire est actuellement modifié par un autre utilisateur. Continuer peut écraser ses modifications. Voulez-vous continuer ?",
+    "ru": "Эта форма сейчас редактируется другим пользователем. Продолжение может перезаписать его изменения. Вы хотите продолжить?",
+    "tr": "Bu form şu anda başka bir kullanıcı tarafından düzenleniyor. Devam ederseniz değişiklikleri üzerine yazabilirsiniz. Yine de devam etmek istiyor musunuz?",
+    "zh": "该表单目前正被其他用户编辑。继续操作可能会覆盖对方的更改。是否仍要继续？"
+  },
+  "appInForeground": {
+    "de": "App im Vordergrund",
+    "en": "App in foreground",
+    "ar": "التطبيق في المقدمة",
+    "es": "Aplicación en primer plano",
+    "fr": "Application au premier plan",
+    "ru": "Приложение на переднем плане",
+    "tr": "Uygulama ön planda",
+    "zh": "应用在前台"
+  },
+  "missingTranslationContent": {
+    "de": "Fehlende Übersetzung (Inhalt)",
+    "en": "Missing translation (content)",
+    "ar": "ترجمة مفقودة (المحتوى)",
+    "es": "Falta traducción (contenido)",
+    "fr": "Traduction manquante (contenu)",
+    "ru": "Отсутствует перевод (содержимое)",
+    "tr": "Eksik çeviri (içerik)",
+    "zh": "缺少翻译（内容）"
+  },
+  "distancePrivacyNotice": {
+    "de": "Wir teilen deinen aktuellen Standort nicht mit uns. Er wird ausschließlich auf deinem Handy verwendet, um die Entfernung zu berechnen. Aus Datenschutzgründen verlassen diese Daten niemals dein Gerät und werden nicht gespeichert. So kannst du sicher sein, dass deine Privatsphäre geschützt ist, während du den vollen Funktionsumfang testen kannst.",
+    "en": "We don’t share your current location with us. It’s used only on your phone to calculate the distance. For privacy reasons, this data never leaves your device and is not stored. This way, your privacy stays protected while you can still test the full functionality.",
+    "ar": "لا نشارك موقعك الحالي معنا. يُستخدم فقط على هاتفك لحساب المسافة. ولأسباب تتعلق بالخصوصية، لا تغادر هذه البيانات جهازك أبدًا ولا يتم حفظها. بهذه الطريقة تبقى خصوصيتك محمية بينما يمكنك اختبار كامل الميزات.",
+    "es": "No compartimos tu ubicación actual con nosotros. Se utiliza únicamente en tu teléfono para calcular la distancia. Por motivos de privacidad, estos datos nunca salen de tu dispositivo y no se almacenan. Así, tu privacidad queda protegida mientras puedes probar todas las funciones.",
+    "fr": "Nous ne partageons pas votre position actuelle avec nous. Elle est utilisée uniquement sur votre téléphone pour calculer la distance. Pour des raisons de confidentialité, ces données ne quittent jamais votre appareil et ne sont pas enregistrées. Ainsi, votre vie privée est protégée tout en vous permettant de tester toutes les fonctionnalités.",
+    "ru": "Мы не передаем нам ваше текущее местоположение. Оно используется только на вашем телефоне для расчета расстояния. По соображениям конфиденциальности эти данные никогда не покидают устройство и не сохраняются. Так ваша приватность защищена, а вы можете тестировать весь функционал.",
+    "tr": "Mevcut konumunuzu bizimle paylaşmıyoruz. Konum yalnızca telefonunuzda mesafeyi hesaplamak için kullanılır. Gizlilik nedeniyle bu veriler cihazınızı asla terk etmez ve kaydedilmez. Böylece tüm özellikleri test ederken gizliliğiniz korunur.",
+    "zh": "我们不会将你的当前位置共享给我们自己。它只会在你的手机上用于计算距离。出于隐私原因，这些数据永远不会离开你的设备，也不会被存储。这样你在测试完整功能的同时也能确保隐私受到保护。"
+  },
+  "custom": {
+    "de": "Benutzerdefiniert",
+    "en": "Custom",
+    "ar": "مخصص",
+    "es": "Personalizado",
+    "fr": "Personnalisé",
+    "ru": "Пользовательский",
+    "tr": "Özel",
+    "zh": "自定义"
+  },
+  "weekSelection": {
+    "de": "Wochenauswahl",
+    "en": "Week selection",
+    "ar": "اختيار الأسبوع",
+    "es": "Selección de semana",
+    "fr": "Sélection de la semaine",
+    "ru": "Выбор недели",
+    "tr": "Hafta seçimi",
+    "zh": "选择周"
+  },
+  "noNews": {
+    "de": "Keine Nachrichten",
+    "en": "No news",
+    "ar": "لا توجد أخبار",
+    "es": "Sin noticias",
+    "fr": "Aucune actualité",
+    "ru": "Нет новостей",
+    "tr": "Haber yok",
+    "zh": "暂无新闻"
+  },
+  "osmVectorMap": {
+    "de": "OSM-Vektorkarte",
+    "en": "OSM vector map",
+    "ar": "خريطة OSM متجهة",
+    "es": "Mapa vectorial de OSM",
+    "fr": "Carte vectorielle OSM",
+    "ru": "Векторная карта OSM",
+    "tr": "OSM vektör haritası",
+    "zh": "OSM 矢量地图"
+  },
+  "loadingVectorMap": {
+    "de": "Vektorkarte wird geladen…",
+    "en": "Loading vector map…",
+    "ar": "جارٍ تحميل خريطة المتجه…",
+    "es": "Cargando mapa vectorial…",
+    "fr": "Chargement de la carte vectorielle…",
+    "ru": "Загрузка векторной карты…",
+    "tr": "Vektör harita yükleniyor…",
+    "zh": "正在加载矢量地图…"
+  },
+  "simulatedNfcRead": {
+    "de": "Simulierter NFC-Lesevorgang: ${amount}€",
+    "en": "Simulated NFC read: ${amount}€",
+    "ar": "قراءة NFC محاكاة: ${amount}€",
+    "es": "Lectura NFC simulada: ${amount}€",
+    "fr": "Lecture NFC simulée : ${amount}€",
+    "ru": "Симуляция чтения NFC: ${amount}€",
+    "tr": "Simüle NFC okuma: ${amount}€",
+    "zh": "模拟 NFC 读取：${amount}€"
+  },
+  "foodPlanWeekTitle": {
+    "de": "Speiseplan: Woche",
+    "en": "Food plan: week",
+    "ar": "خطة الطعام: الأسبوع",
+    "es": "Plan de comida: semana",
+    "fr": "Plan des repas : semaine",
+    "ru": "План питания: неделя",
+    "tr": "Yemek planı: hafta",
+    "zh": "餐食计划：周"
+  },
+  "useModalDebugTitle": {
+    "de": "useModal Debug",
+    "en": "useModal debug",
+    "ar": "تصحيح useModal",
+    "es": "Depuración de useModal",
+    "fr": "Débogage useModal",
+    "ru": "Отладка useModal",
+    "tr": "useModal hata ayıklama",
+    "zh": "useModal 调试"
+  },
+  "settingsListFlashDebugTitle": {
+    "de": "SettingsListFlash: Bild, Name & Like/Dislike (FlashList)",
+    "en": "SettingsListFlash: Image, Name & Like/Dislike (FlashList)",
+    "ar": "SettingsListFlash: صورة، اسم وإعجاب/عدم إعجاب (FlashList)",
+    "es": "SettingsListFlash: Imagen, nombre y me gusta/no me gusta (FlashList)",
+    "fr": "SettingsListFlash : Image, nom et j’aime/je n’aime pas (FlashList)",
+    "ru": "SettingsListFlash: изображение, имя и лайк/дизлайк (FlashList)",
+    "tr": "SettingsListFlash: Görsel, İsim ve Beğen/Beğenme (FlashList)",
+    "zh": "SettingsListFlash：图片、名称与喜欢/不喜欢（FlashList）"
+  },
+  "settingsListFastDebugTitle": {
+    "de": "SettingsListFast: Bild, Name & Like/Dislike (ohne Tooltips)",
+    "en": "SettingsListFast: Image, Name & Like/Dislike (no tooltips)",
+    "ar": "SettingsListFast: صورة، اسم وإعجاب/عدم إعجاب (بدون تلميحات)",
+    "es": "SettingsListFast: Imagen, nombre y me gusta/no me gusta (sin tooltips)",
+    "fr": "SettingsListFast : Image, nom et j’aime/je n’aime pas (sans info-bulles)",
+    "ru": "SettingsListFast: изображение, имя и лайк/дизлайк (без подсказок)",
+    "tr": "SettingsListFast: Görsel, İsim ve Beğen/Beğenme (ipucu yok)",
+    "zh": "SettingsListFast：图片、名称与喜欢/不喜欢（无提示）"
+  },
+  "settingsListDebugTitle": {
+    "de": "SettingsList: Bild, Name & Like-Status",
+    "en": "SettingsList: Image, Name & Like status",
+    "ar": "SettingsList: صورة، اسم وحالة الإعجاب",
+    "es": "SettingsList: Imagen, nombre y estado de me gusta",
+    "fr": "SettingsList : Image, nom et statut j’aime",
+    "ru": "SettingsList: изображение, имя и статус лайка",
+    "tr": "SettingsList: Görsel, İsim ve Beğeni durumu",
+    "zh": "SettingsList：图片、名称与喜欢状态"
+  },
+  "plainFullComponentWithLikeStateDebugTitle": {
+    "de": "Plain: Vollständige Komponente mit Like-Status",
+    "en": "Plain: Full component with like state",
+    "ar": "Plain: مكوّن كامل مع حالة الإعجاب",
+    "es": "Plain: Componente completo con estado de me gusta",
+    "fr": "Plain : Composant complet avec statut j’aime",
+    "ru": "Plain: полный компонент со статусом лайка",
+    "tr": "Plain: Beğeni durumu olan tam bileşen",
+    "zh": "Plain：带喜欢状态的完整组件"
+  },
+  "plainComponentWithImageAndTextDebugTitle": {
+    "de": "Plain: Komponente mit Bild & Text",
+    "en": "Plain: Component with image & text",
+    "ar": "Plain: مكوّن مع صورة ونص",
+    "es": "Plain: Componente con imagen y texto",
+    "fr": "Plain : Composant avec image et texte",
+    "ru": "Plain: компонент с изображением и текстом",
+    "tr": "Plain: Görsel ve metinli bileşen",
+    "zh": "Plain：带图片与文本的组件"
+  },
+  "plainEachMarkingAsOwnComponentDebugTitle": {
+    "de": "Plain: Jede Markierung als eigene Komponente",
+    "en": "Plain: Each marking as its own component",
+    "ar": "Plain: كل علامة كمكوّن مستقل",
+    "es": "Plain: Cada marca como componente independiente",
+    "fr": "Plain : Chaque marquage comme composant distinct",
+    "ru": "Plain: каждая маркировка как отдельный компонент",
+    "tr": "Plain: Her işaretleme ayrı bileşen",
+    "zh": "Plain：每个标记作为独立组件"
+  },
+  "plainTextTranslationAndImageDebugTitle": {
+    "de": "Plain: Text, Übersetzung & Bild",
+    "en": "Plain: Text, translation & image",
+    "ar": "Plain: نص وترجمة وصورة",
+    "es": "Plain: Texto, traducción e imagen",
+    "fr": "Plain : Texte, traduction et image",
+    "ru": "Plain: текст, перевод и изображение",
+    "tr": "Plain: Metin, çeviri ve görsel",
+    "zh": "Plain：文本、翻译与图片"
+  },
+  "plainTextAndTranslationsOnlyDebugTitle": {
+    "de": "Plain: Nur Text & Übersetzungen",
+    "en": "Plain: Text & translations only",
+    "ar": "Plain: نص وترجمات فقط",
+    "es": "Plain: Solo texto y traducciones",
+    "fr": "Plain : Texte et traductions uniquement",
+    "ru": "Plain: только текст и переводы",
+    "tr": "Plain: Yalnızca metin ve çeviriler",
+    "zh": "Plain：仅文本与翻译"
+  },
+  "performanceFull": {
+    "de": "Performance (Voll)",
+    "en": "Performance (Full)",
+    "ar": "الأداء (كامل)",
+    "es": "Rendimiento (Completo)",
+    "fr": "Performance (Complète)",
+    "ru": "Производительность (Полная)",
+    "tr": "Performans (Tam)",
+    "zh": "性能（完整）"
+  },
+  "performanceNoDefer": {
+    "de": "Performance (Ohne Defer)",
+    "en": "Performance (No Defer)",
+    "ar": "الأداء (بدون تأخير)",
+    "es": "Rendimiento (Sin defer)",
+    "fr": "Performance (Sans defer)",
+    "ru": "Производительность (Без defer)",
+    "tr": "Performans (Defer yok)",
+    "zh": "性能（无 Defer）"
+  },
+  "performanceNoLottie": {
+    "de": "Performance (Ohne Lottie)",
+    "en": "Performance (No Lottie)",
+    "ar": "الأداء (بدون Lottie)",
+    "es": "Rendimiento (Sin Lottie)",
+    "fr": "Performance (Sans Lottie)",
+    "ru": "Производительность (Без Lottie)",
+    "tr": "Performans (Lottie yok)",
+    "zh": "性能（无 Lottie）"
+  },
+  "mapLayers": {
+    "de": "Karten-Ebenen",
+    "en": "Map layers",
+    "ar": "طبقات الخريطة",
+    "es": "Capas del mapa",
+    "fr": "Couches de la carte",
+    "ru": "Слои карты",
+    "tr": "Harita katmanları",
+    "zh": "地图图层"
+  },
+  "sportAndLeisure": {
+    "de": "Sport & Freizeit",
+    "en": "Sports & leisure",
+    "ar": "الرياضة والترفيه",
+    "es": "Deporte y ocio",
+    "fr": "Sport et loisirs",
+    "ru": "Спорт и досуг",
+    "tr": "Spor ve eğlence",
+    "zh": "运动与休闲"
+  },
+  "barriersAndClosures": {
+    "de": "Barrieren & Sperren",
+    "en": "Barriers & closures",
+    "ar": "الحواجز والإغلاقات",
+    "es": "Barreras y cierres",
+    "fr": "Barrières et fermetures",
+    "ru": "Барьеры и перекрытия",
+    "tr": "Bariyerler ve kapatmalar",
+    "zh": "障碍与封闭"
+  },
+  "poi_recycling": {
+    "de": "Recycling",
+    "en": "Recycling",
+    "ar": "إعادة التدوير",
+    "es": "Reciclaje",
+    "fr": "Recyclage",
+    "ru": "Переработка",
+    "tr": "Geri dönüşüm",
+    "zh": "回收"
+  },
+  "poi_waste_basket": {
+    "de": "Mülleimer",
+    "en": "Trash can",
+    "ar": "سلة مهملات",
+    "es": "Papelera",
+    "fr": "Poubelle",
+    "ru": "Урна",
+    "tr": "Çöp kutusu",
+    "zh": "垃圾桶"
+  },
+  "poi_waste_disposal": {
+    "de": "Müllentsorgung",
+    "en": "Waste disposal",
+    "ar": "التخلص من النفايات",
+    "es": "Eliminación de residuos",
+    "fr": "Élimination des déchets",
+    "ru": "Утилизация отходов",
+    "tr": "Atık bertarafı",
+    "zh": "垃圾处理"
+  },
+  "poi_bench": {
+    "de": "Bänke",
+    "en": "Benches",
+    "ar": "مقاعد",
+    "es": "Bancos",
+    "fr": "Bancs",
+    "ru": "Скамейки",
+    "tr": "Banklar",
+    "zh": "长椅"
+  },
+  "poi_drinking_water": {
+    "de": "Trinkwasser",
+    "en": "Drinking water",
+    "ar": "مياه الشرب",
+    "es": "Agua potable",
+    "fr": "Eau potable",
+    "ru": "Питьевая вода",
+    "tr": "İçme suyu",
+    "zh": "饮用水"
+  },
+  "poi_toilets": {
+    "de": "Toiletten",
+    "en": "Toilets",
+    "ar": "دورات المياه",
+    "es": "Baños",
+    "fr": "Toilettes",
+    "ru": "Туалеты",
+    "tr": "Tuvaletler",
+    "zh": "洗手间"
+  },
+  "poi_telephone": {
+    "de": "Telefon",
+    "en": "Telephone",
+    "ar": "هاتف",
+    "es": "Teléfono",
+    "fr": "Téléphone",
+    "ru": "Телефон",
+    "tr": "Telefon",
+    "zh": "电话"
+  },
+  "poi_vending_machine": {
+    "de": "Automaten",
+    "en": "Vending machines",
+    "ar": "آلات بيع",
+    "es": "Máquinas expendedoras",
+    "fr": "Distributeurs automatiques",
+    "ru": "Торговые автоматы",
+    "tr": "Otomatlar",
+    "zh": "自动售货机"
+  },
+  "poi_basin": {
+    "de": "Becken",
+    "en": "Basin",
+    "ar": "حوض",
+    "es": "Lavabo",
+    "fr": "Lavabo",
+    "ru": "Раковина",
+    "tr": "Lavabo",
+    "zh": "水槽"
+  },
+  "poi_chess": {
+    "de": "Schach",
+    "en": "Chess",
+    "ar": "شطرنج",
+    "es": "Ajedrez",
+    "fr": "Échecs",
+    "ru": "Шахматы",
+    "tr": "Satranç",
+    "zh": "国际象棋"
+  },
+  "poi_shelter": {
+    "de": "Unterstand",
+    "en": "Shelter",
+    "ar": "مأوى",
+    "es": "Refugio",
+    "fr": "Abri",
+    "ru": "Укрытие",
+    "tr": "Barınak",
+    "zh": "避雨处"
+  },
+  "poi_fountain": {
+    "de": "Brunnen",
+    "en": "Fountain",
+    "ar": "نافورة",
+    "es": "Fuente",
+    "fr": "Fontaine",
+    "ru": "Фонтан",
+    "tr": "Çeşme",
+    "zh": "喷泉"
+  },
+  "poi_clock": {
+    "de": "Uhren",
+    "en": "Clocks",
+    "ar": "ساعات",
+    "es": "Relojes",
+    "fr": "Horloges",
+    "ru": "Часы",
+    "tr": "Saatler",
+    "zh": "时钟"
+  },
+  "poi_viewpoint": {
+    "de": "Aussichtspunkte",
+    "en": "Viewpoints",
+    "ar": "نقاط مشاهدة",
+    "es": "Miradores",
+    "fr": "Points de vue",
+    "ru": "Смотровые площадки",
+    "tr": "Seyir noktaları",
+    "zh": "观景点"
+  },
+  "finishesOnWithDate": {
+    "de": "Fertig am ${date}",
+    "en": "Finishes on ${date}",
+    "ar": "ينتهي في ${date}",
+    "es": "Finaliza el ${date}",
+    "fr": "Se termine le ${date}",
+    "ru": "Завершится ${date}",
+    "tr": "${date} tarihinde biter",
+    "zh": "将于 ${date} 完成"
+  },
+  "statusUnknown": {
+    "de": "Status unbekannt",
+    "en": "Status unknown",
+    "ar": "الحالة غير معروفة",
+    "es": "Estado desconocido",
+    "fr": "Statut inconnu",
+    "ru": "Статус неизвестен",
+    "tr": "Durum bilinmiyor",
+    "zh": "状态未知"
+  },
+  "washingMachineNotificationTitle": {
+    "de": "Waschmaschine ${alias}",
+    "en": "Washing Machine ${alias}",
+    "ar": "غسالة ${alias}",
+    "es": "Lavadora ${alias}",
+    "fr": "Machine à laver ${alias}",
+    "ru": "Стиральная машина ${alias}",
+    "tr": "Çamaşır Makinesi ${alias}",
+    "zh": "洗衣机 ${alias}"
+  },
+  "washingMachineNotificationBody": {
+    "de": "Deine Wäsche ist fertig um ${date}.",
+    "en": "Your washing will finish at ${date}.",
+    "ar": "ستنتهي غسلتك في ${date}.",
+    "es": "Tu lavado terminará a las ${date}.",
+    "fr": "Votre lessive se terminera à ${date}.",
+    "ru": "Стирка завершится в ${date}.",
+    "tr": "Çamaşırınız ${date} saatinde bitecek.",
+    "zh": "你的洗衣将在 ${date} 完成。"
   }
 }

@@ -156,7 +156,7 @@ const EatingHabitsPlainComponentFull = () => {
 				style={{ backgroundColor: theme.screen.background }}
 				contentContainerStyle={{ padding: 16 }}
 			>
-				<DebugView title="Plain: Full Component with Like State" logs={debugLogs} isVisible />
+				<DebugView title={translate(TranslationKeys.plainFullComponentWithLikeStateDebugTitle)} logs={debugLogs} isVisible />
 				<View>
 					{markingIds.map((id: string) => (
 						<PlainFullMarkingRow key={id} markingId={id} />

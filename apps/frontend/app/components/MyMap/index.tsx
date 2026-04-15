@@ -7,6 +7,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 import { StringHelper } from 'repo-depkit-common';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 function escapeHtml(text: string): string {
 	let result = StringHelper.replaceAllLiteralWithOptions({ str: text, find: '&', replace: '&amp;' });
@@ -20,6 +22,7 @@ function escapeHtml(text: string): string {
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch, loadingText, onMessage }, ref) => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
+	const { translate } = useLanguage();
 
 	useEffect(() => {
 		let isMounted = true;
@@ -36,12 +39,11 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch
 				'initMap(null, null);',
 				`initMap([${initialCenter.lng}, ${initialCenter.lat}], null${pitch});`,
 			);
-			if (loadingText) {
-				htmlContent = htmlContent.replace(
-					'<span id="loading-text">Loading vector map…</span>',
-					`<span id="loading-text">${escapeHtml(loadingText)}</span>`,
-				);
-			}
+			const resolvedLoadingText = loadingText ?? translate(TranslationKeys.loadingVectorMap);
+			htmlContent = htmlContent.replace(
+				'<span id="loading-text">Loading vector map…</span>',
+				`<span id="loading-text">${escapeHtml(resolvedLoadingText)}</span>`,
+			);
 			if (isMounted) {
 				setHtml(htmlContent);
 			}

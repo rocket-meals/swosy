@@ -46,7 +46,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			if (supported) {
 				await Linking.openURL(url);
 			} else {
-				toast(`Cannot open URL: ${url}`, 'error');
+				toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', url), 'error');
 			}
 		}
 	};
@@ -54,7 +54,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 		<View
 			style={{
 				...styles.card,
-				flexDirection: screenWidth > 768 ? 'row' : 'column',
+				flexDirection: screenWidth > 768 ? (isArabic ? 'row-reverse' : 'row') : 'column',
 				backgroundColor: theme.screen.iconBg,
 			}}
 		>
@@ -129,7 +129,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				<View
 					style={{
 						...styles.actionContainer,
-						alignItems: screenWidth > 768 ? 'flex-start' : 'center',
+						alignItems: screenWidth > 768 ? (isArabic ? 'flex-end' : 'flex-start') : 'center',
 					}}
 				>
 					<CustomTooltip

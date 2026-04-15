@@ -15,7 +15,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
 const useAppForegroundUpdateCheckModal = () => {
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 	const appState = useRef<AppStateStatus>(AppState.currentState);
         const debugMode = useDebugMode();
         const { isSmartPhone } = usePlatformHelper();
@@ -48,6 +49,8 @@ const useAppForegroundUpdateCheckModal = () => {
 
                         show({
                                 title,
+				titleTextAlign: isRtl ? 'right' : 'left',
+				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 children: (
                                         <View style={{ padding: 24, gap: 12 }}>
                                                 <Text style={{ color: theme.screen.text, textAlign: 'center' }}>{message}</Text>
@@ -89,7 +92,7 @@ const useAppForegroundUpdateCheckModal = () => {
                                 ),
                         });
                 },
-                [close, debugMode, show, theme.screen.background, theme.screen.text, theme.sheet.text]
+                [close, debugMode, isRtl, show, theme.screen.background, theme.screen.text, theme.sheet.text]
         );
 
         const handleDownloadUpdate = useCallback(async () => {

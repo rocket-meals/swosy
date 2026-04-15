@@ -4,10 +4,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import CompanyImage from '@/components/CompanyImage';
 import { StringHelper } from 'repo-depkit-common';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, isConnected = true }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const [currentTime, setCurrentTime] = useState('');
 	const [logoStyle, setLogoStyle] = useState(() => ({
 		width: styles.logo.width,
@@ -70,7 +73,7 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, i
 								fontSize: 12,
 							}}
 						>
-							{'Offline'}
+							{translate(TranslationKeys.offline)}
 						</Text>
 					</View>
 				)}

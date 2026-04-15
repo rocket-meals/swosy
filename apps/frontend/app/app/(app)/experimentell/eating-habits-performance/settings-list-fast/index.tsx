@@ -66,8 +66,8 @@ const EatingHabitsSettingsListFast = () => {
 	const keyExtractor = useCallback((id: string) => id, []);
 
 	const ListHeaderComponent = useMemo(
-		() => <DebugView title="SettingsListFast: Image, Name & Like/Dislike (no tooltips)" logs={debugLogs} isVisible />,
-		[debugLogs]
+		() => <DebugView title={translate(TranslationKeys.settingsListFastDebugTitle)} logs={debugLogs} isVisible />,
+		[debugLogs, translate]
 	);
 
 	return (

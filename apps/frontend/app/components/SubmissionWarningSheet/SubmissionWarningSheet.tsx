@@ -58,7 +58,7 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 					color: theme.modal.text,
 				}}
 			>
-				This form is currently being edited by another user. Proceeding may overwrite their changes. Do you still want to continue?
+				{translate(TranslationKeys.formEditedByAnotherUserWarning)}
 			</Text>
 			<View style={styles.actionContainer}>
 				<AppButton

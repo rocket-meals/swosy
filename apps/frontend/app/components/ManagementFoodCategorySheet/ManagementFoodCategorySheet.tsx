@@ -181,7 +181,7 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 							);
 						})}
 						<SettingsListBoolean
-							label="Custom"
+							label={translate(TranslationKeys.custom)}
 							noIconIndent
 							isEnabled={isCustom}
 							onToggle={() => setIsCustom(true)}
@@ -192,7 +192,7 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 					</View>
 					<View style={{ gap: 0, marginTop: 20 }}>
 						<SettingsList
-							label="Fertig"
+							label={translate(TranslationKeys.done)}
 							noIconIndent
 							rightIcon={<MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />}
 							handleFunction={closeSheet}

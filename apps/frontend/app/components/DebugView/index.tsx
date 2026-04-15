@@ -6,6 +6,8 @@ import { useTheme } from '@/hooks/useTheme';
 import useDebugMode from '@/hooks/useDebugMode';
 import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 export type DebugLog = string | { message: string; timestamp?: string | Date };
 
@@ -36,7 +38,7 @@ interface DebugViewProps extends OverlayBaseProps {
 }
 
 const DebugView: React.FC<DebugViewProps> = ({
-        title = 'Debug',
+        title,
         logs = [],
         actions = [],
         isVisible = false,
@@ -44,9 +46,11 @@ const DebugView: React.FC<DebugViewProps> = ({
         children,
 }) => {
         const { theme } = useTheme();
+        const { translate } = useLanguage();
         const debugMode = useDebugMode();
         const isDevMode = useAppSelector((state) => state.authReducer.isDevMode);
         const language = useAppSelector((state) => state.settings.language);
+        const resolvedTitle = title ?? translate(TranslationKeys.debug);
 
         const formattedLogs = useMemo(() => {
                 return logs
@@ -75,7 +79,7 @@ const DebugView: React.FC<DebugViewProps> = ({
                 >
                         <View style={[styles.header, language === 'ar' ? { flexDirection: 'row-reverse' } : undefined]}>
                                 <MaterialCommunityIcons name="bug-outline" size={18} color={theme.screen.icon} />
-                                <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
+                                <Text style={{ ...styles.title, color: theme.screen.text }}>{resolvedTitle}</Text>
                         </View>
 
                         {actions.length ? (

@@ -82,16 +82,26 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 		<View
 			style={{
 				...styles.loginForm,
-				alignItems: isWeb() ? 'flex-start' : 'center',
+				alignItems: isWeb() ? (isArabic ? 'flex-end' : 'flex-start') : 'center',
 			}}
 		>
-			<Text style={{ ...styles.heading, color: theme.login.text }}>{translate(TranslationKeys.sign_in)}</Text>
+			<Text
+				style={{
+					...styles.heading,
+					color: theme.login.text,
+					width: '100%',
+					textAlign: isArabic ? 'right' : 'left',
+					writingDirection: isArabic ? 'rtl' : 'ltr',
+				}}
+			>
+				{translate(TranslationKeys.sign_in)}
+			</Text>
 			<View>
 				<TouchableOpacity
 					onPress={() => {
 						setChecked(!isChecked);
 					}}
-					style={[styles.section, isArabic ? { flexDirection: 'row-reverse' } : null]}
+					style={[styles.section, { width: '100%' }, isArabic ? { flexDirection: 'row-reverse' } : null]}
 				>
 					<Checkbox
 						style={[styles.checkbox, isArabic ? { marginRight: 0, marginLeft: 15 } : null]}
@@ -103,7 +113,8 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						style={{
 							...styles.checkboxLabel,
 							color: theme.login.text,
-							width: isWeb() ? '100%' : '90%',
+							flex: 1,
+							flexShrink: 1,
 							textAlign: isArabic ? 'right' : 'left',
 							writingDirection: isArabic ? 'rtl' : 'ltr',
 						}}
@@ -170,7 +181,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 				</TouchableOpacity>
 			</View>
 
-			<View style={[styles.managementLogin, isArabic ? { flexDirection: 'row-reverse'} : null]}>
+			<View style={[styles.managementLogin, isArabic ? { flexDirection: 'row-reverse', alignSelf: 'flex-end' } : null]}>
 				<Text
 					style={{
 						...styles.fromManagement,

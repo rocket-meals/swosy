@@ -55,7 +55,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			const permissionResponse = useCamera ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
 			if (!permissionResponse.granted) {
-				Alert.alert('Permission Denied', 'Please grant permissions to access the camera or gallery.');
+				Alert.alert(translate(TranslationKeys.permission_denied_title), translate(TranslationKeys.camera_gallery_permission_message));
 				return;
 			}
 
@@ -78,7 +78,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 					});
 
 			if (pickerResult.canceled) {
-				Alert.alert('Canceled the image');
+				Alert.alert(translate(TranslationKeys.image_picker_canceled));
 				return;
 			}
 
@@ -212,7 +212,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 						writingDirection: isArabic ? 'rtl' : 'ltr',
 					}}
 				>
-					Edit: Image
+					{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
 				</Text>
 			</View>
 			<View

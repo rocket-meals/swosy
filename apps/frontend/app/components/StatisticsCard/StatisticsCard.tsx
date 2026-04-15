@@ -8,9 +8,12 @@ import { StatisticsCardProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet, setSelectedFoodId }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const { serverInfo, appSettings } = useAppSelector((state) => state.settings);
 	const isArabic = useAppSelector((state: RootState) => state.settings.language) === 'ar';
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
@@ -77,7 +80,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 								writingDirection: isArabic ? 'rtl' : 'ltr',
 							}}
 						>
-							Number of Ratings
+							{translate(TranslationKeys.amount_ratings)}
 						</Text>
 					</View>
 					<Text
@@ -104,7 +107,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 								writingDirection: isArabic ? 'rtl' : 'ltr',
 							}}
 						>
-							Average Rating
+							{translate(TranslationKeys.average_rating)}
 						</Text>
 					</View>
 					<Text

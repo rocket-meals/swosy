@@ -76,7 +76,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 		}
 
 		if (string !== null && !string.trim()) {
-			toast('Please write a comment', 'error');
+			toast(translate(TranslationKeys.write_a_comment), 'error');
 			return;
 		}
 
@@ -116,7 +116,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 		}
 
 		if (text.length > 120) {
-			toast('Comment should be less than 500 characters', 'error');
+			toast(translate(TranslationKeys.commentShouldBeLessThan500Characters), 'error');
 			return;
 		}
 		setComment(text);

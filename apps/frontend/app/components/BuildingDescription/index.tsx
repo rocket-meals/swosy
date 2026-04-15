@@ -48,7 +48,7 @@ const BuildingDescription: React.FC<any> = ({ campusDetails }) => {
 						alignSelf: isArabic ? 'flex-end' : 'flex-start',
 					}}
 				>
-					{'Missing translation(content)'}
+					{translate(TranslationKeys.missingTranslationContent)}
 				</Text>
 			)}
 		</View>

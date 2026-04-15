@@ -104,8 +104,8 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 					// Schedule the notification
 					await Notifications.scheduleNotificationAsync({
 						content: {
-							title: `Washing Machine ${alias}`,
-							body: `Your washing will finish at ${format(finishDate, 'dd.MM.yyyy HH:mm')}.`,
+							title: translate(TranslationKeys.washingMachineNotificationTitle).replace('${alias}', String(alias ?? '')),
+							body: translate(TranslationKeys.washingMachineNotificationBody).replace('${date}', format(finishDate, 'dd.MM.yyyy HH:mm')),
 						},
 						trigger: {
 							type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -132,7 +132,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 	const getStatusText = (date_finished: string | null) => {
 		if (!date_finished) {
-			return 'Status unknown';
+			return translate(TranslationKeys.statusUnknown);
 		}
 
 		const currentDate = new Date();
@@ -140,12 +140,12 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 		// Determine the correct status based on the date
 		if (isAfter(finishedDate, currentDate)) {
-			return `Finishes on ${format(finishedDate, 'dd.MM.yyyy HH:mm')}`;
+			return translate(TranslationKeys.finishesOnWithDate).replace('${date}', format(finishedDate, 'dd.MM.yyyy HH:mm'));
 		} else if (isBefore(finishedDate, currentDate)) {
-			return 'Washing Finished';
+			return translate(TranslationKeys.washingmachine_state_finished);
 		}
 
-		return 'Status unknown';
+		return translate(TranslationKeys.statusUnknown);
 	};
 
 	return (

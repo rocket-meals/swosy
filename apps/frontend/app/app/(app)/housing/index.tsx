@@ -131,7 +131,7 @@ const Index: React.FC = () => {
 			});
 		} catch (error) {
 			console.error('Error fetching apartments or buildings:', error);
-			toast('Failed to load apartments', 'error');
+			toast(translate(TranslationKeys.failedToLoadApartments), 'error');
 		} finally {
 			setLoading(false);
 		}
@@ -162,7 +162,7 @@ const Index: React.FC = () => {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				toast('Permission denied', 'error');
+				toast(translate(TranslationKeys.permission_denied_title), 'error');
 				return;
 			}
 			const loc = await Location.getCurrentPositionAsync({});

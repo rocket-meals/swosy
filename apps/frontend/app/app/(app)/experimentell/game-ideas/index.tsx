@@ -9,13 +9,15 @@ import styles from './styles';
 import AppButton from '@/components/AppButton';
 
 interface Dish {
-	name: string;
+	id: string;
+	nameKey: TranslationKeys;
 	rating: number;
 	price: number;
 }
 
 interface Marking {
-	name: string;
+	id: string;
+	nameKey: TranslationKeys;
 	dislikes: number;
 }
 
@@ -26,18 +28,18 @@ interface Card {
 }
 
 const dishes: Dish[] = [
-	{ name: 'Pasta', rating: 4.5, price: 3.5 },
-	{ name: 'Burger', rating: 4.1, price: 4.9 },
-	{ name: 'Salad', rating: 3.8, price: 2.8 },
-	{ name: 'Sushi', rating: 4.7, price: 5.5 },
-	{ name: 'Pizza', rating: 4.3, price: 4.2 },
-	{ name: 'Soup', rating: 3.9, price: 2.5 },
+	{ id: 'pasta', nameKey: TranslationKeys.demo_dish_pasta, rating: 4.5, price: 3.5 },
+	{ id: 'burger', nameKey: TranslationKeys.demo_dish_burger, rating: 4.1, price: 4.9 },
+	{ id: 'salad', nameKey: TranslationKeys.demo_dish_salad, rating: 3.8, price: 2.8 },
+	{ id: 'sushi', nameKey: TranslationKeys.demo_dish_sushi, rating: 4.7, price: 5.5 },
+	{ id: 'pizza', nameKey: TranslationKeys.demo_dish_pizza, rating: 4.3, price: 4.2 },
+	{ id: 'soup', nameKey: TranslationKeys.demo_dish_soup, rating: 3.9, price: 2.5 },
 ];
 
 const markings: Marking[] = [
-	{ name: 'Too Spicy', dislikes: 80 },
-	{ name: 'Too Salty', dislikes: 60 },
-	{ name: 'Too Sweet', dislikes: 40 },
+	{ id: 'too_spicy', nameKey: TranslationKeys.demo_marking_too_spicy, dislikes: 80 },
+	{ id: 'too_salty', nameKey: TranslationKeys.demo_marking_too_salty, dislikes: 60 },
+	{ id: 'too_sweet', nameKey: TranslationKeys.demo_marking_too_sweet, dislikes: 40 },
 ];
 
 const foodIcons = ['🍔', '🍕', '🍣', '🥗', '🍰', '🍟', '🌮', '🍜', '🍩', '🍇', '🍤', '🥐'];
@@ -79,19 +81,19 @@ const GameIdeas = () => {
 	const mostDisliked = useMemo(() => markings.reduce((a, b) => (a.dislikes > b.dislikes ? a : b), markings[0] || {}), []);
 
 	const handleRatingGuess = (dish: Dish) => {
-		const other = ratingPair.find(d => d.name !== dish.name)!;
+		const other = ratingPair.find(d => d.id !== dish.id)!;
 		setRatingResult(dish.rating >= other.rating ? '✔' : '✖');
 		setRatingPair(getRandomPair());
 	};
 
 	const handlePriceGuess = (dish: Dish) => {
-		const other = pricePair.find(d => d.name !== dish.name)!;
+		const other = pricePair.find(d => d.id !== dish.id)!;
 		setPriceResult(dish.price >= other.price ? '✔' : '✖');
 		setPricePair(getRandomPair());
 	};
 
 	const handleMarkingGuess = (marking: Marking) => {
-		setMarkingResult(marking.name === mostDisliked.name ? '✔' : '✖');
+		setMarkingResult(marking.id === (mostDisliked as Marking).id ? '✔' : '✖');
 	};
 
 	const handleCardPress = (index: number) => {
@@ -129,10 +131,10 @@ const GameIdeas = () => {
 			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{ratingPair.map(dish => (
 					<AppButton
-						key={dish.name}
+						key={dish.id}
 						variant="ghost"
 						usePlainText
-						text={dish.name}
+						text={translate(dish.nameKey)}
 						onPress={() => handleRatingGuess(dish)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
 						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}
@@ -145,10 +147,10 @@ const GameIdeas = () => {
 			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{markings.map(m => (
 					<AppButton
-						key={m.name}
+						key={m.id}
 						variant="ghost"
 						usePlainText
-						text={m.name}
+						text={translate(m.nameKey)}
 						onPress={() => handleMarkingGuess(m)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
 						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}
@@ -180,10 +182,10 @@ const GameIdeas = () => {
 			<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 				{pricePair.map(dish => (
 					<AppButton
-						key={dish.name}
+						key={dish.id}
 						variant="ghost"
 						usePlainText
-						text={dish.name}
+						text={translate(dish.nameKey)}
 						onPress={() => handlePriceGuess(dish)}
 						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
 						textStyle={{ color: theme.screen.text, textAlign: isArabic ? 'right' : 'left' }}

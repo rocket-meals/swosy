@@ -52,7 +52,7 @@ const EatingHabitsPlainTextImage = () => {
 				style={{ backgroundColor: theme.screen.background }}
 				contentContainerStyle={{ padding: 16 }}
 			>
-				<DebugView title="Plain: Text, Translation & Image" logs={debugLogs} isVisible />
+				<DebugView title={translate(TranslationKeys.plainTextTranslationAndImageDebugTitle)} logs={debugLogs} isVisible />
 				<View>
 					{(markings ?? []).map((marking: DatabaseTypes.Markings) => {
 						const name = getTextFromTranslation(marking.translations, language);

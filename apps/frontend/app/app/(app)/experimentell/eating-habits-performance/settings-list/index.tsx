@@ -120,7 +120,7 @@ const EatingHabitsSettingsList = () => {
 				style={{ backgroundColor: theme.screen.background }}
 				contentContainerStyle={{ padding: 16 }}
 			>
-				<DebugView title="SettingsList: Image, Name & Like Status" logs={debugLogs} isVisible />
+				<DebugView title={translate(TranslationKeys.settingsListDebugTitle)} logs={debugLogs} isVisible />
 				<View>
 					{markingIds.map((id: string, index: number) => {
 						const total = markingIds.length;

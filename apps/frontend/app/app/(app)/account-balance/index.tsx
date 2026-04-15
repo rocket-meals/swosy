@@ -401,7 +401,7 @@ const AccountBalanceScreen = () => {
 									};
 									try {
 										await callBack(mock);
-										toast(`Simulated NFC read: ${amount}€`, 'info');
+										toast(translate(TranslationKeys.simulatedNfcRead).replace('${amount}', String(amount)), 'info');
 									} catch (e: any) {
 										console.error('Error in simulated read', e);
 										addDebugError(e, 'Simulated NFC Read');

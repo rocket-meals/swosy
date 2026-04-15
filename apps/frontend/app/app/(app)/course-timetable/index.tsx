@@ -106,7 +106,7 @@ const TimetableScreen = () => {
 					if (supported) {
 						await Linking.openURL(link);
 					} else {
-						toast(`Cannot open URL: ${link}`, 'error');
+						toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', link), 'error');
 					}
 				}
 			} catch (error) {

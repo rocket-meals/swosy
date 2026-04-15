@@ -39,7 +39,7 @@ const DistanceModal: React.FC<DistanceModalProps> = ({ visible, onClose, onUseCu
 					onPress={onUseCurrentPosition}
 					textStyle={{ color: contrastColor }}
 				/>
-				<Text style={{ color: theme.screen.text }}>{'Wir teilen deinen aktuellen Standort nicht mit uns. Er wird ausschließlich auf deinem Handy verwendet, um die Entfernung zu berechnen. Aus Datenschutzgründen verlassen diese Daten niemals dein Gerät und werden nicht gespeichert. So kannst du sicher sein, dass deine Privatsphäre geschützt ist, während du den vollen Funktionsumfang testen kannst.'}</Text>
+				<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.distancePrivacyNotice)}</Text>
 			</View>
 		</BaseBottomModal>
 	);

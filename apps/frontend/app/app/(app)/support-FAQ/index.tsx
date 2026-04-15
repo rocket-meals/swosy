@@ -49,7 +49,7 @@ const SupportFaq = () => {
 				if (supported) {
 					await Linking.openURL(url);
 				} else {
-					toast(`Cannot open URL: ${url}`, 'error');
+					toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', url), 'error');
 				}
 			}
 		} catch (error) {

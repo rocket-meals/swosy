@@ -153,7 +153,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 					: await ImagePicker.requestMediaLibraryPermissionsAsync();
 
 				if (!permissionResponse.granted) {
-					Alert.alert('Permission Denied', 'Please grant permissions to access the camera or gallery.');
+					Alert.alert(translate(TranslationKeys.permission_denied_title), translate(TranslationKeys.camera_gallery_permission_message));
 					return;
 				}
 
@@ -176,7 +176,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 						});
 
 				if (pickerResult.canceled) {
-					Alert.alert('Canceled the image');
+					Alert.alert(translate(TranslationKeys.image_picker_canceled));
 					return;
 				}
 
@@ -265,7 +265,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 					children: (
 						<View style={{ gap: 12 }}>
 							<Text style={{ color: theme.screen.text }}>
-								Fehler beim Hochladen: {errorMessage}
+								{translate(TranslationKeys.upload_error_message).replace('${errorMessage}', errorMessage)}
 							</Text>
 							<Text style={{ color: theme.screen.text, fontFamily: 'monospace' }}>{errorDetails}</Text>
 						</View>

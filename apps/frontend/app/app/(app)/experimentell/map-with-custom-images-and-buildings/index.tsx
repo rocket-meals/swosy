@@ -94,10 +94,10 @@ const BUILDINGS_3D = [
 type LayerGroup = 'poi' | 'parking' | 'transit' | 'roadLabels';
 
 const LAYER_TOGGLE_BUTTONS: { group: LayerGroup; label: string; emoji: string }[] = [
-    { group: 'poi',        label: 'Shops/POI',   emoji: '🏪' },
-    { group: 'parking',    label: 'Parking',     emoji: '🅿️' },
-    { group: 'transit',    label: 'Bus/Transit', emoji: '🚌' },
-    { group: 'roadLabels', label: 'Road names',  emoji: '🛣️' },
+    { group: 'poi',        label: TranslationKeys.shops_poi,   emoji: '🏪' },
+    { group: 'parking',    label: TranslationKeys.parking,     emoji: '🅿️' },
+    { group: 'transit',    label: TranslationKeys.bus_transit, emoji: '🚌' },
+    { group: 'roadLabels', label: TranslationKeys.road_names,  emoji: '🛣️' },
 ];
 
 type Props = {

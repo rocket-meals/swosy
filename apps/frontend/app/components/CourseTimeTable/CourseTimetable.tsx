@@ -175,7 +175,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 							},
 						]}
 					>
-						<Text style={styles.currentTimeText}>Now</Text>
+						<Text style={styles.currentTimeText}>{translate(TranslationKeys.now)}</Text>
 					</View>
 				)}
 				<View

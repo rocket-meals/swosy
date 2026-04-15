@@ -6,9 +6,12 @@ import styles from './styles';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { router } from 'expo-router';
 import AppButton from '../AppButton';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const FoodPlanWeek = ({ data, onPressItem }: { data: any[]; onPressItem: (item: any) => void }) => {
 	const { theme } = useTheme();
+	const {translate} = useLanguage();
 
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
@@ -98,7 +101,7 @@ const FoodPlanWeek = ({ data, onPressItem }: { data: any[]; onPressItem: (item: 
 			<AppButton
 				variant="ghost"
 				usePlainText
-				text="Wochen Auswahl"
+				text={translate(TranslationKeys.weekSelection)}
 				onPress={() => router.navigate('/list-week-screen')}
 				style={[styles.mainContainer, { backgroundColor: theme.screen.iconBg, marginVertical: 0 }]}
 				textStyle={{

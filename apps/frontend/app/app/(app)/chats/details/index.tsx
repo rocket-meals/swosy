@@ -364,7 +364,7 @@ const ChatDetailsScreen = () => {
                 const alias = food.alias || '';
                 const fallbackName = alias ? alias.charAt(0).toUpperCase() + alias.slice(1) : undefined;
                 const foodName =
-                        getFoodName(food, language) || fallbackName || translate(TranslationKeys.unknown);
+                        getFoodName(food, language) || fallbackName || 'unknown';
                 const imageSource =
                         food?.image_remote_url
                                 ? { uri: food.image_remote_url }

@@ -91,7 +91,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 			if (selectedItem?.label !== 'title' && selectedItem?.label !== 'location') {
 				if (!validateTime(inputValue)) {
 					// Show a toast for invalid time
-					toast('Please enter time in HH:MM format (e.g., 08:30)', 'error');
+					toast(translate(TranslationKeys.pleaseEnterTimeInHhMmFormat), 'error');
 
 					return; // Prevent saving if time is invalid
 				}
@@ -140,7 +140,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 		// Check if start time is greater than or equal to end time
 		if (!isBefore(startTimeParsed, endTimeParsed) || isEqual(startTimeParsed, endTimeParsed)) {
-			toast('Start time must be earlier than End time.', 'error');
+			toast(translate(TranslationKeys.startTimeMustBeEarlierThanEndTime), 'error');
 
 			setLoading(false);
 			return; // Prevent saving if times are invalid
@@ -233,7 +233,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 		// Check if start time is greater than or equal to end time
 		if (!isBefore(startTimeParsed, endTimeParsed) || isEqual(startTimeParsed, endTimeParsed)) {
-			toast('Start time must be earlier than End time.', 'error');
+			toast(translate(TranslationKeys.startTimeMustBeEarlierThanEndTime), 'error');
 
 			setLoading(false);
 			return; // Prevent saving if times are invalid
@@ -297,7 +297,11 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						color: theme.sheet.text,
 					}}
 				>
-					{selectedItem ? selectedItem.label : isUpdate ? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}` : `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`}
+					{selectedItem
+						? translate(selectedItem.label)
+						: isUpdate
+							? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`
+							: `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`}
 				</Text>
 			</View>
 
@@ -336,7 +340,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						</View>
 					) : (
 						<View style={styles.titleBt}>
-							<TextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
+							<TextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={translate(TranslationKeys.enterAValue)} autoFocus />
 
 							<View style={[styles.buttonContainer]}>
 								<AppButton

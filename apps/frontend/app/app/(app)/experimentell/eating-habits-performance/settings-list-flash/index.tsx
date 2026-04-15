@@ -65,8 +65,8 @@ const EatingHabitsSettingsListFlash = () => {
 	const keyExtractor = useCallback((id: string) => id, []);
 
 	const ListHeaderComponent = useMemo(
-		() => <DebugView title="SettingsListFlash: Image, Name & Like/Dislike (FlashList)" logs={debugLogs} isVisible />,
-		[debugLogs]
+		() => <DebugView title={translate(TranslationKeys.settingsListFlashDebugTitle)} logs={debugLogs} isVisible />,
+		[debugLogs, translate]
 	);
 
 	return (
