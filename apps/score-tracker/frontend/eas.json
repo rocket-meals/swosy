@@ -1,0 +1,19 @@
+{
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "node": "22.16.0",
+      "channel": "preview"
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "autoIncrement": false,
+      "channel": "production",
+      "node": "22.16.0"
+    }
+  }
+}
