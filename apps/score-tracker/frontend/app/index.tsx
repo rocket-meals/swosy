@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -124,11 +124,8 @@ function ScoreTextInput({
 	onSubmit: () => void;
 }) {
 	const { theme } = useTheme();
-	// Use a regular TextInput import from react-native for this modal content.
-	// The BottomSheetTextInput is only needed inside bottom sheets.
-	const RNTextInput = require('react-native').TextInput;
 	return (
-		<RNTextInput
+		<TextInput
 			style={[styles.scoreInputNative, { color: theme.screen.text }]}
 			value={value}
 			onChangeText={onChangeText}
