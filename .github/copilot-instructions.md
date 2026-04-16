@@ -22,6 +22,20 @@
   3. A `<app>-expo-update` job for OTA updates.
 - **Whenever any native change is made to an existing app** (not just plugin changes), increment `getBuildNumber()` in that app's `config.ts` by at least 1 to trigger a new native build in CI.
 
+## New Expo apps: EAS config generation
+
+- **Every new Expo app must have a `generate-eas-config.ts` script** set up under `apps/<app>/scripts/generate-eas-config.ts`, following the pattern of existing apps (e.g. `apps/score-tracker/scripts/generate-eas-config.ts`).
+- The script reads `apps/<app>/frontend/eas.template.json` (which contains static submit config such as `appleId` and `appleTeamId`) and writes the final `apps/<app>/frontend/eas.json`, optionally injecting `ascAppId` from `getCustomerConfig().appleAppId`.
+- **After creating or updating the template**, run the script to (re-)generate `eas.json`:
+  ```
+  yarn workspace <app-workspace-name> generate:eas
+  ```
+- Add a `"generate:eas"` entry to the app's `package.json` scripts pointing to the script:
+  ```json
+  "generate:eas": "ts-node --project ../scripts/tsconfig.json ../scripts/generate-eas-config.ts"
+  ```
+- **Never edit `eas.json` manually** — always update `eas.template.json` and re-run the script.
+
 ## Geonexia: Dialogs and alerts
 
 - **Never use React Native's `Alert` in Geonexia.** Use `useMyScrollviewModal` instead for all user-facing dialogs, confirmations, and notifications.

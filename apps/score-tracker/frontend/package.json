@@ -8,7 +8,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "export:web": "expo export --platform web"
+    "export:web": "expo export --platform web",
+    "generate:eas": "ts-node --project ../scripts/tsconfig.json ../scripts/generate-eas-config.ts"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
