@@ -99,9 +99,15 @@ function ScoreInputContent({
 
 	const handleQuickScore = useCallback(
 		(value: number) => {
-			onSave(value);
+			if (value < 0) {
+				setSignMode('minus');
+				setText(String(Math.abs(value)));
+			} else {
+				setSignMode('plus');
+				setText(String(value));
+			}
 		},
-		[onSave],
+		[],
 	);
 
 	return (
