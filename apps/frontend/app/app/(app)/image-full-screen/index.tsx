@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Dimensions, Platform, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
@@ -15,6 +15,8 @@ import useToast from '@/hooks/useToast';
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useDebugMode from '@/hooks/useDebugMode';
 
 export default function ImageFullScreen() {
 	const { uri, assetId } = useLocalSearchParams<{
@@ -27,6 +29,8 @@ export default function ImageFullScreen() {
 	const { translate } = useLanguage();
 	const [showControls, setShowControls] = useState(true);
 	const [modalVisible, setModalVisible] = useState(false);
+	const { show: showScrollViewModal } = useMyScrollViewModal();
+	const isDebugMode = useDebugMode();
 
 	const highResUri = assetId ? getHighResImageUrl(String(assetId)) : String(uri);
 	const lowResUri = uri ? String(uri) : highResUri;
@@ -167,6 +171,26 @@ export default function ImageFullScreen() {
 			}
 		} catch (e) {
 			toast('Download failed', 'error');
+			if (isDebugMode) {
+				const debugText = [
+					'Download failed',
+					`highResUri: ${highResUri}`,
+					`lowResUri: ${lowResUri}`,
+					`assetId: ${assetId}`,
+					`error: ${e instanceof Error ? e.message : String(e)}`,
+					`stack: ${e instanceof Error ? e.stack : ''}`,
+				].join('\n\n');
+				showScrollViewModal({
+					title: 'Debug: Download Error',
+					children: (
+						<ScrollView>
+							<Text selectable style={{ fontFamily: 'monospace', fontSize: 12, color: theme.screen.text }}>
+								{debugText}
+							</Text>
+						</ScrollView>
+					),
+				});
+			}
 		}
 	};
 
