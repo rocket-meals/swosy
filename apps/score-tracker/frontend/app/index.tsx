@@ -98,12 +98,19 @@ function ScoreInputContent({
 	}, [text, signMode, onSave]);
 
 	const handleQuickScore = useCallback(
-		(delta: number | null) => {
-			const base = initialValue ?? 0;
-			const newValue = delta === null ? 0 : base + delta;
-			onSave(newValue);
+		(delta: number) => {
+			const currentNum = text.trim() === '' ? 0 : parseInt(text, 10) || 0;
+			const currentSigned = signMode === 'minus' ? -Math.abs(currentNum) : Math.abs(currentNum);
+			const newValue = delta === 0 ? 0 : currentSigned + delta;
+			if (newValue < 0) {
+				setSignMode('minus');
+				setText(String(Math.abs(newValue)));
+			} else {
+				setSignMode('plus');
+				setText(String(newValue));
+			}
 		},
-		[initialValue, onSave],
+		[text, signMode],
 	);
 
 	return (
@@ -172,7 +179,7 @@ function ScoreInputContent({
 								borderColor: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.border,
 							},
 						]}
-						onPress={() => handleQuickScore(v === 0 ? null : v)}
+						onPress={() => handleQuickScore(v)}
 						activeOpacity={0.7}
 					>
 						<Text style={[styles.quickButtonText, { color: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.text }]}>
