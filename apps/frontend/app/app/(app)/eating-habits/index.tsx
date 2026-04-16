@@ -20,10 +20,13 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import ProjectButton from '@/components/ProjectButton';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -31,7 +34,7 @@ const Index = () => {
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { markings } = useAppSelector((state) => state.food);
-	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode, foodoffersShowSeparatedMarkingsBreakdown } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
@@ -40,6 +43,7 @@ const Index = () => {
 	const [isActive, setIsActive] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
@@ -112,6 +116,36 @@ const Index = () => {
 		}
 	}, [dispatch, isAnonymousUser, profile, profileHelper]);
 
+	const handleClearMarkingsWithConfirmation = useCallback(() => {
+		showModal(
+			{
+				children: (
+					<View style={{ gap: 12 }}>
+						<Text style={{ fontSize: 18, fontWeight: '600', color: theme.screen.text }}>
+							{translate(TranslationKeys.clear_markings_selection)}
+						</Text>
+						<ProjectButton
+							text={translate(TranslationKeys.confirm)}
+							onPress={() => {
+								closeModal();
+								void handleClearMarkings();
+							}}
+							style={{ marginVertical: 0 }}
+						/>
+						<TouchableOpacity onPress={closeModal} style={{ alignSelf: 'center', paddingVertical: 6 }}>
+							<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
+						</TouchableOpacity>
+					</View>
+				),
+			},
+			{}
+		);
+	}, [showModal, closeModal, translate, theme.screen.text, handleClearMarkings]);
+
+	const handleToggleSeparatedMarkingsBreakdown = useCallback(() => {
+		dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: !foodoffersShowSeparatedMarkingsBreakdown });
+	}, [dispatch, foodoffersShowSeparatedMarkingsBreakdown]);
+
 	const renderItem = useCallback(({ item, index }: { item: string; index: number }) => {
 		const total = markingIds.length;
 		const groupPosition: SettingsListProps['groupPosition'] =
@@ -143,16 +177,22 @@ const Index = () => {
 				</TouchableOpacity>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
+			<SettingsListBoolean
+				title={translate(TranslationKeys.foodoffers_show_separated_markings_breakdown)}
+				isEnabled={foodoffersShowSeparatedMarkingsBreakdown}
+				onToggle={handleToggleSeparatedMarkingsBreakdown}
+				groupPosition="top"
+			/>
 			<SettingsList
 				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
-				handleFunction={handleClearMarkings}
-				groupPosition="single"
+				handleFunction={handleClearMarkingsWithConfirmation}
+				groupPosition="bottom"
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, foodoffersShowSeparatedMarkingsBreakdown, handleToggleSeparatedMarkingsBreakdown]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />

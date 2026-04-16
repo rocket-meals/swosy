@@ -17,7 +17,6 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { getCustomerConfig } from '@/config';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -38,9 +37,8 @@ export const selectFoodOffer = (offerId?: string) =>
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-
-	const showSeparatedMarkingsBreakdown = getCustomerConfig().foodoffers_show_separated_markings_breakdown ?? false;
+	const { primaryColor, appSettings, foodoffersShowSeparatedMarkingsBreakdown } = useSelector((state: RootState) => state.settings);
+	const showSeparatedMarkingsBreakdown = foodoffersShowSeparatedMarkingsBreakdown ?? false;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
