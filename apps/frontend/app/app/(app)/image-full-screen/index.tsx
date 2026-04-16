@@ -157,13 +157,20 @@ export default function ImageFullScreen() {
 				if (format) {
 					extension = format;
 				} else {
-					const pathExt = urlObj.pathname.split('.').pop();
-					if (pathExt && pathExt.length <= 5) {
-						extension = pathExt;
+					const lastSegment = urlObj.pathname.split('/').pop() ?? '';
+					const dotIndex = lastSegment.lastIndexOf('.');
+					if (dotIndex !== -1) {
+						const pathExt = lastSegment.slice(dotIndex + 1);
+						if (pathExt.length > 0 && pathExt.length <= 5) {
+							extension = pathExt;
+						}
 					}
 				}
-			} catch {
+			} catch (urlError) {
 				// URL parsing failed, keep default extension
+				if (isDebugMode) {
+					console.warn('Failed to parse image URL for extension:', urlError);
+				}
 			}
 			const name = assetId ? assetId : `image_${Date.now()}`;
 			if (Platform.OS === 'web') {
