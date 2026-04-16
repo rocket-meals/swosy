@@ -150,17 +150,31 @@ export default function ImageFullScreen() {
 
 	const downloadImage = async () => {
 		try {
-			const extension = String(highResUri).split('.').pop()?.split(/[#?]/)[0];
+			let extension = 'jpg';
+			try {
+				const urlObj = new URL(String(highResUri));
+				const format = urlObj.searchParams.get('format');
+				if (format) {
+					extension = format;
+				} else {
+					const pathExt = urlObj.pathname.split('.').pop();
+					if (pathExt && pathExt.length <= 5) {
+						extension = pathExt;
+					}
+				}
+			} catch {
+				// URL parsing failed, keep default extension
+			}
 			const name = assetId ? assetId : `image_${Date.now()}`;
 			if (Platform.OS === 'web') {
 				const link = document.createElement('a');
 				link.href = String(highResUri);
-				link.download = extension ? `${name}.${extension}` : name;
+				link.download = `${name}.${extension}`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
 			} else {
-				const filename = extension ? `${name}.${extension}` : name;
+				const filename = `${name}.${extension}`;
 				const fileUri = (FileSystem as any).documentDirectory + filename;
 				const { uri } = await FileSystem.downloadAsync(String(highResUri), fileUri);
 				await Share.share({
