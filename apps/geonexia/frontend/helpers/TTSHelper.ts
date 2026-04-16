@@ -1,7 +1,7 @@
 import * as Speech from 'expo-speech';
 import { setAudioModeAsync } from 'expo-audio';
 import type { SpeechRate } from '../store/speechSettingsSlice';
-import { appendTTSLogEntry } from './TTSLogStorage';
+import { enqueueAnnouncement } from './AudioQueueHelper';
 
 // ─── Speech rate mapping ──────────────────────────────────────────────────────
 
@@ -120,9 +120,10 @@ export function buildKmAnnouncement(
 }
 
 /**
- * Speak a TTS announcement, stopping any currently playing speech first.
- * `useApplicationAudioSession` defaults to `true` so background music is not
- * interrupted on iOS.  All other options can be overridden via the third arg.
+ * Add a TTS announcement to the audio queue.
+ * Items are spoken sequentially; the next item starts only after the previous
+ * one finishes (or errors).  Background playback is handled by
+ * {@link enableBackgroundAudio}.
  *
  * Every call is logged to the TTS log storage (text + outcome) so that crash
  * causes can be diagnosed later from the Settings screen.
@@ -137,34 +138,9 @@ export function speakAnnouncement(
 	options?: Omit<Speech.SpeechOptions, 'language'>,
 	source: string = 'unknown',
 ): void {
-	// Log intent *before* the speech call.
-	void appendTTSLogEntry({
-		timestamp: Date.now(),
-		text,
-		languageCode,
-		success: true,
-		source,
-	});
-
-	try {
-		Speech.stop();
-		Speech.speak(text, {
-			useApplicationAudioSession: true,
-			...options,
-			language: languageCode,
-		});
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		console.warn('[TTSHelper] speakAnnouncement failed:', message);
-		void appendTTSLogEntry({
-			timestamp: Date.now(),
-			text,
-			languageCode,
-			success: false,
-			error: message,
-			source,
-		});
-	}
+	// Strip the callback keys that AudioQueueHelper manages internally.
+	const { onDone: _d, onError: _e, onStopped: _s, ...forwardedOptions } = (options ?? {}) as Speech.SpeechOptions;
+	enqueueAnnouncement(text, languageCode, forwardedOptions, source);
 }
 
 // ─── Distance / speed formatting helpers ─────────────────────────────────────
@@ -220,6 +196,29 @@ export interface PeriodicAnnouncementContent {
 	announceSpeed: boolean;
 	announceCalories: boolean;
 	announceHeartRate: boolean;
+	announcePaceAvg: boolean;
+	announceSpeedAvg: boolean;
+}
+
+/**
+ * Format pace (min/km) as a localised speech string fragment.
+ * @param paceMinPerKm  Pace value in minutes per km
+ * @param langCode      Primary language code (e.g. "de", "en")
+ * @param prefix        Label prefix to prepend (e.g. "Pace" or "Durchschnittliche Pace:")
+ * @param prefixEn      English label prefix
+ */
+function formatPaceForSpeech(
+	paceMinPerKm: number,
+	langCode: string,
+	prefix: string,
+	prefixEn: string,
+): string {
+	const pm = Math.floor(paceMinPerKm);
+	const ps = Math.round((paceMinPerKm - pm) * 60);
+	if (langCode === 'de') {
+		return `${prefix} ${pm} Minuten ${ps} Sekunden`;
+	}
+	return `${prefixEn} ${pm} minutes ${ps} seconds`;
 }
 
 /**
@@ -254,13 +253,11 @@ export function buildPeriodicAnnouncement(
 	}
 
 	if (content.announcePace && stats.paceMinPerKm != null) {
-		const pm = Math.floor(stats.paceMinPerKm);
-		const ps = Math.round((stats.paceMinPerKm - pm) * 60);
-		if (langCode === 'de') {
-			parts.push(`Pace ${pm} Minuten ${ps} Sekunden`);
-		} else {
-			parts.push(`Pace ${pm} minutes ${ps} seconds`);
-		}
+		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Pace', 'Pace'));
+	}
+
+	if (content.announcePaceAvg && stats.paceMinPerKm != null) {
+		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Durchschnittliche Pace:', 'Average pace:'));
 	}
 
 	if (content.announceDuration) {
@@ -292,6 +289,19 @@ export function buildPeriodicAnnouncement(
 				parts.push(`${sp} Kilometer pro Stunde`);
 			} else {
 				parts.push(`${sp} kilometers per hour`);
+			}
+		}
+	}
+
+	if (content.announceSpeedAvg) {
+		// Average speed is always derived from avg pace (total distance / total time).
+		const avgKmh = paceToKmh(stats.paceMinPerKm);
+		if (avgKmh != null) {
+			const sp = formatSpeedForSpeech(avgKmh);
+			if (langCode === 'de') {
+				parts.push(`Durchschnittliche Geschwindigkeit: ${sp} Kilometer pro Stunde`);
+			} else {
+				parts.push(`Average speed: ${sp} kilometers per hour`);
 			}
 		}
 	}
@@ -359,4 +369,30 @@ export function buildPaceHintAnnouncement(
 	}
 	const label = kind === 'too_fast' ? 'Too fast' : 'Too slow';
 	return `${label}. Current pace ${curMin} minutes ${curSec} seconds. Target pace ${tgtMin} minutes ${tgtSec} seconds.`;
+}
+
+/**
+ * Build a localised TTS announcement for when the pace returns to the
+ * acceptable target range after a "too fast" or "too slow" warning.
+ *
+ * @param locale  Full BCP-47 locale tag
+ */
+export function buildOnTargetAnnouncement(locale: string): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	switch (langCode) {
+		case 'de':
+			return 'Zielgeschwindigkeit erreicht';
+		case 'fr':
+			return 'Vitesse cible atteinte';
+		case 'es':
+			return 'Velocidad objetivo alcanzada';
+		case 'it':
+			return 'Velocità target raggiunta';
+		case 'pt':
+			return 'Velocidade alvo atingida';
+		case 'nl':
+			return 'Doelsnelheid bereikt';
+		default:
+			return 'Target pace reached';
+	}
 }

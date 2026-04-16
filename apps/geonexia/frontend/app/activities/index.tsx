@@ -1,6 +1,5 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
-	Alert,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -20,12 +19,13 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
-import { AppDispatch } from '../../store/store';
+import { AppDispatch, store } from '../../store/store';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -83,6 +83,7 @@ export default function ActivitiesScreen() {
 	const navigation = useNavigation();
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -122,7 +123,7 @@ export default function ActivitiesScreen() {
 		try {
 			parsed = JSON.parse(code);
 		} catch {
-			Alert.alert('Import Failed', 'The code is not valid JSON.');
+			showAlert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
 
@@ -136,7 +137,7 @@ export default function ActivitiesScreen() {
 				typeof activity.startedAt !== 'number' ||
 				!Array.isArray(activity.routePoints)
 			) {
-				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				showAlert('Import Failed', 'One or more entries do not look like valid activities.');
 				return;
 			}
 			validActivities.push(activity);
@@ -148,23 +149,23 @@ export default function ActivitiesScreen() {
 		closeImportModal();
 		loadData();
 		const count = validActivities.length;
-		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
+		showAlert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
 
 	const handleExportAll = useCallback(async () => {
 		const allActivities = await loadActivities();
 		if (allActivities.length === 0) {
-			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			showAlert('Nothing to Export', 'There are no activities to export.');
 			return;
 		}
 		const json = JSON.stringify(allActivities, null, 2);
 		await Clipboard.setStringAsync(json);
 		const count = allActivities.length;
-		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
 	}, []);
 
 	const handleRebuildMap = useCallback(() => {
-		Alert.alert(
+		showAlert(
 			'Rebuild Map from Activities',
 			'This will recalculate the explored map from all your saved activities. All tile customizations (including manually set tiles) will be reset. Continue?',
 			[
@@ -174,36 +175,42 @@ export default function ActivitiesScreen() {
 					style: 'destructive',
 					onPress: async () => {
 						if (!isH3Available()) {
-							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							showAlert('Not Available', 'H3 library is not available on this device.');
 							return;
 						}
 						const allActivities = await loadActivities();
 						if (allActivities.length === 0) {
-							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							showAlert('No Activities', 'There are no activities to rebuild the map from.');
 							return;
 						}
 
-						// Migrate activities that are missing computed.enclosedHexTiles.
+						// Recompute enclosed tiles for every activity that has enough walked tiles.
+						// This corrects stale stored values (e.g. open-route activities that were
+						// previously recorded with a closed loop) and fills in missing data for
+						// activities saved before the computed field was introduced.
 						// The canonical home for enclosed-tile data is computed.enclosedHexTiles.
 						// The top-level fields enclosedHexTiles / hexTilesEnclosed are legacy and
 						// must never be written; they are only kept for reading old activity files.
 						for (const activity of allActivities) {
 							let updated = false;
 
-							// Determine enclosed tiles: prefer computed, then fall back to legacy fields.
-							let enclosedTiles: string[] =
-								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
-
-							// Recompute from visited hex tiles when enclosed tiles are still unavailable.
-							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
-							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+							// Always recompute from the route when enough walked tiles are available.
+							// Include interpolated GPS point tiles so routes closed via route
+							// interpolation also form a proper closed loop for the polygon check.
+							// Fall back to stored values only for legacy activities without hexTilesOrdered.
+							let enclosedTiles: string[];
+							if (activity.hexTilesOrdered?.length) {
+								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
-									activity.hexTilesOrdered,
-									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+									h3Res,
 								);
+							} else {
+								enclosedTiles =
+									activity.computed?.enclosedHexTiles ??
+									activity.enclosedHexTiles ??
+									activity.hexTilesEnclosed ??
+									[];
 							}
 
 							if (!activity.computed) {
@@ -214,12 +221,11 @@ export default function ActivitiesScreen() {
 								updated = true;
 							} else if (
 								!Array.isArray(activity.computed.enclosedHexTiles) ||
-								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+								activity.computed.enclosedHexTiles.length !== enclosedTiles.length ||
+								activity.computed.enclosedHexTiles.some((id, i) => id !== enclosedTiles[i])
 							) {
 								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount = enclosedTiles.length;
 								updated = true;
 							}
 
@@ -233,7 +239,10 @@ export default function ActivitiesScreen() {
 						// All existing tile state (including manual customizations) is discarded.
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache);
+						const homeHexTile = store.getState().playerInformation.homeHexTile;
+						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const routes = await loadRoutes();
+						applyRouteBenches(records, sorted, routes);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
 
@@ -271,7 +280,7 @@ export default function ActivitiesScreen() {
 						})();
 
 						const count = allActivities.length;
-						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+						showAlert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
 					},
 				},
 			],

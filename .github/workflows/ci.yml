@@ -390,6 +390,61 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ref_name: ${{ github.ref_name }}
 
+  score-tracker-check-build:
+    name: "🔍 Score Tracker Check Build Number"
+    runs-on: ubuntu-latest
+    needs: check-repository
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+      - name: "🔍 Compare Score Tracker Build Number"
+        id: check
+        uses: ./.github/actions/check-build-number
+        with:
+          working-directory: apps/score-tracker/frontend
+
+  score-tracker-build-ios:
+    name: "📦 Score Tracker Build & 🚀 Submit iOS App"
+    runs-on: ubuntu-latest
+    needs: [score-tracker-check-build, check-repository]
+    if: needs.score-tracker-check-build.outputs.changed == 'true'
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+      - name: "🛠️ Build and Submit Score Tracker iOS App"
+        run: eas build --platform ios --non-interactive --auto-submit
+        working-directory: ./apps/score-tracker/frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  score-tracker-expo-update:
+    name: "🎯 Score Tracker EAS Update (OTA)"
+    runs-on: ubuntu-latest
+    needs: [check-repository]
+    if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+    permissions:
+      contents: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: "🚀 Publish Score Tracker OTA update"
+        uses: ./.github/actions/score-tracker-expo-update
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ref_name: ${{ github.ref_name }}
+
   deploy-gh-pages:
     name: "🌍 Deploy to GitHub Pages"
     runs-on: ubuntu-latest

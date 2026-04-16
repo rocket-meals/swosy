@@ -78,11 +78,11 @@ export enum BillboardAnchorPosition {
  * A back-reference linking a hex tile to a specific activity that visited or
  * enclosed it.  At most one entry per activity is stored per tile.
  *
- * - `walkedIndex`   – index of this tile in the activity's `computed.hexTilesVisited` list
- * - `enclosedIndex` – index of this tile in the activity's `computed.enclosedHexTiles` list
+ * - `walkedIndex`         – index of this tile in the activity's `computed.hexTilesVisited` list
+ * - `enclosedIndex`       – index of this tile in the activity's `computed.enclosedHexTiles` list
  *
- * One reference object can carry both indices when the tile was both walked and
- * enclosed in the same activity (rare, but possible with self-crossing routes).
+ * One reference object can carry multiple indices when the tile was walked or
+ * enclosed in the same activity.
  */
 export type ActivityReference = {
 	activityId: string;
@@ -115,6 +115,13 @@ export type HexTileRecord = {
 	visitCount: number;
 	/** Total number of times this tile was enclosed by a completed run loop */
 	enclosedCount: number;
+	/**
+	 * Number of distinct activities that visited (walked on or enclosed) at
+	 * least one immediately neighbouring tile (ring-1 H3 disk neighbours,
+	 * excluding the tile itself).
+	 * Computed during the world-rebuild phase; not updated in real-time.
+	 */
+	avenueCount: number;
 	/** Colour level 0–10, recomputed after each update */
 	level: number;
 	/**
@@ -151,8 +158,18 @@ export type HexTileRecord = {
 	 * When `true` for an anchor, the billboard at that position is rendered flat
 	 * on the map surface (pitch-alignment = 'map') instead of facing the camera
 	 * (pitch-alignment = 'viewport').  Defaults to false when absent.
+	 * @deprecated Use `billboardsTexture` for flat anchor-positioned sprites.
 	 */
 	billboardsFlat?: Record<string, boolean>;
+	/**
+	 * Per-anchor texture adaption map. Keys are BillboardAnchorPosition values.
+	 * Each key maps to a billboard/sprite key (e.g. "objects:47") or null.
+	 * Unlike `billboards` (Hex Objects, always face-camera), texture adaptions
+	 * are always rendered flat on the map surface (pitch-alignment = 'map').
+	 * This is the "Hex Texture Adaption" layer, sitting between the Hex Textur
+	 * fill and the Hex Objects in the render stack.
+	 */
+	billboardsTexture?: Record<string, string | null>;
 	/**
 	 * Back-references to the activities that contributed to this tile's
 	 * visit/enclosure counts.  There is at most one entry per activity.
@@ -161,6 +178,21 @@ export type HexTileRecord = {
 	 * Optional for backward-compat with older saves.
 	 */
 	activityReferences?: ActivityReference[];
+	/**
+	 * H3 index of the parent cell (one resolution level coarser, i.e. resolution - 1).
+	 * Null for resolution-0 cells (no parent exists) or when the H3 library is unavailable.
+	 * Populated automatically during map rebuild.
+	 */
+	parentH3Index?: string | null;
+	/**
+	 * Position of this cell among its parent's 7 children (0–6).
+	 * Children are sorted by H3 index string ascending; the center child (via
+	 * `cellToCenterChild`) receives index 0 and the remaining 6 surrounding
+	 * children receive indices 1–6 in ascending H3-string order.
+	 * Null for resolution-0 cells or when the H3 library is unavailable.
+	 * Populated automatically during map rebuild.
+	 */
+	parentChildIndex?: number | null;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
@@ -175,8 +207,8 @@ export type HexTileRecord = {
  *   1  = lightest green (e.g. enclosed once, never walked)
  *   10 = darkest green  (e.g. visited 5 times)
  *
- * Visiting a tile contributes twice as much as being enclosed, so active
- * running has more visual impact than passive territory capture.
+ * Visiting a tile contributes twice as much as being enclosed,
+ * so active running has more visual impact than passive territory capture.
  */
 export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount'>): number {
 	const score = record.visitCount * 2 + record.enclosedCount;

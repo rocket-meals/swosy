@@ -15,7 +15,6 @@ import {
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
-	SettingsListNumberInput,
 	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
@@ -293,6 +292,8 @@ export default function SpeechSettingsContent() {
 				announceSpeed: settings.announceSpeed,
 				announceCalories: settings.announceCalories,
 				announceHeartRate: settings.announceHeartRate,
+				announcePaceAvg: settings.announcePaceAvg,
+				announceSpeedAvg: settings.announceSpeedAvg,
 			},
 		);
 		if (!text) return;
@@ -554,6 +555,20 @@ export default function SpeechSettingsContent() {
 
 			{/* ── Information intervals ──────────────────────────────── */}
 			<SettingsListGroupTitle title="Information im Intervall von" />
+			<PaceMinSecInput
+				iconBgColor={INTERVAL_COLOR}
+				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
+				label="Zeit"
+				modalTitle="Zeitintervall"
+				minutes={settings.intervalTimeMinutes}
+				seconds={settings.intervalTimeSeconds}
+				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
+				groupPosition="single"
+				primaryColor={INTERVAL_COLOR}
+			/>
+
+			{/* ── Announcement content toggles ───────────────────────── */}
+			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
@@ -564,36 +579,6 @@ export default function SpeechSettingsContent() {
 				valueInactive="Deaktiviert"
 				groupPosition="top"
 			/>
-			<PaceMinSecInput
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
-				label="Zeit"
-				modalTitle="Zeitintervall"
-				minutes={settings.intervalTimeMinutes}
-				seconds={settings.intervalTimeSeconds}
-				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
-				groupPosition="middle"
-				primaryColor={INTERVAL_COLOR}
-			/>
-			<SettingsListNumberInput
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
-				label="Distanz"
-				value={settings.intervalDistanceMeters > 0 ? `Alle ${settings.intervalDistanceMeters} m` : 'Deaktiviert'}
-				modalTitle="Distanzintervall"
-				initialValue={settings.intervalDistanceMeters > 0 ? settings.intervalDistanceMeters : SPEECH_SETTINGS_DEFAULTS.intervalDistanceMeters}
-				min={100}
-				max={10000}
-				step={100}
-				suffix="m"
-				onSave={(val: number) => update({ intervalDistanceMeters: val })}
-				allowDisable
-				onDisable={() => update({ intervalDistanceMeters: 0 })}
-				groupPosition="bottom"
-			/>
-
-			{/* ── Announcement content toggles ───────────────────────── */}
-			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
@@ -602,7 +587,17 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ announcePace: !settings.announcePace })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
-				groupPosition="top"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+				label="Durchschnittliche Pace (min/km)"
+				isEnabled={settings.announcePaceAvg}
+				onToggle={() => update({ announcePaceAvg: !settings.announcePaceAvg })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="middle"
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
@@ -610,6 +605,16 @@ export default function SpeechSettingsContent() {
 				label="Geschwindigkeit (km/h)"
 				isEnabled={settings.announceSpeed}
 				onToggle={() => update({ announceSpeed: !settings.announceSpeed })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
+				label="Durchschnittliche Geschwindigkeit (km/h)"
+				isEnabled={settings.announceSpeedAvg}
+				onToggle={() => update({ announceSpeedAvg: !settings.announceSpeedAvg })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"

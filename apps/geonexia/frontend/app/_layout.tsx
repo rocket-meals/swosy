@@ -6,30 +6,38 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { setDevMode, setDebugMode, loadWalkedEdgesState } from '../store/hexTileSlice';
+import { setDevMode, setDebugMode, loadWalkedEdgesState, setBillboardAtAnchor } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
-import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
+import { loadPersistedHexTextureConfig } from '../store/hexTextureConfigSlice';
+import { loadGpsIntervalSeconds as loadGpsIntervalSecondsAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
+import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
+import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
-import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { loadHexTextureConfig } from '../helpers/HexTextureConfigStorage';
+import { loadGpsIntervalSeconds } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
-import { WORLD_BUILDING_ID, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
+import { loadReplaySettings } from '../helpers/ReplaySettingsStorage';
+import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
+import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
-import { loadHexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { loadRoutes } from '../helpers/RouteStorage';
+import { loadHexTileFeatureCache, mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
@@ -174,6 +182,15 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="challenges/index"
+				options={{
+					title: 'Challenges',
+					drawerIcon: ({ color, size }) => (
+						<MaterialCommunityIcons name="sword-cross" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
@@ -204,6 +221,15 @@ function ThemedDrawerNavigator() {
 					title: 'Billboard Config',
 					drawerIcon: ({ color, size }) => (
 						<Ionicons name="build-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="hex-texture-config/index"
+				options={{
+					title: 'Hex Texture Config',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="grid-outline" size={size} color={color} />
 					),
 				}}
 			/>
@@ -245,6 +271,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/onboarding/index"
+				options={{
+					title: 'Onboarding',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
@@ -260,7 +293,7 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
-	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
+	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 
 	const items: DrawerItem[] = [
 		{
@@ -294,17 +327,29 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('achievements/index'),
 		},
 		{
+			key: 'challenges/index',
+			label: 'Challenges',
+			renderIcon: (_, color) => <MaterialCommunityIcons name="sword-cross" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('challenges/index'),
+		},
+		{
 			key: 'feature-wishes/index',
 			label: 'Feature Wishes',
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
-		...(isDevMode ? [
+		...(isDebugMode ? [
 			{
 				key: 'billboard-config/index',
 				label: 'Billboard Config',
 				renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('billboard-config/index'),
+			},
+			{
+				key: 'hex-texture-config/index',
+				label: 'Hex Texture Config',
+				renderIcon: (_, color) => <Ionicons name="grid-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('hex-texture-config/index'),
 			},
 			{
 				key: 'experimental/index',
@@ -337,11 +382,14 @@ export default function Layout() {
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
-			const [records, walkedEdges, storedBuildingId] = await Promise.all([
+			const [records, walkedEdges, storedBuildingId, playerInfo] = await Promise.all([
 				isDevMode ? loadDevHexTileState() : loadHexTileState(),
 				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
 				isDevMode ? loadDevWorldBuildingId() : loadWorldBuildingId(),
+				loadPlayerInformation(),
 			]);
+
+			store.dispatch(loadPersistedPlayerInformation(playerInfo));
 
 			if (storedBuildingId !== WORLD_BUILDING_ID && isH3Available()) {
 				try {
@@ -349,7 +397,9 @@ export default function Layout() {
 					if (allActivities.length > 0) {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache);
+						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
+						const routes = await loadRoutes();
+						applyRouteBenches(rebuiltRecords, sorted, routes);
 						if (isDevMode) {
 							saveDevHexTileState(rebuiltRecords);
 							saveDevWalkedEdges(rebuiltEdges);
@@ -360,6 +410,46 @@ export default function Layout() {
 							saveWorldBuildingId(WORLD_BUILDING_ID);
 						}
 						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges }));
+						// Fire-and-forget: fetch features for enclosed tiles
+						// that are not yet in the feature cache, then apply forest trees.
+						void (async () => {
+							try {
+								const tilesWithoutCache = Object.entries(rebuiltRecords)
+									.filter(([hexId, rec]) =>
+										rec.enclosedCount > 0 &&
+										!rec.walkedOn &&
+										!hexTileFeatureCache[hexId],
+									)
+									.map(([hexId]) => hexId);
+								if (tilesWithoutCache.length === 0) return;
+								const newEntries: HexTileFeatureCache = {};
+								for (const hexId of tilesWithoutCache) {
+									try {
+										const features = await queryTileFeaturesForHexCell(hexId);
+										newEntries[hexId] = features;
+										if (hasForestFeature(features)) {
+											store.dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: BillboardAnchorPosition.CENTER,
+												billboard: BILLBOARD_PINE_TREE_LARGE,
+											}));
+											// Also place the small tree at a MIDDLE ring position,
+											// matching the full checkAndApplyForest behaviour.
+											store.dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: getSmallTreeAnchorForHexId(hexId),
+												billboard: BILLBOARD_PINE_TREE_SMALL,
+											}));
+										}
+									} catch {
+										// ignore per-cell errors
+									}
+								}
+								await mergeHexTileFeatureCache(newEntries);
+							} catch (err) {
+								console.warn('[Layout] Feature cache update after rebuild failed:', err);
+							}
+						})();
 						return;
 					}
 				} catch (err) {
@@ -375,6 +465,70 @@ export default function Layout() {
 			}
 
 			store.dispatch(setDevMode({ isDevMode, records, walkedEdges }));
+			// Fire-and-forget: apply forest trees to enclosed tiles that are
+			// missing them. This covers cases where a recording ended before the
+			// in-session tree dispatch completed (e.g. app was killed mid-run).
+			void (async () => {
+				try {
+					const hexTileFeatureCache = await loadHexTileFeatureCache();
+					const newEntries: HexTileFeatureCache = {};
+					for (const [hexId, rec] of Object.entries(records)) {
+						const needsTrees = !rec.walkedOn && rec.enclosedCount > 0;
+						if (!needsTrees) continue;
+						const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
+						const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
+						const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
+						if (hasCenterTree && hasSmallTree) continue;
+						const cached = hexTileFeatureCache[hexId];
+						if (cached) {
+							if (hasForestFeature(cached)) {
+								if (!hasCenterTree) {
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: BillboardAnchorPosition.CENTER,
+										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+								}
+								if (!hasSmallTree) {
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: smallTreeAnchor,
+										billboard: BILLBOARD_PINE_TREE_SMALL,
+									}));
+								}
+							}
+						} else {
+							try {
+								const features = await queryTileFeaturesForHexCell(hexId);
+								newEntries[hexId] = features;
+								if (hasForestFeature(features)) {
+									if (!hasCenterTree) {
+										store.dispatch(setBillboardAtAnchor({
+											h3Index: hexId,
+											anchorColor: BillboardAnchorPosition.CENTER,
+											billboard: BILLBOARD_PINE_TREE_LARGE,
+										}));
+									}
+									if (!hasSmallTree) {
+										store.dispatch(setBillboardAtAnchor({
+											h3Index: hexId,
+											anchorColor: smallTreeAnchor,
+											billboard: BILLBOARD_PINE_TREE_SMALL,
+										}));
+									}
+								}
+							} catch {
+								// ignore per-cell errors
+							}
+						}
+					}
+					if (Object.keys(newEntries).length > 0) {
+						await mergeHexTileFeatureCache(newEntries);
+					}
+				} catch (err) {
+					console.warn('[Layout] Feature cache update on startup failed:', err);
+				}
+			})();
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});
@@ -406,12 +560,19 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted billboard config:', err);
 			});
-		loadGpsIntervalMode()
-			.then((mode) => {
-				store.dispatch(loadGpsIntervalModeAction(mode));
+		loadHexTextureConfig()
+			.then((config) => {
+				store.dispatch(loadPersistedHexTextureConfig(config));
 			})
 			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
+				console.warn('[Layout] Failed to load persisted hex texture config:', err);
+			});
+		loadGpsIntervalSeconds()
+			.then((seconds) => {
+				store.dispatch(loadGpsIntervalSecondsAction(seconds));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted GPS interval seconds:', err);
 			});
 		loadTTSEnabled()
 			.then((enabled) => {
@@ -433,6 +594,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted display settings:', err);
+			});
+		loadReplaySettings()
+			.then((settings) => {
+				store.dispatch(loadReplaySettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted replay settings:', err);
 			});
 	}, []);
 

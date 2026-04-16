@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
-	Alert,
 	Keyboard,
 	ScrollView,
 	StyleSheet,
@@ -12,25 +11,36 @@ import {
 
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
-import { useSelector } from 'react-redux';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
-import type { RootState } from '../../store/store';
+import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
+import type { RootState, AppDispatch } from '../../store/store';
+import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+import { snapToRoad } from '../../helpers/RouteSmootherHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
+const REPLAY_COLOR = '#7c3aed';
+
+const REPLAY_SPEED_STEP = 0.5;
+const REPLAY_SPEED_MIN = 0.5;
+const REPLAY_SPEED_MAX = 100.0;
+
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -40,6 +50,7 @@ const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
 const SPEED_WARMUP_MS = 10_000;
+const SPEED_WINDOW_SIZE = 5;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const R = 6371;
@@ -125,8 +136,15 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 	}
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
-	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
-	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
+	const windowedSpeeds: number[] = [];
+	let windowSum = 0;
+	for (let i = 0; i < speedsKmh.length; i++) {
+		windowSum += speedsKmh[i];
+		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
+		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
+	}
+	const maxSpeedKmh = windowedSpeeds.length > 0 ? Math.max(...windowedSpeeds) : 0;
+	const minSpeedKmh = windowedSpeeds.length > 0 ? Math.min(...windowedSpeeds) : 0;
 	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
 	const medianSpeedKmh = (() => {
 		if (speedsKmh.length === 0) return 0;
@@ -184,10 +202,11 @@ function ShareContent({ activity, theme }: { activity: SavedActivity; theme: Ret
 	const compact = JSON.stringify(activity);
 	const pretty = JSON.stringify(activity, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
+	const { showAlert } = useGeonexiaAlert();
 
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
-		Alert.alert('Copied', 'Activity data copied to clipboard.');
+		showAlert('Copied', 'Activity data copied to clipboard.');
 	}, [compact]);
 
 	return (
@@ -384,6 +403,7 @@ type RouteAssignmentProps = {
 function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 	const [routeName, setRouteName] = useState('');
+	const { showAlert } = useGeonexiaAlert();
 
 	const assignRoute = useCallback(async (routeId: string | null) => {
 		// Remove activity from old route (if any)
@@ -414,7 +434,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		try {
 			saveActivity(updated);
 		} catch {
-			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
 			return;
 		}
 		onDone(updated);
@@ -436,7 +456,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		try {
 			saveRoute(newRoute);
 		} catch {
-			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 			return;
 		}
 		await assignRoute(newRoute.id);
@@ -699,16 +719,24 @@ export default function ActivityDetailScreen() {
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
+	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
+	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
+	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
+	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
+	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 	const isDebugMode = useDebugMode();
+	const { showAlert } = useGeonexiaAlert();
 	const { show: showDebugModal } = useMyScrollViewModal();
+	const [routeSiblingActivities, setRouteSiblingActivities] = useState<SavedActivity[]>([]);
 
-	// Stop map-side auto-rotate on unmount
+	// Stop map-side auto-rotate and replay animation on unmount
 	useEffect(() => {
 		return () => {
 			if (mapRef.current) {
 				mapRef.current.sendToMap({ autoRotate: false });
+				mapRef.current.sendToMap({ replayAnimation: null });
 			}
 		};
 	}, []);
@@ -730,6 +758,22 @@ export default function ActivityDetailScreen() {
 	useEffect(() => {
 		loadRoutes().then(setSavedRoutes).catch(() => setSavedRoutes([]));
 	}, []);
+
+	// Load all activities belonging to the same route as this activity
+	useEffect(() => {
+		if (!activity || typeof activity.routeId !== 'string') {
+			setRouteSiblingActivities([]);
+			return;
+		}
+		const routeId = activity.routeId;
+		loadActivities()
+			.then((all) => {
+				const siblings = all.filter((a) => a.routeId === routeId);
+				siblings.sort((a, b) => b.startedAt - a.startedAt);
+				setRouteSiblingActivities(siblings);
+			})
+			.catch(() => setRouteSiblingActivities([]));
+	}, [activity?.routeId ?? null]);
 
 	// Show back arrow instead of drawer hamburger; use theme colors so it stays
 	// visible in both light and dark mode.
@@ -842,19 +886,41 @@ export default function ActivityDetailScreen() {
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
+
+		// Apply centre-line projection when route smoothing is enabled.
+		// We compute smoothed [lng, lat] coordinates and use those for display
+		// while keeping the original speed values from the raw route points.
+		const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
+		const displayCoords: [number, number][] = routeSmoothingEnabled
+			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated))
+			: rawCoords;
+
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
 		if (result && result.segments.length > 0) {
-			mapRef.current.sendToMap({ routeSegments: result.segments, routeSpeedRange: result.speedRange });
+			// Rebuild segments using the (possibly smoothed) display coordinates
+			// while preserving the speed value from each original segment.
+			const smoothedSegments = result.segments.map((seg, i) => ({
+				...seg,
+				coords: [displayCoords[i], displayCoords[i + 1]] as [[number, number], [number, number]],
+			}));
+			mapRef.current.sendToMap({ routeSegments: smoothedSegments, routeSpeedRange: result.speedRange });
 		} else {
 			// Fallback: plain route without speed coloring
-			const coords = activity.routePoints.map((p) => [p.lng, p.lat]);
-			mapRef.current.sendToMap({ routeCoordinates: coords });
+			mapRef.current.sendToMap({ routeCoordinates: displayCoords });
 		}
 
 		// Send start point circle (green, on top of the route lines)
 		const pts = activity.routePoints;
 		if (pts.length >= 1) {
-			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
+			mapRef.current.sendToMap({ routeStartPoint: displayCoords[0] });
+		}
+
+		// Render raw GPS measurement points as small black circles on top of the
+		// route line when the "GPS-Punkte anzeigen" setting is enabled.
+		if (showGpsPoints && pts.length > 0) {
+			mapRef.current.sendToMap({ debugGpsPoints: pts.map((p) => [p.lng, p.lat]) });
+		} else {
+			mapRef.current.sendToMap({ debugGpsPoints: null });
 		}
 
 		// Send hex tile and walk path GeoJSON so the activity screen shows the
@@ -883,8 +949,10 @@ export default function ActivityDetailScreen() {
 			routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
 			// Expand the bounding box to 1.5× the route span so the route is
 			// not clipped at the edges (adds 25 % padding on every side).
-			const latPad = (maxLat - minLat) * 0.25;
-			const lngPad = (maxLng - minLng) * 0.25;
+			// Use at least 0.001 deg (~100 m) so very short routes don't get
+			// a degenerate zero-size bounding box that fitBounds ignores.
+			const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+			const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
 			mapRef.current.sendToMap({
 				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
 				fitBoundsPadding: 20,
@@ -921,7 +989,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingEnabled]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {
@@ -929,7 +997,21 @@ export default function ActivityDetailScreen() {
 		if (!isH3Available()) return;
 
 		const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
-		const enclosedCells = activity.computed?.enclosedHexTiles ?? [];
+		// Always recompute enclosed cells from the route so that stale stored values
+		// (e.g. an activity whose computed.enclosedHexTiles contains tiles from a
+		// previously-detected closed loop that no longer applies) are not shown.
+		// Fall back to the stored value only when there are not enough walked tiles
+		// to form a polygon (legacy activities without hexTilesOrdered).
+		const enclosedCells = (() => {
+			if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
+				const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+				return findEnclosedCellsFromHexTiles(
+					buildFullRouteTileIds(activity.hexTilesOrdered ?? [], activity.routePoints, h3Res),
+					h3Res,
+				);
+			}
+			return activity.computed?.enclosedHexTiles ?? [];
+		})();
 
 		if (enclosedCells.length === 0) {
 			mapRef.current.sendToMap({ hexEnclosedGeoJson: EMPTY_FC });
@@ -953,6 +1035,48 @@ export default function ActivityDetailScreen() {
 			hexEnclosedGeoJson: { type: 'FeatureCollection', features },
 		});
 	}, [mapMounted, activity]);
+
+	// Replay: animate the activity route on the map using the raw GPS points so
+	// the marker moves at the speed the route was actually recorded.
+	// The WebView runs the animation loop internally; the overview auto-rotate
+	// continues uninterrupted so the map keeps its normal rotation behaviour.
+	useEffect(() => {
+		if (replayIsDisabled || !mapMounted || !activity) {
+			if (mapRef.current && mapMounted) {
+				mapRef.current.sendToMap({ replayAnimation: null });
+			}
+			return;
+		}
+
+		// Always use the raw GPS points so the marker follows the actual recorded
+		// path at the recorded speed (real timestamps).
+		const points = activity.routePoints;
+
+		if (points.length < 2) {
+			mapRef.current?.sendToMap({ replayAnimation: null });
+			return;
+		}
+
+		mapRef.current?.sendToMap({ replayAnimation: { points, speed: replaySpeed } });
+
+		return () => {
+			mapRef.current?.sendToMap({ replayAnimation: null });
+		};
+	}, [replayIsDisabled, replaySpeed, mapMounted, activity]);
+
+	const handleReplaySpeedDown = useCallback(() => {
+		const next = Math.max(REPLAY_SPEED_MIN, Math.round((replaySpeed - REPLAY_SPEED_STEP) * 10) / 10);
+		dispatch(updateReplaySettings({ speed: next }));
+	}, [dispatch, replaySpeed]);
+
+	const handleReplaySpeedUp = useCallback(() => {
+		const next = Math.min(REPLAY_SPEED_MAX, Math.round((replaySpeed + REPLAY_SPEED_STEP) * 10) / 10);
+		dispatch(updateReplaySettings({ speed: next }));
+	}, [dispatch, replaySpeed]);
+
+	const handleReplayToggle = useCallback(() => {
+		dispatch(updateReplaySettings({ isDisabled: !replayIsDisabled }));
+	}, [dispatch, replayIsDisabled]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
@@ -1001,7 +1125,7 @@ export default function ActivityDetailScreen() {
 		const sportDef = SPORT_TYPES.find((s) => s.type === activity.sportType);
 		const maxSpeed = sportDef?.maxSpeedKmh ?? 90;
 		const sportLabel = sportDef?.label ?? 'Default';
-		Alert.alert(
+		showAlert(
 			'Filter unrealistic Points',
 			`Remove GPS points that imply a speed above ${maxSpeed} km/h (${sportLabel} limit)?\n\nThis will permanently update the saved activity.`,
 			[
@@ -1015,12 +1139,54 @@ export default function ActivityDetailScreen() {
 						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
 						saveActivity(updated);
 						setActivity(updated);
-						Alert.alert(
+						showAlert(
 							'Done',
 							removedCount > 0
 								? `Removed ${removedCount} unrealistic point${removedCount !== 1 ? 's' : ''}.`
 								: 'No unrealistic points found.',
 						);
+					},
+				},
+			],
+		);
+	}, [activity]);
+
+	const handleRecalculateComputedValues = useCallback(() => {
+		if (!activity) return;
+		showAlert(
+			'Berechnete Werte neu berechnen',
+			'Die berechneten Werte dieser Aktivität werden neu berechnet. Fortfahren?',
+			[
+				{ text: 'Abbrechen', style: 'cancel' },
+				{
+					text: 'Neu berechnen',
+					onPress: () => {
+						if (!isH3Available()) {
+							showAlert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							return;
+						}
+						// Always recompute enclosed tiles from the route so that stale
+						// stored values are corrected. Fall back to the stored value only
+						// for legacy activities that lack a hexTilesOrdered list.
+						let enclosedTiles: string[];
+						if (activity.hexTilesOrdered?.length) {
+							const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+							enclosedTiles = findEnclosedCellsFromHexTiles(
+								buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+								h3Res,
+							);
+						} else {
+							enclosedTiles =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
+						}
+						const newComputed = computeActivityData(activity, enclosedTiles);
+						const updated: SavedActivity = { ...activity, computed: newComputed };
+						saveActivity(updated);
+						setActivity(updated);
+						showAlert('Fertig', 'Berechnete Werte wurden neu berechnet.');
 					},
 				},
 			],
@@ -1111,6 +1277,21 @@ export default function ActivityDetailScreen() {
 		...(activity.enclosedTileCount != null
 			? [{ icon: 'format-shapes' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Enclosed', value: String(activity.enclosedTileCount) }]
 			: []),
+		...((() => {
+			const hexCount = activity.computed?.hexTilesVisited.length ?? activity.hexTilesOrdered?.length ?? 0;
+			if (hexCount <= 0) return [];
+			const secPerTile = stats.durationSeconds / hexCount;
+			const m = Math.floor(secPerTile / 60);
+			const s = Math.round(secPerTile % 60);
+			return [{ icon: 'schedule' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Time per Hex Tile', value: `${m}:${String(s).padStart(2, '0')} mm:ss` }];
+		})()),
+		...((() => {
+			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+			const edgeLengthM = getHexagonEdgeLengthAvg(h3Res, UNITS?.m ?? 'm');
+			if (edgeLengthM <= 0) return [];
+			const diameterM = Math.round(2 * edgeLengthM);
+			return [{ icon: 'crop-square' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Hex Diameter', value: `${diameterM} m` }];
+		})()),
 	];
 
 	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
@@ -1129,6 +1310,36 @@ export default function ActivityDetailScreen() {
 
 			{/* Stats list */}
 			<View style={styles.statsContent}>
+				<SettingsListGroupTitle title="Replay Einstellungen" />
+				<SettingsListBoolean
+					iconBgColor={REPLAY_COLOR}
+					leftIcon={<MaterialIcons name="replay" size={22} color="#ffffff" />}
+					label="Replay anzeigen"
+					isEnabled={!replayIsDisabled}
+					onToggle={handleReplayToggle}
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={REPLAY_COLOR}
+					leftIcon={<MaterialIcons name="speed" size={22} color="#ffffff" />}
+					label="Rückblende Geschwindigkeit"
+					value={`${replaySpeed.toFixed(1)}×`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleReplaySpeedDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={REPLAY_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleReplaySpeedUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={REPLAY_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="bottom"
+				/>
+
+				<SettingsListGroupTitle title="Aktivität Informationen" />
 				{/* Date row */}
 				<SettingsList
 					key={statsRows[0].label}
@@ -1163,8 +1374,16 @@ export default function ActivityDetailScreen() {
 						leftIcon={<MaterialIcons name="filter-list" size={20} color="#ffffff" />}
 						iconBackgroundColor="#f59e0b"
 						title="Filter unrealistic Points"
-						groupPosition="single"
+						groupPosition="top"
+						showSeparator
 						onPress={handleFilterUnrealisticPoints}
+					/>
+					<SettingsList
+						leftIcon={<MaterialIcons name="calculate" size={20} color="#ffffff" />}
+						iconBackgroundColor="#7c3aed"
+						title="Berechnete Werte neu berechnen"
+						groupPosition="bottom"
+						onPress={handleRecalculateComputedValues}
 					/>
 				</View>
 				<SettingsListGroupTitle title="Routen Information" />
@@ -1185,6 +1404,13 @@ export default function ActivityDetailScreen() {
 						groupPosition="bottom"
 					onPress={() => router.navigate(`/routes/${assignedRoute.id}`)}
 					/>
+				)}
+				{/* ── Route statistics (only when a route is assigned) ──── */}
+				{routeSiblingActivities.length > 0 && (
+					<>
+						<SettingsListGroupTitle title="Routen Statistiken" />
+						<ActivityAggregateStatsSection activities={routeSiblingActivities} />
+					</>
 				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
@@ -1422,5 +1648,18 @@ const styles = StyleSheet.create({
 	},
 	filterRow: {
 		marginTop: 16,
+	},
+	stepper: {
+		flexDirection: 'row',
+		gap: 4,
+	},
+	stepBtn: {
+		width: 32,
+		height: 32,
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e5e7eb',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

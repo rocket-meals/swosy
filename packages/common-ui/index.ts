@@ -61,6 +61,8 @@ export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
 
 export { default as MyMap } from './src/components/MyMap';
 export type { MyMapHandle, MyMapProps } from './src/components/MyMap';
+export { MapColorKey, MapStyleKey, MAP_STYLE_DEFINITIONS, LIBERTY_STYLE_URL, getMapStyleDefinitions } from './src/components/MyMap/MyMapHelper';
+export type { MapColorMap, MapStyleDefinition } from './src/components/MyMap/MyMapHelper';
 
 export { MapNorthButton, MapLocationButton } from './src/components/MapOverlayButtons';
 export type { MapNorthButtonProps, MapLocationButtonProps } from './src/components/MapOverlayButtons';
@@ -85,3 +87,9 @@ export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishIte
 
 export { default as ScreenHeader } from './src/components/ScreenHeader';
 export type { ScreenHeaderProps } from './src/components/ScreenHeader';
+
+export { default as CardWithText } from './src/components/CardWithText';
+export type { CardWithTextProps } from './src/components/CardWithText';
+
+export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
+export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';

@@ -1056,12 +1056,14 @@ export type Foodoffers = {
   foodoffer_category?: string | FoodoffersCategories | null;
   foodoffer_components: any[] | FoodoffersComponents[];
   id: string;
+  is_component?: boolean | null;
   markings: any[] | FoodoffersMarkings[];
   price_employee?: number | null;
   price_guest?: number | null;
   price_student?: number | null;
   prices: string;
   redirect_url?: string | null;
+  result_hash?: string | null;
   sort?: number | null;
   status?: string | null;
   user_created?: string | DirectusUsers | null;
@@ -1149,6 +1151,7 @@ export type Foods = {
   rating_average_legacy?: number | null;
   rating_legacy_settings: string;
   rating_settings: string;
+  result_hash?: string | null;
   show_description_icon_on_card?: boolean | null;
   sort?: number | null;
   status?: string | null;
