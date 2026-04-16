@@ -1,6 +1,5 @@
 Key,Message,Component,Line
-"AZ2Vdzddy8hqXC4Kr9Pr","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",102
-"AZ2Vdzddy8hqXC4Kr9Ps","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",103
+"AZ2V4Kjcj7vGheiRHJU2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",102
 "AZ2Tk12f7OEcDMWQizd2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",92
 "AZ2Tk12f7OEcDMWQizd3","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",93
 "AZ13OIID87T5dO55_M6v","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1868
