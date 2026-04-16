@@ -45,6 +45,14 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 			output: 'static',
 			favicon: './assets/icons/app_icon_source.png',
 		},
+		updates: {
+			enabled: true,
+			url: 'https://u.expo.dev/7ea1e999-21dd-41ec-96b3-fc8aa7ad9993',
+			fallbackToCacheTimeout: 10 * 1000,
+		},
+		runtimeVersion: {
+			policy: 'appVersion',
+		},
 		plugins: [
 			'expo-router',
 			[
@@ -56,16 +64,17 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 					backgroundColor: '#ffffff',
 				},
 			],
+			['expo-updates', { username: 'jack5496' }],
 			'expo-localization',
 			'expo-font',
 		],
 		experiments: {
 			typedRoutes: true,
 		},
-	    extra: {
+		extra: {
 			eas: {
-				projectId: "7ea1e999-21dd-41ec-96b3-fc8aa7ad9993"
-			}
-	    }
+				projectId: '7ea1e999-21dd-41ec-96b3-fc8aa7ad9993',
+			},
+		}
 	};
 };
