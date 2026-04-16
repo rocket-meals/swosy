@@ -27,6 +27,7 @@ import { SettingsListProps } from '@/components/SettingsList/types';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -44,6 +45,8 @@ const Index = () => {
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const customerConfig = useCustomerConfig();
+	const customerConfigDefaultBreakdown = customerConfig.foodoffers_show_separated_markings_breakdown ?? false;
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
@@ -142,23 +145,28 @@ const Index = () => {
 		);
 	}, [showModal, closeModal, translate, theme.screen.text, handleClearMarkings]);
 
-	const markingsBreakdownOptions = useMemo(() => [
-		{
-			id: 'true' as const,
-			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled),
-			icon: <MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />,
-		},
-		{
-			id: 'false' as const,
-			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
-			icon: <MaterialCommunityIcons name="close" size={22} color={theme.screen.icon} />,
-		},
-		{
-			id: 'null' as const,
-			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default),
-			icon: <MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />,
-		},
-	], [translate, theme.screen.icon]);
+	const markingsBreakdownOptions = useMemo(() => {
+		const defaultValueLabel = customerConfigDefaultBreakdown
+			? translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled)
+			: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled);
+		return [
+			{
+				id: 'true' as const,
+				label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled),
+				icon: <MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />,
+			},
+			{
+				id: 'false' as const,
+				label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
+				icon: <MaterialCommunityIcons name="close" size={22} color={theme.screen.icon} />,
+			},
+			{
+				id: 'null' as const,
+				label: `${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)} (${defaultValueLabel})`,
+				icon: <MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />,
+			},
+		];
+	}, [translate, theme.screen.icon, customerConfigDefaultBreakdown]);
 
 	const currentMarkingsBreakdownId = foodoffersShowSeparatedMarkingsBreakdown === true ? 'true' : foodoffersShowSeparatedMarkingsBreakdown === false ? 'false' : 'null';
 
