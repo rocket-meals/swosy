@@ -243,13 +243,6 @@ const Index = () => {
 			/>
 			<SettingsList
 				iconBgColor={primaryColor}
-				leftIcon={<MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />}
-				label={`${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)}`}
-				value={customerConfigValueLabel}
-				groupPosition="middle"
-			/>
-			<SettingsList
-				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
 				handleFunction={handleClearMarkingsWithConfirmation}
@@ -257,7 +250,7 @@ const Index = () => {
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal, customerConfigValueLabel]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
