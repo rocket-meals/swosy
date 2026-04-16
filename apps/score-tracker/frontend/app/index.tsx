@@ -157,7 +157,7 @@ function ScoreInputContent({
 				onPress={handleSave}
 				activeOpacity={0.8}
 			>
-				<Text style={styles.scoreInputSaveText}>Speichern</Text>
+				<Text style={styles.scoreInputSaveText}>Save</Text>
 			</TouchableOpacity>
 			<View style={styles.quickButtonsRow}>
 				{QUICK_SCORES.map((v) => (
