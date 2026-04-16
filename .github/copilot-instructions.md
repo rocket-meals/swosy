@@ -12,6 +12,16 @@
 - Expo plugins contain native code. A changed native layer requires a new binary build, so the build number stored in `getBuildNumber()` in `config.ts` must be bumped by at least 1.
 - Example: if `getBuildNumber()` currently returns `7`, change it to `8`.
 
+## New Expo apps: Required build number setup
+
+- **Every new Expo app** (e.g. a new folder under `apps/`) **must** have a `config.ts` file with a `getBuildNumber()` function that returns an integer (start at `1`).
+- The `app.config.ts` must import `getBuildNumber` from `./config.ts` and use the result for `ios.buildNumber`, `android.versionCode`, and `version`.
+- The CI workflow (`.github/workflows/ci.yml`) **must** be extended with three new jobs for the new app, following the pattern of existing apps (e.g. `score-tracker-check-build`, `score-tracker-build-ios`, `score-tracker-expo-update`):
+  1. A `<app>-check-build` job using `./.github/actions/check-build-number` with the app's `working-directory`.
+  2. A `<app>-build-ios` job (and optionally `<app>-build-android`) that only runs when the build number changed.
+  3. A `<app>-expo-update` job for OTA updates.
+- **Whenever any native change is made to an existing app** (not just plugin changes), increment `getBuildNumber()` in that app's `config.ts` by at least 1 to trigger a new native build in CI.
+
 ## Geonexia: Dialogs and alerts
 
 - **Never use React Native's `Alert` in Geonexia.** Use `useMyScrollviewModal` instead for all user-facing dialogs, confirmations, and notifications.
