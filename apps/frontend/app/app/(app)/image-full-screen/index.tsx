@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Dimensions, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, Platform, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
@@ -183,11 +183,9 @@ export default function ImageFullScreen() {
 				showScrollViewModal({
 					title: 'Debug: Download Error',
 					children: (
-						<ScrollView>
-							<Text selectable style={{ fontFamily: 'monospace', fontSize: 12, color: theme.screen.text }}>
-								{debugText}
-							</Text>
-						</ScrollView>
+						<Text selectable style={{ fontFamily: 'monospace', fontSize: 12, color: theme.screen.text }}>
+							{debugText}
+						</Text>
 					),
 				});
 			}
