@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 10 | 10 |
-| 🐛 Reliability | 6835 | 40 |
+| 🔒 Security | 12 | 12 |
+| 🐛 Reliability | 6837 | 38 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16845 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16849 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (10/10)
+## 🔒 Security (12/12)
 
 - **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:22
@@ -29,6 +29,14 @@
 - **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
+
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/score-tracker-expo-update/action.yml:184
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L184
+
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/score-tracker-expo-update/action.yml:184
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L184
 
 - **Change this code to not log user-controlled data.**
   apps/backend/sync/importSchema.js:234
@@ -54,7 +62,7 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (40/6835)
+## 🐛 Reliability (38/6837)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -207,12 +215,4 @@
 - **Remove this "===" check; it will always be false. Did you mean to use "=="?**
   apps/geonexia/frontend/helpers/h3/h3core.js:785
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L785
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:188
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L188
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:191
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L191
 

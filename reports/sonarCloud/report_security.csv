@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ2Tk1-J7OEcDMWQizd-","inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.","rocket-meals_rocket-meals:.github/actions/score-tracker-expo-update/action.yml",184
+"AZ2Tk1-J7OEcDMWQizd9","inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.","rocket-meals_rocket-meals:.github/actions/score-tracker-expo-update/action.yml",184
 "AZ2OkI8VCaLxEFHreIRT","Ensure that tainted data is validated before being used to construct a client-side request URL.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",117
 "AZ2OkI8VCaLxEFHreIRS","Ensure that tainted data is validated before being used to construct a client-side request URL.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",132
 "AZ2OkI8VCaLxEFHreIRR","Ensure that tainted data is validated before being used to construct a client-side request URL.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",147
