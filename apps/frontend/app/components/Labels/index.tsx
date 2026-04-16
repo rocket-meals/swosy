@@ -18,6 +18,7 @@ import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOff
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
+import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -39,7 +40,9 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-	const showSeparatedMarkingsBreakdown = useSeperatedMarkingsForFood();
+	const seperatedMarkingsReduxValue = useSeperatedMarkingsForFood();
+	const customerConfigSeperate = useCustomerConfigSeperateMarkingsForFood();
+	const showSeparatedMarkingsBreakdown = seperatedMarkingsReduxValue ?? customerConfigSeperate;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
