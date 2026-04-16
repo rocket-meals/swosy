@@ -1599,6 +1599,36 @@
     "tr": "Etiketleri bileşene göre ayır",
     "zh": "按成分分解标签"
   },
+  "foodoffers_show_separated_markings_breakdown_option_enabled": {
+    "de": "Ja",
+    "en": "Yes",
+    "ar": "نعم",
+    "es": "Sí",
+    "fr": "Oui",
+    "ru": "Да",
+    "tr": "Evet",
+    "zh": "是"
+  },
+  "foodoffers_show_separated_markings_breakdown_option_disabled": {
+    "de": "Nein",
+    "en": "No",
+    "ar": "لا",
+    "es": "No",
+    "fr": "Non",
+    "ru": "Нет",
+    "tr": "Hayır",
+    "zh": "否"
+  },
+  "foodoffers_show_separated_markings_breakdown_option_default": {
+    "de": "Standard",
+    "en": "Default",
+    "ar": "افتراضي",
+    "es": "Predeterminado",
+    "fr": "Par défaut",
+    "ru": "По умолчанию",
+    "tr": "Varsayılan",
+    "zh": "默认"
+  },
   "eatinghabits_introduction": {
     "de": "Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.",
     "en": "Tell us which eating habits you prefer or want to avoid. We will then sort and mark the meal offers for you. We can use this information to improve our offer. Your data will not be passed on to third parties.",

@@ -18,15 +18,15 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
-import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import ProjectButton from '@/components/ProjectButton';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -142,9 +142,51 @@ const Index = () => {
 		);
 	}, [showModal, closeModal, translate, theme.screen.text, handleClearMarkings]);
 
-	const handleToggleSeparatedMarkingsBreakdown = useCallback(() => {
-		dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: !foodoffersShowSeparatedMarkingsBreakdown });
-	}, [dispatch, foodoffersShowSeparatedMarkingsBreakdown]);
+	const markingsBreakdownOptions = useMemo(() => [
+		{
+			id: 'true' as const,
+			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled),
+			icon: <MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />,
+		},
+		{
+			id: 'false' as const,
+			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
+			icon: <MaterialCommunityIcons name="close" size={22} color={theme.screen.icon} />,
+		},
+		{
+			id: 'null' as const,
+			label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default),
+			icon: <MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />,
+		},
+	], [translate, theme.screen.icon]);
+
+	const currentMarkingsBreakdownId = foodoffersShowSeparatedMarkingsBreakdown === true ? 'true' : foodoffersShowSeparatedMarkingsBreakdown === false ? 'false' : 'null';
+
+	const markingsBreakdownLabel = useMemo(
+		() => markingsBreakdownOptions.find(o => o.id === currentMarkingsBreakdownId)?.label ?? '',
+		[currentMarkingsBreakdownId, markingsBreakdownOptions]
+	);
+
+	const openMarkingsBreakdownModal = useCallback(() => {
+		showModal(
+			{
+				title: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown),
+				children: (
+					<SettingsListSelectOption
+						options={markingsBreakdownOptions}
+						selectedOption={currentMarkingsBreakdownId}
+						onSelect={(option) => {
+							const newValue = option.id === 'true' ? true : option.id === 'false' ? false : null;
+							dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: newValue });
+							closeModal();
+						}}
+						iconBgColor={primaryColor}
+					/>
+				),
+			},
+			{}
+		);
+	}, [showModal, closeModal, translate, markingsBreakdownOptions, currentMarkingsBreakdownId, dispatch, primaryColor]);
 
 	const renderItem = useCallback(({ item, index }: { item: string; index: number }) => {
 		const total = markingIds.length;
@@ -177,10 +219,13 @@ const Index = () => {
 				</TouchableOpacity>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
-			<SettingsListBoolean
-				title={translate(TranslationKeys.foodoffers_show_separated_markings_breakdown)}
-				isEnabled={foodoffersShowSeparatedMarkingsBreakdown}
-				onToggle={handleToggleSeparatedMarkingsBreakdown}
+			<SettingsList
+				iconBgColor={primaryColor}
+				leftIcon={<MaterialCommunityIcons name="layers-outline" size={22} color={theme.screen.icon} />}
+				label={translate(TranslationKeys.foodoffers_show_separated_markings_breakdown)}
+				value={markingsBreakdownLabel}
+				rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+				handleFunction={openMarkingsBreakdownModal}
 				groupPosition="top"
 			/>
 			<SettingsList
@@ -192,7 +237,7 @@ const Index = () => {
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, foodoffersShowSeparatedMarkingsBreakdown, handleToggleSeparatedMarkingsBreakdown]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
