@@ -326,11 +326,11 @@ export default function GameScreen() {
 	if (players.length === 0) {
 		return (
 			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
-				<Ionicons name="people-outline" size={64} color={theme.screen.border} />
+				<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
 				<Text style={[styles.emptyText, { color: theme.screen.text }]}>
 					Noch keine Spieler
 				</Text>
-				<Text style={[styles.emptySubtext, { color: theme.screen.border }]}>
+				<Text style={[styles.emptySubtext, { color: theme.screen.placeholder }]}>
 					Füge einen Spieler über den + Button im Header hinzu
 				</Text>
 			</View>
