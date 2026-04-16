@@ -125,7 +125,8 @@ export const studiFutterConfig: CustomerConfig = {
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
 		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
 		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/icon.png')},
-        }
+        },
+    foodoffers_show_separated_markings_breakdown: true
 };
 
 export function getCustomerConfigsDict(): Record<ConfigCustomerEnum, CustomerConfig> {
