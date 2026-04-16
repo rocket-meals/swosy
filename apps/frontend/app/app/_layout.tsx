@@ -40,7 +40,7 @@ import {config} from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
-import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfigsDict } from '@/config';
+import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
@@ -107,6 +107,21 @@ export default function Layout() {
                                         payload: storedCustomerEnum,
                                 });
                                 ServerAPI.updateServerUrl(customerConfigs[storedCustomerEnum].server_url);
+                                return;
+                        }
+
+                        // No user-selected override – fall back to the build-time customer baked
+                        // in via EXPO_PUBLIC_CUSTOMER so that real customer apps (e.g. SWOSY,
+                        // Studi-Futter) always use the correct CustomerConfig regardless of what
+                        // may be persisted in the Redux store from a previous session.
+                        const buildTimeConfig = getCustomerConfig();
+                        const buildTimeEnum = getCustomerEnumForConfig(buildTimeConfig);
+                        if (buildTimeEnum) {
+                                configureStore.dispatch({
+                                        type: SET_SELECTED_CUSTOMER,
+                                        payload: buildTimeEnum,
+                                });
+                                ServerAPI.updateServerUrl(buildTimeConfig.server_url);
                                 return;
                         }
 
