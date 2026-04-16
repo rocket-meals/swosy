@@ -347,6 +347,7 @@ const settingReducer = (state = initialState, actions: any) => {
                 case CLEAR_SETTINGS: {
                         return {
                                 ...initialState,
+                                selectedCustomer: state.selectedCustomer,
                         };
                 }
 		default:
