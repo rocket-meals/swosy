@@ -98,16 +98,19 @@ function ScoreInputContent({
 	}, [text, signMode, onSave]);
 
 	const handleQuickScore = useCallback(
-		(value: number) => {
-			if (value < 0) {
+		(delta: number) => {
+			const currentAbs = parseInt(text, 10);
+			const currentValue = isNaN(currentAbs) ? 0 : (signMode === 'minus' ? -currentAbs : currentAbs);
+			const newValue = currentValue + delta;
+			if (newValue < 0) {
 				setSignMode('minus');
-				setText(String(Math.abs(value)));
+				setText(String(Math.abs(newValue)));
 			} else {
 				setSignMode('plus');
-				setText(String(value));
+				setText(String(newValue));
 			}
 		},
-		[],
+		[text, signMode],
 	);
 
 	return (
