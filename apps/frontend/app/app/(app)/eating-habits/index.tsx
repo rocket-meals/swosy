@@ -28,6 +28,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
+import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -35,7 +36,7 @@ const Index = () => {
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { markings } = useAppSelector((state) => state.food);
-	const { primaryColor, selectedTheme: mode, foodoffersShowSeparatedMarkingsBreakdown } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
@@ -46,6 +47,7 @@ const Index = () => {
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const customerConfigDefaultBreakdown = useCustomerConfigSeperateMarkingsForFood();
+	const seperatedMarkingsValue = useSeperatedMarkingsForFood();
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
@@ -144,10 +146,14 @@ const Index = () => {
 		);
 	}, [showModal, closeModal, translate, theme.screen.text, handleClearMarkings]);
 
-	const markingsBreakdownOptions = useMemo(() => {
-		const defaultValueLabel = customerConfigDefaultBreakdown
+	const customerConfigValueLabel = useMemo(
+		() => customerConfigDefaultBreakdown
 			? translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled)
-			: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled);
+			: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
+		[customerConfigDefaultBreakdown, translate]
+	);
+
+	const markingsBreakdownOptions = useMemo(() => {
 		return [
 			{
 				id: 'true' as const,
@@ -161,13 +167,13 @@ const Index = () => {
 			},
 			{
 				id: 'null' as const,
-				label: `${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)} (${defaultValueLabel})`,
+				label: `${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)} (${customerConfigValueLabel})`,
 				icon: <MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />,
 			},
 		];
-	}, [translate, theme.screen.icon, customerConfigDefaultBreakdown]);
+	}, [translate, theme.screen.icon, customerConfigValueLabel]);
 
-	const currentMarkingsBreakdownId = foodoffersShowSeparatedMarkingsBreakdown === true ? 'true' : foodoffersShowSeparatedMarkingsBreakdown === false ? 'false' : 'null';
+	const currentMarkingsBreakdownId = seperatedMarkingsValue === true ? 'true' : seperatedMarkingsValue === false ? 'false' : 'null';
 
 	const markingsBreakdownLabel = useMemo(
 		() => markingsBreakdownOptions.find(o => o.id === currentMarkingsBreakdownId)?.label ?? '',
@@ -237,6 +243,13 @@ const Index = () => {
 			/>
 			<SettingsList
 				iconBgColor={primaryColor}
+				leftIcon={<MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />}
+				label={`${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)}`}
+				value={customerConfigValueLabel}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
 				handleFunction={handleClearMarkingsWithConfirmation}
@@ -244,7 +257,7 @@ const Index = () => {
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal, customerConfigValueLabel]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
