@@ -27,7 +27,7 @@ import { SettingsListProps } from '@/components/SettingsList/types';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
-import useCustomerConfig from '@/hooks/useCustomerConfig';
+import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -45,8 +45,7 @@ const Index = () => {
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
-	const customerConfig = useCustomerConfig();
-	const customerConfigDefaultBreakdown = customerConfig.foodoffers_show_separated_markings_breakdown ?? false;
+	const customerConfigDefaultBreakdown = useCustomerConfigSeperateMarkingsForFood();
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
