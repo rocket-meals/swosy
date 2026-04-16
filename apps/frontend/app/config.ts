@@ -23,7 +23,8 @@ export type CustomerConfig = {
                 company_logo_source_get_for_react_native: () => ImageSourcePropType;
                 icon_logo_source_path: string;
                 icon_logo_source_get_for_react_native: () => ImageSourcePropType;
-        }
+        };
+        foodoffers_show_separated_markings_breakdown?: boolean;
 };
 
 export enum ConfigCustomerEnum {
