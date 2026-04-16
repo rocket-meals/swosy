@@ -167,6 +167,7 @@ const settingReducer = (state = initialState, actions: any) => {
                         return {
                                 ...state,
                                 selectedCustomer: actions.payload,
+                                foodoffersShowSeparatedMarkingsBreakdown: null,
                         };
                 }
                 case SET_DEBUG_MODE: {
