@@ -47,11 +47,13 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
 	useEffect(() => {
-		getValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING).then((value) => {
-			if (value === true) {
-				setWasAskedForRating(true);
-			}
-		});
+		getValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING)
+			.then((value) => {
+				if (value === true) {
+					setWasAskedForRating(true);
+				}
+			})
+			.catch(() => {});
 	}, []);
 
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
