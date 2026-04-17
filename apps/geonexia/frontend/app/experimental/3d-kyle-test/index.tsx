@@ -15,10 +15,7 @@ import { useFocusEffect } from 'expo-router';
 
 import MODELS, { GlbModelEntry } from '../../../assets/3dModelAssets';
 
-// Cache directory that mirrors where MyMap writes its HTML file.
-// The WebView is granted read access to this directory so file:// URIs here
-// are loadable by the GLTFLoader inside the map WebView.
-const MAP_CACHE_DIR = (FileSystem.cacheDirectory ?? '') + 'mymap_v1/';
+const MAX_DEBUG_LOG_ENTRIES = 20;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -112,6 +109,7 @@ export default function KyleTest3DScreen() {
 	const [scale, setScale] = useState(DEFAULT_SCALE);
 	const [showBbox, setShowBbox] = useState(false);
 	const [loadingModel, setLoadingModel] = useState(false);
+	const [debugLog, setDebugLog] = useState<string[]>([]);
 
 	// ── Focus / blur map lifecycle ────────────────────────────────────────────
 	useFocusEffect(
@@ -124,7 +122,9 @@ export default function KyleTest3DScreen() {
 		}, []),
 	);
 
-	// ── Load GLB asset as a file:// URI in the map cache dir (cached) ────────
+	// ── Load GLB asset as a base64 data URI (cached) ────────────────────────
+	// Using a data URI (loader.parse) instead of a file:// URL (XHR) avoids
+	// WKWebView restrictions that can silently block XHR requests to file:// URLs.
 	const loadGlbUrl = useCallback(async (entry: GlbModelEntry): Promise<string> => {
 		const cached = glbUrlCacheRef.current.get(entry.key);
 		if (cached) return cached;
@@ -137,17 +137,10 @@ export default function KyleTest3DScreen() {
 			url = asset.uri;
 		} else {
 			if (!asset.localUri) throw new Error('Asset localUri is undefined after downloadAsync');
-			// Write the GLB into the same cache directory as the map HTML so the
-			// WebView (which has allowingReadAccessToURL set to that directory) can
-			// fetch it via file:// URL without any cross-origin restrictions.
-			await FileSystem.makeDirectoryAsync(MAP_CACHE_DIR, { intermediates: true });
-			const destPath = MAP_CACHE_DIR + entry.key + '.glb';
-			const info = await FileSystem.getInfoAsync(destPath);
-			if (!info.exists) {
-				await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
-			}
-			// destPath is already a file:// URI (FileSystem.cacheDirectory includes the scheme)
-			url = destPath;
+			const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+				encoding: FileSystem.EncodingType.Base64,
+			});
+			url = `data:model/gltf-binary;base64,${base64}`;
 		}
 
 		glbUrlCacheRef.current.set(entry.key, url);
@@ -176,7 +169,9 @@ export default function KyleTest3DScreen() {
 					],
 				});
 			} catch (e) {
+				const msg = `Fehler beim Laden: ${entry.key}: ${e instanceof Error ? e.message : String(e)}`;
 				console.warn('Failed to load 3D model:', e);
+				setDebugLog((prev) => [msg, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			} finally {
 				setLoadingModel(false);
 			}
@@ -200,10 +195,13 @@ export default function KyleTest3DScreen() {
 	// ── Handle map ready ──────────────────────────────────────────────────────
 	const handleMapMessage = useCallback(
 		(data: object) => {
-			const msg = data as { tag?: string };
+			const msg = data as { tag?: string; message?: string };
 			if (msg.tag === 'MapComponentMounted') {
 				mapMountedRef.current = true;
 				setMapMounted(true);
+			}
+			if (msg.tag === 'GlbDebugLog' && msg.message) {
+				setDebugLog((prev) => [msg.message as string, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			}
 		},
 		[],
@@ -385,6 +383,40 @@ export default function KyleTest3DScreen() {
 				value={`${scale} m`}
 				groupPosition="bottom"
 			/>
+
+			{/* ── Debug Log ──────────────────────────────────────────────────────── */}
+			<SettingsListGroupTitle title="Debug Log" />
+			{debugLog.length === 0 ? (
+				<SettingsList
+					iconBgColor={ACCENT_COLOR}
+					leftIcon={<Ionicons name="information-circle-outline" size={22} color="#ffffff" />}
+					label="Keine Einträge"
+					value="Noch keine Debug-Nachrichten"
+					groupPosition="single"
+				/>
+			) : (
+				debugLog.map((entry, idx) => {
+					const isFirst = idx === 0;
+					const isLast = idx === debugLog.length - 1;
+					const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+					const isError = entry.toLowerCase().includes('error') || entry.toLowerCase().includes('fehler');
+					return (
+						<SettingsList
+							key={idx}
+							iconBgColor={isError ? '#dc2626' : ACCENT_COLOR}
+							leftIcon={
+								<Ionicons
+									name={isError ? 'warning-outline' : 'checkmark-circle-outline'}
+									size={22}
+									color="#ffffff"
+								/>
+							}
+							label={entry}
+							groupPosition={groupPosition}
+						/>
+					);
+				})
+			)}
 		</ScrollView>
 	);
 }
