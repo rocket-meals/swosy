@@ -4580,11 +4580,11 @@
 
       function addGlbModel(modelData) {
         if (!map || !modelData || !modelData.id || !modelData.url || !modelData.position) {
-          sendToRN({ tag: 'GlbDebugLog', message: 'addGlbModel skipped: map=' + !!map + ' id=' + (modelData && modelData.id) + ' url=' + !!(modelData && modelData.url) + ' pos=' + !!(modelData && modelData.position) });
+          sendToRN({ tag: 'GlbDebugLog', message: 'addGlbModel skipped: map=' + !!map + ' id=' + (modelData && modelData.id) + ' url=' + !!(modelData && modelData.url) + ' pos=' + !!(modelData && modelData.position), isError: true });
           return;
         }
         if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
-          sendToRN({ tag: 'GlbDebugLog', message: 'addGlbModel: THREE.js or GLTFLoader not available' });
+          sendToRN({ tag: 'GlbDebugLog', message: 'addGlbModel: THREE.js or GLTFLoader not available', isError: true });
           return;
         }
         var layerId = 'glb-layer-' + modelData.id;
@@ -4621,12 +4621,12 @@
             var url = modelData.url;
             function onGltfLoad(gltf) {
               self.scene.add(gltf.scene);
-              sendToRN({ tag: 'GlbDebugLog', message: 'GLB loaded OK: ' + modelData.id });
+              sendToRN({ tag: 'GlbDebugLog', message: 'GLB loaded OK: ' + modelData.id, isError: false });
             }
             function onGltfError(err) {
               var msg = 'GLB load error: ' + modelData.id + ': ' + (err && (err.message || String(err)));
               console.error(msg, err);
-              sendToRN({ tag: 'GlbDebugLog', message: msg });
+              sendToRN({ tag: 'GlbDebugLog', message: msg, isError: true });
             }
             if (url && url.indexOf('data:') === 0) {
               // Data URIs cannot be reliably loaded via XHR in some WebView environments.
@@ -4641,7 +4641,7 @@
               } catch (e) {
                 var decMsg = 'GLB data-URI decode error: ' + modelData.id + ': ' + (e && (e.message || String(e)));
                 console.error(decMsg, e);
-                sendToRN({ tag: 'GlbDebugLog', message: decMsg });
+                sendToRN({ tag: 'GlbDebugLog', message: decMsg, isError: true });
               }
             } else {
               loader.load(url, onGltfLoad, undefined, onGltfError);

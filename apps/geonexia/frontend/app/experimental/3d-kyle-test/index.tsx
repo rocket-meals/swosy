@@ -17,6 +17,8 @@ import MODELS, { GlbModelEntry } from '../../../assets/3dModelAssets';
 
 const MAX_DEBUG_LOG_ENTRIES = 20;
 
+type DebugLogEntry = { message: string; isError: boolean };
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ACCENT_COLOR = '#7c3aed';
@@ -109,7 +111,7 @@ export default function KyleTest3DScreen() {
 	const [scale, setScale] = useState(DEFAULT_SCALE);
 	const [showBbox, setShowBbox] = useState(false);
 	const [loadingModel, setLoadingModel] = useState(false);
-	const [debugLog, setDebugLog] = useState<string[]>([]);
+	const [debugLog, setDebugLog] = useState<DebugLogEntry[]>([]);
 
 	// ── Focus / blur map lifecycle ────────────────────────────────────────────
 	useFocusEffect(
@@ -169,9 +171,9 @@ export default function KyleTest3DScreen() {
 					],
 				});
 			} catch (e) {
-				const msg = `Fehler beim Laden: ${entry.key}: ${e instanceof Error ? e.message : String(e)}`;
+				const msg = `Failed to load model: ${entry.key}: ${e instanceof Error ? e.message : String(e)}`;
 				console.warn('Failed to load 3D model:', e);
-				setDebugLog((prev) => [msg, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
+				setDebugLog((prev) => [{ message: msg, isError: true }, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			} finally {
 				setLoadingModel(false);
 			}
@@ -195,13 +197,14 @@ export default function KyleTest3DScreen() {
 	// ── Handle map ready ──────────────────────────────────────────────────────
 	const handleMapMessage = useCallback(
 		(data: object) => {
-			const msg = data as { tag?: string; message?: string };
+			const msg = data as { tag?: string; message?: string; isError?: boolean };
 			if (msg.tag === 'MapComponentMounted') {
 				mapMountedRef.current = true;
 				setMapMounted(true);
 			}
 			if (msg.tag === 'GlbDebugLog' && msg.message) {
-				setDebugLog((prev) => [msg.message as string, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
+				const entry: DebugLogEntry = { message: msg.message, isError: msg.isError ?? false };
+				setDebugLog((prev) => [entry, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			}
 		},
 		[],
@@ -399,19 +402,18 @@ export default function KyleTest3DScreen() {
 					const isFirst = idx === 0;
 					const isLast = idx === debugLog.length - 1;
 					const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
-					const isError = entry.toLowerCase().includes('error') || entry.toLowerCase().includes('fehler');
 					return (
 						<SettingsList
 							key={idx}
-							iconBgColor={isError ? '#dc2626' : ACCENT_COLOR}
+							iconBgColor={entry.isError ? '#dc2626' : ACCENT_COLOR}
 							leftIcon={
 								<Ionicons
-									name={isError ? 'warning-outline' : 'checkmark-circle-outline'}
+									name={entry.isError ? 'warning-outline' : 'checkmark-circle-outline'}
 									size={22}
 									color="#ffffff"
 								/>
 							}
-							label={entry}
+							label={entry.message}
 							groupPosition={groupPosition}
 						/>
 					);
