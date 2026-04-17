@@ -10,24 +10,29 @@ import {
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, SettingsListSelectOptionSingle } from 'repo-depkit-common-ui';
 import { useFocusEffect } from 'expo-router';
 
 import MODELS, { GlbModelEntry } from '../../../assets/3dModelAssets';
+
+// Cache directory that mirrors where MyMap writes its HTML file.
+// The WebView is granted read access to this directory so file:// URIs here
+// are loadable by the GLTFLoader inside the map WebView.
+const MAP_CACHE_DIR = (FileSystem.cacheDirectory ?? '') + 'mymap_v1/';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ACCENT_COLOR = '#7c3aed';
 
 /** Default position: Kieler Förde harbour area */
-const MODEL_POSITION = { lat: 54.3233, lng: 10.1228, altitude: 5 };
+const MODEL_POSITION = { lat: 54.3233, lng: 10.1228, altitude: 10 };
 
 const INITIAL_ZOOM = 17;
 const INITIAL_PITCH = 45;
 const SCALE_STEP = 5;
 const SCALE_MIN = 1;
 const SCALE_MAX = 200;
-const DEFAULT_SCALE = 20;
+const DEFAULT_SCALE = 30;
 
 // ─── Bounding-box inject script ───────────────────────────────────────────────
 // Listens for a { kyleBbox: { show, lat, lng, radiusMeters } | null } message
@@ -97,7 +102,6 @@ const BBOX_SCRIPT = `
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function KyleTest3DScreen() {
-	const { theme } = useTheme();
 	const mapRef = useRef<MyMapHandle>(null);
 	const mapMountedRef = useRef(false);
 	const glbUrlCacheRef = useRef<Map<string, string>>(new Map());
@@ -105,7 +109,6 @@ export default function KyleTest3DScreen() {
 	const [mapKey, setMapKey] = useState(0);
 	const [mapMounted, setMapMounted] = useState(false);
 	const [selectedModel, setSelectedModel] = useState<GlbModelEntry>(MODELS[0]);
-	const [modelPickerOpen, setModelPickerOpen] = useState(false);
 	const [scale, setScale] = useState(DEFAULT_SCALE);
 	const [showBbox, setShowBbox] = useState(false);
 	const [loadingModel, setLoadingModel] = useState(false);
@@ -121,7 +124,7 @@ export default function KyleTest3DScreen() {
 		}, []),
 	);
 
-	// ── Load GLB asset and return a data-URI (cached) ─────────────────────────
+	// ── Load GLB asset as a file:// URI in the map cache dir (cached) ────────
 	const loadGlbUrl = useCallback(async (entry: GlbModelEntry): Promise<string> => {
 		const cached = glbUrlCacheRef.current.get(entry.key);
 		if (cached) return cached;
@@ -134,10 +137,16 @@ export default function KyleTest3DScreen() {
 			url = asset.uri;
 		} else {
 			if (!asset.localUri) throw new Error('Asset localUri is undefined after downloadAsync');
-			const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-				encoding: FileSystem.EncodingType.Base64,
-			});
-			url = `data:model/gltf-binary;base64,${base64}`;
+			// Write the GLB into the same cache directory as the map HTML so the
+			// WebView (which has allowingReadAccessToURL set to that directory) can
+			// fetch it via file:// URL without any cross-origin restrictions.
+			await FileSystem.makeDirectoryAsync(MAP_CACHE_DIR, { intermediates: true });
+			const destPath = MAP_CACHE_DIR + entry.key + '.glb';
+			const info = await FileSystem.getInfoAsync(destPath);
+			if (!info.exists) {
+				await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
+			}
+			url = 'file://' + destPath;
 		}
 
 		glbUrlCacheRef.current.set(entry.key, url);
@@ -211,7 +220,6 @@ export default function KyleTest3DScreen() {
 	const handleSelectModel = useCallback(
 		(entry: GlbModelEntry) => {
 			setSelectedModel(entry);
-			setModelPickerOpen(false);
 			sendModelToMap(entry, scale);
 		},
 		[scale, sendModelToMap],
@@ -252,7 +260,11 @@ export default function KyleTest3DScreen() {
 	// ─── Render ────────────────────────────────────────────────────────────────
 
 	return (
-		<View style={styles.container}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={styles.scrollContent}
+			showsVerticalScrollIndicator={false}
+		>
 			{/* ── Map ─────────────────────────────────────────────────────────── */}
 			<View style={styles.mapWrapper}>
 				<MyMap
@@ -329,110 +341,50 @@ export default function KyleTest3DScreen() {
 				)}
 			</View>
 
-			{/* ── Bottom panel ──────────────────────────────────────────────────── */}
-			<View style={[styles.panel, { backgroundColor: theme.screen.background }]}>
-				<ScrollView
-					style={styles.panelScroll}
-					contentContainerStyle={styles.panelContent}
-					showsVerticalScrollIndicator={false}
-				>
-					<SettingsListGroupTitle title="3D Modell" />
-
-					{/* Model picker trigger */}
-					<TouchableOpacity
-						style={[
-							styles.pickerButton,
-							{ backgroundColor: theme.screen.background, borderColor: theme.screen.iconBg },
-						]}
-						onPress={() => setModelPickerOpen((v) => !v)}
-						activeOpacity={0.75}
-					>
-						<MaterialCommunityIcons name="cube-scan" size={20} color={ACCENT_COLOR} />
-						<Text
-							style={[styles.pickerButtonLabel, { color: theme.screen.text }]}
-							numberOfLines={1}
-						>
-							{selectedModel.label}
-						</Text>
-						<Ionicons
-							name={modelPickerOpen ? 'chevron-up' : 'chevron-down'}
-							size={18}
-							color={theme.screen.icon}
-						/>
-					</TouchableOpacity>
-
-					{/* Inline model list */}
-					{modelPickerOpen && (
-						<ScrollView
-							style={[styles.pickerList, { borderColor: theme.screen.iconBg }]}
-							nestedScrollEnabled
-							showsVerticalScrollIndicator={false}
-						>
-							{MODELS.map((entry, idx) => {
-								const isSelected = selectedModel.key === entry.key;
-								return (
-									<TouchableOpacity
-										key={entry.key}
-										style={[
-											styles.pickerItem,
-											idx < MODELS.length - 1 && {
-												borderBottomWidth: StyleSheet.hairlineWidth,
-												borderBottomColor: theme.screen.iconBg,
-											},
-											isSelected && { backgroundColor: ACCENT_COLOR + '22' },
-										]}
-										onPress={() => handleSelectModel(entry)}
-										activeOpacity={0.75}
-									>
-										<MaterialCommunityIcons
-											name="cube-outline"
-											size={18}
-											color={isSelected ? ACCENT_COLOR : theme.screen.icon}
-										/>
-										<Text
-											style={[
-												styles.pickerItemText,
-												{ color: isSelected ? ACCENT_COLOR : theme.screen.text },
-											]}
-											numberOfLines={1}
-										>
-											{entry.label}
-										</Text>
-										{isSelected && (
-											<Ionicons name="checkmark-circle" size={18} color={ACCENT_COLOR} />
-										)}
-									</TouchableOpacity>
-								);
-							})}
-						</ScrollView>
-					)}
-
-					{/* Info */}
-					<SettingsListGroupTitle title="Position" />
-					<SettingsList
+			{/* ── Model selection ───────────────────────────────────────────────── */}
+			<SettingsListGroupTitle title="3D Modell auswählen" />
+			{MODELS.map((entry, idx) => {
+				const isFirst = idx === 0;
+				const isLast = idx === MODELS.length - 1;
+				const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+				return (
+					<SettingsListSelectOptionSingle
+						key={entry.key}
+						label={entry.label}
 						iconBgColor={ACCENT_COLOR}
-						leftIcon={<Ionicons name="location-outline" size={22} color="#ffffff" />}
-						label="Koordinaten"
-						value={`${MODEL_POSITION.lat.toFixed(6)}°N, ${MODEL_POSITION.lng.toFixed(6)}°E`}
-						groupPosition="top"
+						leftIcon={<MaterialCommunityIcons name="cube-outline" size={22} color="#ffffff" />}
+						isSelected={selectedModel.key === entry.key}
+						selectionColor={ACCENT_COLOR}
+						groupPosition={groupPosition}
+						onPress={() => handleSelectModel(entry)}
 					/>
-					<SettingsList
-						iconBgColor={ACCENT_COLOR}
-						leftIcon={<Ionicons name="trending-up-outline" size={22} color="#ffffff" />}
-						label="Höhe"
-						value={`${MODEL_POSITION.altitude} m über Meeresspiegel`}
-						groupPosition="middle"
-					/>
-					<SettingsList
-						iconBgColor={ACCENT_COLOR}
-						leftIcon={<MaterialCommunityIcons name="resize" size={22} color="#ffffff" />}
-						label="Modellgröße"
-						value={`${scale} m`}
-						groupPosition="bottom"
-					/>
-				</ScrollView>
-			</View>
-		</View>
+				);
+			})}
+
+			{/* ── Position info ─────────────────────────────────────────────────── */}
+			<SettingsListGroupTitle title="Position" />
+			<SettingsList
+				iconBgColor={ACCENT_COLOR}
+				leftIcon={<Ionicons name="location-outline" size={22} color="#ffffff" />}
+				label="Koordinaten"
+				value={`${MODEL_POSITION.lat.toFixed(6)}°N, ${MODEL_POSITION.lng.toFixed(6)}°E`}
+				groupPosition="top"
+			/>
+			<SettingsList
+				iconBgColor={ACCENT_COLOR}
+				leftIcon={<Ionicons name="trending-up-outline" size={22} color="#ffffff" />}
+				label="Höhe"
+				value={`${MODEL_POSITION.altitude} m über Meeresspiegel`}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				iconBgColor={ACCENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="resize" size={22} color="#ffffff" />}
+				label="Modellgröße"
+				value={`${scale} m`}
+				groupPosition="bottom"
+			/>
+		</ScrollView>
 	);
 }
 
@@ -442,11 +394,15 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	scrollContent: {
+		flexGrow: 1,
+		paddingBottom: 32,
+	},
 	// Map
 	mapWrapper: {
-		flex: 1,
+		width: '100%',
+		aspectRatio: 1,
 		position: 'relative',
-		minHeight: 280,
 	},
 	mapButtons: {
 		position: 'absolute',
@@ -534,53 +490,5 @@ const styles = StyleSheet.create({
 		paddingVertical: 8,
 		borderRadius: 8,
 		overflow: 'hidden',
-	},
-	// Bottom panel
-	panel: {
-		maxHeight: 320,
-	},
-	panelScroll: {
-		flex: 1,
-	},
-	panelContent: {
-		paddingVertical: 8,
-		paddingBottom: 16,
-	},
-	// Model picker
-	pickerButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginHorizontal: 16,
-		marginBottom: 4,
-		paddingHorizontal: 14,
-		paddingVertical: 12,
-		borderRadius: 12,
-		borderWidth: 1,
-		gap: 10,
-	},
-	pickerButtonLabel: {
-		flex: 1,
-		fontSize: 14,
-		fontWeight: '500',
-	},
-	pickerList: {
-		marginHorizontal: 16,
-		marginBottom: 4,
-		borderWidth: 1,
-		borderRadius: 12,
-		overflow: 'hidden',
-		maxHeight: 240,
-	},
-	pickerItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingHorizontal: 14,
-		paddingVertical: 11,
-		gap: 10,
-	},
-	pickerItemText: {
-		flex: 1,
-		fontSize: 13,
-		fontWeight: '500',
 	},
 });
