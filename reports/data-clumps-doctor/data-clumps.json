@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-17T22:29:15.663Z",
+  "report_timestamp": "2026-04-17T23:02:54.019Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,19 +28,19 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4268,
-        "detection_time_ms": 89,
+        "ast_generation_time_ms": 3941,
+        "detection_time_ms": 81,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 408.86,
-          "os_memory_free": 14896078848,
-          "os_memory_total": 16770764800,
+          "os_uptime": 290.39,
+          "os_memory_free": 14933983232,
+          "os_memory_total": 16765386752,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3491
         }
       }
     },
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "b18901d755c5de6a30b26712239b611deb7cfb65",
-    "project_commit_hash": "b18901d755c5de6a30b26712239b611deb7cfb65",
+    "project_version": "46e6b95a8f98de3610b2a9d9c0c71082b4d8b059",
+    "project_commit_hash": "46e6b95a8f98de3610b2a9d9c0c71082b4d8b059",
     "project_tag": null,
-    "project_commit_date": "1776464841",
+    "project_commit_date": "1776466871",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -2497,9 +2497,9 @@
             }
           },
           "position": {
-            "startLine": 92,
+            "startLine": 102,
             "startColumn": 25,
-            "endLine": 92,
+            "endLine": 102,
             "endColumn": 39
           }
         },
@@ -2522,9 +2522,9 @@
             }
           },
           "position": {
-            "startLine": 92,
+            "startLine": 102,
             "startColumn": 40,
-            "endLine": 92,
+            "endLine": 102,
             "endColumn": 54
           }
         },
@@ -2547,9 +2547,9 @@
             }
           },
           "position": {
-            "startLine": 92,
+            "startLine": 102,
             "startColumn": 55,
-            "endLine": 92,
+            "endLine": 102,
             "endColumn": 68
           }
         },
@@ -2572,9 +2572,9 @@
             }
           },
           "position": {
-            "startLine": 92,
+            "startLine": 102,
             "startColumn": 69,
-            "endLine": 92,
+            "endLine": 102,
             "endColumn": 81
           }
         }
@@ -3181,9 +3181,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 92,
+              "startLine": 102,
               "startColumn": 25,
-              "endLine": 92,
+              "endLine": 102,
               "endColumn": 39
             }
           },
@@ -3206,9 +3206,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 92,
+              "startLine": 102,
               "startColumn": 40,
-              "endLine": 92,
+              "endLine": 102,
               "endColumn": 54
             }
           },
@@ -3231,9 +3231,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 92,
+              "startLine": 102,
               "startColumn": 55,
-              "endLine": 92,
+              "endLine": 102,
               "endColumn": 68
             }
           },
@@ -3256,9 +3256,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 92,
+              "startLine": 102,
               "startColumn": 69,
-              "endLine": 92,
+              "endLine": 102,
               "endColumn": 81
             }
           },
