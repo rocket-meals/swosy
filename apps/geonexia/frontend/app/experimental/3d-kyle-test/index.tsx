@@ -142,7 +142,10 @@ export default function KyleTest3DScreen() {
 			// fetch it via file:// URL without any cross-origin restrictions.
 			await FileSystem.makeDirectoryAsync(MAP_CACHE_DIR, { intermediates: true });
 			const destPath = MAP_CACHE_DIR + entry.key + '.glb';
-			await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
+			const info = await FileSystem.getInfoAsync(destPath);
+			if (!info.exists) {
+				await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
+			}
 			url = 'file://' + destPath;
 		}
 
