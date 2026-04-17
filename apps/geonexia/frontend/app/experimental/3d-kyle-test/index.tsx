@@ -146,7 +146,8 @@ export default function KyleTest3DScreen() {
 			if (!info.exists) {
 				await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
 			}
-			url = 'file://' + destPath;
+			// destPath is already a file:// URI (FileSystem.cacheDirectory includes the scheme)
+			url = destPath;
 		}
 
 		glbUrlCacheRef.current.set(entry.key, url);
