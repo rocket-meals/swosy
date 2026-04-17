@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ2Z9VJHQydYG71orF9T","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx",349
+"AZ2Z9VJHQydYG71orF9U","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx",349
 "AZ2YIf6SHOaBv7t4lshE","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",151
 "AZ2W7CCgTHU3-S5Qxqnd","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",176
 "AZ2WWRI_Zst1sdfeh-vh","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",192
@@ -9997,5 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvCCS4VhJojFFAQ-","Unnecessary escape character: \).","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",19
 "AZkUSvCCS4VhJojFFARA","Unnecessary escape character: \).","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",20
 "AZ0TplEkufp2jxPAhS0M","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",40
-"AZ0TplEkufp2jxPAhS0O","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",75
-"AZ0TplEkufp2jxPAhS0P","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",99
