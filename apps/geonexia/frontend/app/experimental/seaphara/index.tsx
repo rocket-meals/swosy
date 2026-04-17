@@ -3,12 +3,22 @@ import {
 	Animated,
 	PanResponder,
 	Platform,
+	ScrollView,
 	StyleSheet,
+	Text,
+	TouchableOpacity,
 	View,
 } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
-import { MyMap, MyMapHandle } from 'repo-depkit-common-ui';
+import {
+	MyMap,
+	MyMapHandle,
+	SettingsListGroupTitle,
+	SettingsListNumberInput,
+	useMyScrollViewModal,
+	useTheme,
+} from 'repo-depkit-common-ui';
 import { useFocusEffect } from 'expo-router';
 
 import { HEX_TILE_SCRIPT } from '../../../assets/hexTileScript';
@@ -147,6 +157,20 @@ export default function SeapharaScreen() {
 
 	const [mapKey, setMapKey] = useState(0);
 
+	// Speed multiplier (default 1×)
+	const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
+	const speedMultiplierRef = useRef(1.0);
+
+	// Debug logs – last 30 entries
+	const debugLogsRef = useRef<string[]>([]);
+	const addDebugLog = useCallback((msg: string) => {
+		const ts = new Date().toLocaleTimeString();
+		debugLogsRef.current = [...debugLogsRef.current.slice(-29), `[${ts}] ${msg}`];
+	}, []);
+
+	const { theme } = useTheme();
+	const { show: showDebugModal, close: closeDebugModal } = useMyScrollViewModal();
+
 	// Joystick animation values
 	const knobX = useRef(new Animated.Value(0)).current;
 	const knobY = useRef(new Animated.Value(0)).current;
@@ -159,6 +183,7 @@ export default function SeapharaScreen() {
 	// ── Cleanup on screen blur ──────────────────────────────────────────────
 	useFocusEffect(
 		useCallback(() => {
+			addDebugLog('Screen focused');
 			return () => {
 				if (joystickIntervalRef.current) {
 					clearInterval(joystickIntervalRef.current);
@@ -166,13 +191,15 @@ export default function SeapharaScreen() {
 				}
 				mapMountedRef.current = false;
 				setMapKey((k) => k + 1);
+				addDebugLog('Screen blurred – map remounted');
 			};
-		}, []),
+		}, [addDebugLog]),
 	);
 
 	// ── Load boat GLB (cached as base64 data URI) ────────────────────────────
 	const loadBoatUrl = useCallback(async (): Promise<string> => {
 		if (boatUrlCacheRef.current) return boatUrlCacheRef.current;
+		addDebugLog('Loading GLB model…');
 		const asset = Asset.fromModule(require('../../../assets/3dmodels/boat-tow-b.glb'));
 		await asset.downloadAsync();
 		let url: string;
@@ -186,8 +213,9 @@ export default function SeapharaScreen() {
 			url = `data:model/gltf-binary;base64,${base64}`;
 		}
 		boatUrlCacheRef.current = url;
+		addDebugLog('GLB model loaded and cached');
 		return url;
-	}, []);
+	}, [addDebugLog]);
 
 	// ── Place boat model on the map ──────────────────────────────────────────
 	const placeBoatOnMap = useCallback(
@@ -196,6 +224,7 @@ export default function SeapharaScreen() {
 			try {
 				const url = await loadBoatUrl();
 				if (!mapMountedRef.current || !mapRef.current) return;
+				addDebugLog(`Placing boat at ${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`);
 				mapRef.current.sendToMap({
 					glbModels: [
 						{
@@ -210,10 +239,11 @@ export default function SeapharaScreen() {
 					],
 				});
 			} catch (e) {
+				addDebugLog(`ERROR placing boat: ${e}`);
 				console.warn('[Seaphara] Failed to load boat model:', e);
 			}
 		},
-		[loadBoatUrl],
+		[loadBoatUrl, addDebugLog],
 	);
 
 	// ── Handle messages from the map ─────────────────────────────────────────
@@ -222,6 +252,7 @@ export default function SeapharaScreen() {
 			const msg = data as { tag?: string };
 			if (msg.tag === 'MapComponentMounted') {
 				mapMountedRef.current = true;
+				addDebugLog('Map component mounted');
 				// Activate hex tile grid (transparent fill, default stroke lines)
 				mapRef.current?.sendToMap({
 					hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: 0 },
@@ -237,7 +268,7 @@ export default function SeapharaScreen() {
 				}
 			}
 		},
-		[placeBoatOnMap],
+		[placeBoatOnMap, addDebugLog],
 	);
 
 	// ── Joystick stop ────────────────────────────────────────────────────────
@@ -267,7 +298,7 @@ export default function SeapharaScreen() {
 					if (dist < JOYSTICK_MIN_DISPLACEMENT) return;
 
 					const ratio = Math.min(dist / JOYSTICK_MAX_DISPLACEMENT, 1.0);
-					const metersPerTick = MOVE_M_PER_TICK * ratio;
+					const metersPerTick = MOVE_M_PER_TICK * ratio * speedMultiplierRef.current;
 
 					// Normalize direction: screen-right = east, screen-up = north
 					const nx = x / dist; // east component
@@ -284,7 +315,9 @@ export default function SeapharaScreen() {
 
 					boatPositionRef.current = { lat: newLat, lng: newLng };
 
-					// Fast-path: update boat transform directly in the WebView
+					// Send boat transform and camera follow in a single atomic message so both
+					// updates are processed together in the WebView, preventing the boat from
+					// briefly disappearing between the two separate WebView executions.
 					mapRef.current?.sendToMap({
 						seapharaBoatTransform: {
 							id: BOAT_MODEL_ID,
@@ -293,10 +326,6 @@ export default function SeapharaScreen() {
 							altitude: 0,
 							rotateZ: bearing,
 						},
-					});
-
-					// Smooth camera follow
-					mapRef.current?.sendToMap({
 						mapCenterPosition: { lat: newLat, lng: newLng },
 						easeAnimation: true,
 						easeDuration: MOVE_INTERVAL_MS,
@@ -326,6 +355,76 @@ export default function SeapharaScreen() {
 		};
 	}, []);
 
+	// ── Center camera on boat ─────────────────────────────────────────────────
+	const centerOnBoat = useCallback(() => {
+		if (!mapRef.current) return;
+		const pos = boatPositionRef.current;
+		mapRef.current.sendToMap({
+			mapCenterPosition: { lat: pos.lat, lng: pos.lng },
+			easeAnimation: true,
+			easeDuration: 400,
+		});
+	}, []);
+
+	// ── Open debug modal ──────────────────────────────────────────────────────
+	const openDebugModal = useCallback(() => {
+		const pos = boatPositionRef.current;
+		const logs = [...debugLogsRef.current];
+		showDebugModal({
+			title: '🐛 Debug – Seaphara',
+			children: (
+				<View style={debugStyles.wrapper}>
+					<SettingsListGroupTitle title="Status" />
+					<View style={debugStyles.statusBlock}>
+						<Text style={[debugStyles.statusText, { color: theme.screen.text }]}>
+							{'Lat: ' + pos.lat.toFixed(6) + '  Lng: ' + pos.lng.toFixed(6)}
+						</Text>
+						<Text style={[debugStyles.statusText, { color: theme.screen.text }]}>
+							{'Map mounted: ' + (mapMountedRef.current ? 'Yes' : 'No')}
+						</Text>
+						<Text style={[debugStyles.statusText, { color: theme.screen.text }]}>
+							{'GLB cached: ' + (boatUrlCacheRef.current ? 'Yes' : 'No')}
+						</Text>
+						<Text style={[debugStyles.statusText, { color: theme.screen.text }]}>
+							{'Speed: ' + speedMultiplier.toFixed(1) + '× (~' + Math.round(MOVE_SPEED_M_PER_S * speedMultiplier) + ' m/s)'}
+						</Text>
+					</View>
+
+					<SettingsListGroupTitle title="Speed" />
+					<SettingsListNumberInput
+						label="Speed Multiplier"
+						initialValue={speedMultiplier}
+						min={0.1}
+						max={20}
+						step={0.5}
+						allowDecimal
+						suffix="×"
+						modalTitle="Speed Multiplier"
+						saveLabel="Apply"
+						onSave={(val) => {
+							speedMultiplierRef.current = val;
+							setSpeedMultiplier(val);
+							closeDebugModal();
+						}}
+					/>
+
+					<SettingsListGroupTitle title="Logs" />
+					<ScrollView style={debugStyles.logsScroll}>
+						{logs.length === 0 ? (
+							<Text style={[debugStyles.logLine, { color: theme.screen.text }]}>No logs yet.</Text>
+						) : (
+							logs.map((line, i) => (
+								<Text key={i} style={[debugStyles.logLine, { color: theme.screen.text }]}>
+									{line}
+								</Text>
+							))
+						)}
+					</ScrollView>
+				</View>
+			),
+		});
+	}, [showDebugModal, closeDebugModal, speedMultiplier, theme.screen.text]);
+
 	// ── Render ────────────────────────────────────────────────────────────────
 
 	return (
@@ -339,6 +438,20 @@ export default function SeapharaScreen() {
 				initialCenter={INITIAL_POSITION}
 				initialZoom={INITIAL_ZOOM}
 			/>
+
+			{/* Center-on-boat button – bottom-right */}
+			<View style={styles.centerButtonContainer} pointerEvents="box-none">
+				<TouchableOpacity style={styles.iconButton} onPress={centerOnBoat} activeOpacity={0.8}>
+					<Text style={styles.iconButtonText}>🎯</Text>
+				</TouchableOpacity>
+			</View>
+
+			{/* Debug button – top-right */}
+			<View style={styles.debugButtonContainer} pointerEvents="box-none">
+				<TouchableOpacity style={styles.iconButton} onPress={openDebugModal} activeOpacity={0.8}>
+					<Text style={styles.iconButtonText}>🐛</Text>
+				</TouchableOpacity>
+			</View>
 
 			{/* Joystick overlay – bottom-left */}
 			<View style={styles.joystickContainer} pointerEvents="box-none">
@@ -361,6 +474,31 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	centerButtonContainer: {
+		position: 'absolute',
+		bottom: 32,
+		right: 20,
+		zIndex: 20,
+		elevation: 20,
+	},
+	debugButtonContainer: {
+		position: 'absolute',
+		top: 16,
+		right: 20,
+		zIndex: 20,
+		elevation: 20,
+	},
+	iconButton: {
+		width: 48,
+		height: 48,
+		borderRadius: 24,
+		backgroundColor: 'rgba(0, 0, 0, 0.45)',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	iconButtonText: {
+		fontSize: 22,
+	},
 	joystickContainer: {
 		position: 'absolute',
 		bottom: 32,
@@ -381,5 +519,29 @@ const styles = StyleSheet.create({
 		height: JOYSTICK_KNOB_RADIUS * 2,
 		borderRadius: JOYSTICK_KNOB_RADIUS,
 		backgroundColor: 'rgba(255, 255, 255, 0.85)',
+	},
+});
+
+const debugStyles = StyleSheet.create({
+	wrapper: {
+		paddingBottom: 20,
+	},
+	statusBlock: {
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+		gap: 4,
+	},
+	statusText: {
+		fontSize: 13,
+		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
+	},
+	logsScroll: {
+		maxHeight: 200,
+		paddingHorizontal: 16,
+	},
+	logLine: {
+		fontSize: 11,
+		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
+		paddingVertical: 1,
 	},
 });
