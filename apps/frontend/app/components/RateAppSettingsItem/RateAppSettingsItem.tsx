@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -12,6 +12,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import { getValue, setValue } from '@/constants/AsyncStorageHelper';
+
+const ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING = 'wasAskedForRating';
 
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
 
@@ -43,6 +46,16 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const [wasAskedForRating, setWasAskedForRating] = useState(false);
 	const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
+	useEffect(() => {
+		getValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING)
+			.then((value) => {
+				if (value === true) {
+					setWasAskedForRating(true);
+				}
+			})
+			.catch(() => {});
+	}, []);
+
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
 	const androidStoreUrl = appSettings?.app_stores_url_to_google;
 	const isWeb = Platform.OS === 'web';
@@ -66,12 +79,20 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 
 	const handleNativeRating = useCallback(
 		async (storeUrl: string | undefined, store: StoreTarget) => {
+			if (wasAskedForRating) {
+				addLog('Already asked for rating, opening store URL');
+				if (storeUrl) {
+					openStore(storeUrl, store);
+				}
+				return;
+			}
 			try {
 				const isAvailable = await StoreReview.isAvailableAsync();
 				if (isAvailable) {
 					addLog('Requesting native review dialog');
 					await StoreReview.requestReview();
 					setWasAskedForRating(true);
+					await setValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING, true);
 					addLog('Native review dialog shown');
 					return;
 				}
@@ -83,7 +104,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 				openStore(storeUrl, store);
 			}
 		},
-		[addLog, openStore]
+		[addLog, openStore, wasAskedForRating]
 	);
 
 	const showDebugLogsModal = useCallback(() => {
