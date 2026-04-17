@@ -149,16 +149,25 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 					const isFirst = index === 0;
 					const isLast = index === visibleRows.length - 1;
 					const hasMore = debug || !isLast;
-					const computedGroupPosition = hasBothWebLinks || debug
-						? isFirst ? 'top' : (debug && isLast ? 'middle' : 'bottom')
-						: debug ? 'top' : 'single';
-					const rowUrl = row.url;
+
+					let computedGroupPosition: 'top' | 'middle' | 'bottom' | 'single';
+					if (hasBothWebLinks || debug) {
+						if (isFirst) {
+							computedGroupPosition = 'top';
+						} else if (debug && isLast) {
+							computedGroupPosition = 'middle';
+						} else {
+							computedGroupPosition = 'bottom';
+						}
+					} else {
+						computedGroupPosition = debug ? 'top' : 'single';
+					}
 
 					return (
 						<SettingsList
 							key={row.key}
 							label={row.label}
-							handleFunction={rowUrl ? () => openStore(rowUrl, row.store) : undefined}
+							handleFunction={row.url ? () => openStore(row.url!, row.store) : undefined}
 							groupPosition={computedGroupPosition}
 							showSeparator={hasMore}
 							iconBgColor={RATE_APP_ICON_BACKGROUND}
