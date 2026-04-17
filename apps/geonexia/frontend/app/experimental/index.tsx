@@ -35,6 +35,17 @@ export default function ExperimentalScreen() {
 					groupPosition="single"
 				/>
 
+				<SettingsListGroupTitle title="3D" />
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="cube-scan" size={22} color="#ffffff" />}
+					label="3d Kyle Test"
+					value="3D-Modelle auf der Karte platzieren"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/3d-kyle-test')}
+					groupPosition="single"
+				/>
+
 				<SettingsListGroupTitle title="Karten" />
 				<SettingsList
 					iconBgColor={EXPERIMENTAL_COLOR}
