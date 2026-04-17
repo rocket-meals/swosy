@@ -43,7 +43,16 @@ export default function ExperimentalScreen() {
 					value="3D-Modelle auf der Karte platzieren"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/experimental/3d-kyle-test')}
-					groupPosition="single"
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="sail-boat" size={22} color="#ffffff" />}
+					label="Seaphara"
+					value="Boot per Joystick auf der Karte steuern"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/seaphara')}
+					groupPosition="bottom"
 				/>
 
 				<SettingsListGroupTitle title="Karten" />
