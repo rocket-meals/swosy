@@ -41,7 +41,7 @@ const MOVE_SPEED_M_PER_S = 0.1 * H3_RES4_HEX_WIDTH_M; // ≈ 3 914 m/s
 const MOVE_INTERVAL_MS = 100;
 const MOVE_M_PER_TICK = MOVE_SPEED_M_PER_S * (MOVE_INTERVAL_MS / 1000); // ≈ 391 m per tick
 
-const LAT_DEG_PER_METER = 1 / 111320;
+const LAT_DEG_PER_METER = 1 / METERS_PER_LAT_DEGREE;
 
 const INITIAL_ZOOM = 6;
 // Start over the North Sea / Baltic approach
@@ -50,6 +50,13 @@ const INITIAL_POSITION = { lat: 55.0, lng: 10.0 };
 const JOYSTICK_OUTER_RADIUS = 60;
 const JOYSTICK_KNOB_RADIUS = 22;
 const JOYSTICK_MAX_DISPLACEMENT = JOYSTICK_OUTER_RADIUS - JOYSTICK_KNOB_RADIUS;
+// Minimum pixel displacement before joystick movement is applied
+const JOYSTICK_MIN_DISPLACEMENT = 2;
+
+// Meters per degree of latitude (constant at all latitudes)
+const METERS_PER_LAT_DEGREE = 111320;
+// Minimum cosine-of-latitude before falling back to equator approximation
+const MIN_COS_LAT = 0.001;
 
 // ─── Boat transform addon script ──────────────────────────────────────────────
 // Runs AFTER hexTileScript has set up window._mapExtensions.onMessage.
@@ -257,7 +264,7 @@ export default function SeapharaScreen() {
 					const pos = boatPositionRef.current;
 					const { x, y } = knobOffsetRef.current;
 					const dist = Math.sqrt(x * x + y * y);
-					if (dist < 2) return;
+					if (dist < JOYSTICK_MIN_DISPLACEMENT) return;
 
 					const ratio = Math.min(dist / JOYSTICK_MAX_DISPLACEMENT, 1.0);
 					const metersPerTick = MOVE_M_PER_TICK * ratio;
@@ -270,7 +277,7 @@ export default function SeapharaScreen() {
 					const bearing = Math.atan2(nx, ny);
 
 					const cosLat = Math.cos((pos.lat * Math.PI) / 180);
-					const lngDegPerMeter = cosLat > 0.001 ? 1 / (111320 * cosLat) : 1 / 111320;
+					const lngDegPerMeter = cosLat > MIN_COS_LAT ? 1 / (METERS_PER_LAT_DEGREE * cosLat) : 1 / METERS_PER_LAT_DEGREE;
 
 					const newLat = pos.lat + ny * metersPerTick * LAT_DEG_PER_METER;
 					const newLng = pos.lng + nx * metersPerTick * lngDegPerMeter;
