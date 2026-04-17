@@ -393,7 +393,6 @@ export default function SeapharaScreen() {
 					<SettingsListGroupTitle title="Speed" />
 					<SettingsListNumberInput
 						label="Speed Multiplier"
-						value={speedMultiplier.toFixed(1) + '×'}
 						initialValue={speedMultiplier}
 						min={0.1}
 						max={20}
@@ -534,7 +533,7 @@ const debugStyles = StyleSheet.create({
 	},
 	statusText: {
 		fontSize: 13,
-		fontFamily: 'monospace',
+		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
 	},
 	logsScroll: {
 		maxHeight: 200,
@@ -542,7 +541,7 @@ const debugStyles = StyleSheet.create({
 	},
 	logLine: {
 		fontSize: 11,
-		fontFamily: 'monospace',
+		fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }),
 		paddingVertical: 1,
 	},
 });
