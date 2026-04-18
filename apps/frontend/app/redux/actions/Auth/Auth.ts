@@ -9,6 +9,7 @@ import { setBaseURL } from '@/interceptor';
 
 interface ExtendedProperties {
 	project: {
+		project_name: string | null;
 		project_descriptor: string | null;
 		project_logo: string | null;
 		project_color: string | null;

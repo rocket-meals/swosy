@@ -616,7 +616,7 @@ const Settings = () => {
 							style={styles.logo}
 						/>
 					</View>
-					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
+					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo, customerConfig)}</Text>
 				</TouchableOpacity>
 			),
 		});

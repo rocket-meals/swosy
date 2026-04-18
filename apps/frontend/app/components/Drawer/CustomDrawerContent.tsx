@@ -24,6 +24,7 @@ import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -63,6 +64,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
         const { isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const { chats } = useAppSelector((state) => state.chats);
         const { serverInfo, primaryColor: projectColor, language, appSettings, wikis } = useAppSelector((state) => state.settings);
+        const customerConfig = useCustomerConfig();
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
@@ -352,7 +354,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	return (
 		<AppDrawer
 			logoSource={logoUri ? { uri: logoUri } : undefined}
-			title={ServerInfoHelper.getServerName(serverInfo)}
+			title={ServerInfoHelper.getServerName(serverInfo, customerConfig)}
 			onLogoPress={() => navigation.navigate('foodoffers')}
 			items={toDrawerItems(generateMenuItems())}
 			bottomItems={bottomItems}

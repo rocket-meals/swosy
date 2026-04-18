@@ -5,7 +5,8 @@ import {useTheme} from '@/hooks/useTheme';
 import {TranslationKeys} from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import {getImageUrl} from '@/constants/HelperFunctions';
-import {getAppIconInsideExpoLocalSaved, getCustomerConfig} from '@/config';
+import {getAppIconInsideExpoLocalSaved} from '@/config';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 import QrCode from '@/components/QrCode';
 import useDebugMode from '@/hooks/useDebugMode';
 import {myContrastColor} from '@/helper/ColorHelper';
@@ -35,11 +36,11 @@ const AppDownloadManagement = () => {
 	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;
 	const iconSource = projectLogo ? {uri: projectLogo} : getAppIconInsideExpoLocalSaved();
 
-	const projectName = ServerInfoHelper.getServerName(serverInfo || {});
-	const projectDescriptor = serverInfo?.info?.project?.project_descriptor || '';
-
-	const customerConfig = getCustomerConfig();
+	const customerConfig = useCustomerConfig();
 	const baseUrl = customerConfig.baseUrl;
+
+	const projectName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
+	const projectDescriptor = serverInfo?.info?.project?.project_descriptor || '';
 	const appDownloadUrl = `https://rocket-meals.de${baseUrl}/experimentell/app-download`;
 
 	const qrSize = Math.min(screenWidth * 0.6, 280);
