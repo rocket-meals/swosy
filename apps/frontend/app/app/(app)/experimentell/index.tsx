@@ -93,7 +93,7 @@ const Index = () => {
 		},
 		{
 			key: 'app-download',
-			label: translate(TranslationKeys.app_download),
+			label: translate(TranslationKeys.app_download_selection),
 			leftIcon: <MaterialCommunityIcons name="download" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/app-download'),
 		},

@@ -160,7 +160,16 @@ const Index = () => {
                                                 onPress={() => {
                                                         router.navigate('/give-feedback');
                                                 }}
-                                                groupPosition="single"
+                                                groupPosition="top"
+                                        />
+                                        <SettingsList
+                                                leftIcon={<MaterialCommunityIcons name="download" size={24} />}
+                                                label={translate(TranslationKeys.app_download)}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                onPress={() => {
+                                                        router.navigate('/app-download-management');
+                                                }}
+                                                groupPosition="bottom"
                                         />
                                 </View>
                         </View>

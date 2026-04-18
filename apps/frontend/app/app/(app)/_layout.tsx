@@ -766,6 +766,14 @@ export default function Layout() {
 				/>
 
 				<Drawer.Screen
+					name="app-download-management/index"
+					options={{
+						title: translate(TranslationKeys.app_download),
+						header: () => <CustomStackHeader label={translate(TranslationKeys.app_download)} key={'app_download_management'} />,
+					}}
+				/>
+
+				<Drawer.Screen
 					name="support-ticket"
 					options={{
 						title: 'Support Ticket',
