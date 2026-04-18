@@ -19,7 +19,7 @@ const AppDownloadSelection = () => {
 
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
-	const projectLogo = serverInfo?.info?.project?.project_logo && getImageUrl(serverInfo.info.project.project_logo);
+	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;
 	const iconSource = projectLogo ? {uri: projectLogo} : getAppIconInsideExpoLocalSaved();
 
 	const projectName = ServerInfoHelper.getServerName(serverInfo || {});
