@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, ScrollView, Text, View, StyleSheet, useWindowDimensions} from 'react-native';
+import {Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions} from 'react-native';
 import {useAppSelector} from '@/redux/hooks';
 import {useTheme} from '@/hooks/useTheme';
 import {TranslationKeys} from '@/locales/keys';
@@ -10,20 +10,29 @@ import QrCode from '@/components/QrCode';
 import useDebugMode from '@/hooks/useDebugMode';
 import {myContrastColor} from '@/helper/ColorHelper';
 import {ServerInfoHelper} from '@/helper/ServerInfoHelper';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {useLocalSearchParams, useRouter} from 'expo-router';
+import {useLanguage} from '@/hooks/useLanguage';
+import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
-const GITHUB_PAGES_OWNER = 'rocket-meals';
-const GITHUB_PAGES_REPO = 'rocket-meals';
+const ROUTE_PATH = '/app-download-management';
 
 const AppDownloadManagement = () => {
 	useSetPageTitle(TranslationKeys.app_download);
 	const {theme} = useTheme();
+	const {translate} = useLanguage();
+	const router = useRouter();
+	const {fullscreen} = useLocalSearchParams();
 	const {serverInfo, primaryColor, selectedTheme: mode} = useAppSelector((state) => state.settings);
 	const isDebugMode = useDebugMode();
 	const {width: screenWidth} = useWindowDimensions();
 
+	// useLocalSearchParams may return a string or string[] depending on the router
+	const isFullscreen = Array.isArray(fullscreen) ? fullscreen.includes('true') : fullscreen === 'true';
+
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
-	const projectLogo = serverInfo?.info?.project?.project_logo && getImageUrl(serverInfo.info.project.project_logo);
+	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;
 	const iconSource = projectLogo ? {uri: projectLogo} : getAppIconInsideExpoLocalSaved();
 
 	const projectName = ServerInfoHelper.getServerName(serverInfo || {});
@@ -31,39 +40,83 @@ const AppDownloadManagement = () => {
 
 	const customerConfig = getCustomerConfig();
 	const baseUrl = customerConfig.baseUrl;
-	const githubPagesUrl = `https://${GITHUB_PAGES_OWNER}.github.io/${GITHUB_PAGES_REPO}${baseUrl}/experimentell/app-download`;
+	const appDownloadUrl = `https://rocket-meals.de${baseUrl}/experimentell/app-download`;
 
 	const qrSize = Math.min(screenWidth * 0.6, 280);
 
-	return (
-		<ScrollView
-			style={[styles.container, {backgroundColor: theme.screen.background}]}
-			contentContainerStyle={styles.contentContainer}
+	const toggleFullscreen = () => {
+		if (isFullscreen) {
+			router.replace(ROUTE_PATH);
+			return;
+		}
+		router.replace({
+			pathname: ROUTE_PATH,
+			params: {fullscreen: 'true'},
+		});
+	};
+
+	const exitFullscreen = () => {
+		if (isFullscreen) {
+			router.replace(ROUTE_PATH);
+		}
+	};
+
+	const fullscreenButton = (
+		<TouchableOpacity
+			onPress={toggleFullscreen}
+			style={[styles.actionButton, {backgroundColor: theme.screen.iconBg, borderColor: theme.screen.icon}]}
 		>
-			<View style={[styles.heroSection, {backgroundColor: primaryColor}]}>
-				<Image source={iconSource} style={styles.projectLogo} />
-				<Text style={[styles.projectName, {color: contrastColor}]}>{projectName}</Text>
-				{projectDescriptor ? (
-					<Text style={[styles.projectDescriptor, {color: contrastColor}]}>{projectDescriptor}</Text>
-				) : null}
-				<View style={styles.qrContainer}>
-					<QrCode
-						value={githubPagesUrl}
-						size={qrSize}
-						image={iconSource}
-						innerSize={21}
-						backgroundColor="white"
-					/>
-				</View>
-				{isDebugMode ? (
-					<Text style={[styles.debugLink, {color: contrastColor}]} selectable>{githubPagesUrl}</Text>
-				) : null}
-			</View>
-		</ScrollView>
+			<MaterialCommunityIcons
+				name={isFullscreen ? 'fullscreen-exit' : 'fullscreen'}
+				size={20}
+				color={theme.screen.text}
+			/>
+		</TouchableOpacity>
+	);
+
+	return (
+		<SafeAreaView style={[styles.safeArea, {backgroundColor: theme.screen.background}]}>
+			{isFullscreen ? (
+				<View style={styles.floatingButton}>{fullscreenButton}</View>
+			) : (
+				<CustomStackHeader label={translate(TranslationKeys.app_download)} rightElement={fullscreenButton} />
+			)}
+			<ScrollView
+				style={styles.container}
+				contentContainerStyle={styles.contentContainer}
+			>
+				<TouchableOpacity
+					activeOpacity={1}
+					onPress={exitFullscreen}
+					style={[styles.heroSection, {backgroundColor: primaryColor}]}
+				>
+					<Image source={iconSource} style={styles.projectLogo} />
+					<Text style={[styles.projectName, {color: contrastColor}]}>{projectName}</Text>
+					{projectDescriptor ? (
+						<Text style={[styles.projectDescriptor, {color: contrastColor}]}>{projectDescriptor}</Text>
+					) : null}
+					<View style={styles.qrContainer}>
+						<QrCode
+							value={appDownloadUrl}
+							size={qrSize}
+							image={iconSource}
+							innerSize={21}
+							backgroundColor="white"
+						/>
+					</View>
+					{isDebugMode ? (
+						<Text style={[styles.debugLink, {color: contrastColor}]} selectable>{appDownloadUrl}</Text>
+					) : null}
+				</TouchableOpacity>
+			</ScrollView>
+		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
+	safeArea: {
+		flex: 1,
+	},
 	container: {
 		flex: 1,
 	},
@@ -109,6 +162,82 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		marginTop: 16,
 		opacity: 0.8,
+	},
+	actionButton: {
+		padding: 10,
+		borderRadius: 50,
+		borderWidth: 1,
+	},
+	floatingButton: {
+		position: 'absolute',
+		right: 16,
+		top: 12,
+		zIndex: 1,
+	},
+});
+
+export default AppDownloadManagement;
+
+const styles = StyleSheet.create({
+	safeArea: {
+		flex: 1,
+	},
+	container: {
+		flex: 1,
+	},
+	contentContainer: {
+		flexGrow: 1,
+	},
+	heroSection: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 40,
+		paddingHorizontal: 20,
+		minHeight: 500,
+	},
+	projectLogo: {
+		width: 80,
+		height: 80,
+		resizeMode: 'contain',
+		marginBottom: 16,
+		borderRadius: 12,
+	},
+	projectName: {
+		fontSize: 32,
+		fontWeight: 'bold',
+		textAlign: 'center',
+		marginBottom: 8,
+	},
+	projectDescriptor: {
+		fontSize: 18,
+		textAlign: 'center',
+		marginBottom: 24,
+		paddingHorizontal: 20,
+	},
+	qrContainer: {
+		backgroundColor: 'white',
+		borderRadius: 16,
+		padding: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	debugLink: {
+		fontSize: 12,
+		textAlign: 'center',
+		marginTop: 16,
+		opacity: 0.8,
+	},
+	actionButton: {
+		padding: 10,
+		borderRadius: 50,
+		borderWidth: 1,
+	},
+	floatingButton: {
+		position: 'absolute',
+		right: 16,
+		top: 12,
+		zIndex: 1,
 	},
 });
 
