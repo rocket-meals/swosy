@@ -76,9 +76,7 @@ const AppDownloadManagement = () => {
 
 	return (
 		<SafeAreaView style={[styles.safeArea, {backgroundColor: theme.screen.background}]}>
-			{isFullscreen ? (
-				<View style={styles.floatingButton}>{fullscreenButton}</View>
-			) : (
+			{!isFullscreen && (
 				<CustomStackHeader label={translate(TranslationKeys.app_download)} rightElement={fullscreenButton} />
 			)}
 			<ScrollView
@@ -167,12 +165,6 @@ const styles = StyleSheet.create({
 		padding: 10,
 		borderRadius: 50,
 		borderWidth: 1,
-	},
-	floatingButton: {
-		position: 'absolute',
-		right: 16,
-		top: 12,
-		zIndex: 1,
 	},
 });
 
