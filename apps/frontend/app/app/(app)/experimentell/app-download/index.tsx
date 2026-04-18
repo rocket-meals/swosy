@@ -28,7 +28,7 @@ const AppDownloadSelection = () => {
 	return (
 		<ScrollView
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
-			contentContainerStyle={[styles.contentContainer, { backgroundColor: theme.screen.background }]}
+			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
 			<View style={styles.content}>
 				<SettingsList
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	contentContainer: {},
 	content: {
 		width: '100%',
 		padding: 20,
