@@ -252,9 +252,11 @@ const Index: React.FC = () => {
 	const sortedWithLastOpened = useMemo(() => {
 		if (!buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
 		const lastOpenedSet = new Set(buildingsLastOpenedIds);
+		// Build a Map for O(1) lookup by ID
+		const campusById = new Map(sortedCampuses.map(c => [c.id ?? '', c]));
 		// Preserve the order from buildingsLastOpenedIds (most recent first)
 		const lastOpenedItems = buildingsLastOpenedIds
-			.map(id => sortedCampuses.find(c => c.id === id))
+			.map(id => campusById.get(id))
 			.filter((c): c is BuildingWithDistance => c !== undefined);
 		const otherItems = sortedCampuses.filter(c => !lastOpenedSet.has(c.id ?? ''));
 		return [...lastOpenedItems, ...otherItems];

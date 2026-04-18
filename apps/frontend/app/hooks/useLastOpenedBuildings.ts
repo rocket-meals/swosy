@@ -46,7 +46,7 @@ const useLastOpenedBuildings = () => {
 
 			const newEntry: Partial<DatabaseTypes.ProfilesBuildingsLastOpened> = {
 				buildings_id: buildingId,
-				profiles_id: currentProfile?.id ?? undefined,
+				...(currentProfile?.id ? { profiles_id: currentProfile.id } : {}),
 			};
 
 			const updated = [newEntry, ...filtered].slice(0, MAX_LAST_OPENED);
@@ -60,6 +60,8 @@ const useLastOpenedBuildings = () => {
 				await profileHelper.updateProfile(profileData);
 			} catch (e) {
 				console.error('Error updating buildings_last_opened:', e);
+				// Revert Redux state to previous value on backend failure
+				dispatch({ type: UPDATE_PROFILE, payload: currentProfile });
 			}
 		},
 		[dispatch, profileHelper, isAnonymousUser]

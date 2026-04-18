@@ -66,7 +66,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 		showScrollViewModal({
 			title: translate(TranslationKeys.last_opened_buildings),
 			children: (
-				<Text style={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 16 }}>
+				<Text style={[styles.lastOpenedInfoText, { color: theme.screen.text }]}>
 					{translate(TranslationKeys.last_opened_building_info)}
 				</Text>
 			),
@@ -265,6 +265,10 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	lastOpenedInfoText: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
 	},
 	navigationButton: {
 		position: 'absolute',
