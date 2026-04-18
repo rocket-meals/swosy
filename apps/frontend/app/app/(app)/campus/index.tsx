@@ -27,6 +27,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
 
 import { RootDrawerParamList } from './types';
 import CampusHeader from './components/CampusHeader';
@@ -86,6 +87,7 @@ const Index: React.FC = () => {
 
 	const { openCampusSortingModal } = useCampusSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
+	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
 	// Handlers
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
@@ -246,12 +248,24 @@ const Index: React.FC = () => {
 		return sortCampuses(campusesWithDistance, campusesSortBy);
 	}, [campusesWithDistance, campusesSortBy, sortCampuses]);
 
+	// Lift last-opened buildings to the top (up to 4), in the order they were opened
+	const sortedWithLastOpened = useMemo(() => {
+		if (!buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
+		const lastOpenedSet = new Set(buildingsLastOpenedIds);
+		// Preserve the order from buildingsLastOpenedIds (most recent first)
+		const lastOpenedItems = buildingsLastOpenedIds
+			.map(id => sortedCampuses.find(c => c.id === id))
+			.filter((c): c is BuildingWithDistance => c !== undefined);
+		const otherItems = sortedCampuses.filter(c => !lastOpenedSet.has(c.id ?? ''));
+		return [...lastOpenedItems, ...otherItems];
+	}, [sortedCampuses, buildingsLastOpenedIds]);
+
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
-		const src = sortedCampuses;
+		const src = sortedWithLastOpened;
 		if (!query || query.trim() === '') return src;
 		const q = query.toLowerCase().trim();
 		return src.filter(campus => (campus?.alias ?? '').toLowerCase().includes(q));
-	}, [sortedCampuses, query]);
+	}, [sortedWithLastOpened, query]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
@@ -300,6 +314,7 @@ const Index: React.FC = () => {
 
 	const renderItem = useCallback(
 		({ item }: { item: BuildingWithDistance }) => {
+			const isLastOpened = Boolean(item.id && buildingsLastOpenedIds.includes(item.id));
 			return (
 				<View style={styles.campusContainerItem}>
 					<BuildingItem
@@ -313,6 +328,7 @@ const Index: React.FC = () => {
 						selectedTheme={selectedTheme}
 						screenWidth={windowWidth}
 						isManagement={isManagement}
+						isLastOpened={isLastOpened}
 					/>
 				</View>
 			);
@@ -326,7 +342,8 @@ const Index: React.FC = () => {
 			campusAreaColor, 
 			selectedTheme, 
 			windowWidth, 
-			isManagement
+			isManagement,
+			buildingsLastOpenedIds,
 		]
 	);
 
@@ -386,7 +403,8 @@ const Index: React.FC = () => {
 								campusAreaColor,
 								selectedTheme,
 								windowWidth,
-								isManagement
+								isManagement,
+								buildingsLastOpenedIds,
 							]}
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}

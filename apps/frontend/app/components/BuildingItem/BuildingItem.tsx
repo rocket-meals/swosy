@@ -16,6 +16,7 @@ import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import IconButton from '../UI/IconButton';
 import { CardLayoutProps } from '@/components/shared/cardLayoutProps';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 
 export interface BuildingItemPropsOptimized extends CardLayoutProps {
@@ -29,6 +30,7 @@ export interface BuildingItemPropsOptimized extends CardLayoutProps {
 	campusAreaColor?: string; // Replaces appSettings logic
 	selectedTheme?: string;
 	screenWidth: number;
+	isLastOpened?: boolean;
 }
 
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 
@@ -41,13 +43,15 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 	campusAreaColor,
 	selectedTheme: mode,
 	screenWidth,
-	isManagement = false
+	isManagement = false,
+	isLastOpened = false,
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
+	const { show: showScrollViewModal } = useMyScrollViewModal();
 
 	const defaultImage = useMemo(() => getImageUrl(projectLogo ?? ''), [projectLogo]);
 	const campus_area_color = campusAreaColor ? campusAreaColor : primaryColor;
@@ -57,6 +61,17 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 		(id: string) => openBuildingDetailsModal(id),
 		[openBuildingDetailsModal]
 	);
+
+	const handleOpenLastOpenedModal = useCallback(() => {
+		showScrollViewModal({
+			title: translate(TranslationKeys.last_opened_buildings),
+			children: (
+				<Text style={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 16 }}>
+					{translate(TranslationKeys.last_opened_building_info)}
+				</Text>
+			),
+		});
+	}, [showScrollViewModal, translate, theme.screen.text]);
 
 	const handleOpenNavigation = useCallback(() => {
 		const coordinates = campus?.coordinates?.coordinates;
@@ -153,6 +168,13 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 							>
 								<View />
 							</TouchableOpacity>
+						) : isLastOpened ? (
+							<TouchableOpacity
+								style={[styles.lastOpenedButton, { backgroundColor: campus_area_color }]}
+								onPress={handleOpenLastOpenedModal}
+							>
+								<MaterialCommunityIcons name="clock-outline" size={20} color={contrastColor} />
+							</TouchableOpacity>
 						) : (
 							<View />
 						)}
@@ -205,6 +227,7 @@ export default memo(BuildingItem, (prev, next) => {
         prev.selectedTheme === next.selectedTheme &&
         prev.screenWidth === next.screenWidth &&
         prev.isManagement === next.isManagement &&
+        prev.isLastOpened === next.isLastOpened &&
         prev.onEditImage === next.onEditImage &&
         prev.openDistanceSheet === next.openDistanceSheet;
 });
@@ -233,6 +256,13 @@ const styles = StyleSheet.create({
 		height: 35,
 		borderRadius: 50,
 		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	lastOpenedButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 8,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

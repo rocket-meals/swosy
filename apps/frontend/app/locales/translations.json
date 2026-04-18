@@ -5922,5 +5922,25 @@
     "ru": "Голос",
     "tr": "Ses",
     "zh": "语音"
+  },
+  "last_opened_buildings": {
+    "de": "Zuletzt geöffnete Gebäude",
+    "en": "Recently opened buildings",
+    "ar": "المباني التي تم فتحها مؤخراً",
+    "es": "Edificios abiertos recientemente",
+    "fr": "Bâtiments récemment ouverts",
+    "ru": "Недавно открытые здания",
+    "tr": "Son açılan binalar",
+    "zh": "最近打开的建筑"
+  },
+  "last_opened_building_info": {
+    "de": "Dieses Gebäude hast du zuletzt geöffnet.",
+    "en": "You recently opened this building.",
+    "ar": "لقد فتحت هذا المبنى مؤخراً.",
+    "es": "Abriste este edificio recientemente.",
+    "fr": "Vous avez récemment ouvert ce bâtiment.",
+    "ru": "Вы недавно открывали это здание.",
+    "tr": "Bu binayı yakın zamanda açtınız.",
+    "zh": "您最近打开了这栋建筑。"
   }
 }
