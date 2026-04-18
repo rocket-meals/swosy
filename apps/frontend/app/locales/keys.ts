@@ -325,6 +325,7 @@ export enum TranslationKeys {
         rate_now = 'rate_now',
         rate_later = 'rate_later',
         app_download = 'app_download',
+        app_download_selection = 'app_download_selection',
         react_native_qrcode_svg = 'react_native_qrcode_svg',
 	test_use_modal = 'test_use_modal',
 	markdown_test = 'markdown_test',

@@ -1,28 +1,17 @@
 import React from 'react';
-import {Image, ScrollView, View} from 'react-native';
+import {ScrollView, View, StyleSheet} from 'react-native';
 import {useAppSelector} from '@/redux/hooks';
 import {useTheme} from '@/hooks/useTheme';
 import {TranslationKeys} from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import {getImageUrl} from '@/constants/HelperFunctions';
 import {CommonSystemActionHelper} from '@/helper/SystemActionHelper';
-import DownloadItem from '@/components/DownloadItem';
-import appleStoreIcon from '@/assets/icons/apple-store.png';
-import googlePlayIcon from '@/assets/icons/google-play.png';
-import styles from './styles';
-import {getAppIconInsideExpoLocalSaved} from "@/config";
+import SettingsList from '@/components/SettingsList';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 
-const AppDownload = () => {
-	useSetPageTitle(TranslationKeys.app_download);
+const AppDownloadSelection = () => {
+	useSetPageTitle(TranslationKeys.app_download_selection);
 	const { theme } = useTheme();
-	const { serverInfo, appSettings } = useAppSelector((state) => state.settings);
-
-	const projectLogo = serverInfo?.info?.project?.project_logo && getImageUrl(serverInfo.info.project.project_logo);
-
-	const iconSource = projectLogo ? { uri: projectLogo } : getAppIconInsideExpoLocalSaved()
-
-	const iosUrl = appSettings?.app_stores_url_to_apple;
-	const androidUrl = appSettings?.app_stores_url_to_google;
+	const { appSettings, primaryColor } = useAppSelector((state) => state.settings);
 
 	const handleOpenAppleStore = () => {
 		if (appSettings?.app_stores_url_to_apple) {
@@ -38,21 +27,39 @@ const AppDownload = () => {
 
 	return (
 		<ScrollView
-			style={{ ...styles.container, backgroundColor: theme.screen.background }}
-			contentContainerStyle={{
-				...styles.contentContainer,
-				backgroundColor: theme.screen.background,
-			}}
+			style={[styles.container, { backgroundColor: theme.screen.background }]}
+			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
 			<View style={styles.content}>
-				<Image source={iconSource} style={styles.icon} />
-				<View style={styles.itemsContainer}>
-					<DownloadItem label="iOS" qrValue={iosUrl} imageSource={appleStoreIcon} onPress={handleOpenAppleStore} />
-					<DownloadItem label="Android" qrValue={androidUrl} imageSource={googlePlayIcon} onPress={handleOpenGooglePlay} />
-				</View>
+				<SettingsList
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="apple" size={24} color={theme.screen.icon} />}
+					label="iOS"
+					rightIcon={<MaterialCommunityIcons name="open-in-new" size={24} color={theme.screen.icon} />}
+					onPress={handleOpenAppleStore}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="android" size={24} color={theme.screen.icon} />}
+					label="Android"
+					rightIcon={<MaterialCommunityIcons name="open-in-new" size={24} color={theme.screen.icon} />}
+					onPress={handleOpenGooglePlay}
+					groupPosition="bottom"
+				/>
 			</View>
 		</ScrollView>
 	);
 };
 
-export default AppDownload;
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	content: {
+		width: '100%',
+		padding: 20,
+	},
+});
+
+export default AppDownloadSelection;

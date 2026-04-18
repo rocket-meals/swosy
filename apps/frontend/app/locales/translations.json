@@ -3243,6 +3243,16 @@
     "tr": "App Download",
     "zh": "App Download"
   },
+  "app_download_selection": {
+    "de": "App Download Auswahl",
+    "en": "App Download Selection",
+    "ar": "App Download Selection",
+    "es": "App Download Selection",
+    "fr": "App Download Selection",
+    "ru": "App Download Selection",
+    "tr": "App Download Selection",
+    "zh": "App Download Selection"
+  },
   "react_native_qrcode_svg": {
     "de": "React Native QRCode SVG",
     "en": "React Native QRCode SVG",
