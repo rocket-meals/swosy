@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -21,6 +21,7 @@ import useToast from '@/hooks/useToast';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
 import { TranslationKeys } from '@/locales/keys';
 import ApartmentItem from '@/components/ApartmentItem/ApartmentItem';
 import DistanceModal from '@/components/DistanceModal';
@@ -72,6 +73,7 @@ const Index: React.FC = () => {
 	// Helpers
 	const { openHousingSortingModal } = useHousingSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
+	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
 	const housingAreaColor = housingAreaColorFromSettings
 		? housingAreaColorFromSettings
@@ -210,13 +212,28 @@ const Index: React.FC = () => {
 		return getSortedApartments(apartmentsWithDistance, apartmentsSortBy as any);
 	}, [apartmentsWithDistance, apartmentsSortBy]);
 
+	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
+	const sortedWithLastOpened = useMemo(() => {
+		const shouldApplyLastOpened = apartmentsSortBy === ApartmentSortOption.INTELLIGENT || apartmentsSortBy === ApartmentSortOption.LAST_OPENED;
+		if (!shouldApplyLastOpened || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedApartments;
+		const lastOpenedSet = new Set(buildingsLastOpenedIds);
+		// Build a Map for O(1) lookup by ID (apartment.id is building ID after data merge)
+		const apartmentById = new Map(sortedApartments.map((a: any) => [a.id ?? '', a]));
+		// Preserve the order from buildingsLastOpenedIds (most recent first)
+		const lastOpenedItems = buildingsLastOpenedIds
+			.map(id => apartmentById.get(id))
+			.filter((a): a is DatabaseTypes.Apartments => a !== undefined);
+		const otherItems = sortedApartments.filter((a: any) => !lastOpenedSet.has(a.id ?? ''));
+		return [...lastOpenedItems, ...otherItems];
+	}, [sortedApartments, buildingsLastOpenedIds, apartmentsSortBy]);
+
 	const visibleApartments = useMemo(() => {
-		if (!query || query.trim() === '') return sortedApartments;
+		if (!query || query.trim() === '') return sortedWithLastOpened;
 		const q = query.toLowerCase().trim();
-		return sortedApartments.filter((apartment: any) =>
+		return sortedWithLastOpened.filter((apartment: any) =>
 			(apartment?.alias ?? '').toLowerCase().includes(q)
 		);
-	}, [sortedApartments, query]);
+	}, [sortedWithLastOpened, query]);
 
 	const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {

@@ -15,6 +15,7 @@ export enum CampusSortOption {
   INTELLIGENT = 'intelligent',
   ALPHABETICAL = 'alphabetical',
   DISTANCE = 'distance',
+  LAST_OPENED = 'last_opened',
   NONE = 'none',
 }
 
@@ -23,6 +24,7 @@ export enum ApartmentSortOption {
   ALPHABETICAL = 'alphabetical',
   DISTANCE = 'distance',
   FREE_ROOMS = 'free rooms',
+  LAST_OPENED = 'last_opened',
   NONE = 'none',
 }
 

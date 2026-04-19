@@ -829,6 +829,16 @@
     "tr": "Mesafe",
     "zh": "距离"
   },
+  "sort_option_last_opened": {
+    "de": "Zuletzt geöffnet",
+    "en": "Recently opened",
+    "ar": "آخر فتح",
+    "es": "Abierto recientemente",
+    "fr": "Récemment ouvert",
+    "ru": "Недавно открытые",
+    "tr": "Son açılan",
+    "zh": "最近打开"
+  },
   "sort_option_food_category": {
     "de": "Essenskategorie",
     "en": "Food Category",
