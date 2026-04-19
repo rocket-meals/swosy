@@ -8709,7 +8709,7 @@ Key,Message,Component,Line
 "AZ0Y6QUMyJsjaJPaNj_U","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",56
 "AZ0Y6QUMyJsjaJPaNj_V","Use `export…from` to re-export `MyMapHandle`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",179
 "AZ0Y6QUMyJsjaJPaNj_W","Use `export…from` to re-export `MyMapProps`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",179
-"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",72
+"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",84
 "AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",134
 "AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",154
 "AZ0YwZFETb56BCVJHZIL","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",179
