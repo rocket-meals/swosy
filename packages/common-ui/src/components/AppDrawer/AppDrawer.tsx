@@ -211,5 +211,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexWrap: 'wrap',
 		marginTop: 10,
+		paddingHorizontal: 15,
 	},
 });
