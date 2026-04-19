@@ -29,3 +29,10 @@ export enum ApartmentSortOption {
 }
 
 export type BuildingSortOption = CampusSortOption | ApartmentSortOption;
+
+export function shouldApplyLastOpenedBoost(sortOption: BuildingSortOption): boolean {
+  return sortOption === CampusSortOption.INTELLIGENT
+    || sortOption === CampusSortOption.LAST_OPENED
+    || sortOption === ApartmentSortOption.INTELLIGENT
+    || sortOption === ApartmentSortOption.LAST_OPENED;
+}

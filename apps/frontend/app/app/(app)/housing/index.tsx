@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
-import { ApartmentSortOption, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -214,8 +214,7 @@ const Index: React.FC = () => {
 
 	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
 	const sortedWithLastOpened = useMemo(() => {
-		const shouldApplyLastOpened = apartmentsSortBy === ApartmentSortOption.INTELLIGENT || apartmentsSortBy === ApartmentSortOption.LAST_OPENED;
-		if (!shouldApplyLastOpened || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedApartments;
+		if (!shouldApplyLastOpenedBoost(apartmentsSortBy as any) || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedApartments;
 		const lastOpenedSet = new Set(buildingsLastOpenedIds);
 		// Build a Map for O(1) lookup by ID (apartment.id is building ID after data merge)
 		const apartmentById = new Map(sortedApartments.map((a: any) => [a.id ?? '', a]));

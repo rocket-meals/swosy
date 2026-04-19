@@ -8,9 +8,9 @@ const useApartmentDetailsModal = () => {
     const { trackBuildingOpened } = useLastOpenedBuildings();
 
     const openApartmentDetailsModal = useCallback((id?: string, buildingId?: string) => {
-        const idToTrack = buildingId || id;
-        if (idToTrack) {
-            trackBuildingOpened(idToTrack);
+        const buildingIdToTrack = buildingId || id;
+        if (buildingIdToTrack) {
+            trackBuildingOpened(buildingIdToTrack);
         }
         show({
             children: <ApartmentDetailsContent id={id} />,

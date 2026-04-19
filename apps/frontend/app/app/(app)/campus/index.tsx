@@ -6,7 +6,7 @@ import {
 	useWindowDimensions,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -250,8 +250,7 @@ const Index: React.FC = () => {
 
 	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
 	const sortedWithLastOpened = useMemo(() => {
-		const shouldApplyLastOpened = campusesSortBy === CampusSortOption.INTELLIGENT || campusesSortBy === CampusSortOption.LAST_OPENED;
-		if (!shouldApplyLastOpened || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
+		if (!shouldApplyLastOpenedBoost(campusesSortBy) || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
 		const lastOpenedSet = new Set(buildingsLastOpenedIds);
 		// Build a Map for O(1) lookup by ID
 		const campusById = new Map(sortedCampuses.map(c => [c.id ?? '', c]));
