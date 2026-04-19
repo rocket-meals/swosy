@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ2jZClYVVB4PQRwlGtB","Remove this unused import of 'ApartmentSortOption'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",3
 "AZ2jRG2IEm416nO92vut","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",171
 "AZ2jRHT0Em416nO92vuu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLastOpenedBuildings.ts",43
 "AZ2dsUdPLVHN2p9NjR1Q","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",161
@@ -8937,7 +8938,7 @@ Key,Message,Component,Line
 "AZ0TpkrOufp2jxPAhSur","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/food-wishlist/index.tsx",145
 "AZ0TplvDufp2jxPAhTKz","Move function 'getTodayRangeIso' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts",42
 "AZ0TpkxSufp2jxPAhSv4","Remove this unused import of 'StyleSheet'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsImage.tsx",2
-"AZ0Tpkxuufp2jxPAhSwB","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",76
+"AZ0Tpkxuufp2jxPAhSwB","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",78
 "AZ0TplGSufp2jxPAhS0h","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",105
 "AZ0TplGSufp2jxPAhS0v","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",513
 "AZ0TplGSufp2jxPAhS0w","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",514
@@ -9013,9 +9014,9 @@ Key,Message,Component,Line
 "AZ0TpkxSufp2jxPAhSv7","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsImage.tsx",20
 "AZ0TpkxCufp2jxPAhSv0","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsTabs.tsx",37
 "AZ0TpkxCufp2jxPAhSv1","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsTabs.tsx",88
-"AZ0Tpkxuufp2jxPAhSwD","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",108
-"AZ0Tpkxuufp2jxPAhSwE","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",149
-"AZ0Tpkxuufp2jxPAhSwF","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",157
+"AZ0Tpkxuufp2jxPAhSwD","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",110
+"AZ0Tpkxuufp2jxPAhSwE","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",151
+"AZ0Tpkxuufp2jxPAhSwF","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",159
 "AZ0Tpk9_ufp2jxPAhSzO","Remove this unused import of 'IconButton'.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",16
 "AZ0TplZTufp2jxPAhS40","Member '_client' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",31
 "AZ0TplGSufp2jxPAhS0i","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",140
@@ -9204,7 +9205,7 @@ Key,Message,Component,Line
 "AZ0Tplo-ufp2jxPAhTDa","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/FoodAndMarkingWebParserMuenster.ts",11
 "AZ0TplpEufp2jxPAhTDb","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts",1
 "AZ0TplpEufp2jxPAhTDc","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts",2
-"AZ0Tpkxuufp2jxPAhSwG","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",239
+"AZ0Tpkxuufp2jxPAhSwG","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",255
 "AZ0Tpk8iufp2jxPAhSy4","'react-native' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOfferInfoItem/FoodOfferInfoItem.tsx",12
 "AZ0TplMRufp2jxPAhS15","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/EmailInput/EmailInput.tsx",39
 "AZ0Tpl0sufp2jxPAhTLj","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/scripts/generate-eas-config.ts",75
@@ -9457,7 +9458,7 @@ Key,Message,Component,Line
 "AZkUSvJzS4VhJojFFAUj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",466
 "AZkUSvJzS4VhJojFFAUk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",585
 "AZkUSvMHS4VhJojFFAXA","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/forms/index.tsx",92
-"AZ0Tpkxuufp2jxPAhSwC","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",103
+"AZ0Tpkxuufp2jxPAhSwC","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",105
 "AZ0TpksVufp2jxPAhSu4","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",51
 "AZ0TpksVufp2jxPAhSu7","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",67
 "AZkUSvQgS4VhJojFFAdQ","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/licenseInformation/index.tsx",44
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZ0TplI8ufp2jxPAhS1X","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomCollapsible/CustomCollapsible.tsx",10
 "AZ0TplGqufp2jxPAhS01","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",21
 "AZ0TplDEufp2jxPAhSz_","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",14
-"AZ0TplCbufp2jxPAhSz1","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FilterFormSheet/FilterFormSheet.tsx",12
