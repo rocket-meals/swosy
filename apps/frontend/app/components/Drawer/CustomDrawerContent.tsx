@@ -339,7 +339,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 								>
 									<Text style={[styles.link, { color: theme.drawer.link }]}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
 								</TouchableOpacity>
-								{index + 1 < wikis?.length - 1 && <Text style={[styles.bar, { color: theme.drawer.divider }]}>|</Text>}
+								{index + 1 < wikis?.length - 1 && <Text style={[styles.bar, { color: theme.drawer.link }]}>|</Text>}
 							</React.Fragment>
 						);
 					}

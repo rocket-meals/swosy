@@ -162,6 +162,9 @@ const styles = StyleSheet.create({
 		width: '100%',
 	},
 	menuIconWrapper: {
+		width: 32,
+		alignItems: 'center',
+		justifyContent: 'center',
 		marginRight: 12,
 		position: 'relative',
 	},
