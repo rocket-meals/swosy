@@ -83,6 +83,7 @@ export enum TranslationKeys {
 	sort_option_public_rating = 'sort_option_public_rating',
 	sort_option_intelligent = 'sort_option_intelligent',
 	sort_option_distance = 'sort_option_distance',
+	sort_option_last_opened = 'sort_option_last_opened',
 	sort_option_food_category = 'sort_option_food_category',
 	sort_option_foodoffer_category = 'sort_option_foodoffer_category',
 	sort_option_price_ascending = 'sort_option_price_ascending',

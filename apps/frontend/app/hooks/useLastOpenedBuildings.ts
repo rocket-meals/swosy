@@ -6,7 +6,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 import { useAppSelector } from '@/redux/hooks';
 
-const MAX_LAST_OPENED = 4;
+const MAX_LAST_OPENED = 10;
 
 const useLastOpenedBuildings = () => {
 	const dispatch = useDispatch();

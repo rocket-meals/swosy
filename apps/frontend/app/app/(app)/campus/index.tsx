@@ -6,7 +6,7 @@ import {
 	useWindowDimensions,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -248,9 +248,9 @@ const Index: React.FC = () => {
 		return sortCampuses(campusesWithDistance, campusesSortBy);
 	}, [campusesWithDistance, campusesSortBy, sortCampuses]);
 
-	// Lift last-opened buildings to the top (up to 4), in the order they were opened
+	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
 	const sortedWithLastOpened = useMemo(() => {
-		if (!buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
+		if (!shouldApplyLastOpenedBoost(campusesSortBy) || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
 		const lastOpenedSet = new Set(buildingsLastOpenedIds);
 		// Build a Map for O(1) lookup by ID
 		const campusById = new Map(sortedCampuses.map(c => [c.id ?? '', c]));
@@ -260,7 +260,7 @@ const Index: React.FC = () => {
 			.filter((c): c is BuildingWithDistance => c !== undefined);
 		const otherItems = sortedCampuses.filter(c => !lastOpenedSet.has(c.id ?? ''));
 		return [...lastOpenedItems, ...otherItems];
-	}, [sortedCampuses, buildingsLastOpenedIds]);
+	}, [sortedCampuses, buildingsLastOpenedIds, campusesSortBy]);
 
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
 		const src = sortedWithLastOpened;

@@ -36,6 +36,11 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 			icon: <MaterialCommunityIcons name="map-marker-distance" size={24} />,
 		},
 		{
+			id: ApartmentSortOption.LAST_OPENED,
+			label: TranslationKeys.sort_option_last_opened,
+			icon: <MaterialCommunityIcons name="clock-outline" size={24} />,
+		},
+		{
 			id: ApartmentSortOption.ALPHABETICAL,
 			label: TranslationKeys.sort_option_alphabetical,
 			icon: <MaterialCommunityIcons name="sort-alphabetical-ascending" size={24} />,
