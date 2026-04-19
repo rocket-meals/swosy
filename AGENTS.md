@@ -19,6 +19,13 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 - Änderungen möglichst klein und gezielt halten.
 - Nur notwendige Dateien anfassen.
 
+## Frontend-Features: Screenshots in Pull Requests
+
+- **Bei Pull Requests, die Features oder visuelle Änderungen in einer der Frontend-Apps betreffen, muss immer ein Screenshot oder Bild der Änderung beigefügt werden.**
+- Der Screenshot soll zeigen, wie die neue oder geänderte UI im App aussieht (z. B. ein Simulator- oder Geräte-Screenshot).
+- Das Bild wird direkt in den Agent-Task bzw. die PR-Beschreibung eingebettet, damit Reviewer die Änderung sofort visuell nachvollziehen können.
+- Für die Erstellung von Screenshots: siehe `SCREENSHOTS_PLAYWRIGHT.md`.
+
 ## Frontend: React screens and components
 
 - **No separate `styles.ts` files.** All styles, logic, and exports for a screen or component must stay in a single file (e.g. `index.tsx`). Use `StyleSheet.create(...)` inline inside the same file.
