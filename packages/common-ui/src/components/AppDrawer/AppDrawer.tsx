@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
 		gap: 12,
 	},
 	menuIconWrapper: {
+		minWidth: 28,
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
