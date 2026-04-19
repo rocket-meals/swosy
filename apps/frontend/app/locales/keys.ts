@@ -587,6 +587,8 @@ export enum TranslationKeys {
 	rueckmeldung_rate_app_description = 'rueckmeldung_rate_app_description',
 	rueckmeldung_feedback_description = 'rueckmeldung_feedback_description',
 	public_links = 'public_links',
+	last_opened_buildings = 'last_opened_buildings',
+	last_opened_building_info = 'last_opened_building_info',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',
