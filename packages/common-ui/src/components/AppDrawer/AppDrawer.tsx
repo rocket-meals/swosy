@@ -160,18 +160,18 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		marginBottom: 5,
 		width: '100%',
+		gap: 12,
 	},
 	menuIconWrapper: {
-		width: 32,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginRight: 12,
 		position: 'relative',
 	},
 	menuLabel: {
 		flex: 1,
 		fontSize: 16,
 		marginTop: 4,
+		textAlign: 'left',
 	},
 	notificationDot: {
 		position: 'absolute',
