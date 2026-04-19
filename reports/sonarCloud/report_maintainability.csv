@@ -1,5 +1,4 @@
 Key,Message,Component,Line
-"AZ2no0H0Cfudf6Z3MgzY","Prefer `Math.max()` to simplify ternary expressions.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",24
 "AZ2jZClYVVB4PQRwlGtB","Remove this unused import of 'ApartmentSortOption'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",3
 "AZ2jRG2IEm416nO92vut","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",171
 "AZ2jRHT0Em416nO92vuu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLastOpenedBuildings.ts",43
@@ -8710,7 +8709,7 @@ Key,Message,Component,Line
 "AZ0Y6QUMyJsjaJPaNj_U","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",56
 "AZ0Y6QUMyJsjaJPaNj_V","Use `export…from` to re-export `MyMapHandle`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",179
 "AZ0Y6QUMyJsjaJPaNj_W","Use `export…from` to re-export `MyMapProps`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",179
-"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",80
+"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",72
 "AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",134
 "AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",154
 "AZ0YwZFETb56BCVJHZIL","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",179
@@ -9999,3 +9998,4 @@ Key,Message,Component,Line
 "AZ0Tpk8Eufp2jxPAhSyv","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",5
 "AZ0TplI8ufp2jxPAhS1X","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomCollapsible/CustomCollapsible.tsx",10
 "AZ0TplGqufp2jxPAhS01","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",21
+"AZ0TplDEufp2jxPAhSz_","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",14
