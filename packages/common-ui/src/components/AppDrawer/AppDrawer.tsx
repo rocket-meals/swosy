@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, LayoutChangeEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -19,10 +19,10 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
 	const [iconColumnWidth, setIconColumnWidth] = useState(0);
 
-	const handleIconInnerLayout = (event: LayoutChangeEvent) => {
+	const handleIconInnerLayout = useCallback((event: LayoutChangeEvent) => {
 		const { width } = event.nativeEvent.layout;
 		setIconColumnWidth((prev) => (width > prev ? width : prev));
-	};
+	}, []);
 
 	const isActive = (key: string) => activeKey === key;
 
@@ -55,7 +55,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 				style={[styles.menuItem, { backgroundColor: bgColor }]}
 				onPress={item.onPress}
 			>
-				<View style={[styles.menuIconWrapper, iconColumnWidth > 0 ? { width: iconColumnWidth } : undefined]}>
+				<View style={[styles.menuIconWrapper, { width: iconColumnWidth }]}>
 					<View style={styles.iconInner} onLayout={handleIconInnerLayout}>
 						{item.renderIcon(active, iconColor)}
 						{item.hasUnread ? (
