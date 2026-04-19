@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Image, LayoutChangeEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { AppDrawerProps, DrawerItem } from './types';
@@ -17,6 +17,12 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const [iconColumnWidth, setIconColumnWidth] = useState(0);
+
+	const handleIconInnerLayout = useCallback((event: LayoutChangeEvent) => {
+		const { width } = event.nativeEvent.layout;
+		setIconColumnWidth((prev) => (width > prev ? width : prev));
+	}, []);
 
 	const isActive = (key: string) => activeKey === key;
 
@@ -49,16 +55,18 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 				style={[styles.menuItem, { backgroundColor: bgColor }]}
 				onPress={item.onPress}
 			>
-				<View style={styles.menuIconWrapper}>
-					{item.renderIcon(active, iconColor)}
-					{item.hasUnread ? (
-						<View
-							style={[
-								styles.notificationDot,
-								{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
-							]}
-						/>
-					) : null}
+				<View style={[styles.menuIconWrapper, { width: iconColumnWidth }]}>
+					<View style={styles.iconInner} onLayout={handleIconInnerLayout}>
+						{item.renderIcon(active, iconColor)}
+						{item.hasUnread ? (
+							<View
+								style={[
+									styles.notificationDot,
+									{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
+								]}
+							/>
+						) : null}
+					</View>
 				</View>
 				<Text style={[styles.menuLabel, { color: textColor }]}>{item.label}</Text>
 			</TouchableOpacity>
@@ -163,6 +171,10 @@ const styles = StyleSheet.create({
 		gap: 12,
 	},
 	menuIconWrapper: {
+		alignItems: 'flex-end',
+		justifyContent: 'center',
+	},
+	iconInner: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
