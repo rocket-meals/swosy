@@ -3313,6 +3313,10 @@
     "de": "Fehler beim Senden der Freundschaftsanfrage.",
     "en": "Error sending friendship request."
   },
+  "friendships_allow_camera": {
+    "de": "Kamera erlauben",
+    "en": "Allow Camera"
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",

@@ -338,6 +338,7 @@ export enum TranslationKeys {
         friendships_enter_id_placeholder = 'friendships_enter_id_placeholder',
         friendships_request_sent = 'friendships_request_sent',
         friendships_request_error = 'friendships_request_error',
+        friendships_allow_camera = 'friendships_allow_camera',
 	test_use_modal = 'test_use_modal',
 	markdown_test = 'markdown_test',
 	markdown_test_description = 'markdown_test_description',

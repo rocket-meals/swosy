@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -28,28 +28,29 @@ type ScanModalContentProps = {
 
 const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, submitLabel, placeholder }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const [value, setValue] = useState('');
 	const [submitting, setSubmitting] = useState(false);
-	const [scanned, setScanned] = useState(false);
+	const scannedRef = useRef(false);
 	const [permission, requestPermission] = useCameraPermissions();
 
 	const handleBarCodeScanned = useCallback(({ data }: { data: string }) => {
-		if (scanned) return;
-		setScanned(true);
+		if (scannedRef.current) return;
+		scannedRef.current = true;
 		setValue(data);
-		setTimeout(() => setScanned(false), 2000);
-	}, [scanned]);
+		setTimeout(() => { scannedRef.current = false; }, 2000);
+	}, []);
 
 	const handleSubmit = useCallback(async () => {
-		if (!value.trim() || submitting) return;
+		if (!value.trim()) return;
 		setSubmitting(true);
 		try {
 			await onSubmit(value.trim());
 		} finally {
 			setSubmitting(false);
 		}
-	}, [value, submitting, onSubmit]);
+	}, [value, onSubmit]);
 
 	const showCamera = !isWeb && permission?.granted;
 	const canRequestPermission = !isWeb && permission && !permission.granted;
@@ -70,7 +71,7 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, submitLab
 					) : canRequestPermission ? (
 						<TouchableOpacity style={[scanStyles.permissionButton, { backgroundColor: primaryColor }]} onPress={requestPermission}>
 							<MaterialCommunityIcons name="camera" size={24} color="white" />
-							<Text style={scanStyles.permissionText}>Kamera erlauben</Text>
+							<Text style={scanStyles.permissionText}>{translate(TranslationKeys.friendships_allow_camera)}</Text>
 						</TouchableOpacity>
 					) : null}
 				</View>
