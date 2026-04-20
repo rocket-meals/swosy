@@ -32,9 +32,8 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
-import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
-const MIN_CARD_WIDTH = 280;
 const apartmentsHelper = new ApartmentsHelper();
 const buildingsHelper = new BuildingsHelper();
 

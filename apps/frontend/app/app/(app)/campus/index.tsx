@@ -96,7 +96,6 @@ const Index: React.FC = () => {
 	const toggleDrawer = useCallback(() => drawerNavigation.toggleDrawer(), [drawerNavigation]);
 
 	// Grid Layout Logic
-	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		return CardDimensionHelper.getGridNumColumns(listWidth || windowWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth, windowWidth]);

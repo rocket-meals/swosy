@@ -219,7 +219,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, [selectedSheet]);
 
 	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
-	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		return CardDimensionHelper.getGridNumColumns(listWidth || 0, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth]);
