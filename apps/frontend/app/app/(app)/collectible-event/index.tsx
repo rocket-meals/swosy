@@ -46,7 +46,7 @@ const DEBUG_COLLECTIBLE_EVENT: DatabaseTypes.CollectibleEvents = {
         points_settings: '{}',
         translations: [],
         participants: [],
-        ...Object.fromEntries(COLLECTABLE_AT_FIELDS.map(key => [key, true])),
+        ...Object.fromEntries(COLLECTABLE_AT_FIELDS.slice(0, 12).map(key => [key, true])),
 };
 
 type DebugSectionProps = {
@@ -56,6 +56,7 @@ type DebugSectionProps = {
         resetCurrentCollectibles: () => void;
         resetAllParticipations: () => void;
         simulateAllFound: () => void;
+        simulateNextFound: () => void;
         nextCollectibleKey?: any;
         debugSpotLabel: string;
 };
@@ -89,6 +90,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                                            resetCurrentCollectibles,
                                                            resetAllParticipations,
                                                            simulateAllFound,
+                                                           simulateNextFound,
                                                            nextCollectibleKey,
                                                            debugSpotLabel,
                                                    }) => {
@@ -106,6 +108,20 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                             >
                                     <Text style={{ ...styles.buttonText, color: theme.dark }}>
                                             Simulate all collectibles found
+                                    </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: buttonColor,
+                                        opacity: nextCollectibleKey ? 0.9 : 0.4,
+                                }}
+                                disabled={!nextCollectibleKey}
+                                onPress={simulateNextFound}
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Simulate next collectible found
                                     </Text>
                             </TouchableOpacity>
 
@@ -521,6 +537,18 @@ const CollectibleEventScreen = () => {
                 appendDebugLog('Simulated all collectibles as found');
         }, [activeCollectibleEvent?.id, activeCollectibleKeys, appendDebugLog, dispatch]);
 
+        const simulateNextFound = useCallback(() => {
+                if (!activeCollectibleEvent?.id || !nextCollectibleKey) {
+                        return;
+                }
+
+                dispatch({
+                        type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                        payload: { eventId: activeCollectibleEvent.id, data: { [nextCollectibleKey]: true } },
+                });
+                appendDebugLog(`Simulated collectible found: ${nextCollectibleKey}`);
+        }, [activeCollectibleEvent?.id, nextCollectibleKey, appendDebugLog, dispatch]);
+
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
                         return <Text style={{ ...styles.info, color: theme.screen.text }}>{translate(TranslationKeys.collectible_event_no_active)}</Text>;
@@ -689,6 +717,7 @@ const CollectibleEventScreen = () => {
                                         resetAllParticipations={resetAllParticipations}
                                         resetCurrentCollectibles={resetCurrentCollectibles}
                                         simulateAllFound={simulateAllFound}
+                                        simulateNextFound={simulateNextFound}
                                         theme={theme}
                                         nextCollectibleKey={nextCollectibleKey}
                                         debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}

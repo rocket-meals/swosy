@@ -28,12 +28,13 @@ const useCollectibleEventCongratulationsModal = () => {
 		show(
 			{
 				children: (
-					<View style={{ padding: 24, gap: 12 }}>
+					<View style={{ paddingVertical: 24, gap: 12 }}>
 						<Text
 							style={{
 								...styles.title,
 								color: theme.screen.text,
 								textAlign: 'center',
+								paddingHorizontal: 24,
 							}}
 						>
 							{translate(TranslationKeys.collectible_event_congratulations_title)}
@@ -44,6 +45,7 @@ const useCollectibleEventCongratulationsModal = () => {
 								...styles.label,
 								color: theme.screen.text,
 								textAlign: 'center',
+								paddingHorizontal: 24,
 							}}
 						>
 							{translate(TranslationKeys.collectible_event_rate_app_prompt)}
