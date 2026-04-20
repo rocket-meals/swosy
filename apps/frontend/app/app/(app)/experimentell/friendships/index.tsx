@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
@@ -16,44 +16,89 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
 import ProjectButton from '@/components/ProjectButton';
+import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 const isWeb = Platform.OS === 'web';
 
+type ScanPhase = 'scanning' | 'confirming' | 'error';
+
 type ScanModalContentProps = {
 	onSubmit: (id: string) => Promise<void>;
-	submitLabel: string;
-	placeholder: string;
 };
 
-const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, submitLabel, placeholder }) => {
+const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const [value, setValue] = useState('');
-	const [submitting, setSubmitting] = useState(false);
+	const [phase, setPhase] = useState<ScanPhase>('scanning');
+	const [errorDetail, setErrorDetail] = useState<string>('');
 	const scannedRef = useRef(false);
 	const [permission, requestPermission] = useCameraPermissions();
 
-	const handleBarCodeScanned = useCallback(({ data }: { data: string }) => {
+	const handleBarCodeScanned = useCallback(async ({ data }: { data: string }) => {
 		if (scannedRef.current) return;
+		const friendshipId = data?.trim();
+		if (!friendshipId || friendshipId.length < 1) return;
 		scannedRef.current = true;
-		setValue(data);
-		setTimeout(() => { scannedRef.current = false; }, 2000);
-	}, []);
-
-	const handleSubmit = useCallback(async () => {
-		if (!value.trim()) return;
-		setSubmitting(true);
+		setPhase('confirming');
+		setErrorDetail('');
 		try {
-			await onSubmit(value.trim());
-		} finally {
-			setSubmitting(false);
+			await onSubmit(friendshipId);
+		} catch (error: any) {
+			const message = error?.message ?? error?.toString?.() ?? JSON.stringify(error);
+			setErrorDetail(message);
+			setPhase('error');
+			scannedRef.current = false;
 		}
-	}, [value, onSubmit]);
+	}, [onSubmit]);
+
+	const handleScanAgain = useCallback(() => {
+		scannedRef.current = false;
+		setErrorDetail('');
+		setPhase('scanning');
+	}, []);
 
 	const showCamera = !isWeb && permission?.granted;
 	const canRequestPermission = !isWeb && permission && !permission.granted;
+
+	if (phase === 'confirming') {
+		return (
+			<View style={scanStyles.container}>
+				<View style={scanStyles.statusSection}>
+					<ActivityIndicator size="large" color={primaryColor} />
+					<Text style={[scanStyles.statusText, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.friendships_confirming)}
+					</Text>
+				</View>
+			</View>
+		);
+	}
+
+	if (phase === 'error') {
+		return (
+			<View style={scanStyles.container}>
+				<View style={scanStyles.statusSection}>
+					<MaterialCommunityIcons name="alert-circle-outline" size={48} color="#F44336" />
+					<Text style={[scanStyles.statusText, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.friendships_scan_error_details)}
+					</Text>
+				</View>
+				<DebugView
+					title="Error"
+					logs={errorDetail ? [errorDetail] : []}
+					isVisible={true}
+				/>
+				<View style={scanStyles.buttonContainer}>
+					<ProjectButton
+						text={translate(TranslationKeys.friendships_scan_again)}
+						onPress={handleScanAgain}
+						iconLeft={<MaterialCommunityIcons name="qrcode-scan" size={20} color="white" />}
+					/>
+				</View>
+			</View>
+		);
+	}
 
 	return (
 		<View style={scanStyles.container}>
@@ -76,31 +121,6 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, submitLab
 					) : null}
 				</View>
 			)}
-
-			<TextInput
-				style={[
-					scanStyles.input,
-					{
-						color: theme.screen.text,
-						backgroundColor: theme.screen.background,
-						borderColor: theme.screen.icon,
-					},
-				]}
-				placeholder={placeholder}
-				placeholderTextColor={theme.screen.icon}
-				selectionColor={primaryColor}
-				value={value}
-				onChangeText={setValue}
-				autoCapitalize="none"
-				autoCorrect={false}
-			/>
-
-			<View style={scanStyles.buttonContainer}>
-				<ProjectButton
-					text={submitting ? '...' : submitLabel}
-					onPress={handleSubmit}
-				/>
-			</View>
 		</View>
 	);
 };
@@ -167,21 +187,14 @@ const FriendshipsScreen = () => {
 			title: translate(TranslationKeys.friendships_scan_qr),
 			children: (
 				<ScanModalContent
-					placeholder={translate(TranslationKeys.friendships_enter_id_placeholder)}
-					submitLabel={translate(TranslationKeys.friendships_scan_qr)}
 					onSubmit={async (friendshipId: string) => {
 						if (!profile?.id) return;
-						try {
-							const updated = await friendshipsHelper.updateFriendshipReceiver(friendshipId, profile.id);
-							if (updated) {
-								const exists = friendships.some((f) => f.id === updated.id);
-								dispatch({ type: exists ? UPDATE_FRIENDSHIP : ADD_FRIENDSHIP, payload: updated });
-								showToast(translate(TranslationKeys.friendships_request_sent));
-								closeScrollViewModal();
-							}
-						} catch (error) {
-							console.error('Error accepting friendship:', error);
-							showToast(translate(TranslationKeys.friendships_request_error), 'error');
+						const updated = await friendshipsHelper.updateFriendshipReceiver(friendshipId, profile.id);
+						if (updated) {
+							const exists = friendships.some((f) => f.id === updated.id);
+							dispatch({ type: exists ? UPDATE_FRIENDSHIP : ADD_FRIENDSHIP, payload: updated });
+							showToast(translate(TranslationKeys.friendships_confirmed));
+							closeScrollViewModal();
 						}
 					}}
 				/>
@@ -353,14 +366,16 @@ const scanStyles = StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 14,
 	},
-	input: {
+	statusSection: {
 		width: '100%',
-		height: 56,
-		borderRadius: 20,
-		paddingHorizontal: 20,
-		borderWidth: 1,
+		alignItems: 'center',
+		gap: 12,
+		paddingVertical: 24,
+	},
+	statusText: {
+		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
-		fontSize: 14,
+		textAlign: 'center',
 	},
 	buttonContainer: {
 		width: '100%',

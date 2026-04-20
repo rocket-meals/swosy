@@ -42,6 +42,7 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 	async updateFriendshipReceiver(friendshipId: string, receiverProfileId: string) {
 		return await this.updateItem(friendshipId, {
 			receiver_profiles_id: receiverProfileId,
+			friendship_status: 'accepted',
 		} as Partial<DatabaseTypes.Friendships>);
 	}
 }

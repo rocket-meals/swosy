@@ -3317,6 +3317,22 @@
     "de": "Kamera erlauben",
     "en": "Allow Camera"
   },
+  "friendships_confirming": {
+    "de": "Freundschaftsanfrage wird bestätigt...",
+    "en": "Confirming friendship request..."
+  },
+  "friendships_confirmed": {
+    "de": "Freundschaft bestätigt!",
+    "en": "Friendship confirmed!"
+  },
+  "friendships_scan_again": {
+    "de": "Erneut scannen",
+    "en": "Scan again"
+  },
+  "friendships_scan_error_details": {
+    "de": "Die Anfrage konnte nicht verarbeitet werden.",
+    "en": "The request could not be processed."
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",
