@@ -28,6 +28,26 @@ import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
 import useCollectibleEventCongratulationsModal from '@/hooks/useCollectibleEventCongratulationsModal';
+import useDebugMode from '@/hooks/useDebugMode';
+
+const DEBUG_COLLECTIBLE_EVENT_ID = 'debug-event';
+
+const DEBUG_COLLECTIBLE_EVENT: DatabaseTypes.CollectibleEvents = {
+        id: DEBUG_COLLECTIBLE_EVENT_ID,
+        alias: 'Debug Event',
+        status: 'published',
+        date_start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        date_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        collectable_at: '{}',
+        collectible_item_settings: '{}',
+        collectible_settings: '{}',
+        date_settings: '{}',
+        monitor_settings: '{}',
+        points_settings: '{}',
+        translations: [],
+        participants: [],
+        ...Object.fromEntries(COLLECTABLE_AT_FIELDS.map(key => [key, true])),
+};
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -170,7 +190,10 @@ const CollectibleEventScreen = () => {
         const { profile, loggedIn } = useAppSelector((state) => state.authReducer);
         const { primaryColor } = useAppSelector((state) => state.settings);
         const buttonColor = primaryColor || theme.primary;
-        const { activeCollectibleEvent } = useActiveCollectibleEvent();
+        const { activeCollectibleEvent: realCollectibleEvent } = useActiveCollectibleEvent();
+        const debugMode = useDebugMode();
+        const activeCollectibleEvent = (debugMode && !realCollectibleEvent ? DEBUG_COLLECTIBLE_EVENT : realCollectibleEvent) ?? null;
+        const isDebugEvent = activeCollectibleEvent?.id === DEBUG_COLLECTIBLE_EVENT_ID;
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
         const { collectedCount, collectibleDict } = useCollectibleDict(activeCollectibleEvent?.id);
         const [debugLogs, setDebugLogs] = useState<string[]>([]);
@@ -339,7 +362,7 @@ const CollectibleEventScreen = () => {
         }, [activeCollectibleEvent?.id, displayedCollectedCount, maxCollectibleKeys, openCongratulationsModal]);
 
         const loadParticipation = useCallback(async () => {
-                if (!activeCollectibleEvent?.id || !profile?.id) {
+                if (!activeCollectibleEvent?.id || !profile?.id || isDebugEvent) {
                         setParticipation(null);
                         setEmail('');
                         setPhoneNumber('');
@@ -370,7 +393,7 @@ const CollectibleEventScreen = () => {
                 } finally {
                         setIsLoading(false);
                 }
-        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, isDebugEvent, participantsHelper, profile?.id, toast, translate]);
 
         useEffect(() => {
                 loadParticipation();
