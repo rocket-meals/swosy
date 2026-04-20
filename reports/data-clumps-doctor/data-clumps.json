@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-20T06:32:40.379Z",
+  "report_timestamp": "2026-04-20T07:05:03.298Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 96,
-          "average": 1.6161616161616161,
-          "amountSavedValuesForKeys": 4000,
+          "average": 1.615912762520194,
+          "amountSavedValuesForKeys": 4001,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -20,24 +20,24 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 96,
-          "average": 1.6306563391765185,
-          "amountSavedValuesForKeys": 4000,
+          "average": 1.63039934800326,
+          "amountSavedValuesForKeys": 4001,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4212,
-        "detection_time_ms": 89,
+        "ast_generation_time_ms": 4177,
+        "detection_time_ms": 94,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 363.55,
-          "os_memory_free": 14932021248,
-          "os_memory_total": 16766431232,
+          "os_uptime": 644.63,
+          "os_memory_free": 14955651072,
+          "os_memory_total": 16770764800,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "dd3ad1b6c364d13ec90f687f77a933bdd52de398",
-    "project_commit_hash": "dd3ad1b6c364d13ec90f687f77a933bdd52de398",
+    "project_version": "37431f630ca29855619f8eb3d02e98dd21449b4d",
+    "project_commit_hash": "37431f630ca29855619f8eb3d02e98dd21449b4d",
     "project_tag": null,
-    "project_commit_date": "1776666663",
+    "project_commit_date": "1776668610",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 506,
     "number_of_classes_or_interfaces": 1020,
     "number_of_methods": 1331,
-    "number_of_data_fields": 4000,
+    "number_of_data_fields": 4001,
     "number_of_method_parameters": 1476
   },
   "detector": {
