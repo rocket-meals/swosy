@@ -2,6 +2,11 @@ import { chromium } from 'playwright';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+const EMAIL_INPUT_SELECTOR = 'input[type="email"], input[name="email"], #email';
+const PASSWORD_INPUT_SELECTOR = 'input[type="password"], input[name="password"], #password';
+const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"], [type="submit"], button:has-text("Sign In"), button:has-text("Login"), button:has-text("Anmelden")';
+const DOWNLOAD_BUTTON_SELECTOR = 'button:has-text("Download"), a:has-text("Download"), [data-test="download"], .download-button';
+
 export interface DirectusTypeDownloaderOptions {
   directusInstanceUrl: string;
   adminEmail: string;
@@ -37,9 +42,9 @@ export class DirectusTypeDownloaderHelper {
       await page.goto(loginUrl, { waitUntil: 'networkidle' });
 
       console.log('✏️  Fülle Login-Formular aus...');
-      await page.fill('input[type="email"], input[name="email"], #email', adminEmail);
-      await page.fill('input[type="password"], input[name="password"], #password', adminPassword);
-      await page.click('button[type="submit"], [type="submit"], button:has-text("Sign In"), button:has-text("Login"), button:has-text("Anmelden")');
+      await page.fill(EMAIL_INPUT_SELECTOR, adminEmail);
+      await page.fill(PASSWORD_INPUT_SELECTOR, adminPassword);
+      await page.click(SUBMIT_BUTTON_SELECTOR);
 
       console.log('⏳ Warte auf erfolgreichen Login...');
       await page.waitForURL(url => !url.toString().includes('/login'), { timeout: 30000 });
@@ -49,15 +54,15 @@ export class DirectusTypeDownloaderHelper {
       console.log(`🔗 Navigiere zur Typen-Generierungs-Seite: ${generateTypesUrl}`);
       await page.goto(generateTypesUrl, { waitUntil: 'networkidle' });
 
-      // Wait for page to load
-      console.log('⏳ Warte 5 Sekunden auf vollständiges Laden der Seite...');
-      await page.waitForTimeout(5000);
+      // Wait for the Download button to be visible (up to 30 seconds)
+      console.log('⏳ Warte auf Download-Button...');
+      await page.waitForSelector(DOWNLOAD_BUTTON_SELECTOR, { state: 'visible', timeout: 30000 });
 
       // Click Download button and capture the download
       console.log('📥 Klicke Download-Button...');
       const [download] = await Promise.all([
         page.waitForEvent('download'),
-        page.click('button:has-text("Download"), a:has-text("Download"), [data-test="download"], .download-button'),
+        page.click(DOWNLOAD_BUTTON_SELECTOR),
       ]);
 
       console.log('💾 Speichere heruntergeladene Datei...');
