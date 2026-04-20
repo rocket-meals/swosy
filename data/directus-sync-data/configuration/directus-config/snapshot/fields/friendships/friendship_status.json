@@ -1,0 +1,72 @@
+{
+  "collection": "friendships",
+  "field": "friendship_status",
+  "type": "string",
+  "meta": {
+    "collection": "friendships",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "friendship_status",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": null,
+    "options": {
+      "allowNone": true,
+      "choices": [
+        {
+          "color": "#FFC23B",
+          "icon": "hourglass_top",
+          "text": "Pending",
+          "value": "pending"
+        },
+        {
+          "color": "#2ECDA7",
+          "icon": "group",
+          "text": "Accepted",
+          "value": "accepted"
+        },
+        {
+          "color": "#E35169",
+          "icon": "cancel",
+          "text": "Rejected",
+          "value": "rejected"
+        },
+        {
+          "color": "#18222F",
+          "icon": "block",
+          "text": "Blocked",
+          "value": "blocked"
+        }
+      ],
+      "icon": "connect_without_contact"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 8,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "friendship_status",
+    "table": "friendships",
+    "data_type": "character varying",
+    "default_value": "pending",
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

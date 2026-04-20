@@ -1516,6 +1516,19 @@ export type FormsTranslations = {
   translation_settings: string;
 };
 
+export type Friendships = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  friendship_status?: string | null;
+  id: string;
+  receiver_profiles_id?: string | Profiles | null;
+  requester_profiles_id?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type Languages = {
   code: string;
   direction?: string | null;
@@ -2027,6 +2040,7 @@ export type CustomDirectusTypes = {
   form_submissions: FormSubmissions[];
   forms: Forms[];
   forms_translations: FormsTranslations[];
+  friendships: Friendships[];
   languages: Languages[];
   mails: Mails[];
   mails_files: MailsFiles[];

@@ -5,8 +5,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": "$t:admin_policy_description",
-    "icon": "verified",
     "name": "Administrator",
+    "icon": "verified",
     "roles": [
       {
         "role": "_sync_default_admin_role",
@@ -21,8 +21,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "icon": "badge",
     "name": "AppAccess",
+    "icon": "badge",
     "roles": [
       {
         "role": null,
@@ -37,8 +37,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "icon": "badge",
     "name": "Apartmentmanagement",
+    "icon": "badge",
     "roles": [
       {
         "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
@@ -53,8 +53,24 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "icon": "supervised_user_circle",
+    "name": "User Friendship Requester",
+    "icon": "badge",
+    "roles": [
+      {
+        "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+        "sort": 3
+      }
+    ],
+    "_syncId": "a962ee7e-b5ea-43c6-8a6a-4a163bfc9d14"
+  },
+  {
+    "app_access": false,
+    "admin_access": false,
+    "enforce_tfa": false,
+    "ip_access": null,
+    "description": null,
     "name": "User",
+    "icon": "supervised_user_circle",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -68,13 +84,29 @@
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   },
   {
+    "app_access": false,
+    "admin_access": false,
+    "enforce_tfa": false,
+    "ip_access": null,
+    "description": null,
+    "name": "User Friendship Receiver",
+    "icon": "badge",
+    "roles": [
+      {
+        "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+        "sort": 4
+      }
+    ],
+    "_syncId": "c9bd4d38-19bf-43e5-869b-8cfc42ef73c1"
+  },
+  {
     "app_access": true,
     "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "icon": "badge",
     "name": "Gebäudemanagement",
+    "icon": "badge",
     "roles": [
       {
         "role": "9aaa0300-e0ee-4874-b32f-2d165607867d",
@@ -93,8 +125,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "icon": "badge",
     "name": "Anonymous",
+    "icon": "badge",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
