@@ -49,4 +49,8 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 			friendship_status: 'accepted',
 		} as Partial<DatabaseTypes.Friendships>);
 	}
+
+	async deleteFriendship(friendshipId: string) {
+		return await this.deleteItem(friendshipId);
+	}
 }

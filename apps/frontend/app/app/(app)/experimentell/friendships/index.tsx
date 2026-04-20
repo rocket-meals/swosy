@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
@@ -11,7 +11,7 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
-import { ADD_FRIENDSHIP, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
+import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
@@ -197,9 +197,11 @@ type QRGenerateModalContentProps = {
 	profileId: string;
 	friendshipsHelper: FriendshipsHelper;
 	onCreated: (friendship: DatabaseTypes.Friendships) => void;
+	onAccepted: (friendship: DatabaseTypes.Friendships) => void;
+	closeModal: () => void;
 };
 
-const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated }) => {
+const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated, onAccepted, closeModal }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
@@ -208,6 +210,14 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 	const [friendship, setFriendship] = useState<DatabaseTypes.Friendships | null>(null);
 	const [errorDetail, setErrorDetail] = useState<string>('');
 	const startedRef = useRef(false);
+	const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+	const stopPolling = useCallback(() => {
+		if (pollingRef.current) {
+			clearInterval(pollingRef.current);
+			pollingRef.current = null;
+		}
+	}, []);
 
 	const generate = useCallback(async () => {
 		setPhase('generating');
@@ -226,12 +236,38 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 		}
 	}, [friendshipsHelper, profileId, onCreated]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!startedRef.current) {
 			startedRef.current = true;
 			generate();
 		}
 	}, [generate]);
+
+	// Poll for acceptance once friendship is created
+	useEffect(() => {
+		if (phase !== 'success' || !friendship?.id) {
+			stopPolling();
+			return;
+		}
+
+		pollingRef.current = setInterval(async () => {
+			try {
+				const updated = await friendshipsHelper.readFriendship(friendship.id);
+				if (updated && updated.friendship_status === 'accepted') {
+					stopPolling();
+					onAccepted(updated);
+					showToast(translate(TranslationKeys.friendships_confirmed));
+					closeModal();
+				}
+			} catch {
+				// Ignore polling errors – keep trying
+			}
+		}, 1000);
+
+		return () => {
+			stopPolling();
+		};
+	}, [phase, friendship?.id, friendshipsHelper, onAccepted, closeModal, showToast, translate, stopPolling]);
 
 	const handleCopyId = useCallback(async () => {
 		if (!friendship?.id) return;
@@ -295,10 +331,15 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 			<SettingsList
 				label="ID"
 				value={friendship!.id}
-				groupPosition="single"
+				groupPosition="top"
 				leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
 				rightIcon={<MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />}
 				handleFunction={handleCopyId}
+			/>
+			<SettingsList
+				label={translate(TranslationKeys.friendships_waiting_for_scan)}
+				groupPosition="bottom"
+				leftIcon={<ActivityIndicator size="small" color={primaryColor} />}
 			/>
 		</View>
 	);
@@ -318,6 +359,7 @@ const FriendshipsScreen = () => {
 	const { friendships } = useAppSelector((state) => state.friendships);
 
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
+	const [refreshing, setRefreshing] = useState(false);
 
 	const currentNickname = useMemo(
 		() => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
@@ -348,6 +390,24 @@ const FriendshipsScreen = () => {
 		});
 	}, [acceptedFriendships, getProfileIdFromField]);
 
+	const reloadFriendships = useCallback(async () => {
+		if (!profile?.id) return;
+		try {
+			const result = await friendshipsHelper.fetchFriendshipsByProfileId(profile.id);
+			if (result) {
+				dispatch({ type: SET_FRIENDSHIPS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error reloading friendships:', error);
+		}
+	}, [profile?.id, friendshipsHelper, dispatch]);
+
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true);
+		await reloadFriendships();
+		setRefreshing(false);
+	}, [reloadFriendships]);
+
 	const handleGenerateQR = useCallback(() => {
 		if (!profile?.id) return;
 		showScrollViewModal({
@@ -359,10 +419,14 @@ const FriendshipsScreen = () => {
 					onCreated={(created) => {
 						dispatch({ type: ADD_FRIENDSHIP, payload: created });
 					}}
+					onAccepted={(updated) => {
+						dispatch({ type: UPDATE_FRIENDSHIP, payload: updated });
+					}}
+					closeModal={closeScrollViewModal}
 				/>
 			),
 		});
-	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, translate]);
+	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, translate]);
 
 	const openScanModal = useCallback((noCamera: boolean) => {
 		showScrollViewModal({
@@ -398,6 +462,66 @@ const FriendshipsScreen = () => {
 		openScanModal(true);
 	}, [openScanModal]);
 
+	const formatDate = useCallback((dateStr: string | null | undefined): string => {
+		if (!dateStr) return '-';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+		} catch {
+			return dateStr;
+		}
+	}, []);
+
+	const openFriendshipDetail = useCallback((friendship: DatabaseTypes.Friendships) => {
+		const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
+		const otherProfileId = isRequester
+			? getProfileIdFromField(friendship.receiver_profiles_id)
+			: getProfileIdFromField(friendship.requester_profiles_id);
+
+		const handleDelete = async () => {
+			try {
+				await friendshipsHelper.deleteFriendship(friendship.id);
+				dispatch({ type: REMOVE_FRIENDSHIP, payload: friendship.id });
+				showToast(translate(TranslationKeys.friendships_delete_confirm));
+				closeScrollViewModal();
+			} catch (error) {
+				console.error('Error deleting friendship:', error);
+				showToast(translate(TranslationKeys.friendships_request_error), 'error');
+			}
+		};
+
+		showScrollViewModal({
+			title: translate(TranslationKeys.friendships_details),
+			children: (
+				<View style={{ padding: 16, gap: 16 }}>
+					<SettingsList
+						label={translate(TranslationKeys.friendships_profile_id)}
+						value={otherProfileId}
+						groupPosition="single"
+						leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+					/>
+					<SettingsList
+						label={translate(TranslationKeys.friendships_since)}
+						value={formatDate(friendship.date_created)}
+						groupPosition="single"
+						leftIcon={<MaterialCommunityIcons name="calendar" size={24} color={theme.screen.icon} />}
+					/>
+					<View>
+						<SettingsGroupTitle>{translate(TranslationKeys.friendships_delete)}</SettingsGroupTitle>
+						<SettingsList
+							label={translate(TranslationKeys.friendships_delete)}
+							iconBgColor="#F44336"
+							leftIcon={<MaterialCommunityIcons name="delete" size={24} color="white" />}
+							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+							handleFunction={handleDelete}
+							groupPosition="single"
+						/>
+					</View>
+				</View>
+			),
+		});
+	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, showToast, translate, getProfileIdFromField, formatDate, theme.screen.icon]);
+
 	const friendshipStatusColor = (status: string | null | undefined) => {
 		switch (status) {
 			case 'accepted': return '#4CAF50';
@@ -426,6 +550,8 @@ const FriendshipsScreen = () => {
 					label={otherProfileId}
 					value={friendship.friendship_status ?? 'unknown'}
 					groupPosition={groupPosition}
+					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+					handleFunction={() => openFriendshipDetail(friendship)}
 				/>
 			);
 		});
@@ -435,6 +561,7 @@ const FriendshipsScreen = () => {
 		<ScrollView
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
 			contentContainerStyle={[styles.contentContainer, { backgroundColor: theme.screen.background }]}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 		>
 			<View style={styles.content}>
 				<Text style={[styles.heading, { color: theme.screen.text }]}>

@@ -1,4 +1,4 @@
-import { ADD_FRIENDSHIP, CLEAR_FRIENDSHIPS, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '../Types/types';
+import { ADD_FRIENDSHIP, CLEAR_FRIENDSHIPS, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '../Types/types';
 import { FriendshipsState } from '../Types/stateTypes';
 import { DatabaseTypes } from 'repo-depkit-common';
 
@@ -23,6 +23,13 @@ const friendshipsReducer = (state: FriendshipsState = initialState, action: { ty
 			return {
 				...state,
 				friendships: state.friendships.map((f) => (f.id === updated.id ? updated : f)),
+			};
+		}
+		case REMOVE_FRIENDSHIP: {
+			const removedId = action.payload as string;
+			return {
+				...state,
+				friendships: state.friendships.filter((f) => f.id !== removedId),
 			};
 		}
 		case CLEAR_FRIENDSHIPS:

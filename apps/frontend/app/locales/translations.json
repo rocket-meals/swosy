@@ -3361,6 +3361,26 @@
     "de": "Ihr seid bereits befreundet.",
     "en": "You are already friends."
   },
+  "friendships_since": {
+    "de": "Freundschaft seit",
+    "en": "Friends since"
+  },
+  "friendships_delete": {
+    "de": "Freundschaft löschen",
+    "en": "Delete friendship"
+  },
+  "friendships_delete_confirm": {
+    "de": "Freundschaft wurde gelöscht.",
+    "en": "Friendship has been deleted."
+  },
+  "friendships_details": {
+    "de": "Freundschaftsdetails",
+    "en": "Friendship details"
+  },
+  "friendships_waiting_for_scan": {
+    "de": "Warte auf Scan...",
+    "en": "Waiting for scan..."
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",
