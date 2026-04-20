@@ -27,6 +27,7 @@ import {
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
+import useRateAppModal from '@/hooks/useRateAppModal';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -34,6 +35,7 @@ type DebugSectionProps = {
         buttonColor: string;
         resetCurrentCollectibles: () => void;
         resetAllParticipations: () => void;
+        simulateAllFound: () => void;
         nextCollectibleKey?: any;
         debugSpotLabel: string;
 };
@@ -66,6 +68,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                                            buttonColor,
                                                            resetCurrentCollectibles,
                                                            resetAllParticipations,
+                                                           simulateAllFound,
                                                            nextCollectibleKey,
                                                            debugSpotLabel,
                                                    }) => {
@@ -73,6 +76,19 @@ const DebugSection: React.FC<DebugSectionProps> = ({
             <View style={{ marginTop: 16 }}>
                     <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
                     <View style={{ marginTop: 12, gap: 8 }}>
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: buttonColor,
+                                        opacity: 0.9,
+                                }}
+                                onPress={simulateAllFound}
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Simulate all collectibles found
+                                    </Text>
+                            </TouchableOpacity>
+
                             <TouchableOpacity
                                 style={{
                                         ...styles.button,
@@ -160,6 +176,8 @@ const CollectibleEventScreen = () => {
         const [debugLogs, setDebugLogs] = useState<string[]>([]);
         const previousCollectedCountRef = useRef<number | null>(null);
         const previousEventIdRef = useRef<string | number | null>(null);
+        const hasShownRateModalRef = useRef<string | number | null>(null);
+        const { openRateAppModal } = useRateAppModal(buttonColor);
 
         const appendDebugLog = useCallback((message: string) => {
                 const timestamp = new Date().toLocaleTimeString();
@@ -305,6 +323,21 @@ const CollectibleEventScreen = () => {
                 previousCollectedCountRef.current = currentCount;
         }, [appendDebugLog, displayedCollectedCount]);
 
+        useEffect(() => {
+                const eventId = activeCollectibleEvent?.id ?? null;
+                const currentCount = displayedCollectedCount ?? 0;
+
+                if (
+                        eventId &&
+                        maxCollectibleKeys > 0 &&
+                        currentCount >= maxCollectibleKeys &&
+                        hasShownRateModalRef.current !== eventId
+                ) {
+                        hasShownRateModalRef.current = eventId;
+                        openRateAppModal();
+                }
+        }, [activeCollectibleEvent?.id, displayedCollectedCount, maxCollectibleKeys, openRateAppModal]);
+
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
@@ -447,6 +480,23 @@ const CollectibleEventScreen = () => {
                         }
                 }
         }, [appendDebugLog, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+
+        const simulateAllFound = useCallback(() => {
+                if (!activeCollectibleEvent?.id || activeCollectibleKeys.length === 0) {
+                        return;
+                }
+
+                const allFoundData = activeCollectibleKeys.reduce<Record<string, boolean>>((acc, key) => {
+                        acc[key] = true;
+                        return acc;
+                }, {});
+
+                dispatch({
+                        type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                        payload: { eventId: activeCollectibleEvent.id, data: allFoundData },
+                });
+                toast(translate(TranslationKeys.reset), 'success');
+        }, [activeCollectibleEvent?.id, activeCollectibleKeys, dispatch, toast, translate]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
@@ -615,6 +665,7 @@ const CollectibleEventScreen = () => {
                                         buttonColor={buttonColor}
                                         resetAllParticipations={resetAllParticipations}
                                         resetCurrentCollectibles={resetCurrentCollectibles}
+                                        simulateAllFound={simulateAllFound}
                                         theme={theme}
                                         nextCollectibleKey={nextCollectibleKey}
                                         debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}
