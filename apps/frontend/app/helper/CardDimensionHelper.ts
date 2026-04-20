@@ -1,3 +1,5 @@
+export const MIN_CARD_WIDTH = 280;
+
 export default class CardDimensionHelper {
 	static getCardDimension(screenWidth: number): number {
 		const dimensionMap = [
@@ -36,5 +38,42 @@ export default class CardDimensionHelper {
 			return Math.max(1, Math.floor(screenWidth / size));
 		}
 		return columnsSetting;
+	}
+
+	/**
+	 * Responsive gap between grid items, matching the FoodOffers scroll list pattern.
+	 * Returns the margin to apply on each side of a card (horizontally and vertically).
+	 */
+	static getItemGap(screenWidth: number): number {
+		if (screenWidth >= 1600) return 28;
+		if (screenWidth >= 1300) return 24;
+		if (screenWidth >= 1000) return 20;
+		if (screenWidth >= 700) return 16;
+		if (screenWidth >= 500) return 12;
+		if (screenWidth >= 300) return 10;
+		return 8;
+	}
+
+	/**
+	 * Card width for a responsive grid, matching the FoodOffers scroll list pattern.
+	 * Each card gets marginHorizontal = itemGap on both sides.
+	 */
+	static getGridCardWidth(listWidth: number, numColumns: number, itemGap: number): number {
+		const totalMargin = itemGap * 2 * numColumns;
+		const availableWidth = listWidth - totalMargin;
+		return availableWidth / numColumns;
+	}
+
+	/**
+	 * Number of columns for a responsive grid, matching the FoodOffers scroll list pattern.
+	 * Uses MIN_CARD_WIDTH as the minimum card width, with at least 2 columns.
+	 */
+	static getGridNumColumns(listWidth: number, amountColumnsForcard?: number | null): number {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
+		if (!listWidth) return 2;
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
 	}
 }

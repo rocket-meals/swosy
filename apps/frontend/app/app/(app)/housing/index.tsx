@@ -32,8 +32,8 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
+import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
-const MIN_CARD_WIDTH = 280;
 const apartmentsHelper = new ApartmentsHelper();
 const buildingsHelper = new BuildingsHelper();
 
@@ -235,25 +235,27 @@ const Index: React.FC = () => {
 	}, [sortedWithLastOpened, query]);
 
 	const numColumns = useMemo(() => {
-		if (amountColumnsForcard && amountColumnsForcard > 0) {
-			return amountColumnsForcard;
-		}
-		if (!listWidth) return 2;
-		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
+		return CardDimensionHelper.getGridNumColumns(listWidth || 0, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth]);
+
+	const itemGap = useMemo(() => {
+		return CardDimensionHelper.getItemGap(screenWidth);
+	}, [screenWidth]);
 
 	const cardWidth = useMemo(() => {
 		if (!listWidth) return MIN_CARD_WIDTH;
-		const availableWidth = listWidth - 10;
-		const itemTotalMargin = 20;
-		return (availableWidth / numColumns) - itemTotalMargin;
-	}, [listWidth, numColumns]);
+		return CardDimensionHelper.getGridCardWidth(listWidth, numColumns, itemGap);
+	}, [listWidth, numColumns, itemGap]);
 
 	// Render Helpers
 	const renderItem = useCallback(
 		({ item }: { item: any }) => (
-			<View style={styles.itemContainer}>
+			<View style={{
+				flex: 1,
+				marginHorizontal: itemGap,
+				marginVertical: itemGap,
+				alignItems: 'center',
+			}}>
 				<ApartmentItem
 					apartment={item}
 					onEditImage={openImageManagementModal}
@@ -268,7 +270,7 @@ const Index: React.FC = () => {
 				/>
 			</View>
 		),
-		[openImageManagementModal, openDistanceSheet, cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]
+		[openImageManagementModal, openDistanceSheet, cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme, itemGap]
 	);
 
 	const keyExtractor = useCallback(
@@ -304,8 +306,9 @@ const Index: React.FC = () => {
 		theme,
 		translate,
 		isManagement,
-		selectedTheme
-	]), [cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]);
+		selectedTheme,
+		itemGap
+	]), [cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme, itemGap]);
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -341,7 +344,6 @@ const Index: React.FC = () => {
 							// @ts-ignore
 							estimatedItemSize={300}
 							contentContainerStyle={{
-								paddingHorizontal: 5,
 								paddingBottom: 20,
 							}}
 							ListHeaderComponent={ListHeader}
