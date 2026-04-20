@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import * as StoreReview from 'expo-store-review';
 
 import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
@@ -12,9 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
-import { getValue, setValue } from '@/constants/AsyncStorageHelper';
-
-const ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING = 'wasAskedForRating';
+import useNativeQuickRateApp from '@/hooks/useNativeQuickRateApp';
 
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
 
@@ -42,19 +39,9 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const { theme } = useTheme();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
 	const { show: showModal } = useMyScrollViewModal();
+	const { wasAskedForRating, requestNativeReview } = useNativeQuickRateApp();
 
-	const [wasAskedForRating, setWasAskedForRating] = useState(false);
 	const [debugLogs, setDebugLogs] = useState<string[]>([]);
-
-	useEffect(() => {
-		getValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING)
-			.then((value) => {
-				if (value === true) {
-					setWasAskedForRating(true);
-				}
-			})
-			.catch(() => {});
-	}, []);
 
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
 	const androidStoreUrl = appSettings?.app_stores_url_to_google;
@@ -86,25 +73,18 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 				}
 				return;
 			}
-			try {
-				const isAvailable = await StoreReview.isAvailableAsync();
-				if (isAvailable) {
-					addLog('Requesting native review dialog');
-					await StoreReview.requestReview();
-					setWasAskedForRating(true);
-					await setValue(ASYNC_STORAGE_KEY_WAS_ASKED_FOR_RATING, true);
-					addLog('Native review dialog shown');
-					return;
-				}
-				addLog('Native review not available, falling back to store URL');
-			} catch (error) {
-				addLog(`Native review error: ${error}, falling back to store URL`);
+			addLog('Requesting native review dialog');
+			const shown = await requestNativeReview();
+			if (shown) {
+				addLog('Native review dialog shown');
+				return;
 			}
+			addLog('Native review not available, falling back to store URL');
 			if (storeUrl) {
 				openStore(storeUrl, store);
 			}
 		},
-		[addLog, openStore, wasAskedForRating]
+		[addLog, openStore, requestNativeReview, wasAskedForRating]
 	);
 
 	const showDebugLogsModal = useCallback(() => {

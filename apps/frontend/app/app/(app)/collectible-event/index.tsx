@@ -27,7 +27,7 @@ import {
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
-import useRateAppModal from '@/hooks/useRateAppModal';
+import useCollectibleEventCongratulationsModal from '@/hooks/useCollectibleEventCongratulationsModal';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -177,7 +177,7 @@ const CollectibleEventScreen = () => {
         const previousCollectedCountRef = useRef<number | null>(null);
         const previousEventIdRef = useRef<string | number | null>(null);
         const hasShownRateModalRef = useRef<string | number | null>(null);
-        const { openRateAppModal } = useRateAppModal(buttonColor);
+        const { openCongratulationsModal } = useCollectibleEventCongratulationsModal();
 
         const appendDebugLog = useCallback((message: string) => {
                 const timestamp = new Date().toLocaleTimeString();
@@ -334,9 +334,9 @@ const CollectibleEventScreen = () => {
                         hasShownRateModalRef.current !== eventId
                 ) {
                         hasShownRateModalRef.current = eventId;
-                        openRateAppModal();
+                        openCongratulationsModal();
                 }
-        }, [activeCollectibleEvent?.id, displayedCollectedCount, maxCollectibleKeys, openRateAppModal]);
+        }, [activeCollectibleEvent?.id, displayedCollectedCount, maxCollectibleKeys, openCongratulationsModal]);
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
