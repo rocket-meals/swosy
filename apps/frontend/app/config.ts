@@ -38,7 +38,7 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 182;
+	return 183;
 }
 
 export function getMajorVersion() {
@@ -194,9 +194,9 @@ export function getFinalConfig(config?: any) {
 			slug: customerConfig.projectSlug,
 			version: getVersion(),
 			orientation: 'default',
-			icon: './assets/generated/icon.png',
+			icon: './' + customerConfig.images.icon_logo_source_path,
 			notification: {
-				icon: './assets/generated/notification-icon.png',
+				icon: './' + customerConfig.images.icon_logo_source_path,
 			},
 			updates: {
 				enabled: true,
@@ -206,7 +206,7 @@ export function getFinalConfig(config?: any) {
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
-				image: './assets/generated/splash.png',
+				image: './' + customerConfig.images.company_logo_source_path,
 				resizeMode: 'contain',
 				backgroundColor: '#ffffff',
 			},
@@ -281,7 +281,7 @@ export function getFinalConfig(config?: any) {
 			},
 			android: {
 				adaptiveIcon: {
-					foregroundImage: './assets/generated/adaptive-icon.png',
+					foregroundImage: './' + customerConfig.images.icon_logo_source_path,
 					backgroundColor: '#ffffff',
 				},
 				package: customerConfig.bundleIdAndroid,
@@ -291,7 +291,7 @@ export function getFinalConfig(config?: any) {
 			web: {
 				bundler: 'metro',
 				output: 'static',
-				favicon: './assets/generated/favicon.png',
+				favicon: './' + customerConfig.images.icon_logo_source_path,
 			},
 			plugins: [
 				'expo-router',
@@ -310,7 +310,7 @@ export function getFinalConfig(config?: any) {
 				[
 					'expo-splash-screen',
 					{
-						image: './assets/generated/splash-icon.png',
+						image: './' + customerConfig.images.company_logo_source_path,
 						imageWidth: 200,
 						resizeMode: 'contain',
 						backgroundColor: '#ffffff',
