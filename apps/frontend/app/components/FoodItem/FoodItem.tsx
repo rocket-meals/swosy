@@ -395,7 +395,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         style={[styles.favContainer, { backgroundColor: foods_area_color }]}
                         onPress={handleDescriptionModal}
                       >
-                        <MaterialCommunityIcons name="information" size={20} color={contrastColor} />
+                        <Entypo name="info-with-circle" size={20} color={contrastColor} />
                       </TouchableOpacity>
                     )}
                   </View>
