@@ -186,17 +186,23 @@ export function getCustomerConfig(): CustomerConfig {
 	return getCustomerConfigsDict()[customer as ConfigCustomerEnum] || devConfig;
 }
 
+export function getGeneratedAssetsPath(): string {
+	const customer = getCustomerEnvVariable() || ConfigCustomerEnum.TEST;
+	return `./assets/generated/${customer}`;
+}
+
 export function getFinalConfig(config?: any) {
 	const customerConfig: CustomerConfig = getCustomerConfig();
+	const generatedPath = getGeneratedAssetsPath();
 	return {
 		expo: {
 			name: customerConfig.projectName,
 			slug: customerConfig.projectSlug,
 			version: getVersion(),
 			orientation: 'default',
-			icon: './assets/generated/icon.png',
+			icon: `${generatedPath}/icon.png`,
 			notification: {
-				icon: './assets/generated/notification-icon.png',
+				icon: `${generatedPath}/notification-icon.png`,
 			},
 			updates: {
 				enabled: true,
@@ -206,7 +212,7 @@ export function getFinalConfig(config?: any) {
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
-				image: './assets/generated/splash.png',
+				image: `${generatedPath}/splash.png`,
 				resizeMode: 'contain',
 				backgroundColor: '#ffffff',
 			},
@@ -281,7 +287,7 @@ export function getFinalConfig(config?: any) {
 			},
 			android: {
 				adaptiveIcon: {
-					foregroundImage: './assets/generated/adaptive-icon.png',
+					foregroundImage: `${generatedPath}/adaptive-icon.png`,
 					backgroundColor: '#ffffff',
 				},
 				package: customerConfig.bundleIdAndroid,
@@ -291,7 +297,7 @@ export function getFinalConfig(config?: any) {
 			web: {
 				bundler: 'metro',
 				output: 'static',
-				favicon: './assets/generated/favicon.png',
+				favicon: `${generatedPath}/favicon.png`,
 			},
 			plugins: [
 				'expo-router',
@@ -310,7 +316,7 @@ export function getFinalConfig(config?: any) {
 				[
 					'expo-splash-screen',
 					{
-						image: './assets/generated/splash-icon.png',
+						image: `${generatedPath}/splash-icon.png`,
 						imageWidth: 200,
 						resizeMode: 'contain',
 						backgroundColor: '#ffffff',
