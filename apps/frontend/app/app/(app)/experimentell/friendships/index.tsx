@@ -425,7 +425,7 @@ const FriendshipExpandedLoader: React.FC<FriendshipExpandedLoaderProps> = ({ fri
 				isVisible={true}
 			/>
 			<DebugView
-				title="Friendship (Server, fields: *)"
+				title="Friendship (Server, fields: *, requester.*, receiver.*)"
 				logs={[expandedJson]}
 				isVisible={true}
 			/>
