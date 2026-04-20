@@ -54,7 +54,6 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 			style={{
 				...styles.canteensContainer,
 				width: '100%',
-				marginTop: 20,
 			}}
 			onLayout={(e) => {
 				const w = e.nativeEvent.layout.width;
