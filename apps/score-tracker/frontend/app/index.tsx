@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -68,16 +69,19 @@ function ScoreCell({
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────
 
+const QUICK_SCORES = [-5, -1, 0, 1, 5];
+
 function ScoreInputContent({
 	initialValue,
-	signMode,
 	onSave,
 }: {
 	initialValue: number | null;
-	signMode: 'plus' | 'minus';
 	onSave: (value: number | null) => void;
 }) {
 	const { theme } = useTheme();
+	const [signMode, setSignMode] = useState<'plus' | 'minus'>(
+		initialValue != null && initialValue < 0 ? 'minus' : 'plus',
+	);
 	const [text, setText] = useState(initialValue != null ? String(Math.abs(initialValue)) : '');
 
 	const handleSave = useCallback(() => {
@@ -93,14 +97,68 @@ function ScoreInputContent({
 		onSave(signMode === 'minus' ? -Math.abs(num) : Math.abs(num));
 	}, [text, signMode, onSave]);
 
+	const handleQuickScore = useCallback(
+		(delta: number) => {
+			const currentNum = text.trim() === '' ? 0 : parseInt(text, 10) || 0;
+			const currentSigned = signMode === 'minus' ? -Math.abs(currentNum) : Math.abs(currentNum);
+			const newValue = delta === 0 ? 0 : currentSigned + delta;
+			if (newValue < 0) {
+				setSignMode('minus');
+				setText(String(Math.abs(newValue)));
+			} else {
+				setSignMode('plus');
+				setText(String(newValue));
+			}
+		},
+		[text, signMode],
+	);
+
 	return (
 		<View style={styles.scoreInputContainer}>
+			<View style={styles.signToggle}>
+				<TouchableOpacity
+					style={[
+						styles.signButton,
+						{
+							backgroundColor: signMode === 'plus' ? PRIMARY_COLOR : theme.screen.background,
+							borderColor: PRIMARY_COLOR,
+						},
+					]}
+					onPress={() => setSignMode('plus')}
+					activeOpacity={0.7}
+				>
+					<Text style={[styles.signButtonText, { color: signMode === 'plus' ? '#ffffff' : PRIMARY_COLOR }]}>+</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[
+						styles.signButton,
+						{
+							backgroundColor: signMode === 'minus' ? DANGER_COLOR : theme.screen.background,
+							borderColor: DANGER_COLOR,
+						},
+					]}
+					onPress={() => setSignMode('minus')}
+					activeOpacity={0.7}
+				>
+					<Text style={[styles.signButtonText, { color: signMode === 'minus' ? '#ffffff' : DANGER_COLOR }]}>−</Text>
+				</TouchableOpacity>
+			</View>
 			<View style={[styles.scoreInputField, { backgroundColor: theme.screen.background, borderColor: theme.screen.border }]}>
 				<Text style={[styles.scoreInputSign, { color: signMode === 'minus' ? DANGER_COLOR : PRIMARY_COLOR }]}>
 					{signMode === 'minus' ? '−' : '+'}
 				</Text>
 				<View style={styles.scoreInputTextWrapper}>
-					<ScoreTextInput value={text} onChangeText={setText} onSubmit={handleSave} />
+					<BottomSheetTextInput
+						style={[styles.scoreInputNative, { color: theme.screen.text }]}
+						value={text}
+						onChangeText={setText}
+						keyboardType="number-pad"
+						autoFocus
+						placeholder="0"
+						placeholderTextColor={theme.screen.border}
+						returnKeyType="done"
+						onSubmitEditing={handleSave}
+					/>
 				</View>
 			</View>
 			<TouchableOpacity
@@ -110,32 +168,27 @@ function ScoreInputContent({
 			>
 				<Text style={styles.scoreInputSaveText}>Save</Text>
 			</TouchableOpacity>
+			<View style={styles.quickButtonsRow}>
+				{QUICK_SCORES.map((v) => (
+					<TouchableOpacity
+						key={v}
+						style={[
+							styles.quickButton,
+							{
+								backgroundColor: v < 0 ? DANGER_COLOR + '20' : v > 0 ? PRIMARY_COLOR + '20' : theme.screen.border + '40',
+								borderColor: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.border,
+							},
+						]}
+						onPress={() => handleQuickScore(v)}
+						activeOpacity={0.7}
+					>
+						<Text style={[styles.quickButtonText, { color: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.text }]}>
+							{v > 0 ? `+${v}` : String(v)}
+						</Text>
+					</TouchableOpacity>
+				))}
+			</View>
 		</View>
-	);
-}
-
-function ScoreTextInput({
-	value,
-	onChangeText,
-	onSubmit,
-}: {
-	value: string;
-	onChangeText: (v: string) => void;
-	onSubmit: () => void;
-}) {
-	const { theme } = useTheme();
-	return (
-		<TextInput
-			style={[styles.scoreInputNative, { color: theme.screen.text }]}
-			value={value}
-			onChangeText={onChangeText}
-			keyboardType="phone-pad"
-			autoFocus
-			placeholder="0"
-			placeholderTextColor={theme.screen.border}
-			returnKeyType="done"
-			onSubmitEditing={onSubmit}
-		/>
 	);
 }
 
@@ -149,7 +202,6 @@ export default function GameScreen() {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showDeleteModal, close: closeDeleteModal } = useMyScrollViewModal();
 	const { show: showScoreModal, close: closeScoreModal } = useMyScrollViewModal();
-	const [signMode, setSignMode] = useState<'plus' | 'minus'>('plus');
 
 	const navigation = useNavigation();
 
@@ -263,7 +315,6 @@ export default function GameScreen() {
 				children: (
 					<ScoreInputContent
 						initialValue={currentScore}
-						signMode={signMode}
 						onSave={(value) => {
 							dispatch(setScore({ roundId, playerId, score: value }));
 							closeScoreModal();
@@ -272,7 +323,7 @@ export default function GameScreen() {
 				),
 			});
 		},
-		[showScoreModal, closeScoreModal, dispatch, signMode],
+		[showScoreModal, closeScoreModal, dispatch],
 	);
 
 	const handleAddRound = useCallback(() => {
@@ -284,11 +335,11 @@ export default function GameScreen() {
 	if (players.length === 0) {
 		return (
 			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
-				<Ionicons name="people-outline" size={64} color={theme.screen.border} />
+				<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
 				<Text style={[styles.emptyText, { color: theme.screen.text }]}>
 					Noch keine Spieler
 				</Text>
-				<Text style={[styles.emptySubtext, { color: theme.screen.border }]}>
+				<Text style={[styles.emptySubtext, { color: theme.screen.placeholder }]}>
 					Füge einen Spieler über den + Button im Header hinzu
 				</Text>
 			</View>
@@ -366,36 +417,8 @@ export default function GameScreen() {
 				</ScrollView>
 			</View>
 
-			{/* Bottom bar: +/- toggle and "Nächste Runde" button */}
+			{/* Bottom bar: "Nächste Runde" button */}
 			<View style={[styles.bottomBar, { borderTopColor: theme.screen.border }]}>
-				<View style={styles.signToggle}>
-					<TouchableOpacity
-						style={[
-							styles.signButton,
-							{
-								backgroundColor: signMode === 'plus' ? PRIMARY_COLOR : theme.screen.background,
-								borderColor: PRIMARY_COLOR,
-							},
-						]}
-						onPress={() => setSignMode('plus')}
-						activeOpacity={0.7}
-					>
-						<Text style={[styles.signButtonText, { color: signMode === 'plus' ? '#ffffff' : PRIMARY_COLOR }]}>+</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={[
-							styles.signButton,
-							{
-								backgroundColor: signMode === 'minus' ? DANGER_COLOR : theme.screen.background,
-								borderColor: DANGER_COLOR,
-							},
-						]}
-						onPress={() => setSignMode('minus')}
-						activeOpacity={0.7}
-					>
-						<Text style={[styles.signButtonText, { color: signMode === 'minus' ? '#ffffff' : DANGER_COLOR }]}>−</Text>
-					</TouchableOpacity>
-				</View>
 				<TouchableOpacity
 					style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR }]}
 					onPress={handleAddRound}
@@ -554,5 +577,23 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	quickButtonsRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		gap: 8,
+		marginTop: 4,
+	},
+	quickButton: {
+		flex: 1,
+		height: 44,
+		borderRadius: 8,
+		borderWidth: 1.5,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	quickButtonText: {
+		fontSize: 15,
+		fontWeight: '700',
 	},
 });

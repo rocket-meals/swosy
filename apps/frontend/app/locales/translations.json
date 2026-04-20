@@ -829,6 +829,16 @@
     "tr": "Mesafe",
     "zh": "距离"
   },
+  "sort_option_last_opened": {
+    "de": "Zuletzt geöffnet",
+    "en": "Recently opened",
+    "ar": "آخر فتح",
+    "es": "Abierto recientemente",
+    "fr": "Récemment ouvert",
+    "ru": "Недавно открытые",
+    "tr": "Son açılan",
+    "zh": "最近打开"
+  },
   "sort_option_food_category": {
     "de": "Essenskategorie",
     "en": "Food Category",
@@ -918,6 +928,16 @@
     "ru": "Общие маркировки",
     "tr": "Genel İşaretlemeler",
     "zh": "总体标记"
+  },
+  "no_allergens_or_additives_contained": {
+    "de": "Keine Allergene und kennzeichnungspflichtigen Zusatzstoffe enthalten",
+    "en": "No allergens or mandatory-labeling additives contained",
+    "ar": "لا تحتوي على مواد مسببة للحساسية أو مضافات يجب وضع علامة عليها",
+    "es": "No contiene alérgenos ni aditivos de etiquetado obligatorio",
+    "fr": "Ne contient pas d'allergènes ni d'additifs à déclaration obligatoire",
+    "ru": "Не содержит аллергенов или добавок с обязательной маркировкой",
+    "tr": "Alerjen veya zorunlu etiketleme gerektiren katkı maddesi içermez",
+    "zh": "不含过敏原或需强制标注的添加剂"
   },
   "free_rooms": {
     "de": "Freie Zimmer",
@@ -1578,6 +1598,46 @@
     "ru": "Сбросить выбор аллергенов",
     "tr": "Alerjen seçimlerini sıfırla",
     "zh": "清除过敏原选择"
+  },
+  "foodoffers_show_separated_markings_breakdown": {
+    "de": "Kennzeichnungen nach Komponente aufschlüsseln",
+    "en": "Show markings breakdown per component",
+    "ar": "تفصيل العلامات حسب المكون",
+    "es": "Desglosar etiquetas por componente",
+    "fr": "Détailler les marquages par composant",
+    "ru": "Разбивка маркировок по компонентам",
+    "tr": "Etiketleri bileşene göre ayır",
+    "zh": "按成分分解标签"
+  },
+  "foodoffers_show_separated_markings_breakdown_option_enabled": {
+    "de": "Ja",
+    "en": "Yes",
+    "ar": "نعم",
+    "es": "Sí",
+    "fr": "Oui",
+    "ru": "Да",
+    "tr": "Evet",
+    "zh": "是"
+  },
+  "foodoffers_show_separated_markings_breakdown_option_disabled": {
+    "de": "Nein",
+    "en": "No",
+    "ar": "لا",
+    "es": "No",
+    "fr": "Non",
+    "ru": "Нет",
+    "tr": "Hayır",
+    "zh": "否"
+  },
+  "foodoffers_show_separated_markings_breakdown_option_default": {
+    "de": "Standard",
+    "en": "Default",
+    "ar": "افتراضي",
+    "es": "Predeterminado",
+    "fr": "Par défaut",
+    "ru": "По умолчанию",
+    "tr": "Varsayılan",
+    "zh": "默认"
   },
   "eatinghabits_introduction": {
     "de": "Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.",
@@ -3192,6 +3252,16 @@
     "ru": "App Download",
     "tr": "App Download",
     "zh": "App Download"
+  },
+  "app_download_selection": {
+    "de": "App Download Auswahl",
+    "en": "App Download Selection",
+    "ar": "App Download Selection",
+    "es": "App Download Selection",
+    "fr": "App Download Selection",
+    "ru": "App Download Selection",
+    "tr": "App Download Selection",
+    "zh": "App Download Selection"
   },
   "react_native_qrcode_svg": {
     "de": "React Native QRCode SVG",
@@ -5862,5 +5932,25 @@
     "ru": "Голос",
     "tr": "Ses",
     "zh": "语音"
+  },
+  "last_opened_buildings": {
+    "de": "Zuletzt geöffnete Gebäude",
+    "en": "Recently opened buildings",
+    "ar": "المباني التي تم فتحها مؤخراً",
+    "es": "Edificios abiertos recientemente",
+    "fr": "Bâtiments récemment ouverts",
+    "ru": "Недавно открытые здания",
+    "tr": "Son açılan binalar",
+    "zh": "最近打开的建筑"
+  },
+  "last_opened_building_info": {
+    "de": "Dieses Gebäude hast du zuletzt geöffnet.",
+    "en": "You recently opened this building.",
+    "ar": "لقد فتحت هذا المبنى مؤخراً.",
+    "es": "Abriste este edificio recientemente.",
+    "fr": "Vous avez récemment ouvert ce bâtiment.",
+    "ru": "Вы недавно открывали это здание.",
+    "tr": "Bu binayı yakın zamanda açtınız.",
+    "zh": "您最近打开了这栋建筑。"
   }
 }

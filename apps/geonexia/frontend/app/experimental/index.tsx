@@ -35,6 +35,26 @@ export default function ExperimentalScreen() {
 					groupPosition="single"
 				/>
 
+				<SettingsListGroupTitle title="3D" />
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="cube-scan" size={22} color="#ffffff" />}
+					label="3d Kyle Test"
+					value="3D-Modelle auf der Karte platzieren"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/3d-kyle-test')}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="sail-boat" size={22} color="#ffffff" />}
+					label="Seaphara"
+					value="Boot per Joystick auf der Karte steuern"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/seaphara')}
+					groupPosition="bottom"
+				/>
+
 				<SettingsListGroupTitle title="Karten" />
 				<SettingsList
 					iconBgColor={EXPERIMENTAL_COLOR}

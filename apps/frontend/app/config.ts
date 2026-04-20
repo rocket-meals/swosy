@@ -23,7 +23,8 @@ export type CustomerConfig = {
                 company_logo_source_get_for_react_native: () => ImageSourcePropType;
                 icon_logo_source_path: string;
                 icon_logo_source_get_for_react_native: () => ImageSourcePropType;
-        }
+        };
+        foodoffers_show_separated_markings_breakdown?: boolean;
 };
 
 export enum ConfigCustomerEnum {
@@ -45,7 +46,7 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-        return 3;
+        return 4;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -124,7 +125,8 @@ export const studiFutterConfig: CustomerConfig = {
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
 		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
 		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/icon.png')},
-        }
+        },
+    foodoffers_show_separated_markings_breakdown: true
 };
 
 export function getCustomerConfigsDict(): Record<ConfigCustomerEnum, CustomerConfig> {

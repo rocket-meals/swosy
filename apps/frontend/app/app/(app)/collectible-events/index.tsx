@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { SafeAreaView, ScrollView, Text } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 import { COLLECTABLE_AT_FIELDS, DateHelper } from 'repo-depkit-common';
 import type { DatabaseTypes } from 'repo-depkit-common';
+import { useRouter } from 'expo-router';
 
 import SettingsList from '@/components/SettingsList';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -12,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { RootState } from '@/redux/reducer';
+import useDebugMode from '@/hooks/useDebugMode';
 import styles from './styles';
 
 const getGroupPosition = (index: number, length: number) => {
@@ -63,6 +65,8 @@ const CollectibleEventsScreen = () => {
         const { collectibleEvents, collectibleEventsDict = {} } = useAppSelector(
                 (state) => state.collectibleEvents
         );
+        const debugMode = useDebugMode();
+        const router = useRouter();
 
         const events = useMemo<DatabaseTypes.CollectibleEvents[]>(
                 () => collectibleEvents || [],
@@ -92,6 +96,23 @@ const CollectibleEventsScreen = () => {
         return (
                 <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
                         <ScrollView contentContainerStyle={styles.container}>
+                                {debugMode ? (
+                                        <SettingsList
+                                                key="debug-collectible-event"
+                                                iconBgColor={primaryColor}
+                                                leftIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="bug-outline"
+                                                                size={24}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                label="Debug Collectible Event"
+                                                groupPosition="single"
+                                                handleFunction={() => router.navigate('/collectible-event')}
+                                                rightIcon={<Octicons name="chevron-right" size={20} color={theme.screen.icon} />}
+                                        />
+                                ) : null}
                                 {hasEvents ? (
                                         eventsWithProgress.map(({ event, collectedCount, totalCollectibles, dateRange }, index) => (
                                                 <SettingsList
@@ -111,6 +132,8 @@ const CollectibleEventsScreen = () => {
                                                         }
                                                         value={formatEventValue(collectedCount, totalCollectibles, dateRange)}
                                                         groupPosition={getGroupPosition(index, eventsWithProgress.length) as any}
+                                                        handleFunction={debugMode ? () => router.navigate('/collectible-event') : undefined}
+                                                        rightIcon={debugMode ? <Octicons name="chevron-right" size={20} color={theme.screen.icon} /> : undefined}
                                                 />
                                         ))
                                 ) : (

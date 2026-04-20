@@ -94,6 +94,7 @@ export const useMyScrollviewModalCanteenSelection = () => {
 			showScrollViewModal({
 				title: title ?? translate(TranslationKeys.canteen),
 				onClose: closeScrollViewModal,
+				disableHorizontalPadding: true,
 				children: (
 					<CanteenSelectionContent onSelectCanteen={onSelectCanteen}>
 						{children}

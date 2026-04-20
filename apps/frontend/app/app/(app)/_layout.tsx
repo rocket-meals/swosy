@@ -766,6 +766,14 @@ export default function Layout() {
 				/>
 
 				<Drawer.Screen
+					name="app-download-management/index"
+					options={{
+						title: translate(TranslationKeys.app_download),
+						headerShown: false,
+					}}
+				/>
+
+				<Drawer.Screen
 					name="support-ticket"
 					options={{
 						title: 'Support Ticket',

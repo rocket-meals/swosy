@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Image, LayoutChangeEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { AppDrawerProps, DrawerItem } from './types';
@@ -17,6 +17,16 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const [iconMinWidth, setIconMinWidth] = useState(0);
+	const iconMinWidthRef = useRef(0);
+
+	const handleIconInnerLayout = (event: LayoutChangeEvent) => {
+		const { width } = event.nativeEvent.layout;
+		if (width > iconMinWidthRef.current) {
+			iconMinWidthRef.current = width;
+			setIconMinWidth(width);
+		}
+	};
 
 	const isActive = (key: string) => activeKey === key;
 
@@ -49,16 +59,18 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 				style={[styles.menuItem, { backgroundColor: bgColor }]}
 				onPress={item.onPress}
 			>
-				<View style={styles.menuIconWrapper}>
-					{item.renderIcon(active, iconColor)}
-					{item.hasUnread ? (
-						<View
-							style={[
-								styles.notificationDot,
-								{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
-							]}
-						/>
-					) : null}
+				<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
+					<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>
+						{item.renderIcon(active, iconColor)}
+						{item.hasUnread ? (
+							<View
+								style={[
+									styles.notificationDot,
+									{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
+								]}
+							/>
+						) : null}
+					</View>
 				</View>
 				<Text style={[styles.menuLabel, { color: textColor }]}>{item.label}</Text>
 			</TouchableOpacity>
@@ -160,15 +172,23 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		marginBottom: 5,
 		width: '100%',
+		gap: 12,
 	},
-	menuIconWrapper: {
-		marginRight: 12,
+	menuIconOuter: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	menuIconInner: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
 		position: 'relative',
 	},
 	menuLabel: {
 		flex: 1,
 		fontSize: 16,
 		marginTop: 4,
+		textAlign: 'left',
 	},
 	notificationDot: {
 		position: 'absolute',
@@ -191,5 +211,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexWrap: 'wrap',
 		marginTop: 10,
+		paddingHorizontal: 15,
 	},
 });

@@ -17,6 +17,8 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
+import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
+import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -38,6 +40,9 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const seperatedMarkingsReduxValue = useSeperatedMarkingsForFood();
+	const customerConfigSeperate = useCustomerConfigSeperateMarkingsForFood();
+	const showSeparatedMarkingsBreakdown = seperatedMarkingsReduxValue ?? customerConfigSeperate;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
@@ -104,37 +109,69 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
-			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
+			{showSeparatedMarkingsBreakdown ? (
+				<View>
+					{foodofferComponents.map((component: any) => {
+						const componentFoodoffer = component?.component_foodoffers_id;
+						if (!componentFoodoffer) return null;
+						const componentName =
+							getTextFromTranslation(componentFoodoffer?.translations, language) ||
+							componentFoodoffer?.alias ||
+							`Component #${componentFoodoffer?.id}`;
+						const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
+							(m: any) => m?.markings_id
+						);
+						return (
+							<View key={componentFoodoffer?.id}>
+								<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
+								{componentMarkingIds.length === 0 ? (
+									<SettingsList title={translate(TranslationKeys.no_allergens_or_additives_contained)} italic noIconIndent groupPosition="single" showSeparator={false} />
+								) : (
+									<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+								)}
+							</View>
+						);
+					})}
+					{globalMarkingIds.length > 0 && (
+						<View>
+							<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+							<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
+						</View>
+					)}
+				</View>
+			) : (
+				<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
+			)}
 
 			<DebugView title="Foodoffer Components">
-			{foodofferComponents.map((component: any) => {
-				const componentFoodoffer = component?.component_foodoffers_id;
-				if (!componentFoodoffer) return null;
-				const componentName =
-					getTextFromTranslation(componentFoodoffer?.translations, language) ||
-					componentFoodoffer?.alias ||
-					`Component #${componentFoodoffer?.id}`;
-				const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-					(m: any) => m?.markings_id
-				);
-				return (
-					<View key={componentFoodoffer?.id}>
-						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
-						{componentMarkingIds.length === 0 ? (
-							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
-						) : (
-							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
-						)}
+				{foodofferComponents.map((component: any) => {
+					const componentFoodoffer = component?.component_foodoffers_id;
+					if (!componentFoodoffer) return null;
+					const componentName =
+						getTextFromTranslation(componentFoodoffer?.translations, language) ||
+						componentFoodoffer?.alias ||
+						`Component #${componentFoodoffer?.id}`;
+					const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
+						(m: any) => m?.markings_id
+					);
+					return (
+						<View key={componentFoodoffer?.id}>
+							<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
+							{componentMarkingIds.length === 0 ? (
+								<SettingsList title={translate(TranslationKeys.no_allergens_or_additives_contained)} italic noIconIndent groupPosition="single" showSeparator={false} />
+							) : (
+								<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+							)}
+						</View>
+					);
+				})}
+				{globalMarkingIds.length > 0 && (
+					<View>
+						<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+						<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
 					</View>
-				);
-			})}
-			{globalMarkingIds.length > 0 && (
-				<View>
-					<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
-					<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
-				</View>
-			)}
-		</DebugView>
+				)}
+			</DebugView>
 
 			<DebugView title="Foodoffer Markings Data">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>

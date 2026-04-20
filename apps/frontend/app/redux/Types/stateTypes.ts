@@ -69,6 +69,7 @@ export type SettingsState = {
         mapVirtualZoom: number | null;
         mapOrganisationFilter: Record<string, boolean>;
         mapClusterPixelRadius: number;
+        foodoffersShowSeparatedMarkingsBreakdown: boolean | null;
 }
 
 export type FoodState = {
