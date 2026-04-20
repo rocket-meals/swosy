@@ -12,7 +12,6 @@ import SettingsListNickname from '@/components/SettingsListNickname';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -350,29 +349,37 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 	);
 };
 
-/* ──────────────── Friendship Detail Profile Loader ─────────────────────── */
-type ProfileLoaderProps = {
-	profileId: string;
-	label: string;
+/* ──────────────── Friendship Detail Expanded Loader ─────────────────────── */
+type FriendshipExpandedLoaderProps = {
+	friendship: DatabaseTypes.Friendships;
 };
 
-const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) => {
+const safeJsonStringify = (obj: any): string => {
+	if (obj === null || obj === undefined) return 'null';
+	try {
+		return JSON.stringify(obj, null, 2);
+	} catch {
+		return String(obj);
+	}
+};
+
+const FriendshipExpandedLoader: React.FC<FriendshipExpandedLoaderProps> = ({ friendship }) => {
 	const { theme } = useTheme();
-	const [loadedProfile, setLoadedProfile] = useState<DatabaseTypes.Profiles | null>(null);
+	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
+	const [expandedFriendship, setExpandedFriendship] = useState<any>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState(true);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
 	useEffect(() => {
 		let cancelled = false;
 		(async () => {
 			try {
-				const result = await profileHelper.fetchProfileById(profileId, {});
+				const result = await friendshipsHelper.readFriendshipExpanded(friendship.id);
 				if (!cancelled) {
 					if (result) {
-						setLoadedProfile(result as DatabaseTypes.Profiles);
+						setExpandedFriendship(result);
 					} else {
-						setError('Profil nicht gefunden (null)');
+						setError('Friendship nicht gefunden (null)');
 					}
 				}
 			} catch (err: any) {
@@ -384,32 +391,26 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 			}
 		})();
 		return () => { cancelled = true; };
-	}, [profileId, profileHelper]);
+	}, [friendship.id, friendshipsHelper]);
 
-	const profileJson = useMemo(() => {
-		if (!loadedProfile) return 'null';
-		try {
-			return JSON.stringify(loadedProfile, null, 2);
-		} catch {
-			return String(loadedProfile);
-		}
-	}, [loadedProfile]);
+	const rawJson = useMemo(() => safeJsonStringify(friendship), [friendship]);
+	const expandedJson = useMemo(() => safeJsonStringify(expandedFriendship), [expandedFriendship]);
+	const requesterJson = useMemo(() => safeJsonStringify(expandedFriendship?.requester_profiles_id), [expandedFriendship]);
+	const receiverJson = useMemo(() => safeJsonStringify(expandedFriendship?.receiver_profiles_id), [expandedFriendship]);
 
 	if (loading) {
 		return (
-			<SettingsList
-				label={label}
-				value={profileId}
-				groupPosition="single"
-				leftIcon={<ActivityIndicator size="small" color={theme.screen.icon} />}
-			/>
+			<View style={{ alignItems: 'center', padding: 16 }}>
+				<ActivityIndicator size="small" color={theme.screen.icon} />
+				<Text style={{ color: theme.screen.text, marginTop: 8 }}>Lade erweiterte Daten...</Text>
+			</View>
 		);
 	}
 
 	if (error) {
 		return (
 			<DebugView
-				title={`${label}: ${profileId}`}
+				title="Fehler"
 				logs={[error]}
 				isVisible={true}
 			/>
@@ -417,12 +418,28 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 	}
 
 	return (
-		<SettingsList
-			label={label}
-			value={profileJson}
-			groupPosition="single"
-			leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-		/>
+		<View style={{ gap: 8 }}>
+			<DebugView
+				title="Friendship (lokal)"
+				logs={[rawJson]}
+				isVisible={true}
+			/>
+			<DebugView
+				title="Friendship (Server, fields: *)"
+				logs={[expandedJson]}
+				isVisible={true}
+			/>
+			<DebugView
+				title="requester_profiles_id.*"
+				logs={[requesterJson]}
+				isVisible={true}
+			/>
+			<DebugView
+				title="receiver_profiles_id.*"
+				logs={[receiverJson]}
+				isVisible={true}
+			/>
+		</View>
 	);
 };
 
@@ -596,20 +613,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 							groupPosition="single"
 						/>
 					</View>
-					<DebugView
-						title="Profiles"
-						logs={[]}
-						isVisible={true}
-					>
-						<View style={{ gap: 8 }}>
-							{requesterId && requesterId !== '-' && (
-								<ProfileLoaderItem profileId={requesterId} label={translate(TranslationKeys.friendships_requester)} />
-							)}
-							{receiverId && receiverId !== '-' && (
-								<ProfileLoaderItem profileId={receiverId} label={translate(TranslationKeys.friendships_receiver)} />
-							)}
-						</View>
-					</DebugView>
+					<FriendshipExpandedLoader friendship={friendship} />
 				</View>
 			),
 		});
