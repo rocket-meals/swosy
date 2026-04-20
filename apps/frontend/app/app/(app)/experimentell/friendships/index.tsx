@@ -8,10 +8,12 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import SettingsListNickname from '@/components/SettingsListNickname';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
-import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, SET_NICKNAME_LOCAL, UPDATE_FRIENDSHIP, UPDATE_PROFILE } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
@@ -19,6 +21,7 @@ import ProjectButton from '@/components/ProjectButton';
 import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
+import { UserHelper } from '@/helper/UserHelper';
 
 const isWeb = Platform.OS === 'web';
 
@@ -341,29 +344,126 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 				groupPosition="bottom"
 				leftIcon={<ActivityIndicator size="small" color={primaryColor} />}
 			/>
+			<Text style={[styles.qrManualHint, { color: theme.screen.text }]}>
+				{translate(TranslationKeys.friendships_qr_manual_hint)}
+			</Text>
 		</View>
 	);
 };
 
-/* ──────────────────────── Main Friendships Screen ─────────────────────── */
-const FriendshipsScreen = () => {
-	useSetPageTitle(TranslationKeys.friendships);
+/* ──────────────── Friendship Detail Profile Loader ─────────────────────── */
+type ProfileLoaderProps = {
+	profileId: string;
+	label: string;
+};
+
+const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) => {
+	const { theme } = useTheme();
+	const [loadedProfile, setLoadedProfile] = useState<DatabaseTypes.Profiles | null>(null);
+	const [error, setError] = useState<string>('');
+	const [loading, setLoading] = useState(true);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
+
+	useEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const result = await profileHelper.fetchProfileById(profileId, {});
+				if (!cancelled && result) {
+					setLoadedProfile(result as DatabaseTypes.Profiles);
+				}
+			} catch (err: any) {
+				if (!cancelled) {
+					setError(err?.message ?? err?.toString?.() ?? JSON.stringify(err));
+				}
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		})();
+		return () => { cancelled = true; };
+	}, [profileId, profileHelper]);
+
+	if (loading) {
+		return (
+			<SettingsList
+				label={label}
+				value={profileId}
+				groupPosition="single"
+				leftIcon={<ActivityIndicator size="small" color={theme.screen.icon} />}
+			/>
+		);
+	}
+
+	if (error) {
+		return (
+			<DebugView
+				title={`${label}: ${profileId}`}
+				logs={[error]}
+				isVisible={true}
+			/>
+		);
+	}
+
+	return (
+		<>
+			<SettingsList
+				label={`${label} ID`}
+				value={profileId}
+				groupPosition="top"
+				leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
+			/>
+			<SettingsList
+				label={`${label} Nickname`}
+				value={loadedProfile?.nickname ?? '-'}
+				groupPosition="bottom"
+				leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+			/>
+		</>
+	);
+};
+
+/* ──────────────────── Reusable FriendsContent Component ───────────────── */
+export type FriendsContentProps = {
+	showHeading?: boolean;
+};
+
+export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = true }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const showToast = useToast();
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
-	const { profile } = useAppSelector((state) => state.authReducer);
+	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const { primaryColor, nickNameLocal } = useAppSelector((state) => state.settings);
 	const { friendships } = useAppSelector((state) => state.friendships);
+	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const [refreshing, setRefreshing] = useState(false);
 
 	const currentNickname = useMemo(
 		() => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
 		[nickNameLocal, profile?.id, profile?.nickname]
+	);
+
+	const saveNickname = useCallback(
+		async (value: string) => {
+			const nextNickname = value?.trim?.() ?? '';
+			if (isRegisteredUser) {
+				const result = (await profileHelper.updateProfile({
+					...profile,
+					nickname: nextNickname,
+				})) as DatabaseTypes.Profiles;
+				if (result) {
+					dispatch({ type: UPDATE_PROFILE, payload: result });
+				}
+			} else {
+				dispatch({ type: SET_NICKNAME_LOCAL, payload: nextNickname });
+			}
+		},
+		[dispatch, isRegisteredUser, profile, profileHelper]
 	);
 
 	const getProfileIdFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string => {
@@ -473,10 +573,10 @@ const FriendshipsScreen = () => {
 	}, []);
 
 	const openFriendshipDetail = useCallback((friendship: DatabaseTypes.Friendships) => {
-		const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
-		const otherProfileId = isRequester
-			? getProfileIdFromField(friendship.receiver_profiles_id)
-			: getProfileIdFromField(friendship.requester_profiles_id);
+		const requesterId = getProfileIdFromField(friendship.requester_profiles_id);
+		const receiverId = getProfileIdFromField(friendship.receiver_profiles_id);
+		const isRequester = requesterId === profile?.id;
+		const otherProfileId = isRequester ? receiverId : requesterId;
 
 		const handleDelete = async () => {
 			try {
@@ -517,6 +617,20 @@ const FriendshipsScreen = () => {
 							groupPosition="single"
 						/>
 					</View>
+					<DebugView
+						title="Profiles"
+						logs={[]}
+						isVisible={true}
+					>
+						<View style={{ gap: 8 }}>
+							{requesterId && requesterId !== '-' && (
+								<ProfileLoaderItem profileId={requesterId} label={translate(TranslationKeys.friendships_requester)} />
+							)}
+							{receiverId && receiverId !== '-' && (
+								<ProfileLoaderItem profileId={receiverId} label={translate(TranslationKeys.friendships_receiver)} />
+							)}
+						</View>
+					</DebugView>
 				</View>
 			),
 		});
@@ -564,9 +678,11 @@ const FriendshipsScreen = () => {
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 		>
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.friendships)}
-				</Text>
+				{showHeading && (
+					<Text style={[styles.heading, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.friendships)}
+					</Text>
+				)}
 
 				{/* Profile Info */}
 				<SettingsList
@@ -576,11 +692,9 @@ const FriendshipsScreen = () => {
 					value={profile?.id ?? '-'}
 					groupPosition="top"
 				/>
-				<SettingsList
-					iconBgColor={primaryColor}
-					leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-					label={translate(TranslationKeys.nickname)}
-					value={currentNickname || '-'}
+				<SettingsListNickname
+					initialValue={currentNickname}
+					onSave={saveNickname}
 					groupPosition="bottom"
 				/>
 
@@ -631,6 +745,12 @@ const FriendshipsScreen = () => {
 	);
 };
 
+/* ──────────────────────── Main Friendships Screen ─────────────────────── */
+const FriendshipsScreen = () => {
+	useSetPageTitle(TranslationKeys.friendships);
+	return <FriendsContent showHeading={true} />;
+};
+
 export default FriendshipsScreen;
 
 const styles = StyleSheet.create({
@@ -668,6 +788,13 @@ const styles = StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		textAlign: 'center',
 		opacity: 0.6,
+	},
+	qrManualHint: {
+		fontSize: 12,
+		fontFamily: 'Poppins_400Regular',
+		textAlign: 'center',
+		opacity: 0.6,
+		marginTop: 4,
 	},
 });
 

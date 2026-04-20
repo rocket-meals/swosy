@@ -7,7 +7,7 @@ import { TranslationKeys } from '@/locales/keys';
 
 import { SettingsListNicknameProps } from './types';
 
-const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ initialValue, onSave }) => {
+const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ initialValue, onSave, groupPosition = 'single' }) => {
         const { translate } = useLanguage();
         const [value, setValue] = useState(initialValue ?? '');
 
@@ -36,7 +36,7 @@ const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ initialValu
 				isValid: true,
 				value: currentValue.trim(),
 			})}
-			groupPosition="single"
+			groupPosition={groupPosition}
 		/>
 	);
 };

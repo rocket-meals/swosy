@@ -3381,6 +3381,18 @@
     "de": "Warte auf Scan...",
     "en": "Waiting for scan..."
   },
+  "friendships_qr_manual_hint": {
+    "de": "Alternativ kann dein Freund diese ID innerhalb von 24 Stunden manuell eingeben.",
+    "en": "Alternatively, your friend can enter this ID manually within 24 hours."
+  },
+  "friendships_requester": {
+    "de": "Anfragender",
+    "en": "Requester"
+  },
+  "friendships_receiver": {
+    "de": "Empfänger",
+    "en": "Receiver"
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",
