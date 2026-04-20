@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { getCustomerConfig } from '../frontend/app/config';
+import { getCustomerConfig, getCustomerEnvVariable } from '../frontend/app/config';
 
 const TEMPLATE_FILE = path.resolve(__dirname, '../frontend/app/eas.template.json');
 const TARGET_FILE = path.resolve(__dirname, '../frontend/app/eas.json');
@@ -58,6 +58,26 @@ function updateAscAppId(config: EasConfig, appleAppId?: string) {
         }
 }
 
+type BuildProfileConfig = {
+        env?: Record<string, string>;
+} & Record<string, unknown>;
+
+type BuildConfig = Record<string, BuildProfileConfig>;
+
+function addEnvToAllBuildProfiles(config: EasConfig, customer: string | undefined) {
+        const build = config.build as BuildConfig | undefined;
+        if (!build || !customer) return;
+
+        for (const profileName of Object.keys(build)) {
+                const profile = build[profileName];
+                profile.env = {
+                        ...(profile.env || {}),
+                        CUSTOMER: customer,
+                        EXPO_PUBLIC_CUSTOMER: customer,
+                };
+        }
+}
+
 function persistConfig(config: EasConfig) {
         const serialized = JSON.stringify(config, null, 2);
         fs.writeFileSync(TARGET_FILE, `${serialized}\n`, 'utf8');
@@ -66,10 +86,12 @@ function persistConfig(config: EasConfig) {
 function main() {
         const template = loadTemplate();
         const { appleAppId } = getCustomerConfig();
+        const customer = getCustomerEnvVariable();
 
         updateAscAppId(template, appleAppId);
+        addEnvToAllBuildProfiles(template, customer);
         persistConfig(template);
-        console.log(`EAS config generated at ${TARGET_FILE}`);
+        console.log(`EAS config generated at ${TARGET_FILE} (customer: ${customer || 'default'})`);
 }
 
 void main();
