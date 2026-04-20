@@ -1,8 +1,4 @@
 Key,Message,Component,Line
-"AZ2s-XegicCl4Zs1E1DQ","The empty object is useless.","rocket-meals_rocket-meals:apps/scripts/generate-eas-config.ts",74
-"AZ2s-XGOicCl4Zs1E1DP","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/scripts/eas-build-post-install.js",40
-"AZ2s-XGOicCl4Zs1E1DN","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/eas-build-post-install.js",21
-"AZ2s-XGOicCl4Zs1E1DO","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/eas-build-post-install.js",22
 "AZ2shDrtxt5Rzt2dS7i1","Remove this useless assignment to variable ""nickname"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/settings-list-components/index.tsx",25
 "AZ2shDrtxt5Rzt2dS7i2","Remove this useless assignment to variable ""setNickname"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/settings-list-components/index.tsx",25
 "AZ2shEt5xt5Rzt2dS7i3","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",579
@@ -9219,7 +9215,7 @@ Key,Message,Component,Line
 "AZ0Tpkxuufp2jxPAhSwG","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",252
 "AZ0Tpk8iufp2jxPAhSy4","'react-native' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOfferInfoItem/FoodOfferInfoItem.tsx",12
 "AZ0TplMRufp2jxPAhS15","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/EmailInput/EmailInput.tsx",39
-"AZ0Tpl0sufp2jxPAhTLj","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/scripts/generate-eas-config.ts",97
+"AZ0Tpl0sufp2jxPAhTLj","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/scripts/generate-eas-config.ts",75
 "AZ0Tpk8Eufp2jxPAhSyw","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",14
 "AZ0TplJyufp2jxPAhS1j","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/BaseBottomSheet/BaseBottomSheet.tsx",81
 "AZ0TplKEufp2jxPAhS1k","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",8
@@ -9999,3 +9995,7 @@ Key,Message,Component,Line
 "AZkUSvfzS4VhJojFFCWU","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",179
 "AZkUSvuBS4VhJojFFCeg","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",34
 "AZkUSvfpS4VhJojFFCWM","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface.ts",17
+"AZ0Tpk2jufp2jxPAhSxD","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/price-group/index.tsx",19
+"AZ0Tpk2yufp2jxPAhSxI","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",34
+"AZ0Tpk5tufp2jxPAhSya","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/index.tsx",13
+"AZ0Tpk8Eufp2jxPAhSyv","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",5
