@@ -38,7 +38,7 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 180;
+	return 181;
 }
 
 export function getMajorVersion() {
@@ -300,6 +300,13 @@ export function getFinalConfig(config?: any) {
 				'expo-notifications',
 				'expo-web-browser',
 				['expo-document-picker', { iCloudContainerEnvironment: 'Production' }],
+				[
+					'expo-camera',
+					{
+						cameraPermission: 'This app needs camera access to scan QR codes for adding friends.',
+						recordAudioAndroid: false,
+					},
+				],
 				[
 					'expo-splash-screen',
 					{

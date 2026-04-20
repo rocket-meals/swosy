@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
@@ -11,11 +11,98 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
-import { ADD_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
+import { ADD_FRIENDSHIP, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import useToast from '@/hooks/useToast';
+import ProjectButton from '@/components/ProjectButton';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+
+const isWeb = Platform.OS === 'web';
+
+type ScanModalContentProps = {
+	onSubmit: (id: string) => Promise<void>;
+	submitLabel: string;
+	placeholder: string;
+};
+
+const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, submitLabel, placeholder }) => {
+	const { theme } = useTheme();
+	const { primaryColor } = useAppSelector((state) => state.settings);
+	const [value, setValue] = useState('');
+	const [submitting, setSubmitting] = useState(false);
+	const [scanned, setScanned] = useState(false);
+	const [permission, requestPermission] = useCameraPermissions();
+
+	const handleBarCodeScanned = useCallback(({ data }: { data: string }) => {
+		if (scanned) return;
+		setScanned(true);
+		setValue(data);
+		setTimeout(() => setScanned(false), 2000);
+	}, [scanned]);
+
+	const handleSubmit = useCallback(async () => {
+		if (!value.trim() || submitting) return;
+		setSubmitting(true);
+		try {
+			await onSubmit(value.trim());
+		} finally {
+			setSubmitting(false);
+		}
+	}, [value, submitting, onSubmit]);
+
+	const showCamera = !isWeb && permission?.granted;
+	const canRequestPermission = !isWeb && permission && !permission.granted;
+
+	return (
+		<View style={scanStyles.container}>
+			{!isWeb && (
+				<View style={scanStyles.cameraSection}>
+					{showCamera ? (
+						<View style={scanStyles.cameraWrapper}>
+							<CameraView
+								style={scanStyles.camera}
+								facing="back"
+								barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+								onBarcodeScanned={handleBarCodeScanned}
+							/>
+						</View>
+					) : canRequestPermission ? (
+						<TouchableOpacity style={[scanStyles.permissionButton, { backgroundColor: primaryColor }]} onPress={requestPermission}>
+							<MaterialCommunityIcons name="camera" size={24} color="white" />
+							<Text style={scanStyles.permissionText}>Kamera erlauben</Text>
+						</TouchableOpacity>
+					) : null}
+				</View>
+			)}
+
+			<TextInput
+				style={[
+					scanStyles.input,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.background,
+						borderColor: theme.screen.icon,
+					},
+				]}
+				placeholder={placeholder}
+				placeholderTextColor={theme.screen.icon}
+				selectionColor={primaryColor}
+				value={value}
+				onChangeText={setValue}
+				autoCapitalize="none"
+				autoCorrect={false}
+			/>
+
+			<View style={scanStyles.buttonContainer}>
+				<ProjectButton
+					text={submitting ? '...' : submitLabel}
+					onPress={handleSubmit}
+				/>
+			</View>
+		</View>
+	);
+};
 
 const FriendshipsScreen = () => {
 	useSetPageTitle(TranslationKeys.friendships);
@@ -24,7 +111,6 @@ const FriendshipsScreen = () => {
 	const dispatch = useDispatch();
 	const showToast = useToast();
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { openTextInputModal } = useMyScrollviewTextInputModal();
 
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const { primaryColor, nickNameLocal } = useAppSelector((state) => state.settings);
@@ -76,31 +162,31 @@ const FriendshipsScreen = () => {
 	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, translate, theme.screen.text]);
 
 	const handleScanQR = useCallback(() => {
-		openTextInputModal({
-			title: translate(TranslationKeys.friendships_scan_enter_id),
-			placeholder: translate(TranslationKeys.friendships_enter_id_placeholder),
-			initialValue: '',
-			saveLabel: translate(TranslationKeys.friendships_scan_qr),
-			onSave: async (friendshipId: string) => {
-				if (!profile?.id || !friendshipId.trim()) return;
-				try {
-					const updated = await friendshipsHelper.updateFriendshipRequester(friendshipId.trim(), profile.id);
-					if (updated) {
-						const exists = friendships.some((f) => f.id === updated.id);
-						dispatch({ type: exists ? UPDATE_FRIENDSHIP : ADD_FRIENDSHIP, payload: updated });
-						showToast(translate(TranslationKeys.friendships_request_sent));
-					}
-				} catch (error) {
-					console.error('Error scanning QR code:', error);
-					showToast(translate(TranslationKeys.friendships_request_error), 'error');
-				}
-			},
-			checkTextInput: (value: string) => ({
-				isValid: value.trim().length > 0,
-				value: value.trim(),
-			}),
+		showScrollViewModal({
+			title: translate(TranslationKeys.friendships_scan_qr),
+			children: (
+				<ScanModalContent
+					placeholder={translate(TranslationKeys.friendships_enter_id_placeholder)}
+					submitLabel={translate(TranslationKeys.friendships_scan_qr)}
+					onSubmit={async (friendshipId: string) => {
+						if (!profile?.id) return;
+						try {
+							const updated = await friendshipsHelper.updateFriendshipReceiver(friendshipId, profile.id);
+							if (updated) {
+								const exists = friendships.some((f) => f.id === updated.id);
+								dispatch({ type: exists ? UPDATE_FRIENDSHIP : ADD_FRIENDSHIP, payload: updated });
+								showToast(translate(TranslationKeys.friendships_request_sent));
+								closeScrollViewModal();
+							}
+						} catch (error) {
+							console.error('Error accepting friendship:', error);
+							showToast(translate(TranslationKeys.friendships_request_error), 'error');
+						}
+					}}
+				/>
+			),
 		});
-	}, [profile?.id, friendshipsHelper, friendships, dispatch, openTextInputModal, translate, showToast]);
+	}, [profile?.id, friendshipsHelper, friendships, dispatch, showScrollViewModal, closeScrollViewModal, translate, showToast]);
 
 	const getProfileIdFromField = (field: string | DatabaseTypes.Profiles | null | undefined): string => {
 		if (!field) return '-';
@@ -168,10 +254,10 @@ const FriendshipsScreen = () => {
 					<>
 						<SettingsGroupTitle>{translate(TranslationKeys.friendships)} ({friendships.length})</SettingsGroupTitle>
 						{friendships.map((friendship, index) => {
-							const isReceiver = getProfileIdFromField(friendship.receiver_profiles_id) === profile?.id;
-							const otherProfileId = isReceiver
-								? getProfileIdFromField(friendship.requester_profiles_id)
-								: getProfileIdFromField(friendship.receiver_profiles_id);
+							const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
+							const otherProfileId = isRequester
+								? getProfileIdFromField(friendship.receiver_profiles_id)
+								: getProfileIdFromField(friendship.requester_profiles_id);
 							const statusColor = friendshipStatusColor(friendship.friendship_status);
 							const totalItems = friendships.length;
 							const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
@@ -231,5 +317,52 @@ const styles = StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		textAlign: 'center',
 		opacity: 0.6,
+	},
+});
+
+const scanStyles = StyleSheet.create({
+	container: {
+		width: '100%',
+		padding: 16,
+		gap: 16,
+	},
+	cameraSection: {
+		width: '100%',
+		alignItems: 'center',
+	},
+	cameraWrapper: {
+		width: '100%',
+		aspectRatio: 1,
+		borderRadius: 12,
+		overflow: 'hidden',
+	},
+	camera: {
+		flex: 1,
+	},
+	permissionButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		paddingVertical: 12,
+		paddingHorizontal: 20,
+		borderRadius: 10,
+	},
+	permissionText: {
+		color: 'white',
+		fontFamily: 'Poppins_400Regular',
+		fontSize: 14,
+	},
+	input: {
+		width: '100%',
+		height: 56,
+		borderRadius: 20,
+		paddingHorizontal: 20,
+		borderWidth: 1,
+		fontFamily: 'Poppins_400Regular',
+		fontSize: 14,
+	},
+	buttonContainer: {
+		width: '100%',
+		alignItems: 'stretch',
 	},
 });

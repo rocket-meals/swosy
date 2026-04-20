@@ -11,7 +11,17 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 			fields: ['*'],
 			filter: {
 				_or: [
-					{ receiver_profiles_id: { _eq: profileId } },
+					{
+						_and: [
+							{ friendship_status: { _eq: 'accepted' } },
+							{
+								_or: [
+									{ receiver_profiles_id: { _eq: profileId } },
+									{ requester_profiles_id: { _eq: profileId } },
+								],
+							},
+						],
+					},
 					{ requester_profiles_id: { _eq: profileId } },
 				],
 			},
@@ -21,17 +31,17 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 		return await this.readItems(query);
 	}
 
-	async createFriendshipForQR(receiverProfileId: string) {
+	async createFriendshipForQR(requesterProfileId: string) {
 		return await this.createItem({
-			receiver_profiles_id: receiverProfileId,
-			requester_profiles_id: null,
+			requester_profiles_id: requesterProfileId,
+			receiver_profiles_id: null,
 			friendship_status: 'pending',
 		} as Partial<DatabaseTypes.Friendships>);
 	}
 
-	async updateFriendshipRequester(friendshipId: string, requesterProfileId: string) {
+	async updateFriendshipReceiver(friendshipId: string, receiverProfileId: string) {
 		return await this.updateItem(friendshipId, {
-			requester_profiles_id: requesterProfileId,
+			receiver_profiles_id: receiverProfileId,
 		} as Partial<DatabaseTypes.Friendships>);
 	}
 }
