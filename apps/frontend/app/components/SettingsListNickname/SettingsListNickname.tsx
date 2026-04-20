@@ -6,26 +6,56 @@ import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
+import { SET_NICKNAME_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { UserHelper } from '@/helper/UserHelper';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 import { SettingsListNicknameProps } from './types';
 
-const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ initialValue, onSave, groupPosition = 'single', leftIcon, iconBgColor }) => {
+const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ groupPosition = 'single', leftIcon, iconBgColor }) => {
         const { translate } = useLanguage();
         const { theme } = useTheme();
-        const [value, setValue] = useState(initialValue ?? '');
+        const dispatch = useDispatch();
+        const { user, profile } = useAppSelector((state) => state.authReducer);
+        const { nickNameLocal } = useAppSelector((state) => state.settings);
+        const isRegisteredUser = UserHelper.isRegisteredUser(user);
+        const profileHelper = useMemo(() => new ProfileHelper(), []);
+
+        const currentNickname = useMemo(
+                () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
+                [nickNameLocal, profile?.id, profile?.nickname]
+        );
+
+        const [value, setValue] = useState(currentNickname);
 
         useEffect(() => {
-                setValue(initialValue ?? '');
-        }, [initialValue]);
+                setValue(currentNickname);
+        }, [currentNickname]);
 
         const trimmedValue = useMemo(() => value?.trim?.() ?? '', [value]);
 
         const disableSave = useMemo(
-                () => trimmedValue === (initialValue?.trim?.() ?? ''),
-                [initialValue, trimmedValue]
+                () => trimmedValue === (currentNickname?.trim?.() ?? ''),
+                [currentNickname, trimmedValue]
         );
 
-        const handleSave = useCallback(() => onSave(trimmedValue), [onSave, trimmedValue]);
+        const handleSave = useCallback(async () => {
+                const nextNickname = trimmedValue;
+                if (isRegisteredUser) {
+                        const result = (await profileHelper.updateProfile({
+                                ...profile,
+                                nickname: nextNickname,
+                        })) as DatabaseTypes.Profiles;
+                        if (result) {
+                                dispatch({ type: UPDATE_PROFILE, payload: result });
+                        }
+                } else {
+                        dispatch({ type: SET_NICKNAME_LOCAL, payload: nextNickname });
+                }
+        }, [dispatch, isRegisteredUser, profile, profileHelper, trimmedValue]);
 
         const resolvedIcon = useMemo(
                 () => leftIcon ?? <MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />,

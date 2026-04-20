@@ -111,7 +111,7 @@ const SettingsListComponents = () => {
 				/>
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListNickname</Text>
-				<SettingsListNickname initialValue={nickname} onSave={setNickname} />
+				<SettingsListNickname />
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListCoordinate</Text>
 				<SettingsListCoordinate

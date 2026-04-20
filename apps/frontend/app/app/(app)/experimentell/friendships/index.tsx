@@ -13,7 +13,7 @@ import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, SET_NICKNAME_LOCAL, UPDATE_FRIENDSHIP, UPDATE_PROFILE } from '@/redux/Types/types';
+import { ADD_FRIENDSHIP, REMOVE_FRIENDSHIP, SET_FRIENDSHIPS, UPDATE_FRIENDSHIP } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
@@ -21,7 +21,6 @@ import ProjectButton from '@/components/ProjectButton';
 import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
-import { UserHelper } from '@/helper/UserHelper';
 
 const isWeb = Platform.OS === 'web';
 
@@ -369,8 +368,12 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 		(async () => {
 			try {
 				const result = await profileHelper.fetchProfileById(profileId, {});
-				if (!cancelled && result) {
-					setLoadedProfile(result as DatabaseTypes.Profiles);
+				if (!cancelled) {
+					if (result) {
+						setLoadedProfile(result as DatabaseTypes.Profiles);
+					} else {
+						setError('Profil nicht gefunden (null)');
+					}
 				}
 			} catch (err: any) {
 				if (!cancelled) {
@@ -382,6 +385,15 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 		})();
 		return () => { cancelled = true; };
 	}, [profileId, profileHelper]);
+
+	const profileJson = useMemo(() => {
+		if (!loadedProfile) return 'null';
+		try {
+			return JSON.stringify(loadedProfile, null, 2);
+		} catch {
+			return String(loadedProfile);
+		}
+	}, [loadedProfile]);
 
 	if (loading) {
 		return (
@@ -407,7 +419,7 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 	return (
 		<SettingsList
 			label={label}
-			value={JSON.stringify(loadedProfile, null, 2)}
+			value={profileJson}
 			groupPosition="single"
 			leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 		/>
@@ -426,37 +438,12 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const showToast = useToast();
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
-	const { user, profile } = useAppSelector((state) => state.authReducer);
-	const { primaryColor, nickNameLocal } = useAppSelector((state) => state.settings);
+	const { profile } = useAppSelector((state) => state.authReducer);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { friendships } = useAppSelector((state) => state.friendships);
-	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const [refreshing, setRefreshing] = useState(false);
-
-	const currentNickname = useMemo(
-		() => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
-		[nickNameLocal, profile?.id, profile?.nickname]
-	);
-
-	const saveNickname = useCallback(
-		async (value: string) => {
-			const nextNickname = value?.trim?.() ?? '';
-			if (isRegisteredUser) {
-				const result = (await profileHelper.updateProfile({
-					...profile,
-					nickname: nextNickname,
-				})) as DatabaseTypes.Profiles;
-				if (result) {
-					dispatch({ type: UPDATE_PROFILE, payload: result });
-				}
-			} else {
-				dispatch({ type: SET_NICKNAME_LOCAL, payload: nextNickname });
-			}
-		},
-		[dispatch, isRegisteredUser, profile, profileHelper]
-	);
 
 	const getProfileIdFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string => {
 		if (!field) return '-';
@@ -685,8 +672,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					groupPosition="top"
 				/>
 				<SettingsListNickname
-					initialValue={currentNickname}
-					onSave={saveNickname}
 					groupPosition="bottom"
 				/>
 
