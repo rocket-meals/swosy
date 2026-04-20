@@ -1,8 +1,10 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -89,7 +91,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
 
 	return (
-		<BottomSheetTextInput
+		<ResolvedTextInput
 			style={{
 				...styles.sheetInput,
 				color: theme.sheet.text,
@@ -151,7 +153,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				...styles.sheetView,
 			}}
 		>
-			<BottomSheetTextInput
+			<ResolvedTextInput
 				style={{
 					...styles.sheetInput,
 					color: theme.sheet.text,

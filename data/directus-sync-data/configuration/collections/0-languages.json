@@ -1,55 +1,55 @@
 [
     {
-        "name": "Arabic",
         "status": "published",
+        "name": "Arabic",
         "direction": "rtl",
         "code": "ar-SA"
     },
     {
-        "name": "German",
         "status": "published",
+        "name": "German",
         "direction": "ltr",
         "code": "de-DE"
     },
     {
-        "name": "English",
         "status": "published",
+        "name": "English",
         "direction": "ltr",
         "code": "en-US"
     },
     {
-        "name": "Spanish",
         "status": "published",
+        "name": "Spanish",
         "direction": "ltr",
         "code": "es-ES"
     },
     {
-        "name": "French",
         "status": "published",
+        "name": "French",
         "direction": "ltr",
         "code": "fr-FR"
     },
     {
-        "name": "Polish",
         "status": "published",
+        "name": "Polish",
         "direction": "ltr",
         "code": "pl-PL"
     },
     {
-        "name": "Russian",
         "status": "published",
+        "name": "Russian",
         "direction": "ltr",
         "code": "ru-RU"
     },
     {
-        "name": "Turkish",
         "status": "published",
+        "name": "Turkish",
         "direction": "ltr",
         "code": "tr-TR"
     },
     {
-        "name": "Chinese",
         "status": "published",
+        "name": "Chinese",
         "direction": "ltr",
         "code": "zh-CN"
     }

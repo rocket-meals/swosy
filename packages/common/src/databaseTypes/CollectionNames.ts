@@ -65,6 +65,7 @@ export enum CollectionNames {
   DEVICES = 'devices',
   FOODOFFERS = 'foodoffers',
   FOODOFFER_CATEGORIES = 'foodoffers_categories',
+  FRIENDSHIPS = 'friendships',
   WORKFLOWS = 'workflows',
   WORKFLOWS_RUNS = 'workflows_runs',
 }

@@ -80,3 +80,4 @@ reports/data-clumps-doctor/
 tmp/
 appdrawer-screenshot.png
 apps/frontend/app/server.log
+apps/frontend/app/serveDist/

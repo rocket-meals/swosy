@@ -3273,6 +3273,130 @@
     "tr": "React Native QRCode SVG",
     "zh": "React Native QRCode SVG"
   },
+  "friendships": {
+    "de": "Freundschaften",
+    "en": "Friendships"
+  },
+  "friendships_add_friend": {
+    "de": "Freund hinzufügen",
+    "en": "Add Friend"
+  },
+  "friendships_generate_qr": {
+    "de": "Freund QR-Code generieren",
+    "en": "Generate Friend QR Code"
+  },
+  "friendships_scan_qr": {
+    "de": "Freund QR-Code scannen",
+    "en": "Scan Friend QR Code"
+  },
+  "friendships_qr_hint": {
+    "de": "Dieser Code gilt nur für einen Freund und ist individuell.",
+    "en": "This code is valid for one friend only and is unique."
+  },
+  "friendships_profile_id": {
+    "de": "Profil-ID",
+    "en": "Profile ID"
+  },
+  "friendships_scan_enter_id": {
+    "de": "Freundschafts-ID eingeben",
+    "en": "Enter Friendship ID"
+  },
+  "friendships_enter_id_placeholder": {
+    "de": "Freundschafts-ID hier eingeben",
+    "en": "Enter friendship ID here"
+  },
+  "friendships_request_sent": {
+    "de": "Freundschaftsanfrage gesendet!",
+    "en": "Friendship request sent!"
+  },
+  "friendships_request_error": {
+    "de": "Fehler beim Senden der Freundschaftsanfrage.",
+    "en": "Error sending friendship request."
+  },
+  "friendships_allow_camera": {
+    "de": "Kamera erlauben",
+    "en": "Allow Camera"
+  },
+  "friendships_confirming": {
+    "de": "Freundschaftsanfrage wird bestätigt...",
+    "en": "Confirming friendship request..."
+  },
+  "friendships_confirmed": {
+    "de": "Freundschaft bestätigt!",
+    "en": "Friendship confirmed!"
+  },
+  "friendships_scan_again": {
+    "de": "Erneut scannen",
+    "en": "Scan again"
+  },
+  "friendships_scan_error_details": {
+    "de": "Die Anfrage konnte nicht verarbeitet werden.",
+    "en": "The request could not be processed."
+  },
+  "friendships_generating_qr": {
+    "de": "QR-Code wird generiert...",
+    "en": "Generating QR code..."
+  },
+  "friendships_generating_qr_hint": {
+    "de": "Das kann einen kleinen Moment dauern.",
+    "en": "This may take a moment."
+  },
+  "friendships_generate_retry": {
+    "de": "Erneut versuchen",
+    "en": "Try again"
+  },
+  "friendships_pending": {
+    "de": "Ausstehend",
+    "en": "Pending"
+  },
+  "friendships_accepted": {
+    "de": "Freundschaften",
+    "en": "Friendships"
+  },
+  "friendships_add_manual": {
+    "de": "Manuell Freund hinzufügen",
+    "en": "Add friend manually"
+  },
+  "friendships_already_friends": {
+    "de": "Ihr seid bereits befreundet.",
+    "en": "You are already friends."
+  },
+  "friendships_since": {
+    "de": "Freundschaft seit",
+    "en": "Friends since"
+  },
+  "friendships_delete": {
+    "de": "Freundschaft löschen",
+    "en": "Delete friendship"
+  },
+  "friendships_delete_confirm": {
+    "de": "Freundschaft wurde gelöscht.",
+    "en": "Friendship has been deleted."
+  },
+  "friendships_details": {
+    "de": "Freundschaftsdetails",
+    "en": "Friendship details"
+  },
+  "friendships_waiting_for_scan": {
+    "de": "Warte auf Scan...",
+    "en": "Waiting for scan..."
+  },
+  "friendships_qr_manual_hint": {
+    "de": "Alternativ kann dein Freund diese ID innerhalb von 24 Stunden manuell eingeben.",
+    "en": "Alternatively, your friend can enter this ID manually within 24 hours."
+  },
+  "friendships_requester": {
+    "de": "Anfragender",
+    "en": "Requester"
+  },
+  "friendships_receiver": {
+    "de": "Empfänger",
+    "en": "Receiver"
+  },
+  "friendships_friend_profile_id": {
+    "de": "Freundes Profil-ID",
+    "en": "Friend's Profile ID"
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",

@@ -135,6 +135,11 @@
       },
       {
         "type": "hook",
+        "name": "friendships-hook",
+        "source": "src/friendships-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "housing-sync-hook",
         "source": "src/housing-sync-hook/index.ts"
       },
