@@ -12,7 +12,14 @@ type SubmitConfig = {
         } & Record<string, unknown>;
 } & Record<string, unknown>;
 
+type BuildProfileConfig = {
+        env?: Record<string, string>;
+} & Record<string, unknown>;
+
+type BuildConfig = Record<string, BuildProfileConfig>;
+
 type EasConfig = {
+        build?: BuildConfig;
         submit?: SubmitConfig;
 } & Record<string, unknown>;
 
@@ -57,12 +64,6 @@ function updateAscAppId(config: EasConfig, appleAppId?: string) {
                 delete iosSubmitConfig.ascAppId;
         }
 }
-
-type BuildProfileConfig = {
-        env?: Record<string, string>;
-} & Record<string, unknown>;
-
-type BuildConfig = Record<string, BuildProfileConfig>;
 
 function addEnvToAllBuildProfiles(config: EasConfig, customer: string | undefined) {
         const build = config.build as BuildConfig | undefined;
