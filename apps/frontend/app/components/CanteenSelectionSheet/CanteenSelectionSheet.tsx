@@ -1,5 +1,5 @@
-import { Dimensions, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
@@ -26,7 +26,6 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 	const buildingsHelper = new BuildingsHelper();
 	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
 	const { isManagement } = useAppSelector((state) => state.authReducer);
-	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
@@ -94,23 +93,10 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 		getCanteensWithBuildings();
 	}, [isManagement]);
 
-	useEffect(() => {
-		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
-		};
-
-		const subscription = Dimensions.addEventListener('change', handleResize);
-
-		return () => subscription?.remove();
-	}, []);
-
 	return (
 		<BottomSheetScrollView
 			style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
-			contentContainerStyle={{
-				...styles.contentContainer,
-				paddingHorizontal: isWeb ? (screenWidth < 500 ? 5 : 20) : 5,
-			}}
+			contentContainerStyle={styles.contentContainer}
 		>
 			<View
 				style={{

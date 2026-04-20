@@ -33,6 +33,7 @@ import { RootDrawerParamList } from './types';
 import CampusHeader from './components/CampusHeader';
 import CampusListHeader from './components/CampusListHeader';
 import CampusEmptyState from './components/CampusEmptyState';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 // Types
 type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
@@ -97,13 +98,12 @@ const Index: React.FC = () => {
 	// Grid Layout Logic
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
-		if (amountColumnsForcard && amountColumnsForcard > 0) return amountColumnsForcard;
-		// Use listWidth if available, else fallback to windowWidth
-		const width = listWidth || windowWidth;
-		if (!width) return 2;
-		const cols = Math.floor(width / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
+		return CardDimensionHelper.getGridNumColumns(listWidth || windowWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth, windowWidth]);
+
+	const itemGap = useMemo(() => {
+		return CardDimensionHelper.getItemGap(windowWidth);
+	}, [windowWidth]);
 
 	// Data Processing
 	const ensureStableIds = useCallback((arr: DatabaseTypes.Buildings[] = []) => {
@@ -318,7 +318,12 @@ const Index: React.FC = () => {
 		({ item }: { item: BuildingWithDistance }) => {
 			const isLastOpened = Boolean(item.id && buildingsLastOpenedIds.includes(item.id));
 			return (
-				<View style={styles.campusContainerItem}>
+				<View style={{
+					flex: 1,
+					marginHorizontal: itemGap,
+					marginVertical: itemGap,
+					alignItems: 'center',
+				}}>
 					<BuildingItem
 						campus={item}
 						onEditImage={openImageManagementModal}
@@ -346,6 +351,7 @@ const Index: React.FC = () => {
 			windowWidth, 
 			isManagement,
 			buildingsLastOpenedIds,
+			itemGap,
 		]
 	);
 
@@ -407,11 +413,12 @@ const Index: React.FC = () => {
 								windowWidth,
 								isManagement,
 								buildingsLastOpenedIds,
+								itemGap,
 							]}
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
-							contentContainerStyle={{ marginTop: 20 }}
+							contentContainerStyle={{ paddingBottom: 20 }}
 							ListHeaderComponent={headerComponent}
 							ListEmptyComponent={emptyComponent}
 							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

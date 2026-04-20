@@ -26,6 +26,7 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -220,34 +221,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
-		if (amountColumnsForcard && amountColumnsForcard > 0) {
-			return amountColumnsForcard;
-		}
-
-		if (!listWidth) return 2;
-
-		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
+		return CardDimensionHelper.getGridNumColumns(listWidth || 0, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth]);
 
 	const itemGap = useMemo(() => {
-		if (screenWidth >= 1600) return 28;
-		if (screenWidth >= 1300) return 24;
-		if (screenWidth >= 1000) return 20;
-		if (screenWidth >= 700) return 16;
-		if (screenWidth >= 500) return 12;
-		if (screenWidth >= 300) return 10;
-		return 8;
+		return CardDimensionHelper.getItemGap(screenWidth);
 	}, [screenWidth]);
 
 	const cardWidth = useMemo(() => {
 		if (!listWidth || !numColumns) return undefined;
-
-		const horizontalMargin = itemGap;
-		const totalMargin = horizontalMargin * 2 * numColumns;
-
-		const availableWidth = listWidth - totalMargin;
-		return availableWidth / numColumns;
+		return CardDimensionHelper.getGridCardWidth(listWidth, numColumns, itemGap);
 	}, [itemGap, listWidth, numColumns]);
 
 	const ownFoodFeedbacksForSort = useMemo(() => {
