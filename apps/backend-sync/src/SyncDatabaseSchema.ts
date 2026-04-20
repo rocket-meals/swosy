@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 import {DockerContainerManager} from './DockerContainerManager';
 import {findEnvFile} from "./EnvFileFinder";
+import {DirectusTypeDownloaderHelper} from "./DirectusTypeDownloaderHelper";
 
 enum SyncOperation {
   NONE = 'none',
@@ -34,6 +35,7 @@ type ResolvedSyncConfig = {
   adminPassword: string | undefined;
   directusInstanceUrl: string | undefined;
   pathToDataDirectusSync: string | undefined;
+  pathToTargetTypesFile: string | undefined;
   dockerDirectusRestart: boolean;
   syncOperation: SyncOperation;
 };
@@ -43,6 +45,7 @@ async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<Resolved
   let adminPassword = options.adminPassword || process.env.ADMIN_PASSWORD;
   let directusInstanceUrl = options.directusUrl;
   let pathToDataDirectusSync = options.pathToDataDirectusSync;
+  let pathToTargetTypesFile: string | undefined;
   let dockerDirectusRestart = options.dockerDirectusRestart || false;
 
   let syncOperation = SyncOperation.NONE;
@@ -71,11 +74,12 @@ async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<Resolved
       if (!pathToDataDirectusSync) {
         const folderOfEnvFile = path.dirname(envFilePath);
         pathToDataDirectusSync = path.join(folderOfEnvFile, DockerDirectusHelper.getRelativePathToDirectusSyncFromProjectRoot());
+        pathToTargetTypesFile = path.join(folderOfEnvFile, 'packages/common/src/databaseTypes/types.ts');
       }
     }
   }
 
-  return { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, dockerDirectusRestart, syncOperation };
+  return { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, pathToTargetTypesFile, dockerDirectusRestart, syncOperation };
 }
 
 function validateSyncConfig(config: ResolvedSyncConfig): boolean {
@@ -113,7 +117,7 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
     return false;
   }
 
-  const { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, dockerDirectusRestart, syncOperation } = config;
+  const { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, pathToTargetTypesFile, dockerDirectusRestart, syncOperation } = config;
 
   try {
     console.log('🚀 Starte Backend Sync Service...');
@@ -136,6 +140,17 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
         console.log('🔄 Führe initiale Pull-Operation durch...');
         await syncHelper.pull();
         console.log('✅ Initiale Pull-Operation erfolgreich abgeschlossen!');
+        if (pathToTargetTypesFile) {
+          console.log('🔄 Lade TypeScript-Typen herunter...');
+          const typeDownloader = new DirectusTypeDownloaderHelper({
+            directusInstanceUrl: directusInstanceUrl as string,
+            adminEmail: adminEmail as string,
+            adminPassword: adminPassword as string,
+            targetTypesFilePath: pathToTargetTypesFile,
+          });
+          await typeDownloader.downloadTypes();
+          console.log('✅ TypeScript-Typen erfolgreich heruntergeladen!');
+        }
         break;
       case SyncOperation.NONE:
         break;
