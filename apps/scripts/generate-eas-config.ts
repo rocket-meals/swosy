@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { getCustomerConfig } from '../frontend/app/config';
+import { getCustomerConfig, getCustomerEnvVariable } from '../frontend/app/config';
 
 const TEMPLATE_FILE = path.resolve(__dirname, '../frontend/app/eas.template.json');
 const TARGET_FILE = path.resolve(__dirname, '../frontend/app/eas.json');
@@ -12,7 +12,14 @@ type SubmitConfig = {
         } & Record<string, unknown>;
 } & Record<string, unknown>;
 
+type BuildProfileConfig = {
+        env?: Record<string, string>;
+} & Record<string, unknown>;
+
+type BuildConfig = Record<string, BuildProfileConfig>;
+
 type EasConfig = {
+        build?: BuildConfig;
         submit?: SubmitConfig;
 } & Record<string, unknown>;
 
@@ -58,6 +65,29 @@ function updateAscAppId(config: EasConfig, appleAppId?: string) {
         }
 }
 
+function injectCustomerEnvVars(config: EasConfig) {
+        const customer = getCustomerEnvVariable();
+        if (!customer) {
+                return;
+        }
+
+        const build = config.build;
+        if (!build || typeof build !== 'object') {
+                return;
+        }
+
+        for (const profile of Object.values(build)) {
+                if (!profile || typeof profile !== 'object') {
+                        continue;
+                }
+                if (!profile.env) {
+                        profile.env = {};
+                }
+                profile.env.CUSTOMER = customer;
+                profile.env.EXPO_PUBLIC_CUSTOMER = customer;
+        }
+}
+
 function persistConfig(config: EasConfig) {
         const serialized = JSON.stringify(config, null, 2);
         fs.writeFileSync(TARGET_FILE, `${serialized}\n`, 'utf8');
@@ -68,6 +98,7 @@ function main() {
         const { appleAppId } = getCustomerConfig();
 
         updateAscAppId(template, appleAppId);
+        injectCustomerEnvVars(template);
         persistConfig(template);
         console.log(`EAS config generated at ${TARGET_FILE}`);
 }

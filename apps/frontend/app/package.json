@@ -17,7 +17,8 @@
     "deploy:gh:pages": "yarn run predeploy && yarn run deploy",
     "deploy:local": "yarn run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export --platform web",
-    "export:web:dev": "expo export --platform web"
+    "export:web:dev": "expo export --platform web",
+    "postinstall": "node scripts/generate-icons.js"
   },
   "jest": {
     "preset": "jest-expo"
