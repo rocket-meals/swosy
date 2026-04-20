@@ -555,7 +555,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		}
 	};
 
-	const renderFriendshipGroup = (items: DatabaseTypes.Friendships[]) => {
+	const renderFriendshipGroup = (items: DatabaseTypes.Friendships[], showStatus?: boolean) => {
 		return items.map((friendship, index) => {
 			const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
 			const otherProfileField = isRequester ? friendship.receiver_profiles_id : friendship.requester_profiles_id;
@@ -572,7 +572,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					iconBgColor={statusColor}
 					leftIcon={<MaterialCommunityIcons name="account-group" size={24} color="white" />}
 					label={displayLabel}
-					value={friendship.friendship_status ?? 'unknown'}
+					value={showStatus ? (friendship.friendship_status ?? 'unknown') : undefined}
 					groupPosition={groupPosition}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={() => openFriendshipDetail(friendship)}
@@ -637,7 +637,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				{pendingFriendships.length > 0 && (
 					<>
 						<SettingsGroupTitle>{translate(TranslationKeys.friendships_pending)} ({pendingFriendships.length})</SettingsGroupTitle>
-						{renderFriendshipGroup(pendingFriendships)}
+						{renderFriendshipGroup(pendingFriendships, true)}
 					</>
 				)}
 
