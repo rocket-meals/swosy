@@ -37,6 +37,15 @@ const GENERATED_DIR = path.resolve(APP_ROOT, 'assets', 'generated');
 // Ensure the generated directory exists
 fs.mkdirSync(GENERATED_DIR, { recursive: true });
 
+if (!config.images || !config.images.icon_logo_source_path) {
+	console.error('ERROR: Customer config is missing images.icon_logo_source_path');
+	process.exit(1);
+}
+if (!config.images.company_logo_source_path) {
+	console.error('ERROR: Customer config is missing images.company_logo_source_path');
+	process.exit(1);
+}
+
 const iconSource = path.resolve(APP_ROOT, config.images.icon_logo_source_path);
 const companySource = path.resolve(APP_ROOT, config.images.company_logo_source_path);
 
