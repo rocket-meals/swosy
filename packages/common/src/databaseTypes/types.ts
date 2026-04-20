@@ -574,7 +574,9 @@ export type CollectionsDatesLastUpdate = {
 
 export type Devices = {
   alias?: string | null;
+  app_version?: string | null;
   brand?: string | null;
+  custom_data?: unknown | null;
   date_created?: string | null;
   date_updated?: string | null;
   display_fontscale?: number | null;
@@ -1691,6 +1693,7 @@ export type PopupEvents = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   send_notification?: boolean | null;
+  show_app_rating_button?: boolean | null;
   show_on_android?: boolean | null;
   show_on_ios?: boolean | null;
   show_on_web?: boolean | null;
@@ -1732,6 +1735,8 @@ export type Profiles = {
   date_updated?: string | null;
   devices: any[] | Devices[];
   foods_feedbacks: any[] | FoodsFeedbacks[];
+  friendships_received: any[] | Friendships[];
+  friendships_requested: any[] | Friendships[];
   id: string;
   language?: string | Languages | null;
   markings: any[] | ProfilesMarkings[];

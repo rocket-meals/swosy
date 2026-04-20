@@ -5,8 +5,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": "$t:admin_policy_description",
-    "name": "Administrator",
     "icon": "verified",
+    "name": "Administrator",
     "roles": [
       {
         "role": "_sync_default_admin_role",
@@ -21,8 +21,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "AppAccess",
     "icon": "badge",
+    "name": "AppAccess",
     "roles": [
       {
         "role": null,
@@ -37,8 +37,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "Apartmentmanagement",
     "icon": "badge",
+    "name": "Apartmentmanagement",
     "roles": [
       {
         "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
@@ -53,24 +53,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "User Friendship Requester",
-    "icon": "badge",
-    "roles": [
-      {
-        "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-        "sort": 3
-      }
-    ],
-    "_syncId": "a962ee7e-b5ea-43c6-8a6a-4a163bfc9d14"
-  },
-  {
-    "app_access": false,
-    "admin_access": false,
-    "enforce_tfa": false,
-    "ip_access": null,
-    "description": null,
-    "name": "User",
     "icon": "supervised_user_circle",
+    "name": "User",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -89,15 +73,15 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "User Friendship Receiver",
     "icon": "badge",
+    "name": "Friendship Read Profile",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-        "sort": 4
+        "sort": 3
       }
     ],
-    "_syncId": "c9bd4d38-19bf-43e5-869b-8cfc42ef73c1"
+    "_syncId": "bd945cd0-436d-4278-a1f3-33c69554c381"
   },
   {
     "app_access": true,
@@ -105,8 +89,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "Gebäudemanagement",
     "icon": "badge",
+    "name": "Gebäudemanagement",
     "roles": [
       {
         "role": "9aaa0300-e0ee-4874-b32f-2d165607867d",
@@ -125,8 +109,8 @@
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
-    "name": "Anonymous",
     "icon": "badge",
+    "name": "Anonymous",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",

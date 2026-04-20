@@ -9,16 +9,21 @@
     "collection": "friendships",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "profiles",
     "hidden": false,
-    "icon": null,
+    "icon": "connect_without_contact",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": null,
+    "sort": 5,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Freundschaften"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },
