@@ -39,27 +39,27 @@ const iconSource = path.join(CUSTOMERS_DIR, customerDir, 'icon.png');
 const companySource = path.join(CUSTOMERS_DIR, customerDir, 'company.png');
 
 if (!fs.existsSync(iconSource)) {
-	console.warn('[generate-icons] Icon source not found: ' + iconSource + '. Skipping.');
+	console.warn(`[generate-icons] Icon source not found: ${iconSource}. Skipping.`);
 	process.exit(0);
 }
 
 if (!fs.existsSync(companySource)) {
-	console.warn('[generate-icons] Company logo not found: ' + companySource + '. Skipping.');
+	console.warn(`[generate-icons] Company logo not found: ${companySource}. Skipping.`);
 	process.exit(0);
 }
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 // Icon-based assets
-var iconTargets = ['icon.png', 'notification-icon.png', 'adaptive-icon.png', 'favicon.png'];
-for (var i = 0; i < iconTargets.length; i++) {
-	fs.copyFileSync(iconSource, path.join(OUTPUT_DIR, iconTargets[i]));
+const iconTargets = ['icon.png', 'notification-icon.png', 'adaptive-icon.png', 'favicon.png'];
+for (const target of iconTargets) {
+	fs.copyFileSync(iconSource, path.join(OUTPUT_DIR, target));
 }
 
 // Company-logo-based assets
-var companyTargets = ['splash.png', 'splash-icon.png', 'company.png'];
-for (var j = 0; j < companyTargets.length; j++) {
-	fs.copyFileSync(companySource, path.join(OUTPUT_DIR, companyTargets[j]));
+const companyTargets = ['splash.png', 'splash-icon.png', 'company.png'];
+for (const target of companyTargets) {
+	fs.copyFileSync(companySource, path.join(OUTPUT_DIR, target));
 }
 
-console.log('[generate-icons] Generated icons for customer "' + customer + '" (' + customerDir + ') in ' + OUTPUT_DIR);
+console.log(`[generate-icons] Generated icons for customer "${customer}" (${customerDir}) in ${OUTPUT_DIR}`);
