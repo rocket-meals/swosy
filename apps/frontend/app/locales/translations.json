@@ -3393,6 +3393,10 @@
     "de": "Empfänger",
     "en": "Receiver"
   },
+  "friendships_friend_profile_id": {
+    "de": "Freundes Profil-ID",
+    "en": "Friend's Profile ID"
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",

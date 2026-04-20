@@ -358,6 +358,7 @@ export enum TranslationKeys {
         friendships_qr_manual_hint = 'friendships_qr_manual_hint',
         friendships_requester = 'friendships_requester',
         friendships_receiver = 'friendships_receiver',
+        friendships_friend_profile_id = 'friendships_friend_profile_id',
 	test_use_modal = 'test_use_modal',
 	markdown_test = 'markdown_test',
 	markdown_test_description = 'markdown_test_description',

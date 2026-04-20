@@ -349,11 +349,6 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 	);
 };
 
-/* ──────────────── Friendship Detail Expanded Loader ─────────────────────── */
-type FriendshipExpandedLoaderProps = {
-	friendship: DatabaseTypes.Friendships;
-};
-
 const safeJsonStringify = (obj: any): string => {
 	if (obj === null || obj === undefined) return 'null';
 	try {
@@ -361,86 +356,6 @@ const safeJsonStringify = (obj: any): string => {
 	} catch {
 		return String(obj);
 	}
-};
-
-const FriendshipExpandedLoader: React.FC<FriendshipExpandedLoaderProps> = ({ friendship }) => {
-	const { theme } = useTheme();
-	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
-	const [expandedFriendship, setExpandedFriendship] = useState<any>(null);
-	const [error, setError] = useState<string>('');
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		let cancelled = false;
-		(async () => {
-			try {
-				const result = await friendshipsHelper.readFriendshipExpanded(friendship.id);
-				if (!cancelled) {
-					if (result) {
-						setExpandedFriendship(result);
-					} else {
-						setError('Friendship nicht gefunden (null)');
-					}
-				}
-			} catch (err: any) {
-				if (!cancelled) {
-					setError(err?.message ?? err?.toString?.() ?? JSON.stringify(err));
-				}
-			} finally {
-				if (!cancelled) setLoading(false);
-			}
-		})();
-		return () => { cancelled = true; };
-	}, [friendship.id, friendshipsHelper]);
-
-	const rawJson = useMemo(() => safeJsonStringify(friendship), [friendship]);
-	const expandedJson = useMemo(() => safeJsonStringify(expandedFriendship), [expandedFriendship]);
-	const requesterJson = useMemo(() => safeJsonStringify(expandedFriendship?.requester_profiles_id), [expandedFriendship]);
-	const receiverJson = useMemo(() => safeJsonStringify(expandedFriendship?.receiver_profiles_id), [expandedFriendship]);
-
-	if (loading) {
-		return (
-			<View style={{ alignItems: 'center', padding: 16 }}>
-				<ActivityIndicator size="small" color={theme.screen.icon} />
-				<Text style={{ color: theme.screen.text, marginTop: 8 }}>Lade erweiterte Daten...</Text>
-			</View>
-		);
-	}
-
-	if (error) {
-		return (
-			<DebugView
-				title="Fehler"
-				logs={[error]}
-				isVisible={true}
-			/>
-		);
-	}
-
-	return (
-		<View style={{ gap: 8 }}>
-			<DebugView
-				title="Friendship (lokal)"
-				logs={[rawJson]}
-				isVisible={true}
-			/>
-			<DebugView
-				title="Friendship (Server, fields: *, requester.*, receiver.*)"
-				logs={[expandedJson]}
-				isVisible={true}
-			/>
-			<DebugView
-				title="requester_profiles_id.*"
-				logs={[requesterJson]}
-				isVisible={true}
-			/>
-			<DebugView
-				title="receiver_profiles_id.*"
-				logs={[receiverJson]}
-				isVisible={true}
-			/>
-		</View>
-	);
 };
 
 /* ──────────────────── Reusable FriendsContent Component ───────────────── */
@@ -466,6 +381,11 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		if (!field) return '-';
 		if (typeof field === 'string') return field;
 		return (field as any)?.id ?? '-';
+	}, []);
+
+	const getProfileNicknameFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string | null => {
+		if (!field || typeof field === 'string') return null;
+		return (field as DatabaseTypes.Profiles)?.nickname ?? null;
 	}, []);
 
 	const pendingFriendships = useMemo(
@@ -590,18 +510,20 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			title: translate(TranslationKeys.friendships_details),
 			children: (
 				<View style={{ padding: 16, gap: 16 }}>
-					<SettingsList
-						label={translate(TranslationKeys.friendships_profile_id)}
-						value={otherProfileId}
-						groupPosition="single"
-						leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-					/>
-					<SettingsList
-						label={translate(TranslationKeys.friendships_since)}
-						value={formatDate(friendship.date_created)}
-						groupPosition="single"
-						leftIcon={<MaterialCommunityIcons name="calendar" size={24} color={theme.screen.icon} />}
-					/>
+					<View>
+						<SettingsList
+							label={translate(TranslationKeys.friendships_friend_profile_id)}
+							value={otherProfileId}
+							groupPosition="top"
+							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+						/>
+						<SettingsList
+							label={translate(TranslationKeys.friendships_since)}
+							value={formatDate(friendship.date_created)}
+							groupPosition="bottom"
+							leftIcon={<MaterialCommunityIcons name="calendar" size={24} color={theme.screen.icon} />}
+						/>
+					</View>
 					<View>
 						<SettingsGroupTitle>{translate(TranslationKeys.friendships_delete)}</SettingsGroupTitle>
 						<SettingsList
@@ -613,7 +535,11 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 							groupPosition="single"
 						/>
 					</View>
-					<FriendshipExpandedLoader friendship={friendship} />
+					<DebugView
+						title="Friendship (lokal)"
+						logs={[safeJsonStringify(friendship)]}
+						isVisible={true}
+					/>
 				</View>
 			),
 		});
@@ -632,9 +558,10 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const renderFriendshipGroup = (items: DatabaseTypes.Friendships[]) => {
 		return items.map((friendship, index) => {
 			const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
-			const otherProfileId = isRequester
-				? getProfileIdFromField(friendship.receiver_profiles_id)
-				: getProfileIdFromField(friendship.requester_profiles_id);
+			const otherProfileField = isRequester ? friendship.receiver_profiles_id : friendship.requester_profiles_id;
+			const otherNickname = getProfileNicknameFromField(otherProfileField);
+			const otherProfileId = getProfileIdFromField(otherProfileField);
+			const displayLabel = otherNickname || otherProfileId;
 			const statusColor = friendshipStatusColor(friendship.friendship_status);
 			const totalItems = items.length;
 			const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
@@ -644,7 +571,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					key={friendship.id}
 					iconBgColor={statusColor}
 					leftIcon={<MaterialCommunityIcons name="account-group" size={24} color="white" />}
-					label={otherProfileId}
+					label={displayLabel}
 					value={friendship.friendship_status ?? 'unknown'}
 					groupPosition={groupPosition}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}

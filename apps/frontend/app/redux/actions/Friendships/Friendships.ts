@@ -8,7 +8,7 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 
 	async fetchFriendshipsByProfileId(profileId: string, queryOverride: any = {}) {
 		const defaultQuery = {
-			fields: ['*'],
+			fields: ['*', 'requester_profiles_id.*', 'receiver_profiles_id.*'],
 			filter: {
 				_or: [
 					{
