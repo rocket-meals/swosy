@@ -405,20 +405,12 @@ const ProfileLoaderItem: React.FC<ProfileLoaderProps> = ({ profileId, label }) =
 	}
 
 	return (
-		<>
-			<SettingsList
-				label={`${label} ID`}
-				value={profileId}
-				groupPosition="top"
-				leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
-			/>
-			<SettingsList
-				label={`${label} Nickname`}
-				value={loadedProfile?.nickname ?? '-'}
-				groupPosition="bottom"
-				leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-			/>
-		</>
+		<SettingsList
+			label={label}
+			value={JSON.stringify(loadedProfile, null, 2)}
+			groupPosition="single"
+			leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+		/>
 	);
 };
 
