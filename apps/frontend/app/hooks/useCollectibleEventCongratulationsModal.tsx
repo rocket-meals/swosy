@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Text, View } from 'react-native';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -16,13 +16,11 @@ const useCollectibleEventCongratulationsModal = () => {
 	const { theme } = useTheme();
 	const { wasAskedForRating, requestNativeReview } = useNativeQuickRateApp();
 
-	const wasAskedAtOpenRef = useRef(false);
-
 	const openCongratulationsModal = useCallback(() => {
-		wasAskedAtOpenRef.current = wasAskedForRating;
+		const wasAskedSnapshot = wasAskedForRating;
 
 		const handleClose = () => {
-			if (!wasAskedAtOpenRef.current) {
+			if (!wasAskedSnapshot) {
 				requestNativeReview();
 			}
 		};
