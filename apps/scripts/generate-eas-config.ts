@@ -65,26 +65,17 @@ function updateAscAppId(config: EasConfig, appleAppId?: string) {
         }
 }
 
-function injectCustomerEnvVars(config: EasConfig) {
-        const customer = getCustomerEnvVariable();
-        if (!customer) {
-                return;
-        }
+function addEnvToAllBuildProfiles(config: EasConfig, customer: string | undefined) {
+        const build = config.build as BuildConfig | undefined;
+        if (!build || !customer) return;
 
-        const build = config.build;
-        if (!build || typeof build !== 'object') {
-                return;
-        }
-
-        for (const profile of Object.values(build)) {
-                if (!profile || typeof profile !== 'object') {
-                        continue;
-                }
-                if (!profile.env) {
-                        profile.env = {};
-                }
-                profile.env.CUSTOMER = customer;
-                profile.env.EXPO_PUBLIC_CUSTOMER = customer;
+        for (const profileName of Object.keys(build)) {
+                const profile = build[profileName];
+                profile.env = {
+                        ...(profile.env || {}),
+                        CUSTOMER: customer,
+                        EXPO_PUBLIC_CUSTOMER: customer,
+                };
         }
 }
 
@@ -96,11 +87,12 @@ function persistConfig(config: EasConfig) {
 function main() {
         const template = loadTemplate();
         const { appleAppId } = getCustomerConfig();
+        const customer = getCustomerEnvVariable();
 
         updateAscAppId(template, appleAppId);
-        injectCustomerEnvVars(template);
+        addEnvToAllBuildProfiles(template, customer);
         persistConfig(template);
-        console.log(`EAS config generated at ${TARGET_FILE}`);
+        console.log(`EAS config generated at ${TARGET_FILE} (customer: ${customer || 'default'})`);
 }
 
 void main();
