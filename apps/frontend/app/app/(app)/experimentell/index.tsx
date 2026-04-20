@@ -152,6 +152,12 @@ const Index = () => {
 			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/eating-habits-performance'),
 		},
+		{
+			key: 'friendships',
+			label: translate(TranslationKeys.friendships),
+			leftIcon: <MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/friendships'),
+		},
 	];
 
 	return (

@@ -3273,6 +3273,46 @@
     "tr": "React Native QRCode SVG",
     "zh": "React Native QRCode SVG"
   },
+  "friendships": {
+    "de": "Freundschaften",
+    "en": "Friendships"
+  },
+  "friendships_add_friend": {
+    "de": "Freund hinzufügen",
+    "en": "Add Friend"
+  },
+  "friendships_generate_qr": {
+    "de": "Freund QR-Code generieren",
+    "en": "Generate Friend QR Code"
+  },
+  "friendships_scan_qr": {
+    "de": "Freund QR-Code scannen",
+    "en": "Scan Friend QR Code"
+  },
+  "friendships_qr_hint": {
+    "de": "Dieser Code gilt nur für einen Freund und ist individuell.",
+    "en": "This code is valid for one friend only and is unique."
+  },
+  "friendships_profile_id": {
+    "de": "Profil-ID",
+    "en": "Profile ID"
+  },
+  "friendships_scan_enter_id": {
+    "de": "Freundschafts-ID eingeben",
+    "en": "Enter Friendship ID"
+  },
+  "friendships_enter_id_placeholder": {
+    "de": "Freundschafts-ID hier eingeben",
+    "en": "Enter friendship ID here"
+  },
+  "friendships_request_sent": {
+    "de": "Freundschaftsanfrage gesendet!",
+    "en": "Friendship request sent!"
+  },
+  "friendships_request_error": {
+    "de": "Fehler beim Senden der Freundschaftsanfrage.",
+    "en": "Error sending friendship request."
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",

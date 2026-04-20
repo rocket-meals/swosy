@@ -190,3 +190,7 @@ export type ChatsState = {
         chats: DatabaseTypes.Chats[];
         readStatus: Record<string, string>;
 }
+
+export type FriendshipsState = {
+        friendships: DatabaseTypes.Friendships[];
+}
