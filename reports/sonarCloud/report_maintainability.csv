@@ -5,8 +5,8 @@ Key,Message,Component,Line
 "AZ2dsUdPLVHN2p9NjR1Q","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",161
 "AZ2dsUdPLVHN2p9NjR1R","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",162
 "AZ2dsUdPLVHN2p9NjR1S","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",417
-"AZ2dkkUv3GBU49WbMwdE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",121
-"AZ2dkkUv3GBU49WbMwdF","This assertion is unnecessary since the receiver accepts the original type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",191
+"AZ2dkkUv3GBU49WbMwdE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",101
+"AZ2dkkUv3GBU49WbMwdF","This assertion is unnecessary since the receiver accepts the original type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",171
 "AZ2dklAC3GBU49WbMwdG","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",58
 "AZ2dklAC3GBU49WbMwdH","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",58
 "AZ2dklAC3GBU49WbMwdI","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",297
@@ -9028,10 +9028,10 @@ Key,Message,Component,Line
 "AZ0TplKaufp2jxPAhS1q","Remove this useless assignment to variable ""primaryColor"".","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownInput.tsx",36
 "AZ0TplBCufp2jxPAhSzm","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",106
 "AZ0TpknDufp2jxPAhSuO","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",317
-"AZ0Tpk4yufp2jxPAhSyT","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",169
-"AZ0Tpk4yufp2jxPAhSyU","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",174
-"AZ0Tpk4yufp2jxPAhSyV","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",182
-"AZ0Tpk4yufp2jxPAhSyW","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",195
+"AZ0Tpk4yufp2jxPAhSyT","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",187
+"AZ0Tpk4yufp2jxPAhSyU","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",192
+"AZ0Tpk4yufp2jxPAhSyV","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",200
+"AZ0Tpk4yufp2jxPAhSyW","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",213
 "AZ0Tpk2Eufp2jxPAhSwu","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",365
 "AZ0Tpk2Eufp2jxPAhSw0","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",635
 "AZ0Tpk2Eufp2jxPAhSw5","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",790
@@ -9126,10 +9126,10 @@ Key,Message,Component,Line
 "AZ0Tplc2ufp2jxPAhS5A","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",114
 "AZ0Tplc2ufp2jxPAhS5B","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",116
 "AZ0Tpk_Oufp2jxPAhSzY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingBottomSheet/MarkingBottomSheet.tsx",57
-"AZ0TpkyPufp2jxPAhSwI","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",75
+"AZ0TpkyPufp2jxPAhSwI","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",79
 "AZ0Tpk3aufp2jxPAhSxZ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",728
-"AZ0TpkyPufp2jxPAhSwH","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",14
-"AZ0TpkyPufp2jxPAhSwJ","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",109
+"AZ0TpkyPufp2jxPAhSwH","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",15
+"AZ0TpkyPufp2jxPAhSwJ","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",113
 "AZ0TplDiufp2jxPAhS0E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",397
 "AZ0TplDiufp2jxPAhS0F","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",397
 "AZ0TplcUufp2jxPAhS47","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/hooks/usePopupEventModal.tsx",16
