@@ -86,7 +86,8 @@ const FriendshipsScreen = () => {
 				try {
 					const updated = await friendshipsHelper.updateFriendshipRequester(friendshipId.trim(), profile.id);
 					if (updated) {
-						dispatch({ type: ADD_FRIENDSHIP, payload: updated });
+						const exists = friendships.some((f) => f.id === updated.id);
+						dispatch({ type: exists ? UPDATE_FRIENDSHIP : ADD_FRIENDSHIP, payload: updated });
 						showToast(translate(TranslationKeys.friendships_request_sent));
 					}
 				} catch (error) {
@@ -99,7 +100,13 @@ const FriendshipsScreen = () => {
 				value: value.trim(),
 			}),
 		});
-	}, [profile?.id, friendshipsHelper, dispatch, openTextInputModal, translate, showToast]);
+	}, [profile?.id, friendshipsHelper, friendships, dispatch, openTextInputModal, translate, showToast]);
+
+	const getProfileIdFromField = (field: string | DatabaseTypes.Profiles | null | undefined): string => {
+		if (!field) return '-';
+		if (typeof field === 'string') return field;
+		return (field as any)?.id ?? '-';
+	};
 
 	const friendshipStatusColor = (status: string | null | undefined) => {
 		switch (status) {
@@ -161,10 +168,10 @@ const FriendshipsScreen = () => {
 					<>
 						<SettingsGroupTitle>{translate(TranslationKeys.friendships)} ({friendships.length})</SettingsGroupTitle>
 						{friendships.map((friendship, index) => {
-							const isReceiver = friendship.receiver_profiles_id === profile?.id;
+							const isReceiver = getProfileIdFromField(friendship.receiver_profiles_id) === profile?.id;
 							const otherProfileId = isReceiver
-								? (typeof friendship.requester_profiles_id === 'string' ? friendship.requester_profiles_id : (friendship.requester_profiles_id as any)?.id ?? '-')
-								: (typeof friendship.receiver_profiles_id === 'string' ? friendship.receiver_profiles_id : (friendship.receiver_profiles_id as any)?.id ?? '-');
+								? getProfileIdFromField(friendship.requester_profiles_id)
+								: getProfileIdFromField(friendship.receiver_profiles_id);
 							const statusColor = friendshipStatusColor(friendship.friendship_status);
 							const totalItems = friendships.length;
 							const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';

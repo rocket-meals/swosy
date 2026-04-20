@@ -184,7 +184,7 @@ export default function Layout() {
 
 	const fetchFriendships = async (profileId: string) => {
 		try {
-			const result = (await friendshipsHelper.fetchFriendshipsByProfileId(profileId)) as DatabaseTypes.Friendships[];
+			const result = await friendshipsHelper.fetchFriendshipsByProfileId(profileId);
 			if (result) {
 				dispatch({ type: SET_FRIENDSHIPS, payload: result });
 			}
