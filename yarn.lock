@@ -15445,9 +15445,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-camera@npm:~16.0.18":
-  version: 16.0.18
-  resolution: "expo-camera@npm:16.0.18"
+"expo-camera@npm:~17.0.8":
+  version: 17.0.10
+  resolution: "expo-camera@npm:17.0.10"
   dependencies:
     invariant: "npm:^2.2.4"
   peerDependencies:
@@ -15458,7 +15458,7 @@ __metadata:
   peerDependenciesMeta:
     react-native-web:
       optional: true
-  checksum: 10c0/19d6f27af22d6e148b0bd7dc1dc37778b155ce0454515045a07e7dcc2b0474aa3d0d0986684fcbfe16837cffa41b33128d23376454d975b09b592c3dd92fe803
+  checksum: 10c0/7b43443f5a158845e7a5333f0bd5ddbf05315df9e5fc1ded1bed620d0b82a373147cf0f1b9a73d53a517b9ecf7e5588c15032c503c0eb57484aab8aa70e96127
   languageName: node
   linkType: hard
 
@@ -26583,7 +26583,7 @@ __metadata:
     expo: "npm:54.0.20"
     expo-blur: "npm:~15.0.7"
     expo-build-properties: "npm:~1.0.9"
-    expo-camera: "npm:~16.0.18"
+    expo-camera: "npm:~17.0.8"
     expo-checkbox: "npm:~5.0.7"
     expo-clipboard: "npm:~8.0.7"
     expo-constants: "npm:~18.0.10"
