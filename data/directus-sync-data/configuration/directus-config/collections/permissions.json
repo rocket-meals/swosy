@@ -526,6 +526,60 @@
   {
     "presets": null,
     "fields": [
+      "requester_profiles_id",
+      "friendship_status",
+      "date_updated",
+      "user_updated"
+    ],
+    "presets": null,
+    "validation": {
+      "_and": [
+        {
+          "_and": [
+            {
+              "friendship_status": {
+                "_eq": "accepted"
+              }
+            },
+            {
+              "requester_profiles_id": {
+                "_eq": "$CURRENT_USER.profile"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "permissions": {
+      "_and": [
+        {
+          "_and": [
+            {
+              "requester_profiles_id": {
+                "_null": true
+              }
+            },
+            {
+              "receiver_profiles_id": {
+                "_nnull": true
+              }
+            },
+            {
+              "friendship_status": {
+                "_eq": "pending"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "action": "update",
+    "collection": "friendships",
+    "policy": "a962ee7e-b5ea-43c6-8a6a-4a163bfc9d14",
+    "_syncId": "8a6b3f12-5700-4158-9436-d4b22ee5a343"
+  },
+  {
+    "fields": [
       "positive",
       "content",
       "title",
