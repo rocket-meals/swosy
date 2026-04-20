@@ -495,8 +495,8 @@ const CollectibleEventScreen = () => {
                         type: SET_COLLECTIBLE_EVENT_DICT_BULK,
                         payload: { eventId: activeCollectibleEvent.id, data: allFoundData },
                 });
-                toast(translate(TranslationKeys.reset), 'success');
-        }, [activeCollectibleEvent?.id, activeCollectibleKeys, dispatch, toast, translate]);
+                appendDebugLog('Simulated all collectibles as found');
+        }, [activeCollectibleEvent?.id, activeCollectibleKeys, appendDebugLog, dispatch]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
