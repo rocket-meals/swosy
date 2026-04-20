@@ -96,6 +96,23 @@ const CollectibleEventsScreen = () => {
         return (
                 <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
                         <ScrollView contentContainerStyle={styles.container}>
+                                {debugMode ? (
+                                        <SettingsList
+                                                key="debug-collectible-event"
+                                                iconBgColor={primaryColor}
+                                                leftIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="bug-outline"
+                                                                size={24}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                label="Debug Collectible Event"
+                                                groupPosition="single"
+                                                handleFunction={() => router.navigate('/collectible-event')}
+                                                rightIcon={<Octicons name="chevron-right" size={20} color={theme.screen.icon} />}
+                                        />
+                                ) : null}
                                 {hasEvents ? (
                                         eventsWithProgress.map(({ event, collectedCount, totalCollectibles, dateRange }, index) => (
                                                 <SettingsList
