@@ -3333,6 +3333,34 @@
     "de": "Die Anfrage konnte nicht verarbeitet werden.",
     "en": "The request could not be processed."
   },
+  "friendships_generating_qr": {
+    "de": "QR-Code wird generiert...",
+    "en": "Generating QR code..."
+  },
+  "friendships_generating_qr_hint": {
+    "de": "Das kann einen kleinen Moment dauern.",
+    "en": "This may take a moment."
+  },
+  "friendships_generate_retry": {
+    "de": "Erneut versuchen",
+    "en": "Try again"
+  },
+  "friendships_pending": {
+    "de": "Ausstehend",
+    "en": "Pending"
+  },
+  "friendships_accepted": {
+    "de": "Freundschaften",
+    "en": "Friendships"
+  },
+  "friendships_add_manual": {
+    "de": "Manuell Freund hinzufügen",
+    "en": "Add friend manually"
+  },
+  "friendships_already_friends": {
+    "de": "Ihr seid bereits befreundet.",
+    "en": "You are already friends."
+  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",

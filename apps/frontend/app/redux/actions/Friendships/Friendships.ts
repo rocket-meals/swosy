@@ -31,6 +31,10 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 		return await this.readItems(query);
 	}
 
+	async readFriendship(friendshipId: string) {
+		return await this.readItem(friendshipId);
+	}
+
 	async createFriendshipForQR(requesterProfileId: string) {
 		return await this.createItem({
 			requester_profiles_id: requesterProfileId,
