@@ -42,8 +42,8 @@ const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ groupPositi
                 [currentNickname, trimmedValue]
         );
 
-        const handleSave = useCallback(async () => {
-                const nextNickname = trimmedValue;
+        const handleSave = useCallback(async (savedValue: string) => {
+                const nextNickname = savedValue?.trim?.() ?? trimmedValue;
                 if (isRegisteredUser) {
                         const result = (await profileHelper.updateProfile({
                                 ...profile,
