@@ -58,6 +58,19 @@ export class DirectusTypeDownloaderHelper {
       console.log('⏳ Warte auf Download-Button...');
       await page.waitForSelector(DOWNLOAD_BUTTON_SELECTOR, { state: 'visible', timeout: 30000 });
 
+      // The button is visible immediately but disabled while types are being generated.
+      // Wait until it becomes enabled before clicking.
+      console.log('⏳ Warte bis Download-Button aktiviert ist...');
+      await page.waitForFunction(
+        () => {
+          const el = Array.from(document.querySelectorAll('button, a')).find(
+            b => b.textContent?.trim().toLowerCase().includes('download')
+          ) as HTMLButtonElement | HTMLAnchorElement | undefined;
+          return el !== undefined && !(el as HTMLButtonElement).disabled && !el.hasAttribute('disabled');
+        },
+        { timeout: 60000 }
+      );
+
       // Click Download button and capture the download
       console.log('📥 Klicke Download-Button...');
       const [download] = await Promise.all([
