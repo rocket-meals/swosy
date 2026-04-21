@@ -8,6 +8,9 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
   static MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU = "custom_niedersachsen_menu";
   static FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU = "Niedersachsenmenü"
 
+  static SPEISE_BEZEICHNUNG_HAUPTGERICHT = 'Hauptgericht';
+  static SPEISE_BEZEICHNUNG_EINTOPF_TERRINE = 'Eintopf Terrine';
+
   constructor(rawFoodofferReader: FoodTL1ParserGetRawReportInterface) {
     super(rawFoodofferReader);
   }
@@ -24,7 +27,8 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
 
   private isMainCourse(rawFoodoffer: RawFoodofferInformationType): boolean {
     let courseType = this.getFoodCategoryFromRawFoodoffer(rawFoodoffer);
-    return courseType === 'Hauptgericht';
+    return courseType === FoodTL1ParserOsnabrueck.SPEISE_BEZEICHNUNG_HAUPTGERICHT
+      || courseType === FoodTL1ParserOsnabrueck.SPEISE_BEZEICHNUNG_EINTOPF_TERRINE;
   }
 
   override getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType) {
