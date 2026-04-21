@@ -33,6 +33,8 @@ import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/Cantee
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
+import { SettingsListGroupTitle } from 'repo-depkit-common-ui';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { FriendsContent } from '@/app/(app)/experimentell/friendships';
 
@@ -50,6 +52,158 @@ const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 const canteenVisitsHelper = new CanteenVisitsHelper();
+
+interface CanteenVisitDetailsModalContentProps {
+	canteenId: string;
+	date: string;
+	counts: { total: number; friends: number };
+	primaryColor: string;
+	foods_area_color: string;
+	isRegistered: boolean;
+	friendProfileIds: string[];
+	profileId: string | undefined;
+	translate: (key: TranslationKeys) => string;
+	theme: any;
+	closeModal: () => void;
+	showFriendsModal: () => void;
+	showLoginModal: () => void;
+	onOwnVisitChanged?: (date: string, visit: DatabaseTypes.CanteenVisits | null) => void;
+}
+
+const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentProps> = ({
+	canteenId,
+	date,
+	counts,
+	primaryColor,
+	foods_area_color,
+	isRegistered,
+	friendProfileIds,
+	profileId,
+	translate,
+	theme,
+	closeModal,
+	showFriendsModal,
+	showLoginModal,
+	onOwnVisitChanged,
+}) => {
+	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
+	const [toggling, setToggling] = useState(false);
+
+	useEffect(() => {
+		if (!isRegistered || !profileId) return;
+		canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId).then(visit => {
+			setOwnVisit(visit);
+		});
+	}, [canteenId, date, isRegistered, profileId]);
+
+	const handleToggle = useCallback(async () => {
+		if (!isRegistered || !profileId) {
+			closeModal();
+			showLoginModal();
+			return;
+		}
+		if (toggling) return;
+		setToggling(true);
+		try {
+			if (ownVisit) {
+				await canteenVisitsHelper.deleteVisit(ownVisit.id);
+				setOwnVisit(null);
+				onOwnVisitChanged?.(date, null);
+			} else {
+				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date);
+				setOwnVisit(created);
+				onOwnVisitChanged?.(date, created);
+			}
+		} catch (e) {
+			console.error('Error toggling own canteen visit:', e);
+		} finally {
+			setToggling(false);
+		}
+	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged]);
+
+	return (
+		<View>
+			{isRegistered && (
+				<>
+					<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_my_visit_group)} />
+					<SettingsListBoolean
+						leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+						iconBgColor={ownVisit ? foods_area_color : primaryColor}
+						label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
+						isEnabled={!!ownVisit}
+						onToggle={handleToggle}
+						disabled={toggling || ownVisit === undefined}
+						groupPosition="single"
+					/>
+				</>
+			)}
+			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_friends_group)} />
+			{isRegistered ? (
+				<>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_friends)}
+						value={String(counts.friends)}
+						groupPosition="top"
+					/>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_manage_friends)}
+						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+						handleFunction={() => {
+							closeModal();
+							showFriendsModal();
+						}}
+						groupPosition="bottom"
+					/>
+				</>
+			) : (
+				<>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_friends)}
+						value="-"
+						isAccountRequired={true}
+						onAccountRequired={() => {
+							closeModal();
+							showLoginModal();
+						}}
+						groupPosition="top"
+					/>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="login" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_login_hint)}
+						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+						handleFunction={() => {
+							closeModal();
+							showLoginModal();
+						}}
+						groupPosition="bottom"
+					/>
+				</>
+			)}
+			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_total_group)} />
+			<SettingsList
+				leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
+				iconBgColor={primaryColor}
+				label={translate(TranslationKeys.canteen_visits_total_people)}
+				value={String(counts.total)}
+				groupPosition="top"
+			/>
+			<SettingsList
+				leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
+				iconBgColor={primaryColor}
+				label={translate(TranslationKeys.canteen_visits_total_description)}
+				italic={true}
+				groupPosition="bottom"
+			/>
+		</View>
+	);
+};
 
 const CanteenVisitsScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.canteen_visits);
@@ -85,11 +239,14 @@ const CanteenVisitsScreen: React.FC = () => {
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
+	const canteenContrastColor = useMyContrastColor(foods_area_color, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
 
 	// Canteen visit counts per date
 	const [visitCounts, setVisitCounts] = useState<Record<string, { total: number; friends: number }>>({});
+	// Own visits per date (undefined = not yet fetched, null = no visit)
+	const [ownVisits, setOwnVisits] = useState<Record<string, DatabaseTypes.CanteenVisits | null | undefined>>({});
 
 	const friendProfileIds = useMemo(() => {
 		if (!isRegistered || !profile?.id) return [];
@@ -109,89 +266,67 @@ const CanteenVisitsScreen: React.FC = () => {
 		});
 	}, [canteenId, friendProfileIds]);
 
+	const fetchOwnVisitForDate = useCallback(async (date: string) => {
+		if (!canteenId || !profile?.id) return;
+		const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
+		setOwnVisits(prev => ({ ...prev, [date]: visit }));
+	}, [canteenId, profile?.id]);
+
+	const handleOwnVisitChanged = useCallback((date: string, visit: DatabaseTypes.CanteenVisits | null) => {
+		setOwnVisits(prev => ({ ...prev, [date]: visit }));
+		fetchVisitCountsForDate(date);
+	}, [fetchVisitCountsForDate]);
+
+	const toggleOwnVisitForDate = useCallback(async (date: string) => {
+		if (!isRegistered) {
+			router.navigate('/(auth)/login');
+			return;
+		}
+		const existing = ownVisits[date];
+		try {
+			if (existing) {
+				await canteenVisitsHelper.deleteVisit(existing.id);
+				setOwnVisits(prev => ({ ...prev, [date]: null }));
+			} else {
+				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date);
+				setOwnVisits(prev => ({ ...prev, [date]: created }));
+			}
+			fetchVisitCountsForDate(date);
+		} catch (e) {
+			console.error('Error toggling own canteen visit:', e);
+		}
+	}, [isRegistered, ownVisits, canteenId, fetchVisitCountsForDate, router]);
+
 	const openVisitDetailsModal = useCallback((date: string) => {
 		const counts = visitCounts[date] || { total: 0, friends: 0 };
 
 		showScrollViewModal({
 			title: translate(TranslationKeys.canteen_visits_details),
 			children: (
-				<View>
-					<SettingsList
-						leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
-						iconBgColor={primaryColor}
-						label={translate(TranslationKeys.canteen_visits_total_people)}
-						value={String(counts.total)}
-						groupPosition="top"
-					/>
-					<SettingsList
-						leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
-						iconBgColor={primaryColor}
-						label={translate(TranslationKeys.canteen_visits_total_description)}
-						italic={true}
-						groupPosition="bottom"
-					/>
-					{isRegistered ? (
-						<>
-							<SettingsList
-								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
-								iconBgColor={primaryColor}
-								label={translate(TranslationKeys.canteen_visits_friends)}
-								value={String(counts.friends)}
-								groupPosition="top"
-							/>
-							<SettingsList
-								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
-								iconBgColor={primaryColor}
-								label={translate(TranslationKeys.canteen_visits_friends_description)}
-								italic={true}
-								groupPosition="bottom"
-							/>
-							<SettingsList
-								leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
-								iconBgColor={primaryColor}
-								label={translate(TranslationKeys.canteen_visits_manage_friends)}
-								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-								handleFunction={() => {
-									closeScrollViewModal();
-									showScrollViewModal({
-										title: translate(TranslationKeys.friendships),
-										children: <FriendsContent showHeading={false} />,
-									});
-								}}
-								groupPosition="single"
-							/>
-						</>
-					) : (
-						<>
-							<SettingsList
-								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
-								iconBgColor={primaryColor}
-								label={translate(TranslationKeys.canteen_visits_friends)}
-								value="-"
-								isAccountRequired={true}
-								onAccountRequired={() => {
-									closeScrollViewModal();
-									router.navigate('/(auth)/login');
-								}}
-								groupPosition="top"
-							/>
-							<SettingsList
-								leftIcon={<MaterialCommunityIcons name="login" size={24} color={theme.screen.icon} />}
-								iconBgColor={primaryColor}
-								label={translate(TranslationKeys.canteen_visits_login_hint)}
-								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-								handleFunction={() => {
-									closeScrollViewModal();
-									router.navigate('/(auth)/login');
-								}}
-								groupPosition="bottom"
-							/>
-						</>
-					)}
-				</View>
+				<CanteenVisitDetailsModalContent
+					canteenId={canteenId}
+					date={date}
+					counts={counts}
+					primaryColor={primaryColor}
+					foods_area_color={foods_area_color}
+					isRegistered={isRegistered}
+					friendProfileIds={friendProfileIds}
+					profileId={profile?.id}
+					translate={translate}
+					theme={theme}
+					closeModal={closeScrollViewModal}
+					showFriendsModal={() => {
+						showScrollViewModal({
+							title: translate(TranslationKeys.friendships),
+							children: <FriendsContent showHeading={false} />,
+						});
+					}}
+					showLoginModal={() => router.navigate('/(auth)/login')}
+					onOwnVisitChanged={handleOwnVisitChanged}
+				/>
 			),
 		});
-	}, [visitCounts, translate, theme.screen.icon, primaryColor, isRegistered, showScrollViewModal, closeScrollViewModal, router]);
+	}, [visitCounts, translate, theme, primaryColor, foods_area_color, isRegistered, friendProfileIds, profile?.id, canteenId, showScrollViewModal, closeScrollViewModal, router, handleOwnVisitChanged]);
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -211,6 +346,14 @@ const CanteenVisitsScreen: React.FC = () => {
 		if (datesToFetch.length === 0) return;
 		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
 	}, [days, fetchVisitCountsForDate]);
+
+	// Fetch own visits when days change (only for registered users)
+	useEffect(() => {
+		if (!isRegistered) return;
+		const datesToFetch = days.map(d => d.date).filter(date => ownVisits[date] === undefined);
+		if (datesToFetch.length === 0) return;
+		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date)));
+	}, [days, fetchOwnVisitForDate, isRegistered, ownVisits]);
 
 	const cacheKey = useMemo(
 		() => `canteen-visits_${canteenId}_${startDate}`,
@@ -485,26 +628,43 @@ const CanteenVisitsScreen: React.FC = () => {
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
+		const ownVisit = ownVisits[item.date];
+		const isOwnVisitActive = !!ownVisit;
+		const visitButtonBg = isOwnVisitActive ? foods_area_color : theme.screen.iconBg;
+		const visitTextColor = isOwnVisitActive ? canteenContrastColor : theme.screen.text;
+
 		return (
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
-					<TouchableOpacity
-						style={styles.visitCountButton}
-						onPress={() => openVisitDetailsModal(item.date)}
-						activeOpacity={0.7}
-					>
-						<View style={styles.visitCountRow}>
-							<MaterialCommunityIcons name="account-group" size={16} color={theme.screen.text} />
-							<Text style={[styles.visitCountText, { color: theme.screen.text }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
-						</View>
-						{isRegistered && friendProfileIds.length > 0 && (
-							<View style={styles.visitCountRow}>
-								<MaterialCommunityIcons name="account-heart" size={16} color={theme.screen.text} />
-								<Text style={[styles.visitCountText, { color: theme.screen.text }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
-							</View>
+					<View style={[styles.visitCountButton, { backgroundColor: visitButtonBg }]}>
+						{isRegistered && (
+							<TouchableOpacity
+								style={styles.visitCountRow}
+								onPress={() => toggleOwnVisitForDate(item.date)}
+								activeOpacity={0.7}
+							>
+								<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
+								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{translate(TranslationKeys.canteen_visits_i_will_be_there)}</Text>
+							</TouchableOpacity>
 						)}
-					</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.visitCountCounts}
+							onPress={() => openVisitDetailsModal(item.date)}
+							activeOpacity={0.7}
+						>
+							{isRegistered && friendProfileIds.length > 0 && (
+								<View style={styles.visitCountRow}>
+									<MaterialCommunityIcons name="account-heart" size={18} color={visitTextColor} />
+									<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+								</View>
+							)}
+							<View style={styles.visitCountRow}>
+								<MaterialCommunityIcons name="account-group" size={18} color={visitTextColor} />
+								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
+							</View>
+						</TouchableOpacity>
+					</View>
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
@@ -701,8 +861,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 3,
 	},
+	visitCountCounts: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
+	},
 	visitCountText: {
-		fontSize: 14,
+		fontSize: 18,
 	},
 });
 

@@ -5986,5 +5986,45 @@
     "ru": "Управление друзьями",
     "tr": "Arkadaşları yönet",
     "zh": "管理朋友"
+  },
+  "canteen_visits_i_will_be_there": {
+    "de": "Ich gehe in die Mensa",
+    "en": "I will go to the canteen",
+    "ar": "سأذهب إلى المقصف",
+    "es": "Iré al comedor",
+    "fr": "Je vais à la cantine",
+    "ru": "Я иду в столовую",
+    "tr": "Yemekhaneye gideceğim",
+    "zh": "我去食堂"
+  },
+  "canteen_visits_my_visit_group": {
+    "de": "Mein Besuch",
+    "en": "My Visit",
+    "ar": "زيارتي",
+    "es": "Mi visita",
+    "fr": "Ma visite",
+    "ru": "Мой визит",
+    "tr": "Ziyaretim",
+    "zh": "我的访问"
+  },
+  "canteen_visits_friends_group": {
+    "de": "Freunde in der Mensa",
+    "en": "Friends at the Canteen",
+    "ar": "الأصدقاء في المقصف",
+    "es": "Amigos en el comedor",
+    "fr": "Amis à la cantine",
+    "ru": "Друзья в столовой",
+    "tr": "Yemekhanedeki arkadaşlar",
+    "zh": "食堂里的朋友"
+  },
+  "canteen_visits_total_group": {
+    "de": "Insgesamt",
+    "en": "Total",
+    "ar": "المجموع",
+    "es": "Total",
+    "fr": "Total",
+    "ru": "Итого",
+    "tr": "Toplam",
+    "zh": "合计"
   }
 }
