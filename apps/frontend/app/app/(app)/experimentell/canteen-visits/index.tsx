@@ -637,11 +637,7 @@ const CanteenVisitsScreen: React.FC = () => {
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
-					<TouchableOpacity
-						style={[styles.visitCountButton, { backgroundColor: visitButtonBg }]}
-						onPress={() => openVisitDetailsModal(item.date)}
-						activeOpacity={0.7}
-					>
+					<View style={[styles.visitCountButton, { backgroundColor: visitButtonBg }]}>
 						{isRegistered && (
 							<TouchableOpacity
 								style={styles.visitCountRow}
@@ -652,17 +648,23 @@ const CanteenVisitsScreen: React.FC = () => {
 								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{translate(TranslationKeys.canteen_visits_i_will_be_there)}</Text>
 							</TouchableOpacity>
 						)}
-						{isRegistered && friendProfileIds.length > 0 && (
+						<TouchableOpacity
+							style={styles.visitCountCounts}
+							onPress={() => openVisitDetailsModal(item.date)}
+							activeOpacity={0.7}
+						>
+							{isRegistered && friendProfileIds.length > 0 && (
+								<View style={styles.visitCountRow}>
+									<MaterialCommunityIcons name="account-heart" size={18} color={visitTextColor} />
+									<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+								</View>
+							)}
 							<View style={styles.visitCountRow}>
-								<MaterialCommunityIcons name="account-heart" size={18} color={visitTextColor} />
-								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+								<MaterialCommunityIcons name="account-group" size={18} color={visitTextColor} />
+								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
 							</View>
-						)}
-						<View style={styles.visitCountRow}>
-							<MaterialCommunityIcons name="account-group" size={18} color={visitTextColor} />
-							<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
-						</View>
-					</TouchableOpacity>
+						</TouchableOpacity>
+					</View>
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
@@ -858,6 +860,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 3,
+	},
+	visitCountCounts: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
 	},
 	visitCountText: {
 		fontSize: 18,
