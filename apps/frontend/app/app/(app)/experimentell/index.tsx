@@ -56,10 +56,10 @@ const Index = () => {
 			onPress: () => router.push('/vertical-image-scroll'),
 		},
 		{
-			key: 'foodoffers-scroll',
-			label: translate(TranslationKeys.foodoffers_scroll),
-			leftIcon: <MaterialCommunityIcons name="food" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/foodoffers-scroll'),
+			key: 'canteen-visits',
+			label: translate(TranslationKeys.canteen_visits),
+			leftIcon: <MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/canteen-visits'),
 		},
 		{
 			key: 'date-helper-preview',
@@ -146,12 +146,7 @@ const Index = () => {
 			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/account-required-example'),
 		},
-		{
-			key: 'eating-habits-performance',
-			label: translate(TranslationKeys.eating_habits_performance),
-			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/eating-habits-performance'),
-		},
+
 		{
 			key: 'friendships',
 			label: translate(TranslationKeys.friendships),

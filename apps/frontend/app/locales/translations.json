@@ -3527,15 +3527,15 @@
     "tr": "Dikey Resim Kaydırma",
     "zh": "垂直图片滚动"
   },
-  "foodoffers_scroll": {
-    "de": "Speiseplan-Scroll",
-    "en": "Food Offers Scroll",
-    "ar": "تمرير عروض الطعام",
-    "es": "Desplazamiento de ofertas de comida",
-    "fr": "Défilement des offres de repas",
-    "ru": "Прокрутка предложений блюд",
-    "tr": "Yemek Teklifleri Kaydırma",
-    "zh": "餐饮提供滚动"
+  "canteen_visits": {
+    "de": "Mensa-Besuche",
+    "en": "Canteen Visits",
+    "ar": "زيارات المقصف",
+    "es": "Visitas al comedor",
+    "fr": "Visites à la cantine",
+    "ru": "Посещения столовой",
+    "tr": "Yemekhane Ziyaretleri",
+    "zh": "食堂访问"
   },
   "chats": {
     "de": "Chats",
@@ -5446,166 +5446,6 @@
     "ru": "Account Required Example",
     "tr": "Account Required Example",
     "zh": "Account Required Example"
-  },
-  "eating_habits_performance": {
-    "de": "Essgewohnheiten Performance",
-    "en": "Eating Habits Performance",
-    "ar": "Eating Habits Performance",
-    "es": "Eating Habits Performance",
-    "fr": "Eating Habits Performance",
-    "ru": "Eating Habits Performance",
-    "tr": "Eating Habits Performance",
-    "zh": "Eating Habits Performance"
-  },
-  "eating_habits_performance_full": {
-    "de": "Vollständig (mit Debug)",
-    "en": "Full (with Debug)",
-    "ar": "Full (with Debug)",
-    "es": "Full (with Debug)",
-    "fr": "Full (with Debug)",
-    "ru": "Full (with Debug)",
-    "tr": "Full (with Debug)",
-    "zh": "Full (with Debug)"
-  },
-  "eating_habits_performance_no_lottie": {
-    "de": "Ohne Lottie-Animation",
-    "en": "Without Lottie Animation",
-    "ar": "Without Lottie Animation",
-    "es": "Without Lottie Animation",
-    "fr": "Without Lottie Animation",
-    "ru": "Without Lottie Animation",
-    "tr": "Without Lottie Animation",
-    "zh": "Without Lottie Animation"
-  },
-  "eating_habits_performance_no_defer": {
-    "de": "Ohne verzögertes Rendern",
-    "en": "Without Deferred Render",
-    "ar": "Without Deferred Render",
-    "es": "Without Deferred Render",
-    "fr": "Without Deferred Render",
-    "ru": "Without Deferred Render",
-    "tr": "Without Deferred Render",
-    "zh": "Without Deferred Render"
-  },
-  "eating_habits_performance_plain_text": {
-    "de": "Plain: Nur Text & Übersetzungen",
-    "en": "Plain: Text & Translations Only",
-    "ar": "Plain: Text & Translations Only",
-    "es": "Plain: Text & Translations Only",
-    "fr": "Plain: Text & Translations Only",
-    "ru": "Plain: Text & Translations Only",
-    "tr": "Plain: Text & Translations Only",
-    "zh": "Plain: Text & Translations Only"
-  },
-  "eating_habits_performance_plain_text_image": {
-    "de": "Plain: Text, Übersetzung & Bild",
-    "en": "Plain: Text, Translation & Image",
-    "ar": "Plain: Text, Translation & Image",
-    "es": "Plain: Text, Translation & Image",
-    "fr": "Plain: Text, Translation & Image",
-    "ru": "Plain: Text, Translation & Image",
-    "tr": "Plain: Text, Translation & Image",
-    "zh": "Plain: Text, Translation & Image"
-  },
-  "eating_habits_performance_plain_each_component": {
-    "de": "Plain: Jede Markierung als eigene Komponente",
-    "en": "Plain: Each Marking as Own Component",
-    "ar": "Plain: Each Marking as Own Component",
-    "es": "Plain: Each Marking as Own Component",
-    "fr": "Plain: Each Marking as Own Component",
-    "ru": "Plain: Each Marking as Own Component",
-    "tr": "Plain: Each Marking as Own Component",
-    "zh": "Plain: Each Marking as Own Component"
-  },
-  "eating_habits_performance_plain_component_with_image": {
-    "de": "Plain: Komponente mit Bild & Text",
-    "en": "Plain: Component with Image & Text",
-    "ar": "Plain: Component with Image & Text",
-    "es": "Plain: Component with Image & Text",
-    "fr": "Plain: Component with Image & Text",
-    "ru": "Plain: Component with Image & Text",
-    "tr": "Plain: Component with Image & Text",
-    "zh": "Plain: Component with Image & Text"
-  },
-  "eating_habits_performance_plain_component_full": {
-    "de": "Plain: Vollständige Komponente mit Like-Status",
-    "en": "Plain: Full Component with Like State",
-    "ar": "Plain: Full Component with Like State",
-    "es": "Plain: Full Component with Like State",
-    "fr": "Plain: Full Component with Like State",
-    "ru": "Plain: Full Component with Like State",
-    "tr": "Plain: Full Component with Like State",
-    "zh": "Plain: Full Component with Like State"
-  },
-  "eating_habits_performance_settings_list": {
-    "de": "SettingsList: Bild, Name & Like-Status",
-    "en": "SettingsList: Image, Name & Like Status",
-    "ar": "SettingsList: Image, Name & Like Status",
-    "es": "SettingsList: Image, Name & Like Status",
-    "fr": "SettingsList: Image, Name & Like Status",
-    "ru": "SettingsList: Image, Name & Like Status",
-    "tr": "SettingsList: Image, Name & Like Status",
-    "zh": "SettingsList: Image, Name & Like Status"
-  },
-  "eating_habits_performance_settings_list_fast": {
-    "de": "SettingsListFast: Ohne Tooltips (schnell)",
-    "en": "SettingsListFast: No Tooltips (fast)",
-    "ar": "SettingsListFast: No Tooltips (fast)",
-    "es": "SettingsListFast: No Tooltips (fast)",
-    "fr": "SettingsListFast: No Tooltips (fast)",
-    "ru": "SettingsListFast: No Tooltips (fast)",
-    "tr": "SettingsListFast: No Tooltips (fast)",
-    "zh": "SettingsListFast: No Tooltips (fast)"
-  },
-  "eating_habits_performance_settings_list_flash": {
-    "de": "SettingsListFlash: FlashList (kein ScrollView)",
-    "en": "SettingsListFlash: FlashList (no ScrollView)",
-    "ar": "SettingsListFlash: FlashList (no ScrollView)",
-    "es": "SettingsListFlash: FlashList (no ScrollView)",
-    "fr": "SettingsListFlash: FlashList (no ScrollView)",
-    "ru": "SettingsListFlash: FlashList (no ScrollView)",
-    "tr": "SettingsListFlash: FlashList (no ScrollView)",
-    "zh": "SettingsListFlash: FlashList (no ScrollView)"
-  },
-  "eating_habits_debug_mount_time": {
-    "de": "Screen-Mount-Zeit",
-    "en": "Screen mount time",
-    "ar": "Screen mount time",
-    "es": "Screen mount time",
-    "fr": "Screen mount time",
-    "ru": "Screen mount time",
-    "tr": "Screen mount time",
-    "zh": "Screen mount time"
-  },
-  "eating_habits_debug_animation_time": {
-    "de": "Animation bereit nach",
-    "en": "Animation ready after",
-    "ar": "Animation ready after",
-    "es": "Animation ready after",
-    "fr": "Animation ready after",
-    "ru": "Animation ready after",
-    "tr": "Animation ready after",
-    "zh": "Animation ready after"
-  },
-  "eating_habits_debug_content_time": {
-    "de": "Markierungen sichtbar nach",
-    "en": "Markings visible after",
-    "ar": "Markings visible after",
-    "es": "Markings visible after",
-    "fr": "Markings visible after",
-    "ru": "Markings visible after",
-    "tr": "Markings visible after",
-    "zh": "Markings visible after"
-  },
-  "eating_habits_debug_markings_count": {
-    "de": "Anzahl Markierungen",
-    "en": "Markings count",
-    "ar": "Markings count",
-    "es": "Markings count",
-    "fr": "Markings count",
-    "ru": "Markings count",
-    "tr": "Markings count",
-    "zh": "Markings count"
   },
   "map_variants": {
     "de": "Karten-Varianten",
