@@ -207,9 +207,9 @@ const CanteenVisitsScreen: React.FC = () => {
 
 	// Fetch visit counts when days change
 	useEffect(() => {
-		for (const day of days) {
-			fetchVisitCountsForDate(day.date);
-		}
+		const datesToFetch = days.map(d => d.date).filter(date => visitCounts[date] === undefined);
+		if (datesToFetch.length === 0) return;
+		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
 	}, [days, fetchVisitCountsForDate]);
 
 	const cacheKey = useMemo(
