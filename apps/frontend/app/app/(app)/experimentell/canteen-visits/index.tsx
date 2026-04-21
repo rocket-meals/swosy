@@ -33,6 +33,7 @@ import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/Cantee
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { FriendsContent } from '@/app/(app)/experimentell/friendships';
 
@@ -90,6 +91,9 @@ const CanteenVisitsScreen: React.FC = () => {
 
 	// Canteen visit counts per date
 	const [visitCounts, setVisitCounts] = useState<Record<string, { total: number; friends: number }>>({});
+	// Own visit records per date (visit ID or null)
+	const [ownVisits, setOwnVisits] = useState<Record<string, string | null>>({});
+	const [togglingVisit, setTogglingVisit] = useState<Record<string, boolean>>({});
 
 	const friendProfileIds = useMemo(() => {
 		if (!isRegistered || !profile?.id) return [];
@@ -109,13 +113,67 @@ const CanteenVisitsScreen: React.FC = () => {
 		});
 	}, [canteenId, friendProfileIds]);
 
+	const fetchOwnVisitForDate = useCallback(async (date: string) => {
+		if (!canteenId || !isRegistered || !profile?.id) return;
+		const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
+		setOwnVisits(prev => {
+			const newVal = visit?.id ?? null;
+			if (prev[date] === newVal) return prev;
+			return { ...prev, [date]: newVal };
+		});
+	}, [canteenId, isRegistered, profile?.id]);
+
+	const toggleOwnVisit = useCallback(async (date: string) => {
+		if (!canteenId || !isRegistered || !profile?.id) return;
+		if (togglingVisit[date]) return;
+		setTogglingVisit(prev => ({ ...prev, [date]: true }));
+		try {
+			const existingVisitId = ownVisits[date];
+			if (existingVisitId) {
+				await canteenVisitsHelper.deleteVisit(existingVisitId);
+				setOwnVisits(prev => ({ ...prev, [date]: null }));
+			} else {
+				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date, profile.id);
+				setOwnVisits(prev => ({ ...prev, [date]: created.id }));
+			}
+			await fetchVisitCountsForDate(date);
+		} catch (error) {
+			console.error('Error toggling canteen visit:', error);
+		} finally {
+			setTogglingVisit(prev => ({ ...prev, [date]: false }));
+		}
+	}, [canteenId, isRegistered, profile?.id, ownVisits, togglingVisit, fetchVisitCountsForDate]);
+
 	const openVisitDetailsModal = useCallback((date: string) => {
 		const counts = visitCounts[date] || { total: 0, friends: 0 };
+		const isOwnVisitActive = !!ownVisits[date];
 
 		showScrollViewModal({
 			title: translate(TranslationKeys.canteen_visits_details),
 			children: (
 				<View>
+					{isRegistered && (
+						<>
+							<SettingsListBoolean
+								leftIcon={<MaterialCommunityIcons name="hand-wave" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
+								isEnabled={isOwnVisitActive}
+								onToggle={() => {
+									toggleOwnVisit(date);
+									closeScrollViewModal();
+								}}
+								groupPosition="top"
+							/>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="hand-wave" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_i_will_be_there_description)}
+								italic={true}
+								groupPosition="bottom"
+							/>
+						</>
+					)}
 					<SettingsList
 						leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
 						iconBgColor={primaryColor}
@@ -191,7 +249,7 @@ const CanteenVisitsScreen: React.FC = () => {
 				</View>
 			),
 		});
-	}, [visitCounts, translate, theme.screen.icon, primaryColor, isRegistered, showScrollViewModal, closeScrollViewModal, router]);
+	}, [visitCounts, ownVisits, translate, theme.screen.icon, primaryColor, isRegistered, showScrollViewModal, closeScrollViewModal, router, toggleOwnVisit]);
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -209,8 +267,16 @@ const CanteenVisitsScreen: React.FC = () => {
 	useEffect(() => {
 		const datesToFetch = days.map(d => d.date).filter(date => visitCounts[date] === undefined);
 		if (datesToFetch.length === 0) return;
-		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
+		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date))).catch(() => {});
 	}, [days, fetchVisitCountsForDate]);
+
+	// Fetch own visit status when days change
+	useEffect(() => {
+		if (!isRegistered) return;
+		const datesToFetch = days.map(d => d.date).filter(date => ownVisits[date] === undefined);
+		if (datesToFetch.length === 0) return;
+		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date))).catch(() => {});
+	}, [days, isRegistered, fetchOwnVisitForDate]);
 
 	const cacheKey = useMemo(
 		() => `canteen-visits_${canteenId}_${startDate}`,
@@ -484,11 +550,26 @@ const CanteenVisitsScreen: React.FC = () => {
 		});
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
+		const isOwnVisitActive = !!ownVisits[item.date];
 
 		return (
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+					{isRegistered && (
+						<TouchableOpacity
+							style={[styles.ownVisitToggle, isOwnVisitActive && { backgroundColor: primaryColor + '30' }]}
+							onPress={() => toggleOwnVisit(item.date)}
+							activeOpacity={0.7}
+							disabled={!!togglingVisit[item.date]}
+						>
+							<MaterialCommunityIcons
+								name="hand-wave"
+								size={16}
+								color={isOwnVisitActive ? primaryColor : theme.screen.text}
+							/>
+						</TouchableOpacity>
+					)}
 					<TouchableOpacity
 						style={styles.visitCountButton}
 						onPress={() => openVisitDetailsModal(item.date)}
@@ -695,6 +776,12 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 		borderRadius: 8,
 		gap: 10,
+	},
+	ownVisitToggle: {
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 8,
+		marginRight: 4,
 	},
 	visitCountRow: {
 		flexDirection: 'row',

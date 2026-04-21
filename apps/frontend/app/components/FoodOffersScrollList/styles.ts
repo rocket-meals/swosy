@@ -53,4 +53,26 @@ export default StyleSheet.create({
 		marginTop: 6,
 		marginHorizontal: 10,
 	},
+	visitCountButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 8,
+		gap: 10,
+	},
+	ownVisitToggle: {
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 8,
+		marginRight: 4,
+	},
+	visitCountRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+	},
+	visitCountText: {
+		fontSize: 14,
+	},
 });

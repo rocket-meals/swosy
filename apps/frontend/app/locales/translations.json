@@ -5986,5 +5986,25 @@
     "ru": "Управление друзьями",
     "tr": "Arkadaşları yönet",
     "zh": "管理朋友"
+  },
+  "canteen_visits_i_will_be_there": {
+    "de": "Ich werde da sein",
+    "en": "I will be there",
+    "ar": "سأكون هناك",
+    "es": "Estaré allí",
+    "fr": "Je serai là",
+    "ru": "Я буду там",
+    "tr": "Orada olacağım",
+    "zh": "我会在那里"
+  },
+  "canteen_visits_i_will_be_there_description": {
+    "de": "Gib an, dass du an diesem Tag in der Mensa sein wirst. Deine Freunde können das sehen.",
+    "en": "Indicate that you will be at the canteen on this day. Your friends can see this.",
+    "ar": "أشر إلى أنك ستكون في المقصف في هذا اليوم. يمكن لأصدقائك رؤية ذلك.",
+    "es": "Indica que estarás en el comedor este día. Tus amigos pueden verlo.",
+    "fr": "Indiquez que vous serez à la cantine ce jour-là. Vos amis peuvent le voir.",
+    "ru": "Укажите, что вы будете в столовой в этот день. Ваши друзья смогут это увидеть.",
+    "tr": "Bu gün yemekhanede olacağınızı belirtin. Arkadaşlarınız bunu görebilir.",
+    "zh": "表明您将在这一天到食堂。您的朋友可以看到。"
   }
 }
