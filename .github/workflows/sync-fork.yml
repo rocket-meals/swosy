@@ -58,6 +58,7 @@ jobs:
             if [ -f "$config_file" ]; then
               grep -A 5 'function getBuildNumber' "$config_file" | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found"
             else
+              echo "⚠️ Config file not found: $config_file" >&2
               echo "not-found"
             fi
           }
