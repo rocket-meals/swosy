@@ -6,6 +6,10 @@ inputs:
     required: false
     description: 'Das Verzeichnis, in dem sich die app.config.ts befindet'
     default: apps/frontend/app
+  previous-build-number:
+    required: false
+    description: 'Previous build number to compare against (used by sync-fork). If empty, uses git history (HEAD^).'
+    default: ''
 
 runs:
   using: "composite"
@@ -19,7 +23,13 @@ runs:
     - name: 🔍 Vergleiche Buildnummer
       id: check
       run: |
-        old=$(git show HEAD^:${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+        if [ -n "${{ inputs.previous-build-number }}" ]; then
+          old="${{ inputs.previous-build-number }}"
+          echo "📦 Using previous build number from input (sync-fork)"
+        else
+          old=$(git show HEAD^:${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+          echo "📦 Using previous build number from git history (HEAD^)"
+        fi
         new=$(cat ${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         echo "📦 Old build number: $old"
         echo "📦 New build number: $new"
