@@ -508,7 +508,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	useEffect(() => {
 		const datesToFetch = days.map(d => d.date).filter(date => visitCounts[date] === undefined);
 		if (datesToFetch.length === 0) return;
-		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
+		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date))).catch(() => {});
 	}, [days, fetchVisitCountsForDate]);
 
 	// Fetch own visit status when days change
@@ -516,7 +516,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		if (!isRegistered) return;
 		const datesToFetch = days.map(d => d.date).filter(date => ownVisits[date] === undefined);
 		if (datesToFetch.length === 0) return;
-		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date)));
+		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date))).catch(() => {});
 	}, [days, isRegistered, fetchOwnVisitForDate]);
 
 	useEffect(() => {

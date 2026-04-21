@@ -267,7 +267,7 @@ const CanteenVisitsScreen: React.FC = () => {
 	useEffect(() => {
 		const datesToFetch = days.map(d => d.date).filter(date => visitCounts[date] === undefined);
 		if (datesToFetch.length === 0) return;
-		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
+		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date))).catch(() => {});
 	}, [days, fetchVisitCountsForDate]);
 
 	// Fetch own visit status when days change
@@ -275,7 +275,7 @@ const CanteenVisitsScreen: React.FC = () => {
 		if (!isRegistered) return;
 		const datesToFetch = days.map(d => d.date).filter(date => ownVisits[date] === undefined);
 		if (datesToFetch.length === 0) return;
-		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date)));
+		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date))).catch(() => {});
 	}, [days, isRegistered, fetchOwnVisitForDate]);
 
 	const cacheKey = useMemo(
