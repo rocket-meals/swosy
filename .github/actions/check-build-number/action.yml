@@ -1,35 +1,45 @@
 name: Check Build Number
-description: Vergleicht, ob sich die Buildnummer in app.config.ts geändert hat
+description: Checks if the build number in config.ts changed compared to a previous state
 
 inputs:
   working-directory:
     required: false
-    description: 'Das Verzeichnis, in dem sich die app.config.ts befindet'
+    description: 'Directory containing the config.ts with getBuildNumber()'
     default: apps/frontend/app
-  previous-build-number:
+  previous-commit-sha:
     required: false
-    description: 'Previous build number to compare against (used by sync-fork). If empty, uses git history (HEAD^).'
+    description: 'Commit SHA to compare against (e.g. pre-sync state in forks). If empty, uses HEAD^ from git history.'
     default: ''
 
 runs:
   using: "composite"
   steps:
-    - name: 🔄 Checkout repository
+    # Full history needed when comparing against an older commit SHA (fork sync scenario)
+    - name: 🔄 Checkout repository (full history)
+      if: ${{ inputs.previous-commit-sha != '' }}
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Only last 2 commits needed for HEAD^ comparison (normal push scenario)
+    - name: 🔄 Checkout repository (last 2 commits)
+      if: ${{ inputs.previous-commit-sha == '' }}
       uses: actions/checkout@v4
       with:
         fetch-depth: 2
-        # Get the last 2 commits to compare the build number
 
-    - name: 🔍 Vergleiche Buildnummer
+    - name: 🔍 Compare build number
       id: check
       run: |
-        if [ -n "${{ inputs.previous-build-number }}" ]; then
-          old="${{ inputs.previous-build-number }}"
-          echo "📦 Using previous build number from input (sync-fork)"
+        COMPARE_REF="${{ inputs.previous-commit-sha }}"
+        if [ -z "$COMPARE_REF" ]; then
+          COMPARE_REF="HEAD^"
+          echo "📦 Comparing against HEAD^ (git history)"
         else
-          old=$(git show HEAD^:${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
-          echo "📦 Using previous build number from git history (HEAD^)"
+          echo "📦 Comparing against commit $COMPARE_REF (sync-fork)"
         fi
+
+        old=$(git show ${COMPARE_REF}:${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         new=$(cat ${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         echo "📦 Old build number: $old"
         echo "📦 New build number: $new"
@@ -49,8 +59,7 @@ runs:
         fi
       shell: bash
 
-
 outputs:
   changed:
-    description: 'true, wenn die Buildnummer sich geändert hat'
+    description: 'true if the build number changed'
     value: ${{ steps.check.outputs.changed }}

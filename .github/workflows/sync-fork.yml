@@ -44,38 +44,11 @@ jobs:
           if [ "$LOCAL_COMMIT" != "$UPSTREAM_COMMIT" ]; then
             echo "Updates available from upstream"
             echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "local-commit=$LOCAL_COMMIT" >> $GITHUB_OUTPUT
           else
             echo "No updates available"
             echo "has-updates=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: 📦 Extract Pre-Sync Build Numbers
-        id: build-numbers
-        if: steps.check-repo.outputs.is-fork == 'true' && steps.check-updates.outputs.has-updates == 'true'
-        run: |
-          extract_build_number() {
-            local config_file="$1"
-            if [ -f "$config_file" ]; then
-              grep -A 5 'function getBuildNumber' "$config_file" | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found"
-            else
-              echo "⚠️ Config file not found: $config_file" >&2
-              echo "not-found"
-            fi
-          }
-
-          frontend=$(extract_build_number "apps/frontend/app/config.ts")
-          geonexia=$(extract_build_number "apps/geonexia/frontend/config.ts")
-          score_tracker=$(extract_build_number "apps/score-tracker/frontend/config.ts")
-
-          echo "📦 Pre-sync build numbers:"
-          echo "  Frontend: $frontend"
-          echo "  Geonexia: $geonexia"
-          echo "  Score Tracker: $score_tracker"
-
-          echo "frontend=$frontend" >> $GITHUB_OUTPUT
-          echo "geonexia=$geonexia" >> $GITHUB_OUTPUT
-          echo "score_tracker=$score_tracker" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: 🔄 Sync Fork with Upstream
         id: sync-result
@@ -108,9 +81,7 @@ jobs:
           gh workflow run ci.yml \
             --repo "${{ steps.check-repo.outputs.repository-name }}" \
             --ref master \
-            -f previous_build_number_frontend="${{ steps.build-numbers.outputs.frontend }}" \
-            -f previous_build_number_geonexia="${{ steps.build-numbers.outputs.geonexia }}" \
-            -f previous_build_number_score_tracker="${{ steps.build-numbers.outputs.score_tracker }}"
+            -f previous_commit_sha="${{ steps.check-updates.outputs.local-commit }}"
           echo "✅ Combined CI workflow triggered!"
 
       - name: ⏭️ Skip Fork Sync - No Updates

@@ -5,16 +5,8 @@ on:
     branches: [main, master, dev]
   workflow_dispatch:
     inputs:
-      previous_build_number_frontend:
-        description: 'Previous frontend build number (from sync-fork)'
-        required: false
-        default: ''
-      previous_build_number_geonexia:
-        description: 'Previous geonexia build number (from sync-fork)'
-        required: false
-        default: ''
-      previous_build_number_score_tracker:
-        description: 'Previous score-tracker build number (from sync-fork)'
+      previous_commit_sha:
+        description: 'Commit SHA to compare build numbers against (from sync-fork: pre-sync state)'
         required: false
         default: ''
 
@@ -49,7 +41,7 @@ jobs:
         id: check
         uses: ./.github/actions/check-build-number
         with:
-          previous-build-number: ${{ github.event.inputs.previous_build_number_frontend }}
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
 #  lint:
 #    name: "🎨 Prettier & ESLint"
@@ -364,7 +356,7 @@ jobs:
         uses: ./.github/actions/check-build-number
         with:
           working-directory: apps/geonexia/frontend
-          previous-build-number: ${{ github.event.inputs.previous_build_number_geonexia }}
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
   geonexia-build-ios:
     name: "📦 Geonexia Build & 🚀 Submit iOS App"
@@ -420,7 +412,7 @@ jobs:
         uses: ./.github/actions/check-build-number
         with:
           working-directory: apps/score-tracker/frontend
-          previous-build-number: ${{ github.event.inputs.previous_build_number_score_tracker }}
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
   score-tracker-build-ios:
     name: "📦 Score Tracker Build & 🚀 Submit iOS App"
