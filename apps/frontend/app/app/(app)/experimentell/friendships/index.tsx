@@ -161,7 +161,7 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 				/>
 				<View style={scanStyles.buttonContainer}>
 					<ProjectButton
-						text={translate(TranslationKeys.friendships_scan_qr)}
+						text={translate(TranslationKeys.friendships_add_manual)}
 						onPress={handleManualSubmit}
 						iconLeft={<MaterialCommunityIcons name="account-plus" size={20} color={contrastColor} />}
 					/>
@@ -449,7 +449,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 
 	const openScanModal = useCallback((noCamera: boolean) => {
 		showScrollViewModal({
-			title: translate(TranslationKeys.friendships_scan_qr),
+			title: noCamera ? translate(TranslationKeys.friendships_add_manual) : translate(TranslationKeys.friendships_scan_qr),
 			children: (
 				<ScanModalContent
 					noCamera={noCamera}
