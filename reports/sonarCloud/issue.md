@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 13 | 13 |
-| 🐛 Reliability | 6838 | 37 |
+| 🐛 Reliability | 6840 | 37 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16851 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16853 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -66,7 +66,7 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (37/6838)
+## 🐛 Reliability (37/6840)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -91,6 +91,14 @@
 - **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
   apps/frontend/app/helper/SystemActionHelper.ts:6
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L23
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:46
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L46
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/activities/[id].tsx:187
@@ -207,12 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:261
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L261
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
 
