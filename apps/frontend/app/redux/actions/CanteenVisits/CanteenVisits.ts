@@ -6,6 +6,35 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		super('canteen_visits', client);
 	}
 
+	async fetchOwnVisitForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits | null> {
+		try {
+			const results = await this.readItems({
+				filter: {
+					canteen: { _eq: canteenId },
+					date: { _eq: date },
+					profile: { _eq: profileId },
+				},
+				limit: 1,
+			} as any);
+			return results?.[0] ?? null;
+		} catch (error) {
+			console.error('Error fetching own canteen visit:', error);
+			return null;
+		}
+	}
+
+	async createVisitForDate(canteenId: string, date: string): Promise<DatabaseTypes.CanteenVisits> {
+		return this.createItem({
+			canteen: canteenId,
+			date,
+			status: 'published',
+		} as any);
+	}
+
+	async deleteVisit(visitId: string): Promise<void> {
+		await this.deleteItem(visitId);
+	}
+
 	async fetchVisitCountForDate(canteenId: string, date: string): Promise<number> {
 		try {
 			const result: any = await this.aggregateItems({
