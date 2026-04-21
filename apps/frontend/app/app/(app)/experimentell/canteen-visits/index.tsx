@@ -153,7 +153,6 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 						label={translate(TranslationKeys.canteen_visits_manage_friends)}
 						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 						handleFunction={() => {
-							closeModal();
 							showFriendsModal();
 						}}
 						groupPosition="bottom"
