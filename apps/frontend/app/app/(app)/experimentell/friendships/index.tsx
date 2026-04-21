@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
+import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
 import { useDispatch } from 'react-redux';
 import { TranslationKeys } from '@/locales/keys';
@@ -35,7 +36,8 @@ type ScanModalContentProps = {
 const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlreadyFriends, noCamera }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 	const [phase, setPhase] = useState<ScanPhase>('scanning');
 	const [errorDetail, setErrorDetail] = useState<string>('');
 	const scannedRef = useRef(false);
@@ -128,7 +130,7 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 					<ProjectButton
 						text={translate(TranslationKeys.friendships_scan_again)}
 						onPress={handleScanAgain}
-						iconLeft={<MaterialCommunityIcons name="qrcode-scan" size={20} color="white" />}
+						iconLeft={<MaterialCommunityIcons name="qrcode-scan" size={20} color={contrastColor} />}
 					/>
 				</View>
 			</View>
@@ -161,7 +163,7 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 					<ProjectButton
 						text={translate(TranslationKeys.friendships_scan_qr)}
 						onPress={handleManualSubmit}
-						iconLeft={<MaterialCommunityIcons name="account-plus" size={20} color="white" />}
+						iconLeft={<MaterialCommunityIcons name="account-plus" size={20} color={contrastColor} />}
 					/>
 				</View>
 			</View>
@@ -182,8 +184,8 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 					</View>
 				) : canRequestPermission ? (
 					<TouchableOpacity style={[scanStyles.permissionButton, { backgroundColor: primaryColor }]} onPress={requestPermission}>
-						<MaterialCommunityIcons name="camera" size={24} color="white" />
-						<Text style={scanStyles.permissionText}>{translate(TranslationKeys.friendships_allow_camera)}</Text>
+						<MaterialCommunityIcons name="camera" size={24} color={contrastColor} />
+						<Text style={[scanStyles.permissionText, { color: contrastColor }]}>{translate(TranslationKeys.friendships_allow_camera)}</Text>
 					</TouchableOpacity>
 				) : null}
 			</View>
@@ -205,7 +207,8 @@ type QRGenerateModalContentProps = {
 const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated, onAccepted, closeModal }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 	const showToast = useToast();
 	const [phase, setPhase] = useState<QRGenPhase>('generating');
 	const [friendship, setFriendship] = useState<DatabaseTypes.Friendships | null>(null);
@@ -308,7 +311,7 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 					<ProjectButton
 						text={translate(TranslationKeys.friendships_generate_retry)}
 						onPress={generate}
-						iconLeft={<MaterialCommunityIcons name="refresh" size={20} color="white" />}
+						iconLeft={<MaterialCommunityIcons name="refresh" size={20} color={contrastColor} />}
 					/>
 				</View>
 			</View>
@@ -734,7 +737,6 @@ const scanStyles = StyleSheet.create({
 		borderRadius: 10,
 	},
 	permissionText: {
-		color: 'white',
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 14,
 	},
