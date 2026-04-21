@@ -4,6 +4,11 @@ on:
   push:
     branches: [main, master, dev]
   workflow_dispatch:
+    inputs:
+      previous_commit_sha:
+        description: 'Commit SHA to compare build numbers against (from sync-fork: pre-sync state)'
+        required: false
+        default: ''
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,6 +40,8 @@ jobs:
       - name: "🔍 Compare Build Number"
         id: check
         uses: ./.github/actions/check-build-number
+        with:
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
 #  lint:
 #    name: "🎨 Prettier & ESLint"
@@ -349,6 +356,7 @@ jobs:
         uses: ./.github/actions/check-build-number
         with:
           working-directory: apps/geonexia/frontend
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
   geonexia-build-ios:
     name: "📦 Geonexia Build & 🚀 Submit iOS App"
@@ -404,6 +412,7 @@ jobs:
         uses: ./.github/actions/check-build-number
         with:
           working-directory: apps/score-tracker/frontend
+          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
 
   score-tracker-build-ios:
     name: "📦 Score Tracker Build & 🚀 Submit iOS App"
