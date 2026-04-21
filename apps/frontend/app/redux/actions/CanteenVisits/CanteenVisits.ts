@@ -49,6 +49,36 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 			return 0;
 		}
 	}
+
+	async fetchOwnVisitForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits | null> {
+		try {
+			const items = await this.readItems({
+				filter: {
+					canteen: { _eq: canteenId },
+					date: { _eq: date },
+					profile: { _eq: profileId },
+				},
+				limit: 1,
+			});
+			return items.length > 0 ? items[0] : null;
+		} catch (error) {
+			console.error('Error fetching own canteen visit:', error);
+			return null;
+		}
+	}
+
+	async createVisitForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits> {
+		return this.createItem({
+			canteen: canteenId,
+			date: date,
+			profile: profileId,
+			status: 'published',
+		});
+	}
+
+	async deleteVisit(visitId: string): Promise<void> {
+		await this.deleteItem(visitId);
+	}
 }
 
 /**

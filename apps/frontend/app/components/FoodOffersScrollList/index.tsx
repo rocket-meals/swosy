@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -12,7 +12,7 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
@@ -27,6 +27,13 @@ import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/CanteenVisits/CanteenVisits';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { UserHelper } from '@/helper/UserHelper';
+import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
+import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
+import { FriendsContent } from '@/app/(app)/experimentell/friendships';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -46,16 +53,21 @@ interface DayItem {
 const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
+const canteenVisitsHelper = new CanteenVisitsHelper();
 
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
+	const router = useRouter();
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
 	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
+	const { friendships } = useAppSelector((state) => state.friendships);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const isRegistered = UserHelper.isRegisteredUser(user);
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
 	const flatListRef = useRef<FlatList<DayData>>(null);
@@ -72,6 +84,167 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+
+	// Canteen visit counts per date
+	const [visitCounts, setVisitCounts] = useState<Record<string, { total: number; friends: number }>>({});
+	const [ownVisits, setOwnVisits] = useState<Record<string, string | null>>({});
+	const [togglingVisit, setTogglingVisit] = useState<Record<string, boolean>>({});
+
+	const friendProfileIds = useMemo(() => {
+		if (!isRegistered || !profile?.id) return [];
+		return getFriendProfileIds(friendships, profile.id);
+	}, [isRegistered, profile?.id, friendships]);
+
+	const fetchVisitCountsForDate = useCallback(async (date: string) => {
+		if (!canteenId) return;
+		const total = await canteenVisitsHelper.fetchVisitCountForDate(canteenId, date);
+		let friends = 0;
+		if (friendProfileIds.length > 0) {
+			friends = await canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds);
+		}
+		setVisitCounts(prev => {
+			if (prev[date]?.total === total && prev[date]?.friends === friends) return prev;
+			return { ...prev, [date]: { total, friends } };
+		});
+	}, [canteenId, friendProfileIds]);
+
+	const fetchOwnVisitForDate = useCallback(async (date: string) => {
+		if (!canteenId || !isRegistered || !profile?.id) return;
+		const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
+		setOwnVisits(prev => {
+			const newVal = visit?.id ?? null;
+			if (prev[date] === newVal) return prev;
+			return { ...prev, [date]: newVal };
+		});
+	}, [canteenId, isRegistered, profile?.id]);
+
+	const toggleOwnVisit = useCallback(async (date: string) => {
+		if (!canteenId || !isRegistered || !profile?.id) return;
+		if (togglingVisit[date]) return;
+		setTogglingVisit(prev => ({ ...prev, [date]: true }));
+		try {
+			const existingVisitId = ownVisits[date];
+			if (existingVisitId) {
+				await canteenVisitsHelper.deleteVisit(existingVisitId);
+				setOwnVisits(prev => ({ ...prev, [date]: null }));
+			} else {
+				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date, profile.id);
+				setOwnVisits(prev => ({ ...prev, [date]: created.id }));
+			}
+			await fetchVisitCountsForDate(date);
+		} catch (error) {
+			console.error('Error toggling canteen visit:', error);
+		} finally {
+			setTogglingVisit(prev => ({ ...prev, [date]: false }));
+		}
+	}, [canteenId, isRegistered, profile?.id, ownVisits, togglingVisit, fetchVisitCountsForDate]);
+
+	const openVisitDetailsModal = useCallback((date: string) => {
+		const counts = visitCounts[date] || { total: 0, friends: 0 };
+		const isOwnVisitActive = !!ownVisits[date];
+
+		showScrollViewModal({
+			title: translate(TranslationKeys.canteen_visits_details),
+			children: (
+				<View>
+					{isRegistered && (
+						<>
+							<SettingsListBoolean
+								leftIcon={<MaterialCommunityIcons name="hand-wave" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
+								isEnabled={isOwnVisitActive}
+								onToggle={() => {
+									toggleOwnVisit(date);
+									closeScrollViewModal();
+								}}
+								groupPosition="top"
+							/>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="hand-wave" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_i_will_be_there_description)}
+								italic={true}
+								groupPosition="bottom"
+							/>
+						</>
+					)}
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_total_people)}
+						value={String(counts.total)}
+						groupPosition="top"
+					/>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_total_description)}
+						italic={true}
+						groupPosition="bottom"
+					/>
+					{isRegistered ? (
+						<>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_friends)}
+								value={String(counts.friends)}
+								groupPosition="top"
+							/>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_friends_description)}
+								italic={true}
+								groupPosition="bottom"
+							/>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_manage_friends)}
+								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+								handleFunction={() => {
+									closeScrollViewModal();
+									showScrollViewModal({
+										title: translate(TranslationKeys.friendships),
+										children: <FriendsContent showHeading={false} />,
+									});
+								}}
+								groupPosition="single"
+							/>
+						</>
+					) : (
+						<>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_friends)}
+								value="-"
+								isAccountRequired={true}
+								onAccountRequired={() => {
+									closeScrollViewModal();
+									router.navigate('/(auth)/login');
+								}}
+								groupPosition="top"
+							/>
+							<SettingsList
+								leftIcon={<MaterialCommunityIcons name="login" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={translate(TranslationKeys.canteen_visits_login_hint)}
+								rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+								handleFunction={() => {
+									closeScrollViewModal();
+									router.navigate('/(auth)/login');
+								}}
+								groupPosition="bottom"
+							/>
+						</>
+					)}
+				</View>
+			),
+		});
+	}, [visitCounts, ownVisits, translate, theme.screen.icon, primaryColor, isRegistered, showScrollViewModal, closeScrollViewModal, router, toggleOwnVisit]);
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -331,6 +504,21 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
 	}, [startDate]);
 
+	// Fetch visit counts when days change
+	useEffect(() => {
+		const datesToFetch = days.map(d => d.date).filter(date => visitCounts[date] === undefined);
+		if (datesToFetch.length === 0) return;
+		Promise.all(datesToFetch.map(date => fetchVisitCountsForDate(date)));
+	}, [days, fetchVisitCountsForDate]);
+
+	// Fetch own visit status when days change
+	useEffect(() => {
+		if (!isRegistered) return;
+		const datesToFetch = days.map(d => d.date).filter(date => ownVisits[date] === undefined);
+		if (datesToFetch.length === 0) return;
+		Promise.all(datesToFetch.map(date => fetchOwnVisitForDate(date)));
+	}, [days, isRegistered, fetchOwnVisitForDate]);
+
 	useEffect(() => {
 		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
 		const subscription = Dimensions.addEventListener('change', handleResize);
@@ -367,11 +555,42 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		});
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
+		const isOwnVisitActive = !!ownVisits[item.date];
 
 		return (
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+					{isRegistered && (
+						<TouchableOpacity
+							style={[styles.ownVisitToggle, isOwnVisitActive && { backgroundColor: primaryColor + '30' }]}
+							onPress={() => toggleOwnVisit(item.date)}
+							activeOpacity={0.7}
+							disabled={!!togglingVisit[item.date]}
+						>
+							<MaterialCommunityIcons
+								name="hand-wave"
+								size={16}
+								color={isOwnVisitActive ? primaryColor : theme.screen.text}
+							/>
+						</TouchableOpacity>
+					)}
+					<TouchableOpacity
+						style={styles.visitCountButton}
+						onPress={() => openVisitDetailsModal(item.date)}
+						activeOpacity={0.7}
+					>
+						<View style={styles.visitCountRow}>
+							<MaterialCommunityIcons name="account-group" size={16} color={theme.screen.text} />
+							<Text style={[styles.visitCountText, { color: theme.screen.text }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
+						</View>
+						{isRegistered && friendProfileIds.length > 0 && (
+							<View style={styles.visitCountRow}>
+								<MaterialCommunityIcons name="account-heart" size={16} color={theme.screen.text} />
+								<Text style={[styles.visitCountText, { color: theme.screen.text }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+							</View>
+						)}
+					</TouchableOpacity>
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
