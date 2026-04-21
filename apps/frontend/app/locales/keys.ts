@@ -605,6 +605,13 @@ export enum TranslationKeys {
 	public_links = 'public_links',
 	last_opened_buildings = 'last_opened_buildings',
 	last_opened_building_info = 'last_opened_building_info',
+	canteen_visits_total_people = 'canteen_visits_total_people',
+	canteen_visits_friends = 'canteen_visits_friends',
+	canteen_visits_details = 'canteen_visits_details',
+	canteen_visits_total_description = 'canteen_visits_total_description',
+	canteen_visits_friends_description = 'canteen_visits_friends_description',
+	canteen_visits_login_hint = 'canteen_visits_login_hint',
+	canteen_visits_manage_friends = 'canteen_visits_manage_friends',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',
