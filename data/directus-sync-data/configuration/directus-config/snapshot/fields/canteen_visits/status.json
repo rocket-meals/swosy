@@ -1,9 +1,9 @@
 {
-  "collection": "friendships",
+  "collection": "canteen_visits",
   "field": "status",
   "type": "string",
   "meta": {
-    "collection": "friendships",
+    "collection": "canteen_visits",
     "conditions": null,
     "display": "labels",
     "display_options": {
@@ -67,9 +67,9 @@
   },
   "schema": {
     "name": "status",
-    "table": "friendships",
+    "table": "canteen_visits",
     "data_type": "character varying",
-    "default_value": "published",
+    "default_value": "draft",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

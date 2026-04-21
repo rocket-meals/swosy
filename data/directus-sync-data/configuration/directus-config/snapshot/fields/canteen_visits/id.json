@@ -1,25 +1,23 @@
 {
-  "collection": "app_settings",
-  "field": "placeholder_image",
+  "collection": "canteen_visits",
+  "field": "id",
   "type": "uuid",
   "meta": {
-    "collection": "app_settings",
+    "collection": "canteen_visits",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "placeholder_image",
+    "field": "id",
     "group": null,
-    "hidden": false,
-    "interface": "file-image",
+    "hidden": true,
+    "interface": "input",
     "note": null,
-    "options": {
-      "folder": "462bf197-f235-4d92-9d86-88361d7f201c"
-    },
-    "readonly": false,
+    "options": null,
+    "readonly": true,
     "required": false,
-    "sort": 24,
+    "sort": 1,
     "special": [
-      "file"
+      "uuid"
     ],
     "translations": null,
     "validation": null,
@@ -27,21 +25,21 @@
     "width": "full"
   },
   "schema": {
-    "name": "placeholder_image",
-    "table": "app_settings",
+    "name": "id",
+    "table": "canteen_visits",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
-    "is_nullable": true,
-    "is_unique": false,
+    "is_nullable": false,
+    "is_unique": true,
     "is_indexed": false,
-    "is_primary_key": false,
+    "is_primary_key": true,
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_files",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

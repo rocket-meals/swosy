@@ -1,34 +1,34 @@
 {
-  "collection": "app_settings",
-  "field": "placeholder_image",
+  "collection": "canteen_visits",
+  "field": "user_created",
   "type": "uuid",
   "meta": {
-    "collection": "app_settings",
+    "collection": "canteen_visits",
     "conditions": null,
-    "display": null,
+    "display": "user",
     "display_options": null,
-    "field": "placeholder_image",
+    "field": "user_created",
     "group": null,
-    "hidden": false,
-    "interface": "file-image",
+    "hidden": true,
+    "interface": "select-dropdown-m2o",
     "note": null,
     "options": {
-      "folder": "462bf197-f235-4d92-9d86-88361d7f201c"
+      "template": "{{avatar}} {{first_name}} {{last_name}}"
     },
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 24,
+    "sort": 4,
     "special": [
-      "file"
+      "user-created"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "placeholder_image",
-    "table": "app_settings",
+    "name": "user_created",
+    "table": "canteen_visits",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -41,7 +41,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_files",
+    "foreign_key_table": "directus_users",
     "foreign_key_column": "id"
   }
 }

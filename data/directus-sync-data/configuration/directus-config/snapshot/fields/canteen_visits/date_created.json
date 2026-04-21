@@ -1,34 +1,36 @@
 {
-  "collection": "app_settings",
-  "field": "animations_auto_start",
-  "type": "boolean",
+  "collection": "canteen_visits",
+  "field": "date_created",
+  "type": "timestamp",
   "meta": {
-    "collection": "app_settings",
+    "collection": "canteen_visits",
     "conditions": null,
-    "display": null,
-    "display_options": null,
-    "field": "animations_auto_start",
+    "display": "datetime",
+    "display_options": {
+      "relative": true
+    },
+    "field": "date_created",
     "group": null,
-    "hidden": false,
-    "interface": "boolean",
+    "hidden": true,
+    "interface": "datetime",
     "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 21,
+    "sort": 5,
     "special": [
-      "cast-boolean"
+      "date-created"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "animations_auto_start",
-    "table": "app_settings",
-    "data_type": "boolean",
-    "default_value": true,
+    "name": "date_created",
+    "table": "canteen_visits",
+    "data_type": "timestamp with time zone",
+    "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

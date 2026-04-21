@@ -107,6 +107,8 @@ export type AppSettings = {
   foods_ratings_average_display?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
+  friends_enabled?: boolean | null;
+  friends_settings: string;
   housing_area_color?: string | null;
   housing_before_element?: string | AppElements | null;
   housing_enabled?: boolean | null;
@@ -342,6 +344,19 @@ export type CanteenFoodFeedbackReportSchedulesReportRecipients = {
   canteen_food_feedback_report_schedules_id?: string | CanteenFoodFeedbackReportSchedules | null;
   id: number;
   report_recipients_id?: string | ReportRecipients | null;
+};
+
+export type CanteenVisits = {
+  canteen?: string | Canteens | null;
+  date?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  profile?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Canteens = {
@@ -1967,6 +1982,7 @@ export type CustomDirectusTypes = {
   canteen_food_feedback_report_schedules: CanteenFoodFeedbackReportSchedules[];
   canteen_food_feedback_report_schedules_canteens: CanteenFoodFeedbackReportSchedulesCanteens[];
   canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
+  canteen_visits: CanteenVisits[];
   canteens: Canteens[];
   canteens_feedbacks_labels: CanteensFeedbacksLabels[];
   canteens_feedbacks_labels_entries: CanteensFeedbacksLabelsEntries[];
