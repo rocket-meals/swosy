@@ -27,6 +27,7 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
 
   private isMainCourse(rawFoodoffer: RawFoodofferInformationType): boolean {
     let courseType = this.getFoodCategoryFromRawFoodoffer(rawFoodoffer);
+    // Philipp Heckmann: Ein Eintopf zählt bei uns auch als Hauptgericht, 21.04.2026
     return courseType === FoodTL1ParserOsnabrueck.SPEISE_BEZEICHNUNG_HAUPTGERICHT
       || courseType === FoodTL1ParserOsnabrueck.SPEISE_BEZEICHNUNG_EINTOPF_TERRINE;
   }
