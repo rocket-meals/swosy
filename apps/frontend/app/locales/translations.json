@@ -5916,5 +5916,75 @@
     "ru": "Вы недавно открывали это здание.",
     "tr": "Bu binayı yakın zamanda açtınız.",
     "zh": "您最近打开了这栋建筑。"
+  },
+  "canteen_visits_total_people": {
+    "de": "Personen insgesamt",
+    "en": "Total people",
+    "ar": "إجمالي الأشخاص",
+    "es": "Total de personas",
+    "fr": "Nombre total de personnes",
+    "ru": "Всего человек",
+    "tr": "Toplam kişi",
+    "zh": "总人数"
+  },
+  "canteen_visits_friends": {
+    "de": "Freunde",
+    "en": "Friends",
+    "ar": "الأصدقاء",
+    "es": "Amigos",
+    "fr": "Amis",
+    "ru": "Друзья",
+    "tr": "Arkadaşlar",
+    "zh": "朋友"
+  },
+  "canteen_visits_details": {
+    "de": "Mensa-Besuche Details",
+    "en": "Canteen Visits Details",
+    "ar": "تفاصيل زيارات المقصف",
+    "es": "Detalles de visitas al comedor",
+    "fr": "Détails des visites à la cantine",
+    "ru": "Подробности посещений столовой",
+    "tr": "Yemekhane ziyaret detayları",
+    "zh": "食堂访问详情"
+  },
+  "canteen_visits_total_description": {
+    "de": "Anzahl der Personen, die sich an diesem Tag in der Mensa verabredet haben.",
+    "en": "Number of people who have planned to visit the canteen on this day.",
+    "ar": "عدد الأشخاص الذين خططوا لزيارة المقصف في هذا اليوم.",
+    "es": "Número de personas que han planeado visitar el comedor en este día.",
+    "fr": "Nombre de personnes ayant prévu de visiter la cantine ce jour-là.",
+    "ru": "Количество людей, запланировавших посещение столовой в этот день.",
+    "tr": "Bu gün yemekhaneyi ziyaret etmeyi planlayan kişi sayısı.",
+    "zh": "计划在这一天访问食堂的人数。"
+  },
+  "canteen_visits_friends_description": {
+    "de": "Anzahl deiner Freunde, die sich an diesem Tag in der Mensa verabredet haben.",
+    "en": "Number of your friends who have planned to visit the canteen on this day.",
+    "ar": "عدد أصدقائك الذين خططوا لزيارة المقصف في هذا اليوم.",
+    "es": "Número de tus amigos que han planeado visitar el comedor en este día.",
+    "fr": "Nombre de vos amis ayant prévu de visiter la cantine ce jour-là.",
+    "ru": "Количество ваших друзей, запланировавших посещение столовой в этот день.",
+    "tr": "Bu gün yemekhaneyi ziyaret etmeyi planlayan arkadaşlarınızın sayısı.",
+    "zh": "计划在这一天访问食堂的朋友人数。"
+  },
+  "canteen_visits_login_hint": {
+    "de": "Registriere dich, um zu sehen, welche Freunde in die Mensa gehen.",
+    "en": "Register to see which friends are visiting the canteen.",
+    "ar": "سجّل لترى أي من أصدقائك يزور المقصف.",
+    "es": "Regístrate para ver qué amigos visitan el comedor.",
+    "fr": "Inscrivez-vous pour voir quels amis visitent la cantine.",
+    "ru": "Зарегистрируйтесь, чтобы увидеть, кто из друзей посещает столовую.",
+    "tr": "Arkadaşlarınızın yemekhaneyi ziyaret ettiğini görmek için kaydolun.",
+    "zh": "注册以查看哪些朋友正在访问食堂。"
+  },
+  "canteen_visits_manage_friends": {
+    "de": "Freunde verwalten",
+    "en": "Manage friends",
+    "ar": "إدارة الأصدقاء",
+    "es": "Gestionar amigos",
+    "fr": "Gérer les amis",
+    "ru": "Управление друзьями",
+    "tr": "Arkadaşları yönet",
+    "zh": "管理朋友"
   }
 }
