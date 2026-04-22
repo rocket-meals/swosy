@@ -42,7 +42,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 				date: { _eq: date },
 				profile: { _eq: profileId },
 			},
-		} as any);
+		});
 	}
 
 	async fetchVisitCountForDate(canteenId: string, date: string): Promise<number> {
