@@ -36,13 +36,19 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 	}
 
 	async deleteOwnVisitsForDate(canteenId: string, date: string, profileId: string): Promise<void> {
-		await this.deleteItems({
+		const visits = await this.readItems({
 			filter: {
 				canteen: { _eq: canteenId },
 				date: { _eq: date },
 				profile: { _eq: profileId },
 			},
-		});
+		} as any);
+		for (const visit of visits) {
+			const id = (visit as any).id;
+			if (id) {
+				await this.deleteItem(id);
+			}
+		}
 	}
 
 	async fetchVisitCountForDate(canteenId: string, date: string): Promise<number> {
