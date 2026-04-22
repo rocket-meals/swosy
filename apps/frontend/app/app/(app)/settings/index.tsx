@@ -447,6 +447,7 @@ const Settings = () => {
                 collectibleSettingsModalRef.current = openCollectibleSettingsModal;
         }, [openCollectibleSettingsModal]);
 
+	const showFriendsInSettings = !!(appSettings?.friends_enabled || isDevMode);
 
 	const listData = useMemo(() => {
 		const rows: Array<{ key: string; element: React.ReactElement }> = [];
@@ -454,7 +455,6 @@ const Settings = () => {
 		const groupStyle = { gap: 0 } as const;
 
 		// === Account & Personalization ===
-		const showFriendsInSettings = !!(appSettings?.friends_enabled || isDevMode);
 		rows.push({
 			key: 'section-account',
 			element: (
@@ -753,7 +753,7 @@ const Settings = () => {
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
-		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal,
+		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, isDevMode,
 	]);
 
 	return (
