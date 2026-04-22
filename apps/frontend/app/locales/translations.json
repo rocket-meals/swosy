@@ -6026,5 +6026,45 @@
     "ru": "Итого",
     "tr": "Toplam",
     "zh": "合计"
+  },
+  "canteen_visits_visibility": {
+    "de": "Mensa-Besuche Sichtbarkeit",
+    "en": "Canteen Visits Visibility",
+    "ar": "رؤية زيارات المقصف",
+    "es": "Visibilidad de visitas al comedor",
+    "fr": "Visibilité des visites à la cantine",
+    "ru": "Видимость посещений столовой",
+    "tr": "Yemekhane ziyaretleri görünürlüğü",
+    "zh": "食堂访问可见性"
+  },
+  "canteen_visits_visibility_all": {
+    "de": "Alles",
+    "en": "All",
+    "ar": "الكل",
+    "es": "Todo",
+    "fr": "Tout",
+    "ru": "Все",
+    "tr": "Tümü",
+    "zh": "全部"
+  },
+  "canteen_visits_visibility_friends_only": {
+    "de": "Nur Freunde",
+    "en": "Friends Only",
+    "ar": "الأصدقاء فقط",
+    "es": "Solo amigos",
+    "fr": "Amis uniquement",
+    "ru": "Только друзья",
+    "tr": "Sadece arkadaşlar",
+    "zh": "仅朋友"
+  },
+  "canteen_visits_visibility_off": {
+    "de": "Aus",
+    "en": "Off",
+    "ar": "إيقاف",
+    "es": "Desactivado",
+    "fr": "Désactivé",
+    "ru": "Выключено",
+    "tr": "Kapalı",
+    "zh": "关闭"
   }
 }
