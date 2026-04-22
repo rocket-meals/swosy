@@ -230,7 +230,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const { translate } = useLanguage();
 	const router = useRouter();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
+	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'public_only' | 'off';
 	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { friendships } = useAppSelector((state) => state.friendships);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -273,8 +273,8 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		if (!canteenId || !showCanteenVisits || canteenVisitsVisibility === 'off') return;
 		
 		// Determine what data to fetch based on visibility
-		const shouldFetchTotal = canteenVisitsVisibility === 'all';
-		const shouldFetchFriends = canteenVisitsVisibility !== 'off' && friendProfileIds.length > 0;
+		const shouldFetchTotal = canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'public_only';
+		const shouldFetchFriends = (canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'friends_only') && friendProfileIds.length > 0;
 		const shouldFetchOwn = canteenVisitsVisibility !== 'off' && isRegistered && profile?.id;
 		
 		const totalP = shouldFetchTotal 
@@ -363,8 +363,8 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const countsTextColor = hasFriendsVisiting ? canteenContrastColor : theme.screen.text;
 
 	// Determine which counts to show based on visibility setting
-	const showFriendsCount = isRegistered && friendProfileIds.length > 0;
-	const showTotalCount = canteenVisitsVisibility === 'all';
+	const showFriendsCount = isRegistered && (canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'friends_only');
+	const showTotalCount = canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'public_only';
 
 	return (
 		<View style={rowStyles.visitButtonWrapper}>

@@ -6057,6 +6057,16 @@
     "tr": "Sadece arkadaşlar",
     "zh": "仅朋友"
   },
+  "canteen_visits_visibility_public_only": {
+    "de": "Nur öffentlich",
+    "en": "Public Only",
+    "ar": "عام فقط",
+    "es": "Solo público",
+    "fr": "Public uniquement",
+    "ru": "Только публичные",
+    "tr": "Sadece herkese açık",
+    "zh": "仅公开"
+  },
   "canteen_visits_visibility_off": {
     "de": "Aus",
     "en": "Off",
