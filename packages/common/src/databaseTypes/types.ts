@@ -352,7 +352,7 @@ export type CanteenVisits = {
   date_created?: string | null;
   date_updated?: string | null;
   id: string;
-  profile?: string | Profiles | null;
+  profile: string | Profiles;
   sort?: number | null;
   status: string;
   user_created?: string | DirectusUsers | null;
@@ -1710,6 +1710,7 @@ export type PopupEvents = {
   send_notification?: boolean | null;
   show_app_rating_button?: boolean | null;
   show_on_android?: boolean | null;
+  show_on_app_version?: string | null;
   show_on_ios?: boolean | null;
   show_on_web?: boolean | null;
   sort?: number | null;

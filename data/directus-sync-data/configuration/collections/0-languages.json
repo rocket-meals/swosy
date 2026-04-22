@@ -1,56 +1,56 @@
 [
     {
+        "status": "published",
+        "name": "Arabic",
         "direction": "rtl",
-        "code": "ar-SA",
-        "status": "published",
-        "name": "Arabic"
+        "code": "ar-SA"
     },
     {
-        "direction": "ltr",
-        "code": "de-DE",
         "status": "published",
-        "name": "German"
+        "name": "German",
+        "direction": "ltr",
+        "code": "de-DE"
     },
     {
-        "direction": "ltr",
-        "code": "en-US",
         "status": "published",
-        "name": "English"
+        "name": "English",
+        "direction": "ltr",
+        "code": "en-US"
     },
     {
-        "direction": "ltr",
-        "code": "es-ES",
         "status": "published",
-        "name": "Spanish"
+        "name": "Spanish",
+        "direction": "ltr",
+        "code": "es-ES"
     },
     {
-        "direction": "ltr",
-        "code": "fr-FR",
         "status": "published",
-        "name": "French"
+        "name": "French",
+        "direction": "ltr",
+        "code": "fr-FR"
     },
     {
-        "direction": "ltr",
-        "code": "pl-PL",
         "status": "published",
-        "name": "Polish"
+        "name": "Polish",
+        "direction": "ltr",
+        "code": "pl-PL"
     },
     {
-        "direction": "ltr",
-        "code": "ru-RU",
         "status": "published",
-        "name": "Russian"
+        "name": "Russian",
+        "direction": "ltr",
+        "code": "ru-RU"
     },
     {
-        "direction": "ltr",
-        "code": "tr-TR",
         "status": "published",
-        "name": "Turkish"
+        "name": "Turkish",
+        "direction": "ltr",
+        "code": "tr-TR"
     },
     {
-        "direction": "ltr",
-        "code": "zh-CN",
         "status": "published",
-        "name": "Chinese"
+        "name": "Chinese",
+        "direction": "ltr",
+        "code": "zh-CN"
     }
 ]
