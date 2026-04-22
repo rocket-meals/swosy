@@ -21,6 +21,14 @@ export interface MyScrollViewModalProps {
   keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
   onClose?: () => void;
   disableHorizontalPadding?: boolean;
+  /**
+   * Removes horizontal padding from the content container so that
+   * SettingsList items (which carry their own `paddingHorizontal`) render
+   * flush with the modal edges, matching the natural screen layout.
+   * Prefer this prop for modals that contain list-based settings content.
+   * Use `disableHorizontalPadding` instead when the content manages its own
+   * full-width layout (e.g. image grids, maps, canteen selection).
+   */
   noGap?: boolean;
 }
 
