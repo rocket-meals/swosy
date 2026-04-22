@@ -953,7 +953,7 @@ const styles = StyleSheet.create({
 	},
 	visitButtonWrapper: {
 		flexDirection: 'row',
-		alignItems: 'center',
+		alignItems: 'stretch',
 		borderRadius: 8,
 		overflow: 'hidden',
 	},
