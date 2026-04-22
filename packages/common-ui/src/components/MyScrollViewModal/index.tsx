@@ -19,6 +19,7 @@ export interface MyScrollViewModalProps {
 	keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
+	noGap?: boolean;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -35,6 +36,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	keyboardShouldPersistTaps = 'handled',
 	onClose,
 	disableHorizontalPadding = false,
+	noGap = false,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -64,7 +66,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const footerComponent = ListFooterComponent || <View style={{ height: Math.max(24, insets.bottom + 16) + extraBottomPadding }} />;
 
-	const contentStyle = { paddingBottom: 24 + insets.bottom + extraBottomPadding, paddingHorizontal: disableHorizontalPadding ? 0 : 20 };
+	const contentStyle = { paddingBottom: 24 + insets.bottom + extraBottomPadding, paddingHorizontal: (disableHorizontalPadding || noGap) ? 0 : 20 };
 	const scrollInsets = { bottom: insets.bottom };
 
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };

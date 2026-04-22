@@ -58,18 +58,16 @@ const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) =
 	}, [campusesSortBy]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={sortingOptions.map((option) => ({
-						...option,
-						label: translate(option.label),
-					}))}
-					selectedOption={selectedOption}
-					onSelect={updateSort}
-					iconBgColor={campus_area_color}
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={sortingOptions.map((option) => ({
+					...option,
+					label: translate(option.label),
+				}))}
+				selectedOption={selectedOption}
+				onSelect={updateSort}
+				iconBgColor={campus_area_color}
+			/>
 		</View>
 	);
 };
@@ -81,6 +79,7 @@ export const useCampusSortingModal = () => {
 	const openCampusSortingModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.sort),
+			noGap: true,
 			onClose: closeScrollViewModal,
 			children: <CampusSortSheet closeSheet={closeScrollViewModal} />,
 		});

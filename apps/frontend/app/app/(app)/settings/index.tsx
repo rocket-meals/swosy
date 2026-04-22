@@ -89,6 +89,7 @@ const Settings = () => {
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
                         title: translate(TranslationKeys.friendships),
+                        noGap: true,
                         children: <FriendsContent showHeading={false} />,
                 });
         }, [showScrollViewModal, translate]);

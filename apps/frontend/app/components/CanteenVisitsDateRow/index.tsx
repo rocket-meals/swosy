@@ -337,6 +337,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 					showFriendsModal={() => {
 						showScrollViewModal({
 							title: translate(TranslationKeys.friendships),
+							noGap: true,
 							children: <FriendsContent showHeading={false} />,
 						});
 					}}
