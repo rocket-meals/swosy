@@ -619,6 +619,7 @@ export enum TranslationKeys {
 	canteen_visits_visibility = 'canteen_visits_visibility',
 	canteen_visits_visibility_all = 'canteen_visits_visibility_all',
 	canteen_visits_visibility_friends_only = 'canteen_visits_visibility_friends_only',
+	canteen_visits_visibility_public_only = 'canteen_visits_visibility_public_only',
 	canteen_visits_visibility_off = 'canteen_visits_visibility_off',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',

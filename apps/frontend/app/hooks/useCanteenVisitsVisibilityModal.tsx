@@ -11,7 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { SET_CANTEEN_VISITS_VISIBILITY } from '@/redux/Types/types';
 
-type CanteenVisitsVisibility = 'all' | 'friends_only' | 'off';
+type CanteenVisitsVisibility = 'all' | 'friends_only' | 'public_only' | 'off';
 
 interface VisibilitySheetProps {
 	closeSheet: () => void;
@@ -44,6 +44,11 @@ export const VisibilitySheet: React.FC<VisibilitySheetProps> = ({ closeSheet }) 
 			id: 'friends_only' as CanteenVisitsVisibility,
 			label: translate(TranslationKeys.canteen_visits_visibility_friends_only),
 			icon: <MaterialCommunityIcons name="account-heart" size={24} />,
+		},
+		{
+			id: 'public_only' as CanteenVisitsVisibility,
+			label: translate(TranslationKeys.canteen_visits_visibility_public_only),
+			icon: <MaterialCommunityIcons name="account-group" size={24} />,
 		},
 		{
 			id: 'off' as CanteenVisitsVisibility,
