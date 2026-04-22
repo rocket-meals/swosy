@@ -37,6 +37,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { SettingsListGroupTitle } from 'repo-depkit-common-ui';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { FriendsContent } from '@/app/(app)/experimentell/friendships';
+import DebugView from '@/components/DebugView';
 
 interface DayData {
 	date: string;
@@ -89,12 +90,32 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
 	const [toggling, setToggling] = useState(false);
 
+	// Raw debug data
+	const [debugOwnVisits, setDebugOwnVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
+	const [debugFriendVisits, setDebugFriendVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
+	const [debugAllVisits, setDebugAllVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
+
+	const fetchDebugData = useCallback(async () => {
+		const [ownRaw, friendRaw, allRaw] = await Promise.all([
+			profileId ? canteenVisitsHelper.fetchOwnVisitsForDate(canteenId, date, profileId) : Promise.resolve([]),
+			friendProfileIds.length > 0 ? canteenVisitsHelper.fetchFriendVisitsForDate(canteenId, date, friendProfileIds) : Promise.resolve([]),
+			canteenVisitsHelper.fetchAllVisitsForDate(canteenId, date),
+		]);
+		setDebugOwnVisits(ownRaw);
+		setDebugFriendVisits(friendRaw);
+		setDebugAllVisits(allRaw);
+	}, [canteenId, date, profileId, friendProfileIds]);
+
 	useEffect(() => {
 		if (!isRegistered || !profileId) return;
 		canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId).then(visit => {
 			setOwnVisit(visit);
 		});
 	}, [canteenId, date, isRegistered, profileId]);
+
+	useEffect(() => {
+		fetchDebugData();
+	}, [fetchDebugData]);
 
 	const handleToggle = useCallback(async () => {
 		if (!isRegistered || !profileId) {
@@ -114,12 +135,14 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 			const updatedVisit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId);
 			setOwnVisit(updatedVisit);
 			onOwnVisitChanged?.(date, updatedVisit);
+			// Refresh debug data after toggle
+			fetchDebugData();
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged]);
+	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged, fetchDebugData]);
 
 	return (
 		<View>
@@ -200,6 +223,14 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 				italic={true}
 				groupPosition="bottom"
 			/>
+			<DebugView
+				title="Canteen Visits Debug"
+				logs={[
+					`Own visits: ${debugOwnVisits ? JSON.stringify(debugOwnVisits, null, 2) : 'loading...'}`,
+					`Friend visits: ${debugFriendVisits ? JSON.stringify(debugFriendVisits, null, 2) : 'loading...'}`,
+					`All visits: ${debugAllVisits ? JSON.stringify(debugAllVisits, null, 2) : 'loading...'}`,
+				]}
+			/>
 		</View>
 	);
 };
@@ -246,6 +277,8 @@ const CanteenVisitsScreen: React.FC = () => {
 	const [visitCounts, setVisitCounts] = useState<Record<string, { total: number; friends: number }>>({});
 	// Own visits per date (undefined = not yet fetched, null = no visit)
 	const [ownVisits, setOwnVisits] = useState<Record<string, DatabaseTypes.CanteenVisits | null | undefined>>({});
+	// Dates currently being toggled (loading spinner)
+	const [togglingDates, setTogglingDates] = useState<Record<string, boolean>>({});
 
 	const friendProfileIds = useMemo(() => {
 		if (!isRegistered || !profile?.id) return [];
@@ -281,27 +314,28 @@ const CanteenVisitsScreen: React.FC = () => {
 			router.navigate('/(auth)/login');
 			return;
 		}
-		const existing = ownVisits[date];
+		if (!profile?.id) return;
+		if (togglingDates[date]) return;
+		setTogglingDates(prev => ({ ...prev, [date]: true }));
 		try {
+			const existing = ownVisits[date];
 			if (existing) {
-				if (profile?.id) {
-					await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
-				} else {
-					await canteenVisitsHelper.deleteVisit(existing.id);
-				}
+				// Delete all own visits for this date (handles duplicates)
+				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
 			} else {
+				// Create visit with date set to 12:00
 				await canteenVisitsHelper.createVisitForDate(canteenId, date);
 			}
 			// Re-fetch from backend to get the actual state
-			if (profile?.id) {
-				const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
-				setOwnVisits(prev => ({ ...prev, [date]: visit }));
-			}
-			fetchVisitCountsForDate(date);
+			const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
+			setOwnVisits(prev => ({ ...prev, [date]: visit }));
+			await fetchVisitCountsForDate(date);
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
+		} finally {
+			setTogglingDates(prev => ({ ...prev, [date]: false }));
 		}
-	}, [isRegistered, ownVisits, canteenId, fetchVisitCountsForDate, router, profile?.id]);
+	}, [isRegistered, ownVisits, canteenId, fetchVisitCountsForDate, router, profile?.id, togglingDates]);
 
 	const openVisitDetailsModal = useCallback((date: string) => {
 		const counts = visitCounts[date] || { total: 0, friends: 0 };
@@ -635,6 +669,7 @@ const CanteenVisitsScreen: React.FC = () => {
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		const ownVisit = ownVisits[item.date];
+		const isToggling = !!togglingDates[item.date];
 		const isOwnVisitActive = !!ownVisit;
 		const visitButtonBg = isOwnVisitActive ? foods_area_color : theme.screen.iconBg;
 		const visitTextColor = isOwnVisitActive ? canteenContrastColor : theme.screen.text;
@@ -650,8 +685,13 @@ const CanteenVisitsScreen: React.FC = () => {
 									style={styles.visitJoinButton}
 									onPress={() => toggleOwnVisitForDate(item.date)}
 									activeOpacity={0.7}
+									disabled={isToggling}
 								>
-									<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
+									{isToggling ? (
+										<ActivityIndicator size="small" color={visitTextColor} />
+									) : (
+										<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
+									)}
 								</TouchableOpacity>
 								<View style={[styles.visitSeparator, { backgroundColor: visitTextColor, opacity: 0.3 }]} />
 							</>
@@ -664,12 +704,20 @@ const CanteenVisitsScreen: React.FC = () => {
 							{isRegistered && friendProfileIds.length > 0 && (
 								<View style={styles.visitCountRow}>
 									<MaterialCommunityIcons name="account-heart" size={18} color={visitTextColor} />
-									<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+									{isToggling ? (
+										<ActivityIndicator size="small" color={visitTextColor} />
+									) : (
+										<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+									)}
 								</View>
 							)}
 							<View style={styles.visitCountRow}>
 								<MaterialCommunityIcons name="account-group" size={18} color={visitTextColor} />
-								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
+								{isToggling ? (
+									<ActivityIndicator size="small" color={visitTextColor} />
+								) : (
+									<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
+								)}
 							</View>
 						</TouchableOpacity>
 					</View>

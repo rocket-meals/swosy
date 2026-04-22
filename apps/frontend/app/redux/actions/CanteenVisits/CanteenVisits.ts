@@ -1,17 +1,26 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 
+/**
+ * Helper for date-range filter on a single calendar day (00:00:00 – 23:59:59).
+ */
+function dateRangeFilter(date: string) {
+	return { _gte: `${date}T00:00:00`, _lte: `${date}T23:59:59` };
+}
+
 export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenVisits> {
 	constructor(client?: any) {
 		super('canteen_visits', client);
 	}
+
+	// ── Read own visit (single) ──────────────────────────────────────
 
 	async fetchOwnVisitForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits | null> {
 		try {
 			const results = await this.readItems({
 				filter: {
 					canteen: { _eq: canteenId },
-					date: { _gte: `${date}T00:00:00`, _lte: `${date}T23:59:59` },
+					date: dateRangeFilter(date),
 					profile: { _eq: profileId },
 				},
 				limit: 1,
@@ -23,6 +32,25 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		}
 	}
 
+	// ── Read own visits (all – used for deletion of duplicates) ──────
+
+	async fetchOwnVisitsForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits[]> {
+		try {
+			return await this.readItems({
+				filter: {
+					canteen: { _eq: canteenId },
+					date: dateRangeFilter(date),
+					profile: { _eq: profileId },
+				},
+			} as any);
+		} catch (error) {
+			console.error('Error fetching own canteen visits:', error);
+			return [];
+		}
+	}
+
+	// ── Create ───────────────────────────────────────────────────────
+
 	async createVisitForDate(canteenId: string, date: string): Promise<DatabaseTypes.CanteenVisits> {
 		return this.createItem({
 			canteen: canteenId,
@@ -31,18 +59,10 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		} as any);
 	}
 
-	async deleteVisit(visitId: string): Promise<void> {
-		await this.deleteItem(visitId);
-	}
+	// ── Delete own visits for a date (handles duplicates) ────────────
 
 	async deleteOwnVisitsForDate(canteenId: string, date: string, profileId: string): Promise<void> {
-		const visits = await this.readItems({
-			filter: {
-				canteen: { _eq: canteenId },
-				date: { _gte: `${date}T00:00:00`, _lte: `${date}T22:59:59` },
-				profile: { _eq: profileId },
-			},
-		} as any);
+		const visits = await this.fetchOwnVisitsForDate(canteenId, date, profileId);
 		for (const visit of visits) {
 			const id = (visit as any).id;
 			if (id) {
@@ -50,6 +70,8 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 			}
 		}
 	}
+
+	// ── Count: all people ────────────────────────────────────────────
 
 	async fetchVisitCountForDate(canteenId: string, date: string): Promise<number> {
 		try {
@@ -60,7 +82,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 				query: {
 					filter: {
 						canteen: { _eq: canteenId },
-						date: { _eq: date },
+						date: dateRangeFilter(date),
 					},
 				},
 			});
@@ -72,6 +94,8 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		}
 	}
 
+	// ── Count: friends ───────────────────────────────────────────────
+
 	async fetchFriendVisitCountForDate(canteenId: string, date: string, friendProfileIds: string[]): Promise<number> {
 		if (friendProfileIds.length === 0) return 0;
 		try {
@@ -82,7 +106,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 				query: {
 					filter: {
 						canteen: { _eq: canteenId },
-						date: { _eq: date },
+						date: dateRangeFilter(date),
 						profile: { _in: friendProfileIds },
 					},
 				},
@@ -92,6 +116,38 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		} catch (error) {
 			console.error('Error fetching friend canteen visit count:', error);
 			return 0;
+		}
+	}
+
+	// ── Raw reads (for debug view) ───────────────────────────────────
+
+	async fetchAllVisitsForDate(canteenId: string, date: string): Promise<DatabaseTypes.CanteenVisits[]> {
+		try {
+			return await this.readItems({
+				filter: {
+					canteen: { _eq: canteenId },
+					date: dateRangeFilter(date),
+				},
+			} as any);
+		} catch (error) {
+			console.error('Error fetching all canteen visits:', error);
+			return [];
+		}
+	}
+
+	async fetchFriendVisitsForDate(canteenId: string, date: string, friendProfileIds: string[]): Promise<DatabaseTypes.CanteenVisits[]> {
+		if (friendProfileIds.length === 0) return [];
+		try {
+			return await this.readItems({
+				filter: {
+					canteen: { _eq: canteenId },
+					date: dateRangeFilter(date),
+					profile: { _in: friendProfileIds },
+				},
+			} as any);
+		} catch (error) {
+			console.error('Error fetching friend canteen visits:', error);
+			return [];
 		}
 	}
 }
