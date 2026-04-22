@@ -3,6 +3,7 @@ import { CollectionHelper } from '@/helper/collectionHelper';
 
 /**
  * Helper for date-range filter on a single calendar day (00:00:00 – 23:59:59).
+ * @param date Date string in YYYY-MM-DD format (e.g. "2026-04-22").
  */
 function dateRangeFilter(date: string) {
 	return { _gte: `${date}T00:00:00`, _lte: `${date}T23:59:59` };

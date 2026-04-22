@@ -96,14 +96,21 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 	const [debugAllVisits, setDebugAllVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
 
 	const fetchDebugData = useCallback(async () => {
-		const [ownRaw, friendRaw, allRaw] = await Promise.all([
-			profileId ? canteenVisitsHelper.fetchOwnVisitsForDate(canteenId, date, profileId) : Promise.resolve([]),
-			friendProfileIds.length > 0 ? canteenVisitsHelper.fetchFriendVisitsForDate(canteenId, date, friendProfileIds) : Promise.resolve([]),
-			canteenVisitsHelper.fetchAllVisitsForDate(canteenId, date),
-		]);
-		setDebugOwnVisits(ownRaw);
-		setDebugFriendVisits(friendRaw);
-		setDebugAllVisits(allRaw);
+		try {
+			const [ownRaw, friendRaw, allRaw] = await Promise.all([
+				profileId ? canteenVisitsHelper.fetchOwnVisitsForDate(canteenId, date, profileId) : Promise.resolve([]),
+				friendProfileIds.length > 0 ? canteenVisitsHelper.fetchFriendVisitsForDate(canteenId, date, friendProfileIds) : Promise.resolve([]),
+				canteenVisitsHelper.fetchAllVisitsForDate(canteenId, date),
+			]);
+			setDebugOwnVisits(ownRaw);
+			setDebugFriendVisits(friendRaw);
+			setDebugAllVisits(allRaw);
+		} catch (error) {
+			console.error('Error fetching debug canteen visit data:', error);
+			setDebugOwnVisits([]);
+			setDebugFriendVisits([]);
+			setDebugAllVisits([]);
+		}
 	}, [canteenId, date, profileId, friendProfileIds]);
 
 	useEffect(() => {
