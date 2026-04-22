@@ -55,6 +55,7 @@ import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollvie
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
+import { FriendsContent } from '@/components/FriendsContent';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -84,6 +85,13 @@ const Settings = () => {
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
+
+        const openFriendsModal = useCallback(() => {
+                showScrollViewModal({
+                        title: translate(TranslationKeys.friendships),
+                        children: <FriendsContent showHeading={false} />,
+                });
+        }, [showScrollViewModal, translate]);
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
@@ -478,7 +486,7 @@ const Settings = () => {
 								label={translate(TranslationKeys.friendships)}
 								value={String(acceptedFriendsCount)}
 								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={() => router.navigate('/experimentell/friendships')}
+								handleFunction={openFriendsModal}
 								groupPosition="bottom"
 							/>
 						)}
@@ -753,7 +761,7 @@ const Settings = () => {
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
-		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal,
+		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 	]);
 
 	return (

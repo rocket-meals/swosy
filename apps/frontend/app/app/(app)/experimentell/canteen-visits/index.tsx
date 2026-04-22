@@ -33,7 +33,7 @@ import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/Cantee
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { UserHelper } from '@/helper/UserHelper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FriendsContent } from '@/app/(app)/experimentell/friendships';
+import { FriendsContent } from '@/components/FriendsContent';
 import { CanteenVisitDetailsModalContent } from '@/components/CanteenVisitsDateRow';
 
 interface DayData {
