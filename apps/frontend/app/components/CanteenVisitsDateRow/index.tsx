@@ -221,11 +221,11 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 /* ─────────────────────── CanteenVisitsDateRow ──────────────────────────── */
 
 export interface CanteenVisitsDateRowProps {
-	canteen_id: string;
+	canteenId: string;
 	date: string;
 }
 
-export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ canteen_id, date }) => {
+export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ canteenId, date }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const router = useRouter();
@@ -266,20 +266,20 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const [toggling, setToggling] = useState(false);
 
 	const fetchData = useCallback(async () => {
-		if (!canteen_id) return;
-		const totalP = canteenVisitsHelper.fetchVisitCountForDate(canteen_id, date);
+		if (!canteenId) return;
+		const totalP = canteenVisitsHelper.fetchVisitCountForDate(canteenId, date);
 		const friendsP =
 			friendProfileIds.length > 0
-				? canteenVisitsHelper.fetchFriendVisitCountForDate(canteen_id, date, friendProfileIds)
+				? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
 				: Promise.resolve(0);
 		const ownP =
 			isRegistered && profile?.id
-				? canteenVisitsHelper.fetchOwnVisitForDate(canteen_id, date, profile.id)
+				? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id)
 				: Promise.resolve(null);
 		const [total, friends, own] = await Promise.all([totalP, friendsP, ownP]);
 		setCounts({ total, friends });
 		setOwnVisit(own);
-	}, [canteen_id, date, friendProfileIds, isRegistered, profile?.id]);
+	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id]);
 
 	useEffect(() => {
 		fetchData();
@@ -294,9 +294,9 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		setToggling(true);
 		try {
 			if (ownVisit) {
-				await canteenVisitsHelper.deleteOwnVisitsForDate(canteen_id, date, profile.id);
+				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
 			} else {
-				await canteenVisitsHelper.createVisitForDate(canteen_id, date, profile.id);
+				await canteenVisitsHelper.createVisitForDate(canteenId, date, profile.id);
 			}
 			await fetchData();
 		} catch (e) {
@@ -304,14 +304,14 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profile?.id, toggling, ownVisit, canteen_id, date, router, fetchData]);
+	}, [isRegistered, profile?.id, toggling, ownVisit, canteenId, date, router, fetchData]);
 
 	const openDetailsModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.canteen_visits_details),
 			children: (
 				<CanteenVisitDetailsModalContent
-					canteenId={canteen_id}
+					canteenId={canteenId}
 					date={date}
 					counts={counts}
 					primaryColor={primaryColor}
@@ -337,7 +337,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 				/>
 			),
 		});
-	}, [counts, canteen_id, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, router, fetchData]);
+	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, router, fetchData]);
 
 	const isOwnVisitActive = !!ownVisit;
 	const hasFriendsVisiting = isRegistered && friendProfileIds.length > 0 && counts.friends > 0;

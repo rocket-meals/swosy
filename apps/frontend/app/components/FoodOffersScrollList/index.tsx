@@ -379,7 +379,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
 					{appSettings?.friends_enabled && (
-						<CanteenVisitsDateRow canteen_id={canteenId} date={item.date} />
+						<CanteenVisitsDateRow canteenId={canteenId} date={item.date} />
 					)}
 				</View>
 				{beforeElement && (
