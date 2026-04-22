@@ -190,7 +190,8 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 						groupPosition={(debugFriendVisits ?? []).length > 0 ? 'middle' : 'bottom'}
 					/>
 					{(debugFriendVisits ?? []).map((visit, index) => {
-						const friendProfileId = (visit as any).profile as string;
+						const profileField = visit.profile;
+						const friendProfileId = typeof profileField === 'string' ? profileField : (profileField as DatabaseTypes.Profiles)?.id ?? '';
 						const friendProfile = friendsDict[friendProfileId];
 						const alias = friendProfile?.nickname || friendProfileId;
 						const isLast = index === (debugFriendVisits ?? []).length - 1;
