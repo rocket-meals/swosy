@@ -235,14 +235,6 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const { friendships } = useAppSelector((state) => state.friendships);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
-	// Check if the component should be rendered
-	const showCanteenVisits = appSettings?.friends_enabled || isDevMode;
-	
-	// Early return if not enabled or visibility is 'off'
-	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {
-		return null;
-	}
-
 	const isRegistered = UserHelper.isRegisteredUser(user);
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
 	const canteenContrastColor = useMyContrastColor(foods_area_color, theme, mode === 'dark');
@@ -274,8 +266,11 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
 	const [toggling, setToggling] = useState(false);
 
+	// Check if the component should be rendered
+	const showCanteenVisits = appSettings?.friends_enabled || isDevMode;
+
 	const fetchData = useCallback(async () => {
-		if (!canteenId) return;
+		if (!canteenId || !showCanteenVisits || canteenVisitsVisibility === 'off') return;
 		
 		// Determine what data to fetch based on visibility
 		const shouldFetchTotal = canteenVisitsVisibility === 'all';
@@ -295,7 +290,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		const [total, friends, own] = await Promise.all([totalP, friendsP, ownP]);
 		setCounts({ total, friends });
 		setOwnVisit(own);
-	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id, canteenVisitsVisibility]);
+	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id, canteenVisitsVisibility, showCanteenVisits]);
 
 	useEffect(() => {
 		fetchData();
@@ -354,6 +349,11 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 			),
 		});
 	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, router, fetchData]);
+
+	// Early return if not enabled or visibility is 'off' — placed after all hooks
+	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {
+		return null;
+	}
 
 	const isOwnVisitActive = !!ownVisit;
 	const hasFriendsVisiting = isRegistered && friendProfileIds.length > 0 && counts.friends > 0;
