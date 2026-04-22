@@ -62,6 +62,7 @@ interface CanteenVisitDetailsModalContentProps {
 	foods_area_color: string;
 	isRegistered: boolean;
 	friendProfileIds: string[];
+	friendsDict: Record<string, DatabaseTypes.Profiles>;
 	profileId: string | undefined;
 	translate: (key: TranslationKeys) => string;
 	theme: any;
@@ -79,6 +80,7 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 	foods_area_color,
 	isRegistered,
 	friendProfileIds,
+	friendsDict,
 	profileId,
 	translate,
 	theme,
@@ -171,13 +173,6 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 			{isRegistered ? (
 				<>
 					<SettingsList
-						leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
-						iconBgColor={primaryColor}
-						label={translate(TranslationKeys.canteen_visits_friends)}
-						value={String(counts.friends)}
-						groupPosition="top"
-					/>
-					<SettingsList
 						leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
 						iconBgColor={primaryColor}
 						label={translate(TranslationKeys.canteen_visits_manage_friends)}
@@ -185,8 +180,31 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 						handleFunction={() => {
 							showFriendsModal();
 						}}
-						groupPosition="bottom"
+						groupPosition="top"
 					/>
+					<SettingsList
+						leftIcon={<MaterialCommunityIcons name="account-heart" size={24} color={theme.screen.icon} />}
+						iconBgColor={primaryColor}
+						label={translate(TranslationKeys.canteen_visits_friends)}
+						value={String(counts.friends)}
+						groupPosition={(debugFriendVisits ?? []).length > 0 ? 'middle' : 'bottom'}
+					/>
+					{(debugFriendVisits ?? []).map((visit, index) => {
+						const profileField = visit.profile;
+						const friendProfileId = typeof profileField === 'string' ? profileField : (profileField as DatabaseTypes.Profiles)?.id ?? '';
+						const friendProfile = friendsDict[friendProfileId];
+						const alias = friendProfile?.nickname || friendProfileId;
+						const isLast = index === (debugFriendVisits ?? []).length - 1;
+						return (
+							<SettingsList
+								key={friendProfileId}
+								leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
+								iconBgColor={primaryColor}
+								label={alias}
+								groupPosition={isLast ? 'bottom' : 'middle'}
+							/>
+						);
+					})}
 				</>
 			) : (
 				<>
@@ -292,6 +310,24 @@ const CanteenVisitsScreen: React.FC = () => {
 		return getFriendProfileIds(friendships, profile.id);
 	}, [isRegistered, profile?.id, friendships]);
 
+	const friendsDict = useMemo((): Record<string, DatabaseTypes.Profiles> => {
+		const dict: Record<string, DatabaseTypes.Profiles> = {};
+		if (!profile?.id || !friendships) return dict;
+		for (const friendship of friendships) {
+			if (friendship.friendship_status !== 'accepted') continue;
+			const req = friendship.requester_profiles_id;
+			const rec = friendship.receiver_profiles_id;
+			const reqId = typeof req === 'string' ? req : (req as DatabaseTypes.Profiles)?.id;
+			const recId = typeof rec === 'string' ? rec : (rec as DatabaseTypes.Profiles)?.id;
+			if (reqId === profile.id && recId && typeof rec !== 'string') {
+				dict[recId] = rec as DatabaseTypes.Profiles;
+			} else if (recId === profile.id && reqId && typeof req !== 'string') {
+				dict[reqId] = req as DatabaseTypes.Profiles;
+			}
+		}
+		return dict;
+	}, [friendships, profile?.id]);
+
 	const fetchVisitCountsForDate = useCallback(async (date: string) => {
 		if (!canteenId) return;
 		const total = await canteenVisitsHelper.fetchVisitCountForDate(canteenId, date);
@@ -358,6 +394,7 @@ const CanteenVisitsScreen: React.FC = () => {
 					foods_area_color={foods_area_color}
 					isRegistered={isRegistered}
 					friendProfileIds={friendProfileIds}
+					friendsDict={friendsDict}
 					profileId={profile?.id}
 					translate={translate}
 					theme={theme}
@@ -373,7 +410,7 @@ const CanteenVisitsScreen: React.FC = () => {
 				/>
 			),
 		});
-	}, [visitCounts, translate, theme, primaryColor, foods_area_color, isRegistered, friendProfileIds, profile?.id, canteenId, showScrollViewModal, closeScrollViewModal, router, handleOwnVisitChanged]);
+	}, [visitCounts, translate, theme, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, canteenId, showScrollViewModal, closeScrollViewModal, router, handleOwnVisitChanged]);
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -679,53 +716,54 @@ const CanteenVisitsScreen: React.FC = () => {
 		const isToggling = !!togglingDates[item.date];
 		const isOwnVisitActive = !!ownVisit;
 		const hasFriendsVisiting = isRegistered && friendProfileIds.length > 0 && (visitCounts[item.date]?.friends ?? 0) > 0;
-		const isHighlighted = isOwnVisitActive || hasFriendsVisiting;
-		const visitButtonBg = isHighlighted ? foods_area_color : theme.screen.iconBg;
-		const visitTextColor = isHighlighted ? canteenContrastColor : theme.screen.text;
+		const joinButtonBg = isOwnVisitActive ? foods_area_color : theme.screen.iconBg;
+		const joinTextColor = isOwnVisitActive ? canteenContrastColor : theme.screen.text;
+		const countsBg = hasFriendsVisiting ? foods_area_color : theme.screen.iconBg;
+		const countsTextColor = hasFriendsVisiting ? canteenContrastColor : theme.screen.text;
 
 		return (
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
-					<View style={[styles.visitButtonWrapper, { backgroundColor: visitButtonBg }]}>
+					<View style={styles.visitButtonWrapper}>
 						{isRegistered && (
 							<>
 								<TouchableOpacity
-									style={styles.visitJoinButton}
+									style={[styles.visitJoinButton, { backgroundColor: joinButtonBg }]}
 									onPress={() => toggleOwnVisitForDate(item.date)}
 									activeOpacity={0.7}
 									disabled={isToggling}
 								>
 									{isToggling ? (
-										<ActivityIndicator size="small" color={visitTextColor} />
+										<ActivityIndicator size="small" color={joinTextColor} />
 									) : (
-										<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
+										<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={joinTextColor} />
 									)}
 								</TouchableOpacity>
-								<View style={[styles.visitSeparator, { backgroundColor: visitTextColor, opacity: 0.3 }]} />
+								<View style={[styles.visitSeparator, { backgroundColor: theme.screen.text, opacity: 0.2 }]} />
 							</>
 						)}
 						<TouchableOpacity
-							style={styles.visitCountsButton}
+							style={[styles.visitCountsButton, { backgroundColor: countsBg }]}
 							onPress={() => openVisitDetailsModal(item.date)}
 							activeOpacity={0.7}
 						>
 							{isRegistered && friendProfileIds.length > 0 && (
 								<View style={styles.visitCountRow}>
-									<MaterialCommunityIcons name="account-heart" size={18} color={visitTextColor} />
+									<MaterialCommunityIcons name="account-heart" size={18} color={countsTextColor} />
 									{isToggling ? (
-										<ActivityIndicator size="small" color={visitTextColor} />
+										<ActivityIndicator size="small" color={countsTextColor} />
 									) : (
-										<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
+										<Text style={[styles.visitCountText, { color: countsTextColor }]}>{visitCounts[item.date]?.friends ?? '…'}</Text>
 									)}
 								</View>
 							)}
 							<View style={styles.visitCountRow}>
-								<MaterialCommunityIcons name="account-group" size={18} color={visitTextColor} />
+								<MaterialCommunityIcons name="account-group" size={18} color={countsTextColor} />
 								{isToggling ? (
-									<ActivityIndicator size="small" color={visitTextColor} />
+									<ActivityIndicator size="small" color={countsTextColor} />
 								) : (
-									<Text style={[styles.visitCountText, { color: visitTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
+									<Text style={[styles.visitCountText, { color: countsTextColor }]}>{visitCounts[item.date]?.total ?? '…'}</Text>
 								)}
 							</View>
 						</TouchableOpacity>
