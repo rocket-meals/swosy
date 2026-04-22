@@ -93,12 +93,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L68
-
-- **Prefer `Number.parseInt` over `parseInt`.**
   apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:91
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L91
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:116
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L116
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/activities/[id].tsx:187
