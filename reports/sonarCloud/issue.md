@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 13 | 13 |
-| 🐛 Reliability | 6850 | 37 |
+| 🐛 Reliability | 6840 | 37 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16863 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16853 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -66,51 +66,11 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (37/6850)
+## 🐛 Reliability (37/6840)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
-
-- **React Hook "useMyContrastColor" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:248
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L248
-
-- **React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:250
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L250
-
-- **React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:255
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L255
-
-- **React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:273
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L273
-
-- **React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:274
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L274
-
-- **React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:275
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L275
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:277
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L277
-
-- **React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:300
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L300
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:304
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L304
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/CanteenVisitsDateRow/index.tsx:325
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CanteenVisitsDateRow/index.tsx#L325
 
 - **React Hook "usePlatformHelper" is called in function "handleNativeLogin" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
   apps/frontend/app/helper/authHelper.ts:38
@@ -215,4 +175,44 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:84
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L84
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L119
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:120
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L120
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:158
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L158
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:159
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:466
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L466
+
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:353
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L353
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityStatsHelper.ts#L24
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:242
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L242
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:243
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L243
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:261
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L261
 
