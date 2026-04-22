@@ -107,13 +107,13 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 		try {
 			if (ownVisit) {
 				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profileId);
-				setOwnVisit(null);
-				onOwnVisitChanged?.(date, null);
 			} else {
-				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date);
-				setOwnVisit(created);
-				onOwnVisitChanged?.(date, created);
+				await canteenVisitsHelper.createVisitForDate(canteenId, date);
 			}
+			// Re-fetch from backend to get the actual state
+			const updatedVisit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId);
+			setOwnVisit(updatedVisit);
+			onOwnVisitChanged?.(date, updatedVisit);
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
 		} finally {
@@ -289,10 +289,13 @@ const CanteenVisitsScreen: React.FC = () => {
 				} else {
 					await canteenVisitsHelper.deleteVisit(existing.id);
 				}
-				setOwnVisits(prev => ({ ...prev, [date]: null }));
 			} else {
-				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date);
-				setOwnVisits(prev => ({ ...prev, [date]: created }));
+				await canteenVisitsHelper.createVisitForDate(canteenId, date);
+			}
+			// Re-fetch from backend to get the actual state
+			if (profile?.id) {
+				const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
+				setOwnVisits(prev => ({ ...prev, [date]: visit }));
 			}
 			fetchVisitCountsForDate(date);
 		} catch (e) {

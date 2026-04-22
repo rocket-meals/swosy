@@ -11,7 +11,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 			const results = await this.readItems({
 				filter: {
 					canteen: { _eq: canteenId },
-					date: { _eq: date },
+					date: { _gte: `${date}T00:00:00`, _lte: `${date}T23:59:59` },
 					profile: { _eq: profileId },
 				},
 				limit: 1,
@@ -26,7 +26,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 	async createVisitForDate(canteenId: string, date: string): Promise<DatabaseTypes.CanteenVisits> {
 		return this.createItem({
 			canteen: canteenId,
-			date,
+			date: `${date}T12:00:00`,
 			status: 'published',
 		} as any);
 	}
@@ -39,7 +39,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 		const visits = await this.readItems({
 			filter: {
 				canteen: { _eq: canteenId },
-				date: { _eq: date },
+				date: { _gte: `${date}T00:00:00`, _lte: `${date}T22:59:59` },
 				profile: { _eq: profileId },
 			},
 		} as any);
