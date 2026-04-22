@@ -52,6 +52,7 @@ import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
 
@@ -82,9 +83,11 @@ const Settings = () => {
         const { openHousingSortingModal } = useHousingSortingModal();
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+        const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
+        const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
                 () => friendships.filter((f) => f.friendship_status === 'accepted').length,
@@ -181,6 +184,19 @@ const Settings = () => {
                 () => translate(campusSortingOptionLabels[campusesSortBy as CampusSortOption] ?? 'sort_option_none'),
                 [campusSortingOptionLabels, campusesSortBy, translate]
         );
+
+        const canteenVisitsVisibilityLabel = useMemo(() => {
+                switch (canteenVisitsVisibility) {
+                        case 'all':
+                                return translate(TranslationKeys.canteen_visits_visibility_all);
+                        case 'friends_only':
+                                return translate(TranslationKeys.canteen_visits_visibility_friends_only);
+                        case 'off':
+                                return translate(TranslationKeys.canteen_visits_visibility_off);
+                        default:
+                                return translate(TranslationKeys.canteen_visits_visibility_all);
+                }
+        }, [canteenVisitsVisibility, translate]);
 
         const saveNickname = useCallback(
                 async (value: string) => {
@@ -483,6 +499,17 @@ const Settings = () => {
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+						{showFriendsInSettings && (
+							<SettingsList
+								iconBgColor={foods_area_color}
+								leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.canteen_visits_visibility)}
+								value={canteenVisitsVisibilityLabel}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={openCanteenVisitsVisibilityModal}
+								groupPosition="middle"
+							/>
+						)}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
 					</View>
 				</View>
@@ -726,7 +753,7 @@ const Settings = () => {
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
-		acceptedFriendsCount,
+		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal,
 	]);
 
 	return (
