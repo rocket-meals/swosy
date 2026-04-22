@@ -70,7 +70,7 @@ const Settings = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
-        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement } = useAppSelector((state) => state.authReducer);
+        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
@@ -438,7 +438,7 @@ const Settings = () => {
 		const groupStyle = { gap: 0 } as const;
 
 		// === Account & Personalization ===
-		const showFriendsInSettings = !!(appSettings?.friends_enabled || debugMode);
+		const showFriendsInSettings = !!(appSettings?.friends_enabled || isDevMode);
 		rows.push({
 			key: 'section-account',
 			element: (
