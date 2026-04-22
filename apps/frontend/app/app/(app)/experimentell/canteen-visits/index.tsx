@@ -678,8 +678,10 @@ const CanteenVisitsScreen: React.FC = () => {
 		const ownVisit = ownVisits[item.date];
 		const isToggling = !!togglingDates[item.date];
 		const isOwnVisitActive = !!ownVisit;
-		const visitButtonBg = isOwnVisitActive ? foods_area_color : theme.screen.iconBg;
-		const visitTextColor = isOwnVisitActive ? canteenContrastColor : theme.screen.text;
+		const hasFriendsVisiting = isRegistered && friendProfileIds.length > 0 && (visitCounts[item.date]?.friends ?? 0) > 0;
+		const isHighlighted = isOwnVisitActive || hasFriendsVisiting;
+		const visitButtonBg = isHighlighted ? foods_area_color : theme.screen.iconBg;
+		const visitTextColor = isHighlighted ? canteenContrastColor : theme.screen.text;
 
 		return (
 			<View style={styles.dayContainer}>
