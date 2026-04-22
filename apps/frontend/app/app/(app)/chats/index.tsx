@@ -16,6 +16,7 @@ import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import styles from './styles';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const ChatsScreen = () => {
         useSetPageTitle(TranslationKeys.chats);
@@ -25,7 +26,8 @@ const ChatsScreen = () => {
 
         const { chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
-        const isArabic = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
         const sortedChats = useMemo(() => {
                 return [...chats].sort((a, b) => {

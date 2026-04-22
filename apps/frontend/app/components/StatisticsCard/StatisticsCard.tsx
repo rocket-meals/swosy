@@ -10,12 +10,14 @@ import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet, setSelectedFoodId }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { serverInfo, appSettings } = useAppSelector((state) => state.settings);
-	const isArabic = useAppSelector((state: RootState) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 

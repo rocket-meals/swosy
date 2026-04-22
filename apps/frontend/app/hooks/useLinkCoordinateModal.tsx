@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export type LinkCoordinate = {
 	latitude: number;
@@ -25,7 +26,8 @@ const useLinkCoordinateModal = () => {
 	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const toast = useToast();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const closeModal = useCallback(() => {
 		close();

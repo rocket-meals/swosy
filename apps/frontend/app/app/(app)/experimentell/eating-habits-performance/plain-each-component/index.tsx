@@ -23,6 +23,7 @@ import DebugView from '@/components/DebugView';
 import { PlainMarkingBaseProps } from '..';
 import { useNavigation } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // ---------------------------------------------------------------------------
 // Minimal plain component – receives resolved strings, no hooks/Redux inside
@@ -84,7 +85,8 @@ const EatingHabitsPlainEachComponent = () => {
 	const { translate, language } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

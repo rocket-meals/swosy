@@ -21,6 +21,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt, StringHelper } from 'repo-depkit-common';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const extractTextAndLink = (description: string) => {
 	// Remove unintended spaces between `]` and `(`
@@ -55,7 +56,8 @@ const TimetableScreen = () => {
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : primaryColor;
 	const contrastColor = myContrastColor(course_timetable_area_color, theme, mode === 'dark');
 	const { text, label, link } = extractTextAndLink(courseTimetableDescriptionEmpty[language as keyof typeof courseTimetableDescriptionEmpty] || courseTimetableDescriptionEmpty.en);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const openSheet = useCallback(() => {
 		bottomSheetRef?.current?.expand();

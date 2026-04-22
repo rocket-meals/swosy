@@ -8,10 +8,13 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
 	const { primaryColor, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const getContent = () => {
 		// Regex patterns for different content types
@@ -196,7 +199,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 			const calculateMarginLeft = (level: number, indent = 0) => level * 16 + indent * 4;
 			const calculateMarginRight = (level: number, indent = 0) => level * 16 + indent * 4;
-			const isArabic = language === 'ar';
+			const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 			// Component for rendering text with proper formatting
 			const TextContent = ({ text, level, indent }: { text: string; level: number; indent: number }) => (

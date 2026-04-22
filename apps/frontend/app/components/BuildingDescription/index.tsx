@@ -6,12 +6,14 @@ import { useAppSelector } from '@/redux/hooks';
 import { getBuildingTranslationByLanguageCode } from '@/helper/resourceHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const BuildingDescription: React.FC<any> = ({ campusDetails }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	return (
 		<View style={styles.container}>

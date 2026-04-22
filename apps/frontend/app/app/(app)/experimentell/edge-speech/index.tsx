@@ -8,6 +8,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const VOICES = [
 	{ key: 'de-DE-KatjaNeural', label: 'Katja (DE)' },
@@ -23,7 +24,8 @@ const EdgeSpeechScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const [inputText, setInputText] = useState('Guten Appetit! Hier sind heute leckere Gerichte für euch.');
 	const [selectedVoice, setSelectedVoice] = useState(VOICES[0].key);

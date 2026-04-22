@@ -23,6 +23,8 @@ import styles from './styles';
 import { MARK_CHAT_AS_READ } from '@/redux/Types/types';
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 type LinkedFoodInfo = {
         food: DatabaseTypes.Foods;
@@ -33,6 +35,7 @@ type LinkedFoodInfo = {
 const ChatDetailsScreen = () => {
 	useSetPageTitle(TranslationKeys.chat);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
         const { chat_id, refreshKey } = useLocalSearchParams<{ chat_id?: string; refreshKey?: string }>();
         const { primaryColor: projectColor, selectedTheme: mode, appSettings, serverInfo } = useAppSelector((state) => state.settings);
 
@@ -43,6 +46,7 @@ const ChatDetailsScreen = () => {
         const [newMessage, setNewMessage] = useState('');
         const [sending, setSending] = useState(false);
         const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
         const [linkedFoodFeedback, setLinkedFoodFeedback] = useState<LinkedFoodInfo | null>(null);
         const [refreshing, setRefreshing] = useState(false);
         const listRef = useRef<FlatList<DatabaseTypes.ChatMessages> | null>(null);
@@ -424,7 +428,7 @@ const ChatDetailsScreen = () => {
                                                         }
                                                         rightIcon={
                                                                 <MaterialCommunityIcons
-                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
+                                                                        name={isLtrLanguage ? 'chevron-right' : 'chevron-left'}
                                                                         size={24}
                                                                         color={theme.screen.icon}
                                                                 />
@@ -432,8 +436,8 @@ const ChatDetailsScreen = () => {
                                                         onPress={food?.id ? handleFoodPress : undefined}
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="top"
-							reverseLayout={language === 'ar'}
-							titleTextAlign={language === 'ar' ? 'right' : 'left'}
+							reverseLayout={!isLtrLanguage}
+							titleTextAlign={isLtrLanguage ? 'left' : 'right'}
                                                 />
                                                 <SettingsList
                                                         label={translate(TranslationKeys.linked_elements_rating)}
@@ -447,8 +451,8 @@ const ChatDetailsScreen = () => {
                                                         }
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="middle"
-							reverseLayout={language === 'ar'}
-							titleTextAlign={language === 'ar' ? 'right' : 'left'}
+							reverseLayout={!isLtrLanguage}
+							titleTextAlign={isLtrLanguage ? 'left' : 'right'}
                                                 />
                                                 <SettingsList
                                                         label={translate(TranslationKeys.linked_elements_comment)}
@@ -463,8 +467,8 @@ const ChatDetailsScreen = () => {
                                                         iconBackgroundColor={foodsAreaColor}
                                                         groupPosition="bottom"
                                                         showSeparator={false}
-							reverseLayout={language === 'ar'}
-							titleTextAlign={language === 'ar' ? 'right' : 'left'}
+							reverseLayout={!isLtrLanguage}
+							titleTextAlign={isLtrLanguage ? 'left' : 'right'}
                                                 />
                                         </View>
                                 ),
@@ -478,7 +482,7 @@ const ChatDetailsScreen = () => {
 						styles.linkedElementsTitle,
 						{
 							color: theme.screen.text,
-							...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
+							...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
 						},
 					]}
 				>
@@ -500,19 +504,19 @@ const ChatDetailsScreen = () => {
                                                 title={foodName}
                                                 titleNumberOfLines={1}
                                                 rightElement={
-                                                        <View style={[styles.linkedMoreInfoWrapper, language === 'ar' ? { flexDirection: 'row-reverse' } : null]}>
+                                                        <View style={[styles.linkedMoreInfoWrapper, !isLtrLanguage ? { flexDirection: 'row-reverse' } : null]}>
                                                                 <Text
 									style={[
 										styles.linkedMoreInfoText,
 										{ color: theme.screen.placeholder },
-										language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null,
+										!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : null,
 									]}
 									numberOfLines={1}
 								>
                                                                         {translate(TranslationKeys.show_more_information)}
                                                                 </Text>
                                                                 <MaterialCommunityIcons
-                                                                        name={language === 'ar' ? 'chevron-left' : 'chevron-right'}
+                                                                        name={isLtrLanguage ? 'chevron-right' : 'chevron-left'}
                                                                         size={24}
                                                                         color={theme.screen.icon}
                                                                 />
@@ -521,8 +525,8 @@ const ChatDetailsScreen = () => {
                                                 onPress={openDetailsModal}
                                                 iconBackgroundColor={foodsAreaColor}
                                                 groupPosition="single"
-						reverseLayout={language === 'ar'}
-						titleTextAlign={language === 'ar' ? 'right' : 'left'}
+						reverseLayout={!isLtrLanguage}
+						titleTextAlign={isLtrLanguage ? 'left' : 'right'}
                                         />
                                 </View>
                         </View>
@@ -579,7 +583,7 @@ const ChatDetailsScreen = () => {
 				</View>
 			)}
 			<View style={styles.inputContainer}>
-				<TextInput style={[styles.textInput, { color: theme.screen.text, borderColor: theme.screen.placeholder }, { textAlign: language === 'ar' ? 'right' : 'left' }]} placeholder={translate(TranslationKeys.type_here)} placeholderTextColor={theme.screen.placeholder} multiline value={newMessage} onChangeText={setNewMessage} />
+				<TextInput style={[styles.textInput, { color: theme.screen.text, borderColor: theme.screen.placeholder }, { textAlign: languageTextAlign }]} placeholder={translate(TranslationKeys.type_here)} placeholderTextColor={theme.screen.placeholder} multiline value={newMessage} onChangeText={setNewMessage} />
 				<TouchableOpacity
 					onPress={handleSendMessage}
 					disabled={!newMessage.trim() || sending}

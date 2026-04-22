@@ -10,6 +10,7 @@ import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CollectibleEventMonitor = () => {
 	useSetPageTitle(TranslationKeys.collectible_event_monitor);
@@ -19,7 +20,8 @@ const CollectibleEventMonitor = () => {
 	const { translate, language } = useLanguage();
 	const { activeCollectibleEvent } = useActiveCollectibleEvent();
 	const isFullscreen = Array.isArray(fullscreen) ? fullscreen.includes('true') : fullscreen === 'true';
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const jsonString = useMemo(
 		() => JSON.stringify(activeCollectibleEvent ?? null, null, 2),

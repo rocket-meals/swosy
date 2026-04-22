@@ -15,10 +15,12 @@ import { TranslationKeys } from '@/locales/keys';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 import { RootState } from '@/redux/reducer';
 import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { theme } = useTheme();
 	const apartmentsHelper = new ApartmentsHelper();
 	const [washingMachines, setWashingMachines] = useState<DatabaseTypes.Washingmachines[] | any[]>();

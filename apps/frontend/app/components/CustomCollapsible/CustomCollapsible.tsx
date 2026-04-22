@@ -8,12 +8,14 @@ import { CustomCollapsibleProps } from './types';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { RootState } from '@/redux/reducer';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({ headerText, children, customColor = '', startCollapsed = false }) => {
 	const [collapsed, setCollapsed] = useState(startCollapsed);
 	const { theme } = useTheme();
 	const { primaryColor, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const resolvedColor = customColor || primaryColor;
 	const contrastColor = myContrastColor(resolvedColor, theme, mode === 'dark');
 

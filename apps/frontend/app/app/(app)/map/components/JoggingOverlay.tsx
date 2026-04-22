@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -158,7 +159,8 @@ type RunStatsContentProps = { stats: RunStats };
 const RunStatsContent: React.FC<RunStatsContentProps> = ({ stats }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ iconName: 'straighten', label: translate(TranslationKeys.distance), value: formatDistance(stats.distanceKm) },
@@ -238,7 +240,8 @@ const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
 	const { translate } = useLanguage();
-	const isRtl = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);

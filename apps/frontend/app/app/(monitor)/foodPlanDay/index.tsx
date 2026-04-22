@@ -20,6 +20,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
 import { useMyScrollviewModalSelectDayPlanCanteen } from '@/hooks/useMyScrollviewModalSelectDayPlanCanteen';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_day);
@@ -27,7 +28,8 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { primaryColor: projectColor, appSettings, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { dayPlan } = useAppSelector((state) => state.management);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const { openSelectDayPlanCanteenModal } = useMyScrollviewModalSelectDayPlanCanteen();

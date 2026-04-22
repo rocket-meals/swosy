@@ -9,6 +9,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import AppButton from '../AppButton';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface MyMarkdownProps {
 	content: string;
@@ -36,7 +37,8 @@ const normalizeMarkdownLinks = (sourceContent: string) => {
 
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
 	const { primaryColor, selectedTheme, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const colorScheme = Appearance.getColorScheme();
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;

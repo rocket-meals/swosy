@@ -12,13 +12,15 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.role_management);
 	const { translate } = useLanguage();
         const { theme } = useTheme();
         const dispatch = useDispatch();
-        const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
         const chevronName: React.ComponentProps<typeof Octicons>['name'] = isArabic ? 'chevron-left' : 'chevron-right';
 
         return (

@@ -13,10 +13,14 @@ import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const dispatch = useDispatch();
 	const { formSubmission } = useAppSelector((state) => state.form);
 	const [alias, setAlias] = useState(formSubmission ? formSubmission?.alias : '');
@@ -67,7 +71,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 						...styles.inputContainer,
 					}}
 				>
-					<TextInput style={[styles.input, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder={translate(TranslationKeys.type_here)} />
+					<TextInput style={[styles.input, { color: theme.screen.text }, { textAlign: languageTextAlign }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder={translate(TranslationKeys.type_here)} />
 				</View>
 				<View style={styles.actionContainer}>
 					<AppButton

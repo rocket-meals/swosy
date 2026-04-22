@@ -10,12 +10,14 @@ import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal
 import SettingsList from '@/components/SettingsList';
 import AppButton from '@/components/AppButton';
 import styles from './styles';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const TestUseModalScreen = () => {
         useSetPageTitle(TranslationKeys.test_use_modal);
         const { theme } = useTheme();
         const { translate, language } = useLanguage();
-        const isArabic = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
         const { show, close, debug } = useMyScrollViewModal();
         const { openTextInputModal } = useMyScrollviewTextInputModal();
         const [modalTextValue, setModalTextValue] = useState('');

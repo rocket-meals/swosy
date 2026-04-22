@@ -9,6 +9,7 @@ import { RootState } from '@/redux/reducer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface DropdownSheetProps {
   closeSheet: () => void;
@@ -37,7 +38,8 @@ const ensureStringArray = (options: string[]): string[] => {
 const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allowCustomValues, value, onSelectOption, onSelectCustom, onDeselect, isDisabled, prefix, suffix, error }) => {
   const { theme } = useTheme();
   const { translate, language } = useLanguage();
-  const isRtl = language === 'ar';
+  const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
   const { primaryColor } = useAppSelector(state => state.settings);
 
   const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);

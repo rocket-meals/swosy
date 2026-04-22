@@ -6,13 +6,15 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const FeatureWishesRoute = () => {
 	useSetPageTitle(TranslationKeys.feature_wishes);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { language, primaryColor } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { isManagement } = useAppSelector((state) => state.authReducer);
 
 	return (

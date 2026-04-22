@@ -25,10 +25,12 @@ import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
@@ -134,13 +136,13 @@ const Index = () => {
 				style={{
 					...styles.body1,
 					color: theme.screen.text,
-					...(language === 'ar' ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : {}),
+					...(!isLtrLanguage ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : {}),
 				}}
 			>
 				{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
 			</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
-			<View style={[styles.readMoreContainer, language === 'ar' ? { alignItems: 'flex-end' } : undefined]}>
+			<View style={[styles.readMoreContainer, !isLtrLanguage ? { alignItems: 'flex-end' } : undefined]}>
 				<AppButton
 					text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
 					onPress={handleReadMore}
@@ -148,12 +150,12 @@ const Index = () => {
 						...styles.readMoreButton,
 						backgroundColor: theme.primary,
 						marginVertical: 0,
-						...(language === 'ar' ? { height: 60 } : {}),
+						...(!isLtrLanguage ? { height: 60 } : {}),
 					}}
 					textStyle={{
 						...styles.readMore,
 						color: contrastColor,
-						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
+						...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
 					}}
 				/>
 			</View>
@@ -162,7 +164,7 @@ const Index = () => {
 				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
-				titleTextAlign={language === 'ar' ? 'right' : undefined}
+				titleTextAlign={!isLtrLanguage ? 'right' : undefined}
 				handleFunction={handleClearMarkings}
 				groupPosition="single"
 			/>

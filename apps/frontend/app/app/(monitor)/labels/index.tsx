@@ -15,11 +15,13 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { isWeb } from '@/constants/Constants';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const MarkingItem = ({ marking, onPress }: { marking: any; onPress: () => void }) => {
 	const { theme } = useTheme();
 	const { language, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const markingText = getTextFromTranslation(marking?.translations, language);
 	const MarkingColor = useMyContrastColor(marking?.background_color, theme, mode === 'dark');
 	const hasVisibleIcon = Boolean(marking?.short_code || marking?.image || marking?.image_remote_url || marking?.icon);

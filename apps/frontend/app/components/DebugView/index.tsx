@@ -8,6 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export type DebugLog = string | { message: string; timestamp?: string | Date };
 
@@ -46,10 +47,10 @@ const DebugView: React.FC<DebugViewProps> = ({
         children,
 }) => {
         const { theme } = useTheme();
+        const isLtrLanguage = useIsLtrLanguage();
         const { translate } = useLanguage();
         const debugMode = useDebugMode();
         const isDevMode = useAppSelector((state) => state.authReducer.isDevMode);
-        const language = useAppSelector((state) => state.settings.language);
         const resolvedTitle = title ?? translate(TranslationKeys.debug);
 
         const formattedLogs = useMemo(() => {
@@ -77,13 +78,13 @@ const DebugView: React.FC<DebugViewProps> = ({
                                 styles.container,
                         ]}
                 >
-                        <View style={[styles.header, language === 'ar' ? { flexDirection: 'row-reverse' } : undefined]}>
+                        <View style={[styles.header, !isLtrLanguage ? { flexDirection: 'row-reverse' } : undefined]}>
                                 <MaterialCommunityIcons name="bug-outline" size={18} color={theme.screen.icon} />
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{resolvedTitle}</Text>
                         </View>
 
                         {actions.length ? (
-                                <View style={[styles.actionsContainer, language === 'ar' ? { justifyContent: 'flex-end' } : undefined]}>
+                                <View style={[styles.actionsContainer, !isLtrLanguage ? { justifyContent: 'flex-end' } : undefined]}>
                                         {actions.map((action, index) => (
                                                 <TouchableOpacity
                                                         key={`${action.label}-${index}`}

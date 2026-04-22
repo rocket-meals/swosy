@@ -19,6 +19,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type DirectusImageEditModalBase = {
 	field: string;
@@ -122,7 +123,8 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	const { translate } = useLanguage();
 	const { show: showScrollViewModal } = useMyScrollViewModal();
 	const language = useAppSelector((state) => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [loading, setLoading] = useState({ camera: false, image: false, delete: false });
 	const [isDelete, setIsDelete] = useState(false);
 	const storage = useCollectionFolder(collection);
@@ -417,7 +419,8 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 const useMyScrollviewDirectusImageEditModal = () => {
 	const { show, close } = useMyScrollViewModal();
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const closeModal = useCallback(() => {
 		close();

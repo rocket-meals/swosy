@@ -11,13 +11,15 @@ import SettingsList from '@/components/SettingsList';
 
 import SettingsListCoordinate from '@/components/SettingsListCoordinate/SettingsListCoordinate';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const LocationInformation: React.FC<any> = ({ campusDetails }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { appSettings, primaryColor } = useAppSelector(state => state.settings);
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const campusAreaColor = appSettings?.campus_area_color ?? primaryColor;
 
 	const coordinates = campusDetails?.coordinates?.coordinates;

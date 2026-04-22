@@ -16,6 +16,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { createSelector } from 'reselect';
 import { RootState } from '@/redux/reducer';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface SettingsListMarkingLabelFastProps extends MarkingLabelProps {}
 // All props are defined in MarkingLabelProps; this named export is kept for
@@ -43,7 +44,8 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
 

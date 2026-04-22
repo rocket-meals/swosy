@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
@@ -19,7 +20,8 @@ const useConfirmLogoutModal = () => {
         const { translate, language } = useLanguage();
         const { theme } = useTheme();
         const { buttonLabel, modalDescription } = useLogoutButtonTranslation();
-        const isRtl = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
         const openConfirmLogoutModal = useCallback(
                 () => {

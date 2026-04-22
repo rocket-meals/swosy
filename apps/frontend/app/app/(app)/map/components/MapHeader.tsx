@@ -9,6 +9,8 @@ import { useNavigation } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 type RootDrawerParamList = Record<string, undefined>;
 
@@ -30,7 +32,9 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 	isFilterActive,
 }) => {
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
 	const isRTL = drawerPosition === 'right';
@@ -74,7 +78,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 							{
 								color: theme.header.text,
 							},
-							{ textAlign: language === 'ar' ? 'right' : 'left' },
+							{ textAlign: languageTextAlign },
 						]}
 						cursorColor={theme.header.text}
 						placeholderTextColor={theme.header.text + '88'}

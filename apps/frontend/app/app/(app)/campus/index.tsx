@@ -32,6 +32,7 @@ import { RootDrawerParamList } from './types';
 import CampusHeader from './components/CampusHeader';
 import CampusListHeader from './components/CampusListHeader';
 import CampusEmptyState from './components/CampusEmptyState';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Types
 type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
@@ -39,6 +40,7 @@ type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
 const Index: React.FC = () => {
 	useSetPageTitle(TranslationKeys.campus);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const toast = useToast();
 	const dispatch = useDispatch();
 	const { translate, language } = useLanguage();
@@ -358,7 +360,7 @@ const Index: React.FC = () => {
 					translate={translate}
 					onToggleDrawer={toggleDrawer}
 					onSort={openCampusSortingModal}
-					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition}
 				/>
 
 				<View style={{ flex: 1, alignItems: 'center' }}>

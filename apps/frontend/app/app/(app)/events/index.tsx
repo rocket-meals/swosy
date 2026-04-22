@@ -15,10 +15,12 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useKioskMode from '@/hooks/useKioskMode';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const EventsScreen = () => {
 	useSetPageTitle(TranslationKeys.events);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
     const kioskMode = useKioskMode();
@@ -59,8 +61,8 @@ const EventsScreen = () => {
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<ScrollView contentContainerStyle={styles.container}>
-				<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="refresh" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.reset_seen_popup_events)} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={resetSeenEvents} groupPosition={'single'} />
-				{!kioskMode && popupEvents.map((event: any) => <SettingsList iconBgColor={primaryColor} key={event.id} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={event.translations ? getTitleFromTranslation(event.translations, language) : event.alias} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={() => openSheet(event)} groupPosition={'single'} />)}
+				<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="refresh" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.reset_seen_popup_events)} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={resetSeenEvents} groupPosition={'single'} />
+				{!kioskMode && popupEvents.map((event: any) => <SettingsList iconBgColor={primaryColor} key={event.id} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={event.translations ? getTitleFromTranslation(event.translations, language) : event.alias} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={() => openSheet(event)} groupPosition={'single'} />)}
 			</ScrollView>
 		</SafeAreaView>
 	);

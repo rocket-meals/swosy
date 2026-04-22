@@ -24,6 +24,7 @@ import DebugView from '@/components/DebugView';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useNavigation } from 'expo-router';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // ---------------------------------------------------------------------------
 // Per-marking component – reads its own like state from Redux
@@ -53,7 +54,8 @@ const PlainFullMarkingRow: React.FC<PlainFullMarkingRowProps> = ({ markingId }) 
 	const likeColor = ownMarking?.like === true ? '#4CAF50' : theme.screen.text;
 	const dislikeColor = ownMarking?.like === false ? '#F44336' : theme.screen.text;
 
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	return (
 		<View
@@ -129,7 +131,8 @@ const EatingHabitsPlainComponentFull = () => {
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
 
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

@@ -9,6 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import SettingsList from '@/components/SettingsList';
 import { useNavigation } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // ─── Shimmer hook ────────────────────────────────────────────────────────────
 // Animates a stripe that flashes from left to right every few seconds.
@@ -97,7 +98,8 @@ const AccountRequiredExample = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

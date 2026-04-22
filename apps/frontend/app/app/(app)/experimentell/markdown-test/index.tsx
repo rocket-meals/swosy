@@ -9,6 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import MyMarkdown from '@/components/MyMarkdown';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type MarkdownExample = {
 	id: string;
@@ -20,7 +21,8 @@ const MarkdownTestScreen = () => {
 	useSetPageTitle(TranslationKeys.markdown_test);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { openTextInputModal } = useMyScrollviewTextInputModal();
 	const [customMarkdown, setCustomMarkdown] = useState('**Markdown**\\n\\nMehrzeiliges Beispiel.');
 

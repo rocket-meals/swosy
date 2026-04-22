@@ -22,6 +22,7 @@ import DebugView from '@/components/DebugView';
 import { PlainMarkingBaseProps } from '..';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useNavigation } from 'expo-router';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // ---------------------------------------------------------------------------
 // Plain component with image – receives resolved strings + image URI as props
@@ -106,7 +107,8 @@ const EatingHabitsPlainComponentWithImage = () => {
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
 
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

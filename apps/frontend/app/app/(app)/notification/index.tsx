@@ -22,6 +22,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const NotificationScreen = () => {
 	useSetPageTitle(TranslationKeys.notification);
@@ -29,7 +30,8 @@ const NotificationScreen = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { language, primaryColor, appSettings } = useAppSelector((state) => state.settings);
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);

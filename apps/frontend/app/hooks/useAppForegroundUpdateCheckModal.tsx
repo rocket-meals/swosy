@@ -13,10 +13,12 @@ import { SET_SIMULATE_EXPO_UPDATE_AVAILABLE } from '@/redux/Types/types';
 import AppButton from '@/components/AppButton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const useAppForegroundUpdateCheckModal = () => {
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const appState = useRef<AppStateStatus>(AppState.currentState);
         const debugMode = useDebugMode();
         const { isSmartPhone } = usePlatformHelper();

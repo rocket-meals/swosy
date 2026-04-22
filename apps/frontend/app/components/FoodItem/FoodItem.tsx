@@ -34,6 +34,8 @@ import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -63,6 +65,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     amountColumnsForcard
   }) => {
     const toast = useToast();
+    const isLtrLanguage = useIsLtrLanguage();
+    const languageTextAlign = useLanguageTextAlign();
     const dispatch = useDispatch();
 
     // Optimistic state for rating
@@ -289,8 +293,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       showScrollViewModal(
         {
           title: translate(TranslationKeys.description),
-          titleTextAlign: language === 'ar' ? 'right' : 'left',
-          titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
+          titleTextAlign: languageTextAlign,
+          titleWritingDirection: isLtrLanguage ? 'ltr' : 'rtl',
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
@@ -377,8 +381,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         showScrollViewModal(
                           {
                             title: translate(TranslationKeys.ai_generated_image),
-                            titleTextAlign: language === 'ar' ? 'right' : 'left',
-                            titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
+                            titleTextAlign: languageTextAlign,
+                            titleWritingDirection: isLtrLanguage ? 'ltr' : 'rtl',
                             children: <AIGeneratedHintSheet />,
                           },
                           {}

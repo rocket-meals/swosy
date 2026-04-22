@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { performLogout } from '@/helper/logoutHelper';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const useAccountRequiredModal = () => {
 	const { show, close, closeAll } = useMyScrollViewModal();
@@ -18,7 +19,8 @@ const useAccountRequiredModal = () => {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const language = useAppSelector((state) => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const openAccountRequiredModal = useCallback(() => {
 		const handleLogin = () => {

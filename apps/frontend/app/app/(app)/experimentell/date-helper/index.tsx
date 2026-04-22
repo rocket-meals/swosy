@@ -9,12 +9,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import styles from '../styles';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const DateHelperPreview = () => {
 	useSetPageTitle(TranslationKeys.date_helper_preview);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const smartReadableDate = useSmartReadableDateMethod();
 	const dateLocale = language || Localization.getLocales?.()?.[0]?.languageTag || 'en';
 

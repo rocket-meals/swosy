@@ -7,6 +7,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import styles from './styles';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 interface Dish {
 	id: string;
@@ -64,7 +65,8 @@ const GameIdeas = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { language } = useAppSelector(state => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	useSetPageTitle(TranslationKeys.game_ideas);
 
 	const [ratingPair, setRatingPair] = useState<[Dish, Dish]>(getRandomPair());

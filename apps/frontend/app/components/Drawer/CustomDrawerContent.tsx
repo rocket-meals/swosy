@@ -25,6 +25,7 @@ import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -56,6 +57,7 @@ interface MenuItemProps {
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
 	const { translate, translateDynamic } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
 	const toast = useToast();
 	const dispatch = useDispatch();
 	const router = useRouter();
@@ -367,7 +369,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			activeKey={activeKey}
 			primaryColor={projectColor}
 			footerContent={footerContent}
-			reverseItemLayout={language === 'ar' && drawerPosition === 'right'}
+			reverseItemLayout={!isLtrLanguage && drawerPosition === 'right'}
 		/>
 	);
 };

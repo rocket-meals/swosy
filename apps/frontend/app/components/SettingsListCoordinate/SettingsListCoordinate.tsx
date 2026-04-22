@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import type { LinkCoordinate } from '@/hooks/useLinkCoordinateModal';
 import type { SettingsListProps } from '@/components/SettingsList';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type SettingsListCoordinateProps = React.PropsWithChildren<{
 	location?: LinkCoordinate;
@@ -30,7 +31,8 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const hasLocation = Number.isFinite(location?.latitude) && Number.isFinite(location?.longitude);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const handleOpenLocation = useCallback(() => {
 		if (!hasLocation || !location) {

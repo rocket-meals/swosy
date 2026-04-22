@@ -22,6 +22,7 @@ import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import SettingsList from '@/components/SettingsList';
 import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Module-level cache so the expensive color-replacement deep-copy only runs once
 // per primaryColor value across all navigations, even when the screen is unmounted.
@@ -31,6 +32,7 @@ let _cachedPrimaryColor: string | null = null;
 const Index = () => {
 	useSetPageTitle(TranslationKeys.price_group);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const profileHelper = new ProfileHelper();
@@ -158,8 +160,8 @@ const Index = () => {
 							label={option.label}
 							leftIcon={option.icon}
 							iconBgColor={primaryColor}
-							reverseLayout={language === 'ar'}
-							titleTextAlign={language === 'ar' ? 'right' : undefined}
+							reverseLayout={!isLtrLanguage}
+							titleTextAlign={!isLtrLanguage ? 'right' : undefined}
 							groupPosition={groupPosition}
 							showSeparator={index !== sortingOptions.length - 1}
 							rightIcon={

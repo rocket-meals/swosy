@@ -14,17 +14,19 @@ import { TranslationKeys } from '@/locales/keys';
 
 import { AppScreens } from 'repo-depkit-common';
 import IconButton from '../UI/IconButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { loggedIn } = useAppSelector(state => state.authReducer);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition;
+	const isArabicRight = !isLtrLanguage && resolvedDrawerPosition === 'right';
 
 	const handleGoback = () => {
 		if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {

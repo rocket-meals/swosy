@@ -13,13 +13,15 @@ import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 	const { translate, language: selectedLanguage } = useLanguage();
 	const { theme } = useTheme();
 	const primaryColor = useAppSelector(state => state.settings.primaryColor);
 	const appSettings = useAppSelector(state => state.settings.appSettings);
 	const language = useAppSelector(state => state.settings.language);
-	const isRtl = selectedLanguage === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 

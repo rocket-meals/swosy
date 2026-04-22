@@ -7,6 +7,7 @@ import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Define the type for the theme prop
 type Position = {
@@ -26,7 +27,8 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({ position, isSelected, o
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, selectedTheme: mode, language } = useAppSelector(state => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const checkboxIcon = (
 		<MaterialCommunityIcons

@@ -28,6 +28,8 @@ import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -71,6 +73,8 @@ const DebugSection: React.FC<DebugSectionProps> = ({
         debugSpotLabel,
 }) => {
         const { translate } = useLanguage();
+        const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
         return (
             <View style={{ marginTop: 16 }}>
                     <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>{translate(TranslationKeys.debug)}</Text>
@@ -143,6 +147,8 @@ const CollectibleEventScreen = () => {
         const { theme } = useTheme();
         const toast = useToast();
         const { translate, language } = useLanguage();
+        const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
         const { profile, loggedIn } = useAppSelector((state) => state.authReducer);
         const { primaryColor } = useAppSelector((state) => state.settings);
         const buttonColor = primaryColor || theme.primary;
@@ -503,7 +509,7 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
-                                                    textAlign: language === 'ar' ? 'right' : 'left',
+                                                    textAlign: languageTextAlign,
                                             }}
                                             value={email}
                                             onChangeText={setEmail}
@@ -522,7 +528,7 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
-                                                    textAlign: language === 'ar' ? 'right' : 'left',
+                                                    textAlign: languageTextAlign,
                                             }}
                                             value={phoneNumber}
                                             onChangeText={setPhoneNumber}

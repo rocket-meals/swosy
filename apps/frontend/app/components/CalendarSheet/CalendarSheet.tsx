@@ -17,10 +17,14 @@ import { StringHelper } from 'repo-depkit-common';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { format, isValid, parse } from 'date-fns';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal }) => {
     const { theme } = useTheme();
+    const isLtrLanguage = useIsLtrLanguage();
     const { translate } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
     const dispatch = useDispatch();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [manualDate, setManualDate] = useState('');
@@ -115,7 +119,7 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
                             backgroundColor: theme.sheet.inputBg,
                             borderColor: manualError ? theme.sheet.inputBorderInvalid : theme.sheet.inputBg,
                         },
-                        { textAlign: language === 'ar' ? 'right' : 'left' },
+                        { textAlign: languageTextAlign },
                     ]}
                     cursorColor={theme.screen.text}
                     placeholderTextColor={theme.sheet.placeholder}

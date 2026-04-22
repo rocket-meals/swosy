@@ -16,6 +16,7 @@ import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface SettingsListMarkingLabelProps extends MarkingLabelProps {}
 // All props are defined in MarkingLabelProps; this named export is kept for
@@ -33,7 +34,8 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
 	const markingsDict = useAppSelector(state => state.food.markingsDict);

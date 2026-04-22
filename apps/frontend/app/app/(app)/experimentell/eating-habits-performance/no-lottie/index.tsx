@@ -41,6 +41,7 @@ import DebugView from '@/components/DebugView';
 import eatingHabitsStyles from '../../../eating-habits/styles';
 import AppButton from '@/components/AppButton';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 let _markingContentLoaded = false;
 
@@ -62,7 +63,8 @@ const EatingHabitsPerformanceNoLottie = () => {
 	const [isContentVisible, setIsContentVisible] = useState(_markingContentLoaded);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

@@ -20,6 +20,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const loadingState = {
 	submitLoading: false,
@@ -33,7 +34,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const dispatch = useDispatch();
 	const foodOfferCanteenId = canteenId;
 	const { width: screenWidth } = useWindowDimensions();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);

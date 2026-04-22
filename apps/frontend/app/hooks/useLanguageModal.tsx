@@ -11,6 +11,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const styles = StyleSheet.create({
         optionsContainer: {
@@ -96,7 +97,8 @@ export const useLanguageModal = () => {
         const { translate, setLanguageMode, language } = useLanguage();
         const { theme } = useTheme();
         const { primaryColor } = useAppSelector((state) => state.settings);
-        const isRtl = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
         const changeLanguage = useCallback(
                 (languageOption: (typeof languages)[number]) => {

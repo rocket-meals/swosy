@@ -5,12 +5,14 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const useMyScrollviewModalDistanceInformation = () => {
 	const { show, close } = useMyScrollViewModal();
 	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openDistanceInformationModal = useCallback(() => {
 		show({

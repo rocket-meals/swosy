@@ -6,12 +6,14 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import styles from './styles';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const RateApp = () => {
 	useSetPageTitle(TranslationKeys.rate_app);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
 	const addLog = (msg: string) => setDebugLogs(logs => [...logs, msg]);

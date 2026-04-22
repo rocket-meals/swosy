@@ -9,6 +9,7 @@ import SettingsList from '@/components/SettingsList';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const styles = StyleSheet.create({
 	container: {
@@ -39,7 +40,8 @@ const GiveFeedback = () => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	return (
 		<ScrollView

@@ -20,6 +20,7 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import DebugView from '@/components/DebugView';
 import { useNavigation } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const EatingHabitsPlainTextImage = () => {
 	useSetPageTitle(TranslationKeys.eating_habits_performance_plain_text_image);
@@ -27,7 +28,8 @@ const EatingHabitsPlainTextImage = () => {
 	const { translate, language } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

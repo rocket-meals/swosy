@@ -6,6 +6,7 @@ import CompanyImage from '@/components/CompanyImage';
 import { StringHelper } from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, isConnected = true }) => {
@@ -19,7 +20,8 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, i
 	}));
 	const { width } = Dimensions.get('window');
 	const { appSettings } = useAppSelector(state => state.settings);
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const updateLogoStyle = useCallback(() => {
 		setLogoStyle({
 			width: width < 600 ? 150 : 300,

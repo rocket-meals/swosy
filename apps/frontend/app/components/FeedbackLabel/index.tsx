@@ -15,13 +15,15 @@ import { TranslationKeys } from '@/locales/keys';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();

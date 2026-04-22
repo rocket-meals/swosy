@@ -10,10 +10,12 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { EmailHelper } from 'repo-depkit-common';
 import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { theme } = useTheme();
 	const state = useAppSelector((state) => state);
 	const { primaryColor, selectedTheme: mode } = state.settings;

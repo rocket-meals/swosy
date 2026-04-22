@@ -11,6 +11,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const parseMarkdown = (text: string, theme: any, isRtl: boolean) => {
 	return text.split('\n').map((line, index) => {
@@ -57,7 +58,8 @@ const parseMarkdown = (text: string, theme: any, isRtl: boolean) => {
 const DataAccess = ({ onOpenBottomSheet }: any) => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { user, profile } = useAppSelector(state => state.authReducer);
 	const { primaryColor } = useAppSelector(state => state.settings);
 	const { collectibleEventsItemsDict } = useAppSelector(state => state.collectibleEvents ?? {});

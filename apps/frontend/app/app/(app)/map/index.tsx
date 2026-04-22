@@ -29,6 +29,7 @@ import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MAP_STYLE_DEFINITIONS } from 'repo-depkit-common-ui';
 import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -220,7 +221,8 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	theme,
 }) => {
 	const { translate } = useLanguage();
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
@@ -419,7 +421,8 @@ type OsmControlsHintContentProps = {
 const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontShowAgain, theme }) => {
 	const isWeb = Platform.OS === 'web';
 	const { translate } = useLanguage();
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const hintTextStyle = {
 		color: theme.screen.text,
 		fontSize: 15,
@@ -485,7 +488,8 @@ type OsmConsentContentProps = {
 
 const OsmConsentContent: React.FC<OsmConsentContentProps> = ({ onConsent, theme }) => {
 	const { translate } = useLanguage();
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	return (
 		<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
@@ -729,7 +733,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { show, close } = useMyScrollViewModal();
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
@@ -1583,7 +1588,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
 			{!isFullscreen && (
 				<MapHeader
-					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition}
 					query={gameMode ? '' : searchQuery}
 					onQueryChange={gameMode ? noop : setSearchQuery}
 					onSettingsPress={openSettingsModal}

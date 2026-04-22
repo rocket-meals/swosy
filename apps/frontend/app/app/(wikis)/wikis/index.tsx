@@ -13,18 +13,20 @@ import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	const { theme } = useTheme();
 	const { translate, translateDynamic } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
 	const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
 	const [loading, setLoading] = useState(true);
 	const { wikisDict, language, primaryColor, drawerPosition } = useAppSelector((state) => state.settings);
 	const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
 	const { deviceMock } = useGlobalSearchParams();
 	const { custom_id, id } = useLocalSearchParams();
-	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition;
+	const isArabicRight = !isLtrLanguage && resolvedDrawerPosition === 'right';
 	//Set Page Title
 	const title = wiki?.translations ? translateDynamic(getTitleFromTranslation(wiki?.translations, language)) : 'Wikis';
 	useSetPageTitle(title);

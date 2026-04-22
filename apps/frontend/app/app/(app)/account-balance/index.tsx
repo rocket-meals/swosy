@@ -34,6 +34,8 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import DebugView from '@/components/DebugView';
 import AppButton from '@/components/AppButton';
 import { myContrastColor } from '@/helper/ColorHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -48,10 +50,12 @@ const AccountBalanceScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { profile, isDevMode } = useAppSelector((state) => state.authReducer);
+	const { profile } = useAppSelector((state) => state.authReducer);
 	const { appSettings, language, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : primaryColor;
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
+	const isRtlLanguage = !isLtrLanguage;
 	const [isNfcSupported, setIsNfcSupported] = useState(false);
 	const [isNfcEnabled, setIsNfcEnabled] = useState(false);
 	const [isActive, setIsActive] = useState(false);
@@ -345,27 +349,27 @@ const AccountBalanceScreen = () => {
 
 			{/* Additional Information */}
 			<View style={[styles.infoContainer, { width: windowWidth > 600 ? '90%' : '100%' }]}>
-				<View style={[styles.infoRow, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-					<View style={[styles.iconLabelContainer, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-						<MaterialCommunityIcons name="credit-card" size={24} color={theme.screen.icon} style={[styles.icon, isArabic ? { marginRight: 0, marginLeft: 8 } : undefined]} />
-						<Text style={{ ...styles.label, color: theme.header.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : {}) }}>{translate(TranslationKeys.accountbalance)}</Text>
+				<View style={[styles.infoRow, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+					<View style={[styles.iconLabelContainer, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+						<MaterialCommunityIcons name="credit-card" size={24} color={theme.screen.icon} style={[styles.icon, isRtlLanguage ? { marginRight: 0, marginLeft: 8 } : undefined]} />
+						<Text style={{ ...styles.label, color: theme.header.text, textAlign: languageTextAlign, writingDirection: isRtlLanguage ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.accountbalance)}</Text>
 					</View>
 
-					<Text style={{ ...styles.value, color: theme.header.text, ...(isArabic ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '? €'}</Text>
+					<Text style={{ ...styles.value, color: theme.header.text, ...(isRtlLanguage ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '? €'}</Text>
 				</View>
-				<View style={[styles.infoRow, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-					<View style={[styles.iconLabelContainer, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-						<MaterialCommunityIcons name="transfer" size={24} color={theme.screen.icon} style={[styles.icon, isArabic ? { marginRight: 0, marginLeft: 8 } : undefined]} />
-						<Text style={{ ...styles.label, color: theme.header.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : {}) }}>{translate(TranslationKeys.accountbalanceLastTransaction)}</Text>
+				<View style={[styles.infoRow, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+					<View style={[styles.iconLabelContainer, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+						<MaterialCommunityIcons name="transfer" size={24} color={theme.screen.icon} style={[styles.icon, isRtlLanguage ? { marginRight: 0, marginLeft: 8 } : undefined]} />
+						<Text style={{ ...styles.label, color: theme.header.text, textAlign: languageTextAlign, writingDirection: isRtlLanguage ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.accountbalanceLastTransaction)}</Text>
 					</View>
-					<Text style={{ ...styles.value, color: theme.header.text, ...(isArabic ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance_last_transaction ? showFormatedPrice(formatPrice(profile?.credit_balance_last_transaction)) : '? €'}</Text>
+					<Text style={{ ...styles.value, color: theme.header.text, ...(isRtlLanguage ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance_last_transaction ? showFormatedPrice(formatPrice(profile?.credit_balance_last_transaction)) : '? €'}</Text>
 				</View>
-				<View style={[styles.infoRow, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-					<View style={[styles.iconLabelContainer, isArabic ? { flexDirection: 'row-reverse' as const } : undefined]}>
-						<FontAwesome5 name="calendar-alt" size={24} color={theme.screen.icon} style={[styles.icon, isArabic ? { marginRight: 0, marginLeft: 8 } : undefined]} />
-						<Text style={{ ...styles.label, color: theme.header.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : {}) }}>{translate(TranslationKeys.accountbalanceDateUpdated)}</Text>
+				<View style={[styles.infoRow, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+					<View style={[styles.iconLabelContainer, isRtlLanguage ? { flexDirection: 'row-reverse' as const } : undefined]}>
+						<FontAwesome5 name="calendar-alt" size={24} color={theme.screen.icon} style={[styles.icon, isRtlLanguage ? { marginRight: 0, marginLeft: 8 } : undefined]} />
+						<Text style={{ ...styles.label, color: theme.header.text, textAlign: languageTextAlign, writingDirection: isRtlLanguage ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.accountbalanceDateUpdated)}</Text>
 					</View>
-					<Text style={{ ...styles.value, color: theme.header.text, ...(isArabic ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance_date_updated ? format(profile?.credit_balance_date_updated, 'dd.MM.yyyy HH:mm') : ''}</Text>
+					<Text style={{ ...styles.value, color: theme.header.text, ...(isRtlLanguage ? { textAlign: 'left', writingDirection: 'ltr' } : {}) }}>{profile?.credit_balance_date_updated ? format(profile?.credit_balance_date_updated, 'dd.MM.yyyy HH:mm') : ''}</Text>
 				</View>
 				<View style={styles.additionalInfoContainer}>{appSettings && appSettings?.balance_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} backgroundColor={balance_area_color} imageWidth={'100%'} imageHeight={400} />}</View>
 				<DebugView

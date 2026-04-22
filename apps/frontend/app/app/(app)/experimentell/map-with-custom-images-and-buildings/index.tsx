@@ -9,6 +9,7 @@ import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Demo center: FAU Erlangen campus area
 const DEMO_CENTER = { lat: 49.5977, lng: 11.0036 };
@@ -107,7 +108,8 @@ type Props = {
 const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Props) => {
     const { translate } = useLanguage();
     useSetPageTitle(translate(TranslationKeys.map_custom_images_and_buildings));
-    const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+    const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
     const mapRef = useRef<MyMapHandle>(null);
     const layerToggleButtons: { group: LayerGroup; label: string; emoji: string }[] = [

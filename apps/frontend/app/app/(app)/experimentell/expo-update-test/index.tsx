@@ -9,6 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import usePlatformHelper from '@/helper/platformHelper';
 import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type StepKey = TranslationKeys.CHECK_FOR_APP_UPDATES | TranslationKeys.DOWNLOAD_NEW_APP_UPDATE | TranslationKeys.RELOAD_APP;
 
@@ -22,7 +23,8 @@ const ExpoUpdateTest = () => {
         useSetPageTitle(TranslationKeys.EXPO_UPDATE_TEST);
         const { theme } = useTheme();
         const { translate, language } = useLanguage();
-        const isArabic = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
         const { isSmartPhone } = usePlatformHelper();
 
         const [logs, setLogs] = useState<string[]>([]);

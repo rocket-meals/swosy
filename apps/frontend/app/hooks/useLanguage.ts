@@ -3,6 +3,7 @@ import { configureStore } from '@/redux/store';
 import translations from '@/locales/translations.json';
 import { CHANGE_LANGUAGE, SET_DRAWER_POSITION, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
 import { StringHelper } from 'repo-depkit-common';
+import { isLtrLanguageCode } from '@/hooks/useIsLtrLanguage';
 
 const changeLanguage = (language: 'en' | 'de' | 'fr' | 'ar' | 'es' | 'ru' | 'tr' | 'zh') => ({
 	type: CHANGE_LANGUAGE,
@@ -123,7 +124,7 @@ export const useLanguage = () => {
 
 	const setLanguageMode = (language: 'en' | 'de' | 'fr' | 'ar' | 'es' | 'ru' | 'tr' | 'zh') => {
 		const currentDrawerPosition = configureStore.getState().settings.drawerPosition;
-		if (language === 'ar' && (currentDrawerPosition === 'system' || currentDrawerPosition === 'left' || !currentDrawerPosition)) {
+		if (!isLtrLanguageCode(language) && (currentDrawerPosition === 'system' || currentDrawerPosition === 'left' || !currentDrawerPosition)) {
 			configureStore.dispatch({ type: SET_DRAWER_POSITION, payload: 'right' });
 		}
 		configureStore.dispatch(changeLanguage(language));

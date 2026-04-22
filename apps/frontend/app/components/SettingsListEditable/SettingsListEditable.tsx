@@ -3,12 +3,14 @@ import React, { useMemo } from 'react';
 import { SettingsListEditable as CommonSettingsListEditable } from 'repo-depkit-common-ui';
 import type { SettingsListEditableProps } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export type { SettingsListEditableProps };
 
 const SettingsListEditable: React.FC<SettingsListEditableProps> = (props) => {
 	const language = useAppSelector((state) => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const resolvedReverseLayout = useMemo(
 		() => props.reverseLayout ?? (isArabic ? true : undefined),
 		[isArabic, props.reverseLayout]

@@ -17,6 +17,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
@@ -26,7 +27,8 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const { ownCanteenFeedBackLabelEntriesDict } = useAppSelector((state) => state.canteenReducer);

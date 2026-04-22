@@ -20,6 +20,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_category);
@@ -41,7 +42,8 @@ const Index = () => {
 	const cachedFormCategories = useMemo(() => Object.values(cachedFormCategoriesDict || {}), [cachedFormCategoriesDict]);
 
 	const queueCount = useMemo(() => Object.keys(formQueueDict || {}).length, [formQueueDict]);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const getAllCategories = async () => {
 		setLoading(true);

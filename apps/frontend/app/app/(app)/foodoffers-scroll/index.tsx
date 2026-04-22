@@ -46,6 +46,7 @@ import IconButton from '@/components/UI/IconButton';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -70,7 +71,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
 
 	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const isRtl = languageCode === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { ownFoodFeedbacksDict, selectedDate, foodCategoriesDict, foodOfferCategoriesDict } = useAppSelector((state) => state.food);
 	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	const foodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);

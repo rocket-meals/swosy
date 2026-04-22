@@ -5,6 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '@/hooks/useTheme';
 import styles from '../../app/(app)/support-FAQ/styles';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type SupportFAQProps = {
 	icon?: string;
@@ -18,7 +19,8 @@ type SupportFAQProps = {
 const SupportFAQ: React.FC<SupportFAQProps> = ({ icon, label, text, onPress, isArrowRight = true, redirectIcon = true }) => {
 	const { theme } = useTheme();
 	const language = useAppSelector((state) => state.settings.language);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const renderIcon = (icon: string | undefined) => {
 		if (icon === 'feedback') {

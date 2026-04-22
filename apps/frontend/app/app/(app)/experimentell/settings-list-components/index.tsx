@@ -16,6 +16,7 @@ import SettingsListCoordinate from '@/components/SettingsListCoordinate/Settings
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import { TranslationKeys } from '@/locales/keys';
 import styles from './styles';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const SettingsListComponents = () => {
 	const { translate } = useLanguage();
@@ -23,7 +24,8 @@ const SettingsListComponents = () => {
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [dateValue, setDateValue] = useState('01.01.2024');
 	const [dateError, setDateError] = useState('');
 	const [inputValue, setInputValue] = useState(translate(TranslationKeys.settingsListExampleText));

@@ -18,6 +18,7 @@ import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
 import { TranslationKeys } from '@/locales/keys';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	const { translate, language } = useLanguage();
@@ -33,7 +34,8 @@ const Index = () => {
 	const animationRef = useRef<LottieView>(null);
 	const [isDeleteAccount, setIsDeleteAccount] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const openDeleteAcountModal = () => {
 		setIsDeleteAccount(true);

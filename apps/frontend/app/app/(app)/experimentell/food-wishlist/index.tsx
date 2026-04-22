@@ -15,13 +15,15 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RatingHelper, DatabaseTypes } from 'repo-depkit-common';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import styles from '../styles';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const FoodWishlist = () => {
 	useSetPageTitle(TranslationKeys.food_wishlist);
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { language, primaryColor } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { ownFoodFeedbacksDict } = useAppSelector((state) => state.food);
 	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	const selectedCanteen = useSelectedCanteen();

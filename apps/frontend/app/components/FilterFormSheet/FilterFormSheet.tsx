@@ -12,6 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { myContrastColor } from '@/helper/ColorHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const iconLibraries: any = {
 	MaterialIcons,
@@ -23,7 +24,8 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({ closeSheet, isVisible
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const updateSort = (option: { id: string }) => {

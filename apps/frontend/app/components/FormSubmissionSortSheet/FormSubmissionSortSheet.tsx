@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { FormSubmissionSortOption, FormSubmissionSortSheetProps } from './types';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const SORTING_OPTIONS: { id: FormSubmissionSortOption; label: TranslationKeys; icon: React.ReactElement<{ color?: string }> }[] = [
 	{
@@ -23,7 +24,8 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const updateSort = (option: FormSubmissionSortOption) => {
 		setSelectedOption(option);

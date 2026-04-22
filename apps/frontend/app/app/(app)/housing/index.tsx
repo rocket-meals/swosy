@@ -31,6 +31,7 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const MIN_CARD_WIDTH = 280;
 const apartmentsHelper = new ApartmentsHelper();
@@ -39,6 +40,7 @@ const buildingsHelper = new BuildingsHelper();
 const Index: React.FC = () => {
 	useSetPageTitle(TranslationKeys.housing);
 	const toast = useToast();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -297,7 +299,7 @@ const Index: React.FC = () => {
 				<HousingHeader
 					theme={theme}
 					translate={translate}
-					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition}
 					openHousingSortingModal={openHousingSortingModal}
 				/>
 

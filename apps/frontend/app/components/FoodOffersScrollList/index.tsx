@@ -26,6 +26,7 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -78,7 +79,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	useEffect(() => {
 		const fetchLabels = async () => {

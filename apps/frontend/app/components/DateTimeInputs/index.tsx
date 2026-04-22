@@ -11,9 +11,13 @@ import { parse, format } from 'date-fns';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import { StringHelper } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
@@ -152,7 +156,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 							width: isWeb ? '90%' : '80%',
 						},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
+						{ textAlign: languageTextAlign },
 					]}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={validateDateTime}
@@ -195,6 +199,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 
 const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const languageTextAlign = useLanguageTextAlign();
 	const language = useAppSelector((state) => state.settings.language);
 	const flag = !suffix && !prefix;
 
@@ -276,7 +281,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 							width: isWeb ? '80%' : '70%',
 						},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
+						{ textAlign: languageTextAlign },
 					]}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={onLocalTextChange}
@@ -319,6 +324,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const languageTextAlign = useLanguageTextAlign();
 	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
@@ -388,7 +394,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
+						{ textAlign: languageTextAlign },
 					]}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={text => validateTime(text)}
@@ -416,6 +422,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const languageTextAlign = useLanguageTextAlign();
 	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
@@ -526,7 +533,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
+						{ textAlign: languageTextAlign },
 					]}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={validateTimestamp}

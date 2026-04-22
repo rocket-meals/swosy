@@ -10,6 +10,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 /**
  * Shared base props for plain marking row components in the eating-habits-performance
@@ -29,7 +30,8 @@ const EatingHabitsPerformanceIndex = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

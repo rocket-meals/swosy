@@ -21,6 +21,8 @@ import { FormSubmissionSortOption } from '@/components/FormSubmissionSortSheet/t
 import { useAppSelector } from '@/redux/hooks';
 import { FormQueueEntry } from '@/redux/Types/stateTypes';
 import AppButton from '@/components/AppButton';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type FormSubmissionListRow =
 	| {
@@ -39,6 +41,8 @@ type FormSubmissionListRow =
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_submission);
 	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const { theme } = useTheme();
 	const { form_id } = useLocalSearchParams();
 	const sortSheetRef = useRef<BottomSheet>(null);
@@ -51,8 +55,8 @@ const Index = () => {
     const [selectedOption, setSelectedOption] = useState<string>('draft');
     const [sortOption, setSortOption] = useState<FormSubmissionSortOption>('alphabetical');
     const { drawerPosition, language, offlineMode } = useAppSelector((state) => state.settings);
-    const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-    const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
+    const resolvedDrawerPosition = drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition;
+    const isArabicRight = !isLtrLanguage && resolvedDrawerPosition === 'right';
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const { formQueueDict, cachedFormData } = useAppSelector((state) => state.form);
@@ -379,7 +383,8 @@ const Index = () => {
 
 	const renderItem = useCallback(
 		({ item }: { item: FormSubmissionListRow }) => {
-			const isArabic = language === 'ar';
+			const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 			const indentation = 10 + currentPath.length * 8;
 			const flexDirection: ViewStyle['flexDirection'] = isArabic ? 'row-reverse' : 'row';
 			const baseStyle = {
@@ -470,7 +475,7 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{ flexDirection: language === 'ar' ? 'row-reverse' : 'row' },
+						{ flexDirection: !isLtrLanguage ? 'row-reverse' : 'row' },
 					]}
 				>
 					<TouchableOpacity
@@ -483,7 +488,7 @@ const Index = () => {
 						}}
 						style={{ padding: 10 }}
 					>
-						<Ionicons name={language === 'ar' ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
+						<Ionicons name={isLtrLanguage ? 'arrow-back' : 'arrow-forward'} size={26} color={theme.header.text} />
 					</TouchableOpacity>
 
 					<Text
@@ -491,7 +496,7 @@ const Index = () => {
 							...styles.heading,
 							color: theme.header.text,
 							flex: 1,
-							textAlign: language === 'ar' ? 'right' : 'left',
+							textAlign: languageTextAlign,
 						}}
 					>
 						{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}
@@ -574,7 +579,7 @@ const Index = () => {
 							...styles.searchInput,
 							width: screenWidth > 768 ? '90%' : '85%',
 							color: theme.screen.text,
-							textAlign: language === 'ar' ? 'right' : 'left',
+							textAlign: languageTextAlign,
 						}}
 						cursorColor={theme.screen.text}
 						placeholderTextColor={theme.screen.placeholder}

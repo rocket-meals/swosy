@@ -17,6 +17,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -39,7 +40,8 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 

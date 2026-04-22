@@ -11,6 +11,7 @@ import MyImage from '@/components/MyImage';
 import SettingsList from '@/components/SettingsList';
 import type { FoodDetailsSectionBaseProps } from './types';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     foodDetails: any;
@@ -38,7 +39,8 @@ const FoodHeader = ({
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
     const language = useAppSelector((state) => state.settings.language);
-    const isArabic = language === 'ar';
+    const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
     const dynamicImageStyle = useMemo(() => ({
         width: isLargeScreen ? 400 : screenWidth - 40,

@@ -46,6 +46,8 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import * as FileSystem from 'expo-file-system/legacy';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 /**
  * Convert a file data object (from signature capture) to a base64 data URI.
@@ -134,8 +136,10 @@ const normalizeCurrentValue = (value: unknown, customType?: string): string => {
 
 const Index = () => {
 	const toast = useToast();
+	const isLtrLanguage = useIsLtrLanguage();
 	const scrollViewRef = useRef(null);
 	const { translate } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { form_submission_id, queue_entry_id } = useLocalSearchParams();
@@ -861,7 +865,7 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{ flexDirection: language === 'ar' ? 'row-reverse' : 'row' },
+						{ flexDirection: !isLtrLanguage ? 'row-reverse' : 'row' },
 					]}
 				>
 					<TouchableOpacity
@@ -874,10 +878,10 @@ const Index = () => {
 						}}
 						style={{ padding: 10 }}
 					>
-						<Ionicons name={language === 'ar' ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
+						<Ionicons name={isLtrLanguage ? 'arrow-back' : 'arrow-forward'} size={26} color={theme.header.text} />
 					</TouchableOpacity>
 
-					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: language === 'ar' ? 'right' : 'left' }}>
+					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: languageTextAlign }}>
 						{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}
 					</Text>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
@@ -978,18 +982,18 @@ const Index = () => {
 														...styles.formNameContainer,
 														backgroundColor: theme.screen.iconBg,
 													},
-													language === 'ar' ? { justifyContent: 'flex-start' } : null,
+													!isLtrLanguage ? { justifyContent: 'flex-start' } : null,
 												]}
 											>
 												{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
-												{language === 'ar' && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
+												{!isLtrLanguage && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
 													<FontAwesome6 name="star-of-life" size={12} color={'red'} />
 												)}
 												<Text
 													style={{
 														...styles.body,
 														color: theme.screen.text,
-														...(language === 'ar' ? { flex: 1, textAlign: 'right', writingDirection: 'rtl' } : null),
+														...(!isLtrLanguage ? { flex: 1, textAlign: 'right', writingDirection: 'rtl' } : null),
 													}}
 												>
 													{`${index + 1}. `}
@@ -1012,7 +1016,7 @@ const Index = () => {
 														style={{
 															...styles.body,
 															color: theme.screen.text,
-															...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
+															...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : null),
 														}}
 													>
 														{description}
@@ -1067,7 +1071,7 @@ const Index = () => {
 						...styles.body,
 						marginBottom: 6,
 						color: theme.screen.text,
-						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
+						...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : null),
 					}}
 				>
 					{`${translate(TranslationKeys.state_current)}: ${translate(currentState || formSubmission?.state || 'draft')}`}
@@ -1096,7 +1100,7 @@ const Index = () => {
 								style={{
 									...styles.state,
 									color: theme.screen.text,
-									...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
+									...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : null),
 								}}
 							>
 								{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}

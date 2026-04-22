@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 import type { FormInputBaseProps } from './types';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const ensureStringArray = (options: string[]): string[] => {
 	const uniqueValues = new Set<string>();
@@ -33,7 +34,8 @@ type DropdownInputProps = Omit<FormInputBaseProps, 'isDisabled'> & {
 const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { primaryColor } = useAppSelector(state => state.settings);
 
 	const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);

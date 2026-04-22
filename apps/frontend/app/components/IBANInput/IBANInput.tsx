@@ -6,10 +6,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const flag = !suffix && !prefix;
 
 	const formatIBAN = (text: string) => {
@@ -54,7 +58,7 @@ const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
+						{ textAlign: languageTextAlign },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}

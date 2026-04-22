@@ -21,6 +21,7 @@ import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttribu
 import { useAppSelector } from '@/redux/hooks';
 import { useMyScrollviewModalSelectFoodPlanCanteen } from '@/hooks/useMyScrollviewModalSelectFoodPlanCanteen';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type FoodAttribute = {
 	id: string;
@@ -39,7 +40,8 @@ const Index = () => {
 	const { foodAttributesDict: initialFoodAttributes } = useAppSelector((state) => state.foodAttributes);
 	const [foodAttributes, setFoodAttributes] = useState<FoodAttribute[]>();
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { foodPlan } = useAppSelector((state) => state.management);
 	const [isActive, setIsActive] = useState(false);
 	const [value, setValue] = useState('');

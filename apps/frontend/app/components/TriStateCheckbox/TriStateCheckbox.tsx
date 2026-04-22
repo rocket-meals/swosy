@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const TriStateCheckbox = ({
 	id,
@@ -25,7 +26,8 @@ const TriStateCheckbox = ({
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, language } = useAppSelector(state => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	// If onlyTwo === true we normalize any non-1 value to 0 (false).
 	// Otherwise keep tri-state semantics where value can be 1, 0 or null/undefined.

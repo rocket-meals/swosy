@@ -11,11 +11,13 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
 import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const LicenseInformation = () => {
 	useSetPageTitle(TranslationKeys.license_information);
 	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { theme } = useTheme();
 	const [expanded, setExpanded] = useState(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);

@@ -6,6 +6,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import type { CheckTextInput, TextInputSharedProps } from '@/components/SettingsListTextInput';
 import { borderRadiusContainer } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type ModalTextInputExtraProps = {
 	initialValue?: string;
@@ -86,7 +87,8 @@ type OpenTextInputOptions = TextInputSharedProps & ModalTextInputExtraProps & {
 const useMyScrollviewTextInputModal = () => {
 	const { show, close } = useMyScrollViewModal();
 	const { language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const closeModal = useCallback(() => {
 		if (Platform.OS !== 'web') {

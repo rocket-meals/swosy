@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
 
@@ -29,7 +30,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
 	const androidStoreUrl = appSettings?.app_stores_url_to_google;

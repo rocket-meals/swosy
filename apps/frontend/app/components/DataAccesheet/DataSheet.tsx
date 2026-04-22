@@ -6,11 +6,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { DataSheetProps } from './types';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 	const { theme } = useTheme();
 	const { language } = useLanguage();
-	const isRtl = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	console.log('Content Value', content?.value);
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>

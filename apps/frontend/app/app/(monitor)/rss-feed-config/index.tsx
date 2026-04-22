@@ -7,14 +7,18 @@ import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import styles from './styles';
 import AppButton from '@/components/AppButton';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const RssFeedConfig = () => {
 	useSetPageTitle(TranslationKeys.rss_feed);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const [urls, setUrls] = useState<string[]>(['']);
 	const [interval, setInterval] = useState('10');
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const addUrlField = () => {
 		setUrls(prev => [...prev, '']);
@@ -49,7 +53,7 @@ const RssFeedConfig = () => {
 								borderColor: theme.screen.icon,
 								marginBottom: 8,
 							},
-							{ textAlign: language === 'ar' ? 'right' : 'left' },
+							{ textAlign: languageTextAlign },
 						]}
 						value={url}
 						onChangeText={text => updateUrl(index, text)}
@@ -91,7 +95,7 @@ const RssFeedConfig = () => {
 				>
 					{translate(TranslationKeys.switch_interval_seconds)}
 				</Text>
-				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }, { textAlign: language === 'ar' ? 'right' : 'left' }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
+				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }, { textAlign: languageTextAlign }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
 			</View>
 			<AppButton
 				variant="ghost"

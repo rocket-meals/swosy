@@ -11,13 +11,15 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { useAppSelector } from '../../../../redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const HapticsScreen = () => {
 	useSetPageTitle(TranslationKeys.haptics_test);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [lastEvent, setLastEvent] = useState<string | null>(null);
 
 	const handleHaptic = useCallback(async (label: string, action: () => Promise<void>) => {

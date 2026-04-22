@@ -15,13 +15,15 @@ import { useFocusEffect } from 'expo-router';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.statistics);
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [isActive, setIsActive] = useState(false);
 	const [selectedFoodId, setSelectedFoodId] = useState('');
 	const imageManagementSheetRef = useRef<BottomSheet>(null);

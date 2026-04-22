@@ -37,6 +37,7 @@ import FoodOffersHeader from './components/FoodOffersHeader';
 import { useSheetHandling, useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -47,6 +48,7 @@ export const SHEET_COMPONENTS = {
 
 const Index: React.FC<DrawerContentComponentProps> = () => {
 	const dispatch = useDispatch();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 
@@ -137,7 +139,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
 			<FoodOffersHeader
-				drawerPosition={(drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition) as 'left' | 'right'}
+				drawerPosition={(drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition) as 'left' | 'right'}
 				hasUnreadChats={hasUnreadChats}
 				selectedCanteen={selectedCanteen}
 				selectedDate={selectedDate}

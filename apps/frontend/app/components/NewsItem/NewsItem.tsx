@@ -13,13 +13,15 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector(state => state.settings);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { title, content } = getNewsTranslationByLanguageCode(news?.translations, language);
 	const news_area_color = appSettings?.news_area_color ? appSettings?.news_area_color : primaryColor;

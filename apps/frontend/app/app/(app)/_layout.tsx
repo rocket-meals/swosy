@@ -50,10 +50,12 @@ import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { loadChatReadStatus } from '@/helper/chatReadStatus';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export default function Layout() {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { deviceMock } = useGlobalSearchParams();
 	const kioskMode = useKioskMode();
 	const dispatch = useDispatch();
@@ -573,14 +575,14 @@ export default function Layout() {
 			drawerPosition: (() => {
 				const position =
 					drawerPosition === 'system'
-						? language === 'ar'
-							? 'right'
-							: 'left'
+						? isLtrLanguage
+							? 'left'
+							: 'right'
 						: drawerPosition;
 				return position === 'left' || position === 'right' ? position : 'left';
 			})() as 'left' | 'right',
 		}),
-		[theme.header.background, theme.header.text, drawerPosition, language]
+		[theme.header.background, theme.header.text, drawerPosition, isLtrLanguage]
 	);
 
 	if (!loggedIn && !kioskMode) {

@@ -4,6 +4,7 @@ import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type ThemeSettingsModalOptions = {
         selectedTheme: string;
@@ -13,7 +14,8 @@ type ThemeSettingsModalOptions = {
 export const useThemeSettingsModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { translate, language } = useLanguage();
-        const isRtl = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
         const openThemeSettingsModal = useCallback(
                 ({ selectedTheme, onSelect }: ThemeSettingsModalOptions) => {

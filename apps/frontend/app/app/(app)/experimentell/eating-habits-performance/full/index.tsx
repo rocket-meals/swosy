@@ -49,6 +49,7 @@ import eatingHabitsStyles from '../../../eating-habits/styles';
 import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 import AppButton from '@/components/AppButton';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Isolated module-level cache for this variant (does not share with production screen)
 let _cachedAnimationJson: any = null;
@@ -76,7 +77,8 @@ const EatingHabitsPerformanceFull = () => {
 	const [isContentVisible, setIsContentVisible] = useState(_markingContentLoaded);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
-	const isArabic = language === 'ar';
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const navigation = useNavigation();
 
 	useEffect(() => {

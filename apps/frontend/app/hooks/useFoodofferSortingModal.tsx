@@ -24,6 +24,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SORTING } from '@/redux/Types/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 interface SortSheetProps {
         closeSheet: () => void;
@@ -205,7 +206,8 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 export const useFoodofferSortingModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { translate, language } = useLanguage();
-        const isRtl = language === 'ar';
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
         const openFoodofferSortingModal = useCallback(() => {
                 showScrollViewModal(
                         {

@@ -7,17 +7,19 @@ import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { weekPlan } = useAppSelector((state) => state.management);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const [headerVisible, setHeaderVisible] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const isMobile = screenWidth < 800;
-	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition;
+	const isArabicRight = !isLtrLanguage && resolvedDrawerPosition === 'right';
 
 	const router = useRouter();
 
