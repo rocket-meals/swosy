@@ -52,10 +52,11 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 
 	// ── Create ───────────────────────────────────────────────────────
 
-	async createVisitForDate(canteenId: string, date: string): Promise<DatabaseTypes.CanteenVisits> {
+	async createVisitForDate(canteenId: string, date: string, profileId: string): Promise<DatabaseTypes.CanteenVisits> {
 		return this.createItem({
 			canteen: canteenId,
 			date: `${date}T12:00:00`,
+			profile: profileId,
 			status: 'published',
 		} as any);
 	}
