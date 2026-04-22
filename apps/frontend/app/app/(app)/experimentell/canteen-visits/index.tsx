@@ -106,7 +106,7 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 		setToggling(true);
 		try {
 			if (ownVisit) {
-				await canteenVisitsHelper.deleteVisit(ownVisit.id);
+				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profileId);
 				setOwnVisit(null);
 				onOwnVisitChanged?.(date, null);
 			} else {
@@ -284,7 +284,11 @@ const CanteenVisitsScreen: React.FC = () => {
 		const existing = ownVisits[date];
 		try {
 			if (existing) {
-				await canteenVisitsHelper.deleteVisit(existing.id);
+				if (profile?.id) {
+					await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
+				} else {
+					await canteenVisitsHelper.deleteVisit(existing.id);
+				}
 				setOwnVisits(prev => ({ ...prev, [date]: null }));
 			} else {
 				const created = await canteenVisitsHelper.createVisitForDate(canteenId, date);
@@ -294,7 +298,7 @@ const CanteenVisitsScreen: React.FC = () => {
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
 		}
-	}, [isRegistered, ownVisits, canteenId, fetchVisitCountsForDate, router]);
+	}, [isRegistered, ownVisits, canteenId, fetchVisitCountsForDate, router, profile?.id]);
 
 	const openVisitDetailsModal = useCallback((date: string) => {
 		const counts = visitCounts[date] || { total: 0, friends: 0 };
@@ -636,19 +640,21 @@ const CanteenVisitsScreen: React.FC = () => {
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
-					<View style={[styles.visitCountButton, { backgroundColor: visitButtonBg }]}>
+					<View style={[styles.visitButtonWrapper, { backgroundColor: visitButtonBg }]}>
 						{isRegistered && (
-							<TouchableOpacity
-								style={styles.visitCountRow}
-								onPress={() => toggleOwnVisitForDate(item.date)}
-								activeOpacity={0.7}
-							>
-								<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
-								<Text style={[styles.visitCountText, { color: visitTextColor }]}>{translate(TranslationKeys.canteen_visits_i_will_be_there)}</Text>
-							</TouchableOpacity>
+							<>
+								<TouchableOpacity
+									style={styles.visitJoinButton}
+									onPress={() => toggleOwnVisitForDate(item.date)}
+									activeOpacity={0.7}
+								>
+									<MaterialCommunityIcons name="silverware-fork-knife" size={18} color={visitTextColor} />
+								</TouchableOpacity>
+								<View style={[styles.visitSeparator, { backgroundColor: visitTextColor, opacity: 0.3 }]} />
+							</>
 						)}
 						<TouchableOpacity
-							style={styles.visitCountCounts}
+							style={styles.visitCountsButton}
 							onPress={() => openVisitDetailsModal(item.date)}
 							activeOpacity={0.7}
 						>
@@ -847,23 +853,33 @@ const styles = StyleSheet.create({
 		marginTop: 6,
 		marginHorizontal: 10,
 	},
-	visitCountButton: {
+	visitButtonWrapper: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderRadius: 8,
+		overflow: 'hidden',
+	},
+	visitJoinButton: {
+		paddingHorizontal: 10,
+		paddingVertical: 6,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	visitSeparator: {
+		width: 1,
+		alignSelf: 'stretch',
+	},
+	visitCountsButton: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		paddingHorizontal: 8,
-		paddingVertical: 4,
-		borderRadius: 8,
+		paddingVertical: 6,
 		gap: 10,
 	},
 	visitCountRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 3,
-	},
-	visitCountCounts: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 10,
 	},
 	visitCountText: {
 		fontSize: 18,
