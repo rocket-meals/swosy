@@ -13,7 +13,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { SettingsListGroupTitle } from 'repo-depkit-common-ui';
 import { TranslationKeys } from '@/locales/keys';
 import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/CanteenVisits/CanteenVisits';
-import { FriendsContent } from '@/app/(app)/experimentell/friendships';
+import { FriendsContent } from '@/components/FriendsContent';
 import DebugView from '@/components/DebugView';
 import { useRouter } from 'expo-router';
 

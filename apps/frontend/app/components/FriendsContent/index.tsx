@@ -6,7 +6,6 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
 import { useDispatch } from 'react-redux';
 import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
@@ -655,14 +654,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		</ScrollView>
 	);
 };
-
-/* ──────────────────────── Main Friendships Screen ─────────────────────── */
-const FriendshipsScreen = () => {
-	useSetPageTitle(TranslationKeys.friendships);
-	return <FriendsContent showHeading={true} />;
-};
-
-export default FriendshipsScreen;
 
 const styles = StyleSheet.create({
 	container: {
