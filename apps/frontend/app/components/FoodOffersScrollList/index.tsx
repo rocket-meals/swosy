@@ -180,7 +180,12 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			if (!item || !appElementsMap) return null;
 			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
 			const element = appElementsMap.get(elementId);
-			if (!element) return null;
+			if (!element) {
+				if (item.alias) {
+					return { content: item.alias, popup_button_text: null, popup_content: null };
+				}
+				return null;
+			}
 			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
 			return { content, popup_button_text, popup_content };
 		},
