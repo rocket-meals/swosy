@@ -136,7 +136,7 @@ const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentP
 			if (ownVisit) {
 				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profileId);
 			} else {
-				await canteenVisitsHelper.createVisitForDate(canteenId, date);
+				await canteenVisitsHelper.createVisitForDate(canteenId, date, profileId);
 			}
 			// Re-fetch from backend to get the actual state
 			const updatedVisit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId);
@@ -331,7 +331,7 @@ const CanteenVisitsScreen: React.FC = () => {
 				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
 			} else {
 				// Create visit with date set to 12:00
-				await canteenVisitsHelper.createVisitForDate(canteenId, date);
+				await canteenVisitsHelper.createVisitForDate(canteenId, date, profile.id);
 			}
 			// Re-fetch from backend to get the actual state
 			const visit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id);
