@@ -56,12 +56,6 @@ const Index = () => {
 			onPress: () => router.push('/vertical-image-scroll'),
 		},
 		{
-			key: 'canteen-visits',
-			label: translate(TranslationKeys.canteen_visits),
-			leftIcon: <MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/canteen-visits'),
-		},
-		{
 			key: 'date-helper-preview',
 			label: translate(TranslationKeys.date_helper_preview),
 			leftIcon: <MaterialCommunityIcons name="calendar-week" size={24} color={theme.screen.icon} />,
