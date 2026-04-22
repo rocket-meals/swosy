@@ -27,6 +27,7 @@ import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -377,6 +378,9 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
 					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+					{appSettings?.friends_enabled && (
+						<CanteenVisitsDateRow canteen_id={canteenId} date={item.date} />
+					)}
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>

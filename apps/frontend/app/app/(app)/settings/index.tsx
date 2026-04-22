@@ -85,6 +85,11 @@ const Settings = () => {
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
+        const { friendships } = useAppSelector((state) => state.friendships);
+        const acceptedFriendsCount = useMemo(
+                () => friendships.filter((f) => f.friendship_status === 'accepted').length,
+                [friendships]
+        );
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -433,6 +438,7 @@ const Settings = () => {
 		const groupStyle = { gap: 0 } as const;
 
 		// === Account & Personalization ===
+		const showFriendsInSettings = !!(appSettings?.friends_enabled || debugMode);
 		rows.push({
 			key: 'section-account',
 			element: (
@@ -440,19 +446,26 @@ const Settings = () => {
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="middle" />
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition="middle"
+							groupPosition={showFriendsInSettings ? 'middle' : 'bottom'}
 						/>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
-						{isRegisteredUser ? (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
-						) : null}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" />
+						{showFriendsInSettings && (
+							<SettingsList
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.friendships)}
+								value={String(acceptedFriendsCount)}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={() => router.navigate('/experimentell/friendships')}
+								groupPosition="bottom"
+							/>
+						)}
 					</View>
 				</View>
 			),
@@ -594,6 +607,22 @@ const Settings = () => {
 			),
 		});
 
+		// === Account Actions (Logout / Delete) ===
+		rows.push({
+			key: 'section-account-actions',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.account)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
+						{isRegisteredUser ? (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
+						) : null}
+					</View>
+				</View>
+			),
+		});
+
 		// === Footer ===
 		rows.push({
 			key: 'footer',
@@ -690,13 +719,14 @@ const Settings = () => {
 		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openChangeMyCanteenSelectionModal,
 		openFoodofferSortingModal, sortingLabel, openColorSchemeSheet, openMenuPositionModal,
 		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
-		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, housing_area_color,
-		housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled, campus_area_color,
-		campusSortingLabel, openCampusSortingModal, handleCheckForUpdates, openCollectibleSettingsModal,
-		termsAndPrivacyConsentAcceptedDate, isManagement, dispatch, serverInfo, selectedCustomerDisplayName,
-		foodOffersNextDayThreshold, useWebpForAssets, debugMode, simulateExpoUpdateAvailable,
-		openServerSheet, openFoodOffersTimeSheet, toggleWebpForAssets, toggleDebugMode,
-		toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, appSettings?.friends_enabled,
+		housing_area_color, housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled,
+		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
+		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
+		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
+		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		acceptedFriendsCount,
 	]);
 
 	return (
