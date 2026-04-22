@@ -230,9 +230,18 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const { translate } = useLanguage();
 	const router = useRouter();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const { profile, user } = useAppSelector((state) => state.authReducer);
+	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
+	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { friendships } = useAppSelector((state) => state.friendships);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+
+	// Check if the component should be rendered
+	const showCanteenVisits = appSettings?.friends_enabled || isDevMode;
+	
+	// Early return if not enabled or visibility is 'off'
+	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {
+		return null;
+	}
 
 	const isRegistered = UserHelper.isRegisteredUser(user);
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
@@ -267,19 +276,26 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 
 	const fetchData = useCallback(async () => {
 		if (!canteenId) return;
-		const totalP = canteenVisitsHelper.fetchVisitCountForDate(canteenId, date);
-		const friendsP =
-			friendProfileIds.length > 0
-				? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
-				: Promise.resolve(0);
-		const ownP =
-			isRegistered && profile?.id
-				? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id)
-				: Promise.resolve(null);
+		
+		// Determine what data to fetch based on visibility
+		const shouldFetchTotal = canteenVisitsVisibility === 'all';
+		const shouldFetchFriends = canteenVisitsVisibility !== 'off' && friendProfileIds.length > 0;
+		const shouldFetchOwn = canteenVisitsVisibility !== 'off' && isRegistered && profile?.id;
+		
+		const totalP = shouldFetchTotal 
+			? canteenVisitsHelper.fetchVisitCountForDate(canteenId, date)
+			: Promise.resolve(0);
+		const friendsP = shouldFetchFriends
+			? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
+			: Promise.resolve(0);
+		const ownP = shouldFetchOwn
+			? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id)
+			: Promise.resolve(null);
+		
 		const [total, friends, own] = await Promise.all([totalP, friendsP, ownP]);
 		setCounts({ total, friends });
 		setOwnVisit(own);
-	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id]);
+	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id, canteenVisitsVisibility]);
 
 	useEffect(() => {
 		fetchData();
@@ -346,6 +362,10 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const countsBg = hasFriendsVisiting ? foods_area_color : theme.screen.iconBg;
 	const countsTextColor = hasFriendsVisiting ? canteenContrastColor : theme.screen.text;
 
+	// Determine which counts to show based on visibility setting
+	const showFriendsCount = isRegistered && friendProfileIds.length > 0;
+	const showTotalCount = canteenVisitsVisibility === 'all';
+
 	return (
 		<View style={rowStyles.visitButtonWrapper}>
 			{isRegistered && (
@@ -370,7 +390,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 				onPress={openDetailsModal}
 				activeOpacity={0.7}
 			>
-				{isRegistered && friendProfileIds.length > 0 && (
+				{showFriendsCount && (
 					<View style={rowStyles.visitCountRow}>
 						<MaterialCommunityIcons name="account-heart" size={18} color={countsTextColor} />
 						{toggling ? (
@@ -380,14 +400,16 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 						)}
 					</View>
 				)}
-				<View style={rowStyles.visitCountRow}>
-					<MaterialCommunityIcons name="account-group" size={18} color={countsTextColor} />
-					{toggling ? (
-						<ActivityIndicator size="small" color={countsTextColor} />
-					) : (
-						<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{counts.total}</Text>
-					)}
-				</View>
+				{showTotalCount && (
+					<View style={rowStyles.visitCountRow}>
+						<MaterialCommunityIcons name="account-group" size={18} color={countsTextColor} />
+						{toggling ? (
+							<ActivityIndicator size="small" color={countsTextColor} />
+						) : (
+							<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{counts.total}</Text>
+						)}
+					</View>
+				)}
 			</TouchableOpacity>
 		</View>
 	);
