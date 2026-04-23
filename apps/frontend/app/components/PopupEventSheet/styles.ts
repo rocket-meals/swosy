@@ -4,8 +4,6 @@ export default StyleSheet.create({
 	sheetView: {
 		width: '100%',
 		height: '100%',
-		padding: 10,
-		paddingBottom: 0,
 	},
 	contentContainer: {
 		alignItems: 'center',
