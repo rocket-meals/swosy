@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -16,6 +16,14 @@ type CanteenVisitsVisibility = 'all' | 'friends_only' | 'public_only' | 'off';
 interface VisibilitySheetProps {
 	closeSheet: () => void;
 }
+
+const styles = StyleSheet.create({
+	visibilityListContainer: {
+		width: '100%',
+		paddingHorizontal: 10,
+		marginTop: 12,
+	},
+});
 
 export const VisibilitySheet: React.FC<VisibilitySheetProps> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
@@ -60,13 +68,15 @@ export const VisibilitySheet: React.FC<VisibilitySheetProps> = ({ closeSheet }) 
 	}, [canteenVisitsVisibility]);
 
 	return (
-		<View style={{ width: '100%' }}>
-			<SettingsListSelectOption
-				options={visibilityOptions}
-				selectedOption={selectedOption}
-				onSelect={updateVisibility}
-				iconBgColor={foods_area_color}
-			/>
+		<View style={{ width: '100%', gap: 12 }}>
+			<View style={styles.visibilityListContainer}>
+				<SettingsListSelectOption
+					options={visibilityOptions}
+					selectedOption={selectedOption}
+					onSelect={updateVisibility}
+					iconBgColor={foods_area_color}
+				/>
+			</View>
 		</View>
 	);
 };
@@ -78,7 +88,6 @@ export const useCanteenVisitsVisibilityModal = () => {
 		showScrollViewModal(
 			{
 				title: translate(TranslationKeys.canteen_visits_visibility),
-				noGap: true,
 				onClose: closeScrollViewModal,
 				children: <VisibilitySheet closeSheet={closeScrollViewModal} />,
 			}

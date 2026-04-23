@@ -430,7 +430,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		if (!profile?.id) return;
 		showScrollViewModal({
 			title: translate(TranslationKeys.friendships_generate_qr),
-			noGap: true,
 			children: (
 				<QRGenerateModalContent
 					profileId={profile.id}
@@ -450,7 +449,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const openScanModal = useCallback((noCamera: boolean) => {
 		showScrollViewModal({
 			title: noCamera ? translate(TranslationKeys.friendships_add_manual) : translate(TranslationKeys.friendships_scan_qr),
-			noGap: true,
 			children: (
 				<ScanModalContent
 					noCamera={noCamera}
@@ -512,9 +510,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 
 		showScrollViewModal({
 			title: translate(TranslationKeys.friendships_details),
-			noGap: true,
 			children: (
-				<View style={{ paddingVertical: 16, gap: 16 }}>
+				<View style={{ padding: 16, gap: 16 }}>
 					<View>
 						<SettingsList
 							label={translate(TranslationKeys.friendships_friend_profile_id)}
@@ -665,7 +662,7 @@ const styles = StyleSheet.create({
 	contentContainer: {},
 	content: {
 		width: '100%',
-		paddingVertical: 20,
+		padding: 20,
 	},
 	heading: {
 		fontSize: 24,

@@ -31,17 +31,19 @@ const MenuPositionSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet })
 	}, [drawerPosition]);
 
 	return (
-		<View style={{ width: '100%' }}>
-			<SettingsListSelectOption
-				options={drawers.map((drawer) => ({
-					id: drawer.id,
-					label: translate(drawer.name),
-					icon: <MaterialCommunityIcons name={drawer.icon as any} size={24} />,
-				}))}
-				selectedOption={selectedOption}
-				onSelect={(option) => updatePosition(option.id)}
-				iconBgColor={primaryColor}
-			/>
+		<View style={{ width: '100%', gap: 12 }}>
+			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
+				<SettingsListSelectOption
+					options={drawers.map((drawer) => ({
+						id: drawer.id,
+						label: translate(drawer.name),
+						icon: <MaterialCommunityIcons name={drawer.icon as any} size={24} />,
+					}))}
+					selectedOption={selectedOption}
+					onSelect={(option) => updatePosition(option.id)}
+					iconBgColor={primaryColor}
+				/>
+			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_menuposition} />
 		</View>
 	);
@@ -54,7 +56,6 @@ export const useMenuPositionModal = () => {
 	const openMenuPositionModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.drawer_config_position),
-			noGap: true,
 			onClose: closeScrollViewModal,
 			children: <MenuPositionSheet closeSheet={closeScrollViewModal} />,
 		});
