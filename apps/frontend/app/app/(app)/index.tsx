@@ -31,7 +31,7 @@ const Home = () => {
 	const organizationsHelper = new OrganizationsHelper();
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const { serverInfo } = useAppSelector(state => state.settings);
-	const { isManagement, profile } = useAppSelector(state => state.authReducer);
+	const { isManagement, profile, user } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
 	const { canteens } = useAppSelector(state => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
@@ -44,7 +44,7 @@ const Home = () => {
 
 	const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-		if (profile?.id) {
+		if (user?.id && profile?.id) {
 			profileHelper.updateProfile({ id: profile.id, canteen: canteen.id })
 				.then((updatedProfile) => {
 					if (updatedProfile) {
@@ -130,7 +130,7 @@ const Home = () => {
 	);
 
 	useEffect(() => {
-		if (selectedCanteen || canteens.length === 0) return;
+		if (!user?.id || selectedCanteen || canteens.length === 0) return;
 		const profileCanteenId = profile?.canteen
 			? typeof profile.canteen === 'string'
 				? profile.canteen
@@ -142,7 +142,7 @@ const Home = () => {
 			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 			router.push(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 		}
-	}, [profile?.canteen, canteens, selectedCanteen, dispatch, router]);
+	}, [user?.id, profile?.canteen, canteens, selectedCanteen, dispatch, router]);
 
 	if (!loading && (!canteens || canteens.length === 0)) {
 		return (
