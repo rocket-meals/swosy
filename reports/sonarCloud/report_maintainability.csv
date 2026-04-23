@@ -17,9 +17,9 @@ Key,Message,Component,Line
 "AZ2shDrtxt5Rzt2dS7i1","Remove this useless assignment to variable ""nickname"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/settings-list-components/index.tsx",25
 "AZ2shDrtxt5Rzt2dS7i2","Remove this useless assignment to variable ""setNickname"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/settings-list-components/index.tsx",25
 "AZ2shEt5xt5Rzt2dS7i3","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",594
-"AZ2shDp9xt5Rzt2dS7iy","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",259
-"AZ2shDp9xt5Rzt2dS7i0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",569
-"AZ2shDp9xt5Rzt2dS7iz","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",569
+"AZ2shDp9xt5Rzt2dS7iy","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",225
+"AZ2shDp9xt5Rzt2dS7i0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",649
+"AZ2shDp9xt5Rzt2dS7iz","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",649
 "AZ2shDp9xt5Rzt2dS7ix","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",184
 "AZ2jZClYVVB4PQRwlGtB","Remove this unused import of 'ApartmentSortOption'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",3
 "AZ2jRG2IEm416nO92vut","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",171
