@@ -14,11 +14,9 @@ import SettingsList from '@/components/SettingsList/SettingsList';
 const RateApp = () => {
 	useSetPageTitle(TranslationKeys.rate_app);
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 	const isLtrLanguage = useIsLtrLanguage();
 	const isArabic = !isLtrLanguage;
-	const [debugLogs, setDebugLogs] = useState<string[]>([]);
-	const { translate } = useLanguage();
 
 	const [hasAction, setHasAction] = useState<string>('…');
 	const [isAvailable, setIsAvailable] = useState<string>('…');
@@ -39,24 +37,8 @@ const RateApp = () => {
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
 			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
-			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
-					{translate(TranslationKeys.rate_app)}
-				</Text>
-				<RateAppSettingsItem onLog={addLog} />
-				{debugLogs.length > 0 && (
-					<View style={styles.debugLogContainer}>
-						<ScrollView>
-							{debugLogs.map((l, i) => (
-								<Text key={i} style={styles.debugLogText}>
-									{l}
-								</Text>
-							))}
-						</ScrollView>
-					</View>
-				)}
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.rate_app)}</Text>
+				<Text style={[styles.heading, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>{translate(TranslationKeys.rate_app)}</Text>
 				<RateAppSettingsItem debug />
 				<SettingsListGroupTitle title="Weitere Informationen" />
 				<SettingsList

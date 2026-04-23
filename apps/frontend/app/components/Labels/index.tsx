@@ -159,25 +159,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			)}
 
 			<DebugView title={translate(TranslationKeys.foodofferComponents)}>
-			{foodofferComponents.map((component: any) => {
-				const componentFoodoffer = component?.component_foodoffers_id;
-				if (!componentFoodoffer) return null;
-				const componentName =
-					getTextFromTranslation(componentFoodoffer?.translations, language) ||
-					componentFoodoffer?.alias ||
-					`Component #${componentFoodoffer?.id}`;
-				const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-					(m: any) => m?.markings_id
-				);
-				return (
-					<View key={componentFoodoffer?.id}>
-						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
-						{componentMarkingIds.length === 0 ? (
-							<SettingsList title={translate(TranslationKeys.noFoodofferMarkingsDataProvided)} italic noIconIndent groupPosition="single" showSeparator={false} />
-						) : (
-							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
-						)}
-			<DebugView title="Foodoffer Components">
 				{foodofferComponents.map((component: any) => {
 					const componentFoodoffer = component?.component_foodoffers_id;
 					if (!componentFoodoffer) return null;

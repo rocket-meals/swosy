@@ -30,12 +30,6 @@ const STORE_ICON_BY_TARGET: Record<StoreTarget, keyof typeof Ionicons.glyphMap> 
 	android: 'logo-google-playstore',
 };
 
-export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
-	const { translate, language } = useLanguage();
-	const { theme } = useTheme();
-	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-	const isLtrLanguage = useIsLtrLanguage();
-	const isArabic = !isLtrLanguage;
 export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	groupPosition = 'single',
 	showSeparator = false,
@@ -45,6 +39,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { show: showModal } = useMyScrollViewModal();
 	const { wasAskedForRating, requestNativeReview } = useNativeQuickRateApp();
 
@@ -214,29 +210,6 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	}
 
 	return (
-		<SettingsList
-			label={nativeRow?.label || translate(TranslationKeys.rate_app)}
-			handleFunction={() => openStore(nativeStoreUrl, nativeStore)}
-			groupPosition={groupPosition}
-			showSeparator={showSeparator}
-			iconBgColor={RATE_APP_ICON_BACKGROUND}
-			leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
-			rightElement={
-				<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-					{isArabic ? (
-						<>
-							<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
-							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
-						</>
-					) : (
-						<>
-							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
-							<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
-						</>
-					)}
-				</View>
-			}
-		/>
 		<>
 			{nativeStoreUrl && (
 				<SettingsList
@@ -248,8 +221,17 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 					leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
 					rightElement={
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
-							<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+							{isArabic ? (
+								<>
+									<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
+									<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+								</>
+							) : (
+								<>
+									<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+									<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+								</>
+							)}
 						</View>
 					}
 				/>

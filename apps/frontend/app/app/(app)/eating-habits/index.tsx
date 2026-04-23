@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, SafeAreaView, Text, View } from 'react-native';
+import { Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -263,12 +263,6 @@ const Index = () => {
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
 				titleTextAlign={!isLtrLanguage ? 'right' : undefined}
-				handleFunction={handleClearMarkings}
-				groupPosition="single"
-			/>
-			<View style={styles.markingsTopSpacer} />
-		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings, language]);
 				handleFunction={handleClearMarkingsWithConfirmation}
 				groupPosition="bottom"
 			/>

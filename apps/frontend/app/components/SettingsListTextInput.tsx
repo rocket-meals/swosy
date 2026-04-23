@@ -1,6 +1,5 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, Platform, StyleSheet, View, TextInput } from 'react-native';
 import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -95,10 +94,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	const isLtrLanguage = useIsLtrLanguage();
 	const { primaryColor, language } = useAppSelector((state: RootState) => state.settings);
 
-	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
-
 	return (
-		<InputComponent
 		<ResolvedTextInput
 			style={{
 				...styles.sheetInput,
@@ -161,15 +157,12 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, onSave]);
 
-	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
-
 	const Content = (
 		<View
 			style={{
 				...styles.sheetView,
 			}}
 		>
-			<InputComponent
 			<ResolvedTextInput
 				style={{
 					...styles.sheetInput,
