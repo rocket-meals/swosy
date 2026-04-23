@@ -123,6 +123,8 @@ const SettingsListComponents = () => {
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.settings_list_nickname)}</Text>
 				<SettingsListNickname initialValue={nickname} onSave={setNickname} />
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListNickname</Text>
+				<SettingsListNickname />
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.settings_list_coordinate)}</Text>
 				<SettingsListCoordinate

@@ -26,6 +26,7 @@ import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
 import AppButton from '@/components/AppButton';
 import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -68,6 +69,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
         const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
         const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
         const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
+        const { isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
+        const { chats } = useAppSelector((state) => state.chats);
+        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis } = useAppSelector((state) => state.settings);
+        const customerConfig = useCustomerConfig();
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
@@ -327,6 +332,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		},
 	];
 
+	const footerWikis = wikis ? wikis.filter((wiki: any) => wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) : [];
+
 	const footerContent = (
 		<>
 			{wikis &&
@@ -352,6 +359,21 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						);
 					}
 				})}
+			{footerWikis.map((wiki: any, index: number) => (
+				<React.Fragment key={wiki.custom_id || index}>
+					<TouchableOpacity
+						onPress={() =>
+							router.push({
+								pathname: '/wikis',
+								params: { custom_id: wiki?.custom_id },
+							})
+						}
+					>
+						<Text style={[styles.link, { color: theme.drawer.link }]}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
+					</TouchableOpacity>
+					{index < footerWikis.length - 1 && <Text style={[styles.bar, { color: theme.drawer.link }]}>|</Text>}
+				</React.Fragment>
+			))}
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
 		</>
 	);
@@ -362,7 +384,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	return (
 		<AppDrawer
 			logoSource={logoUri ? { uri: logoUri } : undefined}
-			title={ServerInfoHelper.getServerName(serverInfo)}
+			title={ServerInfoHelper.getServerName(serverInfo, customerConfig)}
 			onLogoPress={() => navigation.navigate('foodoffers')}
 			items={toDrawerItems(generateMenuItems())}
 			bottomItems={bottomItems}

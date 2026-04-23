@@ -99,6 +99,7 @@ export const useMyScrollviewModalCanteenSelection = () => {
 				titleTextAlign: isRtl ? 'right' : 'left',
 				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 				onClose: closeScrollViewModal,
+				disableHorizontalPadding: true,
 				children: (
 					<CanteenSelectionContent onSelectCanteen={onSelectCanteen}>
 						{children}

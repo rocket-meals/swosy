@@ -15,6 +15,8 @@ import useToast from '@/hooks/useToast';
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useDebugMode from '@/hooks/useDebugMode';
 
 export default function ImageFullScreen() {
 	const { uri, assetId } = useLocalSearchParams<{
@@ -27,6 +29,8 @@ export default function ImageFullScreen() {
 	const { translate } = useLanguage();
 	const [showControls, setShowControls] = useState(true);
 	const [modalVisible, setModalVisible] = useState(false);
+	const { show: showScrollViewModal } = useMyScrollViewModal();
+	const isDebugMode = useDebugMode();
 
 	const highResUri = assetId ? getHighResImageUrl(String(assetId)) : String(uri);
 	const lowResUri = uri ? String(uri) : highResUri;
@@ -146,17 +150,38 @@ export default function ImageFullScreen() {
 
 	const downloadImage = async () => {
 		try {
-			const extension = String(highResUri).split('.').pop()?.split(/[#?]/)[0];
+			let extension = 'jpg';
+			try {
+				const urlObj = new URL(String(highResUri));
+				const format = urlObj.searchParams.get('format');
+				if (format) {
+					extension = format;
+				} else {
+					const lastSegment = urlObj.pathname.split('/').pop() ?? '';
+					const dotIndex = lastSegment.lastIndexOf('.');
+					if (dotIndex !== -1) {
+						const pathExt = lastSegment.slice(dotIndex + 1);
+						if (pathExt.length > 0 && pathExt.length <= 5) {
+							extension = pathExt;
+						}
+					}
+				}
+			} catch (urlError) {
+				// URL parsing failed, keep default extension
+				if (isDebugMode) {
+					console.warn('Failed to parse image URL for extension:', urlError);
+				}
+			}
 			const name = assetId ? assetId : `image_${Date.now()}`;
 			if (Platform.OS === 'web') {
 				const link = document.createElement('a');
 				link.href = String(highResUri);
-				link.download = extension ? `${name}.${extension}` : name;
+				link.download = `${name}.${extension}`;
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
 			} else {
-				const filename = extension ? `${name}.${extension}` : name;
+				const filename = `${name}.${extension}`;
 				const fileUri = (FileSystem as any).documentDirectory + filename;
 				const { uri } = await FileSystem.downloadAsync(String(highResUri), fileUri);
 				await Share.share({
@@ -167,6 +192,25 @@ export default function ImageFullScreen() {
 			}
 		} catch (e) {
 			toast(translate(TranslationKeys.download_failed), 'error');
+			toast('Download failed', 'error');
+			if (isDebugMode) {
+				const debugText = [
+					'Download failed',
+					`highResUri: ${highResUri}`,
+					`lowResUri: ${lowResUri}`,
+					`assetId: ${assetId}`,
+					`error: ${e instanceof Error ? e.message : String(e)}`,
+					`stack: ${e instanceof Error ? e.stack : ''}`,
+				].join('\n\n');
+				showScrollViewModal({
+					title: 'Debug: Download Error',
+					children: (
+						<Text selectable style={{ fontFamily: 'monospace', fontSize: 12, color: theme.screen.text }}>
+							{debugText}
+						</Text>
+					),
+				});
+			}
 		}
 	};
 

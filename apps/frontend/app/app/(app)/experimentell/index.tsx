@@ -59,12 +59,6 @@ const Index = () => {
 			onPress: () => router.push('/vertical-image-scroll'),
 		},
 		{
-			key: 'foodoffers-scroll',
-			label: translate(TranslationKeys.foodoffers_scroll),
-			leftIcon: <MaterialCommunityIcons name="food" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/foodoffers-scroll'),
-		},
-		{
 			key: 'date-helper-preview',
 			label: translate(TranslationKeys.date_helper_preview),
 			leftIcon: <MaterialCommunityIcons name="calendar-week" size={24} color={theme.screen.icon} />,
@@ -96,7 +90,7 @@ const Index = () => {
 		},
 		{
 			key: 'app-download',
-			label: translate(TranslationKeys.app_download),
+			label: translate(TranslationKeys.app_download_selection),
 			leftIcon: <MaterialCommunityIcons name="download" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/app-download'),
 		},
@@ -148,12 +142,6 @@ const Index = () => {
 			label: translate(TranslationKeys.account_required_example),
 			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/account-required-example'),
-		},
-		{
-			key: 'eating-habits-performance',
-			label: translate(TranslationKeys.eating_habits_performance),
-			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/eating-habits-performance'),
 		},
 	];
 

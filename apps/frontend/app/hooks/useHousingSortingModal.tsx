@@ -37,6 +37,11 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 			icon: <MaterialCommunityIcons name="map-marker-distance" size={24} />,
 		},
 		{
+			id: ApartmentSortOption.LAST_OPENED,
+			label: TranslationKeys.sort_option_last_opened,
+			icon: <MaterialCommunityIcons name="clock-outline" size={24} />,
+		},
+		{
 			id: ApartmentSortOption.ALPHABETICAL,
 			label: TranslationKeys.sort_option_alphabetical,
 			icon: <MaterialCommunityIcons name="sort-alphabetical-ascending" size={24} />,
@@ -59,18 +64,16 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 	}, [apartmentsSortBy]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={sortingOptions.map((option) => ({
-						...option,
-						label: translate(option.label),
-					}))}
-					selectedOption={selectedOption}
-					onSelect={updateSort}
-					iconBgColor={housing_area_color}
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={sortingOptions.map((option) => ({
+					...option,
+					label: translate(option.label),
+				}))}
+				selectedOption={selectedOption}
+				onSelect={updateSort}
+				iconBgColor={housing_area_color}
+			/>
 		</View>
 	);
 };

@@ -11,7 +11,7 @@ import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import MyImage from '../MyImage';
-import useRateAppModal from '@/hooks/useRateAppModal';
+import useCollectibleEventCongratulationsModal from '@/hooks/useCollectibleEventCongratulationsModal';
 import { useAppSelector } from '@/redux/hooks';
 
 type CollectibleKey = (typeof COLLECTABLE_AT_FIELDS)[number];
@@ -42,7 +42,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         const [isSaving, setIsSaving] = useState(false);
         const [randomOffset, setRandomOffset] = useState({ x: 0, y: 0 });
 
-        const { openRateAppModal } = useRateAppModal(projectColor || theme.primary);
+        const { openCongratulationsModal } = useCollectibleEventCongratulationsModal();
 
         const { collectibleDict, setCollectibleKey, collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
@@ -109,7 +109,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 );
 
                 if (maxCollectibleKeys > 0 && updatedCount === maxCollectibleKeys) {
-                        openRateAppModal();
+                        openCongratulationsModal();
                 }
 
                 if (!loggedIn || !profile?.id) {

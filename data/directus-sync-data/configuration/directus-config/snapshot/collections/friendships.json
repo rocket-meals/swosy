@@ -1,0 +1,33 @@
+{
+  "collection": "friendships",
+  "meta": {
+    "accountability": "all",
+    "archive_app_filter": true,
+    "archive_field": "status",
+    "archive_value": "archived",
+    "collapse": "open",
+    "collection": "friendships",
+    "color": null,
+    "display_template": null,
+    "group": "profiles",
+    "hidden": false,
+    "icon": "connect_without_contact",
+    "item_duplication_fields": null,
+    "note": null,
+    "preview_url": null,
+    "singleton": false,
+    "sort": 5,
+    "sort_field": "sort",
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Freundschaften"
+      }
+    ],
+    "unarchive_value": "draft",
+    "versioning": false
+  },
+  "schema": {
+    "name": "friendships"
+  }
+}

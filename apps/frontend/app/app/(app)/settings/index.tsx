@@ -52,10 +52,12 @@ import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
 import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
+import { FriendsContent } from '@/components/FriendsContent';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -74,7 +76,7 @@ const Settings = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
-        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement } = useAppSelector((state) => state.authReducer);
+        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
@@ -86,9 +88,24 @@ const Settings = () => {
         const { openHousingSortingModal } = useHousingSortingModal();
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+        const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
+
+        const openFriendsModal = useCallback(() => {
+                showScrollViewModal({
+                        title: translate(TranslationKeys.friendships),
+                        children: <FriendsContent showHeading={false} />,
+                        disableHorizontalPadding: true,
+                });
+        }, [showScrollViewModal, translate]);
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
+        const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
+        const { friendships } = useAppSelector((state) => state.friendships);
+        const acceptedFriendsCount = useMemo(
+                () => friendships.filter((f) => f.friendship_status === 'accepted').length,
+                [friendships]
+        );
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -180,6 +197,19 @@ const Settings = () => {
                 () => translate(campusSortingOptionLabels[campusesSortBy as CampusSortOption] ?? 'sort_option_none'),
                 [campusSortingOptionLabels, campusesSortBy, translate]
         );
+
+        const canteenVisitsVisibilityLabel = useMemo(() => {
+                switch (canteenVisitsVisibility) {
+                        case 'all':
+                                return translate(TranslationKeys.canteen_visits_visibility_all);
+                        case 'friends_only':
+                                return translate(TranslationKeys.canteen_visits_visibility_friends_only);
+                        case 'off':
+                                return translate(TranslationKeys.canteen_visits_visibility_off);
+                        default:
+                                return translate(TranslationKeys.canteen_visits_visibility_all);
+                }
+        }, [canteenVisitsVisibility, translate]);
 
         const saveNickname = useCallback(
                 async (value: string) => {
@@ -434,6 +464,7 @@ const Settings = () => {
                 collectibleSettingsModalRef.current = openCollectibleSettingsModal;
         }, [openCollectibleSettingsModal]);
 
+	const showFriendsInSettings = !!(appSettings?.friends_enabled || isDevMode);
 
 	const listData = useMemo(() => {
 		const rows: Array<{ key: string; element: React.ReactElement }> = [];
@@ -448,6 +479,7 @@ const Settings = () => {
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="middle" />
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
@@ -455,13 +487,24 @@ const Settings = () => {
 							titleTextAlign={!isLtrLanguage ? 'right' : undefined}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition="middle"
+							groupPosition={showFriendsInSettings ? 'middle' : 'bottom'}
 						/>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
 						{isRegisteredUser ? (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
 						) : null}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" />
+						{showFriendsInSettings && (
+							<SettingsList
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.friendships)}
+								value={String(acceptedFriendsCount)}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={openFriendsModal}
+								groupPosition="bottom"
+							/>
+						)}
 					</View>
 				</View>
 			),
@@ -480,6 +523,22 @@ const Settings = () => {
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name={isLtrLanguage ? 'chevron-right' : 'chevron-left'} size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+						{showFriendsInSettings && (
+							<SettingsList
+								iconBgColor={foods_area_color}
+								leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.canteen_visits_visibility)}
+								value={canteenVisitsVisibilityLabel}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={openCanteenVisitsVisibilityModal}
+								groupPosition="middle"
+							/>
+						)}
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
 					</View>
 				</View>
 			),
@@ -603,6 +662,22 @@ const Settings = () => {
 			),
 		});
 
+		// === Account Actions (Logout / Delete) ===
+		rows.push({
+			key: 'section-account-actions',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.account)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
+						{isRegisteredUser ? (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
+						) : null}
+					</View>
+				</View>
+			),
+		});
+
 		// === Footer ===
 		rows.push({
 			key: 'footer',
@@ -625,7 +700,7 @@ const Settings = () => {
 							style={styles.logo}
 						/>
 					</View>
-					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
+					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo, customerConfig)}</Text>
 				</TouchableOpacity>
 			),
 		});
@@ -706,13 +781,14 @@ const Settings = () => {
 		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openChangeMyCanteenSelectionModal,
 		openFoodofferSortingModal, sortingLabel, openColorSchemeSheet, openMenuPositionModal,
 		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
-		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, housing_area_color,
-		housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled, campus_area_color,
-		campusSortingLabel, openCampusSortingModal, handleCheckForUpdates, openCollectibleSettingsModal,
-		termsAndPrivacyConsentAcceptedDate, isManagement, dispatch, serverInfo, selectedCustomerDisplayName,
-		foodOffersNextDayThreshold, useWebpForAssets, debugMode, simulateExpoUpdateAvailable,
-		openServerSheet, openFoodOffersTimeSheet, toggleWebpForAssets, toggleDebugMode,
-		toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, appSettings?.friends_enabled,
+		housing_area_color, housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled,
+		campus_area_color, campusSortingLabel, openCampusSortingModal, handleCheckForUpdates,
+		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
+		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
+		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 	]);
 
 	return (

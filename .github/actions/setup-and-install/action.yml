@@ -104,6 +104,18 @@ runs:
         sudo apt-get update
         sudo apt-get install -y imagemagick
 
+        CUSTOMER_ENUM=$(node - <<'EOF'
+        require('ts-node').register({
+                transpileOnly: true,
+                compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+        });
+
+        const { getCustomerEnvVariable, ConfigCustomerEnum } = require('./app/config.ts');
+        console.log(getCustomerEnvVariable() || ConfigCustomerEnum.TEST);
+        EOF
+        )
+        echo "CUSTOMER_ENUM=${CUSTOMER_ENUM}"
+
         ICON_PATH=$(node - <<'EOF'
         require('ts-node').register({
                 transpileOnly: true,
@@ -132,4 +144,4 @@ runs:
         )
         echo "COMPANY_PATH=${COMPANY_PATH}"
 
-        ../../scripts/generateIcons.sh "./app/${ICON_PATH}" "./app/${COMPANY_PATH}" "./app/assets/generated/"
+        ../../scripts/generateIcons.sh "./app/${ICON_PATH}" "./app/${COMPANY_PATH}" "./app/assets/generated/${CUSTOMER_ENUM}/"

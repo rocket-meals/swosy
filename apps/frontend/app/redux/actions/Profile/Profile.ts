@@ -10,7 +10,7 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 	async fetchProfile(queryOverride: any = {}) {
 		// Default query structure
 		const defaultQuery = {
-			fields: ['*', 'markings.*', 'devices.*', 'buildings_favorites.*', 'buildings_last_visited.*'],
+			fields: ['*', 'markings.*', 'devices.*', 'buildings_favorites.*', 'buildings_last_opened.*'],
 			deep: {},
 		};
 
@@ -24,7 +24,7 @@ export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 	async fetchProfileById(id: string, queryOverride: any = {}) {
 		// Default query structure
 		const defaultQuery = {
-			fields: ['*', 'markings.*', 'devices.*', 'buildings_favorites.*', 'buildings_last_visited.*'],
+			fields: ['*', 'markings.*', 'devices.*', 'buildings_favorites.*', 'buildings_last_opened.*'],
 			deep: {},
 		};
 

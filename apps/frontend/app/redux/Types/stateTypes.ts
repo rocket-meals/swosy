@@ -72,6 +72,7 @@ export type SettingsState = {
         mapVirtualZoom: number | null;
         mapOrganisationFilter: Record<string, boolean>;
         mapClusterPixelRadius: number;
+        foodoffersShowSeparatedMarkingsBreakdown: boolean | null;
 }
 
 export type FoodState = {
@@ -191,4 +192,8 @@ export type PopupEventsHashState = {
 export type ChatsState = {
         chatsDict: Record<string, DatabaseTypes.Chats>;
         readStatus: Record<string, string>;
+}
+
+export type FriendshipsState = {
+        friendships: DatabaseTypes.Friendships[];
 }

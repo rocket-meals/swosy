@@ -127,6 +127,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     }, [showModal]);
 
     const openFullScreenImage = useCallback(() => {
+        closeModal();
         if (foodDetails?.image_remote_url) {
             router.push({
                 pathname: '/(app)/image-full-screen',
@@ -143,7 +144,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                 params: { uri: defaultImage },
             });
         }
-    }, [foodDetails, defaultImage]);
+    }, [foodDetails, defaultImage, closeModal]);
 
     const FeedbacksContent = useMemo(() => (
         <Feedbacks

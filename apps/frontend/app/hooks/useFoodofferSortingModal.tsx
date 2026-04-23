@@ -165,7 +165,7 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         }, [sortBy]);
 
         return (
-                <View style={{ width: '100%', gap: 12 }}>
+                <View style={{ width: '100%' }}>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         <View style={styles.sortingListContainer}>
                                 {sortingOptions.map((option, index) => {

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Image, LayoutChangeEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { AppDrawerProps, DrawerItem } from './types';
@@ -18,6 +18,16 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const [iconMinWidth, setIconMinWidth] = useState(0);
+	const iconMinWidthRef = useRef(0);
+
+	const handleIconInnerLayout = (event: LayoutChangeEvent) => {
+		const { width } = event.nativeEvent.layout;
+		if (width > iconMinWidthRef.current) {
+			iconMinWidthRef.current = width;
+			setIconMinWidth(width);
+		}
+	};
 
 	const isActive = (key: string) => activeKey === key;
 
@@ -64,6 +74,18 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 							]}
 						/>
 					) : null}
+				<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
+					<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>
+						{item.renderIcon(active, iconColor)}
+						{item.hasUnread ? (
+							<View
+								style={[
+									styles.notificationDot,
+									{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
+								]}
+							/>
+						) : null}
+					</View>
 				</View>
 				<Text
 					style={[
@@ -173,6 +195,7 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		marginBottom: 5,
 		width: '100%',
+		gap: 12,
 	},
 	menuItemReverse: {
 		flexDirection: 'row-reverse',
@@ -180,6 +203,14 @@ const styles = StyleSheet.create({
 	},
 	menuIconWrapper: {
 		marginRight: 12,
+	menuIconOuter: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	menuIconInner: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
 		position: 'relative',
 	},
 	menuIconWrapperReverse: {
@@ -190,6 +221,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		fontSize: 16,
 		marginTop: 4,
+		textAlign: 'left',
 	},
 	menuLabelReverse: {
 		textAlign: 'right',
@@ -215,5 +247,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexWrap: 'wrap',
 		marginTop: 10,
+		paddingHorizontal: 15,
 	},
 });

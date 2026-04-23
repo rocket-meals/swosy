@@ -6,7 +6,7 @@ import {
 	useWindowDimensions,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -27,12 +27,14 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
 
 import { RootDrawerParamList } from './types';
 import CampusHeader from './components/CampusHeader';
 import CampusListHeader from './components/CampusListHeader';
 import CampusEmptyState from './components/CampusEmptyState';
 import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 // Types
 type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
@@ -88,6 +90,7 @@ const Index: React.FC = () => {
 
 	const { openCampusSortingModal } = useCampusSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
+	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
 	// Handlers
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
@@ -95,15 +98,13 @@ const Index: React.FC = () => {
 	const toggleDrawer = useCallback(() => drawerNavigation.toggleDrawer(), [drawerNavigation]);
 
 	// Grid Layout Logic
-	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
-		if (amountColumnsForcard && amountColumnsForcard > 0) return amountColumnsForcard;
-		// Use listWidth if available, else fallback to windowWidth
-		const width = listWidth || windowWidth;
-		if (!width) return 2;
-		const cols = Math.floor(width / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
+		return CardDimensionHelper.getGridNumColumns(listWidth || windowWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth, windowWidth]);
+
+	const itemGap = useMemo(() => {
+		return CardDimensionHelper.getItemGap(windowWidth);
+	}, [windowWidth]);
 
 	// Data Processing
 	const ensureStableIds = useCallback((arr: DatabaseTypes.Buildings[] = []) => {
@@ -248,12 +249,26 @@ const Index: React.FC = () => {
 		return sortCampuses(campusesWithDistance, campusesSortBy);
 	}, [campusesWithDistance, campusesSortBy, sortCampuses]);
 
+	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
+	const sortedWithLastOpened = useMemo(() => {
+		if (!shouldApplyLastOpenedBoost(campusesSortBy) || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedCampuses;
+		const lastOpenedSet = new Set(buildingsLastOpenedIds);
+		// Build a Map for O(1) lookup by ID
+		const campusById = new Map(sortedCampuses.map(c => [c.id ?? '', c]));
+		// Preserve the order from buildingsLastOpenedIds (most recent first)
+		const lastOpenedItems = buildingsLastOpenedIds
+			.map(id => campusById.get(id))
+			.filter((c): c is BuildingWithDistance => c !== undefined);
+		const otherItems = sortedCampuses.filter(c => !lastOpenedSet.has(c.id ?? ''));
+		return [...lastOpenedItems, ...otherItems];
+	}, [sortedCampuses, buildingsLastOpenedIds, campusesSortBy]);
+
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
-		const src = sortedCampuses;
+		const src = sortedWithLastOpened;
 		if (!query || query.trim() === '') return src;
 		const q = query.toLowerCase().trim();
 		return src.filter(campus => (campus?.alias ?? '').toLowerCase().includes(q));
-	}, [sortedCampuses, query]);
+	}, [sortedWithLastOpened, query]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
@@ -302,8 +317,14 @@ const Index: React.FC = () => {
 
 	const renderItem = useCallback(
 		({ item }: { item: BuildingWithDistance }) => {
+			const isLastOpened = Boolean(item.id && buildingsLastOpenedIds.includes(item.id));
 			return (
-				<View style={styles.campusContainerItem}>
+				<View style={{
+					flex: 1,
+					marginHorizontal: itemGap,
+					marginVertical: itemGap,
+					alignItems: 'center',
+				}}>
 					<BuildingItem
 						campus={item}
 						onEditImage={openImageManagementModal}
@@ -315,6 +336,7 @@ const Index: React.FC = () => {
 						selectedTheme={selectedTheme}
 						screenWidth={windowWidth}
 						isManagement={isManagement}
+						isLastOpened={isLastOpened}
 					/>
 				</View>
 			);
@@ -328,7 +350,9 @@ const Index: React.FC = () => {
 			campusAreaColor, 
 			selectedTheme, 
 			windowWidth, 
-			isManagement
+			isManagement,
+			buildingsLastOpenedIds,
+			itemGap,
 		]
 	);
 
@@ -388,12 +412,14 @@ const Index: React.FC = () => {
 								campusAreaColor,
 								selectedTheme,
 								windowWidth,
-								isManagement
+								isManagement,
+								buildingsLastOpenedIds,
+								itemGap,
 							]}
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
-							contentContainerStyle={{ marginTop: 20 }}
+							contentContainerStyle={{ paddingBottom: 20 }}
 							ListHeaderComponent={headerComponent}
 							ListEmptyComponent={emptyComponent}
 							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

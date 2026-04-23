@@ -170,6 +170,14 @@ const Index = () => {
 					attributeEntries = Object.values(parsedData);
 				}
 
+				// Deduplicate by attribute ID - keep only the first occurrence
+				const seenIds = new Set<string>();
+				attributeEntries = attributeEntries.filter(item => {
+					if (seenIds.has(item.id)) return false;
+					seenIds.add(item.id);
+					return true;
+				});
+
 				let attributeDataCopy: any[] = [];
 				if (foodAttributesDict && Object?.keys(foodAttributesDict)?.length > 0) {
 					attributeDataCopy = attributeEntries.map(item => {
@@ -325,19 +333,22 @@ const Index = () => {
 
 				// Initialize array with empty values for all possible attributes
 				const sortedValues = foodAttributesDataFull.map((attr: any) => ({
-					value: null, // or '-' if you prefer
+					value: null,
 					alias: attr.alias,
 					exists: false,
 				}));
 
 				// Fill in the actual values where they exist
+				// Deduplicate by food_attribute id - only use the first value per attribute
 				if (offer.attribute_values) {
+					const seenAttrIds = new Set<string>();
 					offer.attribute_values.forEach((attrValue: any) => {
 						const attrId = attrValue.food_attribute?.id;
-						if (attributeSortMap[attrId]) {
+						if (attrId && !seenAttrIds.has(attrId) && attributeSortMap[attrId]) {
+							seenAttrIds.add(attrId);
 							const position = attributeSortMap[attrId].index;
 							sortedValues[position] = {
-								value: attrValue, // or extract specific value if needed
+								value: attrValue,
 								alias: attributeSortMap[attrId].alias,
 								exists: true,
 							};
@@ -629,10 +640,10 @@ const Index = () => {
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.name + '%') as DimensionValue }]}>{translate(TranslationKeys.foodname)}</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.markings + '%') as DimensionValue }]}>{translate(TranslationKeys.markings)}</Text>
 						{foodAttributesColumn &&
-							foodAttributesColumn.map((column: any) => {
+							foodAttributesColumn.map((column: any, colIdx: number) => {
 								const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 								return (
-									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={column}>
+									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={`header-attr-${colIdx}`}>
 										{column}
 									</Text>
 								);
@@ -721,7 +732,7 @@ const Index = () => {
 												</View>
 												{mainFoodAttributes?.[item?.id] &&
 													mainFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
-														const attributeColumnWidth = (Number(columnPercentages.attributes) / mainFoodAttributes[item?.id].length).toFixed(2);
+														const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 														if (!attr?.value) {
 															return (
 																<Text
@@ -861,7 +872,7 @@ const Index = () => {
 											</View>
 											{optionalFoodAttributes?.[item?.id] &&
 												optionalFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
-													const attributeColumnWidth = (Number(columnPercentages.attributes) / optionalFoodAttributes[item?.id].length).toFixed(2);
+													const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 													if (!attr?.value) {
 														return (
 															<Text

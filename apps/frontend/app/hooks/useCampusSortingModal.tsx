@@ -32,6 +32,11 @@ const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) =
 			icon: <MaterialCommunityIcons name="map-marker-distance" size={24} />,
 		},
 		{
+			id: CampusSortOption.LAST_OPENED,
+			label: TranslationKeys.sort_option_last_opened,
+			icon: <MaterialCommunityIcons name="clock-outline" size={24} />,
+		},
+		{
 			id: CampusSortOption.ALPHABETICAL,
 			label: TranslationKeys.sort_option_alphabetical,
 			icon: <FontAwesome5 name="sort-alpha-down" size={24} />,
@@ -54,18 +59,16 @@ const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) =
 	}, [campusesSortBy]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={sortingOptions.map((option) => ({
-						...option,
-						label: translate(option.label),
-					}))}
-					selectedOption={selectedOption}
-					onSelect={updateSort}
-					iconBgColor={campus_area_color}
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={sortingOptions.map((option) => ({
+					...option,
+					label: translate(option.label),
+				}))}
+				selectedOption={selectedOption}
+				onSelect={updateSort}
+				iconBgColor={campus_area_color}
+			/>
 		</View>
 	);
 };

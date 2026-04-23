@@ -1,5 +1,8 @@
 Apple Altersfreigabe:
 Schritt 1: Funktionen: Alles "NEIN"
+	Fähigkeiten:
+		Benutzergenerierte Inhalte: JA
+		Nachrichten und Chat: JA
 Schritt 2: Erwachsenenthemen
 	- Gebrauch von Alkohol, Tabak oder Drogen bzw. Verweise hierzu: "SELTEN"
 		- Da Getränke der Mensen angegeben werden können
