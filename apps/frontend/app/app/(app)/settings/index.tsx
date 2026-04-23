@@ -90,6 +90,7 @@ const Settings = () => {
                 showScrollViewModal({
                         title: translate(TranslationKeys.friendships),
                         children: <FriendsContent showHeading={false} />,
+                        disableHorizontalPadding: true,
                 });
         }, [showScrollViewModal, translate]);
 
