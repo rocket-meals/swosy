@@ -92,28 +92,18 @@ const DebugSection: React.FC<DebugSectionProps> = ({
         buttonColor,
         resetCurrentCollectibles,
         resetAllParticipations,
+        simulateAllFound,
+        simulateNextFound,
         nextCollectibleKey,
         debugSpotLabel,
 }) => {
         const { translate } = useLanguage();
         const isLtrLanguage = useIsLtrLanguage();
-	const languageTextAlign = useLanguageTextAlign();
-                                                           activeCollectibleEvent,
-                                                           theme,
-                                                           buttonColor,
-                                                           resetCurrentCollectibles,
-                                                           resetAllParticipations,
-                                                           simulateAllFound,
-                                                           simulateNextFound,
-                                                           nextCollectibleKey,
-                                                           debugSpotLabel,
-                                                   }) => {
+        const languageTextAlign = useLanguageTextAlign();
         return (
             <View style={{ marginTop: 16 }}>
                     <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>{translate(TranslationKeys.debug)}</Text>
                     <View style={{ marginTop: 12, gap: 8 }}>
-                            <AppButton
-                                text={translate(TranslationKeys.reset_current_event_found_collectible)}
                             <TouchableOpacity
                                 style={{
                                         ...styles.button,
@@ -141,12 +131,8 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                     </Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{
-                                        ...styles.button,
-                                        backgroundColor: buttonColor,
-                                        opacity: 0.9,
-                                }}
+                            <AppButton
+                                text={translate(TranslationKeys.reset_current_event_found_collectible)}
                                 onPress={resetCurrentCollectibles}
                                 style={{ ...styles.button, backgroundColor: buttonColor, opacity: 0.9, marginVertical: 0 }}
                                 textStyle={{ ...styles.buttonText, color: theme.dark }}
