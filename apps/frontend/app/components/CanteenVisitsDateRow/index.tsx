@@ -42,7 +42,7 @@ export interface CanteenVisitDetailsModalContentProps {
 export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentProps> = ({
 	canteenId,
 	date,
-	counts,
+	counts: initialCounts,
 	primaryColor,
 	foods_area_color,
 	isRegistered,
@@ -58,10 +58,25 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 }) => {
 	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
 	const [toggling, setToggling] = useState(false);
+	const [counts, setCounts] = useState(initialCounts);
 
 	const [debugOwnVisits, setDebugOwnVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
 	const [debugFriendVisits, setDebugFriendVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
 	const [debugAllVisits, setDebugAllVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
+
+	const fetchCounts = useCallback(async () => {
+		try {
+			const [total, friends] = await Promise.all([
+				canteenVisitsHelper.fetchVisitCountForDate(canteenId, date),
+				friendProfileIds.length > 0
+					? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
+					: Promise.resolve(0),
+			]);
+			setCounts({ total, friends });
+		} catch (error) {
+			console.error('Error fetching canteen visit counts:', error);
+		}
+	}, [canteenId, date, friendProfileIds]);
 
 	const fetchDebugData = useCallback(async () => {
 		try {
@@ -109,13 +124,14 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 			const updatedVisit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId);
 			setOwnVisit(updatedVisit);
 			onOwnVisitChanged?.(date, updatedVisit);
+			fetchCounts();
 			fetchDebugData();
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged, fetchDebugData]);
+	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged, fetchCounts, fetchDebugData]);
 
 	return (
 		<View>
