@@ -148,6 +148,7 @@ export const useLanguageModal = () => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.language),
+                                noGap: true,
                                 children: (
                                         <View style={styles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (

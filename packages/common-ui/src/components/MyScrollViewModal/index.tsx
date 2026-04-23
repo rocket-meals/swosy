@@ -19,6 +19,15 @@ export interface MyScrollViewModalProps {
 	keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
+	/**
+	 * Removes horizontal padding from the content container so that
+	 * SettingsList items (which carry their own `paddingHorizontal`) render
+	 * flush with the modal edges, matching the natural screen layout.
+	 * Prefer this prop for modals that contain list-based settings content.
+	 * Use `disableHorizontalPadding` instead when the content manages its own
+	 * full-width layout (e.g. image grids, maps, canteen selection).
+	 */
+	noGap?: boolean;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -35,6 +44,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	keyboardShouldPersistTaps = 'handled',
 	onClose,
 	disableHorizontalPadding = false,
+	noGap = false,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -64,7 +74,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const footerComponent = ListFooterComponent || <View style={{ height: Math.max(24, insets.bottom + 16) + extraBottomPadding }} />;
 
-	const contentStyle = { paddingBottom: 24 + insets.bottom + extraBottomPadding, paddingHorizontal: disableHorizontalPadding ? 0 : 20 };
+	const contentStyle = { paddingBottom: 24 + insets.bottom + extraBottomPadding, paddingHorizontal: (disableHorizontalPadding || noGap) ? 0 : 20 };
 	const scrollInsets = { bottom: insets.bottom };
 
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };

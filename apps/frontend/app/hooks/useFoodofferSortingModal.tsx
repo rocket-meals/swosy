@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AntDesign, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
@@ -28,14 +28,6 @@ import { SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SORTING } from '@/redux/Types/typ
 interface SortSheetProps {
         closeSheet: () => void;
 }
-
-const styles = StyleSheet.create({
-        sortingListContainer: {
-                width: '100%',
-                paddingHorizontal: 10,
-                marginTop: 12,
-        },
-});
 
 export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         const { translate } = useLanguage();
@@ -159,19 +151,17 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         }, [sortBy]);
 
         return (
-                <View style={{ width: '100%', gap: 12 }}>
+                <View style={{ width: '100%' }}>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
-                        <View style={styles.sortingListContainer}>
-                                <SettingsListSelectOption
-                                        options={sortingOptions.map((option) => ({
-                                                ...option,
-                                                label: translate(option.label),
-                                        }))}
-                                        selectedOption={selectedOption}
-                                        onSelect={updateSort}
-                                        iconBgColor={foods_area_color}
-                                />
-                        </View>
+                        <SettingsListSelectOption
+                                options={sortingOptions.map((option) => ({
+                                        ...option,
+                                        label: translate(option.label),
+                                }))}
+                                selectedOption={selectedOption}
+                                onSelect={updateSort}
+                                iconBgColor={foods_area_color}
+                        />
                 </View>
         );
 };
@@ -183,6 +173,7 @@ export const useFoodofferSortingModal = () => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.sort),
+                                noGap: true,
                                 onClose: closeScrollViewModal,
                                 children: <SortSheet closeSheet={closeScrollViewModal} />,
                         }
