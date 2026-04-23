@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-23T07:55:56.508Z",
+  "report_timestamp": "2026-04-23T09:37:56.921Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 97,
-          "average": 1.6158755484643,
-          "amountSavedValuesForKeys": 4051,
+          "average": 1.6163346613545817,
+          "amountSavedValuesForKeys": 4057,
           "amountKeys": 27
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 21
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 97,
-          "average": 1.6301810865191146,
-          "amountSavedValuesForKeys": 4051,
+          "average": 1.6306270096463023,
+          "amountSavedValuesForKeys": 4057,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3941,
-        "detection_time_ms": 81,
+        "ast_generation_time_ms": 4276,
+        "detection_time_ms": 92,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 298.06,
-          "os_memory_free": 14886170624,
-          "os_memory_total": 16769720320,
+          "os_uptime": 114.16,
+          "os_memory_free": 14950912000,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3419
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 56,
-    "amount_files_with_data_clumps": 45,
+    "amount_classes_or_interfaces_with_data_clumps": 58,
+    "amount_files_with_data_clumps": 46,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 78,
+    "fields_to_fields_data_clump": 80,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 86
+    "amount_data_clumps": 88
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "0335dcfe5a350640d0230a5b9d276213d23e3c14",
-    "project_commit_hash": "0335dcfe5a350640d0230a5b9d276213d23e3c14",
+    "project_version": "78b09684b2c96efcacf1d77a834733d9e1d3244f",
+    "project_commit_hash": "78b09684b2c96efcacf1d77a834733d9e1d3244f",
     "project_tag": null,
-    "project_commit_date": "1776930856",
+    "project_commit_date": "1776936973",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 506,
-    "number_of_classes_or_interfaces": 1032,
+    "number_of_classes_or_interfaces": 1033,
     "number_of_methods": 1353,
-    "number_of_data_fields": 4051,
+    "number_of_data_fields": 4057,
     "number_of_method_parameters": 1509
   },
   "detector": {
@@ -2018,6 +2018,200 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/frontend/app/components/FriendsContent/index.tsx-apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps-apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps-friendshipsHelperonAcceptedcloseModal": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FriendsContent/index.tsx-apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps-apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps-friendshipsHelperonAcceptedcloseModal",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/FriendsContent/index.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps",
+      "from_class_or_interface_name": "PendingFriendshipContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/FriendsContent/index.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps",
+      "to_class_or_interface_name": "QRGenerateModalContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/friendshipsHelper": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/friendshipsHelper",
+          "name": "friendshipsHelper",
+          "type": "FriendshipsHelper",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/friendshipsHelper",
+            "name": "friendshipsHelper",
+            "type": "FriendshipsHelper",
+            "modifiers": [],
+            "position": {
+              "startLine": 312,
+              "startColumn": 2,
+              "endLine": 312,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 198,
+            "startColumn": 2,
+            "endLine": 198,
+            "endColumn": 39
+          }
+        },
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/onAccepted": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/onAccepted",
+          "name": "onAccepted",
+          "type": "(friendship: DatabaseTypes.Friendships) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/onAccepted",
+            "name": "onAccepted",
+            "type": "(friendship: DatabaseTypes.Friendships) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 314,
+              "startColumn": 2,
+              "endLine": 314,
+              "endColumn": 62
+            }
+          },
+          "position": {
+            "startLine": 199,
+            "startColumn": 2,
+            "endLine": 199,
+            "endColumn": 62
+          }
+        },
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/closeModal": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/closeModal",
+          "name": "closeModal",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/closeModal",
+            "name": "closeModal",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 316,
+              "startColumn": 2,
+              "endLine": 316,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 201,
+            "startColumn": 2,
+            "endLine": 201,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/FriendsContent/index.tsx-apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps-apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps-friendshipsHelperonAcceptedcloseModal": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FriendsContent/index.tsx-apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps-apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps-friendshipsHelperonAcceptedcloseModal",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/FriendsContent/index.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps",
+      "from_class_or_interface_name": "QRGenerateModalContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/FriendsContent/index.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps",
+      "to_class_or_interface_name": "PendingFriendshipContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/friendshipsHelper": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/friendshipsHelper",
+          "name": "friendshipsHelper",
+          "type": "FriendshipsHelper",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/friendshipsHelper",
+            "name": "friendshipsHelper",
+            "type": "FriendshipsHelper",
+            "modifiers": [],
+            "position": {
+              "startLine": 198,
+              "startColumn": 2,
+              "endLine": 198,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 312,
+            "startColumn": 2,
+            "endLine": 312,
+            "endColumn": 39
+          }
+        },
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/onAccepted": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/onAccepted",
+          "name": "onAccepted",
+          "type": "(friendship: DatabaseTypes.Friendships) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/onAccepted",
+            "name": "onAccepted",
+            "type": "(friendship: DatabaseTypes.Friendships) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 199,
+              "startColumn": 2,
+              "endLine": 199,
+              "endColumn": 62
+            }
+          },
+          "position": {
+            "startLine": 314,
+            "startColumn": 2,
+            "endLine": 314,
+            "endColumn": 62
+          }
+        },
+        "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/closeModal": {
+          "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/QRGenerateModalContentProps/memberField/closeModal",
+          "name": "closeModal",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FriendsContent/index.tsx/interface/PendingFriendshipContentProps/memberField/closeModal",
+            "name": "closeModal",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 201,
+              "startColumn": 2,
+              "endLine": 201,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 316,
+            "startColumn": 2,
+            "endLine": 316,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/frontend/app/components/MyMap/MyMapHelper.tsx-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/frontend/app/components/MyMap/MyMapHelper.tsx-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText",
@@ -2111,7 +2305,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
@@ -2383,7 +2577,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -2530,7 +2724,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -2627,7 +2821,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2871,7 +3065,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -3168,7 +3362,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -3440,7 +3634,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -3562,7 +3756,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -3659,7 +3853,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -3756,7 +3950,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -3903,7 +4097,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -4050,7 +4244,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -4147,7 +4341,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -4244,7 +4438,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -4341,7 +4535,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -4438,7 +4632,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 3
       }
     },
@@ -4535,7 +4729,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4657,7 +4851,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4754,7 +4948,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4851,7 +5045,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -4948,7 +5142,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -5780,7 +5974,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -5952,7 +6146,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -6049,7 +6243,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -6146,7 +6340,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -6243,7 +6437,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -6415,7 +6609,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -6587,7 +6781,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -6859,7 +7053,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -7131,7 +7325,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -7428,7 +7622,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -7700,7 +7894,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -7797,7 +7991,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -8019,7 +8213,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 21,
         "cluster_type": 2
       }
     },
@@ -8116,7 +8310,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -8238,7 +8432,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -8410,7 +8604,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -8532,7 +8726,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -8654,7 +8848,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -8826,7 +9020,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -8948,7 +9142,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 22,
         "cluster_type": 3
       }
     },
@@ -9120,7 +9314,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -9342,7 +9536,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 21,
         "cluster_type": 2
       }
     },
@@ -9536,7 +9730,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 22,
+        "cluster_id": 23,
         "cluster_type": 2
       }
     },
@@ -9633,7 +9827,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 22,
+        "cluster_id": 23,
         "cluster_type": 2
       }
     },
@@ -9730,7 +9924,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
@@ -10002,7 +10196,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -10587,7 +10781,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -10734,7 +10928,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -10831,7 +11025,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -10953,7 +11147,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11050,7 +11244,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11682,7 +11876,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -11779,7 +11973,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     }
