@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, NumberHelper } from 'repo-depkit-common';
 import { MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -140,7 +140,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 						leftIcon={<MaterialCommunityIcons name="account-multiple-plus" size={24} color={theme.screen.icon} />}
 						iconBgColor={primaryColor}
 						label={translate(TranslationKeys.canteen_visits_manage_friends)}
-						value={String(counts.friends)}
+						value={NumberHelper.formatCompact(counts.friends)}
 						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 						handleFunction={() => {
 							showFriendsModal();
@@ -196,7 +196,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 				leftIcon={<MaterialCommunityIcons name="account-group" size={24} color={theme.screen.icon} />}
 				iconBgColor={primaryColor}
 				label={translate(TranslationKeys.canteen_visits_total_people)}
-				value={String(counts.total)}
+				value={NumberHelper.formatCompact(counts.total)}
 				groupPosition="top"
 			/>
 			<SettingsList
@@ -397,7 +397,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 						{toggling ? (
 							<ActivityIndicator size="small" color={countsTextColor} />
 						) : (
-							<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{counts.friends}</Text>
+							<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{NumberHelper.formatCompact(counts.friends)}</Text>
 						)}
 					</View>
 				)}
@@ -407,7 +407,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 						{toggling ? (
 							<ActivityIndicator size="small" color={countsTextColor} />
 						) : (
-							<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{counts.total}</Text>
+							<Text style={[rowStyles.visitCountText, { color: countsTextColor }]}>{NumberHelper.formatCompact(counts.total)}</Text>
 						)}
 					</View>
 				)}
