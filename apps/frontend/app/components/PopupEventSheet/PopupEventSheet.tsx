@@ -12,6 +12,7 @@ import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resour
 import ProjectButton from '../ProjectButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
+import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
@@ -65,6 +66,11 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 				)}
 				{rawText ? <MyMarkdown content={rawText} textColor={theme.screen.text} /> : null}
 			</View>
+			{eventData?.show_app_rating_button ? (
+				<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 20 }}>
+					<RateAppSettingsItem groupPosition="single" showSeparator={false} />
+				</View>
+			) : null}
 		</BottomSheetScrollView>
 	);
 };
