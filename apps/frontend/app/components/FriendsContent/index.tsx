@@ -192,27 +192,20 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 	);
 };
 
-/* ───────────────────── QR Generate Modal Content ──────────────────────── */
-type QRGenPhase = 'generating' | 'success' | 'error';
-
-type QRGenerateModalContentProps = {
-	profileId: string;
+/* ────────────── Shared Pending Friendship Content ────────────────────── */
+type PendingFriendshipContentProps = {
+	friendship: DatabaseTypes.Friendships;
 	friendshipsHelper: FriendshipsHelper;
-	onCreated: (friendship: DatabaseTypes.Friendships) => void;
 	onAccepted: (friendship: DatabaseTypes.Friendships) => void;
+	onDeleted: () => void;
 	closeModal: () => void;
 };
 
-const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated, onAccepted, closeModal }) => {
+const PendingFriendshipContent: React.FC<PendingFriendshipContentProps> = ({ friendship, friendshipsHelper, onAccepted, onDeleted, closeModal }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
-	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const showToast = useToast();
-	const [phase, setPhase] = useState<QRGenPhase>('generating');
-	const [friendship, setFriendship] = useState<DatabaseTypes.Friendships | null>(null);
-	const [errorDetail, setErrorDetail] = useState<string>('');
-	const startedRef = useRef(false);
 	const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	const stopPolling = useCallback(() => {
@@ -221,6 +214,117 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 			pollingRef.current = null;
 		}
 	}, []);
+
+	// Poll for acceptance
+	useEffect(() => {
+		if (!friendship?.id) return;
+
+		pollingRef.current = setInterval(async () => {
+			try {
+				const updated = await friendshipsHelper.readFriendship(friendship.id);
+				if (updated && updated.friendship_status === 'accepted') {
+					stopPolling();
+					onAccepted(updated);
+					showToast(translate(TranslationKeys.friendships_confirmed));
+					closeModal();
+				}
+			} catch {
+				// Ignore polling errors – keep trying
+			}
+		}, 1000);
+
+		return () => {
+			stopPolling();
+		};
+	}, [friendship?.id, friendshipsHelper, onAccepted, closeModal, showToast, translate, stopPolling]);
+
+	const handleCopyId = useCallback(async () => {
+		if (!friendship?.id) return;
+		const copied = await Clipboard.setStringAsync(friendship.id);
+		if (copied) {
+			showToast(translate(TranslationKeys.copied), 'success');
+		}
+	}, [friendship?.id, showToast, translate]);
+
+	const handleDelete = useCallback(async () => {
+		try {
+			stopPolling();
+			await friendshipsHelper.deleteFriendship(friendship.id);
+			onDeleted();
+			showToast(translate(TranslationKeys.friendships_delete_confirm));
+			closeModal();
+		} catch (error) {
+			console.error('Error deleting friendship:', error);
+			showToast(translate(TranslationKeys.friendships_request_error), 'error');
+		}
+	}, [friendship.id, friendshipsHelper, onDeleted, closeModal, showToast, translate, stopPolling]);
+
+	return (
+		<View style={styles.qrContainer}>
+			<Text style={[styles.qrHint, { color: theme.screen.text }]}>
+				{translate(TranslationKeys.friendships_qr_hint)}
+			</Text>
+			<View style={styles.qrWrapper}>
+				<QRCode
+					value={friendship.id}
+					size={200}
+					backgroundColor="white"
+					color="black"
+				/>
+			</View>
+			<View>
+				<SettingsList
+					label="ID"
+					value={friendship.id}
+					groupPosition="top"
+					leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
+					rightIcon={<MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />}
+					handleFunction={handleCopyId}
+				/>
+				<SettingsList
+					label={translate(TranslationKeys.friendships_waiting_for_scan)}
+					groupPosition="bottom"
+					leftIcon={<ActivityIndicator size="small" color={primaryColor} />}
+				/>
+			</View>
+			<Text style={[styles.qrManualHint, { color: theme.screen.text }]}>
+				{translate(TranslationKeys.friendships_qr_manual_hint)}
+			</Text>
+			<View>
+				<SettingsList
+					label={translate(TranslationKeys.friendships_delete)}
+					iconBgColor="#F44336"
+					leftIcon={<MaterialCommunityIcons name="delete" size={24} color="white" />}
+					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+					handleFunction={handleDelete}
+					groupPosition="single"
+				/>
+			</View>
+		</View>
+	);
+};
+
+/* ───────────────────── QR Generate Modal Content ──────────────────────── */
+type QRGenPhase = 'generating' | 'success' | 'error';
+
+type QRGenerateModalContentProps = {
+	profileId: string;
+	friendshipsHelper: FriendshipsHelper;
+	onCreated: (friendship: DatabaseTypes.Friendships) => void;
+	onAccepted: (friendship: DatabaseTypes.Friendships) => void;
+	onDeleted: (friendshipId: string) => void;
+	closeModal: () => void;
+};
+
+const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated, onAccepted, onDeleted, closeModal }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
+	const [phase, setPhase] = useState<QRGenPhase>('generating');
+	const [friendship, setFriendship] = useState<DatabaseTypes.Friendships | null>(null);
+	const [errorDetail, setErrorDetail] = useState<string>('');
+	const startedRef = useRef(false);
 
 	const generate = useCallback(async () => {
 		setPhase('generating');
@@ -245,40 +349,6 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 			generate();
 		}
 	}, [generate]);
-
-	// Poll for acceptance once friendship is created
-	useEffect(() => {
-		if (phase !== 'success' || !friendship?.id) {
-			stopPolling();
-			return;
-		}
-
-		pollingRef.current = setInterval(async () => {
-			try {
-				const updated = await friendshipsHelper.readFriendship(friendship.id);
-				if (updated && updated.friendship_status === 'accepted') {
-					stopPolling();
-					onAccepted(updated);
-					showToast(translate(TranslationKeys.friendships_confirmed));
-					closeModal();
-				}
-			} catch {
-				// Ignore polling errors – keep trying
-			}
-		}, 1000);
-
-		return () => {
-			stopPolling();
-		};
-	}, [phase, friendship?.id, friendshipsHelper, onAccepted, closeModal, showToast, translate, stopPolling]);
-
-	const handleCopyId = useCallback(async () => {
-		if (!friendship?.id) return;
-		const copied = await Clipboard.setStringAsync(friendship.id);
-		if (copied) {
-			showToast(translate(TranslationKeys.copied), 'success');
-		}
-	}, [friendship?.id, showToast, translate]);
 
 	if (phase === 'generating') {
 		return (
@@ -317,37 +387,15 @@ const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profile
 		);
 	}
 
-	// success
+	// success – delegate to shared pending content
 	return (
-		<View style={styles.qrContainer}>
-			<Text style={[styles.qrHint, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.friendships_qr_hint)}
-			</Text>
-			<View style={styles.qrWrapper}>
-				<QRCode
-					value={friendship!.id}
-					size={200}
-					backgroundColor="white"
-					color="black"
-				/>
-			</View>
-			<SettingsList
-				label="ID"
-				value={friendship!.id}
-				groupPosition="top"
-				leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
-				rightIcon={<MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />}
-				handleFunction={handleCopyId}
-			/>
-			<SettingsList
-				label={translate(TranslationKeys.friendships_waiting_for_scan)}
-				groupPosition="bottom"
-				leftIcon={<ActivityIndicator size="small" color={primaryColor} />}
-			/>
-			<Text style={[styles.qrManualHint, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.friendships_qr_manual_hint)}
-			</Text>
-		</View>
+		<PendingFriendshipContent
+			friendship={friendship!}
+			friendshipsHelper={friendshipsHelper}
+			onAccepted={onAccepted}
+			onDeleted={() => onDeleted(friendship!.id)}
+			closeModal={closeModal}
+		/>
 	);
 };
 
@@ -440,6 +488,9 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					onAccepted={(updated) => {
 						dispatch({ type: UPDATE_FRIENDSHIP, payload: updated });
 					}}
+					onDeleted={(friendshipId) => {
+						dispatch({ type: REMOVE_FRIENDSHIP, payload: friendshipId });
+					}}
 					closeModal={closeScrollViewModal}
 				/>
 			),
@@ -495,6 +546,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		const receiverId = getProfileIdFromField(friendship.receiver_profiles_id);
 		const isRequester = requesterId === profile?.id;
 		const otherProfileId = isRequester ? receiverId : requesterId;
+		const isPending = friendship.friendship_status === 'pending';
 
 		const handleDelete = async () => {
 			try {
@@ -507,6 +559,26 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				showToast(translate(TranslationKeys.friendships_request_error), 'error');
 			}
 		};
+
+		if (isPending) {
+			showScrollViewModal({
+				title: translate(TranslationKeys.friendships_details),
+				children: (
+					<PendingFriendshipContent
+						friendship={friendship}
+						friendshipsHelper={friendshipsHelper}
+						onAccepted={(updated) => {
+							dispatch({ type: UPDATE_FRIENDSHIP, payload: updated });
+						}}
+						onDeleted={() => {
+							dispatch({ type: REMOVE_FRIENDSHIP, payload: friendship.id });
+						}}
+						closeModal={closeScrollViewModal}
+					/>
+				),
+			});
+			return;
+		}
 
 		showScrollViewModal({
 			title: translate(TranslationKeys.friendships_details),
@@ -557,6 +629,14 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		}
 	};
 
+	const translateFriendshipStatus = useCallback((status: string | null | undefined): string => {
+		switch (status) {
+			case 'pending': return translate(TranslationKeys.friendships_pending);
+			case 'accepted': return translate(TranslationKeys.friendships_accepted);
+			default: return status ?? 'unknown';
+		}
+	}, [translate]);
+
 	const renderFriendshipGroup = (items: DatabaseTypes.Friendships[], showStatus?: boolean) => {
 		return items.map((friendship, index) => {
 			const isRequester = getProfileIdFromField(friendship.requester_profiles_id) === profile?.id;
@@ -574,7 +654,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					iconBgColor={statusColor}
 					leftIcon={<MaterialCommunityIcons name="account-group" size={24} color="white" />}
 					label={displayLabel}
-					value={showStatus ? (friendship.friendship_status ?? 'unknown') : undefined}
+					value={showStatus ? translateFriendshipStatus(friendship.friendship_status) : undefined}
 					groupPosition={groupPosition}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={() => openFriendshipDetail(friendship)}
