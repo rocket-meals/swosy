@@ -338,6 +338,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 						showScrollViewModal({
 							title: translate(TranslationKeys.friendships),
 							children: <FriendsContent showHeading={false} />,
+							disableHorizontalPadding: true,
 						});
 					}}
 					showLoginModal={() => router.navigate('/(auth)/login')}
