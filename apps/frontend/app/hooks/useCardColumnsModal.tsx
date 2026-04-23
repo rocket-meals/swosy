@@ -28,17 +28,19 @@ const CardColumnsSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 	}, [amountColumnsForcard]);
 
 	return (
-		<View style={{ width: '100%' }}>
-			<SettingsListSelectOption
-				options={AmountColumn.map((column) => ({
-					id: column.id,
-					label: column.id === 0 ? translate(TranslationKeys.automatic) : column.name,
-				}))}
-				selectedOption={selectedOption}
-				onSelect={(option) => updateColumns(option.id)}
-				selectionColor={primaryColor}
-				noIconIndent
-			/>
+		<View style={{ width: '100%', gap: 12 }}>
+			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
+				<SettingsListSelectOption
+					options={AmountColumn.map((column) => ({
+						id: column.id,
+						label: column.id === 0 ? translate(TranslationKeys.automatic) : column.name,
+					}))}
+					selectedOption={selectedOption}
+					onSelect={(option) => updateColumns(option.id)}
+					selectionColor={primaryColor}
+					noIconIndent
+				/>
+			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_amount_column} />
 		</View>
 	);
@@ -51,7 +53,6 @@ export const useCardColumnsModal = () => {
 	const openCardColumnsModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.amount_columns_for_cards),
-			noGap: true,
 			onClose: closeScrollViewModal,
 			children: <CardColumnsSheet closeSheet={closeScrollViewModal} />,
 		});
