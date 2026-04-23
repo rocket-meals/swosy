@@ -28,24 +28,22 @@ const FirstDayOfWeekSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet 
 	}, [firstDayOfTheWeek]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={days.map((day) => ({
-						id: day.id,
-						label: translate(day.name),
-					}))}
-					selectedOption={selectedOption}
-					onSelect={(option) => {
-						const selectedDay = days.find((day) => day.id === option.id);
-						if (selectedDay) {
-							updateFirstDay({ id: selectedDay.id, name: selectedDay.name });
-						}
-					}}
-					selectionColor={primaryColor}
-					noIconIndent
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={days.map((day) => ({
+					id: day.id,
+					label: translate(day.name),
+				}))}
+				selectedOption={selectedOption}
+				onSelect={(option) => {
+					const selectedDay = days.find((day) => day.id === option.id);
+					if (selectedDay) {
+						updateFirstDay({ id: selectedDay.id, name: selectedDay.name });
+					}
+				}}
+				selectionColor={primaryColor}
+				noIconIndent
+			/>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_first_day_of_week} />
 		</View>
 	);

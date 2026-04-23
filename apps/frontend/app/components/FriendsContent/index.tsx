@@ -511,7 +511,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		showScrollViewModal({
 			title: translate(TranslationKeys.friendships_details),
 			children: (
-				<View style={{ padding: 16, gap: 16 }}>
+				<View style={{ gap: 16 }}>
 					<View>
 						<SettingsList
 							label={translate(TranslationKeys.friendships_friend_profile_id)}
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
 	},
 	qrContainer: {
 		alignItems: 'center',
-		padding: 20,
+		paddingVertical: 20,
 		gap: 16,
 	},
 	qrHint: {
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
 const scanStyles = StyleSheet.create({
 	container: {
 		width: '100%',
-		padding: 16,
+		paddingVertical: 16,
 		gap: 16,
 	},
 	cameraSection: {
