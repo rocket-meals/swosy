@@ -20,8 +20,6 @@ interface VisibilitySheetProps {
 const styles = StyleSheet.create({
 	visibilityListContainer: {
 		width: '100%',
-		paddingHorizontal: 10,
-		marginTop: 12,
 	},
 });
 
@@ -68,15 +66,13 @@ export const VisibilitySheet: React.FC<VisibilitySheetProps> = ({ closeSheet }) 
 	}, [canteenVisitsVisibility]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={styles.visibilityListContainer}>
-				<SettingsListSelectOption
-					options={visibilityOptions}
-					selectedOption={selectedOption}
-					onSelect={updateVisibility}
-					iconBgColor={foods_area_color}
-				/>
-			</View>
+		<View style={styles.visibilityListContainer}>
+			<SettingsListSelectOption
+				options={visibilityOptions}
+				selectedOption={selectedOption}
+				onSelect={updateVisibility}
+				iconBgColor={foods_area_color}
+			/>
 		</View>
 	);
 };
