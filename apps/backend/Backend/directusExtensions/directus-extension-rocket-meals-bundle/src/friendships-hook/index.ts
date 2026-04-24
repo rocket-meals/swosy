@@ -1,4 +1,4 @@
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FriendshipStatus } from 'repo-depkit-common';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
@@ -8,7 +8,7 @@ const HOOK_NAME = 'friendships-hook';
 export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ filter }, apiContext) => {
   filter(CollectionNames.FRIENDSHIPS + '.items.update', async (payload, meta, eventContext) => {
     const typedPayload = payload as Partial<DatabaseTypes.Friendships>;
-    const isBeingAccepted = typedPayload?.friendship_status === 'accepted';
+    const isBeingAccepted = typedPayload?.friendship_status === FriendshipStatus.ACCEPTED;
     if (!isBeingAccepted) {
       return payload;
     }
@@ -45,7 +45,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       const existingFriendships = await friendshipsHelper.readByQuery({
         filter: {
           _and: [
-            { friendship_status: { _eq: 'accepted' } },
+            { friendship_status: { _eq: FriendshipStatus.ACCEPTED } },
             { id: { _neq: String(friendshipId) } },
             {
               _or: [

@@ -1,4 +1,4 @@
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FriendshipStatus } from 'repo-depkit-common';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
@@ -31,7 +31,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
       const pendingFriendships: DatabaseTypes.Friendships[] = await friendshipsHelper.readByQuery({
         filter: {
           _and: [
-            { friendship_status: { _eq: 'pending' } },
+            { friendship_status: { _eq: FriendshipStatus.PENDING } },
             { date_created: { _lte: cutoffDateISO } },
           ],
         } as any,
