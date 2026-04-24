@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
@@ -22,16 +22,8 @@ const useCheckAppRateAsking = () => {
 		} else {
 			show({
 				children: (
-					<View style={{ paddingVertical: 24, gap: 12 }}>
-						<Text
-							style={{
-								color: theme.screen.text,
-								textAlign: 'center',
-								paddingHorizontal: 24,
-								fontSize: 16,
-								fontFamily: 'Poppins_700Bold',
-							}}
-						>
+					<View style={styles.container}>
+						<Text style={[styles.prompt, { color: theme.screen.text }]}>
 							{translate(TranslationKeys.collectible_event_rate_app_prompt)}
 						</Text>
 						<RateAppSettingsItem />
@@ -41,17 +33,26 @@ const useCheckAppRateAsking = () => {
 		}
 	}, [requestNativeReview, show, theme.screen.text, translate]);
 
-	const checkShouldShowAppRating = useCallback((): boolean => {
-		return debugMode === true;
-	}, [debugMode]);
-
 	const checkAndShowAppRating = useCallback(() => {
-		if (checkShouldShowAppRating()) {
+		if (debugMode === true) {
 			showAppRating();
 		}
-	}, [checkShouldShowAppRating, showAppRating]);
+	}, [debugMode, showAppRating]);
 
 	return { checkAndShowAppRating, showAppRating };
 };
+
+const styles = StyleSheet.create({
+	container: {
+		paddingVertical: 24,
+		gap: 12,
+	},
+	prompt: {
+		textAlign: 'center',
+		paddingHorizontal: 24,
+		fontSize: 16,
+		fontFamily: 'Poppins_700Bold',
+	},
+});
 
 export default useCheckAppRateAsking;
