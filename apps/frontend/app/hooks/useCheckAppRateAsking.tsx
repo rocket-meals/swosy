@@ -16,22 +16,29 @@ const useCheckAppRateAsking = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 
-	const showAppRating = useCallback(() => {
+	const showWebRatingModal = useCallback(() => {
+		show({
+			children: (
+				<View style={styles.container}>
+					<Text style={[styles.prompt, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.collectible_event_rate_app_prompt)}
+					</Text>
+					<RateAppSettingsItem />
+				</View>
+			),
+		});
+	}, [show, theme.screen.text, translate]);
+
+	const showAppRating = useCallback(async () => {
 		if (Platform.OS !== 'web') {
-			requestNativeReview();
+			const shown = await requestNativeReview();
+			if (!shown) {
+				showWebRatingModal();
+			}
 		} else {
-			show({
-				children: (
-					<View style={styles.container}>
-						<Text style={[styles.prompt, { color: theme.screen.text }]}>
-							{translate(TranslationKeys.collectible_event_rate_app_prompt)}
-						</Text>
-						<RateAppSettingsItem />
-					</View>
-				),
-			});
+			showWebRatingModal();
 		}
-	}, [requestNativeReview, show, theme.screen.text, translate]);
+	}, [requestNativeReview, showWebRatingModal]);
 
 	const checkAndShowAppRating = useCallback(() => {
 		if (debugMode) {
