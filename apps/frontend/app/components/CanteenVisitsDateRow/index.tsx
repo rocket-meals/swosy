@@ -35,7 +35,6 @@ export interface CanteenVisitDetailsModalContentProps {
 	profileId: string | undefined;
 	translate: (key: TranslationKeys) => string;
 	theme: any;
-	closeModal: () => void;
 	showFriendsModal: () => void;
 	showLoginModal: () => void;
 	onRefresh?: () => void;
@@ -53,7 +52,6 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 	profileId,
 	translate,
 	theme,
-	closeModal,
 	showFriendsModal,
 	showLoginModal,
 	onRefresh,
@@ -98,7 +96,6 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 
 	const handleToggle = useCallback(async () => {
 		if (!isRegistered || !profileId) {
-			closeModal();
 			showLoginModal();
 			return;
 		}
@@ -119,7 +116,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, fetchData, onRefresh, fetchDebugData, checkAndShowAppRating]);
+	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, showLoginModal, fetchData, onRefresh, fetchDebugData, checkAndShowAppRating]);
 
 	return (
 		<View>
@@ -176,10 +173,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 						label={translate(TranslationKeys.canteen_visits_friends)}
 						value="-"
 						isAccountRequired={true}
-						onAccountRequired={() => {
-							closeModal();
-							showLoginModal();
-						}}
+						onAccountRequired={showLoginModal}
 						groupPosition="top"
 					/>
 					<SettingsList
@@ -187,10 +181,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 						iconBgColor={primaryColor}
 						label={translate(TranslationKeys.canteen_visits_login_hint)}
 						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-						handleFunction={() => {
-							closeModal();
-							showLoginModal();
-						}}
+						handleFunction={showLoginModal}
 						groupPosition="bottom"
 					/>
 				</>
@@ -236,7 +227,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'public_only' | 'off';
 	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { friendships } = useAppSelector((state) => state.friendships);
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { show: showScrollViewModal } = useMyScrollViewModal();
 	const { checkAndShowAppRating } = useCheckAppRateAsking();
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 
@@ -320,7 +311,6 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 					profileId={profile?.id}
 					translate={translate}
 					theme={theme}
-					closeModal={closeScrollViewModal}
 					showFriendsModal={() => {
 						showScrollViewModal({
 							title: translate(TranslationKeys.friendships),
@@ -333,7 +323,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 				/>
 			),
 		});
-	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, openAccountRequiredModal, fetchData]);
+	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, openAccountRequiredModal, fetchData]);
 
 	// Early return if not enabled or visibility is 'off' — placed after all hooks
 	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {
