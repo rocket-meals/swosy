@@ -108,6 +108,10 @@ export class EnvVariableHelper {
     return this.getEnvVariable('ADMIN_PASSWORD');
   }
 
+  static getAppStoreConnectPrivateKey() {
+    return this.getEnvVariable('APP_STORE_CONNECT_PRIVATE_KEY');
+  }
+
   static getSyncForCustomer(): SyncForCustomerEnum | null {
     let value = this.getEnvVariable('SYNC_FOR_CUSTOMER');
     // check if value is a valid enum value
