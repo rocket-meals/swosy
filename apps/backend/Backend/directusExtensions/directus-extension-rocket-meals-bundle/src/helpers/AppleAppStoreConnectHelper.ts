@@ -56,4 +56,27 @@ export class AppleAppStoreConnectHelper {
     const json = (await response.json()) as AppleCustomerReviewsResponse;
     return json;
   }
+
+  static async respondToReview(reviewId: string, responseBody: string, privateKey: string): Promise<void> {
+    const token = AppleAppStoreConnectHelper.generateJwt(privateKey);
+    const url = `https://api.appstoreconnect.apple.com/v1/customerReviewResponses`;
+    await FetchHelper.fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'customerReviewResponses',
+          attributes: { responseBody },
+          relationships: {
+            review: {
+              data: { type: 'customerReviews', id: reviewId },
+            },
+          },
+        },
+      }),
+    });
+  }
 }
