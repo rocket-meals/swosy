@@ -1,4 +1,4 @@
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, FriendshipStatus } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 
 export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendships> {
@@ -13,7 +13,7 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 				_or: [
 					{
 						_and: [
-							{ friendship_status: { _eq: 'accepted' } },
+							{ friendship_status: { _eq: FriendshipStatus.ACCEPTED } },
 							{
 								_or: [
 									{ receiver_profiles_id: { _eq: profileId } },
@@ -45,14 +45,14 @@ export class FriendshipsHelper extends CollectionHelper<DatabaseTypes.Friendship
 		return await this.createItem({
 			requester_profiles_id: requesterProfileId,
 			receiver_profiles_id: null,
-			friendship_status: 'pending',
+			friendship_status: FriendshipStatus.PENDING,
 		} as Partial<DatabaseTypes.Friendships>);
 	}
 
 	async updateFriendshipReceiver(friendshipId: string, receiverProfileId: string) {
 		return await this.updateItem(friendshipId, {
 			receiver_profiles_id: receiverProfileId,
-			friendship_status: 'accepted',
+			friendship_status: FriendshipStatus.ACCEPTED,
 		} as Partial<DatabaseTypes.Friendships>);
 	}
 
