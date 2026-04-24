@@ -10,10 +10,10 @@ Diese Dokumentation beschreibt, welche Zugangsdaten bereits vorhanden sind und w
 
 | Variable (Backend-Name) | Wert / Fundort | Status |
 |---|---|---|
-| `APP_STORE_CONNECT_KEY_ID` | `EXPO_ASC_KEY_ID = '39JT9543R7'` in `apps/frontend/app/config.ts` | ✅ Bekannt |
-| `APP_STORE_CONNECT_ISSUER_ID` | `EXPO_ASC_ISSUER_ID = 'a8db47e8-cb43-4861-b383-58ec4f9a9fc6'` in `apps/frontend/app/config.ts` | ✅ Bekannt |
-| `APP_STORE_CONNECT_PRIVATE_KEY` | Inhalt der `.p8`-Datei – liegt als **GitHub Repository Secret** `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` (nur im CI-Kontext) | ⚠️ Muss separat beschafft werden |
-| `APP_STORE_CONNECT_APP_ID` | Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` | ✅ Bekannt (pro Tenant) |
+| `APP_STORE_CONNECT_KEY_ID` | `EXPO_ASC_KEY_ID` in `packages/common/src/AppleAppStoreConfig.ts` (exportiert von `repo-depkit-common`) | ✅ Bekannt |
+| `APP_STORE_CONNECT_ISSUER_ID` | `EXPO_ASC_ISSUER_ID` in `packages/common/src/AppleAppStoreConfig.ts` (exportiert von `repo-depkit-common`) | ✅ Bekannt |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Inhalt der `.p8`-Datei – liegt als **GitHub Repository Secret** `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` (nur im CI-Kontext); im Backend über `docker-compose.yaml` → `${APP_STORE_CONNECT_PRIVATE_KEY}` | ⚠️ Muss separat beschafft werden |
+| `APP_STORE_CONNECT_APP_ID` | Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json`; im Backend über `docker-compose.yaml` → `${APP_STORE_CONNECT_APP_ID}` | ✅ Bekannt (pro Tenant) |
 
 **App-IDs pro Tenant** (Feld `submit.production.ios.ascAppId`):
 | Tenant | `ascAppId` |
@@ -48,10 +48,10 @@ APP_STORE_CONNECT_PRIVATE_KEY=                              # Inhalt der .p8-Dat
 APP_STORE_CONNECT_APP_ID=                                   # aus apps/frontend/app/tenants/eas/<tenant>.json → submit.production.ios.ascAppId
 ```
 
-- `KEY_ID` → direkt aus `apps/frontend/app/config.ts`, Konstante `EXPO_ASC_KEY_ID`
-- `ISSUER_ID` → direkt aus `apps/frontend/app/config.ts`, Konstante `EXPO_ASC_ISSUER_ID`
-- `PRIVATE_KEY` → **nicht im Repo** – liegt als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`; muss vom GitHub-Admin aus den Repo-Secrets exportiert oder aus dem sicheren Speicher (z. B. Google Drive, laut `SSO_APPLE.md`) geholt werden
-- `APP_ID` → Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` (swosy: `6667117575`, studi-futter: `1548108390`, test: `6483930801`)
+- `KEY_ID` → Konstante `EXPO_ASC_KEY_ID` aus `packages/common/src/AppleAppStoreConfig.ts` (`repo-depkit-common`)
+- `ISSUER_ID` → Konstante `EXPO_ASC_ISSUER_ID` aus `packages/common/src/AppleAppStoreConfig.ts` (`repo-depkit-common`)
+- `PRIVATE_KEY` → **nicht im Repo** – liegt als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`; wird im Backend über `docker-compose.yaml` als `APP_STORE_CONNECT_PRIVATE_KEY` eingebunden (aus Google Drive oder neu erstellen, s. unten)
+- `APP_ID` → Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` (swosy: `6667117575`, studi-futter: `1548108390`, test: `6483930801`); wird im Backend über `docker-compose.yaml` als `APP_STORE_CONNECT_APP_ID` gesetzt
 
 ### Google Play (neu anlegen)
 
@@ -69,8 +69,8 @@ GOOGLE_PLAY_PACKAGE_NAME=           # Package Name der App (z.B. de.rocketmeals.
 
 Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Responses wiederverwendet werden, sofern er die notwendige Berechtigung hat.
 
-1. **Key ID** → `39JT9543R7` (bereits in `apps/frontend/app/config.ts` als `EXPO_ASC_KEY_ID`)
-2. **Issuer ID** → `a8db47e8-cb43-4861-b383-58ec4f9a9fc6` (bereits in `apps/frontend/app/config.ts` als `EXPO_ASC_ISSUER_ID`)
+1. **Key ID** → `39JT9543R7` (Konstante `EXPO_ASC_KEY_ID` in `packages/common/src/AppleAppStoreConfig.ts`, importierbar via `repo-depkit-common`)
+2. **Issuer ID** → `a8db47e8-cb43-4861-b383-58ec4f9a9fc6` (Konstante `EXPO_ASC_ISSUER_ID` in `packages/common/src/AppleAppStoreConfig.ts`, importierbar via `repo-depkit-common`)
 
 3. **Private Key (`.p8`-Datei) beschaffen:**
    - Der Dateiinhalt ist **nicht im Repository** – er liegt nur als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`.
