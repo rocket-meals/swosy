@@ -279,7 +279,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		friendProfileIds,
 		isRegistered,
 		visibility: canteenVisitsVisibility,
-		enabled: !!(showCanteenVisits && canteenVisitsVisibility !== 'off'),
+		enabled: showCanteenVisits && canteenVisitsVisibility !== 'off',
 	});
 
 	const handleToggle = useCallback(async () => {

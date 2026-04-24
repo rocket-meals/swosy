@@ -35,7 +35,6 @@ const useCanteenVisitData = ({
 
 		const shouldFetchTotal = visibility === 'all' || visibility === 'public_only';
 		const shouldFetchFriends = (visibility === 'all' || visibility === 'friends_only') && friendProfileIds.length > 0;
-		const shouldFetchOwn = isRegistered && !!profileId;
 
 		const [total, friends, own] = await Promise.all([
 			shouldFetchTotal
@@ -44,8 +43,8 @@ const useCanteenVisitData = ({
 			shouldFetchFriends
 				? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
 				: Promise.resolve(0),
-			shouldFetchOwn
-				? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId!)
+			isRegistered && profileId
+				? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId)
 				: Promise.resolve(null),
 		]);
 

@@ -34,7 +34,7 @@ const useCheckAppRateAsking = () => {
 	}, [requestNativeReview, show, theme.screen.text, translate]);
 
 	const checkAndShowAppRating = useCallback(() => {
-		if (debugMode === true) {
+		if (debugMode) {
 			showAppRating();
 		}
 	}, [debugMode, showAppRating]);
