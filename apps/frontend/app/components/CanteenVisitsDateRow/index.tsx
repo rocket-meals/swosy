@@ -15,9 +15,9 @@ import { TranslationKeys } from '@/locales/keys';
 import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/CanteenVisits/CanteenVisits';
 import { FriendsContent } from '@/components/FriendsContent';
 import DebugView from '@/components/DebugView';
-import { useRouter } from 'expo-router';
 import useCheckAppRateAsking from '@/hooks/useCheckAppRateAsking';
 import useCanteenVisitData from '@/hooks/useCanteenVisitData';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const canteenVisitsHelper = new CanteenVisitsHelper();
 
@@ -232,13 +232,13 @@ export interface CanteenVisitsDateRowProps {
 export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ canteenId, date }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const router = useRouter();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'public_only' | 'off';
 	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { friendships } = useAppSelector((state) => state.friendships);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const { checkAndShowAppRating } = useCheckAppRateAsking();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 
 	const isRegistered = UserHelper.isRegisteredUser(user);
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
@@ -284,7 +284,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 
 	const handleToggle = useCallback(async () => {
 		if (!isRegistered) {
-			router.navigate('/(auth)/login');
+			openAccountRequiredModal();
 			return;
 		}
 		if (!profile?.id || toggling) return;
@@ -302,7 +302,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profile?.id, toggling, ownVisit, canteenId, date, router, fetchData, checkAndShowAppRating]);
+	}, [isRegistered, profile?.id, toggling, ownVisit, canteenId, date, openAccountRequiredModal, fetchData, checkAndShowAppRating]);
 
 	const openDetailsModal = useCallback(() => {
 		showScrollViewModal({
@@ -328,12 +328,12 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 							disableHorizontalPadding: true,
 						});
 					}}
-					showLoginModal={() => router.navigate('/(auth)/login')}
+					showLoginModal={openAccountRequiredModal}
 					onRefresh={fetchData}
 				/>
 			),
 		});
-	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, router, fetchData]);
+	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, openAccountRequiredModal, fetchData]);
 
 	// Early return if not enabled or visibility is 'off' — placed after all hooks
 	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {
