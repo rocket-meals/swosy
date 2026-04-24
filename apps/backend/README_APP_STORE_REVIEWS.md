@@ -8,16 +8,22 @@ Diese Dokumentation beschreibt, welche Zugangsdaten bereits vorhanden sind und w
 
 ### Apple App Store Connect
 
-| Variable | Wo definiert | Status |
+| Variable (Backend-Name) | Wert / Fundort | Status |
 |---|---|---|
-| `EXPO_ASC_KEY_ID` | `apps/frontend/app/config.ts` | ✅ Vorhanden (`39JT9543R7`) |
-| `EXPO_ASC_ISSUER_ID` | `apps/frontend/app/config.ts` | ✅ Vorhanden (`a8db47e8-...`) |
-| `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` | GitHub Secrets (CI only) | ✅ Vorhanden (nur für EAS Build) |
-| `EXPO_APPLE_TEAM_ID` | `apps/frontend/app/config.ts` | ✅ Vorhanden (`6U99CRVHVR`) |
-| App Store App-ID (`ascAppId`) | `apps/frontend/app/tenants/eas/*.json` | ✅ Vorhanden (pro Tenant) |
+| `APP_STORE_CONNECT_KEY_ID` | `EXPO_ASC_KEY_ID = '39JT9543R7'` in `apps/frontend/app/config.ts` | ✅ Bekannt |
+| `APP_STORE_CONNECT_ISSUER_ID` | `EXPO_ASC_ISSUER_ID = 'a8db47e8-cb43-4861-b383-58ec4f9a9fc6'` in `apps/frontend/app/config.ts` | ✅ Bekannt |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | Inhalt der `.p8`-Datei – liegt als **GitHub Repository Secret** `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` (nur im CI-Kontext) | ⚠️ Muss separat beschafft werden |
+| `APP_STORE_CONNECT_APP_ID` | Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` | ✅ Bekannt (pro Tenant) |
 
-> ⚠️ Diese Werte sind aktuell **ausschließlich im CI/CD-Kontext (GitHub Actions)** nutzbar.
-> Für den Backend-Hook müssen sie zusätzlich als **Umgebungsvariablen im Backend** bereitgestellt werden (`.env` + `docker-compose.yaml`).
+**App-IDs pro Tenant** (Feld `submit.production.ios.ascAppId`):
+| Tenant | `ascAppId` |
+|---|---|
+| swosy | `6667117575` |
+| studi-futter | `1548108390` |
+| test | `6483930801` |
+
+> ⚠️ Der **Private Key** ist **nicht im Repository** gespeichert – er ist ausschließlich als GitHub Repository Secret hinterlegt und nur während CI/CD-Runs verfügbar.
+> Für den Backend-Einsatz muss der Inhalt der `.p8`-Datei separat beschafft und in die Backend-`.env` eingetragen werden (s. unten).
 
 ### Google Play
 
@@ -36,14 +42,16 @@ Um im Backend auf Reviews antworten zu können, werden folgende Umgebungsvariabl
 
 ```env
 # App Store Connect API – Review Responses
-APP_STORE_CONNECT_KEY_ID=           # Key ID des App Store Connect API Keys
-APP_STORE_CONNECT_ISSUER_ID=        # Issuer ID des App Store Connect Accounts
-APP_STORE_CONNECT_PRIVATE_KEY=      # Inhalt der .p8-Datei (mehrzeilig, z.B. -----BEGIN PRIVATE KEY-----\n...)
-APP_STORE_CONNECT_APP_ID=           # Numerische App-ID (z.B. 6667117575) – eine pro Tenant
+APP_STORE_CONNECT_KEY_ID=39JT9543R7                         # aus apps/frontend/app/config.ts (EXPO_ASC_KEY_ID)
+APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6  # aus apps/frontend/app/config.ts (EXPO_ASC_ISSUER_ID)
+APP_STORE_CONNECT_PRIVATE_KEY=                              # Inhalt der .p8-Datei (s. unten wie beschaffen)
+APP_STORE_CONNECT_APP_ID=                                   # aus apps/frontend/app/tenants/eas/<tenant>.json → submit.production.ios.ascAppId
 ```
 
-> `KEY_ID` und `ISSUER_ID` sind bereits bekannt (`EXPO_ASC_KEY_ID` / `EXPO_ASC_ISSUER_ID` in `config.ts`).
-> Das `.p8`-File ist in `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` als GitHub Secret gespeichert – dieser Inhalt muss auch in die Backend-`.env` übertragen werden.
+- `KEY_ID` → direkt aus `apps/frontend/app/config.ts`, Konstante `EXPO_ASC_KEY_ID`
+- `ISSUER_ID` → direkt aus `apps/frontend/app/config.ts`, Konstante `EXPO_ASC_ISSUER_ID`
+- `PRIVATE_KEY` → **nicht im Repo** – liegt als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`; muss vom GitHub-Admin aus den Repo-Secrets exportiert oder aus dem sicheren Speicher (z. B. Google Drive, laut `SSO_APPLE.md`) geholt werden
+- `APP_ID` → Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` (swosy: `6667117575`, studi-futter: `1548108390`, test: `6483930801`)
 
 ### Google Play (neu anlegen)
 
@@ -61,33 +69,32 @@ GOOGLE_PLAY_PACKAGE_NAME=           # Package Name der App (z.B. de.rocketmeals.
 
 Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Responses wiederverwendet werden, sofern er die notwendige Berechtigung hat.
 
-1. **Key ID und Issuer ID** sind bereits bekannt (s. `apps/frontend/app/config.ts`).
+1. **Key ID** → `39JT9543R7` (bereits in `apps/frontend/app/config.ts` als `EXPO_ASC_KEY_ID`)
+2. **Issuer ID** → `a8db47e8-cb43-4861-b383-58ec4f9a9fc6` (bereits in `apps/frontend/app/config.ts` als `EXPO_ASC_ISSUER_ID`)
 
-2. **Berechtigung prüfen:**
-   - Öffne [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
-   - Wähle den bestehenden Key (`39JT9543R7`) aus.
-   - Stelle sicher, dass die Rolle mindestens **Customer Support** (für Review Responses) hat.
-   - Falls nicht: neuen Key mit korrekter Rolle erstellen (s. unten).
+3. **Private Key (`.p8`-Datei) beschaffen:**
+   - Der Dateiinhalt ist **nicht im Repository** – er liegt nur als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`.
+   - **Option A** – Aus dem sicheren Speicher holen: Laut `SSO_APPLE.md` wurde die `.p8`-Datei in Google Drive gespeichert → Dateiinhalt von dort kopieren.
+   - **Option B** – Aus GitHub Secrets exportieren: Ein GitHub-Admin kann das Secret unter `https://github.com/<org>/<repo>/settings/secrets/actions` einsehen (Wert ist verdeckt) – er müsste es bei der ursprünglichen Anlage kopiert haben.
+   - **Option C** – Neuen Key erstellen (falls Datei nicht mehr verfügbar):
+     - Gehe zu [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
+     - Klicke auf **„+"**, Name: `Review Responses Key`, Rolle: **Customer Support** oder höher.
+     - Notiere **Key ID** und **Issuer ID** (oben auf der Seite).
+     - Lade die `.p8`-Datei herunter – **nur einmalig möglich!** → sicher speichern (Google Drive).
 
-3. **Neuen API Key erstellen (falls nötig):**
-   - Gehe zu [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
-   - Klicke auf **„+"** (Generate API Key).
-   - Name: z. B. `Review Responses Key`
-   - Rolle: **Customer Support** oder höher
-   - Klicke **Generate**.
-   - Notiere:
-     - **Key ID** (wird in der Liste angezeigt)
-     - **Issuer ID** (oben auf der Seite, einmalig pro Account)
-   - Lade die `.p8`-Datei herunter – **sie kann nur einmalig heruntergeladen werden!**
-   - Speichere den Dateiinhalt sicher (z. B. in einem Passwortmanager oder Google Drive).
+4. **Berechtigung des bestehenden Keys prüfen:**
+   - Öffne [App Store Connect → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api).
+   - Wähle den Key `39JT9543R7` → prüfe ob die Rolle mindestens **Customer Support** enthält.
+   - Falls nicht: neuen Key erstellen (s. Option C).
 
-4. **App-ID (ascAppId) ermitteln:**
-   - Gehe zu [App Store Connect → My Apps](https://appstoreconnect.apple.com/apps)
-   - Öffne die gewünschte App.
-   - Die numerische App-ID steht in der URL: `https://appstoreconnect.apple.com/apps/**6667117575**/...`
-   - Alternativ: In `apps/frontend/app/tenants/eas/*.json` unter `submit.production.ios.ascAppId`.
+5. **App-ID (ascAppId) pro Tenant:**
+   - Aus `apps/frontend/app/tenants/eas/<tenant>.json`, Feld `submit.production.ios.ascAppId`:
+     - `swosy.json` → `6667117575`
+     - `studi-futter.json` → `1548108390`
+     - `test.json` → `6483930801`
+   - Alternativ: [App Store Connect → My Apps](https://appstoreconnect.apple.com/apps) → App öffnen → App-ID steht in der URL.
 
-5. **In `.env` eintragen:**
+6. **In `.env` eintragen:**
    ```env
    APP_STORE_CONNECT_KEY_ID=39JT9543R7
    APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6
@@ -189,10 +196,10 @@ Content-Type: application/json
 
 ```env
 # Apple App Store Connect – Review Responses
-APP_STORE_CONNECT_KEY_ID=             # bereits bekannt: 39JT9543R7
-APP_STORE_CONNECT_ISSUER_ID=          # bereits bekannt: a8db47e8-cb43-4861-b383-58ec4f9a9fc6
-APP_STORE_CONNECT_PRIVATE_KEY=        # Inhalt der .p8-Datei (aus GitHub Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT)
-APP_STORE_CONNECT_APP_ID=             # Numerische App-ID, z.B. 6667117575
+APP_STORE_CONNECT_KEY_ID=39JT9543R7                              # aus apps/frontend/app/config.ts
+APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6 # aus apps/frontend/app/config.ts
+APP_STORE_CONNECT_PRIVATE_KEY=                                    # .p8-Datei Inhalt – aus Google Drive oder neu erstellen
+APP_STORE_CONNECT_APP_ID=                                         # je nach Tenant: 6667117575 / 1548108390 / 6483930801
 
 # Google Play – Review Responses
 GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=     # Inhalt der Service-Account-JSON-Datei
