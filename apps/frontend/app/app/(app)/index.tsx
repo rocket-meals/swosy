@@ -1,5 +1,5 @@
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -28,8 +28,7 @@ const Home = () => {
 	const buildingsHelper = new BuildingsHelper();
 	const buildingsOrganizationsHelper = new BuildingsOrganizationsHelper();
 	const organizationsHelper = new OrganizationsHelper();
-	const { serverInfo } = useAppSelector(state => state.settings);
-	const { isManagement } = useAppSelector(state => state.authReducer);
+	const { isManagement, profile } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
 	const { canteens } = useAppSelector(state => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
@@ -117,6 +116,21 @@ const Home = () => {
 			getCanteensWithBuildings();
 		}, [])
 	);
+
+	useEffect(() => {
+		if (selectedCanteen || canteens.length === 0) return;
+		const profileCanteenId = profile?.canteen
+			? typeof profile.canteen === 'string'
+				? profile.canteen
+				: (profile.canteen as DatabaseTypes.Canteens)?.id
+			: null;
+		if (!profileCanteenId) return;
+		const canteen = canteens.find(c => String(c.id) === String(profileCanteenId));
+		if (canteen) {
+			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
+			router.push(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+		}
+	}, [profile?.canteen, canteens, selectedCanteen, dispatch, router]);
 
 	if (!loading && (!canteens || canteens.length === 0)) {
 		return (
