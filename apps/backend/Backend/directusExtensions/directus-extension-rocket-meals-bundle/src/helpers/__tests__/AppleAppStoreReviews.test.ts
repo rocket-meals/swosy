@@ -4,13 +4,17 @@ import { describe, expect, it } from '@jest/globals';
 import { AppleAppStoreConnectHelper } from '../AppleAppStoreConnectHelper';
 import { AppleAppStoreRssHelper } from '../AppleAppStoreRssHelper';
 import { EnvVariableHelper } from '../EnvVariableHelper';
-
-const SWOSY_APP_ID = '6667117575';
-const STUDI_FUTTER_APP_ID = '1548108390';
+import { SWOSY_APP_STORE_IDS, STUDI_FUTTER_APP_STORE_IDS } from 'repo-depkit-common';
 
 describe('Apple App Store Reviews via RSS (no key required)', () => {
   it('fetches reviews for Swosy via RSS and checks they exist with IDs', async () => {
-    const result = await AppleAppStoreRssHelper.fetchReviews(SWOSY_APP_ID);
+    const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
+    if (!appleAppId) {
+      console.log('Skipping: No Apple App ID configured for Swosy');
+      return;
+    }
+
+    const result = await AppleAppStoreRssHelper.fetchReviews(appleAppId);
 
     expect(result).toBeDefined();
     expect(result.feed).toBeDefined();
@@ -39,7 +43,13 @@ describe('Apple App Store Reviews via RSS (no key required)', () => {
   }, 30000);
 
   it('fetches reviews for Studi-Futter via RSS and checks they exist with IDs', async () => {
-    const result = await AppleAppStoreRssHelper.fetchReviews(STUDI_FUTTER_APP_ID);
+    const appleAppId = STUDI_FUTTER_APP_STORE_IDS.appleAppId;
+    if (!appleAppId) {
+      console.log('Skipping: No Apple App ID configured for Studi-Futter');
+      return;
+    }
+
+    const result = await AppleAppStoreRssHelper.fetchReviews(appleAppId);
 
     expect(result).toBeDefined();
     expect(result.feed).toBeDefined();
@@ -70,7 +80,13 @@ describe('Apple App Store Review responses via ASC API (requires APP_STORE_CONNE
       return;
     }
 
-    const rssResult = await AppleAppStoreRssHelper.fetchReviews(SWOSY_APP_ID);
+    const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
+    if (!appleAppId) {
+      console.log('Skipping: No Apple App ID configured for Swosy');
+      return;
+    }
+
+    const rssResult = await AppleAppStoreRssHelper.fetchReviews(appleAppId);
     const entries = rssResult.feed.entry;
     expect(Array.isArray(entries)).toBe(true);
     expect(entries!.length).toBeGreaterThan(0);
