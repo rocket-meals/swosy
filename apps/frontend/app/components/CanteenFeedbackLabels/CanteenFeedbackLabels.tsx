@@ -140,6 +140,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			rightElement={rightElement}
 			groupPosition={groupPosition}
 			isAccountRequired={isAccountRequired}
+			onAccountRequired={openAccountRequiredModal}
 		/>
 	);
 };
