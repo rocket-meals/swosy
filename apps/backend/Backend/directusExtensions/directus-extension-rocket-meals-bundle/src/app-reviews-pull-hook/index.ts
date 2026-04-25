@@ -30,11 +30,36 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SKIPPED });
       }
 
-      const pullHelper = new AppReviewsPullHelper(myDatabaseHelper, logger);
+      const pullHelper = new AppReviewsPullHelper(logger);
 
-      await pullHelper.pullAppleReviews(appSettings);
-      await pullHelper.pullGoogleReviews(appSettings);
+      const appleReviews = await pullHelper.pullAppleReviews(appSettings);
+      const googleReviews = await pullHelper.pullGoogleReviews(appSettings);
 
+      const allReviews = [...appleReviews, ...googleReviews];
+      const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
+
+      let created = 0;
+      let skipped = 0;
+
+      for (const review of allReviews) {
+        const existing = await appFeedbacksHelper.readByQuery({
+          filter: { id: { _eq: review.external_identifier } },
+          limit: 1,
+        });
+
+        if (existing && existing.length > 0) {
+          skipped++;
+          continue;
+        }
+
+        await appFeedbacksHelper.createOne({
+          ...review,
+          id: review.external_identifier,
+        });
+        created++;
+      }
+
+      await context.logger.appendLog('Created ' + created + ' new reviews, skipped ' + skipped + ' duplicates');
       return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
     } catch (e) {
       await context.logger.appendLog('error during reviews pull: ' + (e instanceof Error ? e.message : String(e)));
