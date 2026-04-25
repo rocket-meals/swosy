@@ -1,5 +1,5 @@
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -8,8 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
 import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_CANTEENS, SET_ORGANISATIONS, SET_SELECTED_CANTEEN, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_CANTEENS, SET_ORGANISATIONS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
@@ -29,8 +28,6 @@ const Home = () => {
 	const buildingsHelper = new BuildingsHelper();
 	const buildingsOrganizationsHelper = new BuildingsOrganizationsHelper();
 	const organizationsHelper = new OrganizationsHelper();
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
-	const { serverInfo } = useAppSelector(state => state.settings);
 	const { isManagement, profile } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
 	const { canteens } = useAppSelector(state => state.canteenReducer);
@@ -44,15 +41,6 @@ const Home = () => {
 
 	const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-		if (profile?.id) {
-			profileHelper.updateProfile({ id: profile.id, canteen: canteen.id })
-				.then((updatedProfile) => {
-					if (updatedProfile) {
-						dispatch({ type: UPDATE_PROFILE, payload: updatedProfile });
-					}
-				})
-				.catch((err) => console.error('Failed to save canteen to profile:', err));
-		}
 		router.push(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 	};
 

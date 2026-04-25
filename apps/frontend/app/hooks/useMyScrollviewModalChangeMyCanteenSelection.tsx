@@ -1,30 +1,17 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
-import { SET_SELECTED_CANTEEN, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { useMyScrollviewModalCanteenSelection } from './useMyScrollviewModalCanteenSelection';
-import { useAppSelector } from '@/redux/hooks';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 
 export const useMyScrollviewModalChangeMyCanteenSelection = () => {
 	const { openCanteenSelectionModal, closeCanteenSelectionModal } = useMyScrollviewModalCanteenSelection();
 	const dispatch = useDispatch();
-	const profile = useAppSelector((state) => state.authReducer.profile);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
 	const openChangeMyCanteenSelectionModal = useCallback(() => {
 		const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-			if (profile?.id) {
-				profileHelper.updateProfile({ id: profile.id, canteen: canteen.id })
-					.then((updatedProfile) => {
-						if (updatedProfile) {
-							dispatch({ type: UPDATE_PROFILE, payload: updatedProfile });
-						}
-					})
-					.catch((err) => console.error('Failed to save canteen to profile:', err));
-			}
 			closeCanteenSelectionModal();
 		};
 
@@ -32,7 +19,7 @@ export const useMyScrollviewModalChangeMyCanteenSelection = () => {
 			onSelectCanteen: handleSelectCanteen,
 			children: <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_canteen_selection} />,
 		});
-	}, [closeCanteenSelectionModal, dispatch, openCanteenSelectionModal, profile, profileHelper]);
+	}, [closeCanteenSelectionModal, dispatch, openCanteenSelectionModal]);
 
 	return { openChangeMyCanteenSelectionModal };
 };
