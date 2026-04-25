@@ -10,13 +10,13 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 export const useMyScrollviewModalChangeMyCanteenSelection = () => {
 	const { openCanteenSelectionModal, closeCanteenSelectionModal } = useMyScrollviewModalCanteenSelection();
 	const dispatch = useDispatch();
-	const { profile, user } = useAppSelector((state) => state.authReducer);
+	const profile = useAppSelector((state) => state.authReducer.profile);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
 	const openChangeMyCanteenSelectionModal = useCallback(() => {
 		const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-			if (user?.id && profile?.id) {
+			if (profile?.id) {
 				profileHelper.updateProfile({ id: profile.id, canteen: canteen.id })
 					.then((updatedProfile) => {
 						if (updatedProfile) {
@@ -32,7 +32,7 @@ export const useMyScrollviewModalChangeMyCanteenSelection = () => {
 			onSelectCanteen: handleSelectCanteen,
 			children: <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_canteen_selection} />,
 		});
-	}, [closeCanteenSelectionModal, dispatch, openCanteenSelectionModal, profile, profileHelper, user]);
+	}, [closeCanteenSelectionModal, dispatch, openCanteenSelectionModal, profile, profileHelper]);
 
 	return { openChangeMyCanteenSelectionModal };
 };
