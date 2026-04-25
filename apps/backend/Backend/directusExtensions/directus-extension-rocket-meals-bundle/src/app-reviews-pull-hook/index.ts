@@ -27,7 +27,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       if (!appSettings) {
         await context.logger.appendLog('No app settings found, skipping');
-        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
+        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SKIPPED });
       }
 
       const pullHelper = new AppReviewsPullHelper(myDatabaseHelper, logger);
