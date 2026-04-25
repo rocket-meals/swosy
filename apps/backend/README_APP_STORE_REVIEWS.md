@@ -13,14 +13,13 @@ Diese Dokumentation beschreibt, welche Zugangsdaten bereits vorhanden sind und w
 | `APP_STORE_CONNECT_KEY_ID` | `EXPO_ASC_KEY_ID` in `packages/common/src/AppleAppStoreConfig.ts` (exportiert von `repo-depkit-common`) | ✅ Bekannt |
 | `APP_STORE_CONNECT_ISSUER_ID` | `EXPO_ASC_ISSUER_ID` in `packages/common/src/AppleAppStoreConfig.ts` (exportiert von `repo-depkit-common`) | ✅ Bekannt |
 | `APP_STORE_CONNECT_PRIVATE_KEY` | Inhalt der `.p8`-Datei – liegt als **GitHub Repository Secret** `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` (nur im CI-Kontext); im Backend über `docker-compose.yaml` → `${APP_STORE_CONNECT_PRIVATE_KEY}` | ⚠️ Muss separat beschafft werden |
-| `APP_STORE_CONNECT_APP_ID` | Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json`; im Backend über `docker-compose.yaml` → `${APP_STORE_CONNECT_APP_ID}` | ✅ Bekannt (pro Tenant) |
+| App-ID (pro Tenant) | Konstante `appleAppId` in `CustomerAppStoreIds` (`packages/common/src/CustomerAppStoreIds.ts`, exportiert von `repo-depkit-common`); kein Env-Var nötig | ✅ Bekannt (in Code) |
 
-**App-IDs pro Tenant** (Feld `submit.production.ios.ascAppId`):
-| Tenant | `ascAppId` |
+**App-IDs pro Tenant** (aus `CustomerAppStoreIds` in `repo-depkit-common`):
+| Tenant | `appleAppId` |
 |---|---|
 | swosy | `6667117575` |
 | studi-futter | `1548108390` |
-| test | `6483930801` |
 
 > ⚠️ Der **Private Key** ist **nicht im Repository** gespeichert – er ist ausschließlich als GitHub Repository Secret hinterlegt und nur während CI/CD-Runs verfügbar.
 > Für den Backend-Einsatz muss der Inhalt der `.p8`-Datei separat beschafft und in die Backend-`.env` eingetragen werden (s. unten).
@@ -45,13 +44,13 @@ Um im Backend auf Reviews antworten zu können, werden folgende Umgebungsvariabl
 APP_STORE_CONNECT_KEY_ID=39JT9543R7                         # aus apps/frontend/app/config.ts (EXPO_ASC_KEY_ID)
 APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6  # aus apps/frontend/app/config.ts (EXPO_ASC_ISSUER_ID)
 APP_STORE_CONNECT_PRIVATE_KEY=                              # Inhalt der .p8-Datei (s. unten wie beschaffen)
-APP_STORE_CONNECT_APP_ID=                                   # aus apps/frontend/app/tenants/eas/<tenant>.json → submit.production.ios.ascAppId
+# APP_ID ist NICHT mehr als Env-Var nötig – wird aus CustomerAppStoreIds in repo-depkit-common gelesen
 ```
 
 - `KEY_ID` → Konstante `EXPO_ASC_KEY_ID` aus `packages/common/src/AppleAppStoreConfig.ts` (`repo-depkit-common`)
 - `ISSUER_ID` → Konstante `EXPO_ASC_ISSUER_ID` aus `packages/common/src/AppleAppStoreConfig.ts` (`repo-depkit-common`)
 - `PRIVATE_KEY` → **nicht im Repo** – liegt als GitHub Repository Secret `EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT`; wird im Backend über `docker-compose.yaml` als `APP_STORE_CONNECT_PRIVATE_KEY` eingebunden (aus Google Drive oder neu erstellen, s. unten)
-- `APP_ID` → Feld `submit.production.ios.ascAppId` in `apps/frontend/app/tenants/eas/<tenant>.json` (swosy: `6667117575`, studi-futter: `1548108390`, test: `6483930801`); wird im Backend über `docker-compose.yaml` als `APP_STORE_CONNECT_APP_ID` gesetzt
+- `APP_ID` → **kein Env-Var nötig** – die App-IDs sind als Konstanten in `CustomerAppStoreIds` (`packages/common/src/CustomerAppStoreIds.ts`, importierbar via `repo-depkit-common`) gespeichert: swosy `6667117575`, studi-futter `1548108390`
 
 ### Google Play (neu anlegen)
 
@@ -87,19 +86,18 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
    - Wähle den Key `39JT9543R7` → prüfe ob die Rolle mindestens **Customer Support** enthält.
    - Falls nicht: neuen Key erstellen (s. Option C).
 
-5. **App-ID (ascAppId) pro Tenant:**
-   - Aus `apps/frontend/app/tenants/eas/<tenant>.json`, Feld `submit.production.ios.ascAppId`:
-     - `swosy.json` → `6667117575`
-     - `studi-futter.json` → `1548108390`
-     - `test.json` → `6483930801`
-   - Alternativ: [App Store Connect → My Apps](https://appstoreconnect.apple.com/apps) → App öffnen → App-ID steht in der URL.
+5. **App-IDs (ascAppId) pro Tenant:**
+   - Konstanten in `CustomerAppStoreIds` (`packages/common/src/CustomerAppStoreIds.ts`, importierbar via `repo-depkit-common`):
+     - `SWOSY_APP_STORE_IDS.appleAppId` → `6667117575`
+     - `STUDI_FUTTER_APP_STORE_IDS.appleAppId` → `1548108390`
+   - Kein Env-Var nötig – das Backend liest die App-ID direkt aus dem Code-Package.
 
 6. **In `.env` eintragen:**
    ```env
    APP_STORE_CONNECT_KEY_ID=39JT9543R7
    APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6
    APP_STORE_CONNECT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n<Inhalt der .p8-Datei>\n-----END PRIVATE KEY-----"
-   APP_STORE_CONNECT_APP_ID=6667117575
+   # APP_ID ist nicht mehr nötig – wird aus CustomerAppStoreIds in repo-depkit-common gelesen
    ```
 
 ---
@@ -199,7 +197,7 @@ Content-Type: application/json
 APP_STORE_CONNECT_KEY_ID=39JT9543R7                              # aus apps/frontend/app/config.ts
 APP_STORE_CONNECT_ISSUER_ID=a8db47e8-cb43-4861-b383-58ec4f9a9fc6 # aus apps/frontend/app/config.ts
 APP_STORE_CONNECT_PRIVATE_KEY=                                    # .p8-Datei Inhalt – aus Google Drive oder neu erstellen
-APP_STORE_CONNECT_APP_ID=                                         # je nach Tenant: 6667117575 / 1548108390 / 6483930801
+# APP_ID ist nicht mehr nötig – wird aus CustomerAppStoreIds in repo-depkit-common gelesen
 
 # Google Play – Review Responses
 GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=     # Inhalt der Service-Account-JSON-Datei

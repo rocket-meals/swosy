@@ -150,8 +150,8 @@ services:
       AUTH_APPLE_HOOK_PRIVATE_KEY: "${AUTH_APPLE_HOOK_PRIVATE_KEY}"
 
       # App Store Connect – Review Responses (KEY_ID and ISSUER_ID are constants in repo-depkit-common/AppleAppStoreConfig)
+      # App IDs are read from CustomerAppStoreIds in repo-depkit-common (no env var needed)
       APP_STORE_CONNECT_PRIVATE_KEY: "${APP_STORE_CONNECT_PRIVATE_KEY}"
-      APP_STORE_CONNECT_APP_ID: "${APP_STORE_CONNECT_APP_ID}"
 
       # Directus Auth configuration - Google predefined values
       AUTH_GOOGLE_DRIVER: "openid"
