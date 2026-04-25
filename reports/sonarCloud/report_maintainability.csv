@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ3Dm6xRMMAbgOavQw4H","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",123
 "AZ3Dh2OUEjNYTa-xGbi8","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",350
 "AZ3BxAYaIyP-aaJNETKb","Remove this useless assignment to variable ""setOwnVisit"".","rocket-meals_rocket-meals:apps/frontend/app/components/CanteenVisitsDateRow/index.tsx",62
 "AZ3BxAoUIyP-aaJNETKc","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useCheckAppRateAsking.tsx",33
@@ -8856,9 +8857,9 @@ Key,Message,Component,Line
 "AZ0TplLWufp2jxPAhS1t","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingDetailsContent/BuildingDetailsContent.tsx",52
 "AZ0TplLWufp2jxPAhS1v","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingDetailsContent/BuildingDetailsContent.tsx",155
 "AZ0TplLWufp2jxPAhS1w","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingDetailsContent/BuildingDetailsContent.tsx",157
-"AZ0TpksVufp2jxPAhSu5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",61
+"AZ0TpksVufp2jxPAhSu5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",60
 "AZ0TplSQufp2jxPAhS4B","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Buildings/Buildings.ts",18
-"AZ0TpksVufp2jxPAhSu6","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",64
+"AZ0TpksVufp2jxPAhSu6","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",63
 "AZ0TplUeufp2jxPAhS4P","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Organizations/Organizations.ts",15
 "AZ0Tpk31ufp2jxPAhSx5","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",847
 "AZ0Tpk31ufp2jxPAhSx7","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",991
@@ -9023,7 +9024,6 @@ Key,Message,Component,Line
 "AZ0Tpk3aufp2jxPAhSxV","Remove this useless assignment to variable ""popupEvents"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",87
 "AZ0Tpk3aufp2jxPAhSxW","Remove this useless assignment to variable ""canteens"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",92
 "AZ0Tpk0wufp2jxPAhSwi","Remove this useless assignment to variable ""isDevMode"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",50
-"AZ0TpksVufp2jxPAhSu3","Remove this useless assignment to variable ""serverInfo"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",31
 "AZ0TplKaufp2jxPAhS1q","Remove this useless assignment to variable ""primaryColor"".","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownInput.tsx",36
 "AZ0TplBCufp2jxPAhSzm","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",106
 "AZ0TpknDufp2jxPAhSuO","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",317
@@ -9442,8 +9442,8 @@ Key,Message,Component,Line
 "AZkUSvJzS4VhJojFFAUk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",585
 "AZkUSvMHS4VhJojFFAXA","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/forms/index.tsx",92
 "AZ0Tpkxuufp2jxPAhSwC","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/index.tsx",105
-"AZ0TpksVufp2jxPAhSu4","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",51
-"AZ0TpksVufp2jxPAhSu7","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",67
+"AZ0TpksVufp2jxPAhSu4","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",50
+"AZ0TpksVufp2jxPAhSu7","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",66
 "AZkUSvQgS4VhJojFFAdQ","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/licenseInformation/index.tsx",44
 "AZkUSvPxS4VhJojFFAcT","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/notification/index.tsx",156
 "AZ0Tpk2jufp2jxPAhSxE","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/price-group/index.tsx",112
