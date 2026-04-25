@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ3Dh2OUEjNYTa-xGbi8","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",350
 "AZ3BxAYaIyP-aaJNETKb","Remove this useless assignment to variable ""setOwnVisit"".","rocket-meals_rocket-meals:apps/frontend/app/components/CanteenVisitsDateRow/index.tsx",62
 "AZ3BxAoUIyP-aaJNETKc","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useCheckAppRateAsking.tsx",33
 "AZ22Vc2dlyTdSDttdOI9","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",99
@@ -8896,7 +8897,7 @@ Key,Message,Component,Line
 "AZ0TplNeufp2jxPAhS19","Use `export…from` to re-export `TooltipText`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
 "AZ0Tpk85ufp2jxPAhSy9","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",372
 "AZ0TplGSufp2jxPAhS0g","Remove this unused import of 'Image'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",2
-"AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",36
+"AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",37
 "AZ0Tpk85ufp2jxPAhSy5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",80
 "AZ0TplIZufp2jxPAhS1V","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",32
 "AZ0TplIZufp2jxPAhS1W","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",67
@@ -8956,7 +8957,7 @@ Key,Message,Component,Line
 "AZ0Tpkvvufp2jxPAhSvR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersList.tsx",78
 "AZ0TpkvTufp2jxPAhSvF","Remove this unused import of 'StyleSheet'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",2
 "AZ0TpkvTufp2jxPAhSvG","Remove this unused import of 'Dimensions'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",2
-"AZ0TpkvTufp2jxPAhSvL","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",53
+"AZ0TpkvTufp2jxPAhSvL","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",54
 "AZ0TpkuJufp2jxPAhSvD","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/index.tsx",123
 "AZ0TplGqufp2jxPAhS00","Remove this unused import of 'TextInput'.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",2
 "AZ0TplGqufp2jxPAhS0y","Remove this unused import of 'Dimensions'.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",2
@@ -8989,8 +8990,8 @@ Key,Message,Component,Line
 "AZ0Tpkvvufp2jxPAhSvS","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersList.tsx",110
 "AZ0Tpkvvufp2jxPAhSvT","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersList.tsx",111
 "AZ0TpkvTufp2jxPAhSvH","Remove this unused import of 'getImageUrl'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",6
-"AZ0TpkvTufp2jxPAhSvJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",48
-"AZ0TpkvTufp2jxPAhSvK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",52
+"AZ0TpkvTufp2jxPAhSvJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",49
+"AZ0TpkvTufp2jxPAhSvK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",53
 "AZ0TpkvHufp2jxPAhSvE","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/TabController.tsx",38
 "AZ0Tpkvcufp2jxPAhSvN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",31
 "AZ0Tpkvcufp2jxPAhSvO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",48
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvPSS4VhJojFFAbn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/_layout.tsx",26
 "AZ0TpknDufp2jxPAhSuM","Remove this useless assignment to variable ""campusesDispatched"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",58
 "AZkUSvL-S4VhJojFFAW0","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",123
-"AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",129
