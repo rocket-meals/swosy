@@ -4,11 +4,13 @@ import { describe, expect, it } from '@jest/globals';
 import { AppleAppStoreConnectHelper } from '../AppleAppStoreConnectHelper';
 import { AppleAppStoreRssHelper } from '../AppleAppStoreRssHelper';
 import { EnvVariableHelper } from '../EnvVariableHelper';
-import { SWOSY_APP_STORE_IDS, STUDI_FUTTER_APP_STORE_IDS } from 'repo-depkit-common';
+import { getCustomerConfigsDict, ConfigCustomerEnum } from '../../../../../../../frontend/app/config';
+
+const customerConfigs = getCustomerConfigsDict();
 
 describe('Apple App Store Reviews via RSS (no key required)', () => {
   it('fetches reviews for Swosy via RSS and checks they exist with IDs', async () => {
-    const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
+    const appleAppId = customerConfigs[ConfigCustomerEnum.SWOSY].appleAppId;
     if (!appleAppId) {
       console.log('Skipping: No Apple App ID configured for Swosy');
       return;
@@ -43,7 +45,7 @@ describe('Apple App Store Reviews via RSS (no key required)', () => {
   }, 30000);
 
   it('fetches reviews for Studi-Futter via RSS and checks they exist with IDs', async () => {
-    const appleAppId = STUDI_FUTTER_APP_STORE_IDS.appleAppId;
+    const appleAppId = customerConfigs[ConfigCustomerEnum.STUDI_FUTTER].appleAppId;
     if (!appleAppId) {
       console.log('Skipping: No Apple App ID configured for Studi-Futter');
       return;
@@ -80,7 +82,7 @@ describe('Apple App Store Review responses via ASC API (requires APP_STORE_CONNE
       return;
     }
 
-    const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
+    const appleAppId = customerConfigs[ConfigCustomerEnum.SWOSY].appleAppId;
     if (!appleAppId) {
       console.log('Skipping: No Apple App ID configured for Swosy');
       return;

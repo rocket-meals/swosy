@@ -19,6 +19,9 @@
         "ts-jest"
       ]
     },
+    "moduleNameMapper": {
+      "^react-native$": "<rootDir>/__mocks__/react-native.js"
+    },
     "testTimeout": 20000
   },
   "directus:extension": {
