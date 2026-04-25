@@ -120,20 +120,18 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 
 	return (
 		<View>
-			{isRegistered && (
-				<>
-					<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_my_visit_group)} />
-					<SettingsListBoolean
-						leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
-						iconBgColor={ownVisit ? foods_area_color : primaryColor}
-						label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
-						isEnabled={!!ownVisit}
-						onToggle={handleToggle}
-						disabled={toggling || ownVisit === undefined}
-						groupPosition="single"
-					/>
-				</>
-			)}
+			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_my_visit_group)} />
+			<SettingsListBoolean
+				leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+				iconBgColor={ownVisit ? foods_area_color : primaryColor}
+				label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
+				isEnabled={!!ownVisit}
+				onToggle={handleToggle}
+				disabled={toggling || ownVisit === undefined}
+				groupPosition="single"
+				isAccountRequired={!isRegistered}
+				onAccountRequired={showLoginModal}
+			/>
 			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_friends_group)} />
 			{isRegistered ? (
 				<>
