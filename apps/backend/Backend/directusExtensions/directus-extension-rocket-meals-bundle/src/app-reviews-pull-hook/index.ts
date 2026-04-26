@@ -26,17 +26,19 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
     try {
       const pullHelper = new AppReviewsPullHelper(logger);
 
-      const customerIds = EnvVariableHelper.getCustomerAppStoreIds();
-      if (!customerIds) {
+      const appleAppId = EnvVariableHelper.getAppleAppId();
+      const googlePlayPackageName = EnvVariableHelper.getGooglePlayPackageName();
+
+      if (!appleAppId && !googlePlayPackageName) {
         await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
         return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
       }
 
-      const appleReviews = customerIds.appleAppId
-        ? await pullHelper.pullAppleReviews(customerIds.appleAppId)
+      const appleReviews = appleAppId
+        ? await pullHelper.pullAppleReviews(appleAppId)
         : [];
-      const googleReviews = customerIds.googlePlayPackageName
-        ? await pullHelper.pullGoogleReviews(customerIds.googlePlayPackageName)
+      const googleReviews = googlePlayPackageName
+        ? await pullHelper.pullGoogleReviews(googlePlayPackageName)
         : [];
       const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
