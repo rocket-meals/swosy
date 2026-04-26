@@ -43,8 +43,7 @@ export class AppStoreReviewsResponseHelper {
   private async respondToAppleReview(reviewId: string, responseBody: string): Promise<void> {
     const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
     if (!privateKey) {
-      this.logger.info('app-reviews-pull-hook: Apple App Store Connect not configured, cannot respond to review: ' + reviewId);
-      return;
+      throw new Error('Apple App Store Connect not configured (missing private key), cannot respond to review: ' + reviewId);
     }
 
     this.logger.info('app-reviews-pull-hook: Responding to Apple review: ' + reviewId);

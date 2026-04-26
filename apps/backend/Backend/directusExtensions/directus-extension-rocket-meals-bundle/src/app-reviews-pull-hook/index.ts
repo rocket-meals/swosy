@@ -75,7 +75,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ action, schedule, filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule, filter }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   await WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
@@ -100,6 +100,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
       ? (meta.keys as string[]).filter((id): id is string => !!id)
       : metaKeysSingle;
 
+    const logger = {
+      info: (msg: string) => apiContext.logger.info(msg),
+      error: (msg: string) => apiContext.logger.error(msg),
+    };
+
     for (const feedbackId of keysArray) {
       const feedback = await appFeedbacksHelper.readOne(feedbackId);
       if (!feedback) {
@@ -112,37 +117,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
           `Cannot set response for ${feedback.source_identifier} review: store not configured`
         );
       }
+
+      const responseHelper = new AppStoreReviewsResponseHelper(filterMyDatabaseHelper, logger);
+      await responseHelper.respondToReview({ ...feedback, response: payloadTyped.response });
     }
 
     return payload;
-  });
-
-  action(CollectionNames.APP_FEEDBACKS + '.items.update', async meta => {
-    const updatedFields: string[] = meta.payload ? Object.keys(meta.payload) : [];
-    if (!updatedFields.includes('response')) {
-      return;
-    }
-
-    try {
-      const myDatabaseHelper = new MyDatabaseHelper(apiContext);
-      const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
-      const feedbackId = meta.key as string;
-      const feedback = await appFeedbacksHelper.readOne(feedbackId);
-
-      if (!feedback) {
-        return;
-      }
-
-      const logger = {
-        info: (msg: string) => apiContext.logger.info(msg),
-        error: (msg: string) => apiContext.logger.error(msg),
-      };
-
-      const responseHelper = new AppStoreReviewsResponseHelper(myDatabaseHelper, logger);
-      await responseHelper.respondToReview(feedback);
-    } catch (e) {
-      apiContext.logger.error(SCHEDULE_NAME + ': error responding to store review: ' + (e instanceof Error ? e.message : String(e)));
-      apiContext.logger.error(e);
-    }
   });
 });
