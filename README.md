@@ -12,6 +12,12 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rocket-meals_rocket-meals&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=rocket-meals_rocket-meals)
 [![Data Clumps](https://raw.githubusercontent.com/rocket-meals/rocket-meals/refs/heads/master/reports/data-clumps-doctor/badges/data-clumps.svg)](https://github.com/NilsBaumgartner1994/data-clumps-doctor)
 
+https://github.com/rocket-meals/rocket-meals
+
+https://github.com/rocket-meals/swosy
+
+https://github.com/rocket-meals/studi-futter
+
 # 🚀 Rocket Meals
 
 **Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von
