@@ -33,6 +33,7 @@ export class AppleAppStoreRssHelper {
       headers: { 'Content-Type': 'application/json' },
     });
     const json = (await response.json()) as AppleRssFeedResponse;
+    console.log('[AppleAppStoreRssHelper] fetchReviews raw response:', JSON.stringify(json, null, 2));
     return json;
   }
 
