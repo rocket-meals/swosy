@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 13 | 13 |
-| 🐛 Reliability | 6840 | 37 |
+| 🐛 Reliability | 6841 | 37 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16853 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16854 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -66,7 +66,11 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (37/6840)
+## 🐛 Reliability (37/6841)
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AppleAppStoreRssHelper.ts:78
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AppleAppStoreRssHelper.ts#L78
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -211,8 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:243
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L243
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:261
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L261
 
