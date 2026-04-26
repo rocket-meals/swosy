@@ -51,7 +51,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       for (const review of allReviews) {
         const existing = await appFeedbacksHelper.readByQuery({
-          filter: { id: { _eq: review.external_identifier } },
+          filter: { external_identifier: { _eq: review.external_identifier } },
           limit: 1,
         });
 
@@ -62,7 +62,6 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
         await appFeedbacksHelper.createOne({
           ...review,
-          id: review.external_identifier,
         });
         created++;
       }
