@@ -59,7 +59,7 @@ export default function SettingsScreen() {
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
-			<ScrollView contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32 }]}>
+			<ScrollView contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32, paddingLeft: insets.left, paddingRight: insets.right }]}>
 				<SettingsListGroupTitle title="Appearance" />
 				<SettingsList
 					iconBgColor={PRIMARY_COLOR}
