@@ -31,7 +31,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       if (!appleAppId && !googlePlayPackageName) {
         await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
-        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
+        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SKIPPED });
       }
 
       let appleReviews: PulledAppReview[] = [];
