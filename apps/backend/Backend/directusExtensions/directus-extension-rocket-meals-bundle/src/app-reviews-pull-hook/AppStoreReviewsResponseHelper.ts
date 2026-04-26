@@ -8,6 +8,23 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
  * when a support team member writes a response to a store review.
  */
 export class AppStoreReviewsResponseHelper {
+  static getMissingEnvVarsForSource(sourceIdentifier: string | null | undefined): string[] {
+    if (sourceIdentifier === AppFeedbackSourceIdentifier.APPLE) {
+      const missing: string[] = [];
+      if (!EnvVariableHelper.getAppStoreConnectPrivateKey()) {
+        missing.push('APP_STORE_CONNECT_PRIVATE_KEY');
+      }
+      return missing;
+    } else if (sourceIdentifier === AppFeedbackSourceIdentifier.GOOGLE_PLAY) {
+      const missing: string[] = [];
+      if (!EnvVariableHelper.getGooglePlayServiceAccountKeyJson()) {
+        missing.push('GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON');
+      }
+      return missing;
+    }
+    return [];
+  }
+
   private readonly myDatabaseHelper: MyDatabaseHelper;
   private readonly logger: { info: (msg: string) => void; error: (msg: string) => void };
 

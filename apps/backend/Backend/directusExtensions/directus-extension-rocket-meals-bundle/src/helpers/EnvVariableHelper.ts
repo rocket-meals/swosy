@@ -112,6 +112,10 @@ export class EnvVariableHelper {
     return this.getEnvVariable('APP_STORE_CONNECT_PRIVATE_KEY');
   }
 
+  static getGooglePlayServiceAccountKeyJson() {
+    return this.getEnvVariable('GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON');
+  }
+
   static getSyncForCustomer(): SyncForCustomerEnum | null {
     let value = this.getEnvVariable('SYNC_FOR_CUSTOMER');
     // check if value is a valid enum value

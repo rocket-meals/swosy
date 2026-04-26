@@ -75,7 +75,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ action, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ action, schedule, filter }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   await WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
@@ -83,6 +83,38 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,
     cronOject: CronHelper.EVERY_DAY_AT_20,
+  });
+
+  filter(CollectionNames.APP_FEEDBACKS + '.items.update', async (payload, meta) => {
+    const payloadTyped = payload as Partial<DatabaseTypes.AppFeedbacks>;
+
+    if (!payloadTyped.response) {
+      return payload;
+    }
+
+    const filterMyDatabaseHelper = new MyDatabaseHelper(apiContext);
+    const appFeedbacksHelper = filterMyDatabaseHelper.getAppFeedbacksHelper();
+
+    const metaKeysSingle = meta.keys ? [meta.keys as string] : [];
+    const keysArray: string[] = Array.isArray(meta.keys)
+      ? (meta.keys as string[]).filter((id): id is string => !!id)
+      : metaKeysSingle;
+
+    for (const feedbackId of keysArray) {
+      const feedback = await appFeedbacksHelper.readOne(feedbackId);
+      if (!feedback) {
+        continue;
+      }
+
+      const missingVars = AppStoreReviewsResponseHelper.getMissingEnvVarsForSource(feedback.source_identifier);
+      if (missingVars.length > 0) {
+        throw new Error(
+          `Cannot set response for ${feedback.source_identifier} review: missing env variables: ${missingVars.join(', ')}`
+        );
+      }
+    }
+
+    return payload;
   });
 
   action(CollectionNames.APP_FEEDBACKS + '.items.update', async meta => {
