@@ -1,7 +1,7 @@
 import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
-import { AppReviewsPullHelper } from './AppReviewsPullHelper';
+import { AppReviewsPullHelper, PulledAppReview } from './AppReviewsPullHelper';
 import { AppStoreReviewsResponseHelper } from './AppStoreReviewsResponseHelper';
 import { WorkflowScheduleHelper } from '../workflows-runs-hook';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
@@ -34,12 +34,15 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
       }
 
-      const appleReviews = appleAppId
-        ? await pullHelper.pullAppleReviews(appleAppId)
-        : [];
-      const googleReviews = googlePlayPackageName
-        ? await pullHelper.pullGoogleReviews(googlePlayPackageName)
-        : [];
+      let appleReviews: PulledAppReview[] = [];
+      if (appleAppId) {
+        appleReviews = await pullHelper.pullAppleReviews(appleAppId);
+      }
+
+      let googleReviews: PulledAppReview[] = [];
+      if (googlePlayPackageName) {
+        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName);
+      }
       const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
