@@ -1,4 +1,4 @@
-import { ALL_CUSTOMER_APP_STORE_IDS, CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 import { AppReviewsPullHelper } from './AppReviewsPullHelper';
@@ -7,6 +7,7 @@ import { WorkflowScheduleHelper } from '../workflows-runs-hook';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
+import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 
 const SCHEDULE_NAME = 'app_reviews_pull';
 
@@ -25,25 +26,19 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
     try {
       const pullHelper = new AppReviewsPullHelper(logger);
 
-      const reviewsByCustomer = await Promise.allSettled(
-        ALL_CUSTOMER_APP_STORE_IDS.map(async (customerIds) => {
-          const appleReviews = customerIds.appleAppId
-            ? await pullHelper.pullAppleReviews(customerIds.appleAppId)
-            : [];
-          const googleReviews = customerIds.googlePlayPackageName
-            ? await pullHelper.pullGoogleReviews(customerIds.googlePlayPackageName)
-            : [];
-          return [...appleReviews, ...googleReviews];
-        })
-      );
+      const customerIds = EnvVariableHelper.getCustomerAppStoreIds();
+      if (!customerIds) {
+        await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
+        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
+      }
 
-      const allReviews = reviewsByCustomer.flatMap((result) => {
-        if (result.status === 'fulfilled') {
-          return result.value;
-        }
-        void context.logger.appendLog('ERROR: Failed to pull reviews for a customer: ' + (result.reason instanceof Error ? result.reason.message : String(result.reason)));
-        return [];
-      });
+      const appleReviews = customerIds.appleAppId
+        ? await pullHelper.pullAppleReviews(customerIds.appleAppId)
+        : [];
+      const googleReviews = customerIds.googlePlayPackageName
+        ? await pullHelper.pullGoogleReviews(customerIds.googlePlayPackageName)
+        : [];
+      const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
       let created = 0;
