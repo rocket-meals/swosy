@@ -1,0 +1,49 @@
+name: "🚀 Deploy Backend (Manual)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      server_preset:
+        description: 'Backend server (preset)'
+        required: true
+        type: choice
+        default: 'test.rocket-meals.de'
+        options:
+          - test.rocket-meals.de
+          - swosy.rocket-meals.de
+          - studi-futter.rocket-meals.de
+          - custom
+      server_host:
+        description: 'Custom backend host (overrides preset when set)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  deploy:
+    name: "🚀 Deploy Backend Server"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "🔍 Resolve target host"
+        id: resolve-host
+        run: |
+          CUSTOM="${{ github.event.inputs.server_host }}"
+          PRESET="${{ github.event.inputs.server_preset }}"
+          if [ -n "$CUSTOM" ]; then
+            echo "host=$CUSTOM" >> $GITHUB_OUTPUT
+            echo "ℹ️ Using custom host: $CUSTOM"
+          else
+            echo "host=$PRESET" >> $GITHUB_OUTPUT
+            echo "ℹ️ Using preset host: $PRESET"
+          fi
+
+      - name: "🚀 Deploy to ${{ steps.resolve-host.outputs.host }}"
+        uses: ./.github/actions/deploy-server
+        with:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SERVER_HOST: ${{ steps.resolve-host.outputs.host }}
