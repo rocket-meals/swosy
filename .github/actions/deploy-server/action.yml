@@ -1,0 +1,37 @@
+name: 'Deploy to Server'
+description: 'Deploy to a server via SSH by running the weekly-update script'
+
+inputs:
+  DEPLOY_SSH_KEY:
+    description: 'SSH private key for the deploy user'
+    required: true
+  DEPLOY_SERVER_HOST:
+    description: 'Hostname or IP of the target server'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "🔑 Setup SSH Key"
+      shell: bash
+      env:
+        DEPLOY_SSH_KEY: ${{ inputs.DEPLOY_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+
+    - name: "🚀 Deploy via SSH"
+      shell: bash
+      env:
+        DEPLOY_SERVER_HOST: ${{ inputs.DEPLOY_SERVER_HOST }}
+      run: |
+        echo "🚀 Connecting to $DEPLOY_SERVER_HOST as deploy user..."
+        ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -i ~/.ssh/deploy_key deploy@"$DEPLOY_SERVER_HOST" \
+          'sudo bash -c "cd /root/rocket-meals && ./scripts/weekly-update.sh"'
+        echo "✅ Deploy completed successfully"
+
+    - name: "🧹 Cleanup SSH Key"
+      if: always()
+      shell: bash
+      run: rm -f ~/.ssh/deploy_key
