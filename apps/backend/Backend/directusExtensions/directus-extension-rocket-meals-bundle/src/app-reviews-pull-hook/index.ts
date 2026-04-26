@@ -1,4 +1,4 @@
-import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
+import { ALL_CUSTOMER_APP_STORE_IDS, CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 import { AppReviewsPullHelper } from './AppReviewsPullHelper';
@@ -23,19 +23,21 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
     };
 
     try {
-      const appSettings = await myDatabaseHelper.getAppSettingsHelper().getAppSettings();
-
-      if (!appSettings) {
-        await context.logger.appendLog('No app settings found, skipping');
-        return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SKIPPED });
-      }
-
       const pullHelper = new AppReviewsPullHelper(logger);
 
-      const appleReviews = await pullHelper.pullAppleReviews(appSettings);
-      const googleReviews = await pullHelper.pullGoogleReviews(appSettings);
+      const allReviewsNested = await Promise.all(
+        ALL_CUSTOMER_APP_STORE_IDS.map(async (customerIds) => {
+          const appleReviews = customerIds.appleAppId
+            ? await pullHelper.pullAppleReviews(customerIds.appleAppId)
+            : [];
+          const googleReviews = customerIds.googlePlayPackageName
+            ? await pullHelper.pullGoogleReviews(customerIds.googlePlayPackageName)
+            : [];
+          return [...appleReviews, ...googleReviews];
+        })
+      );
 
-      const allReviews = [...appleReviews, ...googleReviews];
+      const allReviews = allReviewsNested.flat();
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
       let created = 0;
