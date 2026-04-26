@@ -1,5 +1,5 @@
 name: 'Deploy to Server'
-description: 'Deploy to a server via SSH by running the weekly-update script'
+description: 'Deploy to a server via SSH by running the update-and-generate-env script'
 
 inputs:
   DEPLOY_SSH_KEY:
@@ -7,6 +7,9 @@ inputs:
     required: true
   DEPLOY_SERVER_HOST:
     description: 'Hostname or IP of the target server'
+    required: true
+  ENV_NAME:
+    description: 'Environment name for .env generation (studi-futter, swosy, test)'
     required: true
 
 runs:
@@ -25,10 +28,11 @@ runs:
       shell: bash
       env:
         DEPLOY_SERVER_HOST: ${{ inputs.DEPLOY_SERVER_HOST }}
+        ENV_NAME: ${{ inputs.ENV_NAME }}
       run: |
-        echo "🚀 Connecting to $DEPLOY_SERVER_HOST as deploy user..."
+        echo "🚀 Connecting to $DEPLOY_SERVER_HOST as deploy user (env: $ENV_NAME)..."
         ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -i ~/.ssh/deploy_key deploy@"$DEPLOY_SERVER_HOST" \
-          'sudo bash -c "cd /root/rocket-meals && ./scripts/weekly-update.sh"'
+          "sudo bash -c \"cd /root/rocket-meals && ./scripts/update-and-generate-env.sh $ENV_NAME\""
         echo "✅ Deploy completed successfully"
 
     - name: "🧹 Cleanup SSH Key"
