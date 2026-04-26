@@ -25,7 +25,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
     try {
       const pullHelper = new AppReviewsPullHelper(logger);
 
-      const allReviewsNested = await Promise.all(
+      const reviewsByCustomer = await Promise.allSettled(
         ALL_CUSTOMER_APP_STORE_IDS.map(async (customerIds) => {
           const appleReviews = customerIds.appleAppId
             ? await pullHelper.pullAppleReviews(customerIds.appleAppId)
@@ -37,7 +37,13 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         })
       );
 
-      const allReviews = allReviewsNested.flat();
+      const allReviews = reviewsByCustomer.flatMap((result) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        }
+        void context.logger.appendLog('ERROR: Failed to pull reviews for a customer: ' + (result.reason instanceof Error ? result.reason.message : String(result.reason)));
+        return [];
+      });
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
       let created = 0;
