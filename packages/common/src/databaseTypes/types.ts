@@ -55,6 +55,7 @@ export type AppFeedbacks = {
   display_pixelratio?: number | null;
   display_scale?: number | null;
   display_width?: number | null;
+  external_identifier?: string | null;
   feedback_read_by_support?: boolean | null;
   id: string;
   positive?: boolean | null;

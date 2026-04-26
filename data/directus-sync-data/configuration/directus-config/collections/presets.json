@@ -1,6 +1,8 @@
 [
   {
     "refresh_interval": null,
+    "filter": null,
+    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -12,8 +14,6 @@
         ]
       }
     },
-    "layout_options": null,
-    "filter": null,
     "color": null,
     "icon": "bookmark",
     "layout": "tabular",
@@ -25,6 +25,8 @@
   },
   {
     "refresh_interval": null,
+    "filter": null,
+    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -36,8 +38,6 @@
         ]
       }
     },
-    "layout_options": null,
-    "filter": null,
     "color": null,
     "icon": "bookmark",
     "layout": "tabular",
