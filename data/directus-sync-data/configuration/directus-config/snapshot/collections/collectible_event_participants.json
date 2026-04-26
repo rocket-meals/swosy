@@ -9,7 +9,7 @@
     "collection": "collectible_event_participants",
     "color": null,
     "display_template": null,
-    "group": "collectible_events",
+    "group": "news",
     "hidden": false,
     "icon": "groups",
     "item_duplication_fields": null,

@@ -50,6 +50,11 @@
       },
       {
         "type": "hook",
+        "name": "app-reviews-pull-hook",
+        "source": "src/app-reviews-pull-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "auto-translation-hook",
         "source": "src/auto-translation-hook/index.ts"
       },
