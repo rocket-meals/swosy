@@ -1,56 +1,56 @@
 [
     {
         "status": "published",
-        "name": "Arabic",
+        "code": "ar-SA",
         "direction": "rtl",
-        "code": "ar-SA"
+        "name": "Arabic"
     },
     {
         "status": "published",
-        "name": "German",
+        "code": "de-DE",
         "direction": "ltr",
-        "code": "de-DE"
+        "name": "German"
     },
     {
         "status": "published",
-        "name": "English",
+        "code": "en-US",
         "direction": "ltr",
-        "code": "en-US"
+        "name": "English"
     },
     {
         "status": "published",
-        "name": "Spanish",
+        "code": "es-ES",
         "direction": "ltr",
-        "code": "es-ES"
+        "name": "Spanish"
     },
     {
         "status": "published",
-        "name": "French",
+        "code": "fr-FR",
         "direction": "ltr",
-        "code": "fr-FR"
+        "name": "French"
     },
     {
         "status": "published",
-        "name": "Polish",
+        "code": "pl-PL",
         "direction": "ltr",
-        "code": "pl-PL"
+        "name": "Polish"
     },
     {
         "status": "published",
-        "name": "Russian",
+        "code": "ru-RU",
         "direction": "ltr",
-        "code": "ru-RU"
+        "name": "Russian"
     },
     {
         "status": "published",
-        "name": "Turkish",
+        "code": "tr-TR",
         "direction": "ltr",
-        "code": "tr-TR"
+        "name": "Turkish"
     },
     {
         "status": "published",
-        "name": "Chinese",
+        "code": "zh-CN",
         "direction": "ltr",
-        "code": "zh-CN"
+        "name": "Chinese"
     }
 ]
