@@ -108,8 +108,20 @@ export class EnvVariableHelper {
     return this.getEnvVariable('ADMIN_PASSWORD');
   }
 
+  static getEnvFieldNameForAppStoreConnectPrivateKey(): string {
+    return 'APP_STORE_CONNECT_PRIVATE_KEY';
+  }
+
   static getAppStoreConnectPrivateKey() {
-    return this.getEnvVariable('APP_STORE_CONNECT_PRIVATE_KEY');
+    return this.getEnvVariable(this.getEnvFieldNameForAppStoreConnectPrivateKey());
+  }
+
+  static getEnvFieldNameForGooglePlayServiceAccountKeyJson(): string {
+    return 'GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON';
+  }
+
+  static getGooglePlayServiceAccountKeyJson() {
+    return this.getEnvVariable(this.getEnvFieldNameForGooglePlayServiceAccountKeyJson());
   }
 
   static getSyncForCustomer(): SyncForCustomerEnum | null {
