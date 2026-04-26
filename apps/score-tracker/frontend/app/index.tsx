@@ -336,7 +336,7 @@ export default function GameScreen() {
 
 	if (players.length === 0) {
 		return (
-			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background, paddingBottom: insets.bottom }]}>
+			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
 				<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
 				<Text style={[styles.emptyText, { color: theme.screen.text }]}>
 					Noch keine Spieler
@@ -353,7 +353,7 @@ export default function GameScreen() {
 	const labelWidth = 80;
 
 	return (
-		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			{/* Horizontally scrollable table */}
 			<View style={styles.tableWrapper}>
 				{/* Row label column (fixed) */}
