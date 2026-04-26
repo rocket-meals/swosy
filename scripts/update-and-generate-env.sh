@@ -52,7 +52,7 @@ if [[ ! -d "$ENV_REPO_DIR" ]]; then
 fi
 
 log "Aktualisiere rocket-meals-env Repository"
-git -C "$ENV_REPO_DIR" pull
+git -C "$ENV_REPO_DIR" pull || { log "Fehler: Aktualisierung von rocket-meals-env fehlgeschlagen" >&2; exit 1; }
 
 log "Generiere .env für Umgebung '$ENV_NAME'"
 (cd "$ENV_REPO_DIR" && yarn generate --env "$ENV_NAME" --output "$REPO_DIR/.env")
