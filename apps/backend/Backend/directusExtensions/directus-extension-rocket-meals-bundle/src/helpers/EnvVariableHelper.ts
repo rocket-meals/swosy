@@ -1,4 +1,4 @@
-import { DateHelperTimezone } from 'repo-depkit-common';
+import { DateHelperTimezone, STUDI_FUTTER_APP_STORE_IDS, SWOSY_APP_STORE_IDS } from 'repo-depkit-common';
 
 export enum SyncForCustomerEnum {
   TEST = 'Test',
@@ -119,6 +119,28 @@ export class EnvVariableHelper {
       return value as SyncForCustomerEnum;
     } else {
       return null;
+    }
+  }
+
+  static getAppleAppId(): string | null {
+    switch (this.getSyncForCustomer()) {
+      case SyncForCustomerEnum.OSNABRUECK:
+        return SWOSY_APP_STORE_IDS.appleAppId ?? null;
+      case SyncForCustomerEnum.HANNOVER:
+        return STUDI_FUTTER_APP_STORE_IDS.appleAppId ?? null;
+      default:
+        return null;
+    }
+  }
+
+  static getGooglePlayPackageName(): string | null {
+    switch (this.getSyncForCustomer()) {
+      case SyncForCustomerEnum.OSNABRUECK:
+        return SWOSY_APP_STORE_IDS.googlePlayPackageName ?? null;
+      case SyncForCustomerEnum.HANNOVER:
+        return STUDI_FUTTER_APP_STORE_IDS.googlePlayPackageName ?? null;
+      default:
+        return null;
     }
   }
 }
