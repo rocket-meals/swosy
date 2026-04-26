@@ -8,21 +8,13 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
  * when a support team member writes a response to a store review.
  */
 export class AppStoreReviewsResponseHelper {
-  static getMissingEnvVarsForSource(sourceIdentifier: string | null | undefined): string[] {
+  static isConfiguredForSource(sourceIdentifier: string | null | undefined): boolean {
     if (sourceIdentifier === AppFeedbackSourceIdentifier.APPLE) {
-      const missing: string[] = [];
-      if (!EnvVariableHelper.getAppStoreConnectPrivateKey()) {
-        missing.push('APP_STORE_CONNECT_PRIVATE_KEY');
-      }
-      return missing;
+      return !!EnvVariableHelper.getAppStoreConnectPrivateKey();
     } else if (sourceIdentifier === AppFeedbackSourceIdentifier.GOOGLE_PLAY) {
-      const missing: string[] = [];
-      if (!EnvVariableHelper.getGooglePlayServiceAccountKeyJson()) {
-        missing.push('GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON');
-      }
-      return missing;
+      return !!EnvVariableHelper.getGooglePlayServiceAccountKeyJson();
     }
-    return [];
+    return true;
   }
 
   private readonly myDatabaseHelper: MyDatabaseHelper;
@@ -51,7 +43,7 @@ export class AppStoreReviewsResponseHelper {
   private async respondToAppleReview(reviewId: string, responseBody: string): Promise<void> {
     const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
     if (!privateKey) {
-      this.logger.info('app-reviews-pull-hook: APP_STORE_CONNECT_PRIVATE_KEY not set, cannot respond to Apple review: ' + reviewId);
+      this.logger.info('app-reviews-pull-hook: Apple App Store Connect not configured, cannot respond to review: ' + reviewId);
       return;
     }
 

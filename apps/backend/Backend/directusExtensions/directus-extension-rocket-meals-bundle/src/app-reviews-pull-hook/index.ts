@@ -106,10 +106,10 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
         continue;
       }
 
-      const missingVars = AppStoreReviewsResponseHelper.getMissingEnvVarsForSource(feedback.source_identifier);
-      if (missingVars.length > 0) {
+      const isConfigured = AppStoreReviewsResponseHelper.isConfiguredForSource(feedback.source_identifier);
+      if (!isConfigured) {
         throw new Error(
-          `Cannot set response for ${feedback.source_identifier} review: missing env variables: ${missingVars.join(', ')}`
+          `Cannot set response for ${feedback.source_identifier} review: store not configured`
         );
       }
     }
