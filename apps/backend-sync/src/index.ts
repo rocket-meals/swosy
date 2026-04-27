@@ -11,10 +11,10 @@ async function restartDirectusIfSecretChanged(result: {changed: boolean, reason?
   if(result.changed){
     console.log("[AppleClientSecretChecker] Apple client secret was refreshed. Reason:", result.reason);
     // Restart Docker containers so that the Directus hook reads the new secret from host.env
-    let lokalDockerDirectusServerUrl = DockerDirectusHelper.getDirectusServerUrl();
+    let localDockerDirectusServerUrl = DockerDirectusHelper.getDirectusServerUrl();
 
-    await DockerDirectusPingHelper.waitForDirectusHealthy(lokalDockerDirectusServerUrl);
-    const restartSuccess = await DockerContainerManager.restartDirectusContainers(lokalDockerDirectusServerUrl as string);
+    await DockerDirectusPingHelper.waitForDirectusHealthy(localDockerDirectusServerUrl);
+    const restartSuccess = await DockerContainerManager.restartDirectusContainers(localDockerDirectusServerUrl as string);
     if(restartSuccess){
         console.log("[AppleClientSecretChecker] Successfully restarted Directus Docker containers to apply new Apple client secret.");
     } else {
