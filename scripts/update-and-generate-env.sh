@@ -49,8 +49,12 @@ fi
 log "Starte Update und Env-Generierung in $REPO_DIR (Umgebung: $ENV_NAME)"
 cd "$REPO_DIR"
 
-log "Container werden gestoppt (docker compose down)"
-docker compose down
+if [[ -f "$REPO_DIR/.env" ]]; then
+  log "Container werden gestoppt (docker compose down)"
+  docker compose down
+else
+  log "Keine .env Datei vorhanden – docker compose down wird übersprungen (Ersteinrichtung?)"
+fi
 
 log "Hole neue Änderungen (git fetch + reset)"
 git fetch origin
