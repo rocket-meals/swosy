@@ -8,4 +8,5 @@ export type FoodDetailsSectionBaseProps = FoodAreaDisplayProps & {
     translate: (key: string) => string;
     previousFeedback: any;
     isAccountRequired?: boolean;
+    onAccountRequired?: () => void;
 };

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -196,6 +197,7 @@ function ScoreInputContent({
 
 export default function GameScreen() {
 	const { theme } = useTheme();
+	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
 	const players = useSelector((state: RootState) => state.game.players);
 	const rounds = useSelector((state: RootState) => state.game.rounds);
@@ -334,7 +336,7 @@ export default function GameScreen() {
 
 	if (players.length === 0) {
 		return (
-			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
+			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
 				<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
 				<Text style={[styles.emptyText, { color: theme.screen.text }]}>
 					Noch keine Spieler
@@ -351,7 +353,7 @@ export default function GameScreen() {
 	const labelWidth = 80;
 
 	return (
-		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			{/* Horizontally scrollable table */}
 			<View style={styles.tableWrapper}>
 				{/* Row label column (fixed) */}
@@ -418,7 +420,7 @@ export default function GameScreen() {
 			</View>
 
 			{/* Bottom bar: "Nächste Runde" button */}
-			<View style={[styles.bottomBar, { borderTopColor: theme.screen.border }]}>
+			<View style={[styles.bottomBar, { borderTopColor: theme.screen.border, paddingBottom: insets.bottom + 12 }]}>
 				<TouchableOpacity
 					style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR }]}
 					onPress={handleAddRound}

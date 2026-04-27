@@ -228,6 +228,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 						saveLabel={translate(TranslationKeys.save_comment)}
 						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
 						isAccountRequired={!user?.id}
+						onAccountRequired={openAccountRequiredModal}
 					/>
 				</View>
 			)}

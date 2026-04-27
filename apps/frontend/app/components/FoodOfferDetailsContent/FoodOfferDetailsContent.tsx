@@ -358,6 +358,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         translate={translate}
                         defaultImage={defaultImage}
                         isAccountRequired={!user?.id}
+                        onAccountRequired={openAccountRequiredModal}
                         containerWidth={getContainerWidth}
                     />
 
@@ -369,6 +370,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         updateNotification={updateNotification}
                         foodsAreaColor={foods_area_color}
                         isAccountRequired={!user?.id}
+                        onAccountRequired={openAccountRequiredModal}
                     />
 
                     <TabController

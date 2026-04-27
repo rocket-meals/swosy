@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -32,6 +33,7 @@ function themeModeLabel(mode: ThemeMode): string {
 
 export default function SettingsScreen() {
 	const { theme } = useTheme();
+	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -57,7 +59,7 @@ export default function SettingsScreen() {
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
-			<ScrollView contentContainerStyle={styles.listContent}>
+			<ScrollView contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32, paddingLeft: insets.left, paddingRight: insets.right }]}>
 				<SettingsListGroupTitle title="Appearance" />
 				<SettingsList
 					iconBgColor={PRIMARY_COLOR}
@@ -91,6 +93,5 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	listContent: {
-		paddingBottom: 32,
 	},
 });

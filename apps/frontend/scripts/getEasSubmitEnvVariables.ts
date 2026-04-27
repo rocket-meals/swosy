@@ -1,4 +1,4 @@
-import { EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE, EXPO_ASC_ISSUER_ID, EXPO_ASC_KEY_ID } from '../app/config';
+import { EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE, EXPO_ASC_ISSUER_ID, EXPO_ASC_KEY_ID } from 'repo-depkit-common';
 
 export type EasSubmitEnvVariables = {
   EXPO_ASC_KEY_ID: string;

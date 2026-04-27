@@ -102,6 +102,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 			rightElement={rightElement}
 			groupPosition={groupPosition}
 			isAccountRequired={isAccountRequired}
+			onAccountRequired={openAccountRequiredModal}
 		/>
 	);
 };

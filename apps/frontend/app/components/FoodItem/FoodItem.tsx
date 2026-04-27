@@ -354,15 +354,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         !user?.id && accountRequiredStyles.wrapper,
                         !user?.id && { borderWidth: 2, borderColor: foods_area_color },
                       ]}
+                      onPress={!user?.id
+                        ? openAccountRequiredModal
+                        : () => updateRating(RatingHelper.isMaxRating(currentRating) ? null : RatingHelper.MAX_RATING)
+                      }
                     >
                       {RatingHelper.isMaxRating(currentRating) ? (
-                        <TouchableOpacity onPress={() => updateRating(null)}>
-                          <AntDesign name="star" size={20} color={foods_area_color} />
-                        </TouchableOpacity>
+                        <AntDesign name="star" size={20} color={foods_area_color} />
                       ) : (
-                        <TouchableOpacity onPress={() => updateRating(RatingHelper.MAX_RATING)}>
-                          <MaterialIcons name="star" size={20} color="white" />
-                        </TouchableOpacity>
+                        <MaterialIcons name="star" size={20} color="white" />
                       )}
                       {!user?.id && (
                         <View

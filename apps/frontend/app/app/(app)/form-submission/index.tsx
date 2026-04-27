@@ -134,6 +134,35 @@ const normalizeCurrentValue = (value: unknown, customType?: string): string => {
 	return String(value).trim().toLowerCase();
 };
 
+const isAnswerVisible = (
+	answer: DatabaseTypes.FormAnswers,
+	formAnswers: DatabaseTypes.FormAnswers[],
+	getAnswerValueFn: (a: DatabaseTypes.FormAnswers) => any
+): boolean => {
+	const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+	const baseVisibility = formField?.is_visible_in_form ?? true;
+	if (!baseVisibility) return false;
+
+	const visibilityDependsOnFieldId = formField ? extractFormFieldId(formField.visibility_depends_on_referenced_field) : undefined;
+	const expectedVisibilityValue = formField?.visibility_depends_on_referenced_value_equals;
+	const normalizedExpectedValue = normalizeExpectedValue(expectedVisibilityValue);
+	const hasVisibilityDependency = Boolean(visibilityDependsOnFieldId && normalizedExpectedValue !== '');
+
+	if (!hasVisibilityDependency) return true;
+
+	const referencedAnswer = formAnswers.find(item => {
+		const referencedFieldId = extractFormFieldId(item?.form_field);
+		return referencedFieldId === visibilityDependsOnFieldId;
+	});
+
+	if (!referencedAnswer) return false;
+
+	const referencedField = isFormFieldEntity(referencedAnswer?.form_field) ? referencedAnswer.form_field : null;
+	const referencedCustomType = (referencedField?.field_type || '').split('-')[0];
+	const currentValue = getAnswerValueFn(referencedAnswer);
+	return normalizeCurrentValue(currentValue, referencedCustomType) === normalizedExpectedValue;
+};
+
 const Index = () => {
 	const toast = useToast();
 	const isLtrLanguage = useIsLtrLanguage();
@@ -628,24 +657,34 @@ const Index = () => {
 			}
 		}
 
+		// Validate required fields that are currently visible in the form
+		for (const answer of formAnswers) {
+			const formField = answer?.form_field as DatabaseTypes.FormFields;
+			if (!formField?.is_required) continue;
+			if (!isAnswerVisible(answer, formAnswers, getAnswerValue)) continue;
+			const value = formData[String(answer?.id)]?.value;
+			if (!value || (typeof value === 'string' && value.trim() === '')) {
+				hasError = true;
+				const fieldName = formField?.translations?.length > 0 ? getFromCategoryTranslation(formField.translations, language) : formField?.alias;
+				toast(translate(TranslationKeys.fieldIsRequired).replace('${fieldName}', String(fieldName ?? '')), 'error');
+			}
+		}
+
+		if (hasError) {
+			setSubmissionLoading(false);
+			return;
+		}
+
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
 
 		const updatedFormAnswers = await Promise.all(
 			filteredFormAnswers.map(async answer => {
 				const fieldId = answer?.id;
-				const isRequired = (answer?.form_field as DatabaseTypes.FormFields)?.is_required;
 				const formDataEntry = formData[String(fieldId)];
 				const value = formDataEntry?.value;
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
 				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
 				const custom_id = fieldType?.split('-')[1];
-
-				if (isRequired && (!value || value.trim() === '')) {
-					hasError = true;
-					const fieldName = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias;
-					toast(translate(TranslationKeys.fieldIsRequired).replace('${fieldName}', String(fieldName ?? '')), 'error');
-					return null;
-				}
 
 				const { custom_type } = formDataEntry;
 				let formateDate;
@@ -747,10 +786,6 @@ const Index = () => {
 		);
 
 		const finalAnswers = updatedFormAnswers.filter(Boolean);
-		if (hasError) {
-			setSubmissionLoading(false);
-			return;
-		}
 
 		if (finalAnswers.length > 0) {
 			// In offline mode, immediately add to queue without attempting upload

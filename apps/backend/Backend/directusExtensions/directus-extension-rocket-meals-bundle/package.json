@@ -50,6 +50,11 @@
       },
       {
         "type": "hook",
+        "name": "app-reviews-pull-hook",
+        "source": "src/app-reviews-pull-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "auto-translation-hook",
         "source": "src/auto-translation-hook/index.ts"
       },
@@ -137,6 +142,11 @@
         "type": "hook",
         "name": "friendships-hook",
         "source": "src/friendships-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "friendships-pending-cleanup-schedule",
+        "source": "src/friendships-pending-cleanup-schedule/index.ts"
       },
       {
         "type": "hook",

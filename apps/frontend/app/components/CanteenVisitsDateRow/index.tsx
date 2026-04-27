@@ -15,7 +15,9 @@ import { TranslationKeys } from '@/locales/keys';
 import { CanteenVisitsHelper, getFriendProfileIds } from '@/redux/actions/CanteenVisits/CanteenVisits';
 import { FriendsContent } from '@/components/FriendsContent';
 import DebugView from '@/components/DebugView';
-import { useRouter } from 'expo-router';
+import useCheckAppRateAsking from '@/hooks/useCheckAppRateAsking';
+import useCanteenVisitData from '@/hooks/useCanteenVisitData';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const canteenVisitsHelper = new CanteenVisitsHelper();
 
@@ -24,7 +26,7 @@ const canteenVisitsHelper = new CanteenVisitsHelper();
 export interface CanteenVisitDetailsModalContentProps {
 	canteenId: string;
 	date: string;
-	counts: { total: number; friends: number };
+	initialCounts: { total: number; friends: number };
 	primaryColor: string;
 	foods_area_color: string;
 	isRegistered: boolean;
@@ -33,16 +35,15 @@ export interface CanteenVisitDetailsModalContentProps {
 	profileId: string | undefined;
 	translate: (key: TranslationKeys) => string;
 	theme: any;
-	closeModal: () => void;
 	showFriendsModal: () => void;
 	showLoginModal: () => void;
-	onOwnVisitChanged?: (date: string, visit: DatabaseTypes.CanteenVisits | null) => void;
+	onRefresh?: () => void;
 }
 
 export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalContentProps> = ({
 	canteenId,
 	date,
-	counts,
+	initialCounts,
 	primaryColor,
 	foods_area_color,
 	isRegistered,
@@ -51,13 +52,21 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 	profileId,
 	translate,
 	theme,
-	closeModal,
 	showFriendsModal,
 	showLoginModal,
-	onOwnVisitChanged,
+	onRefresh,
 }) => {
-	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
 	const [toggling, setToggling] = useState(false);
+	const { checkAndShowAppRating } = useCheckAppRateAsking();
+
+	const { counts, ownVisit, setOwnVisit, fetchData } = useCanteenVisitData({
+		canteenId,
+		date,
+		profileId,
+		friendProfileIds,
+		isRegistered,
+		initialCounts,
+	});
 
 	const [debugOwnVisits, setDebugOwnVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
 	const [debugFriendVisits, setDebugFriendVisits] = useState<DatabaseTypes.CanteenVisits[] | undefined>(undefined);
@@ -82,19 +91,11 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 	}, [canteenId, date, profileId, friendProfileIds]);
 
 	useEffect(() => {
-		if (!isRegistered || !profileId) return;
-		canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId).then(visit => {
-			setOwnVisit(visit);
-		});
-	}, [canteenId, date, isRegistered, profileId]);
-
-	useEffect(() => {
 		fetchDebugData();
 	}, [fetchDebugData]);
 
 	const handleToggle = useCallback(async () => {
 		if (!isRegistered || !profileId) {
-			closeModal();
 			showLoginModal();
 			return;
 		}
@@ -105,34 +106,32 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profileId);
 			} else {
 				await canteenVisitsHelper.createVisitForDate(canteenId, date, profileId);
+				checkAndShowAppRating();
 			}
-			const updatedVisit = await canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profileId);
-			setOwnVisit(updatedVisit);
-			onOwnVisitChanged?.(date, updatedVisit);
+			await fetchData();
+			onRefresh?.();
 			fetchDebugData();
 		} catch (e) {
 			console.error('Error toggling own canteen visit:', e);
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, closeModal, showLoginModal, onOwnVisitChanged, fetchDebugData]);
+	}, [isRegistered, profileId, toggling, ownVisit, canteenId, date, showLoginModal, fetchData, onRefresh, fetchDebugData, checkAndShowAppRating]);
 
 	return (
 		<View>
-			{isRegistered && (
-				<>
-					<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_my_visit_group)} />
-					<SettingsListBoolean
-						leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
-						iconBgColor={ownVisit ? foods_area_color : primaryColor}
-						label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
-						isEnabled={!!ownVisit}
-						onToggle={handleToggle}
-						disabled={toggling || ownVisit === undefined}
-						groupPosition="single"
-					/>
-				</>
-			)}
+			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_my_visit_group)} />
+			<SettingsListBoolean
+				leftIcon={<MaterialCommunityIcons name="silverware-fork-knife" size={24} color={theme.screen.icon} />}
+				iconBgColor={ownVisit ? foods_area_color : primaryColor}
+				label={translate(TranslationKeys.canteen_visits_i_will_be_there)}
+				isEnabled={!!ownVisit}
+				onToggle={handleToggle}
+				disabled={toggling || ownVisit === undefined}
+				groupPosition="single"
+				isAccountRequired={!isRegistered}
+				onAccountRequired={showLoginModal}
+			/>
 			<SettingsListGroupTitle title={translate(TranslationKeys.canteen_visits_friends_group)} />
 			{isRegistered ? (
 				<>
@@ -172,10 +171,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 						label={translate(TranslationKeys.canteen_visits_friends)}
 						value="-"
 						isAccountRequired={true}
-						onAccountRequired={() => {
-							closeModal();
-							showLoginModal();
-						}}
+						onAccountRequired={showLoginModal}
 						groupPosition="top"
 					/>
 					<SettingsList
@@ -183,10 +179,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 						iconBgColor={primaryColor}
 						label={translate(TranslationKeys.canteen_visits_login_hint)}
 						rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-						handleFunction={() => {
-							closeModal();
-							showLoginModal();
-						}}
+						handleFunction={showLoginModal}
 						groupPosition="bottom"
 					/>
 				</>
@@ -228,16 +221,20 @@ export interface CanteenVisitsDateRowProps {
 export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ canteenId, date }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const router = useRouter();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'public_only' | 'off';
 	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { friendships } = useAppSelector((state) => state.friendships);
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { show: showScrollViewModal } = useMyScrollViewModal();
+	const { checkAndShowAppRating } = useCheckAppRateAsking();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 
 	const isRegistered = UserHelper.isRegisteredUser(user);
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
 	const canteenContrastColor = useMyContrastColor(foods_area_color, theme, mode === 'dark');
+
+	// Check if the component should be rendered
+	const showCanteenVisits = appSettings?.friends_enabled || isDevMode;
 
 	const friendProfileIds = useMemo(() => {
 		if (!isRegistered || !profile?.id) return [];
@@ -262,43 +259,21 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		return dict;
 	}, [friendships, profile?.id]);
 
-	const [counts, setCounts] = useState({ total: 0, friends: 0 });
-	const [ownVisit, setOwnVisit] = useState<DatabaseTypes.CanteenVisits | null | undefined>(undefined);
 	const [toggling, setToggling] = useState(false);
 
-	// Check if the component should be rendered
-	const showCanteenVisits = appSettings?.friends_enabled || isDevMode;
-
-	const fetchData = useCallback(async () => {
-		if (!canteenId || !showCanteenVisits || canteenVisitsVisibility === 'off') return;
-		
-		// Determine what data to fetch based on visibility
-		const shouldFetchTotal = canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'public_only';
-		const shouldFetchFriends = (canteenVisitsVisibility === 'all' || canteenVisitsVisibility === 'friends_only') && friendProfileIds.length > 0;
-		const shouldFetchOwn = canteenVisitsVisibility !== 'off' && isRegistered && profile?.id;
-		
-		const totalP = shouldFetchTotal 
-			? canteenVisitsHelper.fetchVisitCountForDate(canteenId, date)
-			: Promise.resolve(0);
-		const friendsP = shouldFetchFriends
-			? canteenVisitsHelper.fetchFriendVisitCountForDate(canteenId, date, friendProfileIds)
-			: Promise.resolve(0);
-		const ownP = shouldFetchOwn
-			? canteenVisitsHelper.fetchOwnVisitForDate(canteenId, date, profile.id)
-			: Promise.resolve(null);
-		
-		const [total, friends, own] = await Promise.all([totalP, friendsP, ownP]);
-		setCounts({ total, friends });
-		setOwnVisit(own);
-	}, [canteenId, date, friendProfileIds, isRegistered, profile?.id, canteenVisitsVisibility, showCanteenVisits]);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
+	const { counts, ownVisit, fetchData } = useCanteenVisitData({
+		canteenId,
+		date,
+		profileId: profile?.id,
+		friendProfileIds,
+		isRegistered,
+		visibility: canteenVisitsVisibility,
+		enabled: showCanteenVisits && canteenVisitsVisibility !== 'off',
+	});
 
 	const handleToggle = useCallback(async () => {
 		if (!isRegistered) {
-			router.navigate('/(auth)/login');
+			openAccountRequiredModal();
 			return;
 		}
 		if (!profile?.id || toggling) return;
@@ -308,6 +283,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 				await canteenVisitsHelper.deleteOwnVisitsForDate(canteenId, date, profile.id);
 			} else {
 				await canteenVisitsHelper.createVisitForDate(canteenId, date, profile.id);
+				checkAndShowAppRating();
 			}
 			await fetchData();
 		} catch (e) {
@@ -315,7 +291,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 		} finally {
 			setToggling(false);
 		}
-	}, [isRegistered, profile?.id, toggling, ownVisit, canteenId, date, router, fetchData]);
+	}, [isRegistered, profile?.id, toggling, ownVisit, canteenId, date, openAccountRequiredModal, fetchData, checkAndShowAppRating]);
 
 	const openDetailsModal = useCallback(() => {
 		showScrollViewModal({
@@ -324,7 +300,7 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 				<CanteenVisitDetailsModalContent
 					canteenId={canteenId}
 					date={date}
-					counts={counts}
+					initialCounts={counts}
 					primaryColor={primaryColor}
 					foods_area_color={foods_area_color}
 					isRegistered={isRegistered}
@@ -333,7 +309,6 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 					profileId={profile?.id}
 					translate={translate}
 					theme={theme}
-					closeModal={closeScrollViewModal}
 					showFriendsModal={() => {
 						showScrollViewModal({
 							title: translate(TranslationKeys.friendships),
@@ -341,15 +316,12 @@ export const CanteenVisitsDateRow: React.FC<CanteenVisitsDateRowProps> = ({ cant
 							disableHorizontalPadding: true,
 						});
 					}}
-					showLoginModal={() => router.navigate('/(auth)/login')}
-					onOwnVisitChanged={(_, visit) => {
-						setOwnVisit(visit);
-						fetchData();
-					}}
+					showLoginModal={openAccountRequiredModal}
+					onRefresh={fetchData}
 				/>
 			),
 		});
-	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, closeScrollViewModal, router, fetchData]);
+	}, [counts, canteenId, date, primaryColor, foods_area_color, isRegistered, friendProfileIds, friendsDict, profile?.id, translate, theme, showScrollViewModal, openAccountRequiredModal, fetchData]);
 
 	// Early return if not enabled or visibility is 'off' — placed after all hooks
 	if (!showCanteenVisits || canteenVisitsVisibility === 'off') {

@@ -34,6 +34,7 @@ const FoodHeader = ({
     translate,
     defaultImage,
     isAccountRequired,
+    onAccountRequired,
     containerWidth,
 }: FoodHeaderProps) => {
     const isLargeScreen = screenWidth > 1000;
@@ -163,6 +164,7 @@ const FoodHeader = ({
                                 showSeparator={false}
                                 groupPosition="single"
                                 isAccountRequired={isAccountRequired}
+                                onAccountRequired={onAccountRequired}
                             />
                         </View>
                     </View>
@@ -250,6 +252,7 @@ const FoodHeader = ({
                     showSeparator={false}
                     groupPosition="top"
                     isAccountRequired={isAccountRequired}
+                    onAccountRequired={onAccountRequired}
                 />
             </View>
         </View>

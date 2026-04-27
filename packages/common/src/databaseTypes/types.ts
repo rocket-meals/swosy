@@ -55,6 +55,7 @@ export type AppFeedbacks = {
   display_pixelratio?: number | null;
   display_scale?: number | null;
   display_width?: number | null;
+  external_identifier?: string | null;
   feedback_read_by_support?: boolean | null;
   id: string;
   positive?: boolean | null;
@@ -63,6 +64,8 @@ export type AppFeedbacks = {
   response?: string | null;
   response_read_by_user?: boolean | null;
   sort?: number | null;
+  source_identifier?: string | null;
+  source_rating_raw?: number | null;
   status?: string | null;
   title?: string | null;
   user_created?: string | null;

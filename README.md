@@ -12,6 +12,12 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rocket-meals_rocket-meals&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=rocket-meals_rocket-meals)
 [![Data Clumps](https://raw.githubusercontent.com/rocket-meals/rocket-meals/refs/heads/master/reports/data-clumps-doctor/badges/data-clumps.svg)](https://github.com/NilsBaumgartner1994/data-clumps-doctor)
 
+https://github.com/rocket-meals/rocket-meals
+
+https://github.com/rocket-meals/swosy
+
+https://github.com/rocket-meals/studi-futter
+
 # 🚀 Rocket Meals
 
 **Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von
@@ -51,23 +57,31 @@ cd rocket-meals
 yarn install
 ```
 
-## ⏰ Wöchentliches Docker-Update (Samstagabend)
+## ⏰ Update und Env-Generierung
 
-Falls du jeden Samstagabend automatisch folgende Schritte ausführen willst
+Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 
 1. `docker compose down`
-2. `.env` sichern
-3. `git pull --ff-only`
-4. `.env` wiederherstellen
+2. `git fetch` + `git reset --hard`
+3. `git pull` im `rocket-meals-envs`-Repository (holt den aktuellsten Stand)
+4. `.env` aus dem `rocket-meals-envs`-Repository generieren
 5. `docker compose build`
 6. `docker compose up -d`
 
-kannst du das Skript `scripts/weekly-update.sh` verwenden.
+### Voraussetzung
 
-### 1) Skript manuell testen
+Das Repository `rocket-meals-envs` muss im übergeordneten Ordner liegen (`../rocket-meals-envs`).
+
+### Verfügbare Umgebungen
+
+- `studi-futter`
+- `swosy`
+- `test`
+
+### 1) Skript manuell ausführen
 
 ```bash
-./scripts/weekly-update.sh
+./scripts/update-and-generate-env.sh swosy
 ```
 
 ### 2) Cronjob automatisch erstellen/aktualisieren
@@ -93,12 +107,5 @@ Standardmäßig wird folgender Zeitplan gesetzt (Samstag 20:00 Uhr):
 Optional kannst du Zeitplan/Logpfad überschreiben:
 
 ```bash
-CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/weekly-update.log" ./scripts/setup-weekly-update-cron.sh
+CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/update-and-generate-env.log" ./scripts/setup-weekly-update-cron.sh
 ```
-
-> Hinweis: Das Skript sichert `.env` standardmäßig nach `../envCopy`.
-> Falls du einen anderen Pfad möchtest:
->
-> ```bash
-> BACKUP_FILE=/dein/pfad/envCopy ./scripts/weekly-update.sh
-> ```

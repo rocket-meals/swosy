@@ -20,6 +20,7 @@ const NotificationSection = ({
     updateNotification,
     foodsAreaColor,
     isAccountRequired,
+    onAccountRequired,
 }: NotificationSectionProps) => {
     const isNotifyEnabled = !!previousFeedback?.notify;
 
@@ -47,6 +48,7 @@ const NotificationSection = ({
                 showSeparator={false}
                 groupPosition={isWeb ? "single" : "bottom"}
                 isAccountRequired={isAccountRequired}
+                onAccountRequired={onAccountRequired}
             />
         </View>
     );
