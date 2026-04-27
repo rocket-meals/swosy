@@ -63,13 +63,14 @@ Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 
 1. `docker compose down`
 2. `git fetch` + `git reset --hard`
-3. `.env` aus dem `rocket-meals-env`-Repository generieren
-4. `docker compose build`
-5. `docker compose up -d`
+3. `git pull` im `rocket-meals-envs`-Repository (holt den aktuellsten Stand)
+4. `.env` aus dem `rocket-meals-envs`-Repository generieren
+5. `docker compose build`
+6. `docker compose up -d`
 
 ### Voraussetzung
 
-Das Repository `rocket-meals-env` muss im übergeordneten Ordner liegen (`../rocket-meals-env`).
+Das Repository `rocket-meals-envs` muss im übergeordneten Ordner liegen (`../rocket-meals-envs`).
 
 ### Verfügbare Umgebungen
 
