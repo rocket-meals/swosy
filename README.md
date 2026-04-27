@@ -57,23 +57,30 @@ cd rocket-meals
 yarn install
 ```
 
-## ⏰ Wöchentliches Docker-Update (Samstagabend)
+## ⏰ Update und Env-Generierung
 
-Falls du jeden Samstagabend automatisch folgende Schritte ausführen willst
+Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:
 
 1. `docker compose down`
-2. `.env` sichern
-3. `git pull --ff-only`
-4. `.env` wiederherstellen
-5. `docker compose build`
-6. `docker compose up -d`
+2. `git fetch` + `git reset --hard`
+3. `.env` aus dem `rocket-meals-env`-Repository generieren
+4. `docker compose build`
+5. `docker compose up -d`
 
-kannst du das Skript `scripts/weekly-update.sh` verwenden.
+### Voraussetzung
 
-### 1) Skript manuell testen
+Das Repository `rocket-meals-env` muss im übergeordneten Ordner liegen (`../rocket-meals-env`).
+
+### Verfügbare Umgebungen
+
+- `studi-futter`
+- `swosy`
+- `test`
+
+### 1) Skript manuell ausführen
 
 ```bash
-./scripts/weekly-update.sh
+./scripts/update-and-generate-env.sh swosy
 ```
 
 ### 2) Cronjob automatisch erstellen/aktualisieren
@@ -99,12 +106,5 @@ Standardmäßig wird folgender Zeitplan gesetzt (Samstag 20:00 Uhr):
 Optional kannst du Zeitplan/Logpfad überschreiben:
 
 ```bash
-CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/weekly-update.log" ./scripts/setup-weekly-update-cron.sh
+CRON_SCHEDULE="30 21 * * 6" CRON_LOG_FILE="/workspace/rocket-meals/logs/update-and-generate-env.log" ./scripts/setup-weekly-update-cron.sh
 ```
-
-> Hinweis: Das Skript sichert `.env` standardmäßig nach `../envCopy`.
-> Falls du einen anderen Pfad möchtest:
->
-> ```bash
-> BACKUP_FILE=/dein/pfad/envCopy ./scripts/weekly-update.sh
-> ```
