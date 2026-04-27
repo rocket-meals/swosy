@@ -54,6 +54,10 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 	const handleSave = () => {
 		if (!isDisabled) {
 			if (Platform.OS === 'web') {
+				if (signatureRef.current?.isEmpty()) {
+					onChange(id, null, custom_type);
+					return;
+				}
 				const signature = signatureRef.current?.toDataURL();
 				const base64Data = signature.replace(/^data:image\/\w+;base64,/, '');
 				const signatureUri = `data:image/png;base64,${base64Data}`;

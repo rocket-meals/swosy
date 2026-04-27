@@ -623,24 +623,33 @@ const Index = () => {
 			}
 		}
 
+		// Validate ALL required fields, including those the user never touched (not yet in formData)
+		for (const answer of formAnswers) {
+			const formField = answer?.form_field as DatabaseTypes.FormFields;
+			if (!formField?.is_required) continue;
+			const value = formData[String(answer?.id)]?.value;
+			if (!value || (typeof value === 'string' && value.trim() === '')) {
+				hasError = true;
+				const fieldName = formField?.translations?.length > 0 ? getFromCategoryTranslation(formField.translations, language) : formField?.alias;
+				toast(`Field "${fieldName}" is required`, 'error');
+			}
+		}
+
+		if (hasError) {
+			setSubmissionLoading(false);
+			return;
+		}
+
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
 
 		const updatedFormAnswers = await Promise.all(
 			filteredFormAnswers.map(async answer => {
 				const fieldId = answer?.id;
-				const isRequired = (answer?.form_field as DatabaseTypes.FormFields)?.is_required;
 				const formDataEntry = formData[String(fieldId)];
 				const value = formDataEntry?.value;
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
 				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
 				const custom_id = fieldType?.split('-')[1];
-
-				if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
-					hasError = true;
-					const fieldName = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias;
-					toast(`Field "${fieldName}" is required`, 'error');
-					return null;
-				}
 
 				const { custom_type } = formDataEntry;
 				let formateDate;
@@ -742,10 +751,6 @@ const Index = () => {
 		);
 
 		const finalAnswers = updatedFormAnswers.filter(Boolean);
-		if (hasError) {
-			setSubmissionLoading(false);
-			return;
-		}
 
 		if (finalAnswers.length > 0) {
 			// In offline mode, immediately add to queue without attempting upload
