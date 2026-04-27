@@ -9696,7 +9696,7 @@ Key,Message,Component,Line
 "AZkUSvCWS4VhJojFFARO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",62
 "AZkUSvCWS4VhJojFFARP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",75
 "AZkUSvCWS4VhJojFFARQ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",123
-"AZkUSu8XS4VhJojFFAO8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SignatureInterface/SignatureInterface.tsx",135
+"AZkUSu8XS4VhJojFFAO8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SignatureInterface/SignatureInterface.tsx",122
 "AZkUSveRS4VhJojFFCTj","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",4
 "AZkUSveRS4VhJojFFCTk","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",5
 "AZkUSveRS4VhJojFFCTl","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",6
