@@ -94,7 +94,7 @@ docker compose up -d
 
 APPLE_SECRET_BEFORE="$(grep '^AUTH_APPLE_CLIENT_SECRET=' "$REPO_DIR/.env" 2>/dev/null | cut -d= -f2- || true)"
 APPLE_HOOK_CONFIGURED=false
-if grep -qE '^AUTH_APPLE_HOOK_(APPLE_)?PRIVATE_KEY=.+' "$REPO_DIR/.env" 2>/dev/null; then
+if grep -qE '^AUTH_APPLE_HOOK_(APPLE_)?PRIVATE_KEY=[^[:space:]]+' "$REPO_DIR/.env" 2>/dev/null; then
   APPLE_HOOK_CONFIGURED=true
 fi
 
@@ -108,14 +108,14 @@ if [[ "$APPLE_HOOK_CONFIGURED" == "true" && -z "$APPLE_SECRET_BEFORE" ]]; then
   APPLE_SECRET_GENERATED=""
 
   while [[ $WAITED -lt $MAX_WAIT ]]; do
-    sleep $INTERVAL
-    WAITED=$((WAITED + INTERVAL))
     APPLE_SECRET_GENERATED="$(grep '^AUTH_APPLE_CLIENT_SECRET=' "$REPO_DIR/.env" 2>/dev/null | cut -d= -f2- || true)"
     if [[ -n "$APPLE_SECRET_GENERATED" ]]; then
       log "AUTH_APPLE_CLIENT_SECRET wurde nach ${WAITED}s generiert."
       break
     fi
     log "Warte auf AUTH_APPLE_CLIENT_SECRET... (${WAITED}/${MAX_WAIT}s)"
+    sleep $INTERVAL
+    WAITED=$((WAITED + INTERVAL))
   done
 
   if [[ -n "$APPLE_SECRET_GENERATED" ]]; then
