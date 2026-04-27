@@ -7,7 +7,6 @@ import styles from './styles';
 import SignatureScreen from 'react-native-signature-canvas';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
-import * as FileSystem from 'expo-file-system';
 import { TranslationKeys } from '@/locales/keys';
 import { ServerAPI } from '@/redux/actions';
 
@@ -81,30 +80,18 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		}
 	};
 
-	const handleSignature = async (signature: string) => {
+	const handleSignature = (signature: string) => {
 		if (isDisabled) return;
 
-		const base64Data = signature.replace(/^data:image\/\w+;base64,/, '');
-		const path = (FileSystem as any).cacheDirectory + `signature_${Date.now()}.png`;
+		// signature is already a base64 data URI ("data:image/png;base64,...")
+		// Store it directly, consistent with the web implementation.
+		const fileData = {
+			name: `signature_${Date.now()}.png`,
+			type: 'image/png',
+			image: signature,
+		};
 
-		try {
-			await (FileSystem as any).writeAsStringAsync(path, base64Data, {
-				encoding: 'base64',
-			});
-
-			console.log('Signature saved at:', path);
-
-			const fileData = {
-				name: `signature_${Date.now()}.png`,
-				type: 'image/png',
-				image: path,
-			};
-
-			console.log('Signature Captured:', fileData);
-			onChange(id, fileData, custom_type);
-		} catch (error) {
-			console.error('Error saving signature:', error);
-		}
+		onChange(id, fileData, custom_type);
 	};
 
 	useEffect(() => {
