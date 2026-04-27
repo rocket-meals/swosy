@@ -42,22 +42,8 @@ jobs:
             echo "ℹ️ Using preset host: $PRESET"
           fi
 
-      - name: "🔍 Resolve env name"
-        id: resolve-env
-        run: |
-          HOST="${{ steps.resolve-host.outputs.host }}"
-          case "$HOST" in
-            swosy.rocket-meals.de)    ENV_NAME="swosy" ;;
-            studi-futter.rocket-meals.de) ENV_NAME="studi-futter" ;;
-            test.rocket-meals.de)     ENV_NAME="test" ;;
-            *)                        ENV_NAME="test" ;;
-          esac
-          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
-          echo "ℹ️ Using env: $ENV_NAME"
-
       - name: "🚀 Deploy to ${{ steps.resolve-host.outputs.host }}"
         uses: ./.github/actions/deploy-server
         with:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_SERVER_HOST: ${{ steps.resolve-host.outputs.host }}
-          ENV_NAME: ${{ steps.resolve-env.outputs.env_name }}

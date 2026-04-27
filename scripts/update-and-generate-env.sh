@@ -12,11 +12,24 @@ log() {
 
 AVAILABLE_ENVS=("studi-futter" "swosy" "test")
 
+# Auto-detect ENV_NAME via customer-config.sh when not provided as argument.
+# customer-config.sh uses GITHUB_REPOSITORY; derive it from the git remote URL if unset.
 if [[ -z "$ENV_NAME" ]]; then
-  echo "Fehler: Kein Umgebungsname angegeben." >&2
-  echo "Verwendung: $0 <env-name>" >&2
-  echo "Verfügbare Umgebungen: ${AVAILABLE_ENVS[*]}" >&2
-  exit 1
+  if [[ -z "${GITHUB_REPOSITORY:-}" ]]; then
+    REMOTE_URL="$(git -C "$REPO_DIR" remote get-url origin 2>/dev/null || true)"
+    # Normalize both https and ssh remote URLs to "owner/repo"
+    GITHUB_REPOSITORY="$(echo "$REMOTE_URL" | sed -E 's#(https://github\.com/|git@github\.com:)##; s#\.git$##')"
+    export GITHUB_REPOSITORY
+  fi
+  log "Erkenne Umgebung anhand von GITHUB_REPOSITORY='$GITHUB_REPOSITORY'"
+  ENV_NAME="$(GITHUB_REPOSITORY="$GITHUB_REPOSITORY" bash "$REPO_DIR/scripts/customer-config.sh" | grep '^CUSTOMER=' | cut -d= -f2)"
+  if [[ -z "$ENV_NAME" ]]; then
+    echo "Fehler: Umgebungsname konnte nicht automatisch erkannt werden." >&2
+    echo "Bitte als Argument übergeben: $0 <env-name>" >&2
+    echo "Verfügbare Umgebungen: ${AVAILABLE_ENVS[*]}" >&2
+    exit 1
+  fi
+  log "Automatisch erkannte Umgebung: '$ENV_NAME'"
 fi
 
 VALID=false
