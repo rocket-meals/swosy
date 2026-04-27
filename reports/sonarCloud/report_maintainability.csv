@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ3OOqXmM7lDO3RrzeQe","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/update-and-generate-env.sh",9
 "AZ3JkYhj0Wnz84lNAn19","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/CronHelper.ts",105
 "AZ3Dm6xRMMAbgOavQw4H","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",123
 "AZ3Dh2OUEjNYTa-xGbi8","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",350
@@ -8944,7 +8945,6 @@ Key,Message,Component,Line
 "AZ0TplGSufp2jxPAhS0h","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",105
 "AZ0TplGSufp2jxPAhS0v","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",513
 "AZ0TplGSufp2jxPAhS0w","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",514
-"AZ0TpmPPufp2jxPAhTMz","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/weekly-update.sh",8
 "AZ0Tpkrfufp2jxPAhSus","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/markdown-test/index.tsx",24
 "AZ0Tpkrfufp2jxPAhSut","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/markdown-test/index.tsx",31
 "AZ0Tpkrfufp2jxPAhSuu","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/markdown-test/index.tsx",36
