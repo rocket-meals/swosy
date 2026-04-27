@@ -131,6 +131,35 @@ const normalizeCurrentValue = (value: unknown, customType?: string): string => {
 	return String(value).trim().toLowerCase();
 };
 
+const isAnswerVisible = (
+	answer: DatabaseTypes.FormAnswers,
+	formAnswers: DatabaseTypes.FormAnswers[],
+	getAnswerValueFn: (a: DatabaseTypes.FormAnswers) => any
+): boolean => {
+	const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+	const baseVisibility = formField?.is_visible_in_form ?? true;
+	if (!baseVisibility) return false;
+
+	const visibilityDependsOnFieldId = formField ? extractFormFieldId(formField.visibility_depends_on_referenced_field) : undefined;
+	const expectedVisibilityValue = formField?.visibility_depends_on_referenced_value_equals;
+	const normalizedExpectedValue = normalizeExpectedValue(expectedVisibilityValue);
+	const hasVisibilityDependency = Boolean(visibilityDependsOnFieldId && normalizedExpectedValue !== '');
+
+	if (!hasVisibilityDependency) return true;
+
+	const referencedAnswer = formAnswers.find(item => {
+		const referencedFieldId = extractFormFieldId(item?.form_field);
+		return referencedFieldId === visibilityDependsOnFieldId;
+	});
+
+	if (!referencedAnswer) return false;
+
+	const referencedField = isFormFieldEntity(referencedAnswer?.form_field) ? referencedAnswer.form_field : null;
+	const referencedCustomType = (referencedField?.field_type || '').split('-')[0];
+	const currentValue = getAnswerValueFn(referencedAnswer);
+	return normalizeCurrentValue(currentValue, referencedCustomType) === normalizedExpectedValue;
+};
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -623,10 +652,11 @@ const Index = () => {
 			}
 		}
 
-		// Validate ALL required fields, including those the user never touched (not yet in formData)
+		// Validate required fields that are currently visible in the form
 		for (const answer of formAnswers) {
 			const formField = answer?.form_field as DatabaseTypes.FormFields;
 			if (!formField?.is_required) continue;
+			if (!isAnswerVisible(answer, formAnswers, getAnswerValue)) continue;
 			const value = formData[String(answer?.id)]?.value;
 			if (!value || (typeof value === 'string' && value.trim() === '')) {
 				hasError = true;
