@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ENV_REPO_DIR="${REPO_DIR}/../rocket-meals-env"
+ENV_REPO_DIR="${REPO_DIR}/../rocket-meals-envs"
 ENV_NAME="${1:-}"
 
 log() {
@@ -60,12 +60,12 @@ git reset --hard "origin/$BRANCH"
 # --- Env-Datei generieren ---
 if [[ ! -d "$ENV_REPO_DIR" ]]; then
   echo "Fehler: Verzeichnis '$ENV_REPO_DIR' wurde nicht gefunden." >&2
-  echo "Bitte stelle sicher, dass das Repository 'rocket-meals-env' im übergeordneten Ordner liegt." >&2
+  echo "Bitte stelle sicher, dass das Repository 'rocket-meals-envs' im übergeordneten Ordner liegt." >&2
   exit 1
 fi
 
-log "Aktualisiere rocket-meals-env Repository"
-git -C "$ENV_REPO_DIR" pull || { log "Fehler: Aktualisierung von rocket-meals-env fehlgeschlagen" >&2; exit 1; }
+log "Aktualisiere rocket-meals-envs Repository"
+git -C "$ENV_REPO_DIR" pull || { log "Fehler: Aktualisierung von rocket-meals-envs fehlgeschlagen" >&2; exit 1; }
 
 log "Generiere .env für Umgebung '$ENV_NAME'"
 (cd "$ENV_REPO_DIR" && yarn generate --env "$ENV_NAME" --output "$REPO_DIR/.env")
