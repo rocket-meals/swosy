@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, View } from 'react-native';
+import { Platform, Switch } from 'react-native';
 import type { PropsWithChildren } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -41,23 +41,17 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
 			isAccountRequired={isAccountRequired}
 			value={isEnabled ? valueActive : valueInactive}
 			rightElement={
-				// Wrap the Switch in a View that stops click-event propagation on web.
-				// Without this, React Native Web bubbles the click from the Switch up to
-				// the parent TouchableOpacity, causing onToggle to fire twice when the
-				// slider is tapped.
-				<View
-					// @ts-expect-error – onClick is a valid DOM prop in React Native Web
-					onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-				>
-					<Switch
-						value={isEnabled}
-						onValueChange={isDisabled ? undefined : onToggle}
-						trackColor={{ false: theme.screen.iconBg, true: resolvedPrimaryColor }}
-						thumbColor={theme.screen.icon}
-						ios_backgroundColor={theme.screen.iconBg}
-						disabled={isDisabled}
-					/>
-				</View>
+				<Switch
+					value={isEnabled}
+					// On web the Switch click bubbles up to the parent TouchableOpacity,
+					// which already calls onToggle via handleFunction. Suppress onValueChange
+					// on web to avoid a double invocation.
+					onValueChange={isDisabled || Platform.OS === 'web' ? undefined : onToggle}
+					trackColor={{ false: theme.screen.iconBg, true: resolvedPrimaryColor }}
+					thumbColor={theme.screen.icon}
+					ios_backgroundColor={theme.screen.iconBg}
+					disabled={isDisabled}
+				/>
 			}
 			handleFunction={isDisabled ? undefined : onToggle}
 		/>
