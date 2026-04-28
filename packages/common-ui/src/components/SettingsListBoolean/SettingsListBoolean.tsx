@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch } from 'react-native';
+import { Platform, Switch } from 'react-native';
 import type { PropsWithChildren } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -43,7 +43,10 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
 			rightElement={
 				<Switch
 					value={isEnabled}
-					onValueChange={isDisabled ? undefined : onToggle}
+					// On web the Switch click bubbles up to the parent TouchableOpacity,
+					// which already calls onToggle via handleFunction. Suppress onValueChange
+					// on web to avoid a double invocation.
+					onValueChange={isDisabled || Platform.OS === 'web' ? undefined : onToggle}
 					trackColor={{ false: theme.screen.iconBg, true: resolvedPrimaryColor }}
 					thumbColor={theme.screen.icon}
 					ios_backgroundColor={theme.screen.iconBg}
