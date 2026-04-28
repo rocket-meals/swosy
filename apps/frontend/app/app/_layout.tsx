@@ -46,6 +46,10 @@ import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
+// Module-level ref so AppSettingsProvider (outside ModalProvider) can forward
+// onAccountRequired calls to the handler that lives inside ModalProvider.
+const _accountRequiredCallbackRef: { current: (() => void) | undefined } = { current: undefined };
+
 ServerAPI.createAuthentificationStorage(
 	async () => {
 		const storedData = await AsyncStorage.getItem('auth_data');
@@ -62,12 +66,26 @@ ServerAPI.createAuthentificationStorage(
 
 function AppSettingsProvider({ children }: { children: React.ReactNode }) {
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
-	const { openAccountRequiredModal } = useAccountRequiredModal();
 	return (
-		<SettingsProvider primaryColor={primaryColor} onAccountRequired={openAccountRequiredModal}>
+		<SettingsProvider
+			primaryColor={primaryColor}
+			onAccountRequired={() => _accountRequiredCallbackRef.current?.()}
+		>
 			{children}
 		</SettingsProvider>
 	);
+}
+
+// Must be rendered inside ModalProvider so that useAccountRequiredModal works.
+function ModalAccountConnector() {
+	const { openAccountRequiredModal } = useAccountRequiredModal();
+	React.useEffect(() => {
+		_accountRequiredCallbackRef.current = openAccountRequiredModal;
+		return () => {
+			_accountRequiredCallbackRef.current = undefined;
+		};
+	}, [openAccountRequiredModal]);
+	return null;
 }
 
 export default function Layout() {
@@ -159,6 +177,7 @@ export default function Layout() {
 								<ThemeProvider>
 									<AppSettingsProvider>
 										<ModalProvider>
+											<ModalAccountConnector />
 											<ServerStatusLoader>
 												<ExpoUpdateChecker>
 													<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
