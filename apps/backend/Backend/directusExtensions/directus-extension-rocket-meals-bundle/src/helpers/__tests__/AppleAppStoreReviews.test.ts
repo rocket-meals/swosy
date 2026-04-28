@@ -6,6 +6,26 @@ import { AppleAppStoreRssHelper } from '../AppleAppStoreRssHelper';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { SWOSY_APP_STORE_IDS, STUDI_FUTTER_APP_STORE_IDS } from 'repo-depkit-common';
 
+describe('AppleAppStoreConnectHelper.normalizePemKey', () => {
+  it('converts literal \\n sequences to real newlines', () => {
+    const raw = '-----BEGIN PRIVATE KEY-----\\nABC\\nDEF\\n-----END PRIVATE KEY-----';
+    const result = AppleAppStoreConnectHelper.normalizePemKey(raw);
+    expect(result).toBe('-----BEGIN PRIVATE KEY-----\nABC\nDEF\n-----END PRIVATE KEY-----');
+  });
+
+  it('leaves keys with real newlines unchanged', () => {
+    const raw = '-----BEGIN PRIVATE KEY-----\nABC\nDEF\n-----END PRIVATE KEY-----';
+    const result = AppleAppStoreConnectHelper.normalizePemKey(raw);
+    expect(result).toBe(raw);
+  });
+
+  it('trims surrounding whitespace', () => {
+    const raw = '  -----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----  ';
+    const result = AppleAppStoreConnectHelper.normalizePemKey(raw);
+    expect(result).toBe('-----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----');
+  });
+});
+
 describe('Apple App Store Reviews via RSS (no key required)', () => {
   it('fetches reviews for Swosy via RSS and checks they exist with IDs', async () => {
     const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
