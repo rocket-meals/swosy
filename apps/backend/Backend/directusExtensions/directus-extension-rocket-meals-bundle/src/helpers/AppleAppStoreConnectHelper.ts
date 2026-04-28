@@ -17,6 +17,9 @@ export type AppleCustomerReview = {
 
 export type AppleCustomerReviewsResponse = {
   data: AppleCustomerReview[];
+  links?: {
+    next?: string;
+  };
   meta?: {
     paging?: {
       total: number;
@@ -59,10 +62,10 @@ export class AppleAppStoreConnectHelper {
     });
   }
 
-  static async fetchReviews(appId: string, privateKey: string): Promise<AppleCustomerReviewsResponse> {
+  static async fetchReviews(appId: string, privateKey: string, url?: string): Promise<AppleCustomerReviewsResponse> {
     const token = AppleAppStoreConnectHelper.generateJwt(privateKey);
-    const url = `https://api.appstoreconnect.apple.com/v1/apps/${appId}/customerReviews?limit=5&sort=-createdDate`;
-    const response = await FetchHelper.fetch(url, {
+    const requestUrl = url || `https://api.appstoreconnect.apple.com/v1/apps/${appId}/customerReviews?limit=100&sort=-createdDate`;
+    const response = await FetchHelper.fetch(requestUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -70,6 +73,25 @@ export class AppleAppStoreConnectHelper {
     });
     const json = (await response.json()) as AppleCustomerReviewsResponse;
     return json;
+  }
+
+  static async fetchAllReviews(appId: string, privateKey: string): Promise<AppleCustomerReview[]> {
+    const allReviews: AppleCustomerReview[] = [];
+    let nextUrl: string | undefined = undefined;
+
+    while (true) {
+      const response = await AppleAppStoreConnectHelper.fetchReviews(appId, privateKey, nextUrl);
+      if (response.data && response.data.length > 0) {
+        allReviews.push(...response.data);
+      }
+      if (response.links?.next) {
+        nextUrl = response.links.next;
+      } else {
+        break;
+      }
+    }
+
+    return allReviews;
   }
 
   static async respondToReview(reviewId: string, responseBody: string, privateKey: string): Promise<void> {

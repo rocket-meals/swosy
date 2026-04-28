@@ -1,5 +1,6 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
 import { AppleAppStoreRssHelper } from '../helpers/AppleAppStoreRssHelper';
+import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
 
 /**
  * Intermediate type returned by pull helpers.
@@ -19,8 +20,38 @@ export class AppReviewsPullHelper {
     this.logger = logger;
   }
 
-  async pullAppleReviews(appleAppId: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews for app ID: ' + appleAppId);
+  /**
+   * Pull Apple reviews using the App Store Connect API (preferred, IDs are
+   * compatible with the response endpoint) or fall back to the public RSS
+   * feed when no private key is configured.
+   */
+  async pullAppleReviews(appleAppId: string, privateKey?: string): Promise<PulledAppReview[]> {
+    if (privateKey) {
+      return this.pullAppleReviewsViaApi(appleAppId, privateKey);
+    }
+    this.logger.info('app-reviews-pull-hook: No private key configured, falling back to RSS feed');
+    return this.pullAppleReviewsViaRss(appleAppId);
+  }
+
+  private async pullAppleReviewsViaApi(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via ASC API for app ID: ' + appleAppId);
+
+    const apiReviews = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
+    const reviews: PulledAppReview[] = apiReviews.map((review) => ({
+      external_identifier: review.id,
+      source_identifier: AppFeedbackSourceIdentifier.APPLE,
+      title: review.attributes.title,
+      content: review.attributes.body,
+      source_rating_raw: review.attributes.rating,
+      positive: review.attributes.rating >= 4,
+    }));
+
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via ASC API for app ID: ' + appleAppId);
+    return reviews;
+  }
+
+  private async pullAppleReviewsViaRss(appleAppId: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via RSS for app ID: ' + appleAppId);
 
     const reviews: PulledAppReview[] = [];
     let page = 1;
@@ -56,7 +87,7 @@ export class AppReviewsPullHelper {
       page++;
     }
 
-    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews for app ID: ' + appleAppId);
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via RSS for app ID: ' + appleAppId);
     return reviews;
   }
 

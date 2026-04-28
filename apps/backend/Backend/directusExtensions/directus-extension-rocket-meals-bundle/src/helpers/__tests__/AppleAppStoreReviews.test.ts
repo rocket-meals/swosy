@@ -93,7 +93,7 @@ describe('Apple App Store Reviews via RSS (no key required)', () => {
 });
 
 describe('Apple App Store Review responses via ASC API (requires APP_STORE_CONNECT_PRIVATE_KEY)', () => {
-  it('responds to a Swosy review using the ID from RSS', async () => {
+  it('fetches reviews via ASC API and verifies IDs are valid for response', async () => {
     const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
     if (!privateKey) {
       console.log('Skipping: APP_STORE_CONNECT_PRIVATE_KEY not set');
@@ -106,12 +106,38 @@ describe('Apple App Store Review responses via ASC API (requires APP_STORE_CONNE
       return;
     }
 
-    const rssResult = await AppleAppStoreRssHelper.fetchReviews(appleAppId);
-    const entries = rssResult.feed.entry;
-    expect(Array.isArray(entries)).toBe(true);
-    expect(entries!.length).toBeGreaterThan(0);
+    const result = await AppleAppStoreConnectHelper.fetchReviews(appleAppId, privateKey);
+    expect(result).toBeDefined();
+    expect(result.data).toBeDefined();
+    expect(Array.isArray(result.data)).toBe(true);
 
-    const reviewId = AppleAppStoreRssHelper.getReviewId(entries![0]!);
+    if (result.data.length > 0) {
+      const review = result.data[0]!;
+      expect(review.id).toBeDefined();
+      expect(typeof review.id).toBe('string');
+      expect(review.id.length).toBeGreaterThan(0);
+      expect(review.attributes.rating).toBeGreaterThanOrEqual(1);
+      expect(review.attributes.rating).toBeLessThanOrEqual(5);
+    }
+  }, 30000);
+
+  it('responds to a Swosy review using the ID from ASC API', async () => {
+    const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
+    if (!privateKey) {
+      console.log('Skipping: APP_STORE_CONNECT_PRIVATE_KEY not set');
+      return;
+    }
+
+    const appleAppId = SWOSY_APP_STORE_IDS.appleAppId;
+    if (!appleAppId) {
+      console.log('Skipping: No Apple App ID configured for Swosy');
+      return;
+    }
+
+    const result = await AppleAppStoreConnectHelper.fetchReviews(appleAppId, privateKey);
+    expect(result.data.length).toBeGreaterThan(0);
+
+    const reviewId = result.data[0]!.id;
     expect(typeof reviewId).toBe('string');
     expect(reviewId.length).toBeGreaterThan(0);
 
