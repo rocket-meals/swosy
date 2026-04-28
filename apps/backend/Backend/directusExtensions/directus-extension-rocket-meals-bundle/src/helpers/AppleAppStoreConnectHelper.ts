@@ -26,7 +26,22 @@ export type AppleCustomerReviewsResponse = {
 };
 
 export class AppleAppStoreConnectHelper {
+  /**
+   * Normalize a PEM private key string so that `jsonwebtoken` can parse it.
+   * Environment variables often store the key with literal two-character `\n`
+   * sequences instead of real newlines. This method converts them back and
+   * ensures the PEM header/footer are present.
+   */
+  static normalizePemKey(raw: string): string {
+    // Replace literal \n (two chars) with real newlines
+    let key = raw.replace(/\\n/g, '\n');
+    // Trim whitespace
+    key = key.trim();
+    return key;
+  }
+
   private static generateJwt(privateKey: string): string {
+    const normalizedKey = AppleAppStoreConnectHelper.normalizePemKey(privateKey);
     const now = Math.floor(Date.now() / 1000);
     const payload = {
       iss: EXPO_ASC_ISSUER_ID,
@@ -34,7 +49,7 @@ export class AppleAppStoreConnectHelper {
       exp: now + 20 * 60, // 20 minutes max
       aud: 'appstoreconnect-v1',
     };
-    return jwt.sign(payload, privateKey, {
+    return jwt.sign(payload, normalizedKey, {
       algorithm: 'ES256',
       header: {
         alg: 'ES256',
