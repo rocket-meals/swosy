@@ -98,7 +98,14 @@ if grep -qE '^AUTH_APPLE_HOOK_(APPLE_)?PRIVATE_KEY=[^[:space:]]+' "$REPO_DIR/.en
   APPLE_HOOK_CONFIGURED=true
 fi
 
-if [[ "$APPLE_HOOK_CONFIGURED" == "true" && -z "$APPLE_SECRET_BEFORE" ]]; then
+# A real Apple client secret is a JWT: three non-empty base64url segments separated by dots.
+# Treat any value that does not match this pattern (empty, "Placeholder", etc.) as absent.
+is_valid_apple_secret() {
+  local secret="$1"
+  [[ "$secret" =~ ^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$ ]]
+}
+
+if [[ "$APPLE_HOOK_CONFIGURED" == "true" ]] && ! is_valid_apple_secret "$APPLE_SECRET_BEFORE"; then
   log "Apple SSO konfiguriert, aber noch kein AUTH_APPLE_CLIENT_SECRET vorhanden."
   log "Warte auf Generierung durch backend-sync (max. 120s)..."
 
@@ -109,9 +116,11 @@ if [[ "$APPLE_HOOK_CONFIGURED" == "true" && -z "$APPLE_SECRET_BEFORE" ]]; then
 
   while [[ $WAITED -lt $MAX_WAIT ]]; do
     APPLE_SECRET_GENERATED="$(grep '^AUTH_APPLE_CLIENT_SECRET=' "$REPO_DIR/.env" 2>/dev/null | cut -d= -f2- || true)"
-    if [[ -n "$APPLE_SECRET_GENERATED" ]]; then
+    if is_valid_apple_secret "$APPLE_SECRET_GENERATED"; then
       log "AUTH_APPLE_CLIENT_SECRET wurde nach ${WAITED}s generiert."
       break
+    else
+      APPLE_SECRET_GENERATED=""
     fi
     log "Warte auf AUTH_APPLE_CLIENT_SECRET... (${WAITED}/${MAX_WAIT}s)"
     sleep $INTERVAL
@@ -130,7 +139,7 @@ else
   if [[ "$APPLE_HOOK_CONFIGURED" == "false" ]]; then
     log "Apple SSO nicht konfiguriert – kein Neustart für Apple client secret erforderlich."
   else
-    log "AUTH_APPLE_CLIENT_SECRET bereits vorhanden – kein zusätzlicher Neustart erforderlich."
+    log "AUTH_APPLE_CLIENT_SECRET bereits gültig – kein zusätzlicher Neustart erforderlich."
   fi
 fi
 
