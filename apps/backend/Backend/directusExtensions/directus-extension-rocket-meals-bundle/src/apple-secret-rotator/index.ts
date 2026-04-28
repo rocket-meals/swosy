@@ -46,11 +46,18 @@ export default defineHook(async ({ filter, action, init, schedule }, apiContext)
       if (currentSecret !== freshSecret) {
         console.log(`[${HOOK_NAME}] AUTH_APPLE_CLIENT_SECRET from host .env differs from process.env. Updating process.env to use the latest value.`);
         process.env.AUTH_APPLE_CLIENT_SECRET = freshSecret;
+        console.log(`[${HOOK_NAME}] AUTH_APPLE_CLIENT_SECRET is now: ${freshSecret.substring(0, 10)}...`);
       } else {
-        console.log(`[${HOOK_NAME}] AUTH_APPLE_CLIENT_SECRET is already up to date.`);
+        console.log(`[${HOOK_NAME}] AUTH_APPLE_CLIENT_SECRET is already up to date: ${currentSecret.substring(0, 10)}...`);
       }
     } else {
       console.log(`[${HOOK_NAME}] No AUTH_APPLE_CLIENT_SECRET found in host .env file.`);
+      const currentSecret = process.env.AUTH_APPLE_CLIENT_SECRET;
+      if (currentSecret) {
+        console.log(`[${HOOK_NAME}] Using AUTH_APPLE_CLIENT_SECRET from process.env: ${currentSecret.substring(0, 10)}...`);
+      } else {
+        console.log(`[${HOOK_NAME}] AUTH_APPLE_CLIENT_SECRET is not set.`);
+      }
     }
   });
 });
