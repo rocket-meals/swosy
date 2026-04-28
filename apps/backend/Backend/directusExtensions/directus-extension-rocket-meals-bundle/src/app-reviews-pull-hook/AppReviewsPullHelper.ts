@@ -1,5 +1,4 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
-import { AppleAppStoreRssHelper } from '../helpers/AppleAppStoreRssHelper';
 import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
 
 /**
@@ -21,19 +20,10 @@ export class AppReviewsPullHelper {
   }
 
   /**
-   * Pull Apple reviews using the App Store Connect API (preferred, IDs are
-   * compatible with the response endpoint) or fall back to the public RSS
-   * feed when no private key is configured.
+   * Pull Apple reviews using the App Store Connect API.
+   * Requires a valid private key for authentication.
    */
-  async pullAppleReviews(appleAppId: string, privateKey?: string): Promise<PulledAppReview[]> {
-    if (privateKey) {
-      return this.pullAppleReviewsViaApi(appleAppId, privateKey);
-    }
-    this.logger.info('app-reviews-pull-hook: No private key configured, falling back to RSS feed');
-    return this.pullAppleReviewsViaRss(appleAppId);
-  }
-
-  private async pullAppleReviewsViaApi(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
+  async pullAppleReviews(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
     this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via ASC API for app ID: ' + appleAppId);
 
     const apiReviews = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
@@ -47,47 +37,6 @@ export class AppReviewsPullHelper {
     }));
 
     this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via ASC API for app ID: ' + appleAppId);
-    return reviews;
-  }
-
-  private async pullAppleReviewsViaRss(appleAppId: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via RSS for app ID: ' + appleAppId);
-
-    const reviews: PulledAppReview[] = [];
-    let page = 1;
-
-    while (true) {
-      const rssFeed = await AppleAppStoreRssHelper.fetchReviews(appleAppId, page);
-      const entries = rssFeed.feed.entry;
-
-      if (!entries || entries.length === 0) {
-        break;
-      }
-
-      for (const entry of entries) {
-        const reviewId = AppleAppStoreRssHelper.getReviewId(entry);
-        const rating = AppleAppStoreRssHelper.getReviewRating(entry);
-        const title = AppleAppStoreRssHelper.getReviewTitle(entry);
-        const body = AppleAppStoreRssHelper.getReviewBody(entry);
-
-        reviews.push({
-          external_identifier: reviewId,
-          source_identifier: AppFeedbackSourceIdentifier.APPLE,
-          title: title,
-          content: body,
-          source_rating_raw: rating,
-          positive: rating >= 4,
-        });
-      }
-
-      if (entries.length < 50) {
-        break;
-      }
-
-      page++;
-    }
-
-    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via RSS for app ID: ' + appleAppId);
     return reviews;
   }
 

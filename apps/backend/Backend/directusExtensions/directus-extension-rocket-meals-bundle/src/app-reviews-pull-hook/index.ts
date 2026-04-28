@@ -36,8 +36,10 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       }
 
       let appleReviews: PulledAppReview[] = [];
-      if (appleAppId) {
-        appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey || undefined);
+      if (appleAppId && privateKey) {
+        appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey);
+      } else if (appleAppId && !privateKey) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
       }
 
       let googleReviews: PulledAppReview[] = [];
