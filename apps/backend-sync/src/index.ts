@@ -3,6 +3,25 @@ import {registerCronJob, registerShutdownJobs} from "./CronHelperManager";
 import {buildConfigFromEnv, ensureAppleClientSecret} from "./apple-secret-rotator";
 import {HOST_ENV_FILE_PATH} from "./apple-secret-rotator/DirectusEnvFileHelper";
 import {CronHelper} from "repo-depkit-common";
+import {DockerDirectusHelper} from "./DockerDirectusHelper";
+import {DockerDirectusPingHelper} from "./DockerDirectusPingHelper";
+import {DockerContainerManager} from "./DockerContainerManager";
+
+async function restartDirectusIfSecretChanged(result: {changed: boolean, reason?: string}): Promise<void> {
+  if(result.changed){
+    console.log("[AppleClientSecretChecker] Apple client secret was refreshed. Reason:", result.reason);
+    // Restart Docker containers so that the Directus hook reads the new secret from host.env
+    let localDockerDirectusServerUrl = DockerDirectusHelper.getDirectusServerUrl();
+
+    await DockerDirectusPingHelper.waitForDirectusHealthy(localDockerDirectusServerUrl);
+    const restartSuccess = await DockerContainerManager.restartDirectusContainers(localDockerDirectusServerUrl as string);
+    if(restartSuccess){
+        console.log("[AppleClientSecretChecker] Successfully restarted Directus Docker containers to apply new Apple client secret.");
+    } else {
+        console.error("[AppleClientSecretChecker] Failed to restart Directus Docker containers after Apple client secret refresh.");
+    }
+  }
+}
 
 async function registerAppleClientSecretChecker(){
   console.log("registerAppleClientSecretChecker");
@@ -11,36 +30,22 @@ async function registerAppleClientSecretChecker(){
   let hostEnvFilePath = HOST_ENV_FILE_PATH;
   let config = buildConfigFromEnv(hostEnvFilePath);
   if(config){
-    await ensureAppleClientSecret(config, hostEnvFilePath);
+    const result = await ensureAppleClientSecret(config, hostEnvFilePath);
+    await restartDirectusIfSecretChanged(result);
   }
 
-  // Beispiel-Registrierung: Ein Job, der alle 10 Sekunden läuft
+  // Cron job: check daily at 2 AM
   registerCronJob({
     id: 'sync-database-every-day',
-    schedule: CronHelper.EVERY_DAY_AT_2AM, // Täglich um Mitternacht
+    schedule: CronHelper.EVERY_DAY_AT_2AM,
     task: async () => {
         hostEnvFilePath = HOST_ENV_FILE_PATH;
         config = buildConfigFromEnv(hostEnvFilePath);
         if(config){
           console.log("[AppleClientSecretChecker] Loaded config:");
           console.log(JSON.stringify(config, null, 2));
-          await ensureAppleClientSecret(config, hostEnvFilePath);
-
-          /**
-          if(result.changed){
-            console.log("[AppleClientSecretChecker] Apple client secret was refreshed. Reason:", result.reason);
-            // Restart Docker container to apply new secret
-            let lokalDockerDirectusServerUrl = DockerDirectusHelper.getDirectusServerUrl();
-
-            await DockerDirectusPingHelper.waitForDirectusHealthy(lokalDockerDirectusServerUrl);
-            const restartSuccess = await DockerContainerManager.restartDirectusContainers(lokalDockerDirectusServerUrl as string);
-            if(restartSuccess){
-                console.log("[AppleClientSecretChecker] Successfully restarted Directus Docker containers to apply new Apple client secret.");
-            } else {
-                console.error("[AppleClientSecretChecker] Failed to restart Directus Docker containers after Apple client secret refresh.");
-            }
-          }
-              */
+          const result = await ensureAppleClientSecret(config, hostEnvFilePath);
+          await restartDirectusIfSecretChanged(result);
         } else {
             console.warn('[AppleClientSecretChecker] Rotator disabled due to missing configuration.');
         }
