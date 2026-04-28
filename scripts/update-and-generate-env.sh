@@ -84,7 +84,13 @@ log ".env erfolgreich generiert"
 log "Baue Images neu (docker compose build)"
 docker compose build
 
-log "Starte Container im Hintergrund (docker compose up -d)"
+log "Starte Container im Hintergrund (docker compose up -d) – erster Start"
+docker compose up -d
+
+log "Stoppe Container (docker compose down) – Neustart damit Apple Client Secret korrekt geladen wird"
+docker compose down
+
+log "Starte Container im Hintergrund (docker compose up -d) – zweiter Start"
 docker compose up -d
 
 log "Update und Env-Generierung erfolgreich abgeschlossen"
