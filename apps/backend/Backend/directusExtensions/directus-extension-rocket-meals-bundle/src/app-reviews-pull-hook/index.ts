@@ -51,6 +51,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       let created = 0;
       let skipped = 0;
+      let updated = 0;
 
       for (const review of allReviews) {
         const existing = await appFeedbacksHelper.readByQuery({
@@ -59,17 +60,29 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         });
 
         if (existing && existing.length > 0) {
-          skipped++;
+          // Update response if the pulled review has a response and the existing record does not
+          const existingFeedback = existing[0];
+          if (review.response && (!existingFeedback.response || existingFeedback.response.trim() === '')) {
+            await appFeedbacksHelper.updateOne(existingFeedback.id, {
+              response: review.response,
+              feedback_read_by_support: true,
+            });
+            updated++;
+          } else {
+            skipped++;
+          }
           continue;
         }
 
-        await appFeedbacksHelper.createOne({
-          ...review,
-        });
+        const createData: Partial<DatabaseTypes.AppFeedbacks> = { ...review };
+        if (review.response) {
+          createData.feedback_read_by_support = true;
+        }
+        await appFeedbacksHelper.createOne(createData);
         created++;
       }
 
-      await context.logger.appendLog('Created ' + created + ' new reviews, skipped ' + skipped + ' duplicates');
+      await context.logger.appendLog('Created ' + created + ' new reviews, updated ' + updated + ' with responses, skipped ' + skipped + ' duplicates');
       return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
     } catch (e) {
       await context.logger.appendLog('error during reviews pull: ' + (e instanceof Error ? e.message : String(e)));
@@ -91,9 +104,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
   filter(CollectionNames.APP_FEEDBACKS + '.items.update', async (payload, meta) => {
     const payloadTyped = payload as Partial<DatabaseTypes.AppFeedbacks>;
 
-    if (!payloadTyped.response) {
+    if (!payloadTyped.response || payloadTyped.response.trim() === '') {
       return payload;
     }
+
+    // When response is set to non-empty text, mark as read by support
+    payloadTyped.feedback_read_by_support = true;
 
     const filterMyDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = filterMyDatabaseHelper.getAppFeedbacksHelper();

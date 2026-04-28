@@ -26,15 +26,28 @@ export class AppReviewsPullHelper {
   async pullAppleReviews(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
     this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via ASC API for app ID: ' + appleAppId);
 
-    const apiReviews = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
-    const reviews: PulledAppReview[] = apiReviews.map((review) => ({
-      external_identifier: review.id,
-      source_identifier: AppFeedbackSourceIdentifier.APPLE,
-      title: review.attributes.title,
-      content: review.attributes.body,
-      source_rating_raw: review.attributes.rating,
-      positive: review.attributes.rating >= 4,
-    }));
+    const { reviews: apiReviews, includedResponses } = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
+
+    // Build a map from customerReviewResponse ID to responseBody
+    const responseMap = new Map<string, string>();
+    for (const resp of includedResponses) {
+      responseMap.set(resp.id, resp.attributes.responseBody);
+    }
+
+    const reviews: PulledAppReview[] = apiReviews.map((review) => {
+      const responseId = review.relationships?.response?.data?.id;
+      const responseText = responseId ? responseMap.get(responseId) : undefined;
+
+      return {
+        external_identifier: review.id,
+        source_identifier: AppFeedbackSourceIdentifier.APPLE,
+        title: review.attributes.title,
+        content: review.attributes.body,
+        source_rating_raw: review.attributes.rating,
+        positive: review.attributes.rating >= 4,
+        ...(responseText ? { response: responseText } : {}),
+      };
+    });
 
     this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via ASC API for app ID: ' + appleAppId);
     return reviews;

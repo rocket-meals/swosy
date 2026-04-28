@@ -13,10 +13,29 @@ export type AppleCustomerReview = {
     createdDate: string;
     territory: string;
   };
+  relationships?: {
+    response?: {
+      data?: {
+        type: string;
+        id: string;
+      } | null;
+    };
+  };
+};
+
+export type AppleCustomerReviewResponse = {
+  type: 'customerReviewResponses';
+  id: string;
+  attributes: {
+    responseBody: string;
+    lastModifiedDate: string;
+    state: string;
+  };
 };
 
 export type AppleCustomerReviewsResponse = {
   data: AppleCustomerReview[];
+  included?: AppleCustomerReviewResponse[];
   links?: {
     next?: string;
   };
@@ -64,7 +83,7 @@ export class AppleAppStoreConnectHelper {
 
   static async fetchReviews(appId: string, privateKey: string, url?: string): Promise<AppleCustomerReviewsResponse> {
     const token = AppleAppStoreConnectHelper.generateJwt(privateKey);
-    const requestUrl = url || `https://api.appstoreconnect.apple.com/v1/apps/${appId}/customerReviews?limit=100&sort=-createdDate`;
+    const requestUrl = url || `https://api.appstoreconnect.apple.com/v1/apps/${appId}/customerReviews?limit=100&sort=-createdDate&include=response`;
     const response = await FetchHelper.fetch(requestUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -75,14 +94,18 @@ export class AppleAppStoreConnectHelper {
     return json;
   }
 
-  static async fetchAllReviews(appId: string, privateKey: string): Promise<AppleCustomerReview[]> {
+  static async fetchAllReviews(appId: string, privateKey: string): Promise<{ reviews: AppleCustomerReview[]; includedResponses: AppleCustomerReviewResponse[] }> {
     const allReviews: AppleCustomerReview[] = [];
+    const allIncluded: AppleCustomerReviewResponse[] = [];
     let nextUrl: string | undefined = undefined;
 
     while (true) {
       const response = await AppleAppStoreConnectHelper.fetchReviews(appId, privateKey, nextUrl);
       if (response.data && response.data.length > 0) {
         allReviews.push(...response.data);
+      }
+      if (response.included && response.included.length > 0) {
+        allIncluded.push(...response.included);
       }
       if (response.links?.next) {
         nextUrl = response.links.next;
@@ -91,7 +114,7 @@ export class AppleAppStoreConnectHelper {
       }
     }
 
-    return allReviews;
+    return { reviews: allReviews, includedResponses: allIncluded };
   }
 
   static async respondToReview(reviewId: string, responseBody: string, privateKey: string): Promise<void> {
