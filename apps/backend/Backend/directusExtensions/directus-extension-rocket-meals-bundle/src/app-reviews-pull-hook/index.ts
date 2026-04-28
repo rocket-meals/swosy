@@ -62,7 +62,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         if (existing && existing.length > 0) {
           // Update response if the pulled review has a response and the existing record does not
           const existingFeedback = existing[0];
-          if (review.response && !existingFeedback.response) {
+          if (review.response && (!existingFeedback.response || existingFeedback.response.trim() === '')) {
             await appFeedbacksHelper.updateOne(existingFeedback.id, {
               response: review.response,
               feedback_read_by_support: true,
@@ -104,7 +104,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
   filter(CollectionNames.APP_FEEDBACKS + '.items.update', async (payload, meta) => {
     const payloadTyped = payload as Partial<DatabaseTypes.AppFeedbacks>;
 
-    if (!payloadTyped.response) {
+    if (!payloadTyped.response || payloadTyped.response.trim() === '') {
       return payload;
     }
 
