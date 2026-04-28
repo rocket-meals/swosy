@@ -157,8 +157,8 @@ export default function Layout() {
 						<PersistGate loading={null} persistor={persistor}>
 							<RootSiblingParent>
 								<ThemeProvider>
-									<AppSettingsProvider>
-										<ModalProvider>
+									<ModalProvider>
+										<AppSettingsProvider>
 											<ServerStatusLoader>
 												<ExpoUpdateChecker>
 													<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
@@ -168,8 +168,8 @@ export default function Layout() {
 													</KeyboardAvoidingView>
 												</ExpoUpdateChecker>
 											</ServerStatusLoader>
-										</ModalProvider>
-									</AppSettingsProvider>
+										</AppSettingsProvider>
+									</ModalProvider>
 								</ThemeProvider>
 							</RootSiblingParent>
 						</PersistGate>
