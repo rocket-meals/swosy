@@ -1,5 +1,5 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
-import { AppleAppStoreRssHelper } from '../helpers/AppleAppStoreRssHelper';
+import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
 
 /**
  * Intermediate type returned by pull helpers.
@@ -19,44 +19,24 @@ export class AppReviewsPullHelper {
     this.logger = logger;
   }
 
-  async pullAppleReviews(appleAppId: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews for app ID: ' + appleAppId);
+  /**
+   * Pull Apple reviews using the App Store Connect API.
+   * Requires a valid private key for authentication.
+   */
+  async pullAppleReviews(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via ASC API for app ID: ' + appleAppId);
 
-    const reviews: PulledAppReview[] = [];
-    let page = 1;
+    const apiReviews = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
+    const reviews: PulledAppReview[] = apiReviews.map((review) => ({
+      external_identifier: review.id,
+      source_identifier: AppFeedbackSourceIdentifier.APPLE,
+      title: review.attributes.title,
+      content: review.attributes.body,
+      source_rating_raw: review.attributes.rating,
+      positive: review.attributes.rating >= 4,
+    }));
 
-    while (true) {
-      const rssFeed = await AppleAppStoreRssHelper.fetchReviews(appleAppId, page);
-      const entries = rssFeed.feed.entry;
-
-      if (!entries || entries.length === 0) {
-        break;
-      }
-
-      for (const entry of entries) {
-        const reviewId = AppleAppStoreRssHelper.getReviewId(entry);
-        const rating = AppleAppStoreRssHelper.getReviewRating(entry);
-        const title = AppleAppStoreRssHelper.getReviewTitle(entry);
-        const body = AppleAppStoreRssHelper.getReviewBody(entry);
-
-        reviews.push({
-          external_identifier: reviewId,
-          source_identifier: AppFeedbackSourceIdentifier.APPLE,
-          title: title,
-          content: body,
-          source_rating_raw: rating,
-          positive: rating >= 4,
-        });
-      }
-
-      if (entries.length < 50) {
-        break;
-      }
-
-      page++;
-    }
-
-    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews for app ID: ' + appleAppId);
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via ASC API for app ID: ' + appleAppId);
     return reviews;
   }
 

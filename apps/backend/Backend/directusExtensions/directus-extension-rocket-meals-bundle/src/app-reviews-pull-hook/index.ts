@@ -28,6 +28,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       const appleAppId = EnvVariableHelper.getAppleAppId();
       const googlePlayPackageName = EnvVariableHelper.getGooglePlayPackageName();
+      const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
 
       if (!appleAppId && !googlePlayPackageName) {
         await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
@@ -35,8 +36,10 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       }
 
       let appleReviews: PulledAppReview[] = [];
-      if (appleAppId) {
-        appleReviews = await pullHelper.pullAppleReviews(appleAppId);
+      if (appleAppId && privateKey) {
+        appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey);
+      } else if (appleAppId && !privateKey) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
       }
 
       let googleReviews: PulledAppReview[] = [];
