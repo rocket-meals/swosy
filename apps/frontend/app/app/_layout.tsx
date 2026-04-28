@@ -48,7 +48,7 @@ import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 // Module-level ref so AppSettingsProvider (outside ModalProvider) can forward
 // onAccountRequired calls to the handler that lives inside ModalProvider.
-const _accountRequiredCallbackRef: { current: (() => void) | undefined } = { current: undefined };
+const accountRequiredCallbackRef: { current: (() => void) | undefined } = { current: undefined };
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -69,7 +69,7 @@ function AppSettingsProvider({ children }: { children: React.ReactNode }) {
 	return (
 		<SettingsProvider
 			primaryColor={primaryColor}
-			onAccountRequired={() => _accountRequiredCallbackRef.current?.()}
+			onAccountRequired={() => accountRequiredCallbackRef.current?.()}
 		>
 			{children}
 		</SettingsProvider>
@@ -80,9 +80,9 @@ function AppSettingsProvider({ children }: { children: React.ReactNode }) {
 function ModalAccountConnector() {
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	React.useEffect(() => {
-		_accountRequiredCallbackRef.current = openAccountRequiredModal;
+		accountRequiredCallbackRef.current = openAccountRequiredModal;
 		return () => {
-			_accountRequiredCallbackRef.current = undefined;
+			accountRequiredCallbackRef.current = undefined;
 		};
 	}, [openAccountRequiredModal]);
 	return null;
