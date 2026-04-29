@@ -121,9 +121,17 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
 
    > ⚠️ **Wichtig:** Diese Schritte müssen auf **Konto-Ebene** (nicht innerhalb einer einzelnen App) in der Google Play Console ausgeführt werden.
 
-   **3a. API-Zugang einrichten (Konto-Ebene):**
+   > 🔑 **Voraussetzung – Account-Inhaber (Owner):** Der Menüpunkt **„API access"** unter „Einstellungen/Setup" ist **ausschließlich für den Account-Inhaber (Owner-Rolle) sichtbar**. Nutzer mit anderen Rollen (z. B. Administrator, Release Manager) sehen diesen Eintrag nicht in der Seitenleiste.
+   >
+   > Falls du den Menüpunkt **nicht siehst**, hast du nicht die Owner-Rolle auf diesem Entwicklerkonto. In diesem Fall:
+   > - Bitte die **Person, die das Entwicklerkonto erstellt hat** (= Owner), die folgenden Schritte durchzuführen.
+   > - Alternativ: Der Owner kann dir temporär die Owner-Rolle geben unter **Einstellungen → Allgemein → Benutzer und Berechtigungen**.
+   >
+   > Die Liste der Einstellungseinträge, die du siehst (E-Mail-Benachrichtigungen, Allgemein, Apps übertragen, usw.) bestätigt, dass du **nicht die Owner-Rolle** besitzt.
+
+   **3a. API-Zugang einrichten (Konto-Ebene, als Owner):**
    - Öffne die [Google Play Console auf Konto-Ebene](https://play.google.com/console/developers) – stelle sicher, dass du **keine** App ausgewählt hast (du siehst links die Übersichtsnavigation des Entwicklerkontos).
-   - Klicke in der linken Seitenleiste auf **„Setup"** → **„API access"**.
+   - Klicke in der linken Seitenleiste auf **„Setup"** → **„API access"** (nur als Owner sichtbar, deutsch: „Einstellungen" → „API-Zugang").
    - Falls das Google Cloud Projekt noch nicht verbunden ist: Klicke auf **„Link to a project"** und wähle das Projekt aus Schritt 1 aus (oder erstelle ein neues Projekt).
    - Sobald das Projekt verknüpft ist, erscheint darunter der Abschnitt **„Service accounts"** mit den Service Accounts aus deinem Google Cloud Projekt.
 
