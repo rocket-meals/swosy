@@ -104,27 +104,43 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
 
 ### Google Play Developer API – Service Account (für Review Responses)
 
-1. **Google Cloud Projekt wählen:**
-   - Öffne die [Google Cloud Console](https://console.cloud.google.com/).
-   - Wähle das Projekt, das mit dem Google Play Developer Account verknüpft ist.
-   - Falls noch kein Projekt besteht: Neues Projekt erstellen und die [Google Play Android Developer API](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com) aktivieren.
+> 🔑 **Wichtige Unterscheidung:** Die folgenden Schritte betreffen **zwei verschiedene Google-Konsolen**:
+> - **Google Cloud Console** (`console.cloud.google.com`) – hier wird das Dienstkonto erstellt und die API aktiviert.
+> - **Google Play Console** (`play.google.com/console`) – hier werden dem Dienstkonto die Berechtigungen für die App erteilt.
 
-2. **Service Account erstellen:**
-   - Navigiere zu **IAM & Admin → Service Accounts**.
-   - Klicke auf **„+ Create Service Account"**.
+1. **Service Account in der Google Cloud Console erstellen:**
+   - Öffne die [Google Cloud Console](https://console.cloud.google.com/) und wähle das passende Projekt.
+   - Navigiere zu **IAM & Admin → Dienstkonten (Service Accounts)**.
+   - Klicke auf **„+ Dienstkonto erstellen"** / **„+ Create Service Account"**.
    - Name: z. B. `rocket-meals-review-responder`
    - Keine Cloud IAM-Rolle notwendig (Berechtigungen werden direkt in der Play Console vergeben).
-   - Nach dem Erstellen: Wähle den Service Account → **Keys → Add Key → Create new key → JSON**.
-   - Die JSON-Datei wird heruntergeladen – **sicher speichern!**
+   - Nach dem Erstellen: Wähle das Dienstkonto → **Schlüssel (Keys) → Schlüssel hinzufügen (Add Key) → Neuen Schlüssel erstellen → JSON**.
+   - Die JSON-Datei wird heruntergeladen – **sicher speichern!** (Diese wird später als `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` benötigt.)
 
-3. **Service Account in Google Play Console verknüpfen:**
-   - Öffne die [Google Play Console](https://play.google.com/console).
-   - Gehe zu **Setup → API access**.
-   - Verbinde das Google Cloud Projekt (falls noch nicht verbunden).
-   - Scrolle zu **„Service accounts"** und klicke auf **„Grant access"** beim erstellten Service Account.
-   - Weise folgende Berechtigungen zu:
-     - **Reply to reviews** ✅
-   - Speichere die Änderungen.
+2. **Google Play Android Developer API in der Google Cloud Console aktivieren:**
+
+   > ⚠️ **Wichtig:** Ohne diesen Schritt kann das Dienstkonto die API nicht nutzen.
+
+   - Bleibe in der [Google Cloud Console](https://console.cloud.google.com/).
+   - Navigiere zu **APIs & Dienste → Bibliothek** (oder tippe in die Suchleiste oben `Google Play Android Developer API`).
+   - Öffne den Eintrag **„Google Play Android Developer API"** (Beschreibung: „Manage your app through an API") und klicke auf **„Aktivieren"** / **„Enable"**, falls noch nicht geschehen.
+   - Direktlink: [Google Play Android Developer API aktivieren](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com)
+
+3. **Berechtigung in der Google Play Console vergeben:**
+
+   > ⚠️ **Wichtig:** Diese Schritte finden in der **Google Play Console** (`play.google.com/console`) statt – **nicht** in der Google Cloud Console.
+
+   - Kopiere die E-Mail-Adresse des soeben erstellten Dienstkontos (z. B. `rocket-meals-review-responder@<project-id>.iam.gserviceaccount.com`) aus der Google Cloud Console.
+   - Öffne die [Google Play Console](https://play.google.com/console/developers).
+   - Navigiere im linken Menü zu **„Nutzer und Berechtigungen"** / **„Users and permissions"**.
+   - Klicke auf **„Neue Nutzer einladen"** / **„Invite new users"**.
+   - Füge die E-Mail-Adresse des Dienstkontos ein.
+   - Wechsle zum Tab **„App-Berechtigungen"** / **„App permissions"**.
+   - Wähle deine App aus und aktiviere unter dem Abschnitt **„Nutzerfeedback"** / **„User feedback"** die Berechtigung:
+     - **„Auf Rezensionen antworten"** / **„Reply to reviews"** ✅
+   - Klicke auf **„Nutzer einladen"** / **„Invite user"**, um die Berechtigungen zu speichern.
+
+   > ⏳ Die Berechtigungen können nach dem Speichern bis zu **24 Stunden** brauchen, bis sie aktiv sind.
 
 4. **Package Name ermitteln:**
    - Öffne die [Google Play Console](https://play.google.com/console) → deine App.
