@@ -42,13 +42,9 @@ import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker'
 import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
-import { SettingsProvider } from 'repo-depkit-common-ui';
+import { SettingsProvider, useSettingsContext } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
-
-// Module-level ref so AppSettingsProvider (outside ModalProvider) can forward
-// onAccountRequired calls to the handler that lives inside ModalProvider.
-const accountRequiredCallbackRef: { current: (() => void) | undefined } = { current: undefined };
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -67,25 +63,22 @@ ServerAPI.createAuthentificationStorage(
 function AppSettingsProvider({ children }: { children: React.ReactNode }) {
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	return (
-		<SettingsProvider
-			primaryColor={primaryColor}
-			onAccountRequired={() => accountRequiredCallbackRef.current?.()}
-		>
+		<SettingsProvider primaryColor={primaryColor}>
 			{children}
 		</SettingsProvider>
 	);
 }
 
-// Must be rendered inside ModalProvider so that useAccountRequiredModal works.
-function ModalAccountConnector() {
+// Rendered inside ModalProvider so useAccountRequiredModal (which needs ModalContext) works.
+// Re-provides SettingsContext with onAccountRequired added for app content.
+function AppAccountRequiredProvider({ children }: { children: React.ReactNode }) {
+	const settingsCtx = useSettingsContext();
 	const { openAccountRequiredModal } = useAccountRequiredModal();
-	React.useEffect(() => {
-		accountRequiredCallbackRef.current = openAccountRequiredModal;
-		return () => {
-			accountRequiredCallbackRef.current = undefined;
-		};
-	}, [openAccountRequiredModal]);
-	return null;
+	return (
+		<SettingsProvider primaryColor={settingsCtx?.primaryColor ?? ''} onAccountRequired={openAccountRequiredModal}>
+			{children}
+		</SettingsProvider>
+	);
 }
 
 export default function Layout() {
@@ -177,16 +170,17 @@ export default function Layout() {
 								<ThemeProvider>
 									<AppSettingsProvider>
 										<ModalProvider>
-											<ModalAccountConnector />
-											<ServerStatusLoader>
-												<ExpoUpdateChecker>
-													<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
-														<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
-															<Slot />
-														</SafeAreaView>
-													</KeyboardAvoidingView>
-												</ExpoUpdateChecker>
-											</ServerStatusLoader>
+											<AppAccountRequiredProvider>
+												<ServerStatusLoader>
+													<ExpoUpdateChecker>
+														<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+															<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
+																<Slot />
+															</SafeAreaView>
+														</KeyboardAvoidingView>
+													</ExpoUpdateChecker>
+												</ServerStatusLoader>
+											</AppAccountRequiredProvider>
 										</ModalProvider>
 									</AppSettingsProvider>
 								</ThemeProvider>
