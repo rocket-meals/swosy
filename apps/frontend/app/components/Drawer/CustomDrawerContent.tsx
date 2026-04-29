@@ -1,4 +1,4 @@
-import { Image, Platform, StyleSheet, Text } from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import { AntDesign, Entypo, EvilIcons, Feather, FontAwesome, FontAwesome5, FontAwesome6, Foundation, Ionicons, MaterialCommunityIcons, Octicons, SimpleLineIcons, Zocial } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -45,15 +45,15 @@ export const iconLibraries: Record<string, any> = {
 };
 
 interface MenuItemProps {
-        label: string;
-        iconName: string;
-        iconLibName: React.ComponentType<IconProps<any>>;
-        activeKey: string;
-        route?: string;
-        action?: () => void;
-        position: number;
-        hasUnread?: boolean;
-        activeColor?: string;
+	label: string;
+	iconName: string;
+	iconLibName: React.ComponentType<IconProps<any>>;
+	activeKey: string;
+	route?: string;
+	action?: () => void;
+	position: number;
+	hasUnread?: boolean;
+	activeColor?: string;
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
@@ -62,22 +62,19 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const toast = useToast();
 	const dispatch = useDispatch();
 	const router = useRouter();
-        const wikisHelper = new WikisHelper();
-        const activeIndex = state.index;
-        const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
-        const { chatsDict } = useAppSelector((state) => state.chats);
-        const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
-        const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
-        const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
-        const { isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
-        const { chats } = useAppSelector((state) => state.chats);
-        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis } = useAppSelector((state) => state.settings);
-        const customerConfig = useCustomerConfig();
-        const { hasUnreadChats } = useChatUnreadStatus();
-        const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
-        const { openConfirmLogoutModal } = useConfirmLogoutModal();
-        const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
-        const { theme } = useTheme();
+	const wikisHelper = new WikisHelper();
+	const activeIndex = state.index;
+	const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
+	const { chatsDict } = useAppSelector((state) => state.chats);
+	const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
+	const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
+	const customerConfig = useCustomerConfig();
+	const { hasUnreadChats } = useChatUnreadStatus();
+	const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
+	const { openConfirmLogoutModal } = useConfirmLogoutModal();
+	const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
+	const { theme } = useTheme();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -98,11 +95,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		}
 	};
 
-        const openInBrowser = async (url: string) => {
-                try {
-                        if (Platform.OS === 'web') {
-                                window.open(url, '_blank');
-                        } else {
+	const openInBrowser = async (url: string) => {
+		try {
+			if (Platform.OS === 'web') {
+				window.open(url, '_blank');
+			} else {
 				const supported = await Linking.canOpenURL(url);
 
 				if (supported) {
@@ -133,7 +130,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		}
 	}, []);
 
-        const generateMenuItems = (): MenuItemProps[] => {
+	const generateMenuItems = (): MenuItemProps[] => {
 		let menuItems: MenuItemProps[] = [];
 
 		// Static menu items with positions
@@ -197,46 +194,46 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			});
 		}
 
-                if (appSettings?.course_timetable_enabled) {
-                        menuItems.push({
-                                label: translate(TranslationKeys.course_timetable),
-                                iconName: 'calendar-clock-outline',
-                                iconLibName: MaterialCommunityIcons,
-                                activeKey: 'course-timetable/index',
-                                route: 'course-timetable/index',
-                                position: 8,
-                                activeColor: course_timetable_area_color,
-                        });
-                }
+		if (appSettings?.course_timetable_enabled) {
+			menuItems.push({
+				label: translate(TranslationKeys.course_timetable),
+				iconName: 'calendar-clock-outline',
+				iconLibName: MaterialCommunityIcons,
+				activeKey: 'course-timetable/index',
+				route: 'course-timetable/index',
+				position: 8,
+				activeColor: course_timetable_area_color,
+			});
+		}
 
-                if (hasActiveCollectibleEvent) {
-                        menuItems.push({
-                                label: translate(TranslationKeys.collectible_event_active),
-                                iconName: 'trophy-outline',
-                                iconLibName: MaterialCommunityIcons,
-                                activeKey: 'collectible-event/index',
-                                route: 'collectible-event/index',
-                                position: 2,
-                                hasUnread: true,
-                        });
-                }
+		if (hasActiveCollectibleEvent) {
+			menuItems.push({
+				label: translate(TranslationKeys.collectible_event_active),
+				iconName: 'trophy-outline',
+				iconLibName: MaterialCommunityIcons,
+				activeKey: 'collectible-event/index',
+				route: 'collectible-event/index',
+				position: 2,
+				hasUnread: true,
+			});
+		}
 
-                if (appSettings?.map_enabled || isDevMode) {
-                        menuItems.push({
-                                label: translate(TranslationKeys.map),
-                                iconName: 'map-outline',
-                                iconLibName: Ionicons,
-                                activeKey: 'map/index',
-                                route: 'map/index',
-                                position: 4,
-                        });
-                }
+		if (appSettings?.map_enabled || isDevMode) {
+			menuItems.push({
+				label: translate(TranslationKeys.map),
+				iconName: 'map-outline',
+				iconLibName: Ionicons,
+				activeKey: 'map/index',
+				route: 'map/index',
+				position: 4,
+			});
+		}
 
-                if (isManagement) {
-                        menuItems.push({
-                                label: translate(TranslationKeys.role_management),
-                                iconName: 'bag',
-                                iconLibName: Ionicons,
+		if (isManagement) {
+			menuItems.push({
+				label: translate(TranslationKeys.role_management),
+				iconName: 'bag',
+				iconLibName: Ionicons,
 				activeKey: 'management/index',
 				route: 'management/index',
 				position: 9,
@@ -278,27 +275,27 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						action: wiki.url
 							? () => openInBrowser(wiki?.url)
 							: () =>
-									router.push({
-										pathname: '/wikis',
-										params: wiki?.custom_id ? { custom_id: wiki?.custom_id } : { id: wiki?.id },
-									}),
+								router.push({
+									pathname: '/wikis',
+									params: wiki?.custom_id ? { custom_id: wiki?.custom_id } : { id: wiki?.id },
+								}),
 					};
 				});
 
 			menuItems = [...menuItems, ...wikiMenuItems];
 		}
 
-                if (chats && chats.length > 0) {
-                        menuItems.push({
-                                label: translate(TranslationKeys.chats),
-                                iconName: 'chat',
-                                iconLibName: MaterialCommunityIcons,
-                                activeKey: 'chats',
-                                route: 'chats',
-                                position: 9999,
-                                hasUnread: hasUnreadChats,
-                        });
-                }
+		if (chats && chats.length > 0) {
+			menuItems.push({
+				label: translate(TranslationKeys.chats),
+				iconName: 'chat',
+				iconLibName: MaterialCommunityIcons,
+				activeKey: 'chats',
+				route: 'chats',
+				position: 9999,
+				hasUnread: hasUnreadChats,
+			});
+		}
 
 		// Sort menu items by position (smallest first)
 		menuItems.sort((a, b) => a.position - b.position);

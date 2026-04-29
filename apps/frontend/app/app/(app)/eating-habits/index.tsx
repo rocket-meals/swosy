@@ -27,7 +27,6 @@ import { SettingsListProps } from '@/components/SettingsList/types';
 import AppButton from '@/components/AppButton';
 import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
@@ -131,7 +130,7 @@ const Index = () => {
 						<Text style={{ fontSize: 18, fontWeight: '600', color: theme.screen.text }}>
 							{translate(TranslationKeys.clear_markings_selection)}
 						</Text>
-						<ProjectButton
+						<AppButton
 							text={translate(TranslationKeys.confirm)}
 							onPress={() => {
 								closeModal();

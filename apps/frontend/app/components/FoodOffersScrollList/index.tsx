@@ -65,10 +65,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElementsDict } = useAppSelector((state) => state.appElements);
 	const appElements = useMemo(() => Object.values(appElementsDict || {}), [appElementsDict]);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
-	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
-	const { appElements } = useAppSelector((state) => state.appElements);
-	
 	const selectedCanteen = (canteensDict?.[String(canteenId)] ?? canteens?.find(c => String(c.id) === String(canteenId))) as DatabaseTypes.Canteens | undefined;
 	const flatListRef = useRef<FlatList<DayData>>(null);
 	const [days, setDays] = useState<DayData[]>([]);

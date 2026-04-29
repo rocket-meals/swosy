@@ -65,26 +65,18 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 				onPress={item.onPress}
 			>
 				<View style={[styles.menuIconWrapper, reverseItemLayout ? styles.menuIconWrapperReverse : null]}>
-					{item.renderIcon(active, iconColor)}
-					{item.hasUnread ? (
-						<View
-							style={[
-								styles.notificationDot,
-								{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
-							]}
-						/>
-					) : null}
-				<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
-					<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>
-						{item.renderIcon(active, iconColor)}
-						{item.hasUnread ? (
-							<View
-								style={[
-									styles.notificationDot,
-									{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
-								]}
-							/>
-						) : null}
+					<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
+						<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>
+							{item.renderIcon(active, iconColor)}
+							{item.hasUnread ? (
+								<View
+									style={[
+										styles.notificationDot,
+										{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
+									]}
+								/>
+							) : null}
+						</View>
 					</View>
 				</View>
 				<Text
@@ -203,6 +195,7 @@ const styles = StyleSheet.create({
 	},
 	menuIconWrapper: {
 		marginRight: 12,
+	},
 	menuIconOuter: {
 		alignItems: 'center',
 		justifyContent: 'center',
