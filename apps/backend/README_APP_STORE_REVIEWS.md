@@ -118,13 +118,28 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
    - Die JSON-Datei wird heruntergeladen – **sicher speichern!**
 
 3. **Service Account in Google Play Console verknüpfen:**
-   - Öffne die [Google Play Console](https://play.google.com/console).
-   - Gehe zu **Setup → API access**.
-   - Verbinde das Google Cloud Projekt (falls noch nicht verbunden).
-   - Scrolle zu **„Service accounts"** und klicke auf **„Grant access"** beim erstellten Service Account.
-   - Weise folgende Berechtigungen zu:
-     - **Reply to reviews** ✅
-   - Speichere die Änderungen.
+
+   > ⚠️ **Wichtig:** Diese Schritte müssen auf **Konto-Ebene** (nicht innerhalb einer einzelnen App) in der Google Play Console ausgeführt werden.
+
+   **3a. API-Zugang einrichten (Konto-Ebene):**
+   - Öffne die [Google Play Console auf Konto-Ebene](https://play.google.com/console/developers) – stelle sicher, dass du **keine** App ausgewählt hast (du siehst links die Übersichtsnavigation des Entwicklerkontos).
+   - Klicke in der linken Seitenleiste auf **„Setup"** → **„API access"**.
+   - Falls das Google Cloud Projekt noch nicht verbunden ist: Klicke auf **„Link to a project"** und wähle das Projekt aus Schritt 1 aus (oder erstelle ein neues Projekt).
+   - Sobald das Projekt verknüpft ist, erscheint darunter der Abschnitt **„Service accounts"** mit den Service Accounts aus deinem Google Cloud Projekt.
+
+   **3b. Berechtigungen für den Service Account vergeben:**
+   - Suche deinen soeben erstellten Service Account (z. B. `rocket-meals-review-responder@...iam.gserviceaccount.com`) in der Liste.
+   - Klicke rechts daneben auf **„Grant access"** (oder „Manage permissions" / „Zugriff gewähren").
+   - Es öffnet sich eine Seite mit zwei Abschnitten: **„Account permissions"** (Konto-Berechtigungen) und **„Add app"** (App-Berechtigungen).
+   - Lass die **Account permissions** auf dem Standard (keine globale Rolle nötig).
+   - Klicke im Abschnitt **„Add app"** auf **„Add app"** und wähle deine App aus der Liste aus.
+   - Nach dem Hinzufügen der App erscheinen darunter die App-spezifischen Berechtigungen. Aktiviere:
+     - **„Reply to reviews"** ✅ (unter dem Bereich „Store presence" oder „Replies to reviews")
+   - Klicke auf **„Apply"** und anschließend auf **„Invite user"** (oder „Save") um die Berechtigungen zu speichern.
+
+   > 💡 **Hinweis:** Die Berechtigung „Reply to reviews" befindet sich auf **App-Ebene** (nicht auf Konto-Ebene). Es reicht nicht, nur eine Konto-Rolle zu vergeben – die App muss explizit hinzugefügt und die Berechtigung dort aktiviert werden.
+
+   > ⏳ Die Berechtigungen können nach dem Speichern bis zu **24 Stunden** brauchen, bis sie aktiv sind.
 
 4. **Package Name ermitteln:**
    - Öffne die [Google Play Console](https://play.google.com/console) → deine App.
