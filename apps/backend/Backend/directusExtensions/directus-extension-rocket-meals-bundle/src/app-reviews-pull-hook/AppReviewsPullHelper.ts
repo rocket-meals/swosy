@@ -61,7 +61,7 @@ export class AppReviewsPullHelper {
   async pullGoogleReviews(googlePlayPackageName: string, serviceAccountKeyJson: string): Promise<PulledAppReview[]> {
     this.logger.info('app-reviews-pull-hook: Pulling Google Play reviews for package: ' + googlePlayPackageName);
 
-    const googleReviews = await GooglePlayHelper.fetchAllReviews(googlePlayPackageName, serviceAccountKeyJson);
+    const googleReviews = await GooglePlayHelper.fetchAllReviews(googlePlayPackageName, serviceAccountKeyJson, this.logger);
 
     const reviews: PulledAppReview[] = [];
     for (const review of googleReviews) {
@@ -85,6 +85,9 @@ export class AppReviewsPullHelper {
     }
 
     this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Google Play reviews for package: ' + googlePlayPackageName);
+    if (reviews.length === 0) {
+      this.logger.info('app-reviews-pull-hook: Note: The Google Play Developer API only returns reviews from approximately the last 7 days. If your app has older reviews only, they will not appear here.');
+    }
     return reviews;
   }
 }
