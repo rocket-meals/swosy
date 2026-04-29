@@ -1,5 +1,5 @@
 Key,Message,Component,Line
-"AZ3WFd_dG3_GkEIK0Hgj","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",19
+"AZ3WFd_dG3_GkEIK0Hgj","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",19
 "AZ3JkYhj0Wnz84lNAn19","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/CronHelper.ts",105
 "AZ3Dm6xRMMAbgOavQw4H","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/index.tsx",123
 "AZ3Dh2OUEjNYTa-xGbi8","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",350
