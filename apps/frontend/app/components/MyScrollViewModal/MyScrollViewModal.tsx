@@ -14,10 +14,10 @@ export interface MyScrollViewModalProps {
   // For FlatList mode
   useFlatList?: boolean;
   data?: any[];
-  renderItem?: (info: { item: any; index: number }) => ReactNode;
+  renderItem?: (info: { item: any; index: number }) => React.ReactElement | null;
   keyExtractor?: (item: any, index: number) => string;
-  ListHeaderComponent?: ReactNode;
-  ListFooterComponent?: ReactNode;
+  ListHeaderComponent?: React.ReactElement | null;
+  ListFooterComponent?: React.ReactElement | null;
   // Optional additional props
   showsVerticalScrollIndicator?: boolean;
   keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';

@@ -67,6 +67,7 @@ export const lightTheme = {
 		icon: '#000000',
 		placeholder: '#696969',
 		iconBg: '#e0e0e0',
+		border: '#e0e0e0',
 	},
 	header: {
 		background: '#ffffff',
@@ -148,6 +149,7 @@ export const darkTheme = {
 		icon: '#ffffff',
 		placeholder: '#696969',
 		iconBg: '#2e2e2e',
+		border: '#3a3a3a',
 	},
 	header: {
 		background: '#2E2E2E',

@@ -385,20 +385,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 		return (
 			<View style={styles.dayContainer}>
-				<View style={styles.dateHeaderRow}>
+				<View style={[styles.dateHeaderRow, isRtl && { flexDirection: 'row-reverse' }]}>
 					<Text
 						style={[
 							styles.dateHeader,
 							{
 								color: theme.screen.text,
 								textAlign: isRtl ? 'right' : 'left',
-								writingDirection: isRtl ? 'rtl' : 'ltr',
 							},
 						]}
 					>
 						{smartReadableDate(parseDateOnly(item.date))}
 					</Text>
-					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
 					{item.offers.length > 0 && <CanteenVisitsDateRow canteenId={canteenId} date={item.date} />}
 				</View>
 				{beforeElement && (

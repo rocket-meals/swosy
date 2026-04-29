@@ -165,7 +165,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                 </View>
             </View>
 
-            <View style={styles.row}>
+            <View style={rowStyle}>
                 <View style={[styles.col2, col2GapStyle2]}>
                     <CustomTooltip
                         placement="top"

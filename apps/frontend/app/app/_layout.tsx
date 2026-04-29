@@ -1,8 +1,8 @@
 // Polyfill for environments where `setImmediate` is not available (e.g. web)
 import 'setimmediate';
-import React, {useEffect} from 'react';
-import {Slot, usePathname} from 'expo-router';
-import {RootSiblingParent} from 'react-native-root-siblings';
+import React, { useEffect } from 'react';
+import { Slot, usePathname } from 'expo-router';
+import { RootSiblingParent } from 'react-native-root-siblings';
 import {
 	Poppins_100Thin,
 	Poppins_100Thin_Italic,
@@ -24,22 +24,22 @@ import {
 	Poppins_900Black_Italic,
 	useFonts
 } from '@expo-google-fonts/poppins';
-import {Image, KeyboardAvoidingView, Platform, View} from 'react-native';
-import {ThemeProvider} from '@/context/ThemeContext';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {configureStore, persistor} from '@/redux/store';
-import {ServerAPI} from '@/redux/actions';
+import { Image, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { configureStore, persistor } from '@/redux/store';
+import { ServerAPI } from '@/redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 import ServerStatusLoader from '@/components/ServerStatusLoader/ServerStatusLoader';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {GluestackUIProvider} from '@gluestack-ui/themed';
-import {config} from '@gluestack-ui/config';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { config } from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
-import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
+import { ModalProvider } from '@/components/GlobalModal/ModalProvider';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
@@ -94,45 +94,45 @@ export default function Layout() {
 		Poppins_900Black_Italic,
 	});
 
-        useEffect(() => {
-                const setServerUrl = async () => {
-                        const customerConfigs = getCustomerConfigsDict();
-                        const storedCustomerEnum = (await AsyncStorage.getItem('selected_customer_enum')) as
-                                | ConfigCustomerEnum
-                                | null;
+	useEffect(() => {
+		const setServerUrl = async () => {
+			const customerConfigs = getCustomerConfigsDict();
+			const storedCustomerEnum = (await AsyncStorage.getItem('selected_customer_enum')) as
+				| ConfigCustomerEnum
+				| null;
 
-                        if (storedCustomerEnum && customerConfigs[storedCustomerEnum]) {
-                                configureStore.dispatch({
-                                        type: SET_SELECTED_CUSTOMER,
-                                        payload: storedCustomerEnum,
-                                });
-                                ServerAPI.updateServerUrl(customerConfigs[storedCustomerEnum].server_url);
-                                return;
-                        }
+			if (storedCustomerEnum && customerConfigs[storedCustomerEnum]) {
+				configureStore.dispatch({
+					type: SET_SELECTED_CUSTOMER,
+					payload: storedCustomerEnum,
+				});
+				ServerAPI.updateServerUrl(customerConfigs[storedCustomerEnum].server_url);
+				return;
+			}
 
-                        // No user-selected override – fall back to the build-time customer baked
-                        // in via EXPO_PUBLIC_CUSTOMER so that real customer apps (e.g. SWOSY,
-                        // Studi-Futter) always use the correct CustomerConfig regardless of what
-                        // may be persisted in the Redux store from a previous session.
-                        const buildTimeConfig = getCustomerConfig();
-                        const buildTimeEnum = getCustomerEnumForConfig(buildTimeConfig);
-                        if (buildTimeEnum) {
-                                configureStore.dispatch({
-                                        type: SET_SELECTED_CUSTOMER,
-                                        payload: buildTimeEnum,
-                                });
-                                ServerAPI.updateServerUrl(buildTimeConfig.server_url);
-                                return;
-                        }
+			// No user-selected override – fall back to the build-time customer baked
+			// in via EXPO_PUBLIC_CUSTOMER so that real customer apps (e.g. SWOSY,
+			// Studi-Futter) always use the correct CustomerConfig regardless of what
+			// may be persisted in the Redux store from a previous session.
+			const buildTimeConfig = getCustomerConfig();
+			const buildTimeEnum = getCustomerEnumForConfig(buildTimeConfig);
+			if (buildTimeEnum) {
+				configureStore.dispatch({
+					type: SET_SELECTED_CUSTOMER,
+					payload: buildTimeEnum,
+				});
+				ServerAPI.updateServerUrl(buildTimeConfig.server_url);
+				return;
+			}
 
-                        const url = await AsyncStorage.getItem('server_url_custom');
-                        if (url) {
-                                ServerAPI.updateServerUrl(url);
-                        }
-                };
+			const url = await AsyncStorage.getItem('server_url_custom');
+			if (url) {
+				ServerAPI.updateServerUrl(url);
+			}
+		};
 
-                setServerUrl();
-        }, []);
+		setServerUrl();
+	}, []);
 
 	if (!fontsLoaded) {
 		return (
