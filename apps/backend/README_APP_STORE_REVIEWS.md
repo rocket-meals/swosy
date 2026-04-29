@@ -104,10 +104,14 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
 
 ### Google Play Developer API – Service Account (für Review Responses)
 
-1. **Google Cloud Projekt wählen:**
+1. **Google Cloud Projekt wählen und API aktivieren:**
    - Öffne die [Google Cloud Console](https://console.cloud.google.com/).
    - Wähle das Projekt, das mit dem Google Play Developer Account verknüpft ist.
-   - Falls noch kein Projekt besteht: Neues Projekt erstellen und die [Google Play Android Developer API](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com) aktivieren.
+   - Falls noch kein Projekt besteht: Neues Projekt erstellen.
+   - **Aktiviere die Google Play Android Developer API** – ohne diesen Schritt erscheint der Menüpunkt „API access" in der Play Console **nicht**:
+     - Navigiere zu **APIs & Dienste → Bibliothek** (oder nutze die Suchleiste oben und tippe `Google Play Android Developer API`).
+     - Öffne den Eintrag **„Google Play Android Developer API"** und klicke auf **„Aktivieren"** / **„Enable"**.
+     - Alternativ: Direktlink zur API → [Google Play Android Developer API aktivieren](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com).
 
 2. **Service Account erstellen:**
    - Navigiere zu **IAM & Admin → Service Accounts**.
@@ -121,17 +125,11 @@ Der bestehende API Key (`EXPO_ASC_KEY_ID` = `39JT9543R7`) kann für Review Respo
 
    > ⚠️ **Wichtig:** Diese Schritte müssen auf **Konto-Ebene** (nicht innerhalb einer einzelnen App) in der Google Play Console ausgeführt werden.
 
-   > 🔑 **Voraussetzung – Account-Inhaber (Owner):** Der Menüpunkt **„API access"** unter „Einstellungen/Setup" ist **ausschließlich für den Account-Inhaber (Owner-Rolle) sichtbar**. Nutzer mit anderen Rollen (z. B. Administrator, Release Manager) sehen diesen Eintrag nicht in der Seitenleiste.
-   >
-   > Falls du den Menüpunkt **nicht siehst**, hast du nicht die Owner-Rolle auf diesem Entwicklerkonto. In diesem Fall:
-   > - Bitte die **Person, die das Entwicklerkonto erstellt hat** (= Owner), die folgenden Schritte durchzuführen.
-   > - Alternativ: Der Owner kann dir temporär die Owner-Rolle geben unter **Einstellungen → Allgemein → Benutzer und Berechtigungen**.
-   >
-   > Die Liste der Einstellungseinträge, die du siehst (E-Mail-Benachrichtigungen, Allgemein, Apps übertragen, usw.) bestätigt, dass du **nicht die Owner-Rolle** besitzt.
+   > 💡 **Hinweis:** Der Menüpunkt **„API access"** (deutsch: „API-Zugang") erscheint in der Google Play Console unter „Einstellungen/Setup" **erst, nachdem die Google Play Android Developer API in Google Cloud aktiviert wurde** (siehe Schritt 1). Ist die API aktiviert und das Cloud-Projekt mit der Play Console verknüpft, erscheint der Eintrag in der Seitenleiste.
 
-   **3a. API-Zugang einrichten (Konto-Ebene, als Owner):**
+   **3a. API-Zugang einrichten (Konto-Ebene):**
    - Öffne die [Google Play Console auf Konto-Ebene](https://play.google.com/console/developers) – stelle sicher, dass du **keine** App ausgewählt hast (du siehst links die Übersichtsnavigation des Entwicklerkontos).
-   - Klicke in der linken Seitenleiste auf **„Setup"** → **„API access"** (nur als Owner sichtbar, deutsch: „Einstellungen" → „API-Zugang").
+   - Klicke in der linken Seitenleiste auf **„Setup"** → **„API access"** (deutsch: „Einstellungen" → „API-Zugang").
    - Falls das Google Cloud Projekt noch nicht verbunden ist: Klicke auf **„Link to a project"** und wähle das Projekt aus Schritt 1 aus (oder erstelle ein neues Projekt).
    - Sobald das Projekt verknüpft ist, erscheint darunter der Abschnitt **„Service accounts"** mit den Service Accounts aus deinem Google Cloud Projekt.
 
