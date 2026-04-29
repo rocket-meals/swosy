@@ -1,6 +1,9 @@
 **/*.DS_Store
 .idea/**
 
+# Ignore the env files
+.env
+
 apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
 apps/backend/Backend/directusExtensions/.registry/
 

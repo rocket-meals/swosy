@@ -1,5 +1,4 @@
 Key,Message,Component,Line
-"AZ3JkXlu0Wnz84lNAn18","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AppleAppStoreRssHelper.ts",78
 "AZ2xyckhWySueEBavmdA","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",92
 "AZ2xyckhWySueEBavmc_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",117
 "AZ2V4Kjcj7vGheiRHJU2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",103

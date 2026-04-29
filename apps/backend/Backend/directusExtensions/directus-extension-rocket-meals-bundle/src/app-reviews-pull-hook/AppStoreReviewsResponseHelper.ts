@@ -31,12 +31,18 @@ export class AppStoreReviewsResponseHelper {
       return;
     }
 
+    const externalId = feedback.external_identifier;
+    if (!externalId) {
+      this.logger.error('app-reviews-pull-hook: Cannot respond to review without external_identifier, feedback id: ' + feedback.id);
+      return;
+    }
+
     const sourceIdentifier = feedback.source_identifier;
 
     if (sourceIdentifier === AppFeedbackSourceIdentifier.APPLE) {
-      await this.respondToAppleReview(feedback.id, responseText);
+      await this.respondToAppleReview(externalId, responseText);
     } else if (sourceIdentifier === AppFeedbackSourceIdentifier.GOOGLE_PLAY) {
-      await this.respondToGooglePlayReview(feedback.id, responseText);
+      await this.respondToGooglePlayReview(externalId, responseText);
     }
   }
 
