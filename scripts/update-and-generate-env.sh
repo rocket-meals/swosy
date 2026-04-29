@@ -69,7 +69,9 @@ if [[ ! -d "$ENV_REPO_DIR" ]]; then
 fi
 
 log "Aktualisiere rocket-meals-envs Repository"
+git -C "$ENV_REPO_DIR" stash || true
 git -C "$ENV_REPO_DIR" pull || { log "Fehler: Aktualisierung von rocket-meals-envs fehlgeschlagen" >&2; exit 1; }
+git -C "$ENV_REPO_DIR" stash pop || true
 
 log "Generiere .env für Umgebung '$ENV_NAME'"
 (cd "$ENV_REPO_DIR" && yarn generate --env "$ENV_NAME" --output "$REPO_DIR/.env")
