@@ -61,7 +61,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
         if (existing && existing.length > 0) {
           // Update response if the pulled review has a response and the existing record does not
-          const existingFeedback = existing[0];
+          const existingFeedback = existing[0]!;
           if (review.response && (!existingFeedback.response || existingFeedback.response.trim() === '')) {
             await appFeedbacksHelper.updateOne(existingFeedback.id, {
               response: review.response,
