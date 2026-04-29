@@ -29,6 +29,7 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       const appleAppId = EnvVariableHelper.getAppleAppId();
       const googlePlayPackageName = EnvVariableHelper.getGooglePlayPackageName();
       const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
+      const googleServiceAccountKeyJson = EnvVariableHelper.getGooglePlayServiceAccountKeyJson();
 
       if (!appleAppId && !googlePlayPackageName) {
         await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
@@ -40,11 +41,17 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey);
       } else if (appleAppId && !privateKey) {
         await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
+      } else if (!appleAppId) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — no Apple App ID configured for this customer');
       }
 
       let googleReviews: PulledAppReview[] = [];
-      if (googlePlayPackageName) {
-        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName);
+      if (googlePlayPackageName && googleServiceAccountKeyJson) {
+        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName, googleServiceAccountKeyJson);
+      } else if (googlePlayPackageName && !googleServiceAccountKeyJson) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON not configured');
+      } else if (!googlePlayPackageName) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — no Google Play package name configured for this customer');
       }
       const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();

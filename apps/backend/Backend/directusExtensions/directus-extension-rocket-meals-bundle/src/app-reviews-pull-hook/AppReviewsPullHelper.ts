@@ -1,5 +1,6 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
 import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
+import { GooglePlayHelper } from '../helpers/GooglePlayHelper';
 
 /**
  * Intermediate type returned by pull helpers.
@@ -53,10 +54,37 @@ export class AppReviewsPullHelper {
     return reviews;
   }
 
-  async pullGoogleReviews(googlePlayPackageName: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Google Play review pull not yet implemented for package: ' + googlePlayPackageName);
-    // Google Play reviews require the Google Play Developer API (OAuth2).
-    // Implement via GooglePlayHelper once credentials are available.
-    return [];
+  /**
+   * Pull Google Play reviews using the Google Play Developer API.
+   * Requires a valid service account key JSON for authentication.
+   */
+  async pullGoogleReviews(googlePlayPackageName: string, serviceAccountKeyJson: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Google Play reviews for package: ' + googlePlayPackageName);
+
+    const googleReviews = await GooglePlayHelper.fetchAllReviews(googlePlayPackageName, serviceAccountKeyJson);
+
+    const reviews: PulledAppReview[] = [];
+    for (const review of googleReviews) {
+      const userComment = review.comments?.[0]?.userComment;
+      if (!userComment) {
+        continue;
+      }
+
+      const developerComment = review.comments?.[0]?.developerComment;
+      const rating = userComment.starRating;
+
+      reviews.push({
+        external_identifier: review.reviewId,
+        source_identifier: AppFeedbackSourceIdentifier.GOOGLE_PLAY,
+        title: review.authorName || undefined,
+        content: userComment.text,
+        source_rating_raw: rating,
+        positive: rating >= 4,
+        ...(developerComment?.text ? { response: developerComment.text } : {}),
+      });
+    }
+
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Google Play reviews for package: ' + googlePlayPackageName);
+    return reviews;
   }
 }
