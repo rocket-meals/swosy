@@ -5,6 +5,7 @@ import {CronHelper, DatabaseTypes} from 'repo-depkit-common';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
 import {MyDefineHook} from '../helpers/MyDefineHook';
+import type {Filter} from '@directus/types';
 
 const SCHEDULE_NAME = 'workflows-runs-cleanup-schedule';
 const MAX_AGE_DAYS = 365;
@@ -28,7 +29,7 @@ class WorkflowsRunsCleanupWorkflow extends SingleWorkflowRun {
 
       const workflowsRunsHelper = context.myDatabaseHelper.getWorkflowsRunsHelper();
 
-      const filter = {
+      const filter: Filter = {
         _and: [
           {
             date_created: {
