@@ -1,1 +1,1 @@
-export { ModalProvider, useModalContext } from 'repo-depkit-common-ui';
+export { ModalProvider, ModalContextProvider, ModalRenderer, useModalContext } from 'repo-depkit-common-ui';

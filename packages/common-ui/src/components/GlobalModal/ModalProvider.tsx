@@ -29,6 +29,14 @@ type ModalContextType = {
 		openInvocations: number;
 		closeInvocations: number;
 	};
+	/** @internal used by ModalRenderer */
+	_currentItem: ModalStackItem | null;
+	/** @internal used by ModalRenderer */
+	_sheetRef: React.MutableRefObject<any>;
+	/** @internal used by ModalRenderer */
+	_handleSheetChange: (index: number) => void;
+	/** @internal used by ModalRenderer */
+	_screenBackgroundColor: string;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -36,7 +44,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 const SHEET_CLOSE_ANIMATION_MS = 300;
 const CLOSE_GUARD_RESET_DELAY_MS = 150;
 
-export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [modalStack, setModalStack] = useState<ModalStackItem[]>([]);
 	const modalStackRef = useRef<ModalStackItem[]>([]);
 
@@ -230,7 +238,23 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 	const screenBackgroundColor = currentItem?.headerBackgroundColor || theme.screen.background;
 
 	return (
-		<ModalContext.Provider value={{ open, close, openAndDiscardOthers, closeAll, debug }}>
+		<ModalContext.Provider value={{
+			open, close, openAndDiscardOthers, closeAll, debug,
+			_currentItem: currentItem,
+			_sheetRef: sheetRef,
+			_handleSheetChange: handleSheetChange,
+			_screenBackgroundColor: screenBackgroundColor,
+		}}>
+			{children}
+		</ModalContext.Provider>
+	);
+};
+
+export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) => {
+	const { _currentItem: currentItem, _sheetRef: sheetRef, _handleSheetChange: handleSheetChange, _screenBackgroundColor: screenBackgroundColor, close } = useModalContext();
+
+	return (
+		<>
 			{children}
 			{currentItem && (
 				<View style={styles.modalContainer} pointerEvents="box-none">
@@ -250,13 +274,20 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 					</BaseBottomSheet>
 				</View>
 			)}
-		</ModalContext.Provider>
+		</>
 	);
 };
 
+/** Convenience wrapper that combines ModalContextProvider + ModalRenderer. */
+export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => (
+	<ModalContextProvider>
+		<ModalRenderer>{children}</ModalRenderer>
+	</ModalContextProvider>
+);
+
 export const useModalContext = () => {
 	const ctx = useContext(ModalContext);
-	if (!ctx) throw new Error('useModalContext must be used within a ModalProvider');
+	if (!ctx) throw new Error('useModalContext must be used within a ModalContextProvider');
 	return ctx;
 };
 
