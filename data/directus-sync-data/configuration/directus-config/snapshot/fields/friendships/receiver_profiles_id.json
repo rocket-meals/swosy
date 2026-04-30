@@ -13,7 +13,8 @@
     "interface": "select-dropdown-m2o",
     "note": null,
     "options": {
-      "enableLink": true
+      "enableLink": true,
+      "template": "{{nickname}} ({{id}})"
     },
     "readonly": false,
     "required": false,
