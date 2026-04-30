@@ -4,7 +4,7 @@ import {ServerHelper} from 'repo-depkit-common';
 import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 import {DockerContainerManager} from './DockerContainerManager';
-import {findEnvFile} from "./EnvFileFinder";
+import {findEnvFile, findProjectRootFile} from "./EnvFileFinder";
 import {DirectusTypeDownloaderHelper} from "./DirectusTypeDownloaderHelper";
 
 enum SyncOperation {
@@ -41,8 +41,10 @@ type ResolvedSyncConfig = {
 };
 
 async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<ResolvedSyncConfig> {
-  let adminEmail = options.adminEmail || process.env.ADMIN_EMAIL;
-  let adminPassword = options.adminPassword || process.env.ADMIN_PASSWORD;
+  const TEST_SERVER_ADMIN_EMAIL = "admin@example.com"
+  const TEST_SERVER_ADMIN_PASSWORD = "The!UniversalRocketMealsPassword";
+  let adminEmail: string | undefined = options.adminEmail || process.env.ADMIN_EMAIL || TEST_SERVER_ADMIN_EMAIL
+  let adminPassword: string | undefined = options.adminPassword || process.env.ADMIN_PASSWORD || TEST_SERVER_ADMIN_PASSWORD
   let directusInstanceUrl = options.directusUrl;
   let pathToDataDirectusSync = options.pathToDataDirectusSync;
   let pathToTargetTypesFile: string | undefined;
@@ -70,12 +72,12 @@ async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<Resolved
       dotenv.config({ path: envFilePath });
       adminEmail = process.env.ADMIN_EMAIL;
       adminPassword = process.env.ADMIN_PASSWORD;
-
-      if (!pathToDataDirectusSync) {
-        const folderOfEnvFile = path.dirname(envFilePath);
-        pathToDataDirectusSync = path.join(folderOfEnvFile, DockerDirectusHelper.getRelativePathToDirectusSyncFromProjectRoot());
-        pathToTargetTypesFile = path.join(folderOfEnvFile, 'packages/common/src/databaseTypes/types.ts');
-      }
+    }
+    const projectRootPath = await findProjectRootFile();
+    if (!pathToDataDirectusSync && projectRootPath) {
+      const folderOfProjectRootPath = path.dirname(projectRootPath);
+      pathToDataDirectusSync = path.join(folderOfProjectRootPath, DockerDirectusHelper.getRelativePathToDirectusSyncFromProjectRoot());
+      pathToTargetTypesFile = path.join(folderOfProjectRootPath, 'packages/common/src/databaseTypes/types.ts');
     }
   }
 
@@ -113,6 +115,7 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
   console.log(JSON.stringify(options, null, 2));
 
   const config = await resolveSyncConfig(options);
+
   if (!validateSyncConfig(config)) {
     return false;
   }

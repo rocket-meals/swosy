@@ -1,5 +1,6 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
-import { AppleAppStoreRssHelper } from '../helpers/AppleAppStoreRssHelper';
+import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
+import { GooglePlayHelper } from '../helpers/GooglePlayHelper';
 
 /**
  * Intermediate type returned by pull helpers.
@@ -19,51 +20,74 @@ export class AppReviewsPullHelper {
     this.logger = logger;
   }
 
-  async pullAppleReviews(appleAppId: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews for app ID: ' + appleAppId);
+  /**
+   * Pull Apple reviews using the App Store Connect API.
+   * Requires a valid private key for authentication.
+   */
+  async pullAppleReviews(appleAppId: string, privateKey: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Apple reviews via ASC API for app ID: ' + appleAppId);
 
-    const reviews: PulledAppReview[] = [];
-    let page = 1;
+    const { reviews: apiReviews, includedResponses } = await AppleAppStoreConnectHelper.fetchAllReviews(appleAppId, privateKey);
 
-    while (true) {
-      const rssFeed = await AppleAppStoreRssHelper.fetchReviews(appleAppId, page);
-      const entries = rssFeed.feed.entry;
-
-      if (!entries || entries.length === 0) {
-        break;
-      }
-
-      for (const entry of entries) {
-        const reviewId = AppleAppStoreRssHelper.getReviewId(entry);
-        const rating = AppleAppStoreRssHelper.getReviewRating(entry);
-        const title = AppleAppStoreRssHelper.getReviewTitle(entry);
-        const body = AppleAppStoreRssHelper.getReviewBody(entry);
-
-        reviews.push({
-          external_identifier: reviewId,
-          source_identifier: AppFeedbackSourceIdentifier.APPLE,
-          title: title,
-          content: body,
-          source_rating_raw: rating,
-          positive: rating >= 4,
-        });
-      }
-
-      if (entries.length < 50) {
-        break;
-      }
-
-      page++;
+    // Build a map from customerReviewResponse ID to responseBody
+    const responseMap = new Map<string, string>();
+    for (const resp of includedResponses) {
+      responseMap.set(resp.id, resp.attributes.responseBody);
     }
 
-    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews for app ID: ' + appleAppId);
+    const reviews: PulledAppReview[] = apiReviews.map((review) => {
+      const responseId = review.relationships?.response?.data?.id;
+      const responseText = responseId ? responseMap.get(responseId) : undefined;
+
+      return {
+        external_identifier: review.id,
+        source_identifier: AppFeedbackSourceIdentifier.APPLE,
+        title: review.attributes.title,
+        content: review.attributes.body,
+        source_rating_raw: review.attributes.rating,
+        positive: review.attributes.rating >= 4,
+        ...(responseText ? { response: responseText } : {}),
+      };
+    });
+
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Apple reviews via ASC API for app ID: ' + appleAppId);
     return reviews;
   }
 
-  async pullGoogleReviews(googlePlayPackageName: string): Promise<PulledAppReview[]> {
-    this.logger.info('app-reviews-pull-hook: Google Play review pull not yet implemented for package: ' + googlePlayPackageName);
-    // Google Play reviews require the Google Play Developer API (OAuth2).
-    // Implement via GooglePlayHelper once credentials are available.
-    return [];
+  /**
+   * Pull Google Play reviews using the Google Play Developer API.
+   * Requires a valid service account key JSON for authentication.
+   */
+  async pullGoogleReviews(googlePlayPackageName: string, serviceAccountKeyJson: string): Promise<PulledAppReview[]> {
+    this.logger.info('app-reviews-pull-hook: Pulling Google Play reviews for package: ' + googlePlayPackageName);
+
+    const googleReviews = await GooglePlayHelper.fetchAllReviews(googlePlayPackageName, serviceAccountKeyJson, this.logger);
+
+    const reviews: PulledAppReview[] = [];
+    for (const review of googleReviews) {
+      const userComment = review.comments?.[0]?.userComment;
+      if (!userComment) {
+        continue;
+      }
+
+      const developerComment = review.comments?.[0]?.developerComment;
+      const rating = userComment.starRating;
+
+      reviews.push({
+        external_identifier: review.reviewId,
+        source_identifier: AppFeedbackSourceIdentifier.GOOGLE_PLAY,
+        title: review.authorName || undefined,
+        content: userComment.text,
+        source_rating_raw: rating,
+        positive: rating >= 4,
+        ...(developerComment?.text ? { response: developerComment.text } : {}),
+      });
+    }
+
+    this.logger.info('app-reviews-pull-hook: Fetched ' + reviews.length + ' Google Play reviews for package: ' + googlePlayPackageName);
+    if (reviews.length === 0) {
+      this.logger.info('app-reviews-pull-hook: Note: The Google Play Developer API only returns reviews from approximately the last 7 days. If your app has older reviews only, they will not appear here.');
+    }
+    return reviews;
   }
 }

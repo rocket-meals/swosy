@@ -1,5 +1,6 @@
 import { AppFeedbackSourceIdentifier, DatabaseTypes } from 'repo-depkit-common';
 import { AppleAppStoreConnectHelper } from '../helpers/AppleAppStoreConnectHelper';
+import { GooglePlayHelper } from '../helpers/GooglePlayHelper';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 
@@ -12,7 +13,7 @@ export class AppStoreReviewsResponseHelper {
     if (sourceIdentifier === AppFeedbackSourceIdentifier.APPLE) {
       return !!EnvVariableHelper.getAppStoreConnectPrivateKey();
     } else if (sourceIdentifier === AppFeedbackSourceIdentifier.GOOGLE_PLAY) {
-      return !!EnvVariableHelper.getGooglePlayServiceAccountKeyJson();
+      return !!EnvVariableHelper.getGooglePlayServiceAccountKeyJson() && !!EnvVariableHelper.getGooglePlayPackageName();
     }
     return true;
   }
@@ -31,12 +32,18 @@ export class AppStoreReviewsResponseHelper {
       return;
     }
 
+    const externalId = feedback.external_identifier;
+    if (!externalId) {
+      this.logger.error('app-reviews-pull-hook: Cannot respond to review without external_identifier, feedback id: ' + feedback.id);
+      return;
+    }
+
     const sourceIdentifier = feedback.source_identifier;
 
     if (sourceIdentifier === AppFeedbackSourceIdentifier.APPLE) {
-      await this.respondToAppleReview(feedback.id, responseText);
+      await this.respondToAppleReview(externalId, responseText);
     } else if (sourceIdentifier === AppFeedbackSourceIdentifier.GOOGLE_PLAY) {
-      await this.respondToGooglePlayReview(feedback.id, responseText);
+      await this.respondToGooglePlayReview(externalId, responseText);
     }
   }
 
@@ -51,8 +58,16 @@ export class AppStoreReviewsResponseHelper {
     this.logger.info('app-reviews-pull-hook: Successfully responded to Apple review: ' + reviewId);
   }
 
-  private async respondToGooglePlayReview(reviewId: string, _responseBody: string): Promise<void> {
-    this.logger.info('app-reviews-pull-hook: Google Play review response not yet implemented for review: ' + reviewId);
-    // Implement via Google Play Developer API once credentials are available.
+  private async respondToGooglePlayReview(reviewId: string, responseBody: string): Promise<void> {
+    const serviceAccountKeyJson = EnvVariableHelper.getGooglePlayServiceAccountKeyJson();
+    const packageName = EnvVariableHelper.getGooglePlayPackageName();
+
+    if (!serviceAccountKeyJson || !packageName) {
+      throw new Error('Google Play not configured (missing service account key or package name), cannot respond to review: ' + reviewId);
+    }
+
+    this.logger.info('app-reviews-pull-hook: Responding to Google Play review: ' + reviewId);
+    await GooglePlayHelper.replyToReview(packageName, reviewId, responseBody, serviceAccountKeyJson);
+    this.logger.info('app-reviews-pull-hook: Successfully responded to Google Play review: ' + reviewId);
   }
 }

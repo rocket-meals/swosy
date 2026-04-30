@@ -28,6 +28,8 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
 
       const appleAppId = EnvVariableHelper.getAppleAppId();
       const googlePlayPackageName = EnvVariableHelper.getGooglePlayPackageName();
+      const privateKey = EnvVariableHelper.getAppStoreConnectPrivateKey();
+      const googleServiceAccountKeyJson = EnvVariableHelper.getGooglePlayServiceAccountKeyJson();
 
       if (!appleAppId && !googlePlayPackageName) {
         await context.logger.appendLog('app-reviews-pull-hook: No app store IDs configured for this customer, skipping');
@@ -35,19 +37,28 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       }
 
       let appleReviews: PulledAppReview[] = [];
-      if (appleAppId) {
-        appleReviews = await pullHelper.pullAppleReviews(appleAppId);
+      if (appleAppId && privateKey) {
+        appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey);
+      } else if (appleAppId && !privateKey) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
+      } else if (!appleAppId) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — no Apple App ID configured for this customer');
       }
 
       let googleReviews: PulledAppReview[] = [];
-      if (googlePlayPackageName) {
-        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName);
+      if (googlePlayPackageName && googleServiceAccountKeyJson) {
+        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName, googleServiceAccountKeyJson);
+      } else if (googlePlayPackageName && !googleServiceAccountKeyJson) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON not configured');
+      } else if (!googlePlayPackageName) {
+        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — no Google Play package name configured for this customer');
       }
       const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
       let created = 0;
       let skipped = 0;
+      let updated = 0;
 
       for (const review of allReviews) {
         const existing = await appFeedbacksHelper.readByQuery({
@@ -56,17 +67,31 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         });
 
         if (existing && existing.length > 0) {
-          skipped++;
+          // Update response if the pulled review has a response and the existing record has a different or empty response
+          const existingFeedback = existing[0]!;
+          const existingResponse = existingFeedback.response?.trim() || '';
+          const newResponse = review.response?.trim() || '';
+          if (newResponse && existingResponse !== newResponse) {
+            await appFeedbacksHelper.updateOne(existingFeedback.id, {
+              response: review.response,
+              feedback_read_by_support: true,
+            });
+            updated++;
+          } else {
+            skipped++;
+          }
           continue;
         }
 
-        await appFeedbacksHelper.createOne({
-          ...review,
-        });
+        const createData: Partial<DatabaseTypes.AppFeedbacks> = { ...review };
+        if (review.response) {
+          createData.feedback_read_by_support = true;
+        }
+        await appFeedbacksHelper.createOne(createData);
         created++;
       }
 
-      await context.logger.appendLog('Created ' + created + ' new reviews, skipped ' + skipped + ' duplicates');
+      await context.logger.appendLog('Created ' + created + ' new reviews, updated ' + updated + ' with responses, skipped ' + skipped + ' duplicates');
       return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });
     } catch (e) {
       await context.logger.appendLog('error during reviews pull: ' + (e instanceof Error ? e.message : String(e)));
@@ -88,9 +113,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
   filter(CollectionNames.APP_FEEDBACKS + '.items.update', async (payload, meta) => {
     const payloadTyped = payload as Partial<DatabaseTypes.AppFeedbacks>;
 
-    if (!payloadTyped.response) {
+    if (!payloadTyped.response || payloadTyped.response.trim() === '') {
       return payload;
     }
+
+    // When response is set to non-empty text, mark as read by support
+    payloadTyped.feedback_read_by_support = true;
 
     const filterMyDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = filterMyDatabaseHelper.getAppFeedbacksHelper();

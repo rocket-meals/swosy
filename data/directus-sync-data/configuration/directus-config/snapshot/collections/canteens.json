@@ -8,7 +8,7 @@
     "collapse": "closed",
     "collection": "canteens",
     "color": null,
-    "display_template": null,
+    "display_template": "{{alias}} ({{id}})",
     "group": "folder_food",
     "hidden": false,
     "icon": "warehouse",
