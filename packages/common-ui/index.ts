@@ -77,7 +77,7 @@ export type { BaseBottomSheetProps } from './src/components/BaseBottomSheet';
 export { default as MyScrollViewModal } from './src/components/MyScrollViewModal';
 export type { MyScrollViewModalProps } from './src/components/MyScrollViewModal';
 
-export { ModalProvider, useModalContext } from './src/components/GlobalModal/ModalProvider';
+export { ModalProvider, ModalContextProvider, ModalRenderer, useModalContext } from './src/components/GlobalModal/ModalProvider';
 export { useModal } from './src/components/GlobalModal/useModal';
 export { useMyScrollViewModal } from './src/components/GlobalModal/useMyScrollViewModal';
 export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMyScrollViewModal';

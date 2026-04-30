@@ -39,7 +39,7 @@ import {GluestackUIProvider} from '@gluestack-ui/themed';
 import {config} from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
-import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
+import {ModalContextProvider, ModalRenderer} from '@/components/GlobalModal/ModalProvider';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
@@ -157,19 +157,21 @@ export default function Layout() {
 						<PersistGate loading={null} persistor={persistor}>
 							<RootSiblingParent>
 								<ThemeProvider>
-									<ModalProvider>
+									<ModalContextProvider>
 										<AppSettingsProvider>
-											<ServerStatusLoader>
-												<ExpoUpdateChecker>
-													<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
-														<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
-															<Slot />
-														</SafeAreaView>
-													</KeyboardAvoidingView>
-												</ExpoUpdateChecker>
-											</ServerStatusLoader>
+											<ModalRenderer>
+												<ServerStatusLoader>
+													<ExpoUpdateChecker>
+														<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+															<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
+																<Slot />
+															</SafeAreaView>
+														</KeyboardAvoidingView>
+													</ExpoUpdateChecker>
+												</ServerStatusLoader>
+											</ModalRenderer>
 										</AppSettingsProvider>
-									</ModalProvider>
+									</ModalContextProvider>
 								</ThemeProvider>
 							</RootSiblingParent>
 						</PersistGate>
