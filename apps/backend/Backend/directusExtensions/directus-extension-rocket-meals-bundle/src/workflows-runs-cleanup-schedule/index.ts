@@ -7,7 +7,7 @@ import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
 import {MyDefineHook} from '../helpers/MyDefineHook';
 
 const SCHEDULE_NAME = 'workflows-runs-cleanup-schedule';
-const MAX_AGE_DAYS = 31;
+const MAX_AGE_DAYS = 365;
 const BATCH_SIZE = 500;
 const MAX_ITERATIONS = 20;
 
