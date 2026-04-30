@@ -8,6 +8,8 @@ import {MyDefineHook} from '../helpers/MyDefineHook';
 
 const SCHEDULE_NAME = 'workflows-runs-cleanup-schedule';
 const MAX_AGE_DAYS = 31;
+const BATCH_SIZE = 500;
+const MAX_ITERATIONS = 20;
 
 class WorkflowsRunsCleanupWorkflow extends SingleWorkflowRun {
   getWorkflowId(): string {
@@ -26,38 +28,54 @@ class WorkflowsRunsCleanupWorkflow extends SingleWorkflowRun {
 
       const workflowsRunsHelper = context.myDatabaseHelper.getWorkflowsRunsHelper();
 
-      const oldWorkflowRuns = await workflowsRunsHelper.readByQuery({
-        filter: {
-          _and: [
-            {
-              date_created: {
-                _lte: cutoffDateISO,
-              },
+      const filter = {
+        _and: [
+          {
+            date_created: {
+              _lte: cutoffDateISO,
             },
-            {
-              state: {
-                _neq: WORKFLOW_RUN_STATE.RUNNING,
-              },
+          },
+          {
+            state: {
+              _neq: WORKFLOW_RUN_STATE.RUNNING,
             },
-          ],
-        },
-        fields: ['id'],
-        limit: -1,
-      });
+          },
+        ],
+      };
 
-      await context.logger.appendLog('Found ' + oldWorkflowRuns.length + ' old workflow_runs to delete');
+      let totalDeletedCount = 0;
+      let iteration = 0;
 
-      let deletedCount = 0;
-      for (const workflowRun of oldWorkflowRuns) {
-        try {
-          await workflowsRunsHelper.deleteOne(workflowRun.id);
-          deletedCount++;
-        } catch (err: any) {
-          await context.logger.appendLog('Error deleting workflow_run ' + workflowRun.id + ': ' + err.toString());
+      while (iteration < MAX_ITERATIONS) {
+        iteration++;
+
+        const batch = await workflowsRunsHelper.readByQuery({
+          filter,
+          fields: ['id'],
+          limit: BATCH_SIZE,
+        });
+
+        if (batch.length === 0) {
+          await context.logger.appendLog('No more old workflow_runs found. Stopping after ' + iteration + ' iteration(s).');
+          break;
+        }
+
+        const ids = batch.map(run => run.id);
+        await context.logger.appendLog('Iteration ' + iteration + '/' + MAX_ITERATIONS + ': deleting ' + ids.length + ' workflow_runs');
+        await workflowsRunsHelper.deleteMany(ids);
+        totalDeletedCount += ids.length;
+
+        if (batch.length < BATCH_SIZE) {
+          await context.logger.appendLog('Last batch was smaller than ' + BATCH_SIZE + '. Stopping after ' + iteration + ' iteration(s).');
+          break;
         }
       }
 
-      await context.logger.appendLog('Successfully deleted ' + deletedCount + ' workflow_runs');
+      if (iteration >= MAX_ITERATIONS) {
+        await context.logger.appendLog('Reached maximum of ' + MAX_ITERATIONS + ' iterations. There may be more old workflow_runs remaining.');
+      }
+
+      await context.logger.appendLog('Successfully deleted ' + totalDeletedCount + ' workflow_runs in total');
 
       return context.logger.getFinalLogWithStateAndParams({
         state: WORKFLOW_RUN_STATE.SUCCESS,
