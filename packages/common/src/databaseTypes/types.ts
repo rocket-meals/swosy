@@ -501,6 +501,7 @@ export type ChatsParticipants = {
 
 export type CollectibleEventParticipants = {
   collectible_event?: string | CollectibleEvents | null;
+  data?: any | null;
   date_created?: string | null;
   date_updated?: string | null;
   email?: string | null;

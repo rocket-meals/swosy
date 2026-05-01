@@ -11,6 +11,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const styles = StyleSheet.create({
         optionsContainer: {
@@ -96,6 +97,8 @@ export const useLanguageModal = () => {
         const { translate, setLanguageMode, language } = useLanguage();
         const { theme } = useTheme();
         const { primaryColor } = useAppSelector((state) => state.settings);
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
         const changeLanguage = useCallback(
                 (languageOption: (typeof languages)[number]) => {
@@ -121,6 +124,8 @@ export const useLanguageModal = () => {
                                 <SettingsList
                                         key={`${languageOption.value}-${index}`}
                                         label={languageOption.label}
+                                        reverseLayout={false}
+                                        titleTextAlign="left"
                                         leftIcon={
                                                 <View style={styles.flagWrapper}>
                                                         <Text style={styles.flagText}>{languageOption.emoji}</Text>
@@ -148,6 +153,8 @@ export const useLanguageModal = () => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.language),
+                                titleTextAlign: isRtl ? 'right' : 'left',
+                                titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 children: (
                                         <View style={styles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (
@@ -165,7 +172,7 @@ export const useLanguageModal = () => {
                         },
                         {}
                 );
-        }, [LanguageOption, showScrollViewModal, translate]);
+        }, [LanguageOption, isRtl, showScrollViewModal, translate]);
 
         return { openLanguageModal };
 };

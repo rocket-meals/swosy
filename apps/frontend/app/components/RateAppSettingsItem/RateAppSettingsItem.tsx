@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import useNativeQuickRateApp from '@/hooks/useNativeQuickRateApp';
 
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
@@ -38,6 +39,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const { show: showModal } = useMyScrollViewModal();
 	const { wasAskedForRating, requestNativeReview } = useNativeQuickRateApp();
 
@@ -176,8 +179,17 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 							rightElement={
 								row.url ? (
 									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-										<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
-										<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+										{isArabic ? (
+											<>
+												<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
+												<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
+											</>
+										) : (
+											<>
+												<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
+												<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+											</>
+										)}
 									</View>
 								) : undefined
 							}
@@ -209,8 +221,17 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 					leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
 					rightElement={
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
-							<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+							{isArabic ? (
+								<>
+									<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
+									<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+								</>
+							) : (
+								<>
+									<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+									<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+								</>
+							)}
 						</View>
 					}
 				/>

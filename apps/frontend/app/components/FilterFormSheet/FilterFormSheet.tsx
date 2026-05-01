@@ -12,6 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { myContrastColor } from '@/helper/ColorHelper';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const iconLibraries: any = {
 	MaterialIcons,
@@ -23,6 +24,8 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({ closeSheet, isVisible
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const updateSort = (option: { id: string }) => {
@@ -52,13 +55,25 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({ closeSheet, isVisible
 								{
 									backgroundColor: isSelected ? primaryColor : theme.screen.iconBg,
 									borderColor: isSelected ? primaryColor : theme.screen.iconBg,
+									flexDirection: isArabic ? 'row-reverse' : 'row',
 								},
 							]}
 							onPress={() => updateSort(option)}
 						>
-							<View style={styles.col}>
+							<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 								{IconComponent && <IconComponent name={option.icon.name} size={22} color={isSelected ? contrastColor : theme.screen.text} />}
-								<Text style={[styles.label, { color: isSelected ? contrastColor : theme.screen.text }]}>{translate(option.label)}</Text>
+								<Text
+									style={[
+										styles.label,
+										{
+											color: isSelected ? contrastColor : theme.screen.text,
+											textAlign: isArabic ? 'right' : 'left',
+											writingDirection: isArabic ? 'rtl' : 'ltr',
+										},
+									]}
+								>
+									{translate(option.label)}
+								</Text>
 							</View>
 							{isSelected && <MaterialCommunityIcons name="check" size={22} color={contrastColor} />}
 						</TouchableOpacity>

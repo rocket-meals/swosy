@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export type LinkCoordinate = {
 	latitude: number;
@@ -22,9 +23,11 @@ type OpenLinkCoordinateModalOptions = {
 
 const useLinkCoordinateModal = () => {
 	const { show, close } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const toast = useToast();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const closeModal = useCallback(() => {
 		close();
@@ -79,6 +82,8 @@ const useLinkCoordinateModal = () => {
 
 			show({
 				title: translate(TranslationKeys.location_information),
+				titleTextAlign: isRtl ? 'right' : 'left',
+				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 				onClose: closeModal,
 				children: (
 					<View style={{ gap: 12 }}>
@@ -98,7 +103,7 @@ const useLinkCoordinateModal = () => {
 										key={option.key}
 										label={option.label}
 										leftIcon={option.icon}
-										rightIcon={<Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />}
+											rightIcon={<Entypo name={isRtl ? 'chevron-small-left' : 'chevron-small-right'} size={26} color={theme.screen.icon} />}
 										handleFunction={option.onPress}
 										groupPosition={groupPosition}
 										showSeparator={index !== options.length - 1}
@@ -119,7 +124,7 @@ const useLinkCoordinateModal = () => {
 				),
 			});
 		},
-		[closeModal, show, theme, toast, translate]
+		[closeModal, isRtl, show, theme, toast, translate]
 	);
 
 	return { openLinkCoordinateModal, closeLinkCoordinateModal: closeModal };

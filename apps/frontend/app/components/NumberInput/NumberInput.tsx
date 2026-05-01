@@ -6,10 +6,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 const NumberInput = ({ id, value, onChange, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const { translate, language } = useLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const flag = !suffix && !prefix;
 
 	const handleTextChange = (text: string) => {
@@ -49,6 +53,7 @@ const NumberInput = ({ id, value, onChange, error, isDisabled, custom_type, pref
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
+						{ textAlign: languageTextAlign },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}

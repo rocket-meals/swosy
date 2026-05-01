@@ -3,17 +3,22 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { HoursSheetContent } from '@/components/HoursSheet/HoursSheet';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export const useMyScrollviewModalBusinessHours = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openBusinessHoursModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.businesshours),
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <HoursSheetContent />,
 		});
-	}, [showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openBusinessHoursModal, closeBusinessHoursModal: closeScrollViewModal };
 };

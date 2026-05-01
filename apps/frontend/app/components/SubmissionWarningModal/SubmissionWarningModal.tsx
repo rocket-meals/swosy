@@ -12,6 +12,7 @@ import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import AppButton from '@/components/AppButton';
 
 const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({ isVisible, setIsVisible, id }) => {
 	const router = useRouter();
@@ -100,7 +101,10 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({ isVisib
 					{translate(TranslationKeys.form_edit_warning)}
 				</Text>
 				<View style={styles.actionContainer}>
-					<TouchableOpacity
+					<AppButton
+						text={translate(TranslationKeys.cancel)}
+						onPress={() => router.navigate('/form-submissions')}
+						variant="outline"
 						style={{
 							...styles.loginButton,
 							backgroundColor: theme.screen.iconBg,
@@ -108,20 +112,21 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({ isVisib
 							borderColor: primaryColor,
 							width: Dimensions.get('window').width < 500 ? '100%' : '80%',
 						}}
-						onPress={() => router.navigate('/form-submissions')}
-					>
-						{<Text style={{ ...styles.loginLabel, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>}
-					</TouchableOpacity>
-					<TouchableOpacity
+						textStyle={{ ...styles.loginLabel, color: theme.screen.text }}
+					/>
+					<AppButton
+						text={translate(TranslationKeys.proceed)}
+						onPress={handleProceed}
+						loading={loading}
+						loadingIndicatorColor={theme.background}
+						loadingIndicatorSize={22}
 						style={{
 							...styles.loginButton,
 							backgroundColor: primaryColor,
 							width: Dimensions.get('window').width < 500 ? '100%' : '80%',
 						}}
-						onPress={handleProceed}
-					>
-						{loading ? <ActivityIndicator size={22} color={theme.background} /> : <Text style={{ ...styles.loginLabel, color: theme.activeText }}>{translate(TranslationKeys.proceed)}</Text>}
-					</TouchableOpacity>
+						textStyle={{ ...styles.loginLabel, color: theme.activeText }}
+					/>
 				</View>
 			</View>
 		</Modal>

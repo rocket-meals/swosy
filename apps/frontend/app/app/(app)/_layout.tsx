@@ -8,7 +8,7 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import {AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
+import { AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup } from 'repo-depkit-common';
 import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_FRIENDSHIPS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
@@ -50,11 +50,13 @@ import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { loadChatReadStatus } from '@/helper/chatReadStatus';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 
 export default function Layout() {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { deviceMock } = useGlobalSearchParams();
 	const kioskMode = useKioskMode();
 	const dispatch = useDispatch();
@@ -84,12 +86,10 @@ export default function Layout() {
 	const buildingsOrganizationsHelper = useMemo(() => new BuildingsOrganizationsHelper(), []);
 	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
-	const { popupEvents } = useAppSelector((state) => state.food);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
-	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	useEffect(() => {
@@ -178,7 +178,6 @@ export default function Layout() {
 				fetchFriendships(profile?.id);
 			}
 		} catch (error) {
-			console.error('Error fetching profiles:', error);
 		}
 	};
 
@@ -193,16 +192,16 @@ export default function Layout() {
 		}
 	};
 
-        const fetchChats = async () => {
-                try {
-                        const storedStatus = await loadChatReadStatus();
-                        dispatch({ type: SET_CHAT_READ_STATUS, payload: storedStatus });
+	const fetchChats = async () => {
+		try {
+			const storedStatus = await loadChatReadStatus();
+			dispatch({ type: SET_CHAT_READ_STATUS, payload: storedStatus });
 
-                        if (user?.profile) {
-                                const result = (await chatsHelper.fetchChatsByProfile(user.profile)) as DatabaseTypes.Chats[];
-                                if (result) {
-                                        dispatch({ type: SET_CHATS, payload: result });
-                                }
+			if (user?.profile) {
+				const result = (await chatsHelper.fetchChatsByProfile(user.profile)) as DatabaseTypes.Chats[];
+				if (result) {
+					dispatch({ type: SET_CHATS, payload: result });
+				}
 			}
 		} catch (error) {
 			console.error('Error fetching chats:', error);
@@ -264,11 +263,11 @@ export default function Layout() {
 		}
 	};
 
-        const getNews = async () => {
-                try {
-                        const result = (await newsHelper.fetchNews({})) as DatabaseTypes.News[];
-                        if (result) {
-                                const today = new Date().toISOString().split('T')[0];
+	const getNews = async () => {
+		try {
+			const result = (await newsHelper.fetchNews({})) as DatabaseTypes.News[];
+			if (result) {
+				const today = new Date().toISOString().split('T')[0];
 				const sortedNews = [...result].sort((a, b) => {
 					const dateA = a?.date;
 					const dateB = b?.date;
@@ -288,20 +287,20 @@ export default function Layout() {
 				dispatch({ type: SET_NEWS, payload: sortedNews });
 			}
 		} catch (error) {
-                        console.error('Error fetching news:', error);
-                }
-        };
+			console.error('Error fetching news:', error);
+		}
+	};
 
-        const getCollectibleEvents = async () => {
-                try {
-                        const result = (await collectibleEventsHelper.fetchCollectibleEvents({})) as DatabaseTypes.CollectibleEvents[];
-                        if (result) {
-                                dispatch({ type: SET_COLLECTIBLE_EVENTS, payload: sortBySortField(result) });
-                        }
-                } catch (error) {
-                        console.error('Error fetching collectible events:', error);
-                }
-        };
+	const getCollectibleEvents = async () => {
+		try {
+			const result = (await collectibleEventsHelper.fetchCollectibleEvents({})) as DatabaseTypes.CollectibleEvents[];
+			if (result) {
+				dispatch({ type: SET_COLLECTIBLE_EVENTS, payload: sortBySortField(result) });
+			}
+		} catch (error) {
+			console.error('Error fetching collectible events:', error);
+		}
+	};
 
 	const getFoodCategories = async () => {
 		try {
@@ -422,14 +421,14 @@ export default function Layout() {
 		}
 		try {
 			const response = (await popupEventsHelper.fetchAllPopupEvents()) as DatabaseTypes.PopupEvents[];
-                        if (response) {
-                                const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
+			if (response) {
+				const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
 
-                                const filteredEvents = filterPopupEvents(response, platformKey).map((event, index) => ({
-                                        ...event,
-                                        isOpen: false,
-                                        isCurrent: index === 0,
-                                }));
+				const filteredEvents = filterPopupEvents(response, platformKey).map((event, index) => ({
+					...event,
+					isOpen: false,
+					isCurrent: index === 0,
+				}));
 				const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));
 				if (eventsHash !== hashValue) {
 					dispatch({ type: SET_POPUP_EVENTS, payload: filteredEvents });
@@ -515,12 +514,12 @@ export default function Layout() {
 			key: CollectionKeys.FOODS_FEEDBACKS_LABELS,
 			action: getFoodFeedBackLabels,
 		},
-                { key: CollectionKeys.NEWS, action: getNews },
-                {
-                        key: [CollectionKeys.COLLECTIBLE_EVENTS, CollectionKeys.COLLECTIBLE_EVENTS_TRANSLATIONS],
-                        action: getCollectibleEvents,
-                },
-                { key: CollectionKeys.BUSINESSHOURS, action: getBusinessHours },
+		{ key: CollectionKeys.NEWS, action: getNews },
+		{
+			key: [CollectionKeys.COLLECTIBLE_EVENTS, CollectionKeys.COLLECTIBLE_EVENTS_TRANSLATIONS],
+			action: getCollectibleEvents,
+		},
+		{ key: CollectionKeys.BUSINESSHOURS, action: getBusinessHours },
 		{
 			key: CollectionKeys.BUSINESSHOURS_GROUPS,
 			action: getAllBusinessHoursGroups,
@@ -588,11 +587,16 @@ export default function Layout() {
 			headerTintColor: theme.header.text,
 			drawerType: 'front' as const,
 			drawerPosition: (() => {
-				const position = drawerPosition === 'system' ? 'left' : drawerPosition;
+				const position =
+					drawerPosition === 'system'
+						? isLtrLanguage
+							? 'left'
+							: 'right'
+						: drawerPosition;
 				return position === 'left' || position === 'right' ? position : 'left';
 			})() as 'left' | 'right',
 		}),
-		[theme.header.background, theme.header.text, drawerPosition]
+		[theme.header.background, theme.header.text, drawerPosition, isLtrLanguage]
 	);
 
 	if (!loggedIn && !kioskMode) {
@@ -612,13 +616,13 @@ export default function Layout() {
 					name="index"
 					options={{
 						title: translate(TranslationKeys.please_select_your_canteen),
-						headerLeft: () => null,
+						header: () => <CustomMenuHeader label={translate(TranslationKeys.please_select_your_canteen)} key={'Select-Canteen'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name={AppScreens.FOOD_OFFERS}
 					options={{
-						title: 'Canteens',
+						title: translate(TranslationKeys.canteens),
 						headerShown: false,
 					}}
 				/>
@@ -632,21 +636,21 @@ export default function Layout() {
 				<Drawer.Screen
 					name="campus"
 					options={{
-						title: 'Campus',
+						title: translate(TranslationKeys.campus),
 						headerShown: false,
 					}}
 				/>
 				<Drawer.Screen
 					name="housing"
 					options={{
-						title: 'Housing',
+						title: translate(TranslationKeys.housing),
 						headerShown: false,
 					}}
 				/>
 				<Drawer.Screen
 					name="news/index"
 					options={{
-						title: 'News',
+						title: translate(TranslationKeys.news),
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.news)} key={'News'} />,
 					}}
 				/>
@@ -654,26 +658,26 @@ export default function Layout() {
 					name="course-timetable/index"
 					options={{
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.course_timetable)} key={'course_timetable'} />,
-						title: 'Course Timetable',
+						title: translate(TranslationKeys.course_timetable),
 					}}
 				/>
 				<Drawer.Screen
 					name="settings/index"
 					options={{
-						title: 'Settings',
+						title: translate(TranslationKeys.settings),
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.settings)} key={'settings'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="faq-food/index"
 					options={{
-						title: 'FAQ-Food',
+						title: translate(TranslationKeys.faq_food),
 					}}
 				/>
 				<Drawer.Screen
 					name="faq-living/index"
 					options={{
-						title: 'FAQ-Living',
+						title: translate(TranslationKeys.faq_living),
 					}}
 				/>
 
@@ -681,7 +685,7 @@ export default function Layout() {
 					name="management/index"
 					options={{
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.role_management)} key={'Management'} />,
-						title: 'Management',
+						title: translate(TranslationKeys.management),
 					}}
 				/>
 				<Drawer.Screen
@@ -689,6 +693,125 @@ export default function Layout() {
 					options={{
 						header: () => <CustomMenuHeader label={translate(TranslationKeys.experimentell)} key={'Experimentell'} />,
 						title: translate(TranslationKeys.experimentell),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/account-required-example/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.account_required_example)} key={'account_required_example'} />,
+						title: translate(TranslationKeys.account_required_example),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/eating-habits-performance/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits_performance)} key={'eating_habits_performance'} />,
+						title: translate(TranslationKeys.eating_habits_performance),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/edge-speech/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.edge_speech_test)} key={'edge_speech_test'} />,
+						title: translate(TranslationKeys.edge_speech_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/feature-wishes/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.feature_wishes)} key={"feature_wishes"} />,
+						title: translate(TranslationKeys.feature_wishes),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/food-wishlist/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.food_wishlist)} key={"food_wishlist"} />,
+						title: translate(TranslationKeys.food_wishlist),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/game-ideas/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.game_ideas)} key={"game_ideas"} />,
+						title: translate(TranslationKeys.game_ideas),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/map-with-custom-images-and-buildings/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.map_custom_images_and_buildings)} key={'map_with_custom_images_and_buildings'} />,
+						title: translate(TranslationKeys.map_custom_images_and_buildings),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/expo-update-test/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.EXPO_UPDATE_TEST)} key={'expo_update_test'} />,
+						title: translate(TranslationKeys.EXPO_UPDATE_TEST),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/date-helper/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.date_helper_preview)} key={'date_helper_preview'} />,
+						title: translate(TranslationKeys.date_helper_preview),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/haptics/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.haptics_test)} key={'haptics_test'} />,
+						title: translate(TranslationKeys.haptics_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/debug-logout/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.debug_logout)} key={'debug_logout'} />,
+						title: translate(TranslationKeys.debug_logout),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/rate-app/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.rate_app)} key={'rate_app'} />,
+						title: translate(TranslationKeys.rate_app),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/app-download/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.app_download)} key={'app_download'} />,
+						title: translate(TranslationKeys.app_download),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/react-native-qrcode-svg/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.react_native_qrcode_svg)} key={'react_native_qrcode_svg'} />,
+						title: translate(TranslationKeys.react_native_qrcode_svg),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/markdown-test/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.markdown_test)} key={'markdown_test'} />,
+						title: translate(TranslationKeys.markdown_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/settings-list-components/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.settings_list_components)} key={'settings_list_components'} />,
+						title: translate(TranslationKeys.settings_list_components),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/test-use-modal/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.test_use_modal)} key={'test_use_modal'} />,
+						title: translate(TranslationKeys.test_use_modal),
 					}}
 				/>
 				<Drawer.Screen
@@ -722,44 +845,44 @@ export default function Layout() {
 						title: translate(TranslationKeys.notification),
 					}}
 				/>
-                                <Drawer.Screen
-                                        name="events/index"
-                                        options={{
-                                                header: () => <CustomStackHeader label={translate(TranslationKeys.events)} key={'events'} />,
-                                                title: translate(TranslationKeys.events),
-                                        }}
-                                />
-                                <Drawer.Screen
-                                        name="collectible-events/index"
-                                        options={{
-                                                header: () => (
-                                                        <CustomStackHeader
-                                                                label={translate(TranslationKeys.collectible_events)}
-                                                                key={'collectible_events'}
-                                                        />
-                                                ),
-                                                title: translate(TranslationKeys.collectible_events),
-                                        }}
-                                />
-                                <Drawer.Screen
-                                        name="collectible-event/index"
-                                        options={{
-                                                title: translate(TranslationKeys.collectible_event_active),
-                                                headerShown: false,
-                                        }}
-                                />
-                                <Drawer.Screen
-                                        name="support-FAQ/index"
-                                        options={{
-                                                title: translate(TranslationKeys.feedback_support_faq),
-                                                header: () => <CustomStackHeader label={translate(TranslationKeys.feedback_support_faq)} key={'Feedback Support Faq'} />,
+				<Drawer.Screen
+					name="events/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.events)} key={'events'} />,
+						title: translate(TranslationKeys.events),
+					}}
+				/>
+				<Drawer.Screen
+					name="collectible-events/index"
+					options={{
+						header: () => (
+							<CustomStackHeader
+								label={translate(TranslationKeys.collectible_events)}
+								key={'collectible_events'}
+							/>
+						),
+						title: translate(TranslationKeys.collectible_events),
+					}}
+				/>
+				<Drawer.Screen
+					name="collectible-event/index"
+					options={{
+						title: translate(TranslationKeys.collectible_event_active),
+						headerShown: false,
+					}}
+				/>
+				<Drawer.Screen
+					name="support-FAQ/index"
+					options={{
+						title: translate(TranslationKeys.feedback_support_faq),
+						header: () => <CustomStackHeader label={translate(TranslationKeys.feedback_support_faq)} key={'Feedback Support Faq'} />,
 					}}
 				/>
 
 				<Drawer.Screen
 					name="feedback-support/index"
 					options={{
-						title: 'Feedback & Support',
+						title: translate(TranslationKeys.feedback_and_support),
 						header: () => <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />,
 					}}
 				/>
@@ -783,7 +906,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="support-ticket"
 					options={{
-						title: 'Support Ticket',
+						title: translate(TranslationKeys.support_ticket),
 						headerShown: false,
 					}}
 				/>
@@ -792,14 +915,14 @@ export default function Layout() {
 					name="licenseInformation/index"
 					options={{
 						header: () => <CustomStackHeader label={translate(TranslationKeys.license_information)} key={'license_information'} />,
-						title: 'License Information',
+						title: translate(TranslationKeys.license_information),
 					}}
 				/>
 
 				<Drawer.Screen
 					name="data-access/index"
 					options={{
-						title: 'Data Access',
+						title: translate(TranslationKeys.dataAccess),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.dataAccess)} key={'Data Access'} />,
 					}}
 				/>
@@ -807,14 +930,14 @@ export default function Layout() {
 				<Drawer.Screen
 					name="eating-habits/index"
 					options={{
-						title: 'Eating Habits',
+						title: translate(TranslationKeys.eating_habits),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits)} key={'Eating Habits'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="price-group/index"
 					options={{
-						title: 'Price Group',
+						title: translate(TranslationKeys.price_group),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.price_group)} key={'Price Group'} />,
 					}}
 				/>

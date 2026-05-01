@@ -1,12 +1,14 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { MapStyleKey, MAP_STYLE_DEFINITIONS } from '../MyMap/MyMapHelper';
 import MyMap from '../MyMap';
 import SettingsList from '../SettingsList';
 import CardWithText from '../CardWithText';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const DEFAULT_MAP_PREVIEW_CENTER = { lat: 52.662231, lng: 8.1244 };
 const DEFAULT_MAP_PREVIEW_ZOOM = 14;
@@ -34,17 +36,23 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	groupPosition = 'single',
 	mapPreviewCenter = DEFAULT_MAP_PREVIEW_CENTER,
 	mapPreviewZoom = DEFAULT_MAP_PREVIEW_ZOOM,
-	label = 'Map Style',
-	modalTitle = '🗺️ Map Style',
+	label,
+	modalTitle,
 	leftIcon,
 	iconBgColor,
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { theme } = useTheme();
+	const { language, translate, translateDynamic } = useLanguage();
+
+	const resolvedLabel = label ? translateDynamic(label) : translate(TranslationKeys.map_style);
+	const resolvedModalTitle = modalTitle
+		? translateDynamic(modalTitle)
+		: translate(TranslationKeys.map_style_modal_title);
 
 	const handleOpenSelection = useCallback(() => {
 		showModal({
-			title: modalTitle,
+			title: resolvedModalTitle,
 			disableHorizontalPadding: true,
 			children: (
 				<View style={styles.mapThemeGrid}>
@@ -101,17 +109,19 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 				</View>
 			),
 		});
-	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, theme, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle]);
+	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, theme, accentColor, mapPreviewCenter, mapPreviewZoom, resolvedModalTitle]);
 
 	return (
 		<SettingsList
 			leftIcon={leftIcon}
 			iconBgColor={iconBgColor}
-			label={label}
+			label={resolvedLabel}
 			value={MAP_STYLE_DEFINITIONS[selectedMapStyleKey]?.label ?? ''}
-			rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+			rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />}
 			onPress={handleOpenSelection}
 			groupPosition={groupPosition}
+			titleTextAlign={language === 'ar' ? 'right' : 'left'}
+			reverseLayout={language === 'ar'}
 		/>
 	);
 };

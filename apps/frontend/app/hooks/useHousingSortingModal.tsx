@@ -11,6 +11,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { RootState } from '@/redux/reducer';
 import { SET_APARTMENTS_SORTING } from '@/redux/Types/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
@@ -79,15 +80,19 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 
 export const useHousingSortingModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openHousingSortingModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.sort),
 			onClose: closeScrollViewModal,
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <HousingSortSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openHousingSortingModal };
 };

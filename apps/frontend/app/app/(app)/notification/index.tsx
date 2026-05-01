@@ -14,13 +14,15 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
 import animation from '@/assets/animations/notificationBell.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const NotificationScreen = () => {
 	useSetPageTitle(TranslationKeys.notification);
@@ -28,6 +30,8 @@ const NotificationScreen = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { language, primaryColor, appSettings } = useAppSelector((state) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);
@@ -35,7 +39,8 @@ const NotificationScreen = () => {
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const foodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks);
+	const ownFoodFeedbacksDict = useAppSelector((state) => state.food.ownFoodFeedbacksDict);
+	const foodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -65,7 +70,16 @@ const NotificationScreen = () => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
+			return (
+				<SafeLottieView
+					ref={animationRef}
+					source={animationJson}
+					resizeMode="contain"
+					style={isWeb ? { width: 250, height: 250 } : { width: '100%', height: '100%' }}
+					autoPlay={autoPlay || false}
+					loop={false}
+				/>
+			);
 		}
 	}, [autoPlay, animationJson]);
 
@@ -139,6 +153,9 @@ const NotificationScreen = () => {
 							...styles.label,
 							color: theme.header.text,
 							fontSize: windowWidth < 500 ? 16 : 18,
+							textAlign: isRtl ? 'right' : 'left',
+							writingDirection: isRtl ? 'rtl' : 'ltr',
+							alignSelf: 'stretch',
 						}}
 					>
 						{translate(TranslationKeys.notification_index_introduction)}
@@ -149,6 +166,9 @@ const NotificationScreen = () => {
 							...styles.value,
 							color: theme.header.text,
 							fontSize: windowWidth < 500 ? 16 : 18,
+							textAlign: isRtl ? 'right' : 'left',
+							writingDirection: isRtl ? 'rtl' : 'ltr',
+							alignSelf: 'stretch',
 						}}
 					>
 						{translate(TranslationKeys.foods)}
@@ -159,15 +179,19 @@ const NotificationScreen = () => {
 								style={{
 									...styles.infoRow,
 									backgroundColor: theme.screen.iconBg,
+									...(isRtl ? { flexDirection: 'row-reverse' } : null),
 								}}
 								key={index}
 							>
-								<View style={styles.iconLabelContainer}>
+								<View style={[styles.iconLabelContainer, isRtl ? { flexDirection: 'row-reverse', justifyContent: 'flex-end' } : null]}>
 									<Text
 										style={{
 											...styles.label,
 											color: theme.screen.text,
 											fontSize: windowWidth < 500 ? 16 : 18,
+											textAlign: isRtl ? 'right' : 'left',
+											writingDirection: isRtl ? 'rtl' : 'ltr',
+											alignSelf: 'stretch',
 										}}
 									>
 										{excerpt(getTextFromTranslation(item.data?.translations, language), 90)}

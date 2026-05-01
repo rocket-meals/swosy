@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 import type { FormInputBaseProps } from './types';
+import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const ensureStringArray = (options: string[]): string[] => {
 	const uniqueValues = new Set<string>();
@@ -32,7 +33,9 @@ type DropdownInputProps = Omit<FormInputBaseProps, 'isDisabled'> & {
 
 const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { primaryColor } = useAppSelector(state => state.settings);
 
 	const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);
@@ -63,6 +66,8 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                 show(
                         {
                                 title: translate(TranslationKeys.select),
+								titleTextAlign: isRtl ? 'right' : 'left',
+								titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 onClose: onCloseSheet,
                                 children: (
                                         <DropdownSheet
@@ -84,6 +89,7 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                 );
         }, [
                 isDisabled,
+				isRtl,
                 normalizedOptions,
                 allowCustomValues,
                 currentValue,
@@ -115,36 +121,52 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 						<Text style={[styles.prefixSuffixLabel, { color: theme.screen.text }]}>{prefix}</Text>
 					</View>
 				)}
-				<TouchableOpacity
+				<AppButton
+					variant="ghost"
+					usePlainText
 					style={[
 						styles.selectorButton,
 						{
 							backgroundColor: theme.sheet.inputBg,
 							borderColor: theme.screen.iconBg,
 							opacity: isDisabled ? 0.6 : 1,
+							marginVertical: 0,
 						},
 						prefix && styles.selectorButtonWithPrefix,
 						suffix && styles.selectorButtonWithSuffix,
+						isRtl ? { flexDirection: 'row-reverse' } : null,
 					]}
-					activeOpacity={0.7}
+					textStyle={{ width: 0, height: 0 }}
 					onPress={openSheet}
 					disabled={isDisabled}
-				>
-					<Text
-						style={[
-							styles.selectorText,
-							{
-								color: isPlaceholderDisplay ? theme.screen.placeholder : theme.screen.text,
-							},
-							isPlaceholderDisplay && styles.placeholderText,
-						]}
-						numberOfLines={1}
-						ellipsizeMode="tail"
-					>
-						{labelToShow}
-					</Text>
-					<MaterialCommunityIcons name="chevron-down" size={22} color={theme.screen.icon} style={styles.chevronIcon} />
-				</TouchableOpacity>
+					iconLeft={
+						<View style={{ flex: 1 }}>
+							<Text
+								style={[
+									styles.selectorText,
+									{
+										color: isPlaceholderDisplay ? theme.screen.placeholder : theme.screen.text,
+										textAlign: isRtl ? 'right' : 'left',
+										writingDirection: isRtl ? 'rtl' : 'ltr',
+									},
+									isPlaceholderDisplay && styles.placeholderText,
+								]}
+								numberOfLines={1}
+								ellipsizeMode="tail"
+							>
+								{labelToShow}
+							</Text>
+						</View>
+					}
+					iconRight={
+						<MaterialCommunityIcons
+							name="chevron-down"
+							size={22}
+							color={theme.screen.icon}
+							style={[styles.chevronIcon, isRtl ? { marginLeft: 0, marginRight: 12 } : null]}
+						/>
+					}
+				/>
 				{suffix && (
 					<View style={[styles.prefixSuffix, styles.prefixSuffixRight, { backgroundColor: theme.screen.iconBg, borderColor: theme.screen.iconBg }]}>
 						<Text style={[styles.prefixSuffixLabel, { color: theme.screen.text }]}>{suffix}</Text>

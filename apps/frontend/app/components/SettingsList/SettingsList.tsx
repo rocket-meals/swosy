@@ -1,2 +1,23 @@
+import React, { useMemo } from 'react';
 import { SettingsList as CommonSettingsList } from 'repo-depkit-common-ui';
-export default CommonSettingsList;
+import { useAppSelector } from '@/redux/hooks';
+import type { SettingsListProps } from './types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+
+const SettingsList: React.FC<SettingsListProps> = (props) => {
+	const language = useAppSelector((state) => state.settings.language);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
+	const resolvedTitleTextAlign = useMemo(
+		() => props.titleTextAlign ?? (isArabic ? (props.reverseLayout ?? true) ? 'right' : 'left' : undefined),
+		[isArabic, props.reverseLayout, props.titleTextAlign]
+	);
+	const resolvedReverseLayout = useMemo(
+		() => props.reverseLayout ?? (isArabic ? true : undefined),
+		[isArabic, props.reverseLayout]
+	);
+
+	return <CommonSettingsList {...props} titleTextAlign={resolvedTitleTextAlign} reverseLayout={resolvedReverseLayout} />;
+};
+
+export default SettingsList;

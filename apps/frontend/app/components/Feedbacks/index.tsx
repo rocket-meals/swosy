@@ -20,6 +20,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const loadingState = {
 	submitLoading: false,
@@ -29,10 +30,12 @@ const loadingState = {
 const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
 	const toast = useToast();
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const foodOfferCanteenId = canteenId;
 	const { width: screenWidth } = useWindowDimensions();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
@@ -48,9 +51,12 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	// Optimized Selectors
 	const foodId = foodDetails?.id;
-	const labels = useAppSelector((state) => state.food.foodFeedbackLabels, shallowEqual);
-	const labelEntries = useAppSelector((state) => state.food.ownfoodFeedbackLabelEntries, shallowEqual);
-	const ownFoodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks, shallowEqual);
+	const labelsDict = useAppSelector((state) => state.food.foodFeedbackLabelsDict, shallowEqual);
+	const labelEntriesDict = useAppSelector((state) => state.food.ownfoodFeedbackLabelEntriesDict, shallowEqual);
+	const ownFoodFeedbacksDict = useAppSelector((state) => state.food.ownFoodFeedbacksDict, shallowEqual);
+	const labels = useMemo(() => Object.values(labelsDict || {}), [labelsDict]);
+	const labelEntries = useMemo(() => Object.values(labelEntriesDict || {}), [labelEntriesDict]);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	
 	const previousFeedback = useMemo(() => {
 		return getpreviousFeedback(ownFoodFeedbacks, foodId);
@@ -72,7 +78,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 		}
 
 		if (string !== null && !string.trim()) {
-			toast('Please write a comment', 'error');
+			toast(translate(TranslationKeys.write_a_comment), 'error');
 			return;
 		}
 
@@ -112,7 +118,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 		}
 
 		if (text.length > 120) {
-			toast('Comment should be less than 500 characters', 'error');
+			toast(translate(TranslationKeys.commentShouldBeLessThan500Characters), 'error');
 			return;
 		}
 		setComment(text);
@@ -190,7 +196,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				style={[
 					styles.heading,
 					isWeb ? styles.headingWeb : styles.headingMobile,
-					{ color: theme.screen.text }
+					{
+						color: theme.screen.text,
+						textAlign: isRtl ? 'right' : 'left',
+						writingDirection: isRtl ? 'rtl' : 'ltr',
+					}
 				]}
 			>
 				{translate(TranslationKeys.feedback_labels)}
@@ -226,12 +236,16 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				<>
 					{previousFeedback && previousFeedback.comment && (
 						<View style={styles.commentsContainer}>
-							<View style={styles.commentsHeader}>
+							<View style={[styles.commentsHeader, { flexDirection: isRtl ? 'row-reverse' : 'row' }]}>
 								<Text
 									style={[
 										styles.heading,
 										styles.subHeading,
-										{ color: theme.screen.text }
+										{
+											color: theme.screen.text,
+											textAlign: isRtl ? 'right' : 'left',
+											writingDirection: isRtl ? 'rtl' : 'ltr',
+										}
 									]}
 								>
 									{translate(TranslationKeys.your_comment)}

@@ -1,12 +1,15 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, loadingText, onMessage }, ref) => {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const htmlBase = require('@/assets/maplibre/index.html') as string;
+	const { translate } = useLanguage();
 
 	const iframeSrc = useMemo(
 		// Computed only once: the iframe src is set on mount with the initial map position.
@@ -50,7 +53,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, loadingText,
 				ref={iframeRef}
 				src={iframeSrc}
 				style={{ width: '100%', height: '100%', border: 'none' }}
-				title="OSM Vector Map"
+				title={translate(TranslationKeys.osmVectorMap)}
 			/>
 		</View>
 	);

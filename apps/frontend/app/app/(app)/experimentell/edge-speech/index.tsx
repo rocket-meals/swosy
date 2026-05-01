@@ -8,6 +8,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const VOICES = [
 	{ key: 'de-DE-KatjaNeural', label: 'Katja (DE)' },
@@ -22,7 +23,9 @@ const EdgeSpeechScreen = () => {
 	useSetPageTitle(TranslationKeys.edge_speech_test);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, language } = useAppSelector((state) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const [inputText, setInputText] = useState('Guten Appetit! Hier sind heute leckere Gerichte für euch.');
 	const [selectedVoice, setSelectedVoice] = useState(VOICES[0].key);
@@ -55,19 +58,28 @@ const EdgeSpeechScreen = () => {
 			keyboardShouldPersistTaps="handled"
 		>
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.edge_speech_test)}
-				</Text>
-
 				<View style={styles.section}>
-					<Text style={[styles.body, { color: theme.screen.text }]}>
+					<Text
+						style={[
+							styles.body,
+							{
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							},
+						]}
+					>
 						{translate(TranslationKeys.edge_speech_test_description)}
 					</Text>
 				</View>
 
 				<View style={styles.section}>
 					<TextInput
-						style={[styles.textInput, { color: theme.screen.text, borderColor: primaryColor, backgroundColor: theme.card.background }]}
+						style={[
+							styles.textInput,
+							{ color: theme.screen.text, borderColor: primaryColor, backgroundColor: theme.card.background },
+							{ textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' },
+						]}
 						value={inputText}
 						onChangeText={setInputText}
 						placeholder={translate(TranslationKeys.edge_speech_enter_text)}
@@ -78,7 +90,16 @@ const EdgeSpeechScreen = () => {
 				</View>
 
 				<View style={styles.section}>
-					<Text style={[styles.label, { color: theme.screen.text }]}>
+					<Text
+						style={[
+							styles.label,
+							{
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							},
+						]}
+					>
 						{translate(TranslationKeys.edge_speech_voice_label)}
 					</Text>
 					{VOICES.map((voice) => (
@@ -89,9 +110,10 @@ const EdgeSpeechScreen = () => {
 								styles.voiceItem,
 								{ backgroundColor: theme.card.background },
 								selectedVoice === voice.key && { borderColor: primaryColor, borderWidth: 2 },
+								isArabic ? { flexDirection: 'row-reverse' } : null,
 							]}
 						>
-							<View style={styles.row}>
+							<View style={[styles.row, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 								<View style={[styles.iconBox, { backgroundColor: selectedVoice === voice.key ? primaryColor : theme.card.background }]}>
 									<MaterialCommunityIcons
 										name="account-voice"
@@ -99,7 +121,18 @@ const EdgeSpeechScreen = () => {
 										color={selectedVoice === voice.key ? '#fff' : theme.screen.icon}
 									/>
 								</View>
-								<Text style={[styles.body, { color: theme.screen.text }]}>{voice.label}</Text>
+								<Text
+									style={[
+										styles.body,
+										{
+											color: theme.screen.text,
+											textAlign: isArabic ? 'right' : 'left',
+											writingDirection: isArabic ? 'rtl' : 'ltr',
+										},
+									]}
+								>
+									{voice.label}
+								</Text>
 							</View>
 							{selectedVoice === voice.key && (
 								<MaterialCommunityIcons name="check-circle" size={20} color={primaryColor} />
@@ -110,7 +143,7 @@ const EdgeSpeechScreen = () => {
 
 				<TouchableOpacity
 					onPress={handleSpeak}
-					style={[styles.speakButton, { backgroundColor: primaryColor }]}
+					style={[styles.speakButton, { backgroundColor: primaryColor }, isArabic ? { flexDirection: 'row-reverse' } : null]}
 					activeOpacity={0.8}
 				>
 					<MaterialCommunityIcons
@@ -123,11 +156,29 @@ const EdgeSpeechScreen = () => {
 					</Text>
 				</TouchableOpacity>
 
-				<View style={[styles.statusBox, { backgroundColor: theme.card.background }]}>
-					<Text style={[styles.body, { color: theme.screen.text }]}>
+				<View style={[styles.statusBox, { backgroundColor: theme.card.background }, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+					<Text
+						style={[
+							styles.body,
+							{
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							},
+						]}
+					>
 						{translate(TranslationKeys.edge_speech_status)}:{' '}
 					</Text>
-					<Text style={[styles.body, { color: isSpeaking ? primaryColor : theme.screen.text }]}>
+					<Text
+						style={[
+							styles.body,
+							{
+								color: isSpeaking ? primaryColor : theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							},
+						]}
+					>
 						{isSpeaking
 							? translate(TranslationKeys.edge_speech_status_speaking)
 							: translate(TranslationKeys.edge_speech_status_idle)}

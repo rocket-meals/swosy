@@ -24,8 +24,9 @@ import { SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
@@ -33,10 +34,12 @@ import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
+	const isLtrLanguage = useIsLtrLanguage();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
-	const { markings } = useAppSelector((state) => state.food);
-	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { markingsDict } = useAppSelector((state) => state.food);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const { primaryColor, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
@@ -67,7 +70,6 @@ const Index = () => {
 						dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
 					}
 				}).catch((error) => {
-					console.error('Error fetching profile on focus:', error);
 				});
 			}
 
@@ -128,7 +130,7 @@ const Index = () => {
 						<Text style={{ fontSize: 18, fontWeight: '600', color: theme.screen.text }}>
 							{translate(TranslationKeys.clear_markings_selection)}
 						</Text>
-						<ProjectButton
+						<AppButton
 							text={translate(TranslationKeys.confirm)}
 							onPress={() => {
 								closeModal();
@@ -218,18 +220,32 @@ const Index = () => {
 				alignSelf: 'center',
 			}}
 		>
-			<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
+			<Text
+				style={{
+					...styles.body1,
+					color: theme.screen.text,
+					...(!isLtrLanguage ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : {}),
+				}}
+			>
+				{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
+			</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
-			<View style={styles.readMoreContainer}>
-				<TouchableOpacity
+			<View style={[styles.readMoreContainer, !isLtrLanguage ? { alignItems: 'flex-end' } : undefined]}>
+				<AppButton
+					text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
 					onPress={handleReadMore}
 					style={{
 						...styles.readMoreButton,
 						backgroundColor: theme.primary,
+						marginVertical: 0,
+						...(!isLtrLanguage ? { height: 60 } : {}),
 					}}
-				>
-					<Text style={{ ...styles.readMore, color: contrastColor }}>{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}</Text>
-				</TouchableOpacity>
+					textStyle={{
+						...styles.readMore,
+						color: contrastColor,
+						...(!isLtrLanguage ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
+					}}
+				/>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
 			<SettingsList
@@ -245,6 +261,7 @@ const Index = () => {
 				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
+				titleTextAlign={!isLtrLanguage ? 'right' : undefined}
 				handleFunction={handleClearMarkingsWithConfirmation}
 				groupPosition="bottom"
 			/>

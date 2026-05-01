@@ -6,6 +6,10 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
+import { useAppSelector } from '@/redux/hooks';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Demo center: FAU Erlangen campus area
 const DEMO_CENTER = { lat: 49.5977, lng: 11.0036 };
@@ -91,10 +95,10 @@ const BUILDINGS_3D = [
 type LayerGroup = 'poi' | 'parking' | 'transit' | 'roadLabels';
 
 const LAYER_TOGGLE_BUTTONS: { group: LayerGroup; label: string; emoji: string }[] = [
-    { group: 'poi',        label: 'Shops/POI',   emoji: '🏪' },
-    { group: 'parking',    label: 'Parking',     emoji: '🅿️' },
-    { group: 'transit',    label: 'Bus/Transit', emoji: '🚌' },
-    { group: 'roadLabels', label: 'Road names',  emoji: '🛣️' },
+    { group: 'poi',        label: TranslationKeys.shops_poi,   emoji: '🏪' },
+    { group: 'parking',    label: TranslationKeys.parking,     emoji: '🅿️' },
+    { group: 'transit',    label: TranslationKeys.bus_transit, emoji: '🚌' },
+    { group: 'roadLabels', label: TranslationKeys.road_names,  emoji: '🛣️' },
 ];
 
 type Props = {
@@ -102,9 +106,18 @@ type Props = {
 };
 
 const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Props) => {
-    useSetPageTitle('Map – Custom Images & Buildings');
+    const { translate } = useLanguage();
+    useSetPageTitle(translate(TranslationKeys.map_custom_images_and_buildings));
+    const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
     const mapRef = useRef<MyMapHandle>(null);
+    const layerToggleButtons: { group: LayerGroup; label: string; emoji: string }[] = [
+        { group: 'poi',        label: translate(TranslationKeys.shops_poi),   emoji: '🏪' },
+        { group: 'parking',    label: translate(TranslationKeys.parking),     emoji: '🅿️' },
+        { group: 'transit',    label: translate(TranslationKeys.bus_transit), emoji: '🚌' },
+        { group: 'roadLabels', label: translate(TranslationKeys.road_names),  emoji: '🛣️' },
+    ];
     const mapReadyRef = useRef(false);
     const glbUrlRef = useRef<string | null>(null);
     const modelScaleRef = useRef(GLB_MODEL_SCALE);
@@ -222,23 +235,23 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 ref={mapRef}
                 initialCenter={DEMO_CENTER}
                 initialPitch={DEMO_PITCH}
-                loadingText="Loading map…"
+                loadingText={translate(TranslationKeys.loading_map)}
                 onMessage={handleMessage}
             />
 
             {/* Layer toggle buttons */}
             <View style={styles.layerToggles}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.layerTogglesContent}>
-                    {LAYER_TOGGLE_BUTTONS.map(({ group, label, emoji }) => {
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.layerTogglesContent, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+                    {layerToggleButtons.map(({ group, label, emoji }) => {
                         const active = layerVisibility[group];
                         return (
                             <Pressable
                                 key={group}
-                                style={[styles.layerToggleButton, !active && styles.layerToggleButtonOff]}
+                                style={[styles.layerToggleButton, !active && styles.layerToggleButtonOff, isArabic ? { flexDirection: 'row-reverse' } : null]}
                                 onPress={() => handleLayerToggle(group)}
                             >
                                 <Text style={styles.layerToggleEmoji}>{emoji}</Text>
-                                <Text style={[styles.layerToggleLabel, !active && styles.layerToggleLabelOff]}>{label}</Text>
+                                <Text style={[styles.layerToggleLabel, !active && styles.layerToggleLabelOff, isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null]}>{label}</Text>
                             </Pressable>
                         );
                     })}
@@ -248,7 +261,7 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
             {/* Selected building info */}
             {selectedBuilding != null && (
                 <View style={styles.buildingInfo}>
-                    <Text style={styles.buildingInfoTitle}>Building</Text>
+                    <Text style={styles.buildingInfoTitle}>{translate(TranslationKeys.building)}</Text>
                     <ScrollView style={styles.buildingInfoScroll}>
                         {Object.entries(selectedBuilding).map(([k, v]) => (
                             <Text key={k} style={styles.buildingInfoRow}>

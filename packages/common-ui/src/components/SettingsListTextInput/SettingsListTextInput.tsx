@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 
 const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -138,7 +139,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 
 	const content = (
 		<View style={styles.sheetView}>
-			<ResolvedTextInput
+			<InputComponent
 				style={[
 					styles.sheetInput,
 					{

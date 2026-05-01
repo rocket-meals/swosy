@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View, type ViewStyle } from 'react-native';
 import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
@@ -21,6 +21,7 @@ type CollectibleItemProps = {
         hideOnCollect?: boolean;
         isPreview?: boolean;
         hideCounter?: boolean;
+        wrapperStyle?: ViewStyle;
 };
 
 const CollectibleItem: React.FC<CollectibleItemProps> = ({
@@ -28,6 +29,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         hideOnCollect = true,
         isPreview,
         hideCounter = false,
+        wrapperStyle,
 }) => {
         const { theme } = useTheme();
         const toast = useToast();
@@ -117,7 +119,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 setIsSaving(true);
                 try {
                 const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                        points: updatedCount,
+                        points: String(updatedCount),
                         data: updatedData,
                 };
 
@@ -154,7 +156,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 }
         };
 
-        return (
+        const content = (
                 <TouchableOpacity
                         style={[
                                 styles.container,
@@ -172,18 +174,18 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         disabled={isSaving || isPreview}
                         activeOpacity={isPreview ? 1 : 0.8}
                 >
-			<MyImage
-				remote_image_url={collectibleImageRemoteUrl}
-				directus_asset_id={collectibleDirectusAssetId}
-				resizeMode="contain"
-				style={styles.image}
-			/>
-			{isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
-			{isSaving ? (
-				<View style={styles.loadingOverlay}>
-					<ActivityIndicator color={theme.dark} />
-				</View>
-			) : null}
+                        <MyImage
+                                remote_image_url={collectibleImageRemoteUrl}
+                                directus_asset_id={collectibleDirectusAssetId}
+                                resizeMode="contain"
+                                style={styles.image}
+                        />
+                        {isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
+                        {isSaving ? (
+                                <View style={styles.loadingOverlay}>
+                                        <ActivityIndicator color={theme.dark} />
+                                </View>
+                        ) : null}
                         {hideCounter ? null : (
                                 <View style={[styles.counter, { backgroundColor: theme.primary }]}>
                                         <Text style={[styles.counterText, { color: theme.dark }]}>
@@ -193,6 +195,8 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         )}
                 </TouchableOpacity>
         );
+
+        return wrapperStyle ? <View style={wrapperStyle}>{content}</View> : content;
 };
 
 export default CollectibleItem;

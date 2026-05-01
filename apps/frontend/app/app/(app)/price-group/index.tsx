@@ -10,7 +10,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
 import animation from '@/assets/animations/priceGroup.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -21,6 +21,8 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import SettingsList from '@/components/SettingsList';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 // Module-level cache so the expensive color-replacement deep-copy only runs once
 // per primaryColor value across all navigations, even when the screen is unmounted.
@@ -30,7 +32,8 @@ let _cachedPrimaryColor: string | null = null;
 const Index = () => {
 	useSetPageTitle(TranslationKeys.price_group);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const profileHelper = new ProfileHelper();
 	const [loading, setLoading] = useState(false);
@@ -99,8 +102,16 @@ const Index = () => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			// @ts-expect-error LottieView type issue - LottieView has autoPlay prop but types don't reflect it
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay} loop={false} />;
+			return (
+				<SafeLottieView
+					ref={animationRef}
+					source={animationJson}
+					resizeMode="contain"
+					style={isWeb ? { width: 220, height: 220 } : { width: '100%', height: '100%' }}
+					autoPlay={autoPlay ?? false}
+					loop={false}
+				/>
+			);
 		}
 	}, [autoPlay, animationJson]);
 	const updatePricing = async (option: string) => {
@@ -149,6 +160,8 @@ const Index = () => {
 							label={option.label}
 							leftIcon={option.icon}
 							iconBgColor={primaryColor}
+							reverseLayout={!isLtrLanguage}
+							titleTextAlign={!isLtrLanguage ? 'right' : undefined}
 							groupPosition={groupPosition}
 							showSeparator={index !== sortingOptions.length - 1}
 							rightIcon={

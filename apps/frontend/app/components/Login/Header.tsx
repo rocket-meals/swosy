@@ -13,6 +13,7 @@ import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
 import { useAppSelector } from '@/redux/hooks';
+import { isLtrLanguageCode } from '@/hooks/useIsLtrLanguage';
 
 const LoginHeader = () => {
         const { setLanguageMode, language } = useLanguage();
@@ -60,7 +61,7 @@ const LoginHeader = () => {
 				});
 			}
 		} else {
-			if (language === 'ar') {
+			if (!isLtrLanguageCode(language)) {
 				dispatch({
 					type: SET_DRAWER_POSITION,
 					payload: 'right',

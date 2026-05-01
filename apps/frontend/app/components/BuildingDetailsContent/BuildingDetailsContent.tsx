@@ -42,18 +42,11 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         return state.campus.campusesDict[String(id)] || null;
     }, shallowEqual);
 
-    const { buildingsOrganizations, organisations } = useAppSelector((state) => ({
-        buildingsOrganizations: state.canteenReducer.buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[],
-        organisations: state.canteenReducer.organisations as DatabaseTypes.Organizations[],
+    const { buildingsOrganizationsDict, organisationsDict } = useAppSelector((state) => ({
+        buildingsOrganizationsDict: state.canteenReducer.buildingsOrganizationsDict as Record<string, DatabaseTypes.BuildingsOrganizations>,
+        organisationsDict: state.canteenReducer.organisationsDict as Record<string, DatabaseTypes.Organizations>,
     }), shallowEqual);
-
-    const organisationsDict = useMemo(
-        () => organisations.reduce<Record<string, DatabaseTypes.Organizations>>(
-            (acc, org) => { if (org.id) acc[org.id] = org; return acc; },
-            {}
-        ),
-        [organisations]
-    );
+    const buildingsOrganizations = useMemo(() => Object.values(buildingsOrganizationsDict || {}), [buildingsOrganizationsDict]);
 
     const buildingOrganisations = useMemo(() => {
         if (!id) return [];

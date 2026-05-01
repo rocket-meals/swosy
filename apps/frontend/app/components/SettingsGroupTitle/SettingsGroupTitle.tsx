@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type Props = {
 	children: React.ReactNode;
@@ -9,7 +11,10 @@ type Props = {
 
 const SettingsGroupTitle: React.FC<Props> = ({ children, fontSize }) => {
 	const { theme } = useTheme();
-	return <Text style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }) }]}>{children}</Text>;
+	const { language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
+	return <Text style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }), textAlign: isRtl ? 'right' : 'left', alignSelf: isRtl ? 'flex-end' : 'flex-start', writingDirection: isRtl ? 'rtl' : 'ltr' }]}>{children}</Text>;
 };
 
 export default SettingsGroupTitle;
