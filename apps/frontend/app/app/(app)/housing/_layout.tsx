@@ -2,9 +2,12 @@ import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 export default function FoodOfferLayout() {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 
 	return (
 		<Stack
@@ -16,14 +19,14 @@ export default function FoodOfferLayout() {
 			<Stack.Screen
 				name="index"
 				options={{
-					title: 'housing',
+					title: translate(TranslationKeys.housing),
 					headerShown: false,
 				}}
 			/>
 			<Stack.Screen
 				name="details/index"
 				options={{
-					header: () => <CustomStackHeader label={'Apartment Details'} />,
+					header: () => <CustomStackHeader label={translate(TranslationKeys.apartment_details)} />,
 				}}
 			/>
 		</Stack>

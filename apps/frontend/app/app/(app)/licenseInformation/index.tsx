@@ -10,8 +10,14 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
+import { useLanguage } from '@/hooks/useLanguage';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+
 const LicenseInformation = () => {
 	useSetPageTitle(TranslationKeys.license_information);
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 	const { theme } = useTheme();
 	const [expanded, setExpanded] = useState(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
@@ -33,7 +39,7 @@ const LicenseInformation = () => {
 
 	// Ensure packages is defined before calling map
 	if (!Array.isArray(packages)) {
-		return <Text>Packages data not available.</Text>;
+		return <Text>{translate(TranslationKeys.packages_data_not_available)}</Text>;
 	}
 
 	return (
@@ -74,61 +80,73 @@ const LicenseInformation = () => {
 								</TouchableOpacity>
 								{expanded === index && (
 									<View style={styles.extandContainer}>
-										<View style={styles.detailText}>
+										<View style={[styles.detailText, isRtl ? { flexDirection: 'row-reverse' } : null]}>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'right' : 'left',
+													writingDirection: isRtl ? 'rtl' : 'ltr',
 												}}
 											>
-												Package
+												{translate(TranslationKeys.package)}
 											</Text>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'left' : 'right',
+													writingDirection: 'ltr',
 												}}
 											>
 												{pkg.name}
 											</Text>
 										</View>
-										<View style={styles.detailText}>
+										<View style={[styles.detailText, isRtl ? { flexDirection: 'row-reverse' } : null]}>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'right' : 'left',
+													writingDirection: isRtl ? 'rtl' : 'ltr',
 												}}
 											>
-												Version
+												{translate(TranslationKeys.version)}
 											</Text>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'left' : 'right',
+													writingDirection: 'ltr',
 												}}
 											>
 												{pkg.version}
 											</Text>
 										</View>
-										<View style={styles.detailText}>
+										<View style={[styles.detailText, isRtl ? { flexDirection: 'row-reverse' } : null]}>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'right' : 'left',
+													writingDirection: isRtl ? 'rtl' : 'ltr',
 												}}
 											>
-												License
+												{translate(TranslationKeys.license)}
 											</Text>
 											<Text
 												style={{
 													color: theme.screen.text,
 													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													textAlign: isRtl ? 'left' : 'right',
+													writingDirection: 'ltr',
 												}}
 											>
 												{pkg.license}
 											</Text>
 										</View>
-										<View style={styles.detailText}>
+										<View style={[styles.detailText, isRtl ? { flexDirection: 'row-reverse' } : null]}>
 											<View
 												style={{
 													width: '48%',
@@ -138,22 +156,28 @@ const LicenseInformation = () => {
 													style={{
 														color: theme.screen.text,
 														fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+														textAlign: isRtl ? 'right' : 'left',
+														writingDirection: isRtl ? 'rtl' : 'ltr',
 													}}
 												>
-													Repository
+													{translate(TranslationKeys.repository)}
 												</Text>
 											</View>
 											<View
 												style={{
 													width: '48%',
+													...(isRtl ? { alignItems: 'flex-start' } : {}),
 												}}
 											>
-												<Text style={{ color: 'blue', textAlign: 'right' }} onPress={() => Linking.openURL(pkg.repository)}>
+												<Text
+													style={{ color: 'blue', textAlign: isRtl ? 'left' : 'right', writingDirection: 'ltr' }}
+													onPress={() => Linking.openURL(pkg.repository)}
+												>
 													{pkg.repository}
 												</Text>
 											</View>
 										</View>
-										<View style={styles.detailText}>
+										<View style={[styles.detailText, isRtl ? { flexDirection: 'row-reverse' } : null]}>
 											<View
 												style={{
 													width: '48%',
@@ -163,22 +187,25 @@ const LicenseInformation = () => {
 													style={{
 														color: theme.screen.text,
 														fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+														textAlign: isRtl ? 'right' : 'left',
+														writingDirection: isRtl ? 'rtl' : 'ltr',
 													}}
 												>
-													License URL:
+													{translate(TranslationKeys.license_url)}
 												</Text>
 											</View>
 											<View
 												style={{
 													width: '48%',
-
 													justifyContent: 'flex-end',
+													...(isRtl ? { alignItems: 'flex-start' } : {}),
 												}}
 											>
 												<Text
 													style={{
 														color: 'blue',
-														textAlign: 'right',
+														textAlign: isRtl ? 'left' : 'right',
+														writingDirection: 'ltr',
 													}}
 													onPress={() => Linking.openURL(pkg.licenseUrl)}
 												>

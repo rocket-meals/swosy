@@ -7,9 +7,11 @@ import { useAppSelector } from '@/redux/hooks';
 import { PopupEventSheetProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
-import ProjectButton from '../ProjectButton';
+import AppButton from '../AppButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
 
 const styles = StyleSheet.create({
@@ -52,6 +54,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 	const { theme } = useTheme();
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
 	const { language } = useAppSelector((state) => state.settings);
+	const { translate } = useLanguage();
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
 
@@ -71,7 +74,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
+				<AppButton text={translate(TranslationKeys.closeAndDontShowAgain)} onPress={handleClose} />
 			</View>
 			<View style={styles.sheetHeaderText}>
 				<View />

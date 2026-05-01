@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
+import AppButton from '@/components/AppButton';
 
 const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
@@ -57,20 +58,26 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 					color: theme.modal.text,
 				}}
 			>
-				This form is currently being edited by another user. Proceeding may overwrite their changes. Do you still want to continue?
+				{translate(TranslationKeys.formEditedByAnotherUserWarning)}
 			</Text>
 			<View style={styles.actionContainer}>
-				<TouchableOpacity
+				<AppButton
+					text={translate(TranslationKeys.proceed)}
+					onPress={handleProceed}
+					loading={loading}
+					loadingIndicatorColor={theme.background}
+					loadingIndicatorSize={22}
 					style={{
 						...styles.loginButton,
 						backgroundColor: primaryColor,
 						width: '100%',
 					}}
-					onPress={handleProceed}
-				>
-					{loading ? <ActivityIndicator size={22} color={theme.background} /> : <Text style={{ ...styles.loginLabel, color: theme.activeText }}>{translate(TranslationKeys.proceed)}</Text>}
-				</TouchableOpacity>
-				<TouchableOpacity
+					textStyle={{ ...styles.loginLabel, color: theme.activeText }}
+				/>
+				<AppButton
+					text={translate(TranslationKeys.cancel)}
+					onPress={() => router.navigate('/form-submissions')}
+					variant="outline"
 					style={{
 						...styles.loginButton,
 						backgroundColor: theme.screen.iconBg,
@@ -78,10 +85,8 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 						borderColor: primaryColor,
 						width: '100%',
 					}}
-					onPress={() => router.navigate('/form-submissions')}
-				>
-					{<Text style={{ ...styles.loginLabel, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>}
-				</TouchableOpacity>
+					textStyle={{ ...styles.loginLabel, color: theme.screen.text }}
+				/>
 			</View>
 		</BottomSheetScrollView>
 	);

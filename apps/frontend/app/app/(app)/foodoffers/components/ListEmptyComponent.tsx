@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import styles from '../styles';
 import { TranslationKeys } from '@/locales/keys';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
+import AppButton from '@/components/AppButton';
 
 interface ListEmptyComponentProps {
     loading: boolean;
@@ -41,17 +42,16 @@ const ListEmptyComponent: React.FC<ListEmptyComponentProps> = ({
             </Text>
             <View style={styles.animationContainer}>{renderLottie}</View>
             {nextAvailableDate && (
-                <TouchableOpacity
+                <AppButton
+                    variant="ghost"
+                    usePlainText
+                    text={`${translate(TranslationKeys.show_offers_on)} ${translate(
+                        TranslationKeys[getWeekdayKey(nextAvailableDate) as keyof typeof TranslationKeys]
+                    )}`}
                     onPress={() => dispatch({ type: SET_SELECTED_DATE, payload: nextAvailableDate })}
-                    activeOpacity={0.7}
-                    style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
-                >
-                    <Text style={[styles.jumpButtonText, { color: contrastColor }]}>
-                        {`${translate(TranslationKeys.show_offers_on)} ${translate(
-                            TranslationKeys[getWeekdayKey(nextAvailableDate) as keyof typeof TranslationKeys]
-                        )}`}
-                    </Text>
-                </TouchableOpacity>
+                    style={[styles.jumpButton, { backgroundColor: foods_area_color, marginVertical: 0 }]}
+                    textStyle={[styles.jumpButtonText, { color: contrastColor }]}
+                />
             )}
         </View>
     );

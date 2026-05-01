@@ -5,11 +5,11 @@ import MarkdownIt from 'markdown-it';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import RenderHtml, { CustomBlockRenderer, CustomMixedRenderer, CustomTextualRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
-import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import AppButton from '../AppButton';
 import { StringHelper } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface MyMarkdownProps {
 	content: string;
@@ -31,8 +31,14 @@ export const replaceLinebreaks = (sourceContent: string) => {
 	return sourceContent;
 };
 
+const normalizeMarkdownLinks = (sourceContent: string) => {
+	return sourceContent.replace(/\[([^\]]+)\]\s+\(((?:https?:\/\/|mailto:|tel:)[^)]+)\)/g, '[$1]($2)');
+};
+
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
-	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme, language } = useAppSelector((state) => state.settings);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const colorScheme = Appearance.getColorScheme();
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
@@ -45,6 +51,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	if (option_find_linebreaks) {
 		sourceContent = replaceLinebreaks(sourceContent);
 	}
+	sourceContent = normalizeMarkdownLinks(sourceContent);
 
 	const result = md.render(sourceContent);
 	const source = { html: result || '' };
@@ -68,7 +75,8 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		color: textColor,
 		fontSize,
 		fontStyle: 'normal' as const,
-	}), [textColor, fontSize]);
+		...(isArabic ? { textAlign: 'right' as const, writingDirection: 'rtl' as const } : { textAlign: 'left' as const, writingDirection: 'ltr' as const }),
+	}), [isArabic, textColor, fontSize]);
 
 	const defaultTextProps = React.useMemo(() => ({
 		selectable: true,
@@ -79,7 +87,15 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		td: { borderColor: 'gray', borderWidth: 1 } as const,
 		th: { borderColor: 'gray', borderWidth: 1 } as const,
 		a: { color: textColor } as const,
-	}), [textColor]);
+		p: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		li: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h1: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h2: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h3: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h4: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h5: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h6: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+	}), [isArabic, textColor]);
 
 	const customRenderers = React.useMemo(() => {
 		const renderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
@@ -117,7 +133,15 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
 			}
 
-			return <ProjectButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
+			return (
+				<AppButton
+					text={text}
+					onPress={handlePress}
+					iconLeft={iconLeft}
+					style={isArabic ? { flexDirection: 'row-reverse' } : undefined}
+					textStyle={isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : undefined}
+				/>
+			);
 		},
 		sub: (props: any) => {
 			const { data } = props.tnode;

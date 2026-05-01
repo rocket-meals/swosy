@@ -33,11 +33,14 @@ import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
 
 
 const selectFoodState = (state: RootState) => state.food;
-const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
-const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
+const selectMarkings = createSelector([selectFoodState], foodState => Object.values(foodState.markingsDict ?? {}));
+const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => Object.values(foodState.ownFoodFeedbacksDict ?? {}));
 
 export const FoodItemBase: React.FC<FoodItemProps> = memo(
   ({ 
@@ -62,6 +65,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     amountColumnsForcard
   }) => {
     const toast = useToast();
+    const isLtrLanguage = useIsLtrLanguage();
+    const languageTextAlign = useLanguageTextAlign();
     const dispatch = useDispatch();
 
     // Optimistic state for rating
@@ -175,7 +180,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           } else {
             const supported = await Linking.canOpenURL(url);
             if (supported) await Linking.openURL(url);
-            else toast(`Cannot open URL: ${url}`, 'error');
+            else toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', url), 'error');
           }
         } catch (error) {
           console.error('URL open error:', error);
@@ -230,7 +235,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
             openAccountRequiredModal();
           } else {
             console.error('Failed to update rating:', err);
-            toast('Could not update rating', 'error');
+            toast(translate(TranslationKeys.couldNotUpdateRating), 'error');
           }
         }
       },
@@ -288,6 +293,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       showScrollViewModal(
         {
           title: translate(TranslationKeys.description),
+          titleTextAlign: languageTextAlign,
+          titleWritingDirection: isLtrLanguage ? 'ltr' : 'rtl',
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
@@ -366,22 +373,24 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                     </TouchableOpacity>
 
                   {foodItem?.image_generated && (
-                    <TouchableOpacity
-                      style={styles.aiBadgeContainer}
+                    <AppButton
+                      variant="ghost"
+                      usePlainText
+                      text={translate(TranslationKeys.ai_generated_badge_label)}
                       onPress={() =>
                         showScrollViewModal(
                           {
                             title: translate(TranslationKeys.ai_generated_image),
+                            titleTextAlign: languageTextAlign,
+                            titleWritingDirection: isLtrLanguage ? 'ltr' : 'rtl',
                             children: <AIGeneratedHintSheet />,
                           },
                           {}
                         )
                       }
-                    >
-                      <Text style={styles.aiGeneratedBadgeText}>
-                        {translate(TranslationKeys.ai_generated_badge_label)}
-                      </Text>
-                    </TouchableOpacity>
+                      style={[styles.aiBadgeContainer, { marginVertical: 0 }]}
+                      textStyle={styles.aiGeneratedBadgeText}
+                    />
                   )}
 
                     {dislikedMarkings.length > 0 && (
@@ -419,10 +428,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                       ) : null
                     )}
                   </View>
-
-                  <TouchableOpacity style={styles.priceTag} onPress={handlePriceChange}>
-                    <Text style={styles.priceText}>{priceLabel}</Text>
-                  </TouchableOpacity>
+                    
+                  <AppButton
+                    variant="ghost"
+                    usePlainText
+                    text={priceLabel}
+                    onPress={handlePriceChange}
+                    style={[styles.priceTag, { marginVertical: 0 }]}
+                    textStyle={styles.priceText}
+                  />
                 </>
               }
             >

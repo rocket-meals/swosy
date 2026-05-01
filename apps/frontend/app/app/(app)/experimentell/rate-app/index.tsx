@@ -8,12 +8,15 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import SettingsList from '@/components/SettingsList/SettingsList';
 
 const RateApp = () => {
 	useSetPageTitle(TranslationKeys.rate_app);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const [hasAction, setHasAction] = useState<string>('…');
 	const [isAvailable, setIsAvailable] = useState<string>('…');
@@ -35,7 +38,7 @@ const RateApp = () => {
 			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.rate_app)}</Text>
+				<Text style={[styles.heading, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>{translate(TranslationKeys.rate_app)}</Text>
 				<RateAppSettingsItem debug />
 				<SettingsListGroupTitle title="Weitere Informationen" />
 				<SettingsList

@@ -19,4 +19,5 @@ export interface AppDrawerProps {
 	activeKey?: string;
 	primaryColor?: string;
 	footerContent?: React.ReactNode;
+	reverseItemLayout?: boolean;
 }

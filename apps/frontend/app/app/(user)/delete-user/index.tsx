@@ -17,9 +17,11 @@ import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
 import { TranslationKeys } from '@/locales/keys';
+import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const Index = () => {
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const toast = useToast();
 	const dispatch = useDispatch();
@@ -32,6 +34,8 @@ const Index = () => {
 	const animationRef = useRef<LottieView>(null);
 	const [isDeleteAccount, setIsDeleteAccount] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const openDeleteAcountModal = () => {
 		setIsDeleteAccount(true);
@@ -98,7 +102,7 @@ const Index = () => {
 				if (supported) {
 					await Linking.openURL(url);
 				} else {
-					toast(`Cannot open URL: ${url}`, 'error');
+					toast(translate(TranslationKeys.cannotOpenUrl).replace('${url}', url), 'error');
 				}
 			}
 		} catch (error) {
@@ -128,7 +132,7 @@ const Index = () => {
 				<View style={{ alignItems: 'center', marginBottom: 20 }}>
 					<View style={styles.imageContainer}>{renderLottie}</View>
 					<View style={{ width: windowWidth > 600 ? '85%' : '95%' }}>
-						<Text style={{ ...styles.deleteInfo, color: theme.screen.text }}>{translate(TranslationKeys.account_deletion_info)}</Text>
+						<Text style={{ ...styles.deleteInfo, color: theme.screen.text, ...(isArabic ? { textAlign: 'right' } : {}) }}>{translate(TranslationKeys.account_deletion_info)}</Text>
 					</View>
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
 						<View
@@ -136,9 +140,10 @@ const Index = () => {
 								...styles.list,
 								backgroundColor: theme.screen.iconBg,
 								paddingHorizontal: isWeb ? 20 : 10,
+								...(isArabic ? { flexDirection: 'row-reverse' } : {}),
 							}}
 						>
-							<View style={{ ...styles.col }}>
+							<View style={{ ...styles.col, ...(isArabic ? { flexDirection: 'row-reverse' } : {}) }}>
 								<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />
 								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account)}</Text>
 							</View>
@@ -148,7 +153,7 @@ const Index = () => {
 										...styles.value,
 										color: theme.screen.text,
 										fontSize: isWeb ? 16 : 14,
-										textAlign: 'right',
+										textAlign: isArabic ? 'left' : 'right',
 									}}
 								>
 									{user?.id ? user?.id : translate(TranslationKeys.without_account)}
@@ -157,25 +162,38 @@ const Index = () => {
 						</View>
 					</View>
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
-						<TouchableOpacity
+						<AppButton
 							style={{
 								...styles.list,
 								backgroundColor: theme.screen.iconBg,
 								paddingHorizontal: isWeb ? 20 : 10,
+								marginVertical: 0,
 							}}
 							onPress={openDeleteAcountModal}
 							disabled={!profile?.id}
-						>
-							<View style={{ ...styles.col }}>
-								<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
-							</View>
-						</TouchableOpacity>
+							textStyle={{ width: 0, height: 0 }}
+							iconLeft={
+								!isArabic ? (
+									<View style={{ ...styles.col }}>
+										<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
+									</View>
+								) : undefined
+							}
+							iconRight={
+								isArabic ? (
+									<View style={{ ...styles.col, flexDirection: 'row-reverse' }}>
+										<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
+									</View>
+								) : undefined
+							}
+						/>
 					</View>
 
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
-						<View style={{ ...styles.row, backgroundColor: theme.screen.iconBg }}>
-							<View style={styles.leftView}>
+						<View style={{ ...styles.row, backgroundColor: theme.screen.iconBg, ...(isArabic ? { flexDirection: 'row-reverse' } : {}) }}>
+							<View style={[styles.leftView, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 								<Text
 									style={[
 										styles.linkText,
@@ -183,6 +201,7 @@ const Index = () => {
 											color: theme.screen.text,
 											fontSize: windowWidth < 500 ? 14 : 18,
 										},
+										isArabic ? { marginLeft: 0, marginRight: 10, textAlign: 'right' } : undefined,
 									]}
 								>
 									{translate(TranslationKeys.project_name)}
@@ -196,6 +215,7 @@ const Index = () => {
 											color: theme.screen.text,
 											fontSize: windowWidth < 500 ? 14 : 18,
 										},
+										isArabic ? { marginRight: 0, marginLeft: 10, textAlign: 'left' } : undefined,
 									]}
 								>
 									{projectName?.length > 0 ? projectName : 'SWOSY Test'}
@@ -235,12 +255,26 @@ const Index = () => {
 						{translate(TranslationKeys.are_you_sure_to_delete_your_account)}
 					</Text>
 					<View style={styles.attentionActions}>
-						<TouchableOpacity style={[styles.confirmButton, { backgroundColor: primaryColor }]} onPress={handleDeleteAccount}>
-							{loading ? <ActivityIndicator size={24} color={theme.screen.text} /> : <Text style={[styles.confirmLabel, { color: theme.light }]}>{translate(TranslationKeys.confirm)}</Text>}
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.cancleButton} onPress={closeDeleteAccountModal}>
-							<Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
-						</TouchableOpacity>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							text={translate(TranslationKeys.confirm)}
+							onPress={handleDeleteAccount}
+							disabled={loading}
+							loading={loading}
+							loadingIndicatorColor={theme.screen.text}
+							loadingIndicatorSize={24}
+							style={[styles.confirmButton, { backgroundColor: primaryColor, marginVertical: 0 }]}
+							textStyle={[styles.confirmLabel, { color: theme.light }]}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							text={translate(TranslationKeys.cancel)}
+							onPress={closeDeleteAccountModal}
+							style={[styles.cancleButton]}
+							textStyle={[styles.confirmLabel, { color: theme.dark }]}
+						/>
 					</View>
 				</View>
 			</ModalComponent>

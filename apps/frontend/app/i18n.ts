@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@/constants/AsyncStorage';
 import translations from './locales/translations.json';
 
 // Preprocess translations to create a structure compatible with i18next
@@ -19,18 +19,26 @@ Object.keys(translations).forEach(key => {
 const languageDetector = {
 	type: 'languageDetector' as const,
 	async: true,
-	detect: (callback: any) => {
-		AsyncStorage.getItem('user-language', (err, language) => {
+	detect: async (callback: any) => {
+		try {
+			const language = await AsyncStorage.getItem('user-language');
 			if (language) {
 				callback(language);
 			} else {
 				callback(Localization.getLocales()[0]?.languageCode ?? 'de'); // Use device language
 			}
-		});
+		} catch (error) {
+			console.error('Error detecting language', error);
+			callback(Localization.getLocales()[0]?.languageCode ?? 'de');
+		}
 	},
 	init: () => {},
-	cacheUserLanguage: (language: string) => {
-		AsyncStorage.setItem('user-language', language);
+	cacheUserLanguage: async (language: string) => {
+		try {
+			await AsyncStorage.setItem('user-language', language);
+		} catch (error) {
+			console.error('Error caching language', error);
+		}
 	},
 };
 

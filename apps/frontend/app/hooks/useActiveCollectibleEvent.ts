@@ -34,7 +34,8 @@ export const isCollectibleEventActive = (
 };
 
 const useActiveCollectibleEvent = () => {
-        const { collectibleEvents = [] } = useAppSelector((state) => state.collectibleEvents ?? {});
+        const { collectibleEventsItemsDict = {} } = useAppSelector((state) => state.collectibleEvents ?? {});
+        const collectibleEvents = useMemo(() => Object.values(collectibleEventsItemsDict || {}) as DatabaseTypes.CollectibleEvents[], [collectibleEventsItemsDict]);
 
         const activeCollectibleEvent = useMemo(
                 () => collectibleEvents.find(event => isCollectibleEventActive(event)),

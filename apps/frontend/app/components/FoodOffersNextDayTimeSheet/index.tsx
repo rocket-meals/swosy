@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,6 +9,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TimeInput } from '@/components/DateTimeInputs';
 import styles from './styles';
 import { FoodOffersNextDayTimeSheetProps } from './types';
+import AppButton from '@/components/AppButton';
 
 const DEFAULT_THRESHOLD = '18:00';
 
@@ -69,38 +70,29 @@ const FoodOffersNextDayTimeSheet: React.FC<FoodOffersNextDayTimeSheetProps> = ({
 				<TimeInput id="foodoffers-next-day-threshold" value={value} onChange={handleChange} onError={handleError} error={error} isDisabled={false} custom_type="time" prefix={null} suffix={null} />
 			</View>
 			<View style={styles.buttonContainer}>
-				<TouchableOpacity onPress={closeSheet} style={[styles.buttonBase, styles.secondaryButton, { borderColor: primaryColor, marginRight: 12 }]}>
-					<Text style={{ ...styles.buttonText, color: theme.sheet.text }}>{translate(TranslationKeys.cancel)}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
+				<AppButton
+					text={translate(TranslationKeys.cancel)}
+					onPress={closeSheet}
+					variant="outline"
+					style={[styles.buttonBase, styles.secondaryButton, { borderColor: primaryColor, marginRight: 12, marginVertical: 0 }]}
+					textStyle={{ ...styles.buttonText, color: theme.sheet.text }}
+				/>
+				<AppButton
+					text={translate(TranslationKeys.reset)}
 					onPress={handleReset}
-					style={[
-						styles.buttonBase,
-						styles.secondaryButton,
-						{
-							borderColor: primaryColor,
-							marginRight: 12,
-							opacity: disableReset ? 0.6 : 1,
-						},
-					]}
+					variant="outline"
 					disabled={disableReset}
-				>
-					<Text style={{ ...styles.buttonText, color: theme.sheet.text }}>{translate(TranslationKeys.reset)}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
+					style={[styles.buttonBase, styles.secondaryButton, { borderColor: primaryColor, marginRight: 12, marginVertical: 0 }]}
+					textStyle={{ ...styles.buttonText, color: theme.sheet.text }}
+				/>
+				<AppButton
+					text={translate(TranslationKeys.save)}
 					onPress={handleSave}
-					style={[
-						styles.buttonBase,
-						styles.primaryButton,
-						{
-							backgroundColor: primaryColor,
-							opacity: disableSave ? 0.6 : 1,
-						},
-					]}
+					variant="primary"
 					disabled={disableSave}
-				>
-					<Text style={{ ...styles.buttonText, color: contrastColor }}>{translate(TranslationKeys.save)}</Text>
-				</TouchableOpacity>
+					style={[styles.buttonBase, styles.primaryButton, { backgroundColor: primaryColor, marginVertical: 0 }]}
+					textStyle={{ ...styles.buttonText, color: contrastColor }}
+				/>
 			</View>
 		</BottomSheetView>
 	);

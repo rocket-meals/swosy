@@ -12,6 +12,7 @@ import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FileRelation, FormAnswer } from './types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import AppButton from '@/components/AppButton';
 
 /**
  *  "images" | "videos" | "livePhotos"
@@ -154,36 +155,48 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 		<View style={styles.container}>
 			<View style={{ ...styles.uploadContainer }}>
 				{!isWeb && (
-					<TouchableOpacity
+					<AppButton
+						variant="ghost"
+						usePlainText
+						text={translate(TranslationKeys.upload_image)}
+						onPress={() => pickImage('gallery')}
+						disabled={isDisabled}
 						style={{
 							...styles.uploadButton,
 							backgroundColor: primaryColor,
+							marginVertical: 0,
 						}}
-						onPress={() => pickImage('gallery')}
-						disabled={isDisabled}
-					>
-						<MaterialIcons name="image" size={24} color={theme.screen.text} />
-						<Text style={{ ...styles.uploadText, color: theme.screen.text }}>{translate(TranslationKeys.upload_image)}</Text>
-					</TouchableOpacity>
+						textStyle={{ ...styles.uploadText, color: theme.screen.text }}
+						iconLeft={<MaterialIcons name="image" size={24} color={theme.screen.text} />}
+					/>
 				)}
 				{!isWeb && (
-					<TouchableOpacity style={{ ...styles.uploadButton, backgroundColor: primaryColor }} onPress={() => pickImage('camera')} disabled={isDisabled}>
-						<Ionicons name="camera" size={24} color={theme.screen.text} />
-						<Text style={{ ...styles.uploadText, color: theme.screen.text }}>{translate(TranslationKeys.camera)}</Text>
-					</TouchableOpacity>
+					<AppButton
+						variant="ghost"
+						usePlainText
+						text={translate(TranslationKeys.camera)}
+						onPress={() => pickImage('camera')}
+						disabled={isDisabled}
+						style={{ ...styles.uploadButton, backgroundColor: primaryColor, marginVertical: 0 }}
+						textStyle={{ ...styles.uploadText, color: theme.screen.text }}
+						iconLeft={<Ionicons name="camera" size={24} color={theme.screen.text} />}
+					/>
 				)}
-				<TouchableOpacity
+				<AppButton
+					variant="ghost"
+					usePlainText
+					text={translate(TranslationKeys.upload_file)}
+					onPress={pickFiles}
+					disabled={isDisabled}
 					style={{
 						...styles.uploadButton,
 						paddingVertical: isWeb ? 10 : 6,
 						backgroundColor: primaryColor,
+						marginVertical: 0,
 					}}
-					onPress={pickFiles}
-					disabled={isDisabled}
-				>
-					<MaterialIcons name="cloud-upload" size={24} color={theme.screen.text} />
-					<Text style={{ ...styles.uploadText, color: theme.screen.text }}>{translate(TranslationKeys.upload_file)}</Text>
-				</TouchableOpacity>
+					textStyle={{ ...styles.uploadText, color: theme.screen.text }}
+					iconLeft={<MaterialIcons name="cloud-upload" size={24} color={theme.screen.text} />}
+				/>
 			</View>
 			<ScrollView style={{ width: '100%', maxHeight: 300 }} nestedScrollEnabled>
 				{value &&

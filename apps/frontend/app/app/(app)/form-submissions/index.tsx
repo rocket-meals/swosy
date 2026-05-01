@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { isWeb } from '@/constants/Constants';
+import type { ViewStyle } from 'react-native';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -19,6 +20,9 @@ import FormSubmissionSortSheet from '@/components/FormSubmissionSortSheet/FormSu
 import { FormSubmissionSortOption } from '@/components/FormSubmissionSortSheet/types';
 import { useAppSelector } from '@/redux/hooks';
 import { FormQueueEntry } from '@/redux/Types/stateTypes';
+import AppButton from '@/components/AppButton';
+import useLanguageTextAlign from '@/hooks/useLanguageTextAlign';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type FormSubmissionListRow =
 	| {
@@ -37,6 +41,8 @@ type FormSubmissionListRow =
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_submission);
 	const { translate } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const languageTextAlign = useLanguageTextAlign();
 	const { theme } = useTheme();
 	const { form_id } = useLocalSearchParams();
 	const sortSheetRef = useRef<BottomSheet>(null);
@@ -49,15 +55,17 @@ const Index = () => {
     const [selectedOption, setSelectedOption] = useState<string>('draft');
     const [sortOption, setSortOption] = useState<FormSubmissionSortOption>('alphabetical');
     const { drawerPosition, language, offlineMode } = useAppSelector((state) => state.settings);
+    const resolvedDrawerPosition = drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition;
+    const isArabicRight = !isLtrLanguage && resolvedDrawerPosition === 'right';
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-	const { formQueue, cachedFormData } = useAppSelector((state) => state.form);
+	const { formQueueDict, cachedFormData } = useAppSelector((state) => state.form);
 	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
 	const [hasLoadError, setHasLoadError] = useState(false);
 
 	const queueEntries = useMemo(
-		() => (formQueue || []).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
-		[formQueue, form_id]
+		() => Object.values(formQueueDict || {}).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
+		[formQueueDict, form_id]
 	);
 
 	const folderPrefixes = useMemo(() => {
@@ -375,42 +383,78 @@ const Index = () => {
 
 	const renderItem = useCallback(
 		({ item }: { item: FormSubmissionListRow }) => {
+			const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
+			const indentation = 10 + currentPath.length * 8;
+			const flexDirection: ViewStyle['flexDirection'] = isArabic ? 'row-reverse' : 'row';
 			const baseStyle = {
 				...styles.formCategory,
 				backgroundColor: theme.screen.iconBg,
-				paddingLeft: 10 + currentPath.length * 8,
-			};
+				flexDirection,
+				paddingLeft: isArabic ? 10 : indentation,
+				paddingRight: isArabic ? indentation : 10,
+			} as ViewStyle;
 
 			if (item.type === 'folder') {
 				return (
-					<TouchableOpacity
-						style={baseStyle}
+					<AppButton
+						variant="ghost"
+						usePlainText
 						onPress={() => {
 							setCurrentPath(item.path);
 						}}
-					>
-						<Text style={{ ...styles.body, color: theme.screen.text }}>{item.title}</Text>
-						<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-					</TouchableOpacity>
+						style={[baseStyle, { marginVertical: 0 }]}
+						textStyle={{ width: 0, height: 0 }}
+						iconLeft={
+							<View style={{ flex: 1 }}>
+								<Text
+									style={{
+										...styles.body,
+										color: theme.screen.text,
+										maxWidth: '100%',
+										textAlign: isArabic ? 'right' : 'left',
+										writingDirection: isArabic ? 'rtl' : 'ltr',
+									}}
+								>
+									{item.title}
+								</Text>
+							</View>
+						}
+						iconRight={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
+					/>
 				);
 			}
 
 			return (
-				<TouchableOpacity
-					style={baseStyle}
+				<AppButton
 					onPress={() => {
 						router.push({
 							pathname: '/form-submission',
 							params: { form_submission_id: item?.submission?.id },
 						});
 					}}
-				>
-					<Text style={{ ...styles.body, color: theme.screen.text }}>{item.title || item.submission?.alias}</Text>
-					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-				</TouchableOpacity>
+					style={[baseStyle, { marginVertical: 0 }]}
+					textStyle={{ width: 0, height: 0 }}
+					iconLeft={
+						<View style={{ flex: 1 }}>
+							<Text
+								style={{
+									...styles.body,
+									color: theme.screen.text,
+									maxWidth: '100%',
+									textAlign: isArabic ? 'right' : 'left',
+									writingDirection: isArabic ? 'rtl' : 'ltr',
+								}}
+							>
+								{item.title || item.submission?.alias}
+							</Text>
+						</View>
+					}
+					iconRight={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
+				/>
 			);
 		},
-		[currentPath.length, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]
+		[currentPath.length, language, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]
 	);
 
 	return (
@@ -431,40 +475,33 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{
-							flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
-						},
+						{ flexDirection: !isLtrLanguage ? 'row-reverse' : 'row' },
 					]}
 				>
-					<View
-						style={[
-							styles.col1,
-							screenWidth > 768
-								? {
-										gap: 20,
-									}
-								: {
-										gap: 10,
-									},
-							{
-								flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
-							},
-						]}
+					<TouchableOpacity
+						onPress={() => {
+							if (!hasLoadError && currentPath.length > 0) {
+								setCurrentPath(prev => prev.slice(0, -1));
+							} else {
+								router.navigate('/form-categories');
+							}
+						}}
+						style={{ padding: 10 }}
 					>
-						<TouchableOpacity
-							onPress={() => {
-								if (!hasLoadError && currentPath.length > 0) {
-									setCurrentPath(prev => prev.slice(0, -1));
-								} else {
-									router.navigate('/form-categories');
-								}
-							}}
-							style={{ padding: 10 }}
-						>
-							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
-						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
-					</View>
+						<Ionicons name={isLtrLanguage ? 'arrow-back' : 'arrow-forward'} size={26} color={theme.header.text} />
+					</TouchableOpacity>
+
+					<Text
+						style={{
+							...styles.heading,
+							color: theme.header.text,
+							flex: 1,
+							textAlign: languageTextAlign,
+						}}
+					>
+						{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}
+					</Text>
+
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openSortSheet} style={{ padding: 10 }}>
 							<FontAwesome5 name="sort-alpha-down" size={22} color={theme.header.text} />
@@ -542,6 +579,7 @@ const Index = () => {
 							...styles.searchInput,
 							width: screenWidth > 768 ? '90%' : '85%',
 							color: theme.screen.text,
+							textAlign: languageTextAlign,
 						}}
 						cursorColor={theme.screen.text}
 						placeholderTextColor={theme.screen.placeholder}

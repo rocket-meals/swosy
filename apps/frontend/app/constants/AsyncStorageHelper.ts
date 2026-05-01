@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@/constants/AsyncStorage';
 
 /**
  * Save a value to AsyncStorage.
