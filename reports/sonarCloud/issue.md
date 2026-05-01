@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 14 | 14 |
-| 🐛 Reliability | 6853 | 36 |
+| 🐛 Reliability | 6840 | 36 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16867 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16854 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -70,63 +70,11 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (36/6853)
-
-- **React Hook "useIsLtrLanguage" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/app/(app)/form-submissions/index.tsx:386
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L386
+## 🐛 Reliability (36/6840)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:144
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L144
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:198
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L198
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:199
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L199
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L200
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:201
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L201
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:211
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L211
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:215
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L215
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:224
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L224
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(auth)/login.tsx:225
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(auth)/login.tsx#L225
-
-- **This conditional operation returns the same value whether the condition is "true" or "false".**
-  apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx:407
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx#L407
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:171
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L171
-
-- **React Hook "useIsLtrLanguage" is called in function "getContent" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:202
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L202
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx#L35
+  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
 - **React Hook "usePlatformHelper" is called in function "handleNativeLogin" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
   apps/frontend/app/helper/authHelper.ts:38
@@ -141,8 +89,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L144
 
 - **React Hook "usePlatformHelper" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/helper/NotificationHelper.ts:82
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L82
+  apps/frontend/app/helper/NotificationHelper.ts:75
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L75
 
 - **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
   apps/frontend/app/helper/SystemActionHelper.ts:6
@@ -215,4 +163,56 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/index.tsx:60
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L60
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/geonexia/frontend/app/index.tsx:2836
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2836
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/app/index.tsx:916
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L916
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:72
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L72
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L84
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L119
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:120
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L120
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:158
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L158
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:159
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:466
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L466
+
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:353
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L353
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityStatsHelper.ts#L24
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:242
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L242
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:243
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L243
 
