@@ -22,21 +22,10 @@ import {
 	resetAll,
 } from '../store/gameSlice';
 import type { AppDispatch, RootState } from '../store/store';
-import { store } from '../store/store';
+import { PLAYER_COLORS } from '../helpers/GameStorage';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
-
-const PLAYER_COLORS = [
-	'#2563eb', // blue
-	'#dc2626', // red
-	'#16a34a', // green
-	'#ea580c', // orange
-	'#9333ea', // purple
-	'#0891b2', // cyan
-	'#ca8a04', // yellow
-	'#db2777', // pink
-];
 
 const TILE_BORDER_RADIUS = 16;
 const TILE_GAP = 12;
@@ -399,32 +388,49 @@ export default function GameScreen() {
 
 	const handleTilePress = useCallback(
 		(playerId: string) => {
-			// If there are no rounds, add one first
-			let targetRounds = rounds;
-			if (targetRounds.length === 0) {
+			// If there are no rounds yet, add one first — the score modal
+			// will open on next render via the effect below.
+			if (rounds.length === 0) {
 				dispatch(addRound());
-				// We need to get the updated state from the store after dispatch
-				const updatedState = store.getState();
-				targetRounds = updatedState.game.rounds;
+				// Rounds state will update on next render; schedule modal open
+				pendingScorePlayerRef.current = playerId;
+				return;
 			}
-			const latestRound = targetRounds[targetRounds.length - 1];
-			if (latestRound) {
-				showScoreModal({
-					title: 'Punkte eingeben',
-					children: (
-						<ScoreInputContent
-							initialValue={latestRound.scores[playerId] ?? null}
-							onSave={(value) => {
-								dispatch(setScore({ roundId: latestRound.id, playerId, score: value }));
-								closeScoreModal();
-							}}
-						/>
-					),
-				});
-			}
+			openScoreModalForPlayer(playerId);
+		},
+		[rounds, dispatch],
+	);
+
+	const pendingScorePlayerRef = React.useRef<string | null>(null);
+
+	const openScoreModalForPlayer = useCallback(
+		(playerId: string) => {
+			const latestRound = rounds[rounds.length - 1];
+			if (!latestRound) return;
+			showScoreModal({
+				title: 'Punkte eingeben',
+				children: (
+					<ScoreInputContent
+						initialValue={latestRound.scores[playerId] ?? null}
+						onSave={(value) => {
+							dispatch(setScore({ roundId: latestRound.id, playerId, score: value }));
+							closeScoreModal();
+						}}
+					/>
+				),
+			});
 		},
 		[rounds, showScoreModal, closeScoreModal, dispatch],
 	);
+
+	// Open score modal after a round was auto-created
+	React.useEffect(() => {
+		if (pendingScorePlayerRef.current && rounds.length > 0) {
+			const playerId = pendingScorePlayerRef.current;
+			pendingScorePlayerRef.current = null;
+			openScoreModalForPlayer(playerId);
+		}
+	}, [rounds, openScoreModalForPlayer]);
 
 	const handleAddRound = useCallback(() => {
 		dispatch(addRound());

@@ -8,6 +8,17 @@ export type Player = {
 	color: string;
 };
 
+export const PLAYER_COLORS = [
+	'#2563eb', // blue
+	'#dc2626', // red
+	'#16a34a', // green
+	'#ea580c', // orange
+	'#9333ea', // purple
+	'#0891b2', // cyan
+	'#ca8a04', // yellow
+	'#db2777', // pink
+];
+
 export type Round = {
 	id: string;
 	scores: Record<string, number | null>; // playerId → score (null = not entered)
