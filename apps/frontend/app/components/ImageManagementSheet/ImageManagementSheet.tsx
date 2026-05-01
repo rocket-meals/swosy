@@ -16,10 +16,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
+import AppButton from '@/components/AppButton';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet, selectedFoodId, handleFetch, fileName }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [loading, setLoading] = useState({
 		camera: false,
 		image: false,
@@ -53,7 +57,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			const permissionResponse = useCamera ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
 			if (!permissionResponse.granted) {
-				Alert.alert('Permission Denied', 'Please grant permissions to access the camera or gallery.');
+				Alert.alert(translate(TranslationKeys.permission_denied_title), translate(TranslationKeys.camera_gallery_permission_message));
 				return;
 			}
 
@@ -76,7 +80,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 					});
 
 			if (pickerResult.canceled) {
-				Alert.alert('Canceled the image');
+				Alert.alert(translate(TranslationKeys.image_picker_canceled));
 				return;
 			}
 
@@ -206,9 +210,11 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 					style={{
 						...styles.sheetHeading,
 						color: theme.sheet.text,
+						textAlign: isArabic ? 'right' : 'center',
+						writingDirection: isArabic ? 'rtl' : 'ltr',
 					}}
 				>
-					Edit: Image
+					{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
 				</Text>
 			</View>
 			<View
@@ -221,64 +227,143 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			>
 				{isDelete ? (
 					<View>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={handleDeleteImage}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
-							</View>
-							{loading?.delete ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={{ ...styles.row, backgroundColor: theme.background }}
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={handleDeleteImage}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+									<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>
+										{translate(TranslationKeys.delete)}
+									</Text>
+								</View>
+							}
+							iconRight={
+								loading?.delete ? (
+									<ActivityIndicator size="small" color={theme.screen.icon} />
+								) : (
+									<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+								)
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
 							onPress={() => {
 								setIsDelete(false);
 								closeSheet();
 							}}
-						>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
-							</View>
-							<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => setIsDelete(false)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="keyboard-backspace" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.navigate_back)}</Text>
-							</View>
-						</TouchableOpacity>
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+									<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>
+										{translate(TranslationKeys.cancel)}
+									</Text>
+								</View>
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => setIsDelete(false)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+									<MaterialCommunityIcons name={isArabic ? 'arrow-right' : 'arrow-left'} size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>{translate(TranslationKeys.navigate_back)}</Text>
+								</View>
+							}
+						/>
 					</View>
 				) : (
 					<>
 						{!isWeb && (
-							<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => handleImagePick(true)}>
-								<View style={styles.col}>
-									<Ionicons name="camera" size={24} color={theme.screen.icon} />
-									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.camera)}</Text>
-								</View>
-								{loading?.camera ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-							</TouchableOpacity>
+							<AppButton
+								variant="ghost"
+								usePlainText
+								onPress={() => handleImagePick(true)}
+								style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+								iconLeft={
+									<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+										<Ionicons name="camera" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>
+											{translate(TranslationKeys.camera)}
+										</Text>
+									</View>
+								}
+								iconRight={
+									loading?.camera ? (
+										<ActivityIndicator size="small" color={theme.screen.icon} />
+									) : (
+										<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+									)
+								}
+							/>
 						)}
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => handleImagePick(false)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="folder-image" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.gallery)}</Text>
-							</View>
-							{loading?.image ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => setIsDelete(true)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
-							</View>
-							<MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={closeSheet}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
-							</View>
-						</TouchableOpacity>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => handleImagePick(false)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+									<MaterialCommunityIcons name="folder-image" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>
+										{translate(TranslationKeys.gallery)}
+									</Text>
+								</View>
+							}
+							iconRight={
+								loading?.image ? (
+									<ActivityIndicator size="small" color={theme.screen.icon} />
+								) : (
+									<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+								)
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => setIsDelete(true)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								isArabic ? (
+									<View style={[styles.col, { flexDirection: 'row-reverse' }]}>
+										<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text, textAlign: 'right', writingDirection: 'rtl' }}>{translate(TranslationKeys.delete)}</Text>
+									</View>
+								) : (
+									<View style={styles.col}>
+										<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
+									</View>
+								)
+							}
+							iconRight={
+								isArabic ? (
+									<MaterialCommunityIcons name="arrow-left" size={24} color={theme.screen.icon} />
+								) : (
+									<MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />
+								)
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={closeSheet}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+							iconLeft={
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+									<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text, ...(isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null) }}>
+										{translate(TranslationKeys.cancel)}
+									</Text>
+								</View>
+							}
+						/>
 					</>
 				)}
 			</View>

@@ -16,6 +16,7 @@ import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface SettingsListMarkingLabelProps extends MarkingLabelProps {}
 // All props are defined in MarkingLabelProps; this named export is kept for
@@ -33,10 +34,12 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
-	const markings = useAppSelector(state => state.food.markings);
-	const marking = markings?.find((mark: any) => mark.id === markingId);
+	const markingsDict = useAppSelector(state => state.food.markingsDict);
+	const marking = (markingsDict as any)?.[String(markingId)];
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
 	const [likeLoading, setLikeLoading] = useState(false);
 	const [dislikeLoading, setDislikeLoading] = useState(false);
@@ -83,7 +86,6 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 				dispatch({ type: UPDATE_PROFILE, payload: profile });
 			}
 		} catch (error) {
-			console.error('Error fetching profiles:', error);
 		}
 	};
 
@@ -160,7 +162,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const leftIconComponent = (
-		<View style={styles.leftIconWrapper}>
+		<View style={[styles.leftIconWrapper, isArabic ? styles.leftIconWrapperReverse : undefined]}>
 			<CustomTooltip
 				placement="top"
 				trigger={triggerProps =>
@@ -223,6 +225,10 @@ export default SettingsListMarkingLabel;
 const styles = StyleSheet.create({
 	leftIconWrapper: {
 		marginRight: 10,
+	},
+	leftIconWrapperReverse: {
+		marginRight: 0,
+		marginLeft: 10,
 	},
 	rightRow: {
 		flexDirection: 'row',

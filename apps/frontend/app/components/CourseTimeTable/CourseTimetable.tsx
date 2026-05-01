@@ -10,10 +10,13 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, setIsUpdate, setTimeTableData, setSelectedEventId }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [currentTimeOffset, setCurrentTimeOffset] = useState(0);
 	const [showCurrentTimeOffset, setShowCurrentTimeOffset] = useState(false);
@@ -174,7 +177,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 							},
 						]}
 					>
-						<Text style={styles.currentTimeText}>Now</Text>
+						<Text style={styles.currentTimeText}>{translate(TranslationKeys.now)}</Text>
 					</View>
 				)}
 				<View
@@ -192,7 +195,16 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 					/>
 					{timeSlots.map(time => (
 						<View key={time} style={styles.timeColumn}>
-							<Text style={{ ...styles.timeText, color: theme.screen.text }}>{time}</Text>
+							<Text
+								style={{
+									...styles.timeText,
+									color: theme.screen.text,
+									textAlign: isArabic ? 'right' : 'left',
+									writingDirection: isArabic ? 'rtl' : 'ltr',
+								}}
+							>
+								{time}
+							</Text>
 						</View>
 					))}
 				</View>
@@ -213,6 +225,8 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 										style={{
 											...styles.dayHeaderText,
 											color: theme.screen.text,
+											textAlign: isArabic ? 'right' : 'center',
+											writingDirection: isArabic ? 'rtl' : 'ltr',
 										}}
 									>
 										{translate(day.name)}
@@ -269,7 +283,14 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 															}}
 															onPress={() => handleUpdateEvent(event)}
 														>
-															<Text style={styles.eventText}>{event.title}</Text>
+															<Text
+																style={[
+																	styles.eventText,
+																	isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as any) : null,
+																]}
+															>
+																{event.title}
+															</Text>
 														</TouchableOpacity>
 													)}
 												>

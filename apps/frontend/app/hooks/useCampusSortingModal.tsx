@@ -11,6 +11,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { RootState } from '@/redux/reducer';
 import { SET_CAMPUSES_SORTING } from '@/redux/Types/types';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
@@ -74,15 +75,19 @@ const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) =
 
 export const useCampusSortingModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openCampusSortingModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.sort),
 			onClose: closeScrollViewModal,
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <CampusSortSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openCampusSortingModal };
 };

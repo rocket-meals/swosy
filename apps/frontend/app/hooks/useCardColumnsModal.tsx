@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { SET_AMOUNT_COLUMNS_FOR_CARDS } from '@/redux/Types/types';
 import { CollectibleAt } from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const CardColumnsSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
@@ -46,15 +47,19 @@ const CardColumnsSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 
 export const useCardColumnsModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openCardColumnsModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.amount_columns_for_cards),
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			onClose: closeScrollViewModal,
 			children: <CardColumnsSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openCardColumnsModal };
 };

@@ -15,13 +15,17 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RatingHelper, DatabaseTypes } from 'repo-depkit-common';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import styles from '../styles';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 const FoodWishlist = () => {
 	useSetPageTitle(TranslationKeys.food_wishlist);
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { language, primaryColor } = useAppSelector((state) => state.settings);
-	const { ownFoodFeedbacks } = useAppSelector((state) => state.food);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
+	const { ownFoodFeedbacksDict } = useAppSelector((state) => state.food);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	const selectedCanteen = useSelectedCanteen();
 
 	const [foods, setFoods] = useState<DatabaseTypes.Foods[]>([]);
@@ -147,7 +151,8 @@ const FoodWishlist = () => {
 							width: 34,
 							height: 34,
 							borderRadius: 8,
-							marginRight: 10,
+							marginRight: isArabic ? 0 : 10,
+							marginLeft: isArabic ? 10 : 0,
 						}}
 						contentFit="cover"
 					/>
@@ -156,13 +161,15 @@ const FoodWishlist = () => {
 				value={dateLabel}
 				groupPosition={groupPosition}
 				showSeparator={groupPosition !== 'bottom' && groupPosition !== 'single'}
-				rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+				rightIcon={<Octicons name={isArabic ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />}
 				onPress={() => {
 					router.push({
 						pathname: '/(app)/foodoffers/details',
 						params: { foodId },
 					});
 				}}
+				reverseLayout={isArabic}
+				titleTextAlign={isArabic ? 'right' : 'left'}
 			/>
 		);
 	};
@@ -176,13 +183,13 @@ const FoodWishlist = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 					{translate(TranslationKeys.food_wishlist)}
 				</Text>
 
 				{plannedFoods.length > 0 && (
 					<View style={styles.section}>
-						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18 }}>
+						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 							{translate(TranslationKeys.food_wishlist_planned)}
 						</Text>
 						{plannedFoods.map((food, index) =>
@@ -193,7 +200,7 @@ const FoodWishlist = () => {
 
 				{unplannedFoods.length > 0 && (
 					<View style={styles.section}>
-						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18 }}>
+						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 							{translate(TranslationKeys.food_wishlist_not_planned)}
 						</Text>
 						{unplannedFoods.map((food, index) =>

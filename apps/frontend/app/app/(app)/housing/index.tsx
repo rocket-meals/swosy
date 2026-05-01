@@ -32,6 +32,7 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
 const apartmentsHelper = new ApartmentsHelper();
@@ -40,6 +41,7 @@ const buildingsHelper = new BuildingsHelper();
 const Index: React.FC = () => {
 	useSetPageTitle(TranslationKeys.housing);
 	const toast = useToast();
+	const isLtrLanguage = useIsLtrLanguage();
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -133,7 +135,7 @@ const Index: React.FC = () => {
 			});
 		} catch (error) {
 			console.error('Error fetching apartments or buildings:', error);
-			toast('Failed to load apartments', 'error');
+			toast(translate(TranslationKeys.failedToLoadApartments), 'error');
 		} finally {
 			setLoading(false);
 		}
@@ -164,7 +166,7 @@ const Index: React.FC = () => {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				toast('Permission denied', 'error');
+				toast(translate(TranslationKeys.permission_denied_title), 'error');
 				return;
 			}
 			const loc = await Location.getCurrentPositionAsync({});
@@ -316,7 +318,7 @@ const Index: React.FC = () => {
 				<HousingHeader
 					theme={theme}
 					translate={translate}
-					drawerPosition={drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (isLtrLanguage ? 'left' : 'right') : drawerPosition}
 					openHousingSortingModal={openHousingSortingModal}
 				/>
 

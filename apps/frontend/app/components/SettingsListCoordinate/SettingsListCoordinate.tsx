@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import type { LinkCoordinate } from '@/hooks/useLinkCoordinateModal';
 import type { SettingsListProps } from '@/components/SettingsList';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 type SettingsListCoordinateProps = React.PropsWithChildren<{
 	location?: LinkCoordinate;
@@ -27,9 +28,11 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	...props
 }) => {
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const hasLocation = Number.isFinite(location?.latitude) && Number.isFinite(location?.longitude);
+	const isLtrLanguage = useIsLtrLanguage();
+	const isArabic = !isLtrLanguage;
 
 	const handleOpenLocation = useCallback(() => {
 		if (!hasLocation || !location) {
@@ -45,7 +48,7 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	const resolvedLabel = label ?? translate(TranslationKeys.location);
 	const resolvedValue = value ?? translate(TranslationKeys.open_in_google_or_apple_maps);
 	const resolvedLeftIcon = leftIcon ?? <Ionicons name="location-sharp" size={24} color={theme.screen.icon} />;
-	const resolvedRightIcon = rightIcon ?? <Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />;
+	const resolvedRightIcon = rightIcon ?? <Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={26} color={theme.screen.icon} />;
 
 	return (
 		<SettingsList

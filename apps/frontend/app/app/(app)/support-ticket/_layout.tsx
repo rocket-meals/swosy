@@ -18,7 +18,7 @@ export default function Layout() {
 			<Stack.Screen
 				name="index"
 				options={{
-					title: 'Support Ticket',
+					title: translate(TranslationKeys.support_ticket),
 					header: () => <CustomStackHeader label={translate(TranslationKeys.my_support_tickets)} key={'Support Ticket'} />,
 				}}
 			/>

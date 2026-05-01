@@ -7,6 +7,8 @@ import {
 	View,
 } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { Platform, TextInput } from 'react-native';
+const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -116,7 +118,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 				</TouchableOpacity>
 				<View style={styles.inputContainer}>
 					{prefix ? <Text style={[styles.affix, { color: theme.sheet.text }]}>{prefix}</Text> : null}
-					<BottomSheetTextInput
+					<InputComponent
 						style={[
 							styles.sheetInput,
 							{

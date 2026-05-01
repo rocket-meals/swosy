@@ -3,6 +3,7 @@ import { CalendarSheetContent } from '@/components/CalendarSheet/CalendarSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export interface OpenDatePickerModalOptions {
 	selectedDateProp?: string;
@@ -12,13 +13,17 @@ export interface OpenDatePickerModalOptions {
 
 const useMyScrollviewModalDatePicker = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
 	const openDatePickerModal = useCallback(
 		(options: OpenDatePickerModalOptions = {}) => {
 			showScrollViewModal({
 				title: `${translate(TranslationKeys.select)} : ${translate(TranslationKeys.date)}`,
 				onClose: closeScrollViewModal,
+				titleTextAlign: isRtl ? 'right' : 'left',
+				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 				children: (
 					<CalendarSheetContent
 						closeSheet={closeScrollViewModal}
@@ -29,7 +34,7 @@ const useMyScrollviewModalDatePicker = () => {
 				),
 			});
 		},
-		[closeScrollViewModal, showScrollViewModal, translate]
+		[closeScrollViewModal, isRtl,showScrollViewModal, translate]
 	);
 
 	return { openDatePickerModal, closeDatePickerModal: closeScrollViewModal };

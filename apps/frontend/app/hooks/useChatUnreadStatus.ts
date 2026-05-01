@@ -8,7 +8,8 @@ export const getChatTimestamp = (chat: DatabaseTypes.Chats): string | null => {
 };
 
 const useChatUnreadStatus = () => {
-        const { chats = [], readStatus = {} } = useAppSelector((state) => state.chats ?? {});
+        const { chatsDict = {}, readStatus = {} } = useAppSelector((state) => state.chats ?? {});
+        const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
 
         const readStatusMap = readStatus ?? {};
 

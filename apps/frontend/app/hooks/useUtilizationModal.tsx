@@ -4,16 +4,21 @@ import {useMyScrollViewModal} from '@/components/GlobalModal/useMyScrollViewModa
 import {useLanguage} from '@/hooks/useLanguage';
 import {TranslationKeys} from '@/locales/keys';
 import {DatabaseTypes} from 'repo-depkit-common';
+import useIsLtrLanguage from '@/hooks/useIsLtrLanguage';
 
 export const useUtilizationModal = () => {
         const {show: showScrollViewModal, close: closeScrollViewModal} = useMyScrollViewModal();
-        const {translate} = useLanguage();
+        const {translate, language} = useLanguage();
+        const isLtrLanguage = useIsLtrLanguage();
+	const isRtl = !isLtrLanguage;
 
         const openUtilizationModal = useCallback(
                 (forDate: string, canteen: DatabaseTypes.Canteens | null) =>
                         showScrollViewModal(
                                 {
                                         title: translate(TranslationKeys.forecast),
+                                        titleTextAlign: isRtl ? 'right' : 'left',
+                                        titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                         onClose: closeScrollViewModal,
                                         children: (
                                                 <ForecastSheet
@@ -24,7 +29,7 @@ export const useUtilizationModal = () => {
                                 },
                                 {}
                         ),
-                [closeScrollViewModal, showScrollViewModal, translate]
+                [closeScrollViewModal, isRtl, showScrollViewModal, translate]
         );
 
         return {openUtilizationModal};
