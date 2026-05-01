@@ -5,8 +5,10 @@
   "meta": {
     "collection": "friendships",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{nickname}} ({{id}})"
+    },
     "field": "requester_profiles_id",
     "group": null,
     "hidden": false,

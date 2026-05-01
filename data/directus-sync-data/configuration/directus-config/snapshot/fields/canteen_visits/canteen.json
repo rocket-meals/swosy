@@ -5,8 +5,10 @@
   "meta": {
     "collection": "canteen_visits",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}} ({{id}})"
+    },
     "field": "canteen",
     "group": null,
     "hidden": false,

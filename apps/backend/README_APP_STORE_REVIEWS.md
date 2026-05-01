@@ -28,8 +28,14 @@ Diese Dokumentation beschreibt, welche Zugangsdaten bereits vorhanden sind und w
 
 | Variable | Status |
 |---|---|
-| Service Account JSON | ❌ Fehlt |
-| Package Name | ❌ Fehlt |
+| Service Account JSON | ⚠️ Muss als `GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON` in `.env` eingetragen werden |
+| Package Name | ✅ Bekannt – `googlePlayPackageName` in `CustomerAppStoreIds` (`packages/common/src/CustomerAppStoreIds.ts`, exportiert von `repo-depkit-common`) |
+
+**Package Names pro Tenant** (aus `CustomerAppStoreIds` in `repo-depkit-common`):
+| Tenant | `googlePlayPackageName` |
+|---|---|
+| swosy | `de.baumgartnersoftware.swosy` |
+| studi-futter | `de.baumgartnersoftware.studifutter` |
 
 ---
 
