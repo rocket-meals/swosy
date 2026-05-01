@@ -14,6 +14,15 @@ const ALL_AVATAR_STYLES: AvatarStyle[] = Object.values(AvatarStyle);
 /** Predefined seed examples. */
 const SEED_OPTIONS = ['John Doe', 'Jane Smith', 'Alice', 'Bob', 'Charlie', 'Rocket Meals'];
 
+type GroupPosition = 'top' | 'middle' | 'bottom' | 'single';
+
+function getGroupPosition(index: number, totalItems: number): GroupPosition {
+	if (totalItems === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === totalItems - 1) return 'bottom';
+	return 'middle';
+}
+
 const AvatarShowcase = () => {
 	useSetPageTitle(TranslationKeys.avatar_showcase);
 	const { theme } = useTheme();
@@ -64,8 +73,7 @@ const AvatarShowcase = () => {
 				{/* Seed Selection */}
 				<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>Seed</Text>
 				{SEED_OPTIONS.map((seed, index) => {
-					const totalItems = SEED_OPTIONS.length;
-					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
+					const groupPosition = getGroupPosition(index, SEED_OPTIONS.length);
 
 					return (
 						<SettingsList
@@ -80,7 +88,7 @@ const AvatarShowcase = () => {
 							}
 							label={seed}
 							handleFunction={() => setSelectedSeed(seed)}
-							groupPosition={groupPosition as 'top' | 'middle' | 'bottom' | 'single'}
+							groupPosition={groupPosition}
 						/>
 					);
 				})}
@@ -88,8 +96,7 @@ const AvatarShowcase = () => {
 				{/* Style Selection */}
 				<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>Style</Text>
 				{ALL_AVATAR_STYLES.map((avatarStyle, index) => {
-					const totalItems = ALL_AVATAR_STYLES.length;
-					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
+					const groupPosition = getGroupPosition(index, ALL_AVATAR_STYLES.length);
 
 					return (
 						<SettingsList
@@ -102,7 +109,7 @@ const AvatarShowcase = () => {
 							}
 							label={avatarStyle}
 							handleFunction={() => setSelectedStyle(avatarStyle)}
-							groupPosition={groupPosition as 'top' | 'middle' | 'bottom' | 'single'}
+							groupPosition={groupPosition}
 						/>
 					);
 				})}
