@@ -5,6 +5,7 @@ import { File, Paths } from 'expo-file-system';
 export type Player = {
 	id: string;
 	name: string;
+	color: string;
 };
 
 export type Round = {

@@ -20,6 +20,17 @@ function generateId(): string {
 	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+const PLAYER_COLORS = [
+	'#2563eb', // blue
+	'#dc2626', // red
+	'#16a34a', // green
+	'#ea580c', // orange
+	'#9333ea', // purple
+	'#0891b2', // cyan
+	'#ca8a04', // yellow
+	'#db2777', // pink
+];
+
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
 const gameSlice = createSlice({
@@ -28,13 +39,18 @@ const gameSlice = createSlice({
 	reducers: {
 		/** Load persisted game state from disk. Called once at startup. */
 		loadGameState(_state, action: PayloadAction<GameState>) {
-			return { players: action.payload.players, rounds: action.payload.rounds };
+			const players = action.payload.players.map((p, i) => ({
+				...p,
+				color: p.color || PLAYER_COLORS[i % PLAYER_COLORS.length],
+			}));
+			return { players, rounds: action.payload.rounds };
 		},
 
 		/** Add a new player with a default name. */
 		addPlayer(state) {
 			const playerNumber = state.players.length + 1;
-			const newPlayer: Player = { id: generateId(), name: `Spieler ${playerNumber}` };
+			const color = PLAYER_COLORS[state.players.length % PLAYER_COLORS.length];
+			const newPlayer: Player = { id: generateId(), name: `Spieler ${playerNumber}`, color };
 			state.players.push(newPlayer);
 			// Add score slot for the new player in all existing rounds
 			for (const round of state.rounds) {
@@ -47,6 +63,14 @@ const gameSlice = createSlice({
 			const player = state.players.find((p) => p.id === action.payload.playerId);
 			if (player) {
 				player.name = action.payload.name;
+			}
+		},
+
+		/** Change a player's tile color. */
+		setPlayerColor(state, action: PayloadAction<{ playerId: string; color: string }>) {
+			const player = state.players.find((p) => p.id === action.payload.playerId);
+			if (player) {
+				player.color = action.payload.color;
 			}
 		},
 
@@ -91,6 +115,7 @@ export const {
 	loadGameState,
 	addPlayer,
 	renamePlayer,
+	setPlayerColor,
 	removePlayer,
 	setScore,
 	addRound,
