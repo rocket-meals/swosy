@@ -1,8 +1,10 @@
 import React, { ReactNode } from 'react';
-import { Platform, View, Text, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, View, Text, useWindowDimensions } from 'react-native';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const stickyWrapperStyle = StyleSheet.create({ container: { flex: 1 } }).container;
 
 export interface MyScrollViewModalProps {
 	title?: string;
@@ -72,8 +74,18 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };
 
+	const wrapWithStickyHeader = (content: React.ReactElement): React.ReactElement => {
+		if (!stickyHeaderComponent) return content;
+		return (
+			<View style={[stickyWrapperStyle, { backgroundColor: resolvedBackgroundColor }]}>
+				{stickyHeaderComponent}
+				{content}
+			</View>
+		);
+	};
+
 	if (useFlatList && renderItem && keyExtractor) {
-		const flatList = (
+		return wrapWithStickyHeader(
 			<BottomSheetFlatList
 				data={data}
 				keyExtractor={keyExtractor}
@@ -87,20 +99,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 				scrollIndicatorInsets={scrollInsets}
 			/>
 		);
-
-		if (stickyHeaderComponent) {
-			return (
-				<View style={{ flex: 1, backgroundColor: resolvedBackgroundColor }}>
-					{stickyHeaderComponent}
-					{flatList}
-				</View>
-			);
-		}
-
-		return flatList;
 	}
 
-	const scrollView = (
+	return wrapWithStickyHeader(
 		<BottomSheetScrollView
 			style={containerStyle}
 			contentContainerStyle={contentStyle}
@@ -113,17 +114,6 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 			{footerComponent}
 		</BottomSheetScrollView>
 	);
-
-	if (stickyHeaderComponent) {
-		return (
-			<View style={{ flex: 1, backgroundColor: resolvedBackgroundColor }}>
-				{stickyHeaderComponent}
-				{scrollView}
-			</View>
-		);
-	}
-
-	return scrollView;
 };
 
 export default MyScrollViewModal;
