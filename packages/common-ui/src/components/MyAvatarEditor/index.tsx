@@ -167,6 +167,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				options={optionItems}
 				selectedOption={selectedValue}
 				onSelect={(option) => handleOptionChange(selectedCategory, option.id as string)}
+				iconBgColor={accentColor}
 				accentColor={accentColor}
 				groupPosition="single"
 			/>
