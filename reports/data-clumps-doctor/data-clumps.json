@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-02T13:39:18.330Z",
+  "report_timestamp": "2026-05-02T19:51:23.740Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 99,
-          "average": 1.6143024618991795,
-          "amountSavedValuesForKeys": 4131,
+          "average": 1.614693239546698,
+          "amountSavedValuesForKeys": 4132,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 99,
-          "average": 1.6283011430823808,
-          "amountSavedValuesForKeys": 4131,
+          "average": 1.6286953094205754,
+          "amountSavedValuesForKeys": 4132,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4337,
-        "detection_time_ms": 94,
+        "ast_generation_time_ms": 4270,
+        "detection_time_ms": 92,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 304.65,
-          "os_memory_free": 14941126656,
+          "os_uptime": 600.46,
+          "os_memory_free": 14993801216,
           "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c04e4dfbcafcd5b8092ac3ca0eebd3ba28645b2c",
-    "project_commit_hash": "c04e4dfbcafcd5b8092ac3ca0eebd3ba28645b2c",
+    "project_version": "fe78d6b57b7c6616335f71134fdee28ca001c8ba",
+    "project_commit_hash": "fe78d6b57b7c6616335f71134fdee28ca001c8ba",
     "project_tag": null,
-    "project_commit_date": "1777729064",
+    "project_commit_date": "1777751380",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 518,
     "number_of_classes_or_interfaces": 1058,
     "number_of_methods": 1377,
-    "number_of_data_fields": 4131,
+    "number_of_data_fields": 4132,
     "number_of_method_parameters": 1538
   },
   "detector": {
@@ -10210,9 +10210,9 @@
             }
           },
           "position": {
-            "startLine": 15,
+            "startLine": 16,
             "startColumn": 2,
-            "endLine": 15,
+            "endLine": 16,
             "endColumn": 15
           }
         },
@@ -10235,9 +10235,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 17,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 17,
             "endColumn": 21
           }
         },
@@ -10260,9 +10260,9 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 20,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 20,
             "endColumn": 37
           }
         }
@@ -10300,9 +10300,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 16,
               "startColumn": 2,
-              "endLine": 15,
+              "endLine": 16,
               "endColumn": 15
             }
           },
@@ -10325,9 +10325,9 @@
             "type": "AvatarStyle",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 17,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 17,
               "endColumn": 21
             }
           },
@@ -10350,9 +10350,9 @@
             "type": "Record<string, string[]>",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 20,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 20,
               "endColumn": 37
             }
           },
