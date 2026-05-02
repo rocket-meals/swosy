@@ -67,6 +67,19 @@ function getStyleColorKeys(style: AvatarStyle): string[] {
 }
 
 /**
+ * Returns the default hex color values (without '#') for a given color property key
+ * from the DiceBear avatar style schema.
+ */
+function getSchemaDefaultColors(style: AvatarStyle, key: string): string[] {
+	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
+	const prop = dicebearStyle?.schema?.properties?.[key];
+	if (prop?.default && Array.isArray(prop.default)) {
+		return prop.default as string[];
+	}
+	return [];
+}
+
+/**
  * Returns the predefined color palette appropriate for a given color property key.
  */
 function getPresetColorsForKey(key: string): string[] {
@@ -138,7 +151,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	configRef,
 	selectedCategoryRef,
 }) => {
-	const [config, setConfig] = useState<AvatarConfig>(initialConfig);
+	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const [selectedCategory, setSelectedCategory] = useState<string>(selectedCategoryRef.current);
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 	const { theme, isDark } = useTheme();
@@ -224,7 +237,17 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		if (colorKeys.includes(selectedCategory)) {
 			const presetColors = getPresetColorsForKey(selectedCategory);
 			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
-			const selectedColor = storedHex ? '#' + storedHex : null;
+
+			// When no color is explicitly set, use the first schema default to show as initial selection
+			let displayHex = storedHex;
+			if (!displayHex) {
+				const schemaDefaults = getSchemaDefaultColors(config.style, selectedCategory);
+				if (schemaDefaults.length > 0) {
+					displayHex = schemaDefaults[0];
+				}
+			}
+
+			const selectedColor = displayHex ? '#' + displayHex : null;
 			const swatchBorderColor = selectedColor ? myContrastColor(selectedColor, theme, isDark) : undefined;
 
 			const handleColorSelect = (color: string) => {
