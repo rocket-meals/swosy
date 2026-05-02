@@ -1,8 +1,10 @@
 import React, { ReactNode } from 'react';
-import { Platform, View, Text, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, View, Text, useWindowDimensions } from 'react-native';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const stickyWrapperStyle = StyleSheet.create({ container: { flex: 1 } }).container;
 
 export interface MyScrollViewModalProps {
 	title?: string;
@@ -19,6 +21,8 @@ export interface MyScrollViewModalProps {
 	keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
+	/** Component rendered above the scroll view, stays fixed (sticky) while content scrolls beneath it. */
+	stickyHeaderComponent?: ReactNode;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -35,6 +39,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	keyboardShouldPersistTaps = 'handled',
 	onClose,
 	disableHorizontalPadding = false,
+	stickyHeaderComponent,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -69,8 +74,18 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };
 
-	if (useFlatList && renderItem && keyExtractor) {
+	const wrapWithStickyHeader = (content: React.ReactElement): React.ReactElement => {
+		if (!stickyHeaderComponent) return content;
 		return (
+			<View style={[stickyWrapperStyle, { backgroundColor: resolvedBackgroundColor }]}>
+				{stickyHeaderComponent}
+				{content}
+			</View>
+		);
+	};
+
+	if (useFlatList && renderItem && keyExtractor) {
+		return wrapWithStickyHeader(
 			<BottomSheetFlatList
 				data={data}
 				keyExtractor={keyExtractor}
@@ -86,7 +101,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 		);
 	}
 
-	return (
+	return wrapWithStickyHeader(
 		<BottomSheetScrollView
 			style={containerStyle}
 			contentContainerStyle={contentStyle}
