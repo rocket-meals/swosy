@@ -7,9 +7,10 @@ import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import MyColorPicker, { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
+import { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
+import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 
 export type AvatarConfig = {
 	seed: string;
@@ -91,23 +92,41 @@ type ColorPickerModalContentProps = {
 	colors: string[];
 	initialSelectedColor: string | null;
 	onSelectAndClose: (color: string) => void;
+	accentColor?: string;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	colors,
 	initialSelectedColor,
 	onSelectAndClose,
+	accentColor,
 }) => {
-	const [selectedColor, setSelectedColor] = useState<string | null>(initialSelectedColor);
 	return (
-		<MyColorPicker
-			colors={colors}
-			selectedColor={selectedColor}
-			onSelect={(color) => {
-				setSelectedColor(color);
-				onSelectAndClose(color);
-			}}
-		/>
+		<>
+			{colors.map((color, index) => {
+				const groupPosition =
+					colors.length === 1
+						? 'single'
+						: index === 0
+							? 'top'
+							: index === colors.length - 1
+								? 'bottom'
+								: 'middle';
+				return (
+					<SettingsListSelectOptionSingle
+						key={color}
+						label={color}
+						leftIcon={<View />}
+						iconBgColor={color}
+						selectionColor={accentColor}
+						isSelected={initialSelectedColor?.toLowerCase() === color.toLowerCase()}
+						groupPosition={groupPosition}
+						showSeparator={index !== colors.length - 1}
+						onPress={() => onSelectAndClose(color)}
+					/>
+				);
+			})}
+		</>
 	);
 };
 
@@ -136,14 +155,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const componentKeys = useMemo(() => Object.keys(componentOptions), [componentOptions]);
 	const colorKeys = useMemo(() => getStyleColorKeys(config.style), [config.style]);
 
-	/** All available categories: built-in ones + style-specific component keys + color keys. */
-	const allCategories = useMemo(() => {
-		return [...BUILTIN_CATEGORIES, ...componentKeys, ...colorKeys];
-	}, [componentKeys, colorKeys]);
-
 	const categoryOptions = useMemo(() => {
+		const allCategories = [...BUILTIN_CATEGORIES, ...componentKeys, ...colorKeys];
 		return allCategories.map((cat) => ({ id: cat, label: cat }));
-	}, [allCategories]);
+	}, [componentKeys, colorKeys]);
 
 	/** When the style changes, component keys may change – reset category if it no longer exists. */
 	const handleStyleChange = (newStyle: AvatarStyle) => {
@@ -187,35 +202,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		handleChange(newConfig);
 	};
 
-	/**
-	 * Returns the icon background color for the category selector.
-	 * For color categories, shows the currently selected color for that key.
-	 */
-	const categoryIconBgColor = useMemo(() => {
-		if (colorKeys.includes(selectedCategory)) {
-			const storedHex = config.options?.[selectedCategory]?.[0];
-			if (storedHex) return '#' + storedHex;
-		}
-		return accentColor;
-	}, [selectedCategory, colorKeys, config.options, accentColor]);
-
-	/** Right-side color swatch displayed in the category selector for color keys. */
-	const categoryRightElement = useMemo(() => {
-		if (!colorKeys.includes(selectedCategory)) return undefined;
-		const storedHex = config.options?.[selectedCategory]?.[0];
-		if (!storedHex) return undefined;
-		const colorValue = '#' + storedHex;
-		const swatchBorderColor = myContrastColor(colorValue, theme, isDark);
-		return (
-			<View
-				style={[
-					styles.colorSwatch,
-					{ backgroundColor: colorValue, borderColor: swatchBorderColor },
-				]}
-			/>
-		);
-	}, [selectedCategory, colorKeys, config.options, theme, isDark]);
-
 	/** Render the value selector for the currently active category. */
 	const renderValueSelector = () => {
 		if (selectedCategory === BUILTIN_CATEGORY_STYLE) {
@@ -237,6 +223,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const presetColors = getPresetColorsForKey(selectedCategory);
 			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
 			const selectedColor = storedHex ? '#' + storedHex : null;
+			const swatchBorderColor = selectedColor ? myContrastColor(selectedColor, theme, isDark) : undefined;
 
 			const handleColorSelect = (color: string) => {
 				handleOptionChange(selectedCategory, stripHashPrefix(color));
@@ -249,6 +236,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						<ColorPickerModalContent
 							colors={presetColors}
 							initialSelectedColor={selectedColor}
+							accentColor={accentColor}
 							onSelectAndClose={(color) => {
 								handleColorSelect(color);
 								closeColorModal();
@@ -264,10 +252,20 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					options={presetColors.map((color) => ({ id: color, label: color }))}
 					selectedOption={selectedColor}
 					onSelect={(option) => handleColorSelect(option.id)}
-					iconBgColor={selectedColor ?? undefined}
+					iconBgColor={accentColor}
 					onPress={handleOpenColorPicker}
 					accentColor={accentColor}
 					groupPosition="single"
+					extraRightElement={
+						selectedColor ? (
+							<View
+								style={[
+									styles.colorSwatch,
+									{ backgroundColor: selectedColor, borderColor: swatchBorderColor },
+								]}
+							/>
+						) : undefined
+					}
 				/>
 			);
 		}
@@ -309,10 +307,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				options={categoryOptions}
 				selectedOption={selectedCategory}
 				onSelect={(option) => handleSetSelectedCategory(option.id)}
-				iconBgColor={categoryIconBgColor}
+				iconBgColor={accentColor}
 				accentColor={accentColor}
 				groupPosition="single"
-				extraRightElement={categoryRightElement}
 			/>
 
 			<SettingsListGroupTitle title={selectedCategory} />
