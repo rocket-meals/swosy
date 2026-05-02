@@ -1,9 +1,9 @@
 Key,Message,Component,Line
-"AZ3omXuI8DXjeodrgMj6","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",60
+"AZ3omXuI8DXjeodrgMj6","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",62
 "AZ3oau6RXYbs7Obc7Vpu","'accentColor' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx",23
-"AZ3oMpMw1cGPJwrap8qV","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",245
-"AZ3nkJV-DB_MdPLcm0Wt","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",40
-"AZ3nkJV-DB_MdPLcm0Wu","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",151
+"AZ3oMpMw1cGPJwrap8qV","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",286
+"AZ3nkJV-DB_MdPLcm0Wt","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",42
+"AZ3nkJV-DB_MdPLcm0Wu","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",161
 "AZ3lqYUi8DXjeodrPW-w","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",161
 "AZ3gUBzOs6Hfl3oGA0Jt","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",241
 "AZ3bEWfNcWSvB331ANRG","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/GooglePlayHelper.ts",106
