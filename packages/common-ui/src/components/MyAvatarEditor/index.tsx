@@ -7,6 +7,7 @@ import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MyColorPicker, { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 
 export type AvatarConfig = {
 	seed: string;
@@ -42,13 +43,39 @@ function getStyleComponentOptions(style: AvatarStyle): Record<string, string[]> 
 
 	const result: Record<string, string[]> = {};
 	for (const [key, value] of Object.entries(properties)) {
-		if (key.includes('Color') || key.includes('Probability')) continue;
+		if (key.endsWith('Color') || key.includes('Probability')) continue;
 		const items = (value as any)?.items;
 		if (items?.enum && Array.isArray(items.enum) && items.enum.length > 1) {
 			result[key] = items.enum as string[];
 		}
 	}
 	return result;
+}
+
+/**
+ * Returns the color property keys (e.g. hairColor, skinColor) for a given
+ * DiceBear avatar style.
+ */
+function getStyleColorKeys(style: AvatarStyle): string[] {
+	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
+	const properties = dicebearStyle?.schema?.properties;
+	if (!properties) return [];
+	return Object.keys(properties).filter((key) => key.endsWith('Color'));
+}
+
+/**
+ * Returns the predefined color palette appropriate for a given color property key.
+ */
+function getPresetColorsForKey(key: string): string[] {
+	const lower = key.toLowerCase();
+	if (lower.includes('skin')) return SKIN_COLORS;
+	if (lower.includes('hair')) return HAIR_COLORS;
+	return PRESET_COLORS;
+}
+
+/** Strips the leading '#' from a hex color string if present. */
+function stripHashPrefix(color: string): string {
+	return color.startsWith('#') ? color.slice(1) : color;
 }
 
 type AvatarEditorModalContentProps = {
@@ -72,11 +99,12 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
 	const componentKeys = useMemo(() => Object.keys(componentOptions), [componentOptions]);
+	const colorKeys = useMemo(() => getStyleColorKeys(config.style), [config.style]);
 
-	/** All available categories: built-in ones + style-specific component keys. */
+	/** All available categories: built-in ones + style-specific component keys + color keys. */
 	const allCategories = useMemo(() => {
-		return [...BUILTIN_CATEGORIES, ...componentKeys];
-	}, [componentKeys]);
+		return [...BUILTIN_CATEGORIES, ...componentKeys, ...colorKeys];
+	}, [componentKeys, colorKeys]);
 
 	const categoryOptions = useMemo(() => {
 		return allCategories.map((cat) => ({ id: cat, label: cat }));
@@ -85,9 +113,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	/** When the style changes, component keys may change – reset category if it no longer exists. */
 	const handleStyleChange = (newStyle: AvatarStyle) => {
 		handleChange({ ...config, style: newStyle, options: undefined });
-		// If the currently selected category is a component key that doesn't exist in the new style, reset to Style
+		// If the currently selected category is a component/color key that doesn't exist in the new style, reset to Style
 		const newComponentKeys = Object.keys(getStyleComponentOptions(newStyle));
-		const allNew = [...BUILTIN_CATEGORIES, ...newComponentKeys];
+		const newColorKeys = getStyleColorKeys(newStyle);
+		const allNew = [...BUILTIN_CATEGORIES, ...newComponentKeys, ...newColorKeys];
 		if (!allNew.includes(selectedCategory)) {
 			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
 		}
@@ -106,9 +135,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const handleRandomize = () => {
 		const newComponentOptions = getStyleComponentOptions(config.style);
+		const newColorKeys = getStyleColorKeys(config.style);
 		const randomOptions: Record<string, string[]> = {};
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			randomOptions[key] = [values[Math.floor(Math.random() * values.length)]];
+		}
+		for (const key of newColorKeys) {
+			const presetColors = getPresetColorsForKey(key);
+			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+			randomOptions[key] = [stripHashPrefix(randomColor)];
 		}
 		const newConfig: AvatarConfig = {
 			...config,
@@ -129,6 +164,20 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					iconBgColor={accentColor}
 					accentColor={accentColor}
 					groupPosition="single"
+				/>
+			);
+		}
+
+		// Color option (hairColor, skinColor, etc.)
+		if (colorKeys.includes(selectedCategory)) {
+			const presetColors = getPresetColorsForKey(selectedCategory);
+			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
+			const selectedColor = storedHex ? '#' + storedHex : null;
+			return (
+				<MyColorPicker
+					colors={presetColors}
+					selectedColor={selectedColor}
+					onSelect={(color) => handleOptionChange(selectedCategory, stripHashPrefix(color))}
 				/>
 			);
 		}
