@@ -97,3 +97,6 @@ export type { SettingsListMyMapThemeSelectionProps } from './src/components/Sett
 export { default as MyAvatar } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
 export type { MyAvatarProps } from './src/components/MyAvatar';
+
+export { useAvatarEditorModal } from './src/components/MyAvatarEditor';
+export type { AvatarConfig, UseAvatarEditorModalOptions } from './src/components/MyAvatarEditor';
