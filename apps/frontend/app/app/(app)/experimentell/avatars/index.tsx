@@ -9,32 +9,35 @@ import {
 	MyAvatar,
 	AvatarStyle,
 	AvatarSize,
-	SettingsListSelectOption,
+	SettingsList,
 	SettingsListGroupTitle,
-	SettingsListTextInput,
+	useAvatarEditorModal,
+	AvatarConfig,
 } from 'repo-depkit-common-ui';
 
-const AVATAR_STYLE_OPTIONS = Object.values(AvatarStyle).map((style) => ({
-	id: style,
-	label: style,
-}));
-
-const AVATAR_SIZE_OPTIONS = [
-	{ id: AvatarSize.SMALL, label: `Small (${AvatarSize.SMALL}px)` },
-	{ id: AvatarSize.MEDIUM, label: `Medium (${AvatarSize.MEDIUM}px)` },
-	{ id: AvatarSize.LARGE, label: `Large (${AvatarSize.LARGE}px)` },
-	{ id: AvatarSize.XLARGE, label: `XLarge (${AvatarSize.XLARGE}px)` },
-];
+const DEFAULT_CONFIG: AvatarConfig = {
+	seed: 'John Doe',
+	style: AvatarStyle.LORELEI,
+	size: AvatarSize.LARGE,
+};
 
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { showAvatarEditor } = useAvatarEditorModal();
 
-	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.LORELEI);
-	const [selectedSize, setSelectedSize] = useState<AvatarSize>(AvatarSize.LARGE);
-	const [seed, setSeed] = useState<string>('John Doe');
+	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(DEFAULT_CONFIG);
+
+	const handleOpenEditor = () => {
+		showAvatarEditor(avatarConfig, (updatedConfig) => {
+			setAvatarConfig(updatedConfig);
+		}, {
+			title: translate(TranslationKeys.avatars),
+			accentColor: primaryColor,
+		});
+	};
 
 	return (
 		<ScrollView
@@ -47,35 +50,21 @@ const AvatarsScreen = () => {
 				</Text>
 
 				<View style={styles.avatarContainer}>
-					<MyAvatar seed={seed} style={selectedStyle} size={selectedSize} borderRadius={selectedSize / 2} />
+					<MyAvatar
+						seed={avatarConfig.seed}
+						style={avatarConfig.style}
+						size={avatarConfig.size}
+						borderRadius={avatarConfig.size / 2}
+					/>
 				</View>
 
-				<SettingsListGroupTitle label={translate(TranslationKeys.avatar_seed)} />
-				<SettingsListTextInput
-					label={translate(TranslationKeys.avatar_seed)}
-					placeholder={translate(TranslationKeys.avatar_seed)}
-					initialValue={seed}
-					onSave={setSeed}
+				<SettingsListGroupTitle label={translate(TranslationKeys.avatars)} />
+				<SettingsList
+					title={translate(TranslationKeys.avatar_style)}
+					value={avatarConfig.style}
+					onPress={handleOpenEditor}
 					iconBgColor={primaryColor}
 					groupPosition="single"
-				/>
-
-				<SettingsListGroupTitle label={`${translate(TranslationKeys.avatar_style)} (${selectedStyle})`} />
-				<SettingsListSelectOption
-					options={AVATAR_STYLE_OPTIONS}
-					selectedOption={selectedStyle}
-					onSelect={(option) => setSelectedStyle(option.id as AvatarStyle)}
-					iconBgColor={primaryColor}
-					selectionColor={primaryColor}
-				/>
-
-				<SettingsListGroupTitle label={translate(TranslationKeys.avatar_size)} />
-				<SettingsListSelectOption
-					options={AVATAR_SIZE_OPTIONS}
-					selectedOption={selectedSize}
-					onSelect={(option) => setSelectedSize(option.id as AvatarSize)}
-					iconBgColor={primaryColor}
-					selectionColor={primaryColor}
 				/>
 			</View>
 		</ScrollView>
