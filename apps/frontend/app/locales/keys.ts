@@ -572,6 +572,7 @@ export enum TranslationKeys {
 	guess_more_expensive_dish = 'guess_more_expensive_dish',
 	food_offer_contains_disliked_markings = 'food_offer_contains_disliked_markings',
 	account_required_example = 'account_required_example',
+	avatar_showcase = 'avatar_showcase',
 	optional_device_data_description = 'optional_device_data_description',
 	edge_speech_test = 'edge_speech_test',
 	edge_speech_test_description = 'edge_speech_test_description',
