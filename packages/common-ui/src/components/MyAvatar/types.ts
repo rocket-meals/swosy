@@ -1,7 +1,7 @@
-import { StyleProp, ImageStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
 /**
- * Available avatar styles from DiceBear API.
+ * Available avatar styles from @dicebear/collection.
  */
 export enum AvatarStyle {
 	Adventurer = 'adventurer',
@@ -44,6 +44,6 @@ export interface MyAvatarProps {
 	style?: AvatarStyle;
 	/** Size in pixels (width and height). Defaults to 128. */
 	size?: number;
-	/** Optional additional image style overrides. */
-	imageStyle?: StyleProp<ImageStyle>;
+	/** Optional additional container style overrides. */
+	containerStyle?: StyleProp<ViewStyle>;
 }
