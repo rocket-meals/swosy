@@ -386,7 +386,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				/>
 			</View>
 
-			<SettingsListGroupTitle title="Categories" />
+			<SettingsListGroupTitle title="Category" />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
 					allCategories.length === 1
