@@ -182,7 +182,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			<SettingsList
 				title="Generate Random Avatar"
 				onPress={handleRandomize}
-				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} color="" />}
+				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} color={accentColor ?? 'transparent'} />}
 				iconBgColor={accentColor}
 				groupPosition="single"
 			/>
