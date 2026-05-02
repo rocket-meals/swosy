@@ -8,6 +8,8 @@ import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MyColorPicker, { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
+import { myContrastColor } from '../../helpers/ColorHelper';
+import { useTheme } from '../../context/ThemeContext';
 
 export type AvatarConfig = {
 	seed: string;
@@ -82,18 +84,19 @@ type AvatarEditorModalContentProps = {
 	initialConfig: AvatarConfig;
 	accentColor?: string;
 	configRef: React.MutableRefObject<AvatarConfig>;
+	selectedCategoryRef: React.MutableRefObject<string>;
 };
 
 type ColorPickerModalContentProps = {
 	colors: string[];
 	initialSelectedColor: string | null;
-	onSelect: (color: string) => void;
+	onSelectAndClose: (color: string) => void;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	colors,
 	initialSelectedColor,
-	onSelect,
+	onSelectAndClose,
 }) => {
 	const [selectedColor, setSelectedColor] = useState<string | null>(initialSelectedColor);
 	return (
@@ -102,7 +105,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 			selectedColor={selectedColor}
 			onSelect={(color) => {
 				setSelectedColor(color);
-				onSelect(color);
+				onSelectAndClose(color);
 			}}
 		/>
 	);
@@ -112,10 +115,17 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	initialConfig,
 	accentColor,
 	configRef,
+	selectedCategoryRef,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(initialConfig);
-	const [selectedCategory, setSelectedCategory] = useState<string>(BUILTIN_CATEGORY_STYLE);
-	const { show: showColorModal } = useMyScrollViewModal();
+	const [selectedCategory, setSelectedCategory] = useState<string>(selectedCategoryRef.current);
+	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
+	const { theme, isDark } = useTheme();
+
+	const handleSetSelectedCategory = (cat: string) => {
+		setSelectedCategory(cat);
+		selectedCategoryRef.current = cat;
+	};
 
 	const handleChange = (newConfig: AvatarConfig) => {
 		setConfig(newConfig);
@@ -143,7 +153,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		const newColorKeys = getStyleColorKeys(newStyle);
 		const allNew = [...BUILTIN_CATEGORIES, ...newComponentKeys, ...newColorKeys];
 		if (!allNew.includes(selectedCategory)) {
-			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
+			handleSetSelectedCategory(BUILTIN_CATEGORY_STYLE);
 		}
 	};
 
@@ -177,6 +187,35 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		handleChange(newConfig);
 	};
 
+	/**
+	 * Returns the icon background color for the category selector.
+	 * For color categories, shows the currently selected color for that key.
+	 */
+	const categoryIconBgColor = useMemo(() => {
+		if (colorKeys.includes(selectedCategory)) {
+			const storedHex = config.options?.[selectedCategory]?.[0];
+			if (storedHex) return '#' + storedHex;
+		}
+		return accentColor;
+	}, [selectedCategory, colorKeys, config.options, accentColor]);
+
+	/** Right-side color swatch displayed in the category selector for color keys. */
+	const categoryRightElement = useMemo(() => {
+		if (!colorKeys.includes(selectedCategory)) return undefined;
+		const storedHex = config.options?.[selectedCategory]?.[0];
+		if (!storedHex) return undefined;
+		const colorValue = '#' + storedHex;
+		const swatchBorderColor = myContrastColor(colorValue, theme, isDark);
+		return (
+			<View
+				style={[
+					styles.colorSwatch,
+					{ backgroundColor: colorValue, borderColor: swatchBorderColor },
+				]}
+			/>
+		);
+	}, [selectedCategory, colorKeys, config.options, theme, isDark]);
+
 	/** Render the value selector for the currently active category. */
 	const renderValueSelector = () => {
 		if (selectedCategory === BUILTIN_CATEGORY_STYLE) {
@@ -198,7 +237,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const presetColors = getPresetColorsForKey(selectedCategory);
 			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
 			const selectedColor = storedHex ? '#' + storedHex : null;
-			const colorOptions = presetColors.map((color) => ({ id: color, label: color }));
 
 			const handleColorSelect = (color: string) => {
 				handleOptionChange(selectedCategory, stripHashPrefix(color));
@@ -211,7 +249,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						<ColorPickerModalContent
 							colors={presetColors}
 							initialSelectedColor={selectedColor}
-							onSelect={handleColorSelect}
+							onSelectAndClose={(color) => {
+								handleColorSelect(color);
+								closeColorModal();
+							}}
 						/>
 					),
 				});
@@ -220,7 +261,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			return (
 				<SettingsListLeftRight
 					label={selectedCategory}
-					options={colorOptions}
+					options={presetColors.map((color) => ({ id: color, label: color }))}
 					selectedOption={selectedColor}
 					onSelect={(option) => handleColorSelect(option.id)}
 					iconBgColor={selectedColor ?? undefined}
@@ -267,10 +308,11 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				label="Select Category"
 				options={categoryOptions}
 				selectedOption={selectedCategory}
-				onSelect={(option) => setSelectedCategory(option.id)}
-				iconBgColor={accentColor}
+				onSelect={(option) => handleSetSelectedCategory(option.id)}
+				iconBgColor={categoryIconBgColor}
 				accentColor={accentColor}
 				groupPosition="single"
+				extraRightElement={categoryRightElement}
 			/>
 
 			<SettingsListGroupTitle title={selectedCategory} />
@@ -296,10 +338,12 @@ export type UseAvatarEditorModalOptions = {
 export const useAvatarEditorModal = () => {
 	const { show, close } = useMyScrollViewModal();
 	const configRef = useRef<AvatarConfig>(DEFAULT_AVATAR_CONFIG);
+	const selectedCategoryRef = useRef<string>(BUILTIN_CATEGORY_STYLE);
 
 	const showAvatarEditor = useCallback(
 		(initialConfig: AvatarConfig, onClose: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
 			configRef.current = { ...initialConfig };
+			selectedCategoryRef.current = BUILTIN_CATEGORY_STYLE;
 
 			show({
 				title: options?.title ?? 'Avatar Editor',
@@ -311,6 +355,7 @@ export const useAvatarEditorModal = () => {
 						initialConfig={initialConfig}
 						accentColor={options?.accentColor}
 						configRef={configRef}
+						selectedCategoryRef={selectedCategoryRef}
 					/>
 				),
 			});
@@ -329,5 +374,11 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingVertical: 24,
+	},
+	colorSwatch: {
+		width: 22,
+		height: 22,
+		borderRadius: 11,
+		borderWidth: 1.5,
 	},
 });
