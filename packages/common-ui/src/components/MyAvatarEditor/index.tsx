@@ -43,7 +43,7 @@ function getStyleComponentOptions(style: AvatarStyle): Record<string, string[]> 
 
 	const result: Record<string, string[]> = {};
 	for (const [key, value] of Object.entries(properties)) {
-		if (key.includes('Color') || key.includes('Probability')) continue;
+		if (key.endsWith('Color') || key.includes('Probability')) continue;
 		const items = (value as any)?.items;
 		if (items?.enum && Array.isArray(items.enum) && items.enum.length > 1) {
 			result[key] = items.enum as string[];
@@ -60,7 +60,7 @@ function getStyleColorKeys(style: AvatarStyle): string[] {
 	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
 	const properties = dicebearStyle?.schema?.properties;
 	if (!properties) return [];
-	return Object.keys(properties).filter((key) => key.includes('Color'));
+	return Object.keys(properties).filter((key) => key.endsWith('Color'));
 }
 
 /**
@@ -71,6 +71,11 @@ function getPresetColorsForKey(key: string): string[] {
 	if (lower.includes('skin')) return SKIN_COLORS;
 	if (lower.includes('hair')) return HAIR_COLORS;
 	return PRESET_COLORS;
+}
+
+/** Strips the leading '#' from a hex color string if present. */
+function stripHashPrefix(color: string): string {
+	return color.startsWith('#') ? color.slice(1) : color;
 }
 
 type AvatarEditorModalContentProps = {
@@ -138,7 +143,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const key of newColorKeys) {
 			const presetColors = getPresetColorsForKey(key);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
-			randomOptions[key] = [randomColor.replace('#', '')];
+			randomOptions[key] = [stripHashPrefix(randomColor)];
 		}
 		const newConfig: AvatarConfig = {
 			...config,
@@ -172,7 +177,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				<MyColorPicker
 					colors={presetColors}
 					selectedColor={selectedColor}
-					onSelect={(color) => handleOptionChange(selectedCategory, color.replace('#', ''))}
+					onSelect={(color) => handleOptionChange(selectedCategory, stripHashPrefix(color))}
 				/>
 			);
 		}
