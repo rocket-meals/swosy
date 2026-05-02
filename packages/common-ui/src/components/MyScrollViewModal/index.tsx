@@ -19,6 +19,8 @@ export interface MyScrollViewModalProps {
 	keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
+	/** Component rendered above the scroll view, stays fixed (sticky) while content scrolls beneath it. */
+	stickyHeaderComponent?: ReactNode;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -35,6 +37,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	keyboardShouldPersistTaps = 'handled',
 	onClose,
 	disableHorizontalPadding = false,
+	stickyHeaderComponent,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -70,7 +73,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };
 
 	if (useFlatList && renderItem && keyExtractor) {
-		return (
+		const flatList = (
 			<BottomSheetFlatList
 				data={data}
 				keyExtractor={keyExtractor}
@@ -84,9 +87,20 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 				scrollIndicatorInsets={scrollInsets}
 			/>
 		);
+
+		if (stickyHeaderComponent) {
+			return (
+				<View style={{ flex: 1, backgroundColor: resolvedBackgroundColor }}>
+					{stickyHeaderComponent}
+					{flatList}
+				</View>
+			);
+		}
+
+		return flatList;
 	}
 
-	return (
+	const scrollView = (
 		<BottomSheetScrollView
 			style={containerStyle}
 			contentContainerStyle={contentStyle}
@@ -99,6 +113,17 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 			{footerComponent}
 		</BottomSheetScrollView>
 	);
+
+	if (stickyHeaderComponent) {
+		return (
+			<View style={{ flex: 1, backgroundColor: resolvedBackgroundColor }}>
+				{stickyHeaderComponent}
+				{scrollView}
+			</View>
+		);
+	}
+
+	return scrollView;
 };
 
 export default MyScrollViewModal;
