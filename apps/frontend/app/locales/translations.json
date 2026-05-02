@@ -5447,6 +5447,16 @@
     "tr": "Account Required Example",
     "zh": "Account Required Example"
   },
+  "avatar_showcase": {
+    "de": "Avatar Showcase",
+    "en": "Avatar Showcase",
+    "ar": "Avatar Showcase",
+    "es": "Avatar Showcase",
+    "fr": "Avatar Showcase",
+    "ru": "Avatar Showcase",
+    "tr": "Avatar Showcase",
+    "zh": "Avatar Showcase"
+  },
   "map_variants": {
     "de": "Karten-Varianten",
     "en": "Map Variants",
