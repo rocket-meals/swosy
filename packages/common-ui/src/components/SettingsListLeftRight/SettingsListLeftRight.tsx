@@ -94,8 +94,9 @@ const SettingsListLeftRight = <T extends string | number>({
 		<SettingsList
 			label={label}
 			value={displayValue}
-			leftIcon={leftIcon ?? leftArrow}
-			iconBgColor={iconBgColor ?? 'transparent'}
+			leftIcon={leftIcon}
+			leftIconComponent={!leftIcon ? leftArrow : undefined}
+			iconBgColor={iconBgColor}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			noIconIndent={noIconIndent}
