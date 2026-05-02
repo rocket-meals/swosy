@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -30,6 +30,14 @@ const DANGER_COLOR = '#dc2626';
 
 const TILE_BORDER_RADIUS = 16;
 const TILE_GAP = 12;
+const MIN_TILE_HEIGHT = 120;
+
+// Helper to determine groupPosition for list items
+function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
+	if (total === 1 || index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────
 
@@ -166,6 +174,7 @@ function PlayerTile({
 	onPress,
 	onLongPress,
 	tileHeight,
+	tileWidth,
 }: {
 	name: string;
 	score: number;
@@ -174,6 +183,7 @@ function PlayerTile({
 	onPress: () => void;
 	onLongPress: () => void;
 	tileHeight: number;
+	tileWidth?: number;
 }) {
 	return (
 		<TouchableOpacity
@@ -182,6 +192,7 @@ function PlayerTile({
 				{
 					backgroundColor: color,
 					height: tileHeight,
+					width: tileWidth,
 				},
 			]}
 			onPress={onPress}
@@ -213,9 +224,18 @@ export default function GameScreen() {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showDeleteModal, close: closeDeleteModal } = useMyScrollViewModal();
 	const { show: showScoreModal, close: closeScoreModal } = useMyScrollViewModal();
-	const { height: windowHeight } = useWindowDimensions();
+	const { show: showEditModal, close: closeEditModal } = useMyScrollViewModal();
+	const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
 	const navigation = useNavigation();
+
+	// Landscape detection and column count
+	const isLandscape = windowWidth > windowHeight;
+	const columnCount = (players.length === 4 || (isLandscape && players.length >= 2)) ? 2 : 1;
+
+	// Keep a ref to players so the header handler always has fresh data
+	const playersRef = useRef(players);
+	playersRef.current = players;
 
 	// Compute totals per player
 	const totals = useMemo(() => {
@@ -253,17 +273,51 @@ export default function GameScreen() {
 		const count = players.length;
 		if (count === 0) return 200;
 		// Available height: window minus header (~56), bottom bar (~80), safe areas, gaps
-		const availableHeight = windowHeight - 56 - 80 - insets.top - insets.bottom - TILE_GAP * (count + 1);
-		const minHeight = 120;
-		return Math.max(minHeight, Math.floor(availableHeight / count));
-	}, [players.length, windowHeight, insets.top, insets.bottom]);
+		const rows = Math.ceil(count / columnCount);
+		const availableHeight = windowHeight - 56 - 80 - insets.top - insets.bottom - TILE_GAP * (rows + 1);
+		const minHeight = MIN_TILE_HEIGHT;
+		return Math.max(minHeight, Math.floor(availableHeight / rows));
+	}, [players.length, windowHeight, insets.top, insets.bottom, columnCount]);
+
+	// Tile width for multi-column grid layout
+	const tileWidth = useMemo(() => {
+		if (columnCount === 1) return undefined;
+		const availableWidth = windowWidth - insets.left - insets.right;
+		return Math.floor((availableWidth - TILE_GAP * (columnCount + 1)) / columnCount);
+	}, [columnCount, windowWidth, insets.left, insets.right]);
 
 	// ─── Header buttons ───────────────────────────────────────────────────────
+
+	const handleOpenEditNamesModal = useCallback(() => {
+		const currentPlayers = playersRef.current;
+		showEditModal({
+			title: '✏️ Namen bearbeiten',
+			children: (
+				<View style={styles.modalContent}>
+					{currentPlayers.map((player, index) => (
+						<SettingsListTextInput
+							key={player.id}
+							label={player.name}
+							placeholder="Name eingeben"
+							initialValue={player.name}
+							onSave={(newName) => {
+								dispatch(renamePlayer({ playerId: player.id, name: newName }));
+							}}
+							groupPosition={getGroupPosition(index, currentPlayers.length)}
+						/>
+					))}
+				</View>
+			),
+		});
+	}, [showEditModal, dispatch]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
 				<View style={styles.headerButtons}>
+					<TouchableOpacity onPress={handleOpenEditNamesModal} style={styles.headerButton}>
+						<Ionicons name="create-outline" size={22} color={theme.header.text} />
+					</TouchableOpacity>
 					<TouchableOpacity onPress={handleOpenDeleteModal} style={styles.headerButton}>
 						<Ionicons name="trash-outline" size={22} color={theme.header.text} />
 					</TouchableOpacity>
@@ -273,7 +327,7 @@ export default function GameScreen() {
 				</View>
 			),
 		});
-	}, [navigation, theme.header.text]);
+	}, [navigation, theme.header.text, handleOpenEditNamesModal]);
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -429,7 +483,11 @@ export default function GameScreen() {
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			<ScrollView
 				style={styles.tilesScroll}
-				contentContainerStyle={[styles.tilesContainer, { paddingBottom: insets.bottom + 80 }]}
+				contentContainerStyle={[
+					styles.tilesContainer,
+					columnCount > 1 && styles.tilesContainerGrid,
+					{ paddingBottom: insets.bottom + 80 },
+				]}
 				showsVerticalScrollIndicator={false}
 			>
 				{players.map((player) => (
@@ -442,6 +500,7 @@ export default function GameScreen() {
 						onPress={() => handleTilePress(player.id)}
 						onLongPress={() => handleOpenPlayerModal(player.id, player.name, player.color)}
 						tileHeight={tileHeight}
+						tileWidth={tileWidth}
 					/>
 				))}
 			</ScrollView>
@@ -496,6 +555,10 @@ const styles = StyleSheet.create({
 	tilesContainer: {
 		padding: TILE_GAP,
 		gap: TILE_GAP,
+	},
+	tilesContainerGrid: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
 	},
 	playerTile: {
 		borderRadius: TILE_BORDER_RADIUS,
