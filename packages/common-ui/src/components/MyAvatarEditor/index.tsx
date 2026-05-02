@@ -206,7 +206,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			<SettingsListGroupTitle title="Category" />
 			<SettingsListLeftRight
-				label="Category"
+				label="Select Category"
 				options={categoryOptions}
 				selectedOption={selectedCategory}
 				onSelect={(option) => setSelectedCategory(option.id)}
@@ -220,7 +220,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			<SettingsListGroupTitle title="Randomize" />
 			<SettingsList
-				title="Randomize"
+				title="Generate Random Avatar"
 				onPress={handleRandomize}
 				iconBgColor={accentColor}
 				groupPosition="single"
