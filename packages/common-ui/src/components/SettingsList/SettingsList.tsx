@@ -35,6 +35,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	titleNumberOfLines = 0,
 	isAccountRequired = false,
 	onAccountRequired,
+	valueNumberOfLines = 0,
 }) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -101,8 +102,8 @@ const SettingsList: React.FC<SettingsListProps> = ({
 				leftIconComponent ? leftIconComponent : renderedLeftIcon
 			) : null}
 			{shouldReserveIconSpace ? <View style={[styles.iconPlaceholder, reverseLayout ? styles.iconPlaceholderReverse : null]} /> : null}
-			<View style={[styles.textWrapper, reverseLayout ? styles.textWrapperReverse : null]}>
-				<View style={styles.titleContainer}>
+			<View style={[styles.textWrapper, valueNumberOfLines ? { flexWrap: 'nowrap' } : null, reverseLayout ? styles.textWrapperReverse : null]}>
+				<View style={[styles.titleContainer, valueNumberOfLines ? { flexGrow: 0, flexShrink: 0 } : null]}>
 					<Text
 						selectable
 						style={[
@@ -118,7 +119,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 				{value ? (
 					<View
 						style={[
-							// styles.valueContainer,
+							valueNumberOfLines ? styles.valueContainer : null,
 							reverseLayout && titleTextAlign !== 'right' ? styles.valueContainerReverse : null,
 						]}
 					>
@@ -128,8 +129,10 @@ const SettingsList: React.FC<SettingsListProps> = ({
 								styles.value,
 								reverseLayout && titleTextAlign !== 'right' ? styles.valueReverse : null,
 								{ color: theme.screen.text } as TextStyle,
+								valueNumberOfLines ? { flexShrink: 1 } : null,
 							]}
-							numberOfLines={0}
+							numberOfLines={valueNumberOfLines}
+							ellipsizeMode={valueNumberOfLines ? 'tail' : undefined}
 						>
 							{value}
 						</Text>
