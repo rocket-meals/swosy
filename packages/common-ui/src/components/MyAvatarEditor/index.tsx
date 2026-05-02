@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP } from '../MyAvatar';
 import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
@@ -101,6 +101,8 @@ type ColorPickerModalContentProps = {
 	initialSelectedColor: string | null;
 	onSelectAndClose: (color: string) => void;
 	accentColor?: string;
+	config: AvatarConfig;
+	colorKey: string;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
@@ -108,6 +110,8 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	initialSelectedColor,
 	onSelectAndClose,
 	accentColor,
+	config,
+	colorKey,
 }) => {
 	return (
 		<>
@@ -120,12 +124,23 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 							: index === colors.length - 1
 								? 'bottom'
 								: 'middle';
+				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
 				return (
 					<SettingsListSelectOptionSingle
 						key={color}
 						label={color}
-						leftIcon={<View />}
-						iconBgColor={color}
+						leftIcon={
+							<View style={styles.previewAvatarWrapper}>
+								<MyAvatar
+									seed={config.seed}
+									style={config.style}
+									size={PREVIEW_AVATAR_SIZE}
+									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+									options={previewOptions}
+								/>
+							</View>
+						}
+						noIconIndent
 						selectionColor={accentColor}
 						isSelected={initialSelectedColor?.toLowerCase() === color.toLowerCase()}
 						groupPosition={groupPosition}
@@ -352,6 +367,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					colors={presetColors}
 					initialSelectedColor={selectedColor}
 					accentColor={accentColor}
+					config={config}
+					colorKey={key}
 					onSelectAndClose={(color) => {
 						handleOptionChange(key, stripHashPrefix(color));
 						closeCategoryModal();
@@ -390,6 +407,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					borderRadius={AvatarSize.XLARGE / 2}
 					options={config.options}
 				/>
+				<TouchableOpacity style={styles.diceButton} onPress={handleRandomize} accessibilityLabel="Randomize avatar" accessibilityRole="button">
+					<MaterialCommunityIcons name="dice-multiple" size={24} color={accentColor ?? '#fff'} />
+				</TouchableOpacity>
 			</View>
 
 			<SettingsListGroupTitle title="Category" />
@@ -429,15 +449,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					/>
 				);
 			})}
-
-			<SettingsListGroupTitle title="Randomize" />
-			<SettingsList
-				title="Generate Random Avatar"
-				onPress={handleRandomize}
-				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} color={accentColor ?? 'transparent'} />}
-				iconBgColor={accentColor}
-				groupPosition="single"
-			/>
 		</View>
 	);
 };
@@ -483,6 +494,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingVertical: 24,
+		position: 'relative',
+	},
+	diceButton: {
+		position: 'absolute',
+		top: 24,
+		right: 0,
+		padding: 6,
 	},
 	colorSwatch: {
 		width: 22,
