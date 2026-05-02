@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
-import { useSettingsContext } from '../../context/SettingsContext';
-import { lightTheme } from '../../themes';
 import SettingsList from '../SettingsList';
 import type { SettingsListItemBaseProps, SettingsListProps } from '../SettingsList/types';
 
@@ -35,11 +33,8 @@ const SettingsListLeftRight = <T extends string | number>({
 	showSeparator,
 	noIconIndent = false,
 	groupPosition = 'single',
-	accentColor,
 }: SettingsListLeftRightProps<T>) => {
 	const { theme } = useTheme();
-	const settingsCtx = useSettingsContext();
-	const resolvedAccentColor = accentColor ?? iconBgColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
 
 	const currentIndex = options.findIndex((o) => o.id === selectedOption);
 
@@ -69,7 +64,7 @@ const SettingsListLeftRight = <T extends string | number>({
 			<MaterialCommunityIcons
 				name="chevron-left"
 				size={28}
-				color={resolvedAccentColor}
+				color={theme.screen.text}
 			/>
 		</TouchableOpacity>
 	);
@@ -94,7 +89,7 @@ const SettingsListLeftRight = <T extends string | number>({
 					<MaterialCommunityIcons
 						name="chevron-right"
 						size={28}
-						color={resolvedAccentColor}
+						color={theme.screen.text}
 					/>
 				</TouchableOpacity>
 			}
