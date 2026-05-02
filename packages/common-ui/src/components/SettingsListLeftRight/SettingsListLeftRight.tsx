@@ -69,14 +69,26 @@ const SettingsListLeftRight = <T extends string | number>({
 			noIconIndent={noIconIndent}
 			rightElement={
 				<View style={styles.arrowContainer}>
-					<TouchableOpacity onPress={handlePrevious} style={styles.arrowButton} hitSlop={8}>
+					<TouchableOpacity
+						onPress={handlePrevious}
+						style={styles.arrowButton}
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Previous option"
+					>
 						<MaterialCommunityIcons
 							name="chevron-left"
 							size={28}
 							color={resolvedAccentColor}
 						/>
 					</TouchableOpacity>
-					<TouchableOpacity onPress={handleNext} style={styles.arrowButton} hitSlop={8}>
+					<TouchableOpacity
+						onPress={handleNext}
+						style={styles.arrowButton}
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Next option"
+					>
 						<MaterialCommunityIcons
 							name="chevron-right"
 							size={28}
