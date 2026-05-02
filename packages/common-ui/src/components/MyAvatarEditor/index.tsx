@@ -5,8 +5,8 @@ import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
-import SettingsListTextInput from '../SettingsListTextInput';
 import SettingsList from '../SettingsList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export type AvatarConfig = {
 	seed: string;
@@ -24,20 +24,12 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 
 /** Built-in category keys (always available regardless of style). */
 const BUILTIN_CATEGORY_STYLE = 'Style';
-const BUILTIN_CATEGORY_SIZE = 'Size';
-const BUILTIN_CATEGORIES = [BUILTIN_CATEGORY_STYLE, BUILTIN_CATEGORY_SIZE];
+const BUILTIN_CATEGORIES = [BUILTIN_CATEGORY_STYLE];
 
 const AVATAR_STYLE_OPTIONS = Object.values(AvatarStyle).map((style) => ({
 	id: style,
 	label: style,
 }));
-
-const AVATAR_SIZE_OPTIONS = [
-	{ id: AvatarSize.SMALL, label: `Small (${AvatarSize.SMALL}px)` },
-	{ id: AvatarSize.MEDIUM, label: `Medium (${AvatarSize.MEDIUM}px)` },
-	{ id: AvatarSize.LARGE, label: `Large (${AvatarSize.LARGE}px)` },
-	{ id: AvatarSize.XLARGE, label: `XLarge (${AvatarSize.XLARGE}px)` },
-];
 
 /**
  * Returns the available component options (e.g. eyes, mouth, hair) for a given
@@ -113,24 +105,16 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	};
 
 	const handleRandomize = () => {
-		const styles = AVATAR_STYLE_OPTIONS;
-		const randomStyle = styles[Math.floor(Math.random() * styles.length)].id as AvatarStyle;
-		const newComponentOptions = getStyleComponentOptions(randomStyle);
+		const newComponentOptions = getStyleComponentOptions(config.style);
 		const randomOptions: Record<string, string[]> = {};
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			randomOptions[key] = [values[Math.floor(Math.random() * values.length)]];
 		}
 		const newConfig: AvatarConfig = {
 			...config,
-			style: randomStyle,
 			options: randomOptions,
 		};
 		handleChange(newConfig);
-		// Reset category to Style in case the current one no longer exists
-		const allNew = [...BUILTIN_CATEGORIES, ...Object.keys(newComponentOptions)];
-		if (!allNew.includes(selectedCategory)) {
-			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
-		}
 	};
 
 	/** Render the value selector for the currently active category. */
@@ -142,20 +126,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					options={AVATAR_STYLE_OPTIONS}
 					selectedOption={config.style}
 					onSelect={(option) => handleStyleChange(option.id as AvatarStyle)}
-					iconBgColor={accentColor}
-					accentColor={accentColor}
-					groupPosition="single"
-				/>
-			);
-		}
-
-		if (selectedCategory === BUILTIN_CATEGORY_SIZE) {
-			return (
-				<SettingsListLeftRight
-					label="Size"
-					options={AVATAR_SIZE_OPTIONS}
-					selectedOption={config.size}
-					onSelect={(option) => handleChange({ ...config, size: option.id as AvatarSize })}
 					iconBgColor={accentColor}
 					accentColor={accentColor}
 					groupPosition="single"
@@ -194,16 +164,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				/>
 			</View>
 
-			<SettingsListGroupTitle title="Seed" />
-			<SettingsListTextInput
-				label="Seed"
-				placeholder="Seed"
-				initialValue={config.seed}
-				onSave={(value) => handleChange({ ...config, seed: value })}
-				iconBgColor={accentColor}
-				groupPosition="single"
-			/>
-
 			<SettingsListGroupTitle title="Category" />
 			<SettingsListLeftRight
 				label="Select Category"
@@ -222,6 +182,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			<SettingsList
 				title="Generate Random Avatar"
 				onPress={handleRandomize}
+				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} color="" />}
 				iconBgColor={accentColor}
 				groupPosition="single"
 			/>
