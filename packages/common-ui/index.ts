@@ -91,6 +91,9 @@ export type { ScreenHeaderProps } from './src/components/ScreenHeader';
 export { default as CardWithText } from './src/components/CardWithText';
 export type { CardWithTextProps } from './src/components/CardWithText';
 
+export { default as SettingsListLeftRight } from './src/components/SettingsListLeftRight';
+export type { SettingsListLeftRightProps, SettingsListLeftRightItem } from './src/components/SettingsListLeftRight';
+
 export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
 export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';
 
