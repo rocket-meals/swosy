@@ -103,3 +103,6 @@ export type { MyAvatarProps } from './src/components/MyAvatar';
 
 export { useAvatarEditorModal } from './src/components/MyAvatarEditor';
 export type { AvatarConfig, UseAvatarEditorModalOptions } from './src/components/MyAvatarEditor';
+
+export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
+export type { MyColorPickerProps } from './src/components/MyColorPicker';

@@ -8,6 +8,7 @@ import {
 	SettingsListTextInput,
 	useMyScrollViewModal,
 	useTheme,
+	MyColorPicker,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from 'expo-router';
@@ -151,37 +152,6 @@ function ScoreInputContent({
 					</TouchableOpacity>
 				))}
 			</View>
-		</View>
-	);
-}
-
-// ─── Color Picker ─────────────────────────────────────────────────────────────
-
-function ColorPicker({
-	selectedColor,
-	onSelect,
-}: {
-	selectedColor: string;
-	onSelect: (color: string) => void;
-}) {
-	return (
-		<View style={styles.colorPickerContainer}>
-			{PLAYER_COLORS.map((color) => (
-				<TouchableOpacity
-					key={color}
-					style={[
-						styles.colorPickerSwatch,
-						{ backgroundColor: color },
-						selectedColor === color && styles.colorPickerSwatchSelected,
-					]}
-					onPress={() => onSelect(color)}
-					activeOpacity={0.7}
-				>
-					{selectedColor === color && (
-						<Ionicons name="checkmark" size={22} color="#ffffff" />
-					)}
-				</TouchableOpacity>
-			))}
 		</View>
 	);
 }
@@ -333,7 +303,8 @@ export default function GameScreen() {
 							iconBgColor={playerColor}
 							groupPosition="middle"
 						/>
-						<ColorPicker
+						<MyColorPicker
+							colors={PLAYER_COLORS}
 							selectedColor={playerColor}
 							onSelect={(color) => {
 								dispatch(setPlayerColor({ playerId, color }));
@@ -607,29 +578,6 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		padding: 10,
-	},
-	colorPickerContainer: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 10,
-		padding: 12,
-		justifyContent: 'center',
-	},
-	colorPickerSwatch: {
-		width: 44,
-		height: 44,
-		borderRadius: 22,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	colorPickerSwatchSelected: {
-		borderWidth: 3,
-		borderColor: '#ffffff',
-		shadowColor: '#000000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.3,
-		shadowRadius: 4,
-		elevation: 4,
 	},
 	scoreInputContainer: {
 		padding: 16,
