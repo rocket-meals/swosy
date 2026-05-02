@@ -3537,6 +3537,46 @@
     "tr": "Yemekhane Ziyaretleri",
     "zh": "食堂访问"
   },
+  "avatars": {
+    "de": "Avatare",
+    "en": "Avatars",
+    "ar": "الصور الرمزية",
+    "es": "Avatares",
+    "fr": "Avatars",
+    "ru": "Аватары",
+    "tr": "Avatarlar",
+    "zh": "头像"
+  },
+  "avatar_style": {
+    "de": "Avatar-Stil",
+    "en": "Avatar Style",
+    "ar": "نمط الصورة الرمزية",
+    "es": "Estilo de avatar",
+    "fr": "Style d'avatar",
+    "ru": "Стиль аватара",
+    "tr": "Avatar Stili",
+    "zh": "头像风格"
+  },
+  "avatar_seed": {
+    "de": "Avatar-Seed",
+    "en": "Avatar Seed",
+    "ar": "بذرة الصورة الرمزية",
+    "es": "Semilla del avatar",
+    "fr": "Graine d'avatar",
+    "ru": "Сид аватара",
+    "tr": "Avatar Tohumu",
+    "zh": "头像种子"
+  },
+  "avatar_size": {
+    "de": "Avatar-Größe",
+    "en": "Avatar Size",
+    "ar": "حجم الصورة الرمزية",
+    "es": "Tamaño del avatar",
+    "fr": "Taille d'avatar",
+    "ru": "Размер аватара",
+    "tr": "Avatar Boyutu",
+    "zh": "头像大小"
+  },
   "chats": {
     "de": "Chats",
     "en": "Chats",
