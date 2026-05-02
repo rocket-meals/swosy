@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-02T11:17:50.537Z",
+  "report_timestamp": "2026-05-02T12:08:55.098Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.6153544849197023,
-          "amountSavedValuesForKeys": 4124,
+          "average": 1.6146322378716744,
+          "amountSavedValuesForKeys": 4127,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -20,27 +20,27 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.629395495851442,
-          "amountSavedValuesForKeys": 4124,
+          "average": 1.6286503551696923,
+          "amountSavedValuesForKeys": 4127,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4103,
-        "detection_time_ms": 95,
+        "ast_generation_time_ms": 4182,
+        "detection_time_ms": 89,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 358.02,
-          "os_memory_free": 14886117376,
-          "os_memory_total": 16765394944,
+          "os_uptime": 176.44,
+          "os_memory_free": 14954676224,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3467
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "47120125ab65665468d6ce66cd6a07263c19fa85",
-    "project_commit_hash": "47120125ab65665468d6ce66cd6a07263c19fa85",
+    "project_version": "4043e8124a5bb5f4e9591ee13e92e865be5c6849",
+    "project_commit_hash": "4043e8124a5bb5f4e9591ee13e92e865be5c6849",
     "project_tag": null,
-    "project_commit_date": "1777720572",
+    "project_commit_date": "1777723637",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 517,
-    "number_of_classes_or_interfaces": 1056,
+    "number_of_files": 518,
+    "number_of_classes_or_interfaces": 1057,
     "number_of_methods": 1377,
-    "number_of_data_fields": 4124,
+    "number_of_data_fields": 4127,
     "number_of_method_parameters": 1538
   },
   "detector": {
@@ -10210,9 +10210,9 @@
             }
           },
           "position": {
-            "startLine": 12,
+            "startLine": 13,
             "startColumn": 2,
-            "endLine": 12,
+            "endLine": 13,
             "endColumn": 15
           }
         },
@@ -10235,9 +10235,9 @@
             }
           },
           "position": {
-            "startLine": 13,
+            "startLine": 14,
             "startColumn": 2,
-            "endLine": 13,
+            "endLine": 14,
             "endColumn": 21
           }
         },
@@ -10260,9 +10260,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 17,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 17,
             "endColumn": 37
           }
         }
@@ -10300,9 +10300,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 12,
+              "startLine": 13,
               "startColumn": 2,
-              "endLine": 12,
+              "endLine": 13,
               "endColumn": 15
             }
           },
@@ -10325,9 +10325,9 @@
             "type": "AvatarStyle",
             "modifiers": [],
             "position": {
-              "startLine": 13,
+              "startLine": 14,
               "startColumn": 2,
-              "endLine": 13,
+              "endLine": 14,
               "endColumn": 21
             }
           },
@@ -10350,9 +10350,9 @@
             "type": "Record<string, string[]>",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 17,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 17,
               "endColumn": 37
             }
           },
