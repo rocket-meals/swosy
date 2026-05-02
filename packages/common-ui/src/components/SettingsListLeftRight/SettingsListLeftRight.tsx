@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -58,44 +58,45 @@ const SettingsListLeftRight = <T extends string | number>({
 	const currentOption = currentIndex >= 0 ? options[currentIndex] : null;
 	const displayValue = currentOption?.label ?? '';
 
+	const leftArrow = (
+		<TouchableOpacity
+			onPress={handlePrevious}
+			style={styles.arrowButton}
+			hitSlop={8}
+			accessibilityRole="button"
+			accessibilityLabel="Previous option"
+		>
+			<MaterialCommunityIcons
+				name="chevron-left"
+				size={28}
+				color={resolvedAccentColor}
+			/>
+		</TouchableOpacity>
+	);
+
 	return (
 		<SettingsList
 			label={label}
 			value={displayValue}
-			leftIcon={leftIcon}
-			iconBgColor={iconBgColor}
+			leftIcon={leftIcon ?? leftArrow}
+			iconBgColor={leftIcon ? iconBgColor : 'transparent'}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			noIconIndent={noIconIndent}
 			rightElement={
-				<View style={styles.arrowContainer}>
-					<TouchableOpacity
-						onPress={handlePrevious}
-						style={styles.arrowButton}
-						hitSlop={8}
-						accessibilityRole="button"
-						accessibilityLabel="Previous option"
-					>
-						<MaterialCommunityIcons
-							name="chevron-left"
-							size={28}
-							color={resolvedAccentColor}
-						/>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={handleNext}
-						style={styles.arrowButton}
-						hitSlop={8}
-						accessibilityRole="button"
-						accessibilityLabel="Next option"
-					>
-						<MaterialCommunityIcons
-							name="chevron-right"
-							size={28}
-							color={resolvedAccentColor}
-						/>
-					</TouchableOpacity>
-				</View>
+				<TouchableOpacity
+					onPress={handleNext}
+					style={styles.arrowButton}
+					hitSlop={8}
+					accessibilityRole="button"
+					accessibilityLabel="Next option"
+				>
+					<MaterialCommunityIcons
+						name="chevron-right"
+						size={28}
+						color={resolvedAccentColor}
+					/>
+				</TouchableOpacity>
 			}
 		/>
 	);
@@ -104,11 +105,6 @@ const SettingsListLeftRight = <T extends string | number>({
 export default SettingsListLeftRight;
 
 const styles = StyleSheet.create({
-	arrowContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 2,
-	},
 	arrowButton: {
 		padding: 2,
 	},

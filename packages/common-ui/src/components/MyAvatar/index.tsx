@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import { createAvatar } from '@dicebear/core';
+import { createAvatar, Style } from '@dicebear/core';
 import * as collection from '@dicebear/collection';
 
 export enum AvatarStyle {
@@ -50,9 +50,11 @@ export type MyAvatarProps = {
 	style?: AvatarStyle;
 	size?: AvatarSize | number;
 	borderRadius?: number;
+	/** Additional DiceBear options (e.g. eyes, mouth, hair, nose, etc.) */
+	options?: Record<string, string[]>;
 };
 
-const STYLE_MAP: Record<AvatarStyle, collection.Style<object>> = {
+export const STYLE_MAP: Record<AvatarStyle, Style<object>> = {
 	[AvatarStyle.ADVENTURER]: collection.adventurer,
 	[AvatarStyle.ADVENTURER_NEUTRAL]: collection.adventurerNeutral,
 	[AvatarStyle.AVATAAARS]: collection.avataaars,
@@ -91,14 +93,16 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	style = AvatarStyle.LORELEI,
 	size = AvatarSize.LARGE,
 	borderRadius = 0,
+	options,
 }) => {
 	const svgXml = useMemo(() => {
 		const avatarStyle = STYLE_MAP[style];
 		return createAvatar(avatarStyle, {
 			seed,
 			size,
+			...options,
 		}).toString();
-	}, [seed, style, size]);
+	}, [seed, style, size, options]);
 
 	return (
 		<View style={[styles.container, { width: size, height: size, borderRadius }]}>

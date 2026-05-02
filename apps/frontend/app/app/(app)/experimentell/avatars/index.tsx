@@ -55,10 +55,11 @@ const AvatarsScreen = () => {
 						style={avatarConfig.style}
 						size={avatarConfig.size}
 						borderRadius={avatarConfig.size / 2}
+						options={avatarConfig.options}
 					/>
 				</View>
 
-				<SettingsListGroupTitle label={translate(TranslationKeys.avatars)} />
+				<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
 				<SettingsList
 					title={translate(TranslationKeys.avatar_style)}
 					value={avatarConfig.style}
