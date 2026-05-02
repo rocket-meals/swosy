@@ -112,6 +112,8 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 							: index === colors.length - 1
 								? 'bottom'
 								: 'middle';
+				// An empty View is passed as leftIcon so SettingsList renders the icon
+				// wrapper with iconBgColor as a colored swatch.
 				return (
 					<SettingsListSelectOptionSingle
 						key={color}
