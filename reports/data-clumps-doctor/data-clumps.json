@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-02T06:22:03.315Z",
+  "report_timestamp": "2026-05-02T06:44:43.413Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,9 +8,9 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6140282131661443,
-          "amountSavedValuesForKeys": 4119,
-          "amountKeys": 27
+          "average": 1.615203761755486,
+          "amountSavedValuesForKeys": 4122,
+          "amountKeys": 26
         },
         "invertedParameterToMethods": {
           "median": 1,
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6280632411067193,
-          "amountSavedValuesForKeys": 4119,
+          "average": 1.6292490118577074,
+          "amountSavedValuesForKeys": 4122,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4284,
-        "detection_time_ms": 87,
+        "ast_generation_time_ms": 4247,
+        "detection_time_ms": 86,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 180.91,
-          "os_memory_free": 14903095296,
+          "os_uptime": 234.61,
+          "os_memory_free": 14956310528,
           "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,28 +44,28 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 60,
-    "amount_files_with_data_clumps": 48,
+    "amount_classes_or_interfaces_with_data_clumps": 62,
+    "amount_files_with_data_clumps": 50,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 82,
+    "fields_to_fields_data_clump": 84,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 90
+    "amount_data_clumps": 92
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c52a2dc1d246dc130752bf0f4353dfa1dad164d5",
-    "project_commit_hash": "c52a2dc1d246dc130752bf0f4353dfa1dad164d5",
+    "project_version": "d766cb0ee8a24a6bdb330326506a37fea0b20695",
+    "project_commit_hash": "d766cb0ee8a24a6bdb330326506a37fea0b20695",
     "project_tag": null,
-    "project_commit_date": "1777702823",
+    "project_commit_date": "1777704184",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 516,
-    "number_of_classes_or_interfaces": 1054,
+    "number_of_files": 517,
+    "number_of_classes_or_interfaces": 1056,
     "number_of_methods": 1377,
-    "number_of_data_fields": 4119,
+    "number_of_data_fields": 4122,
     "number_of_method_parameters": 1538
   },
   "detector": {
@@ -11032,6 +11032,103 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem-idlabelicon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem-idlabelicon",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem",
+      "from_class_or_interface_name": "SettingsListLeftRightItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem",
+      "to_class_or_interface_name": "SettingsListSelectOptionItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/id": {
+          "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/id",
+          "name": "id",
+          "type": "T",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/id",
+            "name": "id",
+            "type": "T",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 8
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 8
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/icon": {
+          "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/icon",
+          "name": "icon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/icon",
+            "name": "icon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likeLoadinglikeCountprimaryColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likeLoadinglikeCountprimaryColor",
@@ -11809,6 +11906,103 @@
       "data_clump_type_additional": {
         "cluster_id": 8,
         "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem-idlabelicon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx-packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem-packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem-idlabelicon",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem",
+      "from_class_or_interface_name": "SettingsListSelectOptionItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem",
+      "to_class_or_interface_name": "SettingsListLeftRightItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/id": {
+          "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/id",
+          "name": "id",
+          "type": "T",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/id",
+            "name": "id",
+            "type": "T",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 8
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 8
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/icon": {
+          "key": "packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionItem/memberField/icon",
+          "name": "icon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx/interface/SettingsListLeftRightItem/memberField/icon",
+            "name": "icon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-initialValuesaveLabelprimaryColor": {
