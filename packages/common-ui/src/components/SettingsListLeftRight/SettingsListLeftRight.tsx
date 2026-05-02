@@ -21,6 +21,7 @@ export type SettingsListLeftRightProps<T extends string | number> = Pick<
 	onSelect: (option: SettingsListLeftRightItem<T>) => void;
 	groupPosition?: SettingsListProps['groupPosition'];
 	accentColor?: string;
+	onPress?: () => void;
 };
 
 const SettingsListLeftRight = <T extends string | number>({
@@ -33,6 +34,7 @@ const SettingsListLeftRight = <T extends string | number>({
 	showSeparator,
 	noIconIndent = false,
 	groupPosition = 'single',
+	onPress,
 }: SettingsListLeftRightProps<T>) => {
 	const { theme } = useTheme();
 
@@ -74,10 +76,11 @@ const SettingsListLeftRight = <T extends string | number>({
 			label={label}
 			value={displayValue}
 			leftIcon={leftIcon ?? leftArrow}
-			iconBgColor={leftIcon ? iconBgColor : 'transparent'}
+			iconBgColor={leftIcon ? iconBgColor : (iconBgColor ?? 'transparent')}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			noIconIndent={noIconIndent}
+			onPress={onPress}
 			rightElement={
 				<TouchableOpacity
 					onPress={handleNext}

@@ -84,6 +84,30 @@ type AvatarEditorModalContentProps = {
 	configRef: React.MutableRefObject<AvatarConfig>;
 };
 
+type ColorPickerModalContentProps = {
+	colors: string[];
+	initialSelectedColor: string | null;
+	onSelect: (color: string) => void;
+};
+
+const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
+	colors,
+	initialSelectedColor,
+	onSelect,
+}) => {
+	const [selectedColor, setSelectedColor] = useState<string | null>(initialSelectedColor);
+	return (
+		<MyColorPicker
+			colors={colors}
+			selectedColor={selectedColor}
+			onSelect={(color) => {
+				setSelectedColor(color);
+				onSelect(color);
+			}}
+		/>
+	);
+};
+
 const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	initialConfig,
 	accentColor,
@@ -91,6 +115,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(initialConfig);
 	const [selectedCategory, setSelectedCategory] = useState<string>(BUILTIN_CATEGORY_STYLE);
+	const { show: showColorModal } = useMyScrollViewModal();
 
 	const handleChange = (newConfig: AvatarConfig) => {
 		setConfig(newConfig);
@@ -173,11 +198,35 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const presetColors = getPresetColorsForKey(selectedCategory);
 			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
 			const selectedColor = storedHex ? '#' + storedHex : null;
+			const colorOptions = presetColors.map((c) => ({ id: c, label: c }));
+
+			const handleColorSelect = (color: string) => {
+				handleOptionChange(selectedCategory, stripHashPrefix(color));
+			};
+
+			const handleOpenColorPicker = () => {
+				showColorModal({
+					title: selectedCategory,
+					children: (
+						<ColorPickerModalContent
+							colors={presetColors}
+							initialSelectedColor={selectedColor}
+							onSelect={handleColorSelect}
+						/>
+					),
+				});
+			};
+
 			return (
-				<MyColorPicker
-					colors={presetColors}
-					selectedColor={selectedColor}
-					onSelect={(color) => handleOptionChange(selectedCategory, stripHashPrefix(color))}
+				<SettingsListLeftRight
+					label={selectedCategory}
+					options={colorOptions}
+					selectedOption={selectedColor}
+					onSelect={(option) => handleColorSelect(option.id)}
+					iconBgColor={selectedColor ?? undefined}
+					onPress={handleOpenColorPicker}
+					accentColor={accentColor}
+					groupPosition="single"
 				/>
 			);
 		}
