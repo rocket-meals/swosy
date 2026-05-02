@@ -93,7 +93,3 @@ export type { CardWithTextProps } from './src/components/CardWithText';
 
 export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
 export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';
-
-export { default as MyAvatar } from './src/components/MyAvatar';
-export { AvatarStyle } from './src/components/MyAvatar/types';
-export type { MyAvatarProps } from './src/components/MyAvatar/types';
