@@ -6,6 +6,7 @@ import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsListTextInput from '../SettingsListTextInput';
+import SettingsList from '../SettingsList';
 
 export type AvatarConfig = {
 	seed: string;
@@ -20,6 +21,11 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 	style: AvatarStyle.LORELEI,
 	size: AvatarSize.LARGE,
 };
+
+/** Built-in category keys (always available regardless of style). */
+const BUILTIN_CATEGORY_STYLE = 'Style';
+const BUILTIN_CATEGORY_SIZE = 'Size';
+const BUILTIN_CATEGORIES = [BUILTIN_CATEGORY_STYLE, BUILTIN_CATEGORY_SIZE];
 
 const AVATAR_STYLE_OPTIONS = Object.values(AvatarStyle).map((style) => ({
 	id: style,
@@ -65,6 +71,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	configRef,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(initialConfig);
+	const [selectedCategory, setSelectedCategory] = useState<string>(BUILTIN_CATEGORY_STYLE);
 
 	const handleChange = (newConfig: AvatarConfig) => {
 		setConfig(newConfig);
@@ -74,9 +81,24 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
 	const componentKeys = useMemo(() => Object.keys(componentOptions), [componentOptions]);
 
+	/** All available categories: built-in ones + style-specific component keys. */
+	const allCategories = useMemo(() => {
+		return [...BUILTIN_CATEGORIES, ...componentKeys];
+	}, [componentKeys]);
+
+	const categoryOptions = useMemo(() => {
+		return allCategories.map((cat) => ({ id: cat, label: cat }));
+	}, [allCategories]);
+
+	/** When the style changes, component keys may change – reset category if it no longer exists. */
 	const handleStyleChange = (newStyle: AvatarStyle) => {
-		// Reset options when style changes since different styles have different options
 		handleChange({ ...config, style: newStyle, options: undefined });
+		// If the currently selected category is a component key that doesn't exist in the new style, reset to Style
+		const newComponentKeys = Object.keys(getStyleComponentOptions(newStyle));
+		const allNew = [...BUILTIN_CATEGORIES, ...newComponentKeys];
+		if (!allNew.includes(selectedCategory)) {
+			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
+		}
 	};
 
 	const handleOptionChange = (key: string, value: string) => {
@@ -88,6 +110,76 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		const selected = config.options?.[key];
 		if (selected && selected.length > 0) return selected[0];
 		return null;
+	};
+
+	const handleRandomize = () => {
+		const styles = AVATAR_STYLE_OPTIONS;
+		const randomStyle = styles[Math.floor(Math.random() * styles.length)].id as AvatarStyle;
+		const newComponentOptions = getStyleComponentOptions(randomStyle);
+		const randomOptions: Record<string, string[]> = {};
+		for (const [key, values] of Object.entries(newComponentOptions)) {
+			randomOptions[key] = [values[Math.floor(Math.random() * values.length)]];
+		}
+		const newConfig: AvatarConfig = {
+			...config,
+			style: randomStyle,
+			options: randomOptions,
+		};
+		handleChange(newConfig);
+		// Reset category to Style in case the current one no longer exists
+		const allNew = [...BUILTIN_CATEGORIES, ...Object.keys(newComponentOptions)];
+		if (!allNew.includes(selectedCategory)) {
+			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
+		}
+	};
+
+	/** Render the value selector for the currently active category. */
+	const renderValueSelector = () => {
+		if (selectedCategory === BUILTIN_CATEGORY_STYLE) {
+			return (
+				<SettingsListLeftRight
+					label="Style"
+					options={AVATAR_STYLE_OPTIONS}
+					selectedOption={config.style}
+					onSelect={(option) => handleStyleChange(option.id as AvatarStyle)}
+					iconBgColor={accentColor}
+					accentColor={accentColor}
+					groupPosition="single"
+				/>
+			);
+		}
+
+		if (selectedCategory === BUILTIN_CATEGORY_SIZE) {
+			return (
+				<SettingsListLeftRight
+					label="Size"
+					options={AVATAR_SIZE_OPTIONS}
+					selectedOption={config.size}
+					onSelect={(option) => handleChange({ ...config, size: option.id as AvatarSize })}
+					iconBgColor={accentColor}
+					accentColor={accentColor}
+					groupPosition="single"
+				/>
+			);
+		}
+
+		// Component option (eyes, mouth, hair, etc.)
+		const values = componentOptions[selectedCategory];
+		if (!values) return null;
+		const optionItems = values.map((v) => ({ id: v, label: v }));
+		const selectedValue = getSelectedOptionValue(selectedCategory);
+
+		return (
+			<SettingsListLeftRight
+				label={selectedCategory}
+				options={optionItems}
+				selectedOption={selectedValue}
+				onSelect={(option) => handleOptionChange(selectedCategory, option.id as string)}
+				iconBgColor={accentColor}
+				accentColor={accentColor}
+				groupPosition="single"
+			/>
+		);
 	};
 
 	return (
@@ -112,57 +204,27 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				groupPosition="single"
 			/>
 
-			<SettingsListGroupTitle title={`Style (${config.style})`} />
+			<SettingsListGroupTitle title="Category" />
 			<SettingsListLeftRight
-				label="Style"
-				options={AVATAR_STYLE_OPTIONS}
-				selectedOption={config.style}
-				onSelect={(option) => handleStyleChange(option.id as AvatarStyle)}
+				label="Select Category"
+				options={categoryOptions}
+				selectedOption={selectedCategory}
+				onSelect={(option) => setSelectedCategory(option.id)}
 				iconBgColor={accentColor}
 				accentColor={accentColor}
 				groupPosition="single"
 			/>
 
-			<SettingsListGroupTitle title="Size" />
-			<SettingsListLeftRight
-				label="Size"
-				options={AVATAR_SIZE_OPTIONS}
-				selectedOption={config.size}
-				onSelect={(option) => handleChange({ ...config, size: option.id as AvatarSize })}
+			<SettingsListGroupTitle title={selectedCategory} />
+			{renderValueSelector()}
+
+			<SettingsListGroupTitle title="Randomize" />
+			<SettingsList
+				title="Generate Random Avatar"
+				onPress={handleRandomize}
 				iconBgColor={accentColor}
-				accentColor={accentColor}
 				groupPosition="single"
 			/>
-
-			{componentKeys.length > 0 && (
-				<>
-					<SettingsListGroupTitle title="Components" />
-					{componentKeys.map((key, index) => {
-						const values = componentOptions[key];
-						const optionItems = values.map((v) => ({ id: v, label: v }));
-						const selectedValue = getSelectedOptionValue(key);
-						const groupPosition = componentKeys.length === 1
-							? 'single' as const
-							: index === 0
-								? 'top' as const
-								: index === componentKeys.length - 1
-									? 'bottom' as const
-									: 'middle' as const;
-
-						return (
-							<SettingsListLeftRight
-								key={key}
-								label={key}
-								options={optionItems}
-								selectedOption={selectedValue}
-								onSelect={(option) => handleOptionChange(key, option.id as string)}
-								accentColor={accentColor}
-								groupPosition={groupPosition}
-							/>
-						);
-					})}
-				</>
-			)}
 		</View>
 	);
 };
