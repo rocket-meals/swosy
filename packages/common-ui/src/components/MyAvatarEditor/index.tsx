@@ -6,6 +6,7 @@ import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsListTextInput from '../SettingsListTextInput';
+import SettingsList from '../SettingsList';
 
 export type AvatarConfig = {
 	seed: string;
@@ -22,10 +23,9 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 };
 
 /** Built-in category keys (always available regardless of style). */
-const BUILTIN_CATEGORY_SEED = 'Seed';
 const BUILTIN_CATEGORY_STYLE = 'Style';
 const BUILTIN_CATEGORY_SIZE = 'Size';
-const BUILTIN_CATEGORIES = [BUILTIN_CATEGORY_SEED, BUILTIN_CATEGORY_STYLE, BUILTIN_CATEGORY_SIZE];
+const BUILTIN_CATEGORIES = [BUILTIN_CATEGORY_STYLE, BUILTIN_CATEGORY_SIZE];
 
 const AVATAR_STYLE_OPTIONS = Object.values(AvatarStyle).map((style) => ({
 	id: style,
@@ -112,21 +112,29 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		return null;
 	};
 
+	const handleRandomize = () => {
+		const styles = AVATAR_STYLE_OPTIONS;
+		const randomStyle = styles[Math.floor(Math.random() * styles.length)].id as AvatarStyle;
+		const newComponentOptions = getStyleComponentOptions(randomStyle);
+		const randomOptions: Record<string, string[]> = {};
+		for (const [key, values] of Object.entries(newComponentOptions)) {
+			randomOptions[key] = [values[Math.floor(Math.random() * values.length)]];
+		}
+		const newConfig: AvatarConfig = {
+			...config,
+			style: randomStyle,
+			options: randomOptions,
+		};
+		handleChange(newConfig);
+		// Reset category to Style in case the current one no longer exists
+		const allNew = [...BUILTIN_CATEGORIES, ...Object.keys(newComponentOptions)];
+		if (!allNew.includes(selectedCategory)) {
+			setSelectedCategory(BUILTIN_CATEGORY_STYLE);
+		}
+	};
+
 	/** Render the value selector for the currently active category. */
 	const renderValueSelector = () => {
-		if (selectedCategory === BUILTIN_CATEGORY_SEED) {
-			return (
-				<SettingsListTextInput
-					label="Seed"
-					placeholder="Seed"
-					initialValue={config.seed}
-					onSave={(value) => handleChange({ ...config, seed: value })}
-					iconBgColor={accentColor}
-					groupPosition="single"
-				/>
-			);
-		}
-
 		if (selectedCategory === BUILTIN_CATEGORY_STYLE) {
 			return (
 				<SettingsListLeftRight
@@ -186,6 +194,16 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				/>
 			</View>
 
+			<SettingsListGroupTitle title="Seed" />
+			<SettingsListTextInput
+				label="Seed"
+				placeholder="Seed"
+				initialValue={config.seed}
+				onSave={(value) => handleChange({ ...config, seed: value })}
+				iconBgColor={accentColor}
+				groupPosition="single"
+			/>
+
 			<SettingsListGroupTitle title="Category" />
 			<SettingsListLeftRight
 				label="Category"
@@ -199,6 +217,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			<SettingsListGroupTitle title={selectedCategory} />
 			{renderValueSelector()}
+
+			<SettingsListGroupTitle title="Randomize" />
+			<SettingsList
+				title="Randomize"
+				onPress={handleRandomize}
+				iconBgColor={accentColor}
+				groupPosition="single"
+			/>
 		</View>
 	);
 };
