@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsList from '../SettingsList';
@@ -22,6 +22,8 @@ export type SettingsListLeftRightProps<T extends string | number> = Pick<
 	groupPosition?: SettingsListProps['groupPosition'];
 	accentColor?: string;
 	onPress?: () => void;
+	/** Optional element rendered between the value text and the right arrow. */
+	extraRightElement?: React.ReactNode;
 };
 
 const SettingsListLeftRight = <T extends string | number>({
@@ -35,6 +37,7 @@ const SettingsListLeftRight = <T extends string | number>({
 	noIconIndent = false,
 	groupPosition = 'single',
 	onPress,
+	extraRightElement,
 }: SettingsListLeftRightProps<T>) => {
 	const { theme } = useTheme();
 
@@ -71,6 +74,22 @@ const SettingsListLeftRight = <T extends string | number>({
 		</TouchableOpacity>
 	);
 
+	const rightArrow = (
+		<TouchableOpacity
+			onPress={handleNext}
+			style={styles.arrowButton}
+			hitSlop={8}
+			accessibilityRole="button"
+			accessibilityLabel="Next option"
+		>
+			<MaterialCommunityIcons
+				name="chevron-right"
+				size={28}
+				color={theme.screen.text}
+			/>
+		</TouchableOpacity>
+	);
+
 	return (
 		<SettingsList
 			label={label}
@@ -82,19 +101,14 @@ const SettingsListLeftRight = <T extends string | number>({
 			noIconIndent={noIconIndent}
 			onPress={onPress}
 			rightElement={
-				<TouchableOpacity
-					onPress={handleNext}
-					style={styles.arrowButton}
-					hitSlop={8}
-					accessibilityRole="button"
-					accessibilityLabel="Next option"
-				>
-					<MaterialCommunityIcons
-						name="chevron-right"
-						size={28}
-						color={theme.screen.text}
-					/>
-				</TouchableOpacity>
+				extraRightElement ? (
+					<View style={styles.rightContainer}>
+						{extraRightElement}
+						{rightArrow}
+					</View>
+				) : (
+					rightArrow
+				)
 			}
 		/>
 	);
@@ -105,5 +119,10 @@ export default SettingsListLeftRight;
 const styles = StyleSheet.create({
 	arrowButton: {
 		padding: 2,
+	},
+	rightContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
 	},
 });
