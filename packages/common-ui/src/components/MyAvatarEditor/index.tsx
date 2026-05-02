@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MyAvatar, { AvatarStyle, AvatarSize } from '../MyAvatar';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
-import SettingsListSelectOption from '../SettingsListSelectOption';
+import SettingsListLeftRight from '../SettingsListLeftRight';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsListTextInput from '../SettingsListTextInput';
 
@@ -70,21 +70,25 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			/>
 
 			<SettingsListGroupTitle label={`Style (${config.style})`} />
-			<SettingsListSelectOption
+			<SettingsListLeftRight
+				label="Style"
 				options={AVATAR_STYLE_OPTIONS}
 				selectedOption={config.style}
 				onSelect={(option) => handleChange({ ...config, style: option.id as AvatarStyle })}
 				iconBgColor={accentColor}
-				selectionColor={accentColor}
+				accentColor={accentColor}
+				groupPosition="single"
 			/>
 
 			<SettingsListGroupTitle label="Size" />
-			<SettingsListSelectOption
+			<SettingsListLeftRight
+				label="Size"
 				options={AVATAR_SIZE_OPTIONS}
 				selectedOption={config.size}
 				onSelect={(option) => handleChange({ ...config, size: option.id as AvatarSize })}
 				iconBgColor={accentColor}
-				selectionColor={accentColor}
+				accentColor={accentColor}
+				groupPosition="single"
 			/>
 		</View>
 	);
