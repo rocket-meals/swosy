@@ -1,45 +1,45 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-02T07:20:03.860Z",
+  "report_timestamp": "2026-05-02T08:17:07.936Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.6153544849197023,
-          "amountSavedValuesForKeys": 4124,
+          "average": 1.6146322378716744,
+          "amountSavedValuesForKeys": 4127,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.36979969183359,
-          "amountSavedValuesForKeys": 1538,
+          "average": 2.3634969325153374,
+          "amountSavedValuesForKeys": 1541,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.629395495851442,
-          "amountSavedValuesForKeys": 4124,
+          "average": 1.6286503551696923,
+          "amountSavedValuesForKeys": 4127,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4506,
-        "detection_time_ms": 102,
+        "ast_generation_time_ms": 4346,
+        "detection_time_ms": 93,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 239.52,
-          "os_memory_free": 14920056832,
+          "os_uptime": 119.7,
+          "os_memory_free": 14959546368,
           "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "fbab7265dd8811b0f34f8919b003e5618c69f4a7",
-    "project_commit_hash": "fbab7265dd8811b0f34f8919b003e5618c69f4a7",
+    "project_version": "34d8d3898b202a1520f59af19a6a4fa5814b545c",
+    "project_commit_hash": "34d8d3898b202a1520f59af19a6a4fa5814b545c",
     "project_tag": null,
-    "project_commit_date": "1777706302",
+    "project_commit_date": "1777709722",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 517,
-    "number_of_classes_or_interfaces": 1056,
-    "number_of_methods": 1377,
-    "number_of_data_fields": 4124,
-    "number_of_method_parameters": 1538
+    "number_of_classes_or_interfaces": 1058,
+    "number_of_methods": 1381,
+    "number_of_data_fields": 4127,
+    "number_of_method_parameters": 1541
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -2509,9 +2509,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 8,
+              "startLine": 10,
               "startColumn": 2,
-              "endLine": 8,
+              "endLine": 10,
               "endColumn": 17
             }
           },
@@ -2534,9 +2534,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 10,
+              "startLine": 12,
               "startColumn": 2,
-              "endLine": 10,
+              "endLine": 12,
               "endColumn": 27
             }
           },
@@ -2559,9 +2559,9 @@
             "type": "ReactNode",
             "modifiers": [],
             "position": {
-              "startLine": 11,
+              "startLine": 13,
               "startColumn": 2,
-              "endLine": 11,
+              "endLine": 13,
               "endColumn": 23
             }
           },
@@ -2584,9 +2584,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 12,
+              "startLine": 14,
               "startColumn": 2,
-              "endLine": 12,
+              "endLine": 14,
               "endColumn": 24
             }
           },
@@ -2609,9 +2609,9 @@
             "type": "any[]",
             "modifiers": [],
             "position": {
-              "startLine": 13,
+              "startLine": 15,
               "startColumn": 2,
-              "endLine": 13,
+              "endLine": 15,
               "endColumn": 15
             }
           },
@@ -2634,9 +2634,9 @@
             "type": "ReactNode",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 18,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 18,
               "endColumn": 34
             }
           },
@@ -2659,9 +2659,9 @@
             "type": "ReactNode",
             "modifiers": [],
             "position": {
-              "startLine": 17,
+              "startLine": 19,
               "startColumn": 2,
-              "endLine": 17,
+              "endLine": 19,
               "endColumn": 34
             }
           },
@@ -2684,9 +2684,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 20,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 20,
               "endColumn": 41
             }
           },
@@ -2709,9 +2709,9 @@
             "type": "\"always\" | \"never\" | \"handled\"",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 21,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 21,
               "endColumn": 61
             }
           },
@@ -2734,9 +2734,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 21,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 21,
+              "endLine": 23,
               "endColumn": 37
             }
           },
@@ -10501,9 +10501,9 @@
             }
           },
           "position": {
-            "startLine": 8,
+            "startLine": 10,
             "startColumn": 2,
-            "endLine": 8,
+            "endLine": 10,
             "endColumn": 17
           }
         },
@@ -10526,9 +10526,9 @@
             }
           },
           "position": {
-            "startLine": 10,
+            "startLine": 12,
             "startColumn": 2,
-            "endLine": 10,
+            "endLine": 12,
             "endColumn": 27
           }
         },
@@ -10551,9 +10551,9 @@
             }
           },
           "position": {
-            "startLine": 11,
+            "startLine": 13,
             "startColumn": 2,
-            "endLine": 11,
+            "endLine": 13,
             "endColumn": 23
           }
         },
@@ -10576,9 +10576,9 @@
             }
           },
           "position": {
-            "startLine": 12,
+            "startLine": 14,
             "startColumn": 2,
-            "endLine": 12,
+            "endLine": 14,
             "endColumn": 24
           }
         },
@@ -10601,9 +10601,9 @@
             }
           },
           "position": {
-            "startLine": 13,
+            "startLine": 15,
             "startColumn": 2,
-            "endLine": 13,
+            "endLine": 15,
             "endColumn": 15
           }
         },
@@ -10626,9 +10626,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 18,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 18,
             "endColumn": 34
           }
         },
@@ -10651,9 +10651,9 @@
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 19,
             "startColumn": 2,
-            "endLine": 17,
+            "endLine": 19,
             "endColumn": 34
           }
         },
@@ -10676,9 +10676,9 @@
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 20,
             "startColumn": 2,
-            "endLine": 18,
+            "endLine": 20,
             "endColumn": 41
           }
         },
@@ -10701,9 +10701,9 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 21,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 61
           }
         },
@@ -10726,9 +10726,9 @@
             }
           },
           "position": {
-            "startLine": 21,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 21,
+            "endLine": 23,
             "endColumn": 37
           }
         }
