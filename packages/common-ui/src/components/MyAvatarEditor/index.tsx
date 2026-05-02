@@ -198,7 +198,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const presetColors = getPresetColorsForKey(selectedCategory);
 			const storedHex = config.options?.[selectedCategory]?.[0] ?? null;
 			const selectedColor = storedHex ? '#' + storedHex : null;
-			const colorOptions = presetColors.map((c) => ({ id: c, label: c }));
+			const colorOptions = presetColors.map((color) => ({ id: color, label: color }));
 
 			const handleColorSelect = (color: string) => {
 				handleOptionChange(selectedCategory, stripHashPrefix(color));
