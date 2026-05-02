@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-02T05:00:09.127Z",
+  "report_timestamp": "2026-05-02T05:16:00.496Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,7 +8,7 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 99,
-          "average": 1.6140557518649392,
+          "average": 1.6127893291486857,
           "amountSavedValuesForKeys": 4111,
           "amountKeys": 27
         },
@@ -22,25 +22,25 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 99,
-          "average": 1.628118811881188,
+          "average": 1.626830233478433,
           "amountSavedValuesForKeys": 4111,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4075,
-        "detection_time_ms": 96,
+        "ast_generation_time_ms": 4014,
+        "detection_time_ms": 92,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 121.84,
-          "os_memory_free": 14887755776,
-          "os_memory_total": 16765394944,
+          "os_uptime": 112.53,
+          "os_memory_free": 14923632640,
+          "os_memory_total": 16769728512,
           "os_cpu_cores": 4,
           "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3406
+          "os_cpu_speed": 3490
         }
       }
     },
@@ -55,15 +55,15 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "6ed9bb46ea80f383e4ce9117048a00f936f17c6f",
-    "project_commit_hash": "6ed9bb46ea80f383e4ce9117048a00f936f17c6f",
+    "project_version": "c3954ee5b6459a194f9e66f51424baa991639bba",
+    "project_commit_hash": "c3954ee5b6459a194f9e66f51424baa991639bba",
     "project_tag": null,
-    "project_commit_date": "1777697901",
+    "project_commit_date": "1777698857",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 516,
-    "number_of_classes_or_interfaces": 1052,
+    "number_of_files": 515,
+    "number_of_classes_or_interfaces": 1051,
     "number_of_methods": 1377,
     "number_of_data_fields": 4111,
     "number_of_method_parameters": 1538
