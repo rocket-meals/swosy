@@ -88,7 +88,7 @@ function stripHashPrefix(color: string): string {
 }
 
 /** Size used for avatar previews inside selection modals. */
-const PREVIEW_AVATAR_SIZE = 40;
+const PREVIEW_AVATAR_SIZE = 80;
 
 type AvatarEditorModalContentProps = {
 	initialConfig: AvatarConfig;
@@ -168,13 +168,16 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 						key={style}
 						label={style}
 						leftIcon={
-							<MyAvatar
-								seed={seed}
-								style={style}
-								size={PREVIEW_AVATAR_SIZE}
-								borderRadius={PREVIEW_AVATAR_SIZE / 2}
-							/>
+							<View style={styles.previewAvatarWrapper}>
+								<MyAvatar
+									seed={seed}
+									style={style}
+									size={PREVIEW_AVATAR_SIZE}
+									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+								/>
+							</View>
 						}
+						noIconIndent
 						selectionColor={accentColor}
 						isSelected={currentStyle === style}
 						groupPosition={groupPosition}
@@ -221,14 +224,17 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 						key={value}
 						label={value}
 						leftIcon={
-							<MyAvatar
-								seed={config.seed}
-								style={config.style}
-								size={PREVIEW_AVATAR_SIZE}
-								borderRadius={PREVIEW_AVATAR_SIZE / 2}
-								options={previewOptions}
-							/>
+							<View style={styles.previewAvatarWrapper}>
+								<MyAvatar
+									seed={config.seed}
+									style={config.style}
+									size={PREVIEW_AVATAR_SIZE}
+									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+									options={previewOptions}
+								/>
+							</View>
 						}
+						noIconIndent
 						selectionColor={accentColor}
 						isSelected={currentValue === value}
 						groupPosition={groupPosition}
@@ -483,5 +489,8 @@ const styles = StyleSheet.create({
 		height: 22,
 		borderRadius: 11,
 		borderWidth: 1.5,
+	},
+	previewAvatarWrapper: {
+		marginRight: 10,
 	},
 });
