@@ -69,7 +69,7 @@ const AvatarsScreen = () => {
 					selectionColor={primaryColor}
 				/>
 
-				<SettingsListGroupTitle label="Size" />
+				<SettingsListGroupTitle label={translate(TranslationKeys.avatar_size)} />
 				<SettingsListSelectOption
 					options={AVATAR_SIZE_OPTIONS}
 					selectedOption={selectedSize}

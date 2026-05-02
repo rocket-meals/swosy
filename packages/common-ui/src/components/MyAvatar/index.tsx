@@ -35,6 +35,7 @@ export enum AvatarStyle {
 	RINGS = 'rings',
 	SHAPES = 'shapes',
 	THUMBS = 'thumbs',
+	TOON_HEAD = 'toonHead',
 }
 
 export enum AvatarSize {
@@ -82,6 +83,7 @@ const STYLE_MAP: Record<AvatarStyle, collection.Style<object>> = {
 	[AvatarStyle.RINGS]: collection.rings,
 	[AvatarStyle.SHAPES]: collection.shapes,
 	[AvatarStyle.THUMBS]: collection.thumbs,
+	[AvatarStyle.TOON_HEAD]: collection.toonHead,
 };
 
 const MyAvatar: React.FC<MyAvatarProps> = ({
@@ -94,7 +96,7 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		const avatarStyle = STYLE_MAP[style];
 		return createAvatar(avatarStyle, {
 			seed,
-			size: typeof size === 'number' ? size : size,
+			size,
 		}).toString();
 	}, [seed, style, size]);
 

@@ -385,6 +385,7 @@ export enum TranslationKeys {
         avatars = 'avatars',
         avatar_style = 'avatar_style',
         avatar_seed = 'avatar_seed',
+        avatar_size = 'avatar_size',
         chats = 'chats',
         chat = 'chat',
         linked_elements = 'linked_elements',
