@@ -45,7 +45,6 @@ import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import * as FileSystem from 'expo-file-system/legacy';
-import AppButton from '@/components/AppButton';
 
 /**
  * Convert a file data object (from signature capture) to a base64 data URI.
@@ -132,6 +131,35 @@ const normalizeCurrentValue = (value: unknown, customType?: string): string => {
 	return String(value).trim().toLowerCase();
 };
 
+const isAnswerVisible = (
+	answer: DatabaseTypes.FormAnswers,
+	formAnswers: DatabaseTypes.FormAnswers[],
+	getAnswerValueFn: (a: DatabaseTypes.FormAnswers) => any
+): boolean => {
+	const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+	const baseVisibility = formField?.is_visible_in_form ?? true;
+	if (!baseVisibility) return false;
+
+	const visibilityDependsOnFieldId = formField ? extractFormFieldId(formField.visibility_depends_on_referenced_field) : undefined;
+	const expectedVisibilityValue = formField?.visibility_depends_on_referenced_value_equals;
+	const normalizedExpectedValue = normalizeExpectedValue(expectedVisibilityValue);
+	const hasVisibilityDependency = Boolean(visibilityDependsOnFieldId && normalizedExpectedValue !== '');
+
+	if (!hasVisibilityDependency) return true;
+
+	const referencedAnswer = formAnswers.find(item => {
+		const referencedFieldId = extractFormFieldId(item?.form_field);
+		return referencedFieldId === visibilityDependsOnFieldId;
+	});
+
+	if (!referencedAnswer) return false;
+
+	const referencedField = isFormFieldEntity(referencedAnswer?.form_field) ? referencedAnswer.form_field : null;
+	const referencedCustomType = (referencedField?.field_type || '').split('-')[0];
+	const currentValue = getAnswerValueFn(referencedAnswer);
+	return normalizeCurrentValue(currentValue, referencedCustomType) === normalizedExpectedValue;
+};
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -151,14 +179,14 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission, formQueueDict, cachedFormData } = useAppSelector((state) => state.form);
+	const { formSubmission, formQueue, cachedFormData } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
+	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
 	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
@@ -406,7 +434,7 @@ const Index = () => {
 
 			// If opened from queue, override with queued formData
 			if (queue_entry_id) {
-				const queueEntry = Object.values(formQueueDict || {}).find((entry: any) => String(entry?.id) === String(queue_entry_id));
+				const queueEntry = (formQueue || []).find((entry: any) => entry.id === queue_entry_id);
 				if (queueEntry) {
 					setFormData({ ...initialFormData, ...queueEntry.formData });
 					setSelectedState(queueEntry.targetState);
@@ -624,24 +652,34 @@ const Index = () => {
 			}
 		}
 
+		// Validate required fields that are currently visible in the form
+		for (const answer of formAnswers) {
+			const formField = answer?.form_field as DatabaseTypes.FormFields;
+			if (!formField?.is_required) continue;
+			if (!isAnswerVisible(answer, formAnswers, getAnswerValue)) continue;
+			const value = formData[String(answer?.id)]?.value;
+			if (!value || (typeof value === 'string' && value.trim() === '')) {
+				hasError = true;
+				const fieldName = formField?.translations?.length > 0 ? getFromCategoryTranslation(formField.translations, language) : formField?.alias;
+				toast(`Field "${fieldName}" is required`, 'error');
+			}
+		}
+
+		if (hasError) {
+			setSubmissionLoading(false);
+			return;
+		}
+
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
 
 		const updatedFormAnswers = await Promise.all(
 			filteredFormAnswers.map(async answer => {
 				const fieldId = answer?.id;
-				const isRequired = (answer?.form_field as DatabaseTypes.FormFields)?.is_required;
 				const formDataEntry = formData[String(fieldId)];
 				const value = formDataEntry?.value;
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
 				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
 				const custom_id = fieldType?.split('-')[1];
-
-				if (isRequired && (!value || value.trim() === '')) {
-					hasError = true;
-					const fieldName = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias;
-					toast(`Field "${fieldName}" is required`, 'error');
-					return null;
-				}
 
 				const { custom_type } = formDataEntry;
 				let formateDate;
@@ -743,10 +781,6 @@ const Index = () => {
 		);
 
 		const finalAnswers = updatedFormAnswers.filter(Boolean);
-		if (hasError) {
-			setSubmissionLoading(false);
-			return;
-		}
 
 		if (finalAnswers.length > 0) {
 			// In offline mode, immediately add to queue without attempting upload
@@ -861,25 +895,37 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{ flexDirection: language === 'ar' ? 'row-reverse' : 'row' },
+						{
+							flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+						},
 					]}
 				>
-					<TouchableOpacity
-						onPress={() => {
+					<View
+						style={[
+							styles.col1,
+							screenWidth > 768
+								? {
+										gap: 20,
+									}
+								: {
+										gap: 10,
+									},
+							{
+								flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+							},
+						]}
+					>
+						<TouchableOpacity onPress={() => {
 							if (router.canGoBack()) {
 								router.back();
 							} else {
 								router.navigate('/form-categories');
 							}
-						}}
-						style={{ padding: 10 }}
-					>
-						<Ionicons name={language === 'ar' ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
-					</TouchableOpacity>
-
-					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: language === 'ar' ? 'right' : 'left' }}>
-						{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}
-					</Text>
+						}} style={{ padding: 10 }}>
+							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
+						</TouchableOpacity>
+						<Text style={{ ...styles.heading, color: theme.header.text }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
+					</View>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openEditSheet} style={{ padding: 10 }}>
 							<FontAwesome name="edit" size={24} color={theme.header.text} />
@@ -973,33 +1019,23 @@ const Index = () => {
 											key={answer?.id + index}
 										>
 											<View
-												style={[
-													{
-														...styles.formNameContainer,
-														backgroundColor: theme.screen.iconBg,
-													},
-													language === 'ar' ? { justifyContent: 'flex-start' } : null,
-												]}
+												style={{
+													...styles.formNameContainer,
+													backgroundColor: theme.screen.iconBg,
+												}}
 											>
 												{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
-												{language === 'ar' && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
-													<FontAwesome6 name="star-of-life" size={12} color={'red'} />
-												)}
+
 												<Text
 													style={{
 														...styles.body,
 														color: theme.screen.text,
-														...(language === 'ar' ? { flex: 1, textAlign: 'right', writingDirection: 'rtl' } : null),
 													}}
 												>
 													{`${index + 1}. `}
-													{(answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0
-														? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language)
-														: (answer?.form_field as DatabaseTypes.FormFields)?.alias}
+													{(answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias}
 												</Text>
-												{language !== 'ar' && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
-													<FontAwesome6 name="star-of-life" size={12} color={'red'} />
-												)}
+												{(answer?.form_field as DatabaseTypes.FormFields)?.is_required && <FontAwesome6 name="star-of-life" size={12} color={'red'} />}
 											</View>
 											{Boolean(description) && (
 												<View
@@ -1012,7 +1048,6 @@ const Index = () => {
 														style={{
 															...styles.body,
 															color: theme.screen.text,
-															...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
 														}}
 													>
 														{description}
@@ -1062,48 +1097,28 @@ const Index = () => {
 			>
 			<View style={styles.pickerContainer}>
 				{/* Aktueller Zustand und Auswahl des nächsten Zustands */}
-				<Text
-					style={{
-						...styles.body,
-						marginBottom: 6,
-						color: theme.screen.text,
-						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
-					}}
-				>
+				<Text style={{ ...styles.body, marginBottom: 6, color: theme.screen.text }}>
 					{`${translate(TranslationKeys.state_current)}: ${translate(currentState || formSubmission?.state || 'draft')}`}
 				</Text>
-				<AppButton
-					variant="ghost"
-					usePlainText
-					onPress={openFilterSheet}
+				<TouchableOpacity
 					style={{
 						...styles.stateChangeButton,
 						backgroundColor: theme.screen.iconBg,
-						marginVertical: 0,
 					}}
-					textStyle={{ width: 0, height: 0 }}
-					iconLeft={
-						<View
-							style={{
-								flexDirection: 'row',
-								alignItems: 'center',
-								gap: 10,
-								width: '100%',
-							}}
-						>
-							<MaterialIcons name="edit" size={20} color={theme.screen.text} />
-							<Text
-								style={{
-									...styles.state,
-									color: theme.screen.text,
-									...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
-								}}
-							>
-								{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}
-							</Text>
-						</View>
-					}
-				/>
+					onPress={openFilterSheet}
+				>
+					<View
+						style={{
+							marginLeft: -34,
+							flexDirection: 'row',
+							alignItems: 'center',
+							gap: 10,
+						}}
+					>
+						<MaterialIcons name="edit" size={20} color={theme.screen.text} />
+						<Text style={{ ...styles.state, color: theme.screen.text }}>{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}</Text>
+					</View>
+				</TouchableOpacity>
 			</View>
 				<TouchableOpacity style={{ ...styles.button, backgroundColor: primaryColor }} onPress={handleFormSubmission}>
 					{submissionLoading ? <ActivityIndicator size={22} color={theme.screen.text} /> : <Text style={{ ...styles.buttonLabel, color: theme.activeText }}>{translate(TranslationKeys.save)}</Text>}

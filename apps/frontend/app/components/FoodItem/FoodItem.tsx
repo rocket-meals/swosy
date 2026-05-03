@@ -33,12 +33,11 @@ import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
-import AppButton from '@/components/AppButton';
 
 
 const selectFoodState = (state: RootState) => state.food;
-const selectMarkings = createSelector([selectFoodState], foodState => Object.values(foodState.markingsDict ?? {}));
-const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => Object.values(foodState.ownFoodFeedbacksDict ?? {}));
+const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
+const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
 
 export const FoodItemBase: React.FC<FoodItemProps> = memo(
   ({ 
@@ -289,8 +288,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       showScrollViewModal(
         {
           title: translate(TranslationKeys.description),
-          titleTextAlign: language === 'ar' ? 'right' : 'left',
-          titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
@@ -350,15 +347,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         !user?.id && accountRequiredStyles.wrapper,
                         !user?.id && { borderWidth: 2, borderColor: foods_area_color },
                       ]}
+                      onPress={!user?.id
+                        ? openAccountRequiredModal
+                        : () => updateRating(RatingHelper.isMaxRating(currentRating) ? null : RatingHelper.MAX_RATING)
+                      }
                     >
                       {RatingHelper.isMaxRating(currentRating) ? (
-                        <TouchableOpacity onPress={() => updateRating(null)}>
-                          <AntDesign name="star" size={20} color={foods_area_color} />
-                        </TouchableOpacity>
+                        <AntDesign name="star" size={20} color={foods_area_color} />
                       ) : (
-                        <TouchableOpacity onPress={() => updateRating(RatingHelper.MAX_RATING)}>
-                          <MaterialIcons name="star" size={20} color="white" />
-                        </TouchableOpacity>
+                        <MaterialIcons name="star" size={20} color="white" />
                       )}
                       {!user?.id && (
                         <View
@@ -369,24 +366,22 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                     </TouchableOpacity>
 
                   {foodItem?.image_generated && (
-                    <AppButton
-                      variant="ghost"
-                      usePlainText
-                      text={translate(TranslationKeys.ai_generated_badge_label)}
+                    <TouchableOpacity
+                      style={styles.aiBadgeContainer}
                       onPress={() =>
                         showScrollViewModal(
                           {
                             title: translate(TranslationKeys.ai_generated_image),
-                            titleTextAlign: language === 'ar' ? 'right' : 'left',
-                            titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
                             children: <AIGeneratedHintSheet />,
                           },
                           {}
                         )
                       }
-                      style={[styles.aiBadgeContainer, { marginVertical: 0 }]}
-                      textStyle={styles.aiGeneratedBadgeText}
-                    />
+                    >
+                      <Text style={styles.aiGeneratedBadgeText}>
+                        {translate(TranslationKeys.ai_generated_badge_label)}
+                      </Text>
+                    </TouchableOpacity>
                   )}
 
                     {dislikedMarkings.length > 0 && (
@@ -400,7 +395,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         style={[styles.favContainer, { backgroundColor: foods_area_color }]}
                         onPress={handleDescriptionModal}
                       >
-                        <Entypo name="megaphone" size={20} color={contrastColor} />
+                        <Entypo name="info" size={20} color={contrastColor} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -424,15 +419,10 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                       ) : null
                     )}
                   </View>
-                    
-                  <AppButton
-                    variant="ghost"
-                    usePlainText
-                    text={priceLabel}
-                    onPress={handlePriceChange}
-                    style={[styles.priceTag, { marginVertical: 0 }]}
-                    textStyle={styles.priceText}
-                  />
+
+                  <TouchableOpacity style={styles.priceTag} onPress={handlePriceChange}>
+                    <Text style={styles.priceText}>{priceLabel}</Text>
+                  </TouchableOpacity>
                 </>
               }
             >

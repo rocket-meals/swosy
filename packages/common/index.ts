@@ -19,3 +19,7 @@ export * from './src/RatingHelper';
 export * from './src/LanguageCodes';
 export * from './src/CollectibleEvents';
 export * from './src/MailAdresses';
+export * from './src/FriendshipStatus';
+export * from './src/AppFeedbackSourceIdentifier';
+export * from './src/CustomerAppStoreIds';
+export * from './src/AppleAppStoreConfig';

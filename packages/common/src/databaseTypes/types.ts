@@ -55,6 +55,7 @@ export type AppFeedbacks = {
   display_pixelratio?: number | null;
   display_scale?: number | null;
   display_width?: number | null;
+  external_identifier?: string | null;
   feedback_read_by_support?: boolean | null;
   id: string;
   positive?: boolean | null;
@@ -63,6 +64,8 @@ export type AppFeedbacks = {
   response?: string | null;
   response_read_by_user?: boolean | null;
   sort?: number | null;
+  source_identifier?: string | null;
+  source_rating_raw?: number | null;
   status?: string | null;
   title?: string | null;
   user_created?: string | null;
@@ -107,6 +110,8 @@ export type AppSettings = {
   foods_ratings_average_display?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
+  friends_enabled?: boolean | null;
+  friends_settings: string;
   housing_area_color?: string | null;
   housing_before_element?: string | AppElements | null;
   housing_enabled?: boolean | null;
@@ -344,6 +349,19 @@ export type CanteenFoodFeedbackReportSchedulesReportRecipients = {
   report_recipients_id?: string | ReportRecipients | null;
 };
 
+export type CanteenVisits = {
+  canteen?: string | Canteens | null;
+  date?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  profile: string | Profiles;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type Canteens = {
   alias?: string | null;
   building?: string | Buildings | null;
@@ -483,7 +501,6 @@ export type ChatsParticipants = {
 
 export type CollectibleEventParticipants = {
   collectible_event?: string | CollectibleEvents | null;
-  data?: any | null;
   date_created?: string | null;
   date_updated?: string | null;
   email?: string | null;
@@ -575,7 +592,9 @@ export type CollectionsDatesLastUpdate = {
 
 export type Devices = {
   alias?: string | null;
+  app_version?: string | null;
   brand?: string | null;
+  custom_data?: unknown | null;
   date_created?: string | null;
   date_updated?: string | null;
   display_fontscale?: number | null;
@@ -1517,6 +1536,19 @@ export type FormsTranslations = {
   translation_settings: string;
 };
 
+export type Friendships = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  friendship_status?: string | null;
+  id: string;
+  receiver_profiles_id?: string | Profiles | null;
+  requester_profiles_id?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type Languages = {
   code: string;
   direction?: string | null;
@@ -1679,7 +1711,9 @@ export type PopupEvents = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   send_notification?: boolean | null;
+  show_app_rating_button?: boolean | null;
   show_on_android?: boolean | null;
+  show_on_app_version?: string | null;
   show_on_ios?: boolean | null;
   show_on_web?: boolean | null;
   sort?: number | null;
@@ -1720,6 +1754,8 @@ export type Profiles = {
   date_updated?: string | null;
   devices: any[] | Devices[];
   foods_feedbacks: any[] | FoodsFeedbacks[];
+  friendships_received: any[] | Friendships[];
+  friendships_requested: any[] | Friendships[];
   id: string;
   language?: string | Languages | null;
   markings: any[] | ProfilesMarkings[];
@@ -1950,6 +1986,7 @@ export type CustomDirectusTypes = {
   canteen_food_feedback_report_schedules: CanteenFoodFeedbackReportSchedules[];
   canteen_food_feedback_report_schedules_canteens: CanteenFoodFeedbackReportSchedulesCanteens[];
   canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
+  canteen_visits: CanteenVisits[];
   canteens: Canteens[];
   canteens_feedbacks_labels: CanteensFeedbacksLabels[];
   canteens_feedbacks_labels_entries: CanteensFeedbacksLabelsEntries[];
@@ -2028,6 +2065,7 @@ export type CustomDirectusTypes = {
   form_submissions: FormSubmissions[];
   forms: Forms[];
   forms_translations: FormsTranslations[];
+  friendships: Friendships[];
   languages: Languages[];
   mails: Mails[];
   mails_files: MailsFiles[];

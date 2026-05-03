@@ -14,7 +14,8 @@ import appElementsReducer from './appElementsReducer';
 import lastUpdatedReducer from './lastUpdatedReducer';
 import popupEventsHashReducer from './popupEventsHashReducer';
 import chatsReducer from './chatsReducer';
-import { ApartmentsState, AppElementState, AuthState, CampusState, CanteensState, ChatsState, CollectibleEventsState, FoodAttributesState, FoodState, FormState, LastUpdatedState, ManagementState, NewsState, PopupEventsHashState, SettingsState } from '../Types/stateTypes';
+import friendshipsReducer from './friendshipsReducer';
+import { ApartmentsState, AppElementState, AuthState, CampusState, CanteensState, ChatsState, CollectibleEventsState, FoodAttributesState, FoodState, FormState, FriendshipsState, LastUpdatedState, ManagementState, NewsState, PopupEventsHashState, SettingsState } from '../Types/stateTypes';
 
 export const reducer = combineReducers({
 	state: (state = {}) => state,
@@ -33,6 +34,7 @@ export const reducer = combineReducers({
 	lastUpdated: lastUpdatedReducer,
 	popup_events_hash: popupEventsHashReducer,
 	chats: chatsReducer,
+	friendships: friendshipsReducer,
 });
 
 export type RootState = {
@@ -51,4 +53,5 @@ export type RootState = {
         settings: SettingsState;
         popup_events_hash: PopupEventsHashState;
         chats: ChatsState;
+        friendships: FriendshipsState;
 };

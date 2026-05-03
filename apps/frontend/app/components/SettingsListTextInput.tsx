@@ -1,12 +1,14 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, Platform, StyleSheet, View, TextInput } from 'react-native';
+import { Keyboard, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 
-import AppButton from '@/components/AppButton';
+import ProjectButton from '@/components/ProjectButton';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -86,18 +88,15 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	onSubmitEditing,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor, language } = useAppSelector((state: RootState) => state.settings);
-
-	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
 
 	return (
-		<InputComponent
+		<ResolvedTextInput
 			style={{
 				...styles.sheetInput,
 				color: theme.sheet.text,
 				backgroundColor: theme.sheet.inputBg,
 				borderColor: theme.sheet.inputBorder,
-				textAlign: language === 'ar' ? 'right' : 'left',
 				...(inputStyle ?? {}),
 			}}
 			autoFocus={autoFocus}
@@ -133,26 +132,20 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	allowSubmitWhenDisabled = false,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor, language } = useAppSelector((state) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
 		if (disableSave && !allowSubmitWhenDisabled) return;
-		if (Platform.OS !== 'web') {
-			Keyboard.dismiss();
-		}
+		Keyboard.dismiss();
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, multiline, onSave]);
 
 	const handlePressSave = useCallback(() => {
 		if (disableSave && !allowSubmitWhenDisabled) return;
-		if (Platform.OS !== 'web') {
-			Keyboard.dismiss();
-		}
+		Keyboard.dismiss();
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, onSave]);
-
-	const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 
 	const Content = (
 		<View
@@ -160,13 +153,12 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				...styles.sheetView,
 			}}
 		>
-			<InputComponent
+			<ResolvedTextInput
 				style={{
 					...styles.sheetInput,
 					color: theme.sheet.text,
 					backgroundColor: theme.sheet.inputBg,
 					borderColor: theme.sheet.inputBorder,
-					textAlign: language === 'ar' ? 'right' : 'left',
 					...(inputStyle ?? {}),
 				}}
 				autoFocus={autoFocus}
@@ -185,7 +177,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 			/>
 
 			<View style={styles.buttonContainer}>
-				<AppButton
+				<ProjectButton
 					text={saveLabel}
 					onPress={handlePressSave}
 				/>

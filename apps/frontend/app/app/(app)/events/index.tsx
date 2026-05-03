@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { SafeAreaView, ScrollView } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
@@ -22,8 +22,7 @@ const EventsScreen = () => {
 	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
     const kioskMode = useKioskMode();
-    const { popupEventsDict } = useAppSelector((state) => state.food);
-    const popupEvents = useMemo(() => Object.values(popupEventsDict || {}), [popupEventsDict]);
+    const { popupEvents } = useAppSelector((state) => state.food);
     const { primaryColor } = useAppSelector((state) => state.settings);
 	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -59,8 +58,8 @@ const EventsScreen = () => {
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<ScrollView contentContainerStyle={styles.container}>
-				<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="refresh" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.reset_seen_popup_events)} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={resetSeenEvents} groupPosition={'single'} />
-				{!kioskMode && popupEvents.map((event: any) => <SettingsList iconBgColor={primaryColor} key={event.id} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={event.translations ? getTitleFromTranslation(event.translations, language) : event.alias} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={() => openSheet(event)} groupPosition={'single'} />)}
+				<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="refresh" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.reset_seen_popup_events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={resetSeenEvents} groupPosition={'single'} />
+				{!kioskMode && popupEvents.map((event: any) => <SettingsList iconBgColor={primaryColor} key={event.id} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={event.translations ? getTitleFromTranslation(event.translations, language) : event.alias} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openSheet(event)} groupPosition={'single'} />)}
 			</ScrollView>
 		</SafeAreaView>
 	);

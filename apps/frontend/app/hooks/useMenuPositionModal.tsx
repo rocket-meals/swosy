@@ -31,19 +31,17 @@ const MenuPositionSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet })
 	}, [drawerPosition]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={drawers.map((drawer) => ({
-						id: drawer.id,
-						label: translate(drawer.name),
-						icon: <MaterialCommunityIcons name={drawer.icon as any} size={24} />,
-					}))}
-					selectedOption={selectedOption}
-					onSelect={(option) => updatePosition(option.id)}
-					iconBgColor={primaryColor}
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={drawers.map((drawer) => ({
+					id: drawer.id,
+					label: translate(drawer.name),
+					icon: <MaterialCommunityIcons name={drawer.icon as any} size={24} />,
+				}))}
+				selectedOption={selectedOption}
+				onSelect={(option) => updatePosition(option.id)}
+				iconBgColor={primaryColor}
+			/>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_menuposition} />
 		</View>
 	);
@@ -51,18 +49,15 @@ const MenuPositionSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet })
 
 export const useMenuPositionModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const { translate } = useLanguage();
 
 	const openMenuPositionModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.drawer_config_position),
-			titleTextAlign: isRtl ? 'right' : 'left',
-			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			onClose: closeScrollViewModal,
 			children: <MenuPositionSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, showScrollViewModal, translate]);
 
 	return { openMenuPositionModal };
 };

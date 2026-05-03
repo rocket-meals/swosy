@@ -21,8 +21,7 @@ interface StepConfig {
 const ExpoUpdateTest = () => {
         useSetPageTitle(TranslationKeys.EXPO_UPDATE_TEST);
         const { theme } = useTheme();
-        const { translate, language } = useLanguage();
-        const isArabic = language === 'ar';
+        const { translate } = useLanguage();
         const { isSmartPhone } = usePlatformHelper();
 
         const [logs, setLogs] = useState<string[]>([]);
@@ -127,19 +126,17 @@ const ExpoUpdateTest = () => {
                         }}
                 >
                         <View style={{ ...styles.content }}>
-                                <Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
-                                        {translate(TranslationKeys.EXPO_UPDATE_TEST)}
-                                </Text>
+                                <Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.EXPO_UPDATE_TEST)}</Text>
                                 <TouchableOpacity
-                                        style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg, flexDirection: isArabic ? 'row-reverse' : 'row' }}
+                                        style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
                                         onPress={runAllSteps}
                                         disabled={!!running}
                                 >
-                                        <View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+                                        <View style={styles.col}>
                                                 <MaterialCommunityIcons name="playlist-check" color={theme.screen.icon} size={24} />
-                                                <Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.RUN_ALL_STEPS)}</Text>
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.RUN_ALL_STEPS)}</Text>
                                         </View>
-                                        <Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />
+                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
                                 </TouchableOpacity>
 
                                 <View style={styles.section}>
@@ -150,16 +147,15 @@ const ExpoUpdateTest = () => {
                                                                 ...styles.listItem,
                                                                 backgroundColor: theme.screen.iconBg,
                                                                 opacity: running && running !== step.key ? 0.6 : 1,
-                                                                flexDirection: isArabic ? 'row-reverse' : 'row',
                                                         }}
                                                         onPress={step.action}
                                                         disabled={!!running && running !== step.key}
                                                 >
-                                                        <View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+                                                        <View style={styles.col}>
                                                                 <MaterialCommunityIcons name={step.icon} color={theme.screen.icon} size={24} />
-                                                                <Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(step.key)}</Text>
+                                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(step.key)}</Text>
                                                         </View>
-                                                        <Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />
+                                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
                                                 </TouchableOpacity>
                                         ))}
                                 </View>
@@ -172,9 +168,9 @@ const ExpoUpdateTest = () => {
                                                 borderWidth: 1,
                                         }}
                                 >
-                                        <View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+                                        <View style={styles.col}>
                                                 <MaterialCommunityIcons name="bug" color={theme.screen.icon} size={20} />
-                                                <Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>
                                                         {translate(TranslationKeys.EXPO_UPDATE_LOGS)}
                                                 </Text>
                                         </View>

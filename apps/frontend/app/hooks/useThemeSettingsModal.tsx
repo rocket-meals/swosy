@@ -12,16 +12,13 @@ type ThemeSettingsModalOptions = {
 
 export const useThemeSettingsModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-        const { translate, language } = useLanguage();
-        const isRtl = language === 'ar';
+        const { translate } = useLanguage();
 
         const openThemeSettingsModal = useCallback(
                 ({ selectedTheme, onSelect }: ThemeSettingsModalOptions) => {
                         showScrollViewModal(
                                 {
                                         title: translate(TranslationKeys.color_scheme),
-                                        titleTextAlign: isRtl ? 'right' : 'left',
-                                        titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                         onClose: closeScrollViewModal,
                                         children: (
                                                 <ColorSchemeSheet
@@ -33,7 +30,7 @@ export const useThemeSettingsModal = () => {
                                 }
                         );
                 },
-                [closeScrollViewModal, isRtl, showScrollViewModal, translate]
+                [closeScrollViewModal, showScrollViewModal, translate]
         );
 
         return { openThemeSettingsModal };

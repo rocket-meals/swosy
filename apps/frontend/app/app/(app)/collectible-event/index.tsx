@@ -27,7 +27,27 @@ import {
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
-import AppButton from '@/components/AppButton';
+import useCollectibleEventCongratulationsModal from '@/hooks/useCollectibleEventCongratulationsModal';
+import useDebugMode from '@/hooks/useDebugMode';
+
+const DEBUG_COLLECTIBLE_EVENT_ID = 'debug-event';
+
+const DEBUG_COLLECTIBLE_EVENT: DatabaseTypes.CollectibleEvents = {
+        id: DEBUG_COLLECTIBLE_EVENT_ID,
+        alias: 'Debug Event',
+        status: 'published',
+        date_start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        date_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        collectable_at: '{}',
+        collectible_item_settings: '{}',
+        collectible_settings: '{}',
+        date_settings: '{}',
+        monitor_settings: '{}',
+        points_settings: '{}',
+        translations: [],
+        participants: [],
+        ...Object.fromEntries(COLLECTABLE_AT_FIELDS.slice(0, 12).map(key => [key, true])),
+};
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -35,6 +55,8 @@ type DebugSectionProps = {
         buttonColor: string;
         resetCurrentCollectibles: () => void;
         resetAllParticipations: () => void;
+        simulateAllFound: () => void;
+        simulateNextFound: () => void;
         nextCollectibleKey?: any;
         debugSpotLabel: string;
 };
@@ -62,33 +84,72 @@ const formatCollectibleLabel = (key: string) =>
                 .join(' ');
 
 const DebugSection: React.FC<DebugSectionProps> = ({
-        activeCollectibleEvent,
-        theme,
-        buttonColor,
-        resetCurrentCollectibles,
-        resetAllParticipations,
-        nextCollectibleKey,
-        debugSpotLabel,
-}) => {
+                                                           activeCollectibleEvent,
+                                                           theme,
+                                                           buttonColor,
+                                                           resetCurrentCollectibles,
+                                                           resetAllParticipations,
+                                                           simulateAllFound,
+                                                           simulateNextFound,
+                                                           nextCollectibleKey,
+                                                           debugSpotLabel,
+                                                   }) => {
         return (
             <View style={{ marginTop: 16 }}>
                     <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
                     <View style={{ marginTop: 12, gap: 8 }}>
-                            <AppButton
-                                text="Reset current event found collectible"
-                                onPress={resetCurrentCollectibles}
-                                style={{ ...styles.button, backgroundColor: buttonColor, opacity: 0.9, marginVertical: 0 }}
-                                textStyle={{ ...styles.buttonText, color: theme.dark }}
-                                usePlainText
-                            />
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: buttonColor,
+                                        opacity: 0.9,
+                                }}
+                                onPress={simulateAllFound}
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Simulate all collectibles found
+                                    </Text>
+                            </TouchableOpacity>
 
-                            <AppButton
-                                text="Reset all event participations"
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: buttonColor,
+                                        opacity: nextCollectibleKey ? 0.9 : 0.4,
+                                }}
+                                disabled={!nextCollectibleKey}
+                                onPress={simulateNextFound}
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Simulate next collectible found
+                                    </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: buttonColor,
+                                        opacity: 0.9,
+                                }}
+                                onPress={resetCurrentCollectibles}
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Reset current event found collectible
+                                    </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                        ...styles.button,
+                                        backgroundColor: theme.accent,
+                                        opacity: 0.9,
+                                }}
                                 onPress={resetAllParticipations}
-                                style={{ ...styles.button, backgroundColor: theme.accent, opacity: 0.9, marginVertical: 0 }}
-                                textStyle={{ ...styles.buttonText, color: theme.dark }}
-                                usePlainText
-                            />
+                            >
+                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                            Reset all event participations
+                                    </Text>
+                            </TouchableOpacity>
                     </View>
 
                     {nextCollectibleKey ? (
@@ -145,12 +206,17 @@ const CollectibleEventScreen = () => {
         const { profile, loggedIn } = useAppSelector((state) => state.authReducer);
         const { primaryColor } = useAppSelector((state) => state.settings);
         const buttonColor = primaryColor || theme.primary;
-        const { activeCollectibleEvent } = useActiveCollectibleEvent();
+        const { activeCollectibleEvent: realCollectibleEvent } = useActiveCollectibleEvent();
+        const debugMode = useDebugMode();
+        const activeCollectibleEvent = (debugMode && !realCollectibleEvent ? DEBUG_COLLECTIBLE_EVENT : realCollectibleEvent) ?? null;
+        const isDebugEvent = activeCollectibleEvent?.id === DEBUG_COLLECTIBLE_EVENT_ID;
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
         const { collectedCount, collectibleDict } = useCollectibleDict(activeCollectibleEvent?.id);
         const [debugLogs, setDebugLogs] = useState<string[]>([]);
         const previousCollectedCountRef = useRef<number | null>(null);
         const previousEventIdRef = useRef<string | number | null>(null);
+        const hasShownRateModalRef = useRef<string | number | null>(null);
+        const { openCongratulationsModal } = useCollectibleEventCongratulationsModal();
 
         const appendDebugLog = useCallback((message: string) => {
                 const timestamp = new Date().toLocaleTimeString();
@@ -296,8 +362,23 @@ const CollectibleEventScreen = () => {
                 previousCollectedCountRef.current = currentCount;
         }, [appendDebugLog, displayedCollectedCount]);
 
+        useEffect(() => {
+                const eventId = activeCollectibleEvent?.id ?? null;
+                const currentCount = displayedCollectedCount ?? 0;
+
+                if (
+                        eventId &&
+                        maxCollectibleKeys > 0 &&
+                        currentCount >= maxCollectibleKeys &&
+                        hasShownRateModalRef.current !== eventId
+                ) {
+                        hasShownRateModalRef.current = eventId;
+                        openCongratulationsModal();
+                }
+        }, [activeCollectibleEvent?.id, displayedCollectedCount, maxCollectibleKeys, openCongratulationsModal]);
+
         const loadParticipation = useCallback(async () => {
-                if (!activeCollectibleEvent?.id || !profile?.id) {
+                if (!activeCollectibleEvent?.id || !profile?.id || isDebugEvent) {
                         setParticipation(null);
                         setEmail('');
                         setPhoneNumber('');
@@ -328,7 +409,7 @@ const CollectibleEventScreen = () => {
                 } finally {
                         setIsLoading(false);
                 }
-        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, isDebugEvent, participantsHelper, profile?.id, toast, translate]);
 
         useEffect(() => {
                 loadParticipation();
@@ -349,12 +430,12 @@ const CollectibleEventScreen = () => {
                         return;
                 }
 
-                const pointsToSave = displayedCollectedCount ?? 0;
+                const pointsToSave = displayedCollectedCount;
 
                 setIsSaving(true);
                 try {
                 const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                        points: String(pointsToSave),
+                        points: pointsToSave,
                         email: email?.trim() || null,
                         phone_number: phoneNumber?.trim() || null,
                         data: collectibleDict,
@@ -409,8 +490,8 @@ const CollectibleEventScreen = () => {
                                 );
 
                                 if (existing?.id) {
-                                        await participantsHelper.updateItem(existing.id, { points: '0', data: {} });
-                                        setParticipation(prev => (prev ? { ...prev, points: '0', data: {} } : prev));
+                                        await participantsHelper.updateItem(existing.id, { points: 0, data: {} });
+                                        setParticipation(prev => (prev ? { ...prev, points: 0, data: {} } : prev));
                                         toast(translate(TranslationKeys.reset), 'success');
                                 }
                         } catch (error) {
@@ -438,6 +519,35 @@ const CollectibleEventScreen = () => {
                         }
                 }
         }, [appendDebugLog, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+
+        const simulateAllFound = useCallback(() => {
+                if (!activeCollectibleEvent?.id || activeCollectibleKeys.length === 0) {
+                        return;
+                }
+
+                const allFoundData = activeCollectibleKeys.reduce<Record<string, boolean>>((acc, key) => {
+                        acc[key] = true;
+                        return acc;
+                }, {});
+
+                dispatch({
+                        type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                        payload: { eventId: activeCollectibleEvent.id, data: allFoundData },
+                });
+                appendDebugLog('Simulated all collectibles as found');
+        }, [activeCollectibleEvent?.id, activeCollectibleKeys, appendDebugLog, dispatch]);
+
+        const simulateNextFound = useCallback(() => {
+                if (!activeCollectibleEvent?.id || !nextCollectibleKey) {
+                        return;
+                }
+
+                dispatch({
+                        type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                        payload: { eventId: activeCollectibleEvent.id, data: { [nextCollectibleKey]: true } },
+                });
+                appendDebugLog(`Simulated collectible found: ${nextCollectibleKey}`);
+        }, [activeCollectibleEvent?.id, nextCollectibleKey, appendDebugLog, dispatch]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
@@ -502,7 +612,6 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
-                                                    textAlign: language === 'ar' ? 'right' : 'left',
                                             }}
                                             value={email}
                                             onChangeText={setEmail}
@@ -521,7 +630,6 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
-                                                    textAlign: language === 'ar' ? 'right' : 'left',
                                             }}
                                             value={phoneNumber}
                                             onChangeText={setPhoneNumber}
@@ -534,14 +642,21 @@ const CollectibleEventScreen = () => {
                                                 {translate(TranslationKeys.collectible_event_data_notice)}
                                         </Text>
 
-                                        <AppButton
-                                            text={isSaving ? translate(TranslationKeys.loading) : translate(TranslationKeys.save)}
-                                            onPress={handleSave}
+                                        <TouchableOpacity
+                                            style={{
+                                                    ...styles.button,
+                                                    backgroundColor: buttonColor,
+                                                    opacity: isSaving ? 0.6 : 1,
+                                            }}
                                             disabled={isSaving}
-                                            style={{ ...styles.button, backgroundColor: buttonColor, opacity: isSaving ? 0.6 : 1, marginVertical: 0 }}
-                                            textStyle={{ ...styles.buttonText, color: theme.dark }}
-                                            usePlainText
-                                        />
+                                            onPress={handleSave}
+                                        >
+                                                <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                        {isSaving
+                                                            ? translate(TranslationKeys.loading)
+                                                            : translate(TranslationKeys.save)}
+                                                </Text>
+                                        </TouchableOpacity>
                                 </View>
                             ) : null}
 
@@ -601,6 +716,8 @@ const CollectibleEventScreen = () => {
                                         buttonColor={buttonColor}
                                         resetAllParticipations={resetAllParticipations}
                                         resetCurrentCollectibles={resetCurrentCollectibles}
+                                        simulateAllFound={simulateAllFound}
+                                        simulateNextFound={simulateNextFound}
                                         theme={theme}
                                         nextCollectibleKey={nextCollectibleKey}
                                         debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}

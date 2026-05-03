@@ -30,7 +30,7 @@ const EmailInput = ({
 	suffix: string | null | undefined;
 }) => {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 	const flag = !suffix && !prefix;
 
 	const validateEmail = (text: string) => {
@@ -69,7 +69,6 @@ const EmailInput = ({
 								width: isWeb ? '90%' : '80%',
 							},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}

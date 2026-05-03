@@ -12,14 +12,12 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
-import AppButton from '@/components/AppButton';
 
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector(state => state.settings);
-	const isArabic = language === 'ar';
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { title, content } = getNewsTranslationByLanguageCode(news?.translations, language);
 	const news_area_color = appSettings?.news_area_color ? appSettings?.news_area_color : primaryColor;
@@ -97,9 +95,6 @@ const NewsItem: React.FC<any> = ({ news }) => {
 								...styles.newsHeading,
 								color: theme.screen.text,
 								width: screenWidth > 768 ? '80%' : '100%',
-								textAlign: isArabic ? 'right' : 'left',
-								writingDirection: isArabic ? 'rtl' : 'ltr',
-								marginBottom: isArabic ? 12 : undefined,
 							}}
 						>
 							{title}
@@ -115,16 +110,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 							{formattedDate}
 						</Text>
 					</View>
-					<Text
-						style={{
-							...styles.newsBody,
-							color: theme.screen.text,
-							textAlign: isArabic ? 'right' : 'left',
-							writingDirection: isArabic ? 'rtl' : 'ltr',
-						}}
-					>
-						{content}
-					</Text>
+					<Text style={{ ...styles.newsBody, color: theme.screen.text }}>{content}</Text>
 				</View>
 				<View
 					style={{
@@ -135,21 +121,18 @@ const NewsItem: React.FC<any> = ({ news }) => {
 					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
-							<AppButton
+							<TouchableOpacity
 								{...triggerProps}
-								variant="ghost"
-								usePlainText
-								text={translate(TranslationKeys.read_more)}
-								onPress={handleNewsDetails}
 								style={{
 									...styles.readMoreButton,
 									backgroundColor: news_area_color,
 									width: screenWidth > 768 ? 210 : '100%',
-									marginVertical: 0,
 								}}
-								textStyle={{ ...styles.readMore, color: contrastColor }}
-								iconRight={<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />}
-							/>
+								onPress={handleNewsDetails}
+							>
+								<Text style={{ ...styles.readMore, color: contrastColor }}>{translate(TranslationKeys.read_more)}</Text>
+								<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />
+							</TouchableOpacity>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

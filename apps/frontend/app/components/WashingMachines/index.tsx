@@ -8,17 +8,15 @@ import { differenceInSeconds, format, isAfter, isBefore } from 'date-fns';
 import washingmachine from '@/assets/animations/washingmachine/washingmachine.json';
 import washingmachineEmpty from '@/assets/animations/washingmachine/washingmachineEmpty.json';
 import { useAppSelector } from '@/redux/hooks';
-import type LottieView from 'lottie-react-native';
+import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 import { RootState } from '@/redux/reducer';
-import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
-	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const apartmentsHelper = new ApartmentsHelper();
 	const [washingMachines, setWashingMachines] = useState<DatabaseTypes.Washingmachines[] | any[]>();
@@ -150,7 +148,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.washing_machines)}</Text>
+			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.washing_machines)}</Text>
 			<View style={styles.washingMachines}>
 				{loading ? (
 					<View
@@ -172,7 +170,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 							const animationSource = isStatusUnknown || isWashingFinished ? washingmachineEmpty : washingmachine;
 							return (
-								<View style={{ ...styles.card, flexDirection: isRtl ? 'row-reverse' : 'row' }} key={item?.id}>
+								<View style={{ ...styles.card }} key={item?.id}>
 									<View
 										style={{
 											width: 150,
@@ -181,22 +179,14 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 											alignItems: 'center',
 										}}
 									>
-										<SafeLottieView
-											source={replaceLottieColors(animationSource, primaryColor)}
-											autoPlay={autoPlay ?? false}
-											loop={!isWashingFinished}
-											resizeMode="contain"
-											style={Platform.OS === 'web' ? { width: 150, height: 150 } : { width: '100%', height: '100%' }}
-										/>
+										<LottieView source={replaceLottieColors(animationSource, primaryColor)} autoPlay={autoPlay ?? false} loop={!isWashingFinished} resizeMode="contain" style={{ width: '100%', height: '100%' }} />
 									</View>
-									<View style={{ ...styles.details, alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
-										<Text style={{ ...styles.title, color: theme.screen.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' }}>{item?.alias}</Text>
+									<View style={styles.details}>
+										<Text style={{ ...styles.title, color: theme.screen.text }}>{item?.alias}</Text>
 										<Text
 											style={{
 												...styles.description,
 												color: theme.screen.text,
-												textAlign: isRtl ? 'right' : 'left',
-												writingDirection: isRtl ? 'rtl' : 'ltr',
 											}}
 										>
 											{getStatusText(item?.date_finished)}

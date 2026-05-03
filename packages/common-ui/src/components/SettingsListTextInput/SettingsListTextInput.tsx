@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Keyboard,
+	Platform,
 	StyleSheet,
+	TextInput,
 	TouchableOpacity,
 	Text,
 	View,
 } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { Platform, TextInput } from 'react-native';
-const InputComponent = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -136,7 +138,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 
 	const content = (
 		<View style={styles.sheetView}>
-			<InputComponent
+			<ResolvedTextInput
 				style={[
 					styles.sheetInput,
 					{

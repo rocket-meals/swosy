@@ -1,0 +1,25 @@
+{
+  "collection": "friendships",
+  "field": "requester_profiles_id",
+  "related_collection": "profiles",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "friendships",
+    "many_field": "requester_profiles_id",
+    "one_allowed_collections": null,
+    "one_collection": "profiles",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": "friendships_requested",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "friendships",
+    "column": "requester_profiles_id",
+    "foreign_key_table": "profiles",
+    "foreign_key_column": "id",
+    "constraint_name": "friendships_requester_profiles_id_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  }
+}

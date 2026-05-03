@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -21,6 +21,7 @@ import useToast from '@/hooks/useToast';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
 import { TranslationKeys } from '@/locales/keys';
 import ApartmentItem from '@/components/ApartmentItem/ApartmentItem';
 import DistanceModal from '@/components/DistanceModal';
@@ -31,8 +32,8 @@ import { addDistanceToApartments, getSortedApartments } from './utils';
 import HousingHeader from './components/HousingHeader';
 import HousingListHeader from './components/HousingListHeader';
 import HousingListEmpty from './components/HousingListEmpty';
+import CardDimensionHelper, { MIN_CARD_WIDTH } from '@/helper/CardDimensionHelper';
 
-const MIN_CARD_WIDTH = 280;
 const apartmentsHelper = new ApartmentsHelper();
 const buildingsHelper = new BuildingsHelper();
 
@@ -72,6 +73,7 @@ const Index: React.FC = () => {
 	// Helpers
 	const { openHousingSortingModal } = useHousingSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
+	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
 	const housingAreaColor = housingAreaColorFromSettings
 		? housingAreaColorFromSettings
@@ -210,34 +212,50 @@ const Index: React.FC = () => {
 		return getSortedApartments(apartmentsWithDistance, apartmentsSortBy as any);
 	}, [apartmentsWithDistance, apartmentsSortBy]);
 
+	// Lift last-opened buildings to the top only for INTELLIGENT and LAST_OPENED sort modes
+	const sortedWithLastOpened = useMemo(() => {
+		if (!shouldApplyLastOpenedBoost(apartmentsSortBy as any) || !buildingsLastOpenedIds || buildingsLastOpenedIds.length === 0) return sortedApartments;
+		const lastOpenedSet = new Set(buildingsLastOpenedIds);
+		// Build a Map for O(1) lookup by ID (apartment.id is building ID after data merge)
+		const apartmentById = new Map(sortedApartments.map((a: any) => [a.id ?? '', a]));
+		// Preserve the order from buildingsLastOpenedIds (most recent first)
+		const lastOpenedItems = buildingsLastOpenedIds
+			.map(id => apartmentById.get(id))
+			.filter((a): a is DatabaseTypes.Apartments => a !== undefined);
+		const otherItems = sortedApartments.filter((a: any) => !lastOpenedSet.has(a.id ?? ''));
+		return [...lastOpenedItems, ...otherItems];
+	}, [sortedApartments, buildingsLastOpenedIds, apartmentsSortBy]);
+
 	const visibleApartments = useMemo(() => {
-		if (!query || query.trim() === '') return sortedApartments;
+		if (!query || query.trim() === '') return sortedWithLastOpened;
 		const q = query.toLowerCase().trim();
-		return sortedApartments.filter((apartment: any) =>
+		return sortedWithLastOpened.filter((apartment: any) =>
 			(apartment?.alias ?? '').toLowerCase().includes(q)
 		);
-	}, [sortedApartments, query]);
+	}, [sortedWithLastOpened, query]);
 
 	const numColumns = useMemo(() => {
-		if (amountColumnsForcard && amountColumnsForcard > 0) {
-			return amountColumnsForcard;
-		}
-		if (!listWidth) return 2;
-		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
+		return CardDimensionHelper.getGridNumColumns(listWidth || 0, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth]);
+
+	const itemGap = useMemo(() => {
+		return CardDimensionHelper.getItemGap(screenWidth);
+	}, [screenWidth]);
 
 	const cardWidth = useMemo(() => {
 		if (!listWidth) return MIN_CARD_WIDTH;
-		const availableWidth = listWidth - 10;
-		const itemTotalMargin = 20;
-		return (availableWidth / numColumns) - itemTotalMargin;
-	}, [listWidth, numColumns]);
+		return CardDimensionHelper.getGridCardWidth(listWidth, numColumns, itemGap);
+	}, [listWidth, numColumns, itemGap]);
 
 	// Render Helpers
 	const renderItem = useCallback(
 		({ item }: { item: any }) => (
-			<View style={styles.itemContainer}>
+			<View style={{
+				flex: 1,
+				marginHorizontal: itemGap,
+				marginVertical: itemGap,
+				alignItems: 'center',
+			}}>
 				<ApartmentItem
 					apartment={item}
 					onEditImage={openImageManagementModal}
@@ -252,7 +270,7 @@ const Index: React.FC = () => {
 				/>
 			</View>
 		),
-		[openImageManagementModal, openDistanceSheet, cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]
+		[openImageManagementModal, openDistanceSheet, cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme, itemGap]
 	);
 
 	const keyExtractor = useCallback(
@@ -288,8 +306,9 @@ const Index: React.FC = () => {
 		theme,
 		translate,
 		isManagement,
-		selectedTheme
-	]), [cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]);
+		selectedTheme,
+		itemGap
+	]), [cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme, itemGap]);
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -297,7 +316,7 @@ const Index: React.FC = () => {
 				<HousingHeader
 					theme={theme}
 					translate={translate}
-					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
+					drawerPosition={drawerPosition}
 					openHousingSortingModal={openHousingSortingModal}
 				/>
 
@@ -325,7 +344,6 @@ const Index: React.FC = () => {
 							// @ts-ignore
 							estimatedItemSize={300}
 							contentContainerStyle={{
-								paddingHorizontal: 5,
 								paddingBottom: 20,
 							}}
 							ListHeaderComponent={ListHeader}

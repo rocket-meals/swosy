@@ -27,10 +27,9 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	...props
 }) => {
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const hasLocation = Number.isFinite(location?.latitude) && Number.isFinite(location?.longitude);
-	const isArabic = language === 'ar';
 
 	const handleOpenLocation = useCallback(() => {
 		if (!hasLocation || !location) {
@@ -46,7 +45,7 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	const resolvedLabel = label ?? translate(TranslationKeys.location);
 	const resolvedValue = value ?? translate(TranslationKeys.open_in_google_or_apple_maps);
 	const resolvedLeftIcon = leftIcon ?? <Ionicons name="location-sharp" size={24} color={theme.screen.icon} />;
-	const resolvedRightIcon = rightIcon ?? <Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={26} color={theme.screen.icon} />;
+	const resolvedRightIcon = rightIcon ?? <Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />;
 
 	return (
 		<SettingsList

@@ -22,8 +22,7 @@ const SORTING_OPTIONS: { id: FormSubmissionSortOption; label: TranslationKeys; i
 const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ closeSheet, selectedOption, setSelectedOption }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const updateSort = (option: FormSubmissionSortOption) => {
 		setSelectedOption(option);
@@ -56,7 +55,6 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 						key={option.id}
 						style={[
 							styles.actionItem,
-							isArabic ? { flexDirection: 'row-reverse' } : null,
 							selectedOption === option.id
 								? {
 										backgroundColor: primaryColor,
@@ -67,7 +65,7 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 						]}
 						onPress={() => updateSort(option.id)}
 					>
-						<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+						<View style={styles.col}>
 							{React.cloneElement(
 								option.icon,
 								selectedOption === option.id
@@ -79,7 +77,6 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 							<Text
 								style={[
 									styles.label,
-									isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null,
 									selectedOption === option.id
 										? {
 												color: theme.activeText,

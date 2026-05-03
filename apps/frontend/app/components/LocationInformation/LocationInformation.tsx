@@ -17,7 +17,6 @@ const LocationInformation: React.FC<any> = ({ campusDetails }) => {
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { appSettings, primaryColor } = useAppSelector(state => state.settings);
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
 	const campusAreaColor = appSettings?.campus_area_color ?? primaryColor;
 
 	const coordinates = campusDetails?.coordinates?.coordinates;
@@ -57,17 +56,7 @@ const LocationInformation: React.FC<any> = ({ campusDetails }) => {
 
 	return (
 		<View style={styles.container}>
-			<Text
-				style={{
-					...styles.heading,
-					color: theme.screen.text,
-					textAlign: isArabic ? 'right' : 'left',
-					writingDirection: isArabic ? 'rtl' : 'ltr',
-					alignSelf: isArabic ? 'flex-end' : 'flex-start',
-				}}
-			>
-				{translate(TranslationKeys.information)}
-			</Text>
+			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.information)}</Text>
 			<View style={{ gap: 0 }}>
 				{infoItems.map((item, index) => {
 					const groupPosition =

@@ -6,7 +6,6 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
-import { useAppSelector } from '@/redux/hooks';
 
 // Demo center: FAU Erlangen campus area
 const DEMO_CENTER = { lat: 49.5977, lng: 11.0036 };
@@ -104,7 +103,6 @@ type Props = {
 
 const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Props) => {
     useSetPageTitle('Map – Custom Images & Buildings');
-    const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
 
     const mapRef = useRef<MyMapHandle>(null);
     const mapReadyRef = useRef(false);
@@ -230,17 +228,17 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
 
             {/* Layer toggle buttons */}
             <View style={styles.layerToggles}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.layerTogglesContent, isArabic ? { flexDirection: 'row-reverse' } : null]}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.layerTogglesContent}>
                     {LAYER_TOGGLE_BUTTONS.map(({ group, label, emoji }) => {
                         const active = layerVisibility[group];
                         return (
                             <Pressable
                                 key={group}
-                                style={[styles.layerToggleButton, !active && styles.layerToggleButtonOff, isArabic ? { flexDirection: 'row-reverse' } : null]}
+                                style={[styles.layerToggleButton, !active && styles.layerToggleButtonOff]}
                                 onPress={() => handleLayerToggle(group)}
                             >
                                 <Text style={styles.layerToggleEmoji}>{emoji}</Text>
-                                <Text style={[styles.layerToggleLabel, !active && styles.layerToggleLabelOff, isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : null]}>{label}</Text>
+                                <Text style={[styles.layerToggleLabel, !active && styles.layerToggleLabelOff]}>{label}</Text>
                             </Pressable>
                         );
                     })}

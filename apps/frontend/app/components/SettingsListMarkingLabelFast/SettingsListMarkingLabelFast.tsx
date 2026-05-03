@@ -23,8 +23,8 @@ export interface SettingsListMarkingLabelFastProps extends MarkingLabelProps {}
 
 const makeSelectMarking = (markingId: string) =>
 	createSelector(
-		[(state: RootState) => state.food.markingsDict],
-		(markingsDict) => (markingsDict ? (markingsDict as any)[String(markingId)] : null)
+		[(state: RootState) => state.food.markings],
+		markings => markings?.find((m: any) => m.id === markingId)
 	);
 
 const makeSelectOwnMarking = (markingId: string) =>
@@ -43,7 +43,6 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
-	const isArabic = language === 'ar';
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
 
@@ -74,6 +73,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
 			}
 		} catch (error) {
+			console.error('Error fetching profiles:', error);
 		}
 	}, [profileHelper, user?.profile, dispatch]);
 
@@ -137,7 +137,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	);
 
 	const leftIconComponent = useMemo(() => (
-		<View style={[styles.leftIconWrapper, isArabic ? styles.leftIconWrapperReverse : undefined]}>
+		<View style={styles.leftIconWrapper}>
 			{handleMenuSheet && marking ? (
 				<Pressable onPress={() => openMarkingLabel(marking)}>
 					<MarkingIcon marking={marking} size={size} />
@@ -146,7 +146,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				<MarkingIcon marking={marking} size={size} />
 			) : null}
 		</View>
-	), [marking, size, handleMenuSheet, openMarkingLabel, isArabic]);
+	), [marking, size, handleMenuSheet, openMarkingLabel]);
 
 	const rightElement = useMemo(() => (
 		<View style={styles.rightRow}>
@@ -168,10 +168,8 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 		<SettingsList
 			leftIconComponent={leftIconComponent}
 			title={markingText || ''}
-			titleTextAlign={isArabic ? 'right' : undefined}
 			rightElement={rightElement}
 			groupPosition={groupPosition}
-			reverseLayout={isArabic}
 		/>
 	);
 };
@@ -181,10 +179,6 @@ export default React.memo(SettingsListMarkingLabelFast);
 const styles = StyleSheet.create({
 	leftIconWrapper: {
 		marginRight: 10,
-	},
-	leftIconWrapperReverse: {
-		marginRight: 0,
-		marginLeft: 10,
 	},
 	rightRow: {
 		flexDirection: 'row',

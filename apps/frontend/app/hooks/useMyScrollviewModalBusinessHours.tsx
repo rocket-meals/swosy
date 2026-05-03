@@ -6,17 +6,14 @@ import { TranslationKeys } from '@/locales/keys';
 
 export const useMyScrollviewModalBusinessHours = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const { translate } = useLanguage();
 
 	const openBusinessHoursModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.businesshours),
-			titleTextAlign: isRtl ? 'right' : 'left',
-			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <HoursSheetContent />,
 		});
-	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
+	}, [showScrollViewModal, translate]);
 
 	return { openBusinessHoursModal, closeBusinessHoursModal: closeScrollViewModal };
 };

@@ -5,7 +5,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
-import { useAppSelector } from '@/redux/hooks';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -155,7 +154,6 @@ type RunStatsContentProps = { stats: RunStats };
 
 const RunStatsContent: React.FC<RunStatsContentProps> = ({ stats }) => {
 	const { theme } = useTheme();
-	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
 
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ iconName: 'straighten', label: 'Entfernung', value: formatDistance(stats.distanceKm) },
@@ -178,23 +176,13 @@ const RunStatsContent: React.FC<RunStatsContentProps> = ({ stats }) => {
 					key={row.label}
 					style={[
 						statsStyles.row,
-						isArabic ? statsStyles.rowRtl : undefined,
 						{ borderBottomColor: theme.screen.text + '22' },
 						index === rows.length - 1 && statsStyles.rowLast,
 					]}
 				>
-					<MaterialIcons
-						name={row.iconName}
-						size={20}
-						color={theme.screen.icon}
-						style={[statsStyles.rowIcon, isArabic ? statsStyles.rowIconRtl : undefined]}
-					/>
-					<Text style={[statsStyles.rowLabel, { color: theme.screen.text }, isArabic ? statsStyles.rowLabelRtl : undefined]}>
-						{row.label}
-					</Text>
-					<Text style={[statsStyles.rowValue, { color: theme.screen.text }, isArabic ? statsStyles.rowValueRtl : undefined]}>
-						{row.value}
-					</Text>
+					<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={statsStyles.rowIcon} />
+					<Text style={[statsStyles.rowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[statsStyles.rowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
 		</View>
@@ -210,16 +198,10 @@ const statsStyles = StyleSheet.create({
 		paddingHorizontal: 16,
 		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
-	rowRtl: {
-		flexDirection: 'row-reverse',
-	},
 	rowLast: { borderBottomWidth: 0 },
 	rowIcon: { marginRight: 12 },
-	rowIconRtl: { marginRight: 0, marginLeft: 12 },
 	rowLabel: { flex: 1, fontSize: 15 },
-	rowLabelRtl: { textAlign: 'right', writingDirection: 'rtl' },
 	rowValue: { fontSize: 15, fontWeight: '600' },
-	rowValueRtl: { textAlign: 'left', writingDirection: 'ltr' },
 });
 
 // ─── Jogging Overlay ──────────────────────────────────────────────────────────
@@ -228,13 +210,12 @@ const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
 
 export type JoggingOverlayProps = {
-	mapRef: React.RefObject<MyMapHandle | null>;
+	mapRef: React.RefObject<MyMapHandle>;
 };
 
 const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
-	const isRtl = useAppSelector((state) => state.settings.language) === 'ar';
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -352,11 +333,9 @@ const JoggingOverlay: React.FC<JoggingOverlayProps> = ({ mapRef }) => {
 
 		show({
 			title: '🏃 Lauf Statistiken',
-			titleTextAlign: isRtl ? 'right' : 'left',
-			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <RunStatsContent stats={stats} />,
 		});
-	}, [isRtl, show]);
+	}, [show]);
 
 	return (
 		<>

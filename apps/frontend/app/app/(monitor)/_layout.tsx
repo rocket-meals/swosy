@@ -21,7 +21,7 @@ export default function MonitorLayout() {
 	const appSettingsHelper = new AppSettingsHelper();
 	const markingGroupsHelper = new MarkingGroupsHelper();
 	const [loading, setLoading] = useState(true);
-	const { markingsDict } = useAppSelector((state) => state.food);
+	const { markings } = useAppSelector((state) => state.food);
 	const { appSettings } = useAppSelector((state) => state.settings);
 
 	const getMarkings = async () => {
@@ -45,7 +45,7 @@ export default function MonitorLayout() {
 	const getAllData = async () => {
 		const tasks: Promise<any>[] = [];
 
-		if (!Object.keys(markingsDict || {}).length) tasks.push(getMarkings());
+		if (!markings?.length) tasks.push(getMarkings());
 		if (!Object.keys(appSettings || {}).length) tasks.push(getAppSettings());
 
 		if (tasks.length === 0) {
@@ -144,14 +144,7 @@ export default function MonitorLayout() {
 				name="labels/index"
 				options={{
 					title: 'Labels',
-					header: () => <CustomStackHeader label={translate(TranslationKeys.markings)} key={'labels'} />,
-				}}
-			/>
-			<Stack.Screen
-				name="rss-feed-config/index"
-				options={{
-					title: 'RSS Feed Config',
-					header: () => <CustomStackHeader label={`${translate(TranslationKeys.rss_feed)} Config`} key={'rss-feed-config'} />,
+					headerShown: false,
 				}}
 			/>
 		</Stack>

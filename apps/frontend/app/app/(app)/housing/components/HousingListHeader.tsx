@@ -56,7 +56,7 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 				]}
 			>
 				<TextInput
-					style={[styles.searchInput, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]}
+					style={[styles.searchInput, { color: theme.screen.text }]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={setQuery}

@@ -19,8 +19,6 @@ const useMyScrollviewModalApartmentAvailableFrom = () => {
 			show({
 				title: translate(TranslationKeys.free_rooms),
 				onClose: close,
-				titleTextAlign: language === 'ar' ? 'right' : 'left',
-				titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
 				children: (
 					<View>
 						<Text style={[styles.text, { color: theme.screen.text }]}>

@@ -24,3 +24,8 @@ export async function findEnvFile(): Promise<string | null> {
   const startDir = process.cwd();
   return findFileUpwards(startDir, '.env');
 }
+
+export async function findProjectRootFile(): Promise<string | null> {
+  const startDir = process.cwd();
+  return findFileUpwards(startDir, 'PROJECT_ROOT.md');
+}

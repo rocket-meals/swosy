@@ -24,3 +24,34 @@ describe('NumberHelper.formatNumber', () => {
     expect(result).toBe(`1.234,56${StringHelper.NONBREAKING_SPACE}m`);
   });
 });
+
+describe('NumberHelper.formatCompact', () => {
+  it('returns the number as string when below 1000', () => {
+    expect(NumberHelper.formatCompact(0)).toBe('0');
+    expect(NumberHelper.formatCompact(1)).toBe('1');
+    expect(NumberHelper.formatCompact(999)).toBe('999');
+  });
+
+  it('formats thousands with k suffix', () => {
+    expect(NumberHelper.formatCompact(1000)).toBe('1k');
+    expect(NumberHelper.formatCompact(1500)).toBe('1.5k');
+    expect(NumberHelper.formatCompact(9900)).toBe('9.9k');
+    expect(NumberHelper.formatCompact(999999)).toBe('999.9k');
+  });
+
+  it('truncates instead of rounding for k', () => {
+    expect(NumberHelper.formatCompact(1050)).toBe('1k');
+    expect(NumberHelper.formatCompact(1990)).toBe('1.9k');
+  });
+
+  it('formats millions with m suffix', () => {
+    expect(NumberHelper.formatCompact(1_000_000)).toBe('1m');
+    expect(NumberHelper.formatCompact(1_500_000)).toBe('1.5m');
+    expect(NumberHelper.formatCompact(9_900_000)).toBe('9.9m');
+  });
+
+  it('truncates instead of rounding for m', () => {
+    expect(NumberHelper.formatCompact(1_050_000)).toBe('1m');
+    expect(NumberHelper.formatCompact(1_990_000)).toBe('1.9m');
+  });
+});

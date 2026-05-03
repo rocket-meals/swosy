@@ -44,4 +44,20 @@ export class NumberHelper {
     const suffix = unit ? StringHelper.NONBREAKING_SPACE + unit : '';
     return formattedValue + suffix;
   }
+
+  // Formats a number with compact abbreviations: up to 999 shown as-is,
+  // then 1k, 1.5k, 1m, 1.5m, etc. (truncates, does not round).
+  static formatCompact(value: number): string {
+    if (value >= 1_000_000) {
+      const truncated = Math.floor(value / 100_000) / 10;
+      const formatted = truncated % 1 === 0 ? String(Math.floor(truncated)) : String(truncated);
+      return formatted + 'm';
+    }
+    if (value >= 1_000) {
+      const truncated = Math.floor(value / 100) / 10;
+      const formatted = truncated % 1 === 0 ? String(Math.floor(truncated)) : String(truncated);
+      return formatted + 'k';
+    }
+    return String(value);
+  }
 }

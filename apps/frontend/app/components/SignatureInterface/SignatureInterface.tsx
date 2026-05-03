@@ -7,10 +7,8 @@ import styles from './styles';
 import SignatureScreen from 'react-native-signature-canvas';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
-import * as FileSystem from 'expo-file-system';
 import { TranslationKeys } from '@/locales/keys';
 import { ServerAPI } from '@/redux/actions';
-import AppButton from '@/components/AppButton';
 
 // Import libraries based on platform
 const SignatureCanvas = Platform.OS === 'web' ? require('react-signature-canvas').default : require('react-native-signature-canvas').default;
@@ -82,30 +80,18 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		}
 	};
 
-	const handleSignature = async (signature: string) => {
+	const handleSignature = (signature: string) => {
 		if (isDisabled) return;
 
-		const base64Data = signature.replace(/^data:image\/\w+;base64,/, '');
-		const path = (FileSystem as any).cacheDirectory + `signature_${Date.now()}.png`;
+		// signature is already a base64 data URI ("data:image/png;base64,...")
+		// Store it directly, consistent with the web implementation.
+		const fileData = {
+			name: `signature_${Date.now()}.png`,
+			type: 'image/png',
+			image: signature,
+		};
 
-		try {
-			await (FileSystem as any).writeAsStringAsync(path, base64Data, {
-				encoding: 'base64',
-			});
-
-			console.log('Signature saved at:', path);
-
-			const fileData = {
-				name: `signature_${Date.now()}.png`,
-				type: 'image/png',
-				image: path,
-			};
-
-			console.log('Signature Captured:', fileData);
-			onChange(id, fileData, custom_type);
-		} catch (error) {
-			console.error('Error saving signature:', error);
-		}
+		onChange(id, fileData, custom_type);
 	};
 
 	useEffect(() => {
@@ -168,15 +154,10 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 			)}
 
 			<View style={{ ...styles.buttonContainer }}>
-				<AppButton
-					variant="ghost"
-					usePlainText
-					text={translate(TranslationKeys.clear)}
-					onPress={handleClear}
-					style={{ ...styles.button, backgroundColor: primaryColor, marginVertical: 0 }}
-					textStyle={{ ...styles.buttonText, color: theme.screen.text }}
-					iconLeft={<MaterialIcons name="clear" size={24} color={theme.screen.text} />}
-				/>
+				<TouchableOpacity style={{ ...styles.button, backgroundColor: primaryColor }} onPress={handleClear} activeOpacity={0.7}>
+					<MaterialIcons name="clear" size={24} color={theme.screen.text} />
+					<Text style={{ ...styles.buttonText, color: theme.screen.text }}>{translate(TranslationKeys.clear)}</Text>
+				</TouchableOpacity>
 			</View>
 			{folderHint != null && (
 				<Text style={{ ...styles.folderHint, color: theme.screen.text }}>

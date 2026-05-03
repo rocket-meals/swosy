@@ -20,8 +20,6 @@ export const lightTheme = {
 	},
 	drawer: {
 		link: '#000000',
-		logoBg: '#424242',
-		divider: '#696969',
 	},
 	login: {
 		background: '#E2E2E2',
@@ -101,8 +99,6 @@ export const darkTheme = {
 	},
 	drawer: {
 		link: '#ffffff',
-		logoBg: '#424242',
-		divider: '#696969',
 	},
 	login: {
 		background: '#222222',

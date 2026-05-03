@@ -1,4 +1,4 @@
-import { DateHelperTimezone } from 'repo-depkit-common';
+import { DateHelperTimezone, STUDI_FUTTER_APP_STORE_IDS, SWOSY_APP_STORE_IDS } from 'repo-depkit-common';
 
 export enum SyncForCustomerEnum {
   TEST = 'Test',
@@ -108,6 +108,22 @@ export class EnvVariableHelper {
     return this.getEnvVariable('ADMIN_PASSWORD');
   }
 
+  static getEnvFieldNameForAppStoreConnectPrivateKey(): string {
+    return 'APP_STORE_CONNECT_PRIVATE_KEY';
+  }
+
+  static getAppStoreConnectPrivateKey() {
+    return this.getEnvVariable(this.getEnvFieldNameForAppStoreConnectPrivateKey());
+  }
+
+  static getEnvFieldNameForGooglePlayServiceAccountKeyJson(): string {
+    return 'GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON';
+  }
+
+  static getGooglePlayServiceAccountKeyJson() {
+    return this.getEnvVariable(this.getEnvFieldNameForGooglePlayServiceAccountKeyJson());
+  }
+
   static getSyncForCustomer(): SyncForCustomerEnum | null {
     let value = this.getEnvVariable('SYNC_FOR_CUSTOMER');
     // check if value is a valid enum value
@@ -115,6 +131,28 @@ export class EnvVariableHelper {
       return value as SyncForCustomerEnum;
     } else {
       return null;
+    }
+  }
+
+  static getAppleAppId(): string | null {
+    switch (this.getSyncForCustomer()) {
+      case SyncForCustomerEnum.OSNABRUECK:
+        return SWOSY_APP_STORE_IDS.appleAppId ?? null;
+      case SyncForCustomerEnum.HANNOVER:
+        return STUDI_FUTTER_APP_STORE_IDS.appleAppId ?? null;
+      default:
+        return null;
+    }
+  }
+
+  static getGooglePlayPackageName(): string | null {
+    switch (this.getSyncForCustomer()) {
+      case SyncForCustomerEnum.OSNABRUECK:
+        return SWOSY_APP_STORE_IDS.googlePlayPackageName ?? null;
+      case SyncForCustomerEnum.HANNOVER:
+        return STUDI_FUTTER_APP_STORE_IDS.googlePlayPackageName ?? null;
+      default:
+        return null;
     }
   }
 }

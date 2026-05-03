@@ -997,7 +997,12 @@ export class ParseSchedule {
 
   async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject) {
     const amountOfRawMealOffers = foodofferListForParser.length;
-    await this.context.logger.appendLog('Create Food Offers');
+    const firstFoodoffer = foodofferListForParser[0];
+    const canteenInfo = firstFoodoffer?.canteen_external_identifier ?? 'unknown';
+    const dateInfo = firstFoodoffer?.date
+      ? DateHelper.foodofferDateTypeToString(firstFoodoffer.date).split('-').reverse().join('.')
+      : 'no date';
+    await this.context.logger.appendLog('Create Food Offers (' + canteenInfo + ', ' + dateInfo + ')');
 
     const dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null> = {};
     const dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null> = {};
@@ -1103,7 +1108,7 @@ export class ParseSchedule {
 
     const myFoodOffersService = await this.context.myDatabaseHelper.getFoodoffersHelper();
 
-    const myTimer = new MyTimer(SCHEDULE_NAME + ' - Create Food Offers');
+    const myTimer = new MyTimer(SCHEDULE_NAME + ' - Create Food Offers (' + canteenInfo + ', ' + dateInfo + ')');
     await this.context.logger.appendLog('Amount of food offers to create: ' + foodoffersToCreate.length)
     const myTimersEmitEvents = new MyTimers('disableEventEmit_TRUE', 'disableEventEmit_FALSE');
 
@@ -1135,7 +1140,7 @@ export class ParseSchedule {
         progress: batchIndex,
         total: amountOfBatches,
         prefix: null,
-        suffix: 'Total amount of food offers: ' + foodoffersToCreate.length,
+        suffix: 'Create Foodoffers (' + canteenInfo + ', ' + dateInfo + ', Offers: ' + foodoffersToCreate.length + ')',
       });
       batchIndex++;
     }

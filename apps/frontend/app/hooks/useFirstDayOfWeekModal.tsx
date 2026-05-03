@@ -28,24 +28,22 @@ const FirstDayOfWeekSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet 
 	}, [firstDayOfTheWeek]);
 
 	return (
-		<View style={{ width: '100%', gap: 12 }}>
-			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				<SettingsListSelectOption
-					options={days.map((day) => ({
-						id: day.id,
-						label: translate(day.name),
-					}))}
-					selectedOption={selectedOption}
-					onSelect={(option) => {
-						const selectedDay = days.find((day) => day.id === option.id);
-						if (selectedDay) {
-							updateFirstDay({ id: selectedDay.id, name: selectedDay.name });
-						}
-					}}
-					selectionColor={primaryColor}
-					noIconIndent
-				/>
-			</View>
+		<View style={{ width: '100%' }}>
+			<SettingsListSelectOption
+				options={days.map((day) => ({
+					id: day.id,
+					label: translate(day.name),
+				}))}
+				selectedOption={selectedOption}
+				onSelect={(option) => {
+					const selectedDay = days.find((day) => day.id === option.id);
+					if (selectedDay) {
+						updateFirstDay({ id: selectedDay.id, name: selectedDay.name });
+					}
+				}}
+				selectionColor={primaryColor}
+				noIconIndent
+			/>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_first_day_of_week} />
 		</View>
 	);
@@ -53,18 +51,15 @@ const FirstDayOfWeekSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet 
 
 export const useFirstDayOfWeekModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate, language } = useLanguage();
-	const isRtl = language === 'ar';
+	const { translate } = useLanguage();
 
 	const openFirstDayOfWeekModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.first_day_of_week),
 			onClose: closeScrollViewModal,
-			titleTextAlign: isRtl ? 'right' : 'left',
-			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <FirstDayOfWeekSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, showScrollViewModal, translate]);
 
 	return { openFirstDayOfWeekModal };
 };

@@ -1,6 +1,9 @@
 **/*.DS_Store
 .idea/**
 
+# Ignore the env files
+.env
+
 apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
 apps/backend/Backend/directusExtensions/.registry/
 
@@ -26,10 +29,8 @@ apps/frontend/app/eas.json
 apps/frontend/app/android
 
 # Ignore generated icon/splash files (created by scripts/generateIcons.sh)
-# These are regenerated during CI setup (setup-and-install action) before build/submit.
-# Source images live in apps/frontend/app/assets/images/customers/
-apps/frontend/app/assets/generated/*
-!apps/frontend/app/assets/generated/.keep
+# Per-customer subfolders are committed. Only the hash file is ignored.
+apps/frontend/app/assets/generated/*/icons_hash.json
 # Geonexia generated icon/splash files (created by scripts/generateIcons.sh)
 # Old location (now replaced by generated/ subfolder)
 apps/geonexia/frontend/assets/adaptive-icon.png
@@ -78,3 +79,6 @@ reports/sonarCloud/
 reports/data-clumps-doctor/
 
 tmp/
+appdrawer-screenshot.png
+apps/frontend/app/server.log
+apps/frontend/app/serveDist/

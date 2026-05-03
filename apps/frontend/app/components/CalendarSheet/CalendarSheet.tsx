@@ -25,7 +25,7 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [manualDate, setManualDate] = useState('');
     const [manualError, setManualError] = useState('');
-    const { primaryColor, appSettings, selectedTheme: mode, firstDayOfTheWeek, language } = useAppSelector((state) => state.settings);
+    const { primaryColor, appSettings, selectedTheme: mode, firstDayOfTheWeek } = useAppSelector((state) => state.settings);
     const { selectedDate } = useAppSelector((state) => state.food);
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
     const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
@@ -115,7 +115,6 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
                             backgroundColor: theme.sheet.inputBg,
                             borderColor: manualError ? theme.sheet.inputBorderInvalid : theme.sheet.inputBg,
                         },
-                        { textAlign: language === 'ar' ? 'right' : 'left' },
                     ]}
                     cursorColor={theme.screen.text}
                     placeholderTextColor={theme.sheet.placeholder}

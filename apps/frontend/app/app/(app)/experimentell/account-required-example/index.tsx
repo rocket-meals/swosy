@@ -6,8 +6,6 @@ import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
-import { useNavigation } from 'expo-router';
-import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
 // ─── Shimmer hook ────────────────────────────────────────────────────────────
 // Animates a stripe that flashes from left to right every few seconds.
@@ -94,21 +92,11 @@ const PulsingBorderWrapper = ({ children, primaryColor }: { children: React.Reac
 const AccountRequiredExample = () => {
 	useSetPageTitle(TranslationKeys.account_required_example);
 	const { theme } = useTheme();
-	const { primaryColor, language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
-	const navigation = useNavigation();
-
-	useEffect(() => {
-		navigation.setOptions({
-			header: () => <CustomStackHeader label="Account Required Example" />,
-		});
-	}, [navigation]);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const iconColor = theme.screen.icon;
 	const textColor = theme.screen.text;
 	const bg = theme.screen.background;
-	const textAlign = isArabic ? 'right' : 'left';
-	const writingDirection = isArabic ? 'rtl' : 'ltr';
 
 	return (
 		<ScrollView
@@ -116,23 +104,22 @@ const AccountRequiredExample = () => {
 			contentContainerStyle={[styles.contentContainer, { backgroundColor: bg }]}
 		>
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: textColor, textAlign, writingDirection }]}>Account Required - Beispiele</Text>
+				<Text style={[styles.heading, { color: textColor }]}>Account Required - Beispiele</Text>
 
 				{/* ── 1. Default isAccountRequired ─────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>1. Default isAccountRequired</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Standard-Anzeige wenn ein Account erforderlich ist: gestrichelter Rahmen und gedimmtes Schloss-Icon.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>1. Default isAccountRequired</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Standard-Anzeige wenn ein Account erforderlich ist: gestrichelter Rahmen und gedimmtes Schloss-Icon.</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="information-outline" size={24} color={iconColor} />}
 					label="Account-Funktion"
 					isAccountRequired
 					groupPosition="single"
-					titleTextAlign={isArabic ? 'left' : 'right'}
 				/>
 
 				{/* ── 2. Lock icon in the right slot ────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>2. Schloss-Icon rechts</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Das Schloss-Icon zeigt deutlich, dass ein Account benötigt wird.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>2. Schloss-Icon rechts</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Das Schloss-Icon zeigt deutlich, dass ein Account benötigt wird.</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="star-outline" size={24} color={iconColor} />}
@@ -143,8 +130,8 @@ const AccountRequiredExample = () => {
 				/>
 
 				{/* ── 3. Gold / Premium border ──────────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>3. Gold-Rahmen (Premium)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Ein goldener Rahmen signalisiert Premium-Inhalt.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>3. Gold-Rahmen (Premium)</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Ein goldener Rahmen signalisiert Premium-Inhalt.</Text>
 				<View style={styles.goldBorderWrapper}>
 					<SettingsList
 						iconBgColor="#F5C518"
@@ -158,23 +145,23 @@ const AccountRequiredExample = () => {
 				</View>
 
 				{/* ── 4. Dashed border ──────────────────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>4. Gestrichelter Rahmen</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Ein gestrichelter Rahmen deutet an, dass die Funktion noch "gesperrt" ist.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>4. Gestrichelter Rahmen</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Ein gestrichelter Rahmen deutet an, dass die Funktion noch "gesperrt" ist.</Text>
 				<View style={[styles.dashedBorderWrapper, { borderColor: primaryColor }]}>
 					<SettingsList
 						iconBgColor={primaryColor}
 						leftIcon={<MaterialCommunityIcons name="lock-outline" size={24} color={iconColor} />}
 						label="Gesperrte Aktion"
 						value="Login erforderlich"
-						rightIcon={<Entypo name={isArabic ? "chevron-small-left" : "chevron-small-right"} color={iconColor} size={24} />}
+						rightIcon={<Entypo name="chevron-small-right" color={iconColor} size={24} />}
 						handleFunction={() => {}}
 						groupPosition="single"
 					/>
 				</View>
 
 				{/* ── 5. Shimmer flash animation ────────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>5. Schimmer-Animation (Blitz-Streifen)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>5. Schimmer-Animation (Blitz-Streifen)</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>
 					Ein Lichtstreifen gleitet alle paar Sekunden von links nach rechts - ein subtiler Hinweis auf Premium.
 				</Text>
 				<View style={[styles.shimmerWrapper, { borderWidth: 2, borderColor: primaryColor }]}>
@@ -191,32 +178,32 @@ const AccountRequiredExample = () => {
 				</View>
 
 				{/* ── 6. Lock badge overlay ─────────────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>6. Schloss-Badge (Overlay)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Ein kleines Badge-Icon überlagert den Button in der Ecke.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>6. Schloss-Badge (Overlay)</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Ein kleines Badge-Icon überlagert den Button in der Ecke.</Text>
 				<View style={styles.lockBadgeContainer}>
 					<SettingsList
 						iconBgColor={primaryColor}
 						leftIcon={<MaterialCommunityIcons name="bell-outline" size={24} color={iconColor} />}
 						label="Benachrichtigungen"
-						rightIcon={<Entypo name={isArabic ? "chevron-small-left" : "chevron-small-right"} color={iconColor} size={24} />}
+						rightIcon={<Entypo name="chevron-small-right" color={iconColor} size={24} />}
 						handleFunction={() => {}}
 						groupPosition="single"
 					/>
-					<View style={[styles.lockBadge, { backgroundColor: '#F5C518', left: isArabic ? undefined : 0, right: isArabic ? 0 : undefined, top: isArabic ? -10 : undefined }]}>
+					<View style={[styles.lockBadge, { backgroundColor: '#F5C518' }]}>
 						<MaterialCommunityIcons name="lock" size={14} color="#fff" />
 					</View>
 				</View>
 
 				{/* ── 7. Dimmed / disabled overlay ─────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>7. Gedimmt (deaktiviert)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Der Button ist sichtbar, aber halbtransparent überlagert und nicht klickbar.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>7. Gedimmt (deaktiviert)</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Der Button ist sichtbar, aber halbtransparent überlagert und nicht klickbar.</Text>
 				<View style={styles.dimContent}>
 					<SettingsList
 						iconBgColor={primaryColor}
 						leftIcon={<MaterialCommunityIcons name="chart-bar" size={24} color={iconColor} />}
 						label="Statistiken"
 						value="Nur für angemeldete Nutzer"
-						rightIcon={<Entypo name={isArabic ? "chevron-small-left" : "chevron-small-right"} color={iconColor} size={24} />}
+						rightIcon={<Entypo name="chevron-small-right" color={iconColor} size={24} />}
 						groupPosition="single"
 					/>
 					<View style={[styles.dimOverlay, { backgroundColor: 'rgba(128,128,128,0.45)' }]}>
@@ -227,8 +214,8 @@ const AccountRequiredExample = () => {
 				</View>
 
 				{/* ── 8. Custom dark button with shimmer ───────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>8. Benutzerdefinierter Button (Hintergrund-Schimmer)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Ein komplett eigener Button mit einem Schimmer auf dem Hintergrund.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>8. Benutzerdefinierter Button (Hintergrund-Schimmer)</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Ein komplett eigener Button mit einem Schimmer auf dem Hintergrund.</Text>
 				<View style={[styles.shimmerWrapper, { borderWidth: 2, borderColor: '#F5C518' }]}>
 					<TouchableOpacity
 						activeOpacity={0.8}
@@ -236,7 +223,7 @@ const AccountRequiredExample = () => {
 						style={{
 							backgroundColor: '#1a1a2e',
 							borderRadius: 12,
-							flexDirection: isArabic ? 'row-reverse' : 'row',
+							flexDirection: 'row',
 							alignItems: 'center',
 							padding: 14,
 							gap: 12,
@@ -255,17 +242,17 @@ const AccountRequiredExample = () => {
 							<MaterialCommunityIcons name="crown" size={22} color="#1a1a2e" />
 						</View>
 						<View style={{ flex: 1 }}>
-							<Text style={{ color: '#F5C518', fontFamily: 'Poppins_700Bold', fontSize: 15, textAlign, writingDirection }}>Premium freischalten</Text>
-							<Text style={{ color: '#aaa', fontFamily: 'Poppins_400Regular', fontSize: 12, textAlign, writingDirection }}>Account erforderlich</Text>
+							<Text style={{ color: '#F5C518', fontFamily: 'Poppins_700Bold', fontSize: 15 }}>Premium freischalten</Text>
+							<Text style={{ color: '#aaa', fontFamily: 'Poppins_400Regular', fontSize: 12 }}>Account erforderlich</Text>
 						</View>
-						<MaterialCommunityIcons name={isArabic ? "chevron-left" : "chevron-right"} size={22} color="#F5C518" />
+						<MaterialCommunityIcons name="chevron-right" size={22} color="#F5C518" />
 					</TouchableOpacity>
 					<ShimmerOverlay />
 				</View>
 
 				{/* ── 9. Pulsing border animation ───────────────────────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor, textAlign, writingDirection }]}>9. Pulsierender Rahmen</Text>
-				<Text style={[styles.sectionDescription, { color: textColor, textAlign, writingDirection }]}>Der Rahmen pulsiert sanft, um Aufmerksamkeit zu erregen.</Text>
+				<Text style={[styles.sectionTitle, { color: textColor }]}>9. Pulsierender Rahmen</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Der Rahmen pulsiert sanft, um Aufmerksamkeit zu erregen.</Text>
 				<PulsingBorderWrapper primaryColor={primaryColor}>
 					<SettingsList
 						iconBgColor={primaryColor}

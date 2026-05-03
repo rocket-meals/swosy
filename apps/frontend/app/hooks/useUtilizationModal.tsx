@@ -7,16 +7,13 @@ import {DatabaseTypes} from 'repo-depkit-common';
 
 export const useUtilizationModal = () => {
         const {show: showScrollViewModal, close: closeScrollViewModal} = useMyScrollViewModal();
-        const {translate, language} = useLanguage();
-        const isRtl = language === 'ar';
+        const {translate} = useLanguage();
 
         const openUtilizationModal = useCallback(
                 (forDate: string, canteen: DatabaseTypes.Canteens | null) =>
                         showScrollViewModal(
                                 {
                                         title: translate(TranslationKeys.forecast),
-                                        titleTextAlign: isRtl ? 'right' : 'left',
-                                        titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                         onClose: closeScrollViewModal,
                                         children: (
                                                 <ForecastSheet
@@ -27,7 +24,7 @@ export const useUtilizationModal = () => {
                                 },
                                 {}
                         ),
-                [closeScrollViewModal, isRtl, showScrollViewModal, translate]
+                [closeScrollViewModal, showScrollViewModal, translate]
         );
 
         return {openUtilizationModal};

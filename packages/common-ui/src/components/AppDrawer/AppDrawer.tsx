@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Image, LayoutChangeEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { AppDrawerProps, DrawerItem } from './types';
@@ -14,10 +14,19 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 	activeKey,
 	primaryColor,
 	footerContent,
-	reverseItemLayout,
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const [iconMinWidth, setIconMinWidth] = useState(0);
+	const iconMinWidthRef = useRef(0);
+
+	const handleIconInnerLayout = (event: LayoutChangeEvent) => {
+		const { width } = event.nativeEvent.layout;
+		if (width > iconMinWidthRef.current) {
+			iconMinWidthRef.current = width;
+			setIconMinWidth(width);
+		}
+	};
 
 	const isActive = (key: string) => activeKey === key;
 
@@ -47,33 +56,23 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 		return (
 			<TouchableOpacity
 				key={item.key ?? index}
-				style={[
-					styles.menuItem,
-					reverseItemLayout ? styles.menuItemReverse : null,
-					{ backgroundColor: bgColor },
-				]}
+				style={[styles.menuItem, { backgroundColor: bgColor }]}
 				onPress={item.onPress}
 			>
-				<View style={[styles.menuIconWrapper, reverseItemLayout ? styles.menuIconWrapperReverse : null]}>
-					{item.renderIcon(active, iconColor)}
-					{item.hasUnread ? (
-						<View
-							style={[
-								styles.notificationDot,
-								{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
-							]}
-						/>
-					) : null}
+				<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
+					<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>
+						{item.renderIcon(active, iconColor)}
+						{item.hasUnread ? (
+							<View
+								style={[
+									styles.notificationDot,
+									{ backgroundColor: theme.accent, borderColor: theme.drawerBg },
+								]}
+							/>
+						) : null}
+					</View>
 				</View>
-				<Text
-					style={[
-						styles.menuLabel,
-						reverseItemLayout ? styles.menuLabelReverse : null,
-						{ color: textColor },
-					]}
-				>
-					{item.label}
-				</Text>
+				<Text style={[styles.menuLabel, { color: textColor }]}>{item.label}</Text>
 			</TouchableOpacity>
 		);
 	};
@@ -173,26 +172,23 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		marginBottom: 5,
 		width: '100%',
+		gap: 12,
 	},
-	menuItemReverse: {
-		flexDirection: 'row-reverse',
-		justifyContent: 'flex-start',
+	menuIconOuter: {
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
-	menuIconWrapper: {
-		marginRight: 12,
+	menuIconInner: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
 		position: 'relative',
-	},
-	menuIconWrapperReverse: {
-		marginRight: 0,
-		marginLeft: 12,
 	},
 	menuLabel: {
 		flex: 1,
 		fontSize: 16,
 		marginTop: 4,
-	},
-	menuLabelReverse: {
-		textAlign: 'right',
+		textAlign: 'left',
 	},
 	notificationDot: {
 		position: 'absolute',
@@ -215,5 +211,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexWrap: 'wrap',
 		marginTop: 10,
+		paddingHorizontal: 15,
 	},
 });

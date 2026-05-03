@@ -1,5 +1,5 @@
 import LabelHeader from '@/components/LabelHeader/LabelHeader';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, DimensionValue, Easing, ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
@@ -33,10 +33,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const rowHeight = 80;
-	const { markingsDict, foodCategoriesDict, foodOfferCategoriesDict } = useAppSelector((state) => state.food);
-	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
-	const localFoodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);
-	const localFoodOfferCategories = useMemo(() => Object.values(foodOfferCategoriesDict || {}), [foodOfferCategoriesDict]);
+	const { markings, foodCategories: localFoodCategories, foodOfferCategories: localFoodOfferCategories } = useAppSelector((state) => state.food);
 	const canteenHelper = new CanteenHelper();
 	const buildingsHelper = new BuildingsHelper();
 	const foodAttributesHelper = new FoodAttributesHelper();
@@ -51,8 +48,8 @@ const Index = () => {
 	const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
 	const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
 	const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
-	const { canteensDict } = useAppSelector((state) => state.canteenReducer);
-	const canteens = useMemo(() => Object.values(canteensDict || {}), [canteensDict]);
+	const [selectedAdditionalCanteen, setSelectedAdditionalCanteen] = useState<DatabaseTypes.Canteens | null>(null);
+	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { foodAttributesDict } = useAppSelector((state) => state.foodAttributes);
@@ -71,6 +68,7 @@ const Index = () => {
 	const [foodAttributesColumn, setFoodAttributesColumn] = useState<any>([]);
 	
 	const [foodAttributesDataFull, setFoodAttributesDataFull] = useState<any>(null);
+	const [mainFoodAttributes, setMainFoodAttributes] = useState<any>(null);
 	const [optionalFoodAttributes, setOptionalFoodAttributes] = useState<any>(null);
 
 	const foodsScrollRef = useRef<ScrollView>(null);
@@ -167,6 +165,14 @@ const Index = () => {
 				} else if (parsedData && typeof parsedData === 'object') {
 					attributeEntries = Object.values(parsedData);
 				}
+
+				// Deduplicate by attribute ID - keep only the first occurrence
+				const seenIds = new Set<string>();
+				attributeEntries = attributeEntries.filter(item => {
+					if (seenIds.has(item.id)) return false;
+					seenIds.add(item.id);
+					return true;
+				});
 
 				let attributeDataCopy: any[] = [];
 				if (foodAttributesDict && Object?.keys(foodAttributesDict)?.length > 0) {
@@ -288,6 +294,24 @@ const Index = () => {
 		fetchSelectedCanteen();
 	}, [canteens_id, canteens]);
 
+	const fetchAdditionalCanteen = useCallback(async () => {
+		if (!monitor_additional_canteens_id) return;
+		let canteensData: DatabaseTypes.Canteens[] = [];
+		if (!canteens || canteens.length === 0) {
+			canteensData = await getCanteensWithBuildings();
+		} else {
+			canteensData = canteens;
+		}
+		const foundCanteen = canteensData?.find((canteen: any) => canteen.id === monitor_additional_canteens_id);
+		if (foundCanteen) {
+			setSelectedAdditionalCanteen(foundCanteen);
+		}
+	}, [monitor_additional_canteens_id, canteens]);
+
+	useEffect(() => {
+		fetchAdditionalCanteen();
+	}, [fetchAdditionalCanteen]);
+
 	const filterFoodAttributes = (foodOffers: any) => {
 		if (!foodOffers || !foodAttributesDataFull) return {};
 		try {
@@ -305,19 +329,22 @@ const Index = () => {
 
 				// Initialize array with empty values for all possible attributes
 				const sortedValues = foodAttributesDataFull.map((attr: any) => ({
-					value: null, // or '-' if you prefer
+					value: null,
 					alias: attr.alias,
 					exists: false,
 				}));
 
 				// Fill in the actual values where they exist
+				// Deduplicate by food_attribute id - only use the first value per attribute
 				if (offer.attribute_values) {
+					const seenAttrIds = new Set<string>();
 					offer.attribute_values.forEach((attrValue: any) => {
 						const attrId = attrValue.food_attribute?.id;
-						if (attributeSortMap[attrId]) {
+						if (attrId && !seenAttrIds.has(attrId) && attributeSortMap[attrId]) {
+							seenAttrIds.add(attrId);
 							const position = attributeSortMap[attrId].index;
 							sortedValues[position] = {
-								value: attrValue, // or extract specific value if needed
+								value: attrValue,
 								alias: attributeSortMap[attrId].alias,
 								exists: true,
 							};
@@ -339,14 +366,16 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			if (foods) {
+				const filteredAttributes = filterFoodAttributes(foods);
+				setMainFoodAttributes(filteredAttributes);
+			}
 			if (optionalFoods) {
 				const filteredAttributes = filterFoodAttributes(optionalFoods);
 				setOptionalFoodAttributes(filteredAttributes);
 			}
-			return () => {
-				// setOptionalFoodAttributes(null);
-			};
-		}, [optionalFoods, foodAttributesDataFull])
+			return () => {};
+		}, [foods, optionalFoods, foodAttributesDataFull])
 	);
 
 	const sortFoodOffers = useCallback(
@@ -434,7 +463,9 @@ const Index = () => {
 
 			const newMarkings: any = {};
 			foodList.forEach((food: any) => {
-				const markingIds = food?.markings?.map((mark: any) => mark.markings_id) || [];
+				// Deduplicate marking IDs to prevent the same marking appearing twice
+				const markingIdsRaw = food?.markings?.map((mark: any) => mark.markings_id) || [];
+				const markingIds = [...new Set(markingIdsRaw)];
 				let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
 
 				// Sort the filtered markings using sortMarkingsByGroup
@@ -482,7 +513,7 @@ const Index = () => {
 	useEffect(() => {
 		if (foods?.length > 0) fetchFoodMarkingLabels(foods, setFoodMarkings);
 		if (optionalFoods?.length > 0) fetchFoodMarkingLabels(optionalFoods, setOptionalFoodMarkings);
-	}, [foods, optionalFoods]);
+	}, [foods, optionalFoods, fetchFoodMarkingLabels]);
 
 	useEffect(() => {
 		if (foods?.length > 0 && nextPageIntervalInSeconds) {
@@ -605,10 +636,10 @@ const Index = () => {
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.name + '%') as DimensionValue }]}>{translate(TranslationKeys.foodname)}</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.markings + '%') as DimensionValue }]}>{translate(TranslationKeys.markings)}</Text>
 						{foodAttributesColumn &&
-							foodAttributesColumn.map((column: any) => {
+							foodAttributesColumn.map((column: any, colIdx: number) => {
 								const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 								return (
-									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={column}>
+									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={`header-attr-${colIdx}`}>
 										{column}
 									</Text>
 								);
@@ -647,7 +678,7 @@ const Index = () => {
 									foods?.map((item: any, index) => {
 										return (
 											<View
-												key={index}
+												key={item.id || index}
 												style={[
 													styles.dataRow,
 													{
@@ -695,13 +726,13 @@ const Index = () => {
 															return <MarkingIcon key={idx} marking={marking} size={24} color={m.color} compact />;
 														})}
 												</View>
-												{filterFoodAttributes(foods)[item?.id] &&
-													filterFoodAttributes(foods)[item?.id]?.map((attr: any) => {
-														const attributeColumnWidth = (Number(columnPercentages.attributes) / filterFoodAttributes(foods)[item?.id].length).toFixed(2);
+												{mainFoodAttributes?.[item?.id] &&
+													mainFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
+														const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 														if (!attr?.value) {
 															return (
 																<Text
-																	key={`${item.id}`}
+																	key={`${item.id}-attr-${attrIdx}`}
 																	style={[
 																		styles.cell,
 																		{
@@ -720,7 +751,7 @@ const Index = () => {
 														if (number_value === undefined || number_value === null) {
 															return (
 																<Text
-																	key={`${item.id}`}
+																	key={`${item.id}-attr-${attrIdx}`}
 																	style={[
 																		styles.cell,
 																		{
@@ -740,7 +771,7 @@ const Index = () => {
 
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -768,8 +799,9 @@ const Index = () => {
 							</View>
 						</ScrollView>
 						{optionalFoods?.length > 0 && (
-							<View style={{ ...styles.row, backgroundColor: foods_area_color }}>
-								<Text style={{ ...styles.body, color: contrastColor }}>{`${translate(TranslationKeys.foods)}: ${optionalFoods?.length} / ${optionalFoods?.length}`}</Text>
+							<View style={[styles.rowSpaceBetween, { backgroundColor: foods_area_color }]}>
+								<Text style={[styles.body, { color: contrastColor }]}>{selectedAdditionalCanteen?.alias || ''}</Text>
+								<Text style={[styles.body, { color: contrastColor }]}>{`${translate(TranslationKeys.foods)}: ${optionalFoods?.length} / ${optionalFoods?.length}`}</Text>
 							</View>
 						)}
 						<ScrollView
@@ -786,7 +818,7 @@ const Index = () => {
 								{optionalFoods &&
 									optionalFoods?.map((item: any, index) => (
 										<View
-											key={index}
+											key={item.id || index}
 											style={[
 												styles.dataRow,
 												{
@@ -834,13 +866,13 @@ const Index = () => {
 														return <MarkingIcon key={idx} marking={marking} size={24} color={mark.color} compact />;
 													})}
 											</View>
-											{optionalFoodAttributes[item?.id] &&
-												optionalFoodAttributes[item?.id]?.map((attr: any) => {
-													const attributeColumnWidth = (Number(columnPercentages.attributes) / optionalFoodAttributes[item?.id].length).toFixed(2);
+											{optionalFoodAttributes?.[item?.id] &&
+												optionalFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
+													const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 													if (!attr?.value) {
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -859,7 +891,7 @@ const Index = () => {
 													if (number_value === undefined || number_value === null) {
 														return (
 															<Text
-																key={`${item.id}`}
+																key={`${item.id}-attr-${attrIdx}`}
 																style={[
 																	styles.cell,
 																	{
@@ -879,7 +911,7 @@ const Index = () => {
 
 													return (
 														<Text
-															key={`${item.id}`}
+															key={`${item.id}-attr-${attrIdx}`}
 															style={[
 																styles.cell,
 																{

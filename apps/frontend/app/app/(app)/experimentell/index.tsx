@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
-import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -13,12 +13,11 @@ import SettingsList from '@/components/SettingsList';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.experimentell);
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
     const { theme } = useTheme();
     const { buildingsDict } = useAppSelector((state) => state.canteenReducer);
     const { primaryColor } = useAppSelector((state) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
-	const isArabic = language === 'ar';
 
 	const buildingPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -35,7 +34,7 @@ const Index = () => {
 		{
 			key: 'edge-speech',
 			label: translate(TranslationKeys.edge_speech_test),
-			leftIcon: <MaterialIcons name="record-voice-over" size={24} color={theme.screen.icon} />,
+			leftIcon: <MaterialCommunityIcons name="text-to-speech" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/edge-speech'),
 		},
 		{
@@ -55,12 +54,6 @@ const Index = () => {
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/vertical-image-scroll'),
-		},
-		{
-			key: 'foodoffers-scroll',
-			label: translate(TranslationKeys.foodoffers_scroll),
-			leftIcon: <MaterialCommunityIcons name="food" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/foodoffers-scroll'),
 		},
 		{
 			key: 'date-helper-preview',
@@ -94,7 +87,7 @@ const Index = () => {
 		},
 		{
 			key: 'app-download',
-			label: translate(TranslationKeys.app_download),
+			label: translate(TranslationKeys.app_download_selection),
 			leftIcon: <MaterialCommunityIcons name="download" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/app-download'),
 		},
@@ -148,10 +141,10 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/account-required-example'),
 		},
 		{
-			key: 'eating-habits-performance',
-			label: translate(TranslationKeys.eating_habits_performance),
-			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/eating-habits-performance'),
+			key: 'avatars',
+			label: translate(TranslationKeys.avatars),
+			leftIcon: <MaterialCommunityIcons name="account-circle" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/avatars'),
 		},
 	];
 
@@ -164,9 +157,9 @@ const Index = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.experimentell)}</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.experimentell)}</Text>
 				{buildingPosition && (
-					<Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
+					<Text style={{ ...styles.body, color: theme.screen.text }}>
 						{translate(TranslationKeys.coordinates)}: {buildingPosition.lat}, {buildingPosition.lng}
 					</Text>
 				)}
@@ -174,17 +167,7 @@ const Index = () => {
 					const totalItems = listItems.length;
 					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
 
-					return (
-						<SettingsList
-							key={item.key}
-							iconBgColor={primaryColor}
-							leftIcon={item.leftIcon}
-							label={item.label}
-							rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
-							handleFunction={item.onPress}
-							groupPosition={groupPosition}
-						/>
-					);
+					return <SettingsList key={item.key} iconBgColor={primaryColor} leftIcon={item.leftIcon} label={item.label} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} handleFunction={item.onPress} groupPosition={groupPosition} />;
 				})}
 			</View>
 		</ScrollView>

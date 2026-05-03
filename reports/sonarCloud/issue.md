@@ -4,23 +4,27 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6835 | 46 |
+| 🔒 Security | 14 | 14 |
+| 🐛 Reliability | 6840 | 36 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16839 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16854 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (4/4)
+## 🔒 Security (14/14)
+
+- **inputs.previous-commit-sha is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/check-build-number/action.yml:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L34
 
 - **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
-  .github/actions/check-build-number/action.yml:22
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L22
+  .github/actions/check-build-number/action.yml:42
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L42
 
 - **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
-  .github/actions/check-build-number/action.yml:23
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L23
+  .github/actions/check-build-number/action.yml:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L43
 
 - **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/geonexia-expo-update/action.yml:184
@@ -30,7 +34,43 @@
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
 
-## 🐛 Reliability (46/6835)
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/score-tracker-expo-update/action.yml:184
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L184
+
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/score-tracker-expo-update/action.yml:184
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L184
+
+- **Review this potentially hard-coded password.**
+  apps/backend-sync/src/SyncDatabaseSchema.ts:45
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L45
+
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:234
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L234
+
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:237
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L237
+
+- **Change this code to not log user-controlled data.**
+  apps/backend/sync/importSchema.js:240
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L240
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L117
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:132
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L132
+
+- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:147
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
+
+## 🐛 Reliability (36/6840)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -55,6 +95,14 @@
 - **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
   apps/frontend/app/helper/SystemActionHelper.ts:6
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:92
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L92
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L117
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/activities/[id].tsx:187
@@ -167,52 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:243
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L243
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:261
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L261
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/h3core.js:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
-
-- **Remove this "===" check; it will always be false. Did you mean to use "=="?**
-  apps/geonexia/frontend/helpers/h3/h3core.js:785
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L785
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:188
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L188
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:191
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L191
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `~~`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `~~`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:200
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:217
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L217
-
-- **Use `Math.trunc` instead of `>> 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:219
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L219
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:312
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L312
 

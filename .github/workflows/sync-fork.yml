@@ -44,6 +44,7 @@ jobs:
           if [ "$LOCAL_COMMIT" != "$UPSTREAM_COMMIT" ]; then
             echo "Updates available from upstream"
             echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "local-commit=$LOCAL_COMMIT" >> $GITHUB_OUTPUT
           else
             echo "No updates available"
             echo "has-updates=false" >> $GITHUB_OUTPUT
@@ -77,7 +78,10 @@ jobs:
           GH_TOKEN: ${{ secrets.PRIVATE_ACCESS_TOKEN }}
         run: |
           echo "🚀 Triggering Combined CI workflow after successful sync..."
-          gh workflow run ci.yml --ref master
+          gh workflow run ci.yml \
+            --repo "${{ steps.check-repo.outputs.repository-name }}" \
+            --ref master \
+            -f previous_commit_sha="${{ steps.check-updates.outputs.local-commit }}"
           echo "✅ Combined CI workflow triggered!"
 
       - name: ⏭️ Skip Fork Sync - No Updates

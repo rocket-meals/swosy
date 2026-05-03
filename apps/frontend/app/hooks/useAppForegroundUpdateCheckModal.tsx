@@ -10,7 +10,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_SIMULATE_EXPO_UPDATE_AVAILABLE } from '@/redux/Types/types';
-import AppButton from '@/components/AppButton';
 
 const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
@@ -52,33 +51,29 @@ const useAppForegroundUpdateCheckModal = () => {
                                                 {(primaryAction || allowClose) && (
                                                         <View style={{ flexDirection: 'row', gap: 8 }}>
                                                                 {allowClose && (
-                                                                        <AppButton
-                                                                                variant="ghost"
-                                                                                usePlainText
-                                                                                text="Schließen"
+                                                                        <TouchableOpacity
                                                                                 onPress={close}
                                                                                 style={{
                                                                                         ...buttonBaseStyle,
                                                                                         borderWidth: 1,
                                                                                         borderColor: theme.sheet.text,
-                                                                                        marginVertical: 0,
                                                                                 }}
-                                                                                textStyle={{ color: theme.screen.text }}
-                                                                        />
+                                                                        >
+                                                                                <Text style={{ color: theme.screen.text }}>Schließen</Text>
+                                                                        </TouchableOpacity>
                                                                 )}
                                                                 {primaryAction && (
-                                                                        <AppButton
-                                                                                variant="ghost"
-                                                                                usePlainText
-                                                                                text={primaryAction.label}
+                                                                        <TouchableOpacity
                                                                                 onPress={primaryAction.onPress}
                                                                                 style={{
                                                                                         ...buttonBaseStyle,
                                                                                         backgroundColor: theme.sheet.text,
-                                                                                        marginVertical: 0,
                                                                                 }}
-                                                                                textStyle={{ color: theme.screen.background, fontWeight: '600' }}
-                                                                        />
+                                                                        >
+                                                                                <Text style={{ color: theme.screen.background, fontWeight: '600' }}>
+                                                                                        {primaryAction.label}
+                                                                                </Text>
+                                                                        </TouchableOpacity>
                                                                 )}
                                                         </View>
                                                 )}

@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, SafeAreaView, Text, View } from 'react-native';
+import { Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,22 +18,25 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
-import AppButton from '@/components/AppButton';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import ProjectButton from '@/components/ProjectButton';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
+import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
+import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
-	const { markingsDict } = useAppSelector((state) => state.food);
-	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
-	const { primaryColor, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
+	const { markings } = useAppSelector((state) => state.food);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
@@ -42,6 +45,9 @@ const Index = () => {
 	const [isActive, setIsActive] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const customerConfigDefaultBreakdown = useCustomerConfigSeperateMarkingsForFood();
+	const seperatedMarkingsValue = useSeperatedMarkingsForFood();
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
@@ -61,6 +67,7 @@ const Index = () => {
 						dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
 					}
 				}).catch((error) => {
+					console.error('Error fetching profile on focus:', error);
 				});
 			}
 
@@ -113,6 +120,87 @@ const Index = () => {
 		}
 	}, [dispatch, isAnonymousUser, profile, profileHelper]);
 
+	const handleClearMarkingsWithConfirmation = useCallback(() => {
+		showModal(
+			{
+				children: (
+					<View style={{ gap: 12 }}>
+						<Text style={{ fontSize: 18, fontWeight: '600', color: theme.screen.text }}>
+							{translate(TranslationKeys.clear_markings_selection)}
+						</Text>
+						<ProjectButton
+							text={translate(TranslationKeys.confirm)}
+							onPress={() => {
+								closeModal();
+								void handleClearMarkings();
+							}}
+							style={{ marginVertical: 0 }}
+						/>
+						<TouchableOpacity onPress={closeModal} style={{ alignSelf: 'center', paddingVertical: 6 }}>
+							<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
+						</TouchableOpacity>
+					</View>
+				),
+			},
+			{}
+		);
+	}, [showModal, closeModal, translate, theme.screen.text, handleClearMarkings]);
+
+	const customerConfigValueLabel = useMemo(
+		() => customerConfigDefaultBreakdown
+			? translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled)
+			: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
+		[customerConfigDefaultBreakdown, translate]
+	);
+
+	const markingsBreakdownOptions = useMemo(() => {
+		return [
+			{
+				id: 'true' as const,
+				label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_enabled),
+				icon: <MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />,
+			},
+			{
+				id: 'false' as const,
+				label: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_disabled),
+				icon: <MaterialCommunityIcons name="close" size={22} color={theme.screen.icon} />,
+			},
+			{
+				id: 'null' as const,
+				label: `${translate(TranslationKeys.foodoffers_show_separated_markings_breakdown_option_default)} (${customerConfigValueLabel})`,
+				icon: <MaterialCommunityIcons name="cog-outline" size={22} color={theme.screen.icon} />,
+			},
+		];
+	}, [translate, theme.screen.icon, customerConfigValueLabel]);
+
+	const currentMarkingsBreakdownId = seperatedMarkingsValue === true ? 'true' : seperatedMarkingsValue === false ? 'false' : 'null';
+
+	const markingsBreakdownLabel = useMemo(
+		() => markingsBreakdownOptions.find(o => o.id === currentMarkingsBreakdownId)?.label ?? '',
+		[currentMarkingsBreakdownId, markingsBreakdownOptions]
+	);
+
+	const openMarkingsBreakdownModal = useCallback(() => {
+		showModal(
+			{
+				title: translate(TranslationKeys.foodoffers_show_separated_markings_breakdown),
+				children: (
+					<SettingsListSelectOption
+						options={markingsBreakdownOptions}
+						selectedOption={currentMarkingsBreakdownId}
+						onSelect={(option) => {
+							const newValue = option.id === 'true' ? true : option.id === 'false' ? false : null;
+							dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: newValue });
+							closeModal();
+						}}
+						iconBgColor={primaryColor}
+					/>
+				),
+			},
+			{}
+		);
+	}, [showModal, closeModal, translate, markingsBreakdownOptions, currentMarkingsBreakdownId, dispatch, primaryColor]);
+
 	const renderItem = useCallback(({ item, index }: { item: string; index: number }) => {
 		const total = markingIds.length;
 		const groupPosition: SettingsListProps['groupPosition'] =
@@ -130,45 +218,39 @@ const Index = () => {
 				alignSelf: 'center',
 			}}
 		>
-			<Text
-				style={{
-					...styles.body1,
-					color: theme.screen.text,
-					...(language === 'ar' ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : {}),
-				}}
-			>
-				{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
-			</Text>
+			<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
-			<View style={[styles.readMoreContainer, language === 'ar' ? { alignItems: 'flex-end' } : undefined]}>
-				<AppButton
-					text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
+			<View style={styles.readMoreContainer}>
+				<TouchableOpacity
 					onPress={handleReadMore}
 					style={{
 						...styles.readMoreButton,
 						backgroundColor: theme.primary,
-						marginVertical: 0,
-						...(language === 'ar' ? { height: 60 } : {}),
 					}}
-					textStyle={{
-						...styles.readMore,
-						color: contrastColor,
-						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
-					}}
-				/>
+				>
+					<Text style={{ ...styles.readMore, color: contrastColor }}>{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}</Text>
+				</TouchableOpacity>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
 			<SettingsList
 				iconBgColor={primaryColor}
+				leftIcon={<MaterialCommunityIcons name="layers-outline" size={22} color={theme.screen.icon} />}
+				label={translate(TranslationKeys.foodoffers_show_separated_markings_breakdown)}
+				value={markingsBreakdownLabel}
+				rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+				handleFunction={openMarkingsBreakdownModal}
+				groupPosition="top"
+			/>
+			<SettingsList
+				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
-				titleTextAlign={language === 'ar' ? 'right' : undefined}
-				handleFunction={handleClearMarkings}
-				groupPosition="single"
+				handleFunction={handleClearMarkingsWithConfirmation}
+				groupPosition="bottom"
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings, language]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />

@@ -96,7 +96,6 @@ export const useLanguageModal = () => {
         const { translate, setLanguageMode, language } = useLanguage();
         const { theme } = useTheme();
         const { primaryColor } = useAppSelector((state) => state.settings);
-        const isRtl = language === 'ar';
 
         const changeLanguage = useCallback(
                 (languageOption: (typeof languages)[number]) => {
@@ -122,8 +121,6 @@ export const useLanguageModal = () => {
                                 <SettingsList
                                         key={`${languageOption.value}-${index}`}
                                         label={languageOption.label}
-                                        reverseLayout={false}
-                                        titleTextAlign="left"
                                         leftIcon={
                                                 <View style={styles.flagWrapper}>
                                                         <Text style={styles.flagText}>{languageOption.emoji}</Text>
@@ -151,8 +148,6 @@ export const useLanguageModal = () => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.language),
-                                titleTextAlign: isRtl ? 'right' : 'left',
-                                titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 children: (
                                         <View style={styles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (
@@ -170,7 +165,7 @@ export const useLanguageModal = () => {
                         },
                         {}
                 );
-        }, [LanguageOption, isRtl, showScrollViewModal, translate]);
+        }, [LanguageOption, showScrollViewModal, translate]);
 
         return { openLanguageModal };
 };

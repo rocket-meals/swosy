@@ -2,10 +2,7 @@
 import { ServerHelper } from 'repo-depkit-common';
 import {ImageSourcePropType} from "react-native";
 
-export const EXPO_ASC_KEY_ID = '39JT9543R7';
-export const EXPO_ASC_ISSUER_ID = 'a8db47e8-cb43-4861-b383-58ec4f9a9fc6';
-export const EXPO_APPLE_TEAM_ID = '6U99CRVHVR';
-export const EXPO_APPLE_TEAM_TYPE = 'IN_HOUSE';
+export { EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE } from 'repo-depkit-common';
 
 export type CustomerConfig = {
         projectName: string;
@@ -23,7 +20,8 @@ export type CustomerConfig = {
                 company_logo_source_get_for_react_native: () => ImageSourcePropType;
                 icon_logo_source_path: string;
                 icon_logo_source_get_for_react_native: () => ImageSourcePropType;
-        }
+        };
+        foodoffers_show_separated_markings_breakdown?: boolean;
 };
 
 export enum ConfigCustomerEnum {
@@ -37,7 +35,7 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 180;
+	return 195;
 }
 
 export function getMajorVersion() {
@@ -45,7 +43,7 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-        return 3;
+        return 4;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -124,7 +122,8 @@ export const studiFutterConfig: CustomerConfig = {
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
 		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
 		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/icon.png')},
-        }
+        },
+    foodoffers_show_separated_markings_breakdown: true
 };
 
 export function getCustomerConfigsDict(): Record<ConfigCustomerEnum, CustomerConfig> {
@@ -184,17 +183,23 @@ export function getCustomerConfig(): CustomerConfig {
 	return getCustomerConfigsDict()[customer as ConfigCustomerEnum] || devConfig;
 }
 
+export function getGeneratedAssetsPath(): string {
+	const customer = getCustomerEnvVariable() || ConfigCustomerEnum.TEST;
+	return `./assets/generated/${customer}`;
+}
+
 export function getFinalConfig(config?: any) {
 	const customerConfig: CustomerConfig = getCustomerConfig();
+	const generatedPath = getGeneratedAssetsPath();
 	return {
 		expo: {
 			name: customerConfig.projectName,
 			slug: customerConfig.projectSlug,
 			version: getVersion(),
 			orientation: 'default',
-			icon: './assets/generated/icon.png',
+			icon: `${generatedPath}/icon.png`,
 			notification: {
-				icon: './assets/generated/notification-icon.png',
+				icon: `${generatedPath}/notification-icon.png`,
 			},
 			updates: {
 				enabled: true,
@@ -204,7 +209,7 @@ export function getFinalConfig(config?: any) {
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
-				image: './assets/generated/splash.png',
+				image: `${generatedPath}/splash.png`,
 				resizeMode: 'contain',
 				backgroundColor: '#ffffff',
 			},
@@ -279,7 +284,7 @@ export function getFinalConfig(config?: any) {
 			},
 			android: {
 				adaptiveIcon: {
-					foregroundImage: './assets/generated/adaptive-icon.png',
+					foregroundImage: `${generatedPath}/adaptive-icon.png`,
 					backgroundColor: '#ffffff',
 				},
 				package: customerConfig.bundleIdAndroid,
@@ -289,7 +294,7 @@ export function getFinalConfig(config?: any) {
 			web: {
 				bundler: 'metro',
 				output: 'static',
-				favicon: './assets/generated/favicon.png',
+				favicon: `${generatedPath}/favicon.png`,
 			},
 			plugins: [
 				'expo-router',
@@ -299,9 +304,16 @@ export function getFinalConfig(config?: any) {
 				'expo-web-browser',
 				['expo-document-picker', { iCloudContainerEnvironment: 'Production' }],
 				[
+					'expo-camera',
+					{
+						cameraPermission: 'This app needs camera access to scan QR codes for adding friends.',
+						recordAudioAndroid: false,
+					},
+				],
+				[
 					'expo-splash-screen',
 					{
-						image: './assets/generated/splash-icon.png',
+						image: `${generatedPath}/splash-icon.png`,
 						imageWidth: 200,
 						resizeMode: 'contain',
 						backgroundColor: '#ffffff',

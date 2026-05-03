@@ -1,0 +1,32 @@
+{
+  "collection": "app_settings",
+  "field": "friends_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "friends_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "connect_without_contact",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 18,
+    "special": [
+      "alias",
+      "no-data",
+      "group"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

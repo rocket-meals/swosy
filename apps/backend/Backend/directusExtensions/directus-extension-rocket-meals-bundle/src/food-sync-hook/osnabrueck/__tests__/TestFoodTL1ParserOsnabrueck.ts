@@ -147,4 +147,14 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
         expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
     }
   });
+
+  it('Food with Eintopf Terrine category and CO2 rating A should have Klimateller marking', async () => {
+    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithEintopfTerrineAndCO2RatingAMensaHaste());
+    expect(!!foodOfferJson).toBe(true);
+    expect(foodOfferJson.length).toBeGreaterThan(0);
+    const expectedMarkingExternalIdentifiers = [FoodTL1ParserOsnabrueck.getKlimaTellerMarkingExternalIdentifier()];
+    for (let foodOffer of foodOfferJson) {
+      expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
+    }
+  });
 });

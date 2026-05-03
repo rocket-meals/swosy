@@ -1,5 +1,5 @@
-import { Image, Platform, StyleSheet, Text } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
 import { AntDesign, Entypo, EvilIcons, Feather, FontAwesome, FontAwesome5, FontAwesome6, Foundation, Ionicons, MaterialCommunityIcons, Octicons, SimpleLineIcons, Zocial } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useTheme } from '@/hooks/useTheme';
@@ -24,7 +24,7 @@ import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
-import AppButton from '@/components/AppButton';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -61,11 +61,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const router = useRouter();
         const wikisHelper = new WikisHelper();
         const activeIndex = state.index;
-        const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
-        const { chatsDict } = useAppSelector((state) => state.chats);
-        const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
-        const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
-        const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
+        const { isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
+        const { chats } = useAppSelector((state) => state.chats);
+        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis } = useAppSelector((state) => state.settings);
+        const customerConfig = useCustomerConfig();
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
@@ -248,7 +247,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		if (wikis) {
 			const wikiMenuItems = wikis
 				.filter((wiki: any) => wiki.show_in_drawer) // Only show relevant wikis
-				.map((wiki: any, index: number) => {
+				.map((wiki: any) => {
 					let iconLib: any = Entypo;
 					let iconName = 'home';
 
@@ -260,13 +259,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						}
 					}
 
-					const wikiKey = wiki?.custom_id ? `wikis:${wiki.custom_id}` : wiki?.id ? `wikis:${wiki.id}` : `wikis:pos:${wiki.position ?? index}`;
-
 					return {
 						label: translateDynamic(getTitleFromTranslation(wiki?.translations, language)),
 						iconName,
 						iconLibName: iconLib,
-						activeKey: wikiKey,
+						activeKey: 'faq-food/index',
 						position: wiki.position ?? Number.MAX_SAFE_INTEGER,
 						action: wiki.url
 							? () => openInBrowser(wiki?.url)
@@ -325,31 +322,25 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		},
 	];
 
+	const footerWikis = wikis ? wikis.filter((wiki: any) => wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) : [];
+
 	const footerContent = (
 		<>
-			{wikis &&
-				wikis?.map((wiki: any, index: number) => {
-					if (wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) {
-						return (
-							<React.Fragment key={index}>
-								<AppButton
-									variant="ghost"
-									usePlainText
-									text={translateDynamic(getTitleFromTranslation(wiki?.translations, language))}
-									onPress={() =>
-										router.push({
-											pathname: '/wikis',
-											params: { custom_id: wiki?.custom_id },
-										})
-									}
-									style={{ marginVertical: 0 }}
-									textStyle={[styles.link, { color: theme.drawer.link }]}
-								/>
-								{index + 1 < wikis?.length - 1 && <Text style={[styles.bar, { color: theme.drawer.divider }]}>|</Text>}
-							</React.Fragment>
-						);
-					}
-				})}
+			{footerWikis.map((wiki: any, index: number) => (
+				<React.Fragment key={wiki.custom_id || index}>
+					<TouchableOpacity
+						onPress={() =>
+							router.push({
+								pathname: '/wikis',
+								params: { custom_id: wiki?.custom_id },
+							})
+						}
+					>
+						<Text style={[styles.link, { color: theme.drawer.link }]}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
+					</TouchableOpacity>
+					{index < footerWikis.length - 1 && <Text style={[styles.bar, { color: theme.drawer.link }]}>|</Text>}
+				</React.Fragment>
+			))}
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
 		</>
 	);
@@ -360,14 +351,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	return (
 		<AppDrawer
 			logoSource={logoUri ? { uri: logoUri } : undefined}
-			title={ServerInfoHelper.getServerName(serverInfo)}
+			title={ServerInfoHelper.getServerName(serverInfo, customerConfig)}
 			onLogoPress={() => navigation.navigate('foodoffers')}
 			items={toDrawerItems(generateMenuItems())}
 			bottomItems={bottomItems}
 			activeKey={activeKey}
 			primaryColor={projectColor}
 			footerContent={footerContent}
-			reverseItemLayout={language === 'ar' && drawerPosition === 'right'}
 		/>
 	);
 };

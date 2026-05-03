@@ -113,6 +113,7 @@ export const CollectionKeys = {
 	AUTO_TRANSLATION_SETTINGS: 'auto_translation_settings',
 	DEVICES: 'devices',
 	CANTEENS: 'canteens',
+	FRIENDSHIPS: 'friendships',
 	FOODS_TRANSLATIONS: 'foods_translations',
 	NEWS: 'news',
 	NEWS_TRANSLATIONS: 'news_translations',

@@ -1,17 +1,52 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import MyImage from '@/components/MyImage';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { useAppSelector } from '@/redux/hooks';
 import { PopupEventSheetProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
-import AppButton from '../AppButton';
+import ProjectButton from '../ProjectButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
+import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
+
+const styles = StyleSheet.create({
+	container: {
+		width: '100%',
+		alignItems: 'center',
+	},
+	sheetHeaderClose: {
+		width: '100%',
+		flexDirection: 'column',
+	},
+	sheetHeaderText: {
+		width: '100%',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	sheetHeading: {
+		fontFamily: 'Poppins_700Bold',
+		textAlign: 'center',
+	},
+	popupContainer: {
+		width: '100%',
+		gap: 20,
+		marginTop: 10,
+		alignItems: 'center',
+	},
+	imageContainer: {
+		width: '100%',
+		height: 300,
+	},
+	image: {
+		width: '100%',
+		height: '100%',
+		resizeMode: 'contain',
+	},
+});
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
@@ -27,7 +62,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 	};
 
 	return (
-		<BottomSheetScrollView style={styles.sheetView} contentContainerStyle={styles.contentContainer}>
+		<View style={styles.container}>
 			<View
 				style={{
 					...styles.sheetHeaderClose,
@@ -36,13 +71,9 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				<AppButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
+				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
 			</View>
-			<View
-				style={{
-					...styles.sheetHeaderText,
-				}}
-			>
+			<View style={styles.sheetHeaderText}>
 				<View />
 				<Text
 					style={{
@@ -65,7 +96,12 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 				)}
 				{rawText ? <MyMarkdown content={rawText} textColor={theme.screen.text} /> : null}
 			</View>
-		</BottomSheetScrollView>
+			{eventData?.show_app_rating_button ? (
+				<View style={{ width: '100%', marginTop: 20 }}>
+					<RateAppSettingsItem groupPosition="single" showSeparator={false} />
+				</View>
+			) : null}
+		</View>
 	);
 };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { SafeAreaView, View } from 'react-native';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
@@ -48,7 +48,7 @@ export const SHEET_COMPONENTS = {
 const Index: React.FC<DrawerContentComponentProps> = () => {
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
@@ -57,8 +57,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
-	const businessHoursDict = useAppSelector((state) => state.canteenReducer.businessHoursDict, shallowEqual);
-	const businessHours = useMemo(() => Object.values(businessHoursDict || {}), [businessHoursDict]);
+	const businessHours = useAppSelector((state) => state.canteenReducer.businessHours, shallowEqual);
 
 	const selectedCanteen = useSelectedCanteen();
 	useFoodOffersDefaultDate();
@@ -137,7 +136,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
 			<FoodOffersHeader
-				drawerPosition={(drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition) as 'left' | 'right'}
+				drawerPosition={drawerPosition as 'left' | 'right'}
 				hasUnreadChats={hasUnreadChats}
 				selectedCanteen={selectedCanteen}
 				selectedDate={selectedDate}

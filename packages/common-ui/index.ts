@@ -77,7 +77,7 @@ export type { BaseBottomSheetProps } from './src/components/BaseBottomSheet';
 export { default as MyScrollViewModal } from './src/components/MyScrollViewModal';
 export type { MyScrollViewModalProps } from './src/components/MyScrollViewModal';
 
-export { ModalProvider, useModalContext } from './src/components/GlobalModal/ModalProvider';
+export { ModalProvider, ModalContextProvider, ModalRenderer, useModalContext } from './src/components/GlobalModal/ModalProvider';
 export { useModal } from './src/components/GlobalModal/useModal';
 export { useMyScrollViewModal } from './src/components/GlobalModal/useMyScrollViewModal';
 export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMyScrollViewModal';
@@ -91,5 +91,18 @@ export type { ScreenHeaderProps } from './src/components/ScreenHeader';
 export { default as CardWithText } from './src/components/CardWithText';
 export type { CardWithTextProps } from './src/components/CardWithText';
 
+export { default as SettingsListLeftRight } from './src/components/SettingsListLeftRight';
+export type { SettingsListLeftRightProps, SettingsListLeftRightItem } from './src/components/SettingsListLeftRight';
+
 export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
 export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';
+
+export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
+export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
+export type { MyAvatarProps } from './src/components/MyAvatar';
+
+export { useAvatarEditorModal } from './src/components/MyAvatarEditor';
+export type { AvatarConfig, UseAvatarEditorModalOptions } from './src/components/MyAvatarEditor';
+
+export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
+export type { MyColorPickerProps } from './src/components/MyColorPicker';

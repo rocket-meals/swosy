@@ -8,15 +8,12 @@ import { TranslationKeys } from '@/locales/keys';
 
 const useMyScrollviewModalDistanceInformation = () => {
 	const { show, close } = useMyScrollViewModal();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const isRtl = language === 'ar';
 
 	const openDistanceInformationModal = useCallback(() => {
 		show({
 			title: translate(TranslationKeys.distance),
-			titleTextAlign: isRtl ? 'right' : 'left',
-			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			onClose: close,
 			children: (
 				<View>
@@ -26,7 +23,7 @@ const useMyScrollviewModalDistanceInformation = () => {
 				</View>
 			),
 		});
-	}, [close, isRtl, show, theme.screen.text, translate]);
+	}, [close, show, theme.screen.text, translate]);
 
 	return { openDistanceInformationModal, closeDistanceInformationModal: close };
 };

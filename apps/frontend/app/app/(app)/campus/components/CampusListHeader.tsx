@@ -4,7 +4,6 @@ import { CollectibleAt } from 'repo-depkit-common';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import styles from '../styles';
 import { TranslationKeys } from '@/locales/keys';
-import { useAppSelector } from '@/redux/hooks';
 
 interface CampusListHeaderProps {
     widthStyle: { width: number };
@@ -21,13 +20,12 @@ const CampusListHeader: React.FC<CampusListHeaderProps> = ({
     setQuery,
     translate,
 }) => {
-    const language = useAppSelector((state) => state.settings.language);
     return (
         <View style={{ width: '100%', paddingHorizontal: 5, marginBottom: 10, alignItems: 'center' }}>
             <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_campus} />
             <View style={[styles.searchContainer, widthStyle]}>
                 <TextInput
-                    style={[styles.searchInput, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]}
+                    style={[styles.searchInput, { color: theme.screen.text }]}
                     cursorColor={theme.screen.text}
                     placeholderTextColor={theme.screen.placeholder}
                     onChangeText={setQuery}

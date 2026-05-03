@@ -5,7 +5,6 @@ import { useAppSelector } from '@/redux/hooks';
 
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { useLanguage } from '@/hooks/useLanguage';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListDate from '@/components/SettingsListDate';
@@ -20,8 +19,6 @@ const SettingsListComponents = () => {
 	useSetPageTitle('SettingsList Komponenten');
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const { language } = useLanguage();
-	const isArabic = language === 'ar';
 	const [dateValue, setDateValue] = useState('01.01.2024');
 	const [dateError, setDateError] = useState('');
 	const [inputValue, setInputValue] = useState('Beispieltext');
@@ -38,13 +35,9 @@ const SettingsListComponents = () => {
 			}}
 		>
 			<View style={styles.content}>
-				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
-					SettingsList Komponenten
-				</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text }}>SettingsList Komponenten</Text>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
-					SettingsList (isAccountRequired)
-				</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList (isAccountRequired)</Text>
 			<SettingsList
 				iconBgColor={primaryColor}
 				title="Account-Funktion"
@@ -53,7 +46,7 @@ const SettingsListComponents = () => {
 				groupPosition="single"
 			/>
 
-			<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsList</Text>
+			<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="format-list-text" size={24} color={theme.screen.icon} />}
@@ -61,7 +54,7 @@ const SettingsListComponents = () => {
 					value="Beispielwert"
 					groupPosition="single"
 				/>
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsList Check</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList Check</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="format-list-text" size={24} color={theme.screen.icon} />}
@@ -70,7 +63,7 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListEditable</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListEditable</Text>
 				<SettingsListEditable
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
@@ -79,7 +72,7 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListDate</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListDate</Text>
 				<SettingsListDate
 					id="test-date"
 					value={dateValue}
@@ -93,7 +86,7 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListBoolean</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListBoolean</Text>
 				<SettingsListBoolean
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="toggle-switch-outline" size={24} color={theme.screen.icon} />}
@@ -103,7 +96,7 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListTextInput</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListTextInput</Text>
 				<SettingsListTextInput
 					label="Eingabe"
 					value={inputValue}
@@ -117,17 +110,17 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListNickname</Text>
-				<SettingsListNickname initialValue={nickname} onSave={setNickname} />
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListNickname</Text>
+				<SettingsListNickname />
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListCoordinate</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListCoordinate</Text>
 				<SettingsListCoordinate
 					iconBgColor={primaryColor}
 					location={{ latitude: 51.4556, longitude: 7.0116 }}
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>SettingsListLikeDislike</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListLikeDislike</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="thumb-up-outline" size={24} color={theme.screen.icon} />}

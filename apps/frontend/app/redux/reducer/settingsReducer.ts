@@ -1,21 +1,7 @@
-import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_SETTINGS, SET_CAMPUSES_SORTING, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_COLOR, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_FUN_LANGUAGE_MODE, SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM, SET_NICKNAME_LOCAL, SET_OFFLINE_MODE,  SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_SETTINGS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, SET_PIRATE_LANGUAGE, SET_SELECTED_CUSTOMER, SET_SERVER_INFO, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
+import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_SETTINGS, SET_CAMPUSES_SORTING, SET_CANTEEN_VISITS_VISIBILITY, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_COLOR, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, SET_FUN_LANGUAGE_MODE, SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM, SET_NICKNAME_LOCAL, SET_OFFLINE_MODE,  SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_SETTINGS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, SET_PIRATE_LANGUAGE, SET_SELECTED_CUSTOMER, SET_SERVER_INFO, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { ConfigCustomerEnum } from '@/config';
+import { ConfigCustomerEnum, getCustomerConfig, getCustomerEnumForConfig } from '@/config';
 import { MapStyleKey } from 'repo-depkit-common-ui';
-
-const arrayToDict = <T>(payload: unknown, getKey: (item: any, index: number) => string | null): Record<string, T> => {
-	if (!payload) return {};
-	if (!Array.isArray(payload)) return payload as Record<string, T>;
-	return payload.reduce((acc: Record<string, T>, item: any, index: number) => {
-		const key = getKey(item, index);
-		if (key) {
-			acc[key] = item;
-		}
-		return acc;
-	}, {});
-};
-
-const idKey = (item: any) => (item?.id ? String(item.id) : null);
 
 const initialState = {
 	selectedTheme: 'systematic',
@@ -26,12 +12,12 @@ const initialState = {
         serverInfo: {},
         primaryColor: '#FCDE31',
         appSettings: {},
-        selectedCustomer: ConfigCustomerEnum.TEST,
+        selectedCustomer: getCustomerEnumForConfig(getCustomerConfig()) ?? ConfigCustomerEnum.TEST,
         language: 'de',
 	firstDayOfTheWeek: { id: 'monday', name: 'Mon' },
 	drawerPosition: 'left',
-	wikisPagesDict: {},
-	wikisDict: {},
+	wikisPages: [],
+	wikis: [],
         nickNameLocal: '',
         amountColumnsForcard: 0,
         useWebpForAssets: true,
@@ -70,6 +56,10 @@ const initialState = {
         mapClusterPixelRadius: 60,
         pirateLanguage: false,
         funLanguageMode: null as string | null,
+        foodoffersShowSeparatedMarkingsBreakdown: null as boolean | null,
+        canteenVisits: {
+                visibility: 'all' as 'all' | 'friends_only' | 'off',
+        },
 };
 
 const settingReducer = (state = initialState, actions: any) => {
@@ -137,13 +127,13 @@ const settingReducer = (state = initialState, actions: any) => {
 		case SET_WIKIS_PAGES: {
 			return {
 				...state,
-				wikisPagesDict: arrayToDict(actions.payload, (item, index) => idKey(item) ?? `idx:${index}`),
+				wikisPages: actions.payload,
 			};
 		}
 		case SET_WIKIS: {
 			return {
 				...state,
-				wikisDict: arrayToDict(actions.payload, (item, index) => idKey(item) ?? `idx:${index}`),
+				wikis: actions.payload,
 			};
 		}
 		case SET_NICKNAME_LOCAL: {
@@ -180,6 +170,7 @@ const settingReducer = (state = initialState, actions: any) => {
                         return {
                                 ...state,
                                 selectedCustomer: actions.payload,
+                                foodoffersShowSeparatedMarkingsBreakdown: null,
                         };
                 }
                 case SET_DEBUG_MODE: {
@@ -350,9 +341,25 @@ const settingReducer = (state = initialState, actions: any) => {
                                 funLanguageMode: actions.payload,
                         };
                 }
+                case SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN: {
+                        return {
+                                ...state,
+                                foodoffersShowSeparatedMarkingsBreakdown: actions.payload,
+                        };
+                }
+                case SET_CANTEEN_VISITS_VISIBILITY: {
+                        return {
+                                ...state,
+                                canteenVisits: {
+                                        ...state.canteenVisits,
+                                        visibility: actions.payload,
+                                },
+                        };
+                }
                 case CLEAR_SETTINGS: {
                         return {
                                 ...initialState,
+                                selectedCustomer: state.selectedCustomer,
                         };
                 }
 		default:

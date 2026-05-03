@@ -46,7 +46,6 @@ const DebugView: React.FC<DebugViewProps> = ({
         const { theme } = useTheme();
         const debugMode = useDebugMode();
         const isDevMode = useAppSelector((state) => state.authReducer.isDevMode);
-        const language = useAppSelector((state) => state.settings.language);
 
         const formattedLogs = useMemo(() => {
                 return logs
@@ -73,13 +72,13 @@ const DebugView: React.FC<DebugViewProps> = ({
                                 styles.container,
                         ]}
                 >
-                        <View style={[styles.header, language === 'ar' ? { flexDirection: 'row-reverse' } : undefined]}>
+                        <View style={styles.header}>
                                 <MaterialCommunityIcons name="bug-outline" size={18} color={theme.screen.icon} />
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
                         </View>
 
                         {actions.length ? (
-                                <View style={[styles.actionsContainer, language === 'ar' ? { justifyContent: 'flex-end' } : undefined]}>
+                                <View style={styles.actionsContainer}>
                                         {actions.map((action, index) => (
                                                 <TouchableOpacity
                                                         key={`${action.label}-${index}`}

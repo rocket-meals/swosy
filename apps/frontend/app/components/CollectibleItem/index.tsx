@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
@@ -11,7 +11,7 @@ import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import MyImage from '../MyImage';
-import useRateAppModal from '@/hooks/useRateAppModal';
+import useCollectibleEventCongratulationsModal from '@/hooks/useCollectibleEventCongratulationsModal';
 import { useAppSelector } from '@/redux/hooks';
 
 type CollectibleKey = (typeof COLLECTABLE_AT_FIELDS)[number];
@@ -21,7 +21,6 @@ type CollectibleItemProps = {
         hideOnCollect?: boolean;
         isPreview?: boolean;
         hideCounter?: boolean;
-        wrapperStyle?: ViewStyle;
 };
 
 const CollectibleItem: React.FC<CollectibleItemProps> = ({
@@ -29,7 +28,6 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         hideOnCollect = true,
         isPreview,
         hideCounter = false,
-        wrapperStyle,
 }) => {
         const { theme } = useTheme();
         const toast = useToast();
@@ -42,7 +40,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         const [isSaving, setIsSaving] = useState(false);
         const [randomOffset, setRandomOffset] = useState({ x: 0, y: 0 });
 
-        const { openRateAppModal } = useRateAppModal(projectColor || theme.primary);
+        const { openCongratulationsModal } = useCollectibleEventCongratulationsModal();
 
         const { collectibleDict, setCollectibleKey, collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
@@ -109,7 +107,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 );
 
                 if (maxCollectibleKeys > 0 && updatedCount === maxCollectibleKeys) {
-                        openRateAppModal();
+                        openCongratulationsModal();
                 }
 
                 if (!loggedIn || !profile?.id) {
@@ -119,7 +117,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 setIsSaving(true);
                 try {
                 const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                        points: String(updatedCount),
+                        points: updatedCount,
                         data: updatedData,
                 };
 
@@ -156,7 +154,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 }
         };
 
-        const content = (
+        return (
                 <TouchableOpacity
                         style={[
                                 styles.container,
@@ -174,18 +172,18 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         disabled={isSaving || isPreview}
                         activeOpacity={isPreview ? 1 : 0.8}
                 >
-                        <MyImage
-                                remote_image_url={collectibleImageRemoteUrl}
-                                directus_asset_id={collectibleDirectusAssetId}
-                                resizeMode="contain"
-                                style={styles.image}
-                        />
-                        {isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
-                        {isSaving ? (
-                                <View style={styles.loadingOverlay}>
-                                        <ActivityIndicator color={theme.dark} />
-                                </View>
-                        ) : null}
+			<MyImage
+				remote_image_url={collectibleImageRemoteUrl}
+				directus_asset_id={collectibleDirectusAssetId}
+				resizeMode="contain"
+				style={styles.image}
+			/>
+			{isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
+			{isSaving ? (
+				<View style={styles.loadingOverlay}>
+					<ActivityIndicator color={theme.dark} />
+				</View>
+			) : null}
                         {hideCounter ? null : (
                                 <View style={[styles.counter, { backgroundColor: theme.primary }]}>
                                         <Text style={[styles.counterText, { color: theme.dark }]}>
@@ -195,8 +193,6 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         )}
                 </TouchableOpacity>
         );
-
-        return wrapperStyle ? <View style={wrapperStyle}>{content}</View> : content;
 };
 
 export default CollectibleItem;

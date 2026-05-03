@@ -9,7 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 
 const SingleLineInput = ({ id, value, onChange, error, isDisabled, custom_type, prefix, suffix, autoFocus }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined; autoFocus?: boolean }) => {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
+	const { translate } = useLanguage();
 	const flag = !suffix && !prefix;
 
 	return (
@@ -40,7 +40,6 @@ const SingleLineInput = ({ id, value, onChange, error, isDisabled, custom_type, 
 							borderBottomRightRadius: suffix ? 0 : 10,
 						},
 						{ color: theme.screen.text },
-						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}

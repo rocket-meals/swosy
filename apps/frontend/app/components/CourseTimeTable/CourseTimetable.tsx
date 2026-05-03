@@ -13,8 +13,7 @@ import { useAppSelector } from '@/redux/hooks';
 
 const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, setIsUpdate, setTimeTableData, setSelectedEventId }) => {
 	const { theme } = useTheme();
-	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
+	const { translate } = useLanguage();
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [currentTimeOffset, setCurrentTimeOffset] = useState(0);
 	const [showCurrentTimeOffset, setShowCurrentTimeOffset] = useState(false);
@@ -193,16 +192,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 					/>
 					{timeSlots.map(time => (
 						<View key={time} style={styles.timeColumn}>
-							<Text
-								style={{
-									...styles.timeText,
-									color: theme.screen.text,
-									textAlign: isArabic ? 'right' : 'left',
-									writingDirection: isArabic ? 'rtl' : 'ltr',
-								}}
-							>
-								{time}
-							</Text>
+							<Text style={{ ...styles.timeText, color: theme.screen.text }}>{time}</Text>
 						</View>
 					))}
 				</View>
@@ -223,8 +213,6 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 										style={{
 											...styles.dayHeaderText,
 											color: theme.screen.text,
-											textAlign: isArabic ? 'right' : 'center',
-											writingDirection: isArabic ? 'rtl' : 'ltr',
 										}}
 									>
 										{translate(day.name)}
@@ -281,14 +269,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 															}}
 															onPress={() => handleUpdateEvent(event)}
 														>
-															<Text
-																style={[
-																	styles.eventText,
-																	isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as any) : null,
-																]}
-															>
-																{event.title}
-															</Text>
+															<Text style={styles.eventText}>{event.title}</Text>
 														</TouchableOpacity>
 													)}
 												>

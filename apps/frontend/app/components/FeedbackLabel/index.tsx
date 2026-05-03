@@ -21,7 +21,6 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { language } = useAppSelector((state) => state.settings);
-	const isArabic = language === 'ar';
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
@@ -59,7 +58,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 	const labelText = getTextFromTranslation(label, language);
 
 	const leftIconComponent = (
-		<View style={[styles.leftIconWrapper, isArabic ? styles.leftIconWrapperReverse : undefined]}>
+		<View style={styles.leftIconWrapper}>
 			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
@@ -100,6 +99,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 			rightElement={rightElement}
 			groupPosition={groupPosition}
 			isAccountRequired={isAccountRequired}
+			onAccountRequired={openAccountRequiredModal}
 		/>
 	);
 };
@@ -109,10 +109,6 @@ export default FeedbackLabel;
 const styles = StyleSheet.create({
 	leftIconWrapper: {
 		marginRight: 10,
-	},
-	leftIconWrapperReverse: {
-		marginRight: 0,
-		marginLeft: 10,
 	},
 	icon: {
 		width: 30,

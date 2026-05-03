@@ -32,7 +32,6 @@ export default StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'stretch',
 		flexWrap: 'wrap',
-		rowGap: 10,
 		paddingBottom: 20,
 	},
 	foodName: {

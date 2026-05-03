@@ -14,9 +14,8 @@ const DateHelperPreview = () => {
 	useSetPageTitle(TranslationKeys.date_helper_preview);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const isArabic = language === 'ar';
 	const smartReadableDate = useSmartReadableDateMethod();
-	const dateLocale = language || Localization.getLocales?.()?.[0]?.languageTag || 'en';
+	const dateLocale = language || Localization.locale || 'en';
 
 	const dates = useMemo(() => {
 		const start = new Date();
@@ -33,16 +32,7 @@ const DateHelperPreview = () => {
 			}}
 		>
 			<View style={styles.content}>
-				<Text
-					style={{
-						...styles.heading,
-						color: theme.screen.text,
-						textAlign: isArabic ? 'right' : 'left',
-						writingDirection: isArabic ? 'rtl' : 'ltr',
-					}}
-				>
-					{translate(TranslationKeys.date_helper_preview)}
-				</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.date_helper_preview)}</Text>
 				<View style={styles.section}>
 					{dates.map(date => {
 						const dateKey = CommonDateHelper.getDirectusDateOnlyString(date);
