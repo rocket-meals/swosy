@@ -29,6 +29,90 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 const BUILTIN_CATEGORY_STYLE = 'Style';
 
 /**
+ * Maps avatar attribute category keys to MaterialCommunityIcons icon names.
+ * Used to display a recognisable icon on the left side of each settings-list row.
+ */
+const CATEGORY_ICON_MAP: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
+	// Built-in
+	[BUILTIN_CATEGORY_STYLE]: 'palette-swatch-variant',
+	// Skin / base
+	skinColor: 'hand-back-right',
+	baseColor: 'circle',
+	// Hair
+	hair: 'face-woman-shimmer',
+	hairColor: 'palette',
+	frontHair: 'face-woman-shimmer',
+	rearHair: 'hair-dryer',
+	sideburn: 'face-man-profile',
+	// Face
+	face: 'emoticon-outline',
+	head: 'head',
+	// Eyebrows
+	eyebrows: 'emoticon-angry-outline',
+	eyebrowsColor: 'palette',
+	brows: 'emoticon-angry-outline',
+	// Eyes
+	eyes: 'eye',
+	eyesColor: 'eye',
+	eyeShadowColor: 'eye-circle',
+	// Nose
+	nose: 'triangle-outline',
+	noseColor: 'triangle-outline',
+	// Mouth / lips
+	mouth: 'emoticon-kiss-outline',
+	mouthColor: 'emoticon-kiss-outline',
+	lips: 'emoticon-kiss-outline',
+	// Beard / facial hair
+	beard: 'face-man',
+	facialHair: 'face-man',
+	facialHairColor: 'face-man',
+	mustache: 'mustache',
+	// Ears / earrings
+	ear: 'ear-hearing',
+	ears: 'ear-hearing',
+	earrings: 'diamond-stone',
+	earringsColor: 'diamond-stone',
+	earringColor: 'diamond-stone',
+	// Glasses
+	glasses: 'glasses',
+	glassesColor: 'glasses',
+	// Accessories / features
+	accessories: 'necklace',
+	accessoriesColor: 'necklace',
+	features: 'star-outline',
+	hairAccessoriesColor: 'bow-tie',
+	frecklesColor: 'dots-circle',
+	cheek: 'emoticon-happy-outline',
+	// Clothing / body
+	clothing: 'tshirt-crew',
+	clothesColor: 'tshirt-crew',
+	clothingColor: 'tshirt-crew',
+	clothingGraphic: 'image-outline',
+	clothes: 'tshirt-crew',
+	body: 'human',
+	bodyColor: 'human',
+	bodyIcon: 'image-outline',
+	shirt: 'tshirt-crew',
+	shirtColor: 'tshirt-crew',
+	// Hat / top
+	top: 'hat-fedora',
+	topColor: 'hat-fedora',
+	hat: 'hat-fedora',
+	hatColor: 'hat-fedora',
+	hairAccessories: 'bow-tie',
+	// Misc
+	mask: 'face-mask',
+	headContrastColor: 'contrast-circle',
+	sides: 'robot',
+	texture: 'texture',
+	shapeColor: 'shape',
+	backgroundColor: 'format-color-fill',
+	gesture: 'hand-wave',
+	mood: 'emoticon-outline',
+	style: 'cog-outline',
+};
+
+/**
  * Per-style attribute order for a character-creation-style flow.
  * Each style defines its own logical order: skin/base first, then facial
  * features (each component paired with its matching color), then clothing
@@ -545,12 +629,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				const swatchColor = colorKey ? '#' + colorKey : undefined;
 				const swatchBorderColor = swatchColor ? myContrastColor(swatchColor, theme, isDark) : undefined;
 
+				const iconName = CATEGORY_ICON_MAP[cat] ?? 'help-circle-outline';
+
 				return (
 					<SettingsList
 						key={cat}
 						title={cat}
 						value={displayValue}
 						onPress={getCategoryHandler(cat)}
+						leftIcon={<MaterialCommunityIcons name={iconName} size={20} />}
 						iconBgColor={accentColor}
 						groupPosition={groupPosition}
 						showSeparator={index !== allCategories.length - 1}
