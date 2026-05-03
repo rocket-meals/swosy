@@ -46,7 +46,6 @@ export enum AvatarSize {
 }
 
 export type AvatarConfig = {
-	seed: string;
 	style: AvatarStyle;
 	size: AvatarSize;
 	/** Style-specific options like eyes, mouth, hair, etc. Each key maps to a single-element array. */
@@ -56,7 +55,6 @@ export type AvatarConfig = {
 export type MyAvatarProps = {
 	/** When provided, all avatar parameters are taken from this config object. */
 	config?: AvatarConfig;
-	seed?: string;
 	style?: AvatarStyle;
 	size?: AvatarSize | number;
 	borderRadius?: number;
@@ -100,13 +98,11 @@ export const STYLE_MAP: Record<AvatarStyle, Style<object>> = {
 
 const MyAvatar: React.FC<MyAvatarProps> = ({
 	config,
-	seed: seedProp = 'John Doe',
 	style: styleProp = AvatarStyle.LORELEI,
 	size: sizeProp = AvatarSize.LARGE,
 	borderRadius = 0,
 	options: optionsProp,
 }) => {
-	const seed = config?.seed ?? seedProp;
 	const style = config?.style ?? styleProp;
 	const size = config?.size ?? sizeProp;
 	const options = config?.options ?? optionsProp;
@@ -114,11 +110,10 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	const svgXml = useMemo(() => {
 		const avatarStyle = STYLE_MAP[style];
 		return createAvatar(avatarStyle, {
-			seed,
 			size,
 			...options,
 		}).toString();
-	}, [seed, style, size, options]);
+	}, [style, size, options]);
 
 	return (
 		<View style={[styles.container, { width: size, height: size, borderRadius }]}>

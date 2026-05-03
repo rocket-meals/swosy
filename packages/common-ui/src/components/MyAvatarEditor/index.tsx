@@ -17,7 +17,6 @@ export type { AvatarConfig } from '../MyAvatar';
 const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
 
 const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
-	seed: 'John Doe',
 	style: DEFAULT_AVATAR_STYLE,
 	size: AvatarSize.LARGE,
 	options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
@@ -361,7 +360,6 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={config.seed}
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -384,14 +382,12 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 
 type StylePickerModalContentProps = {
 	currentStyle: AvatarStyle;
-	seed: string;
 	onSelectAndClose: (style: AvatarStyle) => void;
 	accentColor?: string;
 };
 
 const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	currentStyle,
-	seed,
 	onSelectAndClose,
 	accentColor,
 }) => {
@@ -414,7 +410,6 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={seed}
 									style={style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -470,7 +465,6 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={config.seed}
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -550,7 +544,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			children: (
 				<StylePickerModalContent
 					currentStyle={config.style}
-					seed={config.seed}
 					accentColor={accentColor}
 					onSelectAndClose={(style) => {
 						handleStyleChange(style);
