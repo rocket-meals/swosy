@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP } from '../MyAvatar';
+import * as Clipboard from 'expo-clipboard';
+import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
 import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
@@ -11,13 +12,7 @@ import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 
-export type AvatarConfig = {
-	seed: string;
-	style: AvatarStyle;
-	size: AvatarSize;
-	/** Style-specific options like eyes, mouth, hair, etc. Each key maps to a single-element array. */
-	options?: Record<string, string[]>;
-};
+export type { AvatarConfig } from '../MyAvatar';
 
 const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 	seed: 'John Doe',
@@ -292,6 +287,7 @@ type AvatarEditorModalContentProps = {
 	initialConfig: AvatarConfig;
 	accentColor?: string;
 	configRef: React.MutableRefObject<AvatarConfig>;
+	debugMode?: boolean;
 };
 
 type ColorPickerModalContentProps = {
@@ -464,6 +460,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	initialConfig,
 	accentColor,
 	configRef,
+	debugMode,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
@@ -506,6 +503,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			randomOptions[key] = [stripHashPrefix(randomColor)];
 		}
 		handleChange({ ...config, options: randomOptions });
+	};
+
+	const handleCopyConfig = async () => {
+		await Clipboard.setStringAsync(JSON.stringify(config, null, 2));
 	};
 
 	const handleOpenStylePicker = () => {
@@ -603,15 +604,17 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		<View style={styles.content}>
 			<View style={styles.avatarContainer}>
 				<MyAvatar
-					seed={config.seed}
-					style={config.style}
-					size={AvatarSize.XLARGE}
+					config={{ ...config, size: AvatarSize.XLARGE }}
 					borderRadius={AvatarSize.XLARGE / 2}
-					options={config.options}
 				/>
 				<TouchableOpacity style={styles.diceButton} onPress={handleRandomize} accessibilityLabel="Randomize avatar" accessibilityRole="button">
 					<MaterialCommunityIcons name="dice-multiple" size={24} color={accentColor ?? '#fff'} />
 				</TouchableOpacity>
+				{debugMode && (
+					<TouchableOpacity style={styles.copyButton} onPress={handleCopyConfig} accessibilityLabel="Copy config JSON" accessibilityRole="button">
+						<MaterialCommunityIcons name="content-copy" size={24} color={accentColor ?? '#fff'} />
+					</TouchableOpacity>
+				)}
 			</View>
 
 			<SettingsListGroupTitle title="Category" />
@@ -661,6 +664,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 export type UseAvatarEditorModalOptions = {
 	title?: string;
 	accentColor?: string;
+	debugMode?: boolean;
 };
 
 export const useAvatarEditorModal = () => {
@@ -681,6 +685,7 @@ export const useAvatarEditorModal = () => {
 						initialConfig={initialConfig}
 						accentColor={options?.accentColor}
 						configRef={configRef}
+						debugMode={options?.debugMode}
 					/>
 				),
 			});
@@ -705,6 +710,12 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		top: 24,
 		right: 0,
+		padding: 6,
+	},
+	copyButton: {
+		position: 'absolute',
+		top: 24,
+		left: 0,
 		padding: 6,
 	},
 	colorSwatch: {

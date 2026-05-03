@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
+import useDebugMode from '@/hooks/useDebugMode';
 import {
 	MyAvatar,
 	AvatarStyle,
@@ -26,6 +27,7 @@ const AvatarsScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
+	const debugMode = useDebugMode();
 	const { showAvatarEditor } = useAvatarEditorModal();
 
 	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(DEFAULT_CONFIG);
@@ -36,6 +38,7 @@ const AvatarsScreen = () => {
 		}, {
 			title: translate(TranslationKeys.avatars),
 			accentColor: primaryColor,
+			debugMode,
 		});
 	};
 
@@ -51,11 +54,8 @@ const AvatarsScreen = () => {
 
 				<View style={styles.avatarContainer}>
 					<MyAvatar
-						seed={avatarConfig.seed}
-						style={avatarConfig.style}
-						size={avatarConfig.size}
+						config={avatarConfig}
 						borderRadius={avatarConfig.size / 2}
-						options={avatarConfig.options}
 					/>
 				</View>
 
