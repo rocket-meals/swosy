@@ -29,6 +29,56 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 const BUILTIN_CATEGORY_STYLE = 'Style';
 
 /**
+ * Known attribute order for a character-creation-style flow.
+ * Skin color comes first, followed by facial/hair features (each component
+ * paired with its matching color), then clothing and accessories.
+ * Keys not listed here are appended after the known keys in their original order.
+ */
+const ATTRIBUTE_ORDER: string[] = [
+	'skinColor',
+	'hair',
+	'hairColor',
+	'hairBackType',
+	'hairBackColor',
+	'eyebrows',
+	'eyes',
+	'eyeShadow',
+	'eyeShadowColor',
+	'freckles',
+	'frecklesColor',
+	'mouth',
+	'nose',
+	'beard',
+	'beardColor',
+	'earrings',
+	'earringsColor',
+	'clothing',
+	'clothingColor',
+	'top',
+	'topColor',
+	'shirt',
+	'shirtColor',
+	'accessories',
+	'accessoriesColor',
+	'glasses',
+	'glassesColor',
+	'hat',
+	'hatColor',
+];
+
+/**
+ * Sorts avatar attribute keys (component + color) in a logical character-creation
+ * order. Keys with a known position come first (in that order), followed by any
+ * remaining keys in their original relative order.
+ */
+function sortAttributeKeys(keys: string[]): string[] {
+	const knownSet = new Set(ATTRIBUTE_ORDER);
+	const knownKeys = ATTRIBUTE_ORDER.filter((k) => keys.includes(k));
+	const unknownKeys = keys.filter((k) => !knownSet.has(k));
+	return [...knownKeys, ...unknownKeys];
+}
+
+/**
  * Returns the available component options (e.g. eyes, mouth, hair) for a given
  * DiceBear avatar style. Each key maps to its allowed enum values.
  */
@@ -395,7 +445,11 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		return () => handleOpenComponentPicker(cat);
 	};
 
-	const allCategories = [BUILTIN_CATEGORY_STYLE, ...componentKeys, ...colorKeys];
+	const sortedAttributeKeys = useMemo(
+		() => sortAttributeKeys([...componentKeys, ...colorKeys]),
+		[componentKeys, colorKeys],
+	);
+	const allCategories = [BUILTIN_CATEGORY_STYLE, ...sortedAttributeKeys];
 
 	return (
 		<View style={styles.content}>
