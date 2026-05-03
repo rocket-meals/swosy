@@ -231,7 +231,7 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 	for (const key of colorKeys) {
 		const schemaDefaults = getSchemaDefaultColors(style, key);
 		if (schemaDefaults.length > 0) {
-			defaults[key] = [schemaDefaults[0]];
+			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
 		} else {
 			const presetColors = getPresetColorsForKey(key);
 			if (presetColors.length > 0) {
