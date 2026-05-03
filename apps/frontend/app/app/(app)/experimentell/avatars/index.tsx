@@ -17,7 +17,6 @@ import {
 } from 'repo-depkit-common-ui';
 
 const DEFAULT_CONFIG: AvatarConfig = {
-	seed: 'John Doe',
 	style: AvatarStyle.LORELEI,
 	size: AvatarSize.LARGE,
 };
