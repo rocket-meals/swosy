@@ -29,51 +29,115 @@ const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 const BUILTIN_CATEGORY_STYLE = 'Style';
 
 /**
- * Known attribute order for a character-creation-style flow.
- * Skin color comes first, followed by facial/hair features (each component
- * paired with its matching color), then clothing and accessories.
+ * Per-style attribute order for a character-creation-style flow.
+ * Each style defines its own logical order: skin/base first, then facial
+ * features (each component paired with its matching color), then clothing
+ * and accessories.
  * Keys not listed here are appended after the known keys in their original order.
  */
-const ATTRIBUTE_ORDER: string[] = [
-	'skinColor',
-	'hair',
-	'hairColor',
-	'hairBackType',
-	'hairBackColor',
-	'eyebrows',
-	'eyes',
-	'eyeShadow',
-	'eyeShadowColor',
-	'freckles',
-	'frecklesColor',
-	'mouth',
-	'nose',
-	'beard',
-	'beardColor',
-	'earrings',
-	'earringsColor',
-	'clothing',
-	'clothingColor',
-	'top',
-	'topColor',
-	'shirt',
-	'shirtColor',
-	'accessories',
-	'accessoriesColor',
-	'glasses',
-	'glassesColor',
-	'hat',
-	'hatColor',
-];
+const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
+	[AvatarStyle.ADVENTURER]: [
+		'skinColor', 'hair', 'hairColor', 'eyebrows', 'eyes', 'mouth', 'features', 'earrings', 'glasses',
+	],
+	[AvatarStyle.ADVENTURER_NEUTRAL]: [
+		'eyebrows', 'eyes', 'mouth', 'glasses', 'backgroundColor',
+	],
+	[AvatarStyle.AVATAAARS]: [
+		'skinColor', 'hair', 'hairColor', 'eyebrows', 'eyes', 'mouth', 'nose', 'facialHair', 'facialHairColor',
+		'clothing', 'clothesColor', 'clothingGraphic', 'top', 'hatColor', 'accessories', 'accessoriesColor',
+		'style', 'backgroundColor',
+	],
+	[AvatarStyle.AVATAAARS_NEUTRAL]: [
+		'eyebrows', 'eyes', 'mouth', 'backgroundColor',
+	],
+	[AvatarStyle.BIG_EARS]: [
+		'skinColor', 'face', 'hair', 'hairColor', 'frontHair', 'ear', 'sideburn', 'cheek',
+		'eyes', 'mouth', 'nose',
+	],
+	[AvatarStyle.BIG_EARS_NEUTRAL]: [
+		'cheek', 'eyes', 'mouth', 'nose', 'backgroundColor',
+	],
+	[AvatarStyle.BIG_SMILE]: [
+		'skinColor', 'hair', 'hairColor', 'eyes', 'mouth', 'accessories',
+	],
+	[AvatarStyle.BOTTTS]: [
+		'baseColor', 'face', 'eyes', 'mouth', 'sides', 'texture', 'top',
+	],
+	[AvatarStyle.BOTTTS_NEUTRAL]: [
+		'eyes', 'mouth', 'backgroundColor',
+	],
+	[AvatarStyle.CROODLES]: [
+		'baseColor', 'face', 'eyes', 'mouth', 'nose', 'beard', 'mustache', 'top', 'topColor',
+	],
+	[AvatarStyle.CROODLES_NEUTRAL]: [
+		'eyes', 'mouth', 'nose',
+	],
+	[AvatarStyle.DYLAN]: [
+		'skinColor', 'hair', 'hairColor', 'mood', 'facialHair', 'backgroundColor',
+	],
+	[AvatarStyle.FUN_EMOJI]: [
+		'eyes', 'mouth', 'backgroundColor',
+	],
+	[AvatarStyle.LORELEI]: [
+		'skinColor', 'head', 'hair', 'hairColor', 'eyebrows', 'eyebrowsColor', 'eyes', 'eyesColor',
+		'mouth', 'mouthColor', 'nose', 'noseColor', 'frecklesColor', 'beard',
+		'earrings', 'earringsColor', 'glasses', 'glassesColor', 'hairAccessoriesColor',
+	],
+	[AvatarStyle.LORELEI_NEUTRAL]: [
+		'eyebrows', 'eyebrowsColor', 'eyes', 'eyesColor', 'mouth', 'mouthColor',
+		'nose', 'noseColor', 'frecklesColor', 'glasses', 'glassesColor', 'backgroundColor',
+	],
+	[AvatarStyle.MICAH]: [
+		'baseColor', 'hair', 'hairColor', 'eyebrows', 'eyebrowsColor', 'eyes', 'eyesColor',
+		'eyeShadowColor', 'mouth', 'mouthColor', 'nose', 'ears', 'facialHair', 'facialHairColor',
+		'earrings', 'earringColor', 'glasses', 'glassesColor', 'shirt', 'shirtColor',
+	],
+	[AvatarStyle.MINIAVS]: [
+		'skinColor', 'head', 'hair', 'hairColor', 'eyes', 'mouth', 'mustache',
+		'body', 'bodyColor',
+	],
+	[AvatarStyle.NOTIONISTS]: [
+		'beard', 'hair', 'brows', 'eyes', 'lips', 'nose', 'glasses',
+		'body', 'bodyIcon', 'gesture',
+	],
+	[AvatarStyle.NOTIONISTS_NEUTRAL]: [
+		'brows', 'eyes', 'lips', 'nose', 'glasses', 'backgroundColor',
+	],
+	[AvatarStyle.OPEN_PEEPS]: [
+		'skinColor', 'head', 'headContrastColor', 'face', 'facialHair',
+		'accessories', 'mask', 'clothingColor',
+	],
+	[AvatarStyle.PERSONAS]: [
+		'skinColor', 'hair', 'hairColor', 'eyes', 'mouth', 'nose',
+		'facialHair', 'body', 'clothingColor',
+	],
+	[AvatarStyle.PIXEL_ART]: [
+		'skinColor', 'hair', 'hairColor', 'eyesColor', 'eyes', 'mouth', 'mouthColor',
+		'beard', 'glasses', 'glassesColor', 'hat', 'hatColor',
+		'clothing', 'clothingColor', 'accessories', 'accessoriesColor',
+	],
+	[AvatarStyle.PIXEL_ART_NEUTRAL]: [
+		'eyes', 'eyesColor', 'mouth', 'mouthColor', 'glasses', 'glassesColor', 'backgroundColor',
+	],
+	[AvatarStyle.THUMBS]: [
+		'face', 'eyes', 'eyesColor', 'mouth', 'mouthColor', 'shapeColor', 'backgroundColor',
+	],
+	[AvatarStyle.TOON_HEAD]: [
+		'skinColor', 'head', 'hair', 'hairColor', 'rearHair', 'eyebrows', 'eyes', 'mouth',
+		'beard', 'clothes', 'clothesColor',
+	],
+};
 
 /**
  * Sorts avatar attribute keys (component + color) in a logical character-creation
- * order. Keys with a known position come first (in that order), followed by any
- * remaining keys in their original relative order.
+ * order based on the current avatar style. Keys with a known position come first
+ * (in that order), followed by any remaining keys in their original relative order.
  */
-function sortAttributeKeys(keys: string[]): string[] {
-	const knownSet = new Set(ATTRIBUTE_ORDER);
-	const knownKeys = ATTRIBUTE_ORDER.filter((k) => keys.includes(k));
+function sortAttributeKeys(keys: string[], style: AvatarStyle): string[] {
+	const order = ATTRIBUTE_ORDER_BY_STYLE[style];
+	if (!order) return keys;
+	const knownSet = new Set(order);
+	const knownKeys = order.filter((k) => keys.includes(k));
 	const unknownKeys = keys.filter((k) => !knownSet.has(k));
 	return [...knownKeys, ...unknownKeys];
 }
@@ -446,8 +510,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	};
 
 	const sortedAttributeKeys = useMemo(
-		() => sortAttributeKeys([...componentKeys, ...colorKeys]),
-		[componentKeys, colorKeys],
+		() => sortAttributeKeys([...componentKeys, ...colorKeys], config.style),
+		[componentKeys, colorKeys, config.style],
 	);
 	const allCategories = [BUILTIN_CATEGORY_STYLE, ...sortedAttributeKeys];
 
