@@ -214,7 +214,8 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
  * in the allowed enum values, otherwise the first available value is used.
- * Color attributes are intentionally excluded so they remain seed-based.
+ * For color attributes, the schema default is used if available, otherwise
+ * the first preset color for that category is used.
  */
 function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]> {
 	const componentOptions = getStyleComponentOptions(style);
@@ -224,6 +225,18 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 			defaults[key] = ['default'];
 		} else if (values.length > 0) {
 			defaults[key] = [values[0]];
+		}
+	}
+	const colorKeys = getStyleColorKeys(style);
+	for (const key of colorKeys) {
+		const schemaDefaults = getSchemaDefaultColors(style, key);
+		if (schemaDefaults.length > 0) {
+			defaults[key] = [schemaDefaults[0]];
+		} else {
+			const presetColors = getPresetColorsForKey(key);
+			if (presetColors.length > 0) {
+				defaults[key] = [stripHashPrefix(presetColors[0])];
+			}
 		}
 	}
 	return defaults;
