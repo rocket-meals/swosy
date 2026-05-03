@@ -17,7 +17,6 @@ export type { AvatarConfig } from '../MyAvatar';
 const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
 
 const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
-	seed: 'John Doe',
 	style: DEFAULT_AVATAR_STYLE,
 	size: AvatarSize.LARGE,
 	options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
@@ -214,7 +213,7 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
  * in the allowed enum values, otherwise the first available value is used.
- * Color attributes are intentionally excluded so they remain seed-based.
+ * Color attributes are intentionally excluded so they use default values.
  */
 function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]> {
 	const componentOptions = getStyleComponentOptions(style);
@@ -348,7 +347,6 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={config.seed}
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -371,14 +369,12 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 
 type StylePickerModalContentProps = {
 	currentStyle: AvatarStyle;
-	seed: string;
 	onSelectAndClose: (style: AvatarStyle) => void;
 	accentColor?: string;
 };
 
 const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	currentStyle,
-	seed,
 	onSelectAndClose,
 	accentColor,
 }) => {
@@ -401,7 +397,6 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={seed}
 									style={style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -457,7 +452,6 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
-									seed={config.seed}
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
@@ -537,7 +531,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			children: (
 				<StylePickerModalContent
 					currentStyle={config.style}
-					seed={config.seed}
 					accentColor={accentColor}
 					onSelectAndClose={(style) => {
 						handleStyleChange(style);
