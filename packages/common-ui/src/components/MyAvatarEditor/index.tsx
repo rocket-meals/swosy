@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
 import { Style } from '@dicebear/core';
@@ -600,6 +600,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	);
 	const allCategories = [BUILTIN_CATEGORY_STYLE, ...sortedAttributeKeys];
 
+	const diceButtonBg = accentColor ?? theme.screen.text;
+	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
+
 	return (
 		<View style={styles.content}>
 			<View style={styles.avatarContainer}>
@@ -607,14 +610,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					config={{ ...config, size: AvatarSize.XLARGE }}
 					borderRadius={AvatarSize.XLARGE / 2}
 				/>
-				<TouchableOpacity style={styles.diceButton} onPress={handleRandomize} accessibilityLabel="Randomize avatar" accessibilityRole="button">
-					<MaterialCommunityIcons name="dice-multiple" size={24} color={accentColor ?? '#fff'} />
+				<TouchableOpacity
+					style={[styles.diceButton, { backgroundColor: diceButtonBg }]}
+					onPress={handleRandomize}
+					accessibilityLabel="Randomize avatar"
+					accessibilityRole="button"
+				>
+					<MaterialCommunityIcons name="dice-multiple" size={24} color={diceIconColor} />
 				</TouchableOpacity>
-				{debugMode && (
-					<TouchableOpacity style={styles.copyButton} onPress={handleCopyConfig} accessibilityLabel="Copy config JSON" accessibilityRole="button">
-						<MaterialCommunityIcons name="content-copy" size={24} color={accentColor ?? '#fff'} />
-					</TouchableOpacity>
-				)}
 			</View>
 
 			<SettingsListGroupTitle title="Category" />
@@ -657,6 +660,24 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					/>
 				);
 			})}
+
+			<SettingsListGroupTitle title="Actions" />
+			<SettingsList
+				title="Copy Config"
+				onPress={handleCopyConfig}
+				leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
+				iconBgColor={accentColor}
+				groupPosition="single"
+			/>
+
+			{debugMode && (
+				<>
+					<SettingsListGroupTitle title="Debug" />
+					<Text style={[styles.debugJson, { color: theme.screen.text }]}>
+						{JSON.stringify(config, null, 2)}
+					</Text>
+				</>
+			)}
 		</View>
 	);
 };
@@ -710,13 +731,8 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		top: 24,
 		right: 0,
-		padding: 6,
-	},
-	copyButton: {
-		position: 'absolute',
-		top: 24,
-		left: 0,
-		padding: 6,
+		padding: 8,
+		borderRadius: 10,
 	},
 	colorSwatch: {
 		width: 22,
@@ -726,5 +742,10 @@ const styles = StyleSheet.create({
 	},
 	previewAvatarWrapper: {
 		marginRight: 10,
+	},
+	debugJson: {
+		fontFamily: 'monospace',
+		fontSize: 12,
+		padding: 12,
 	},
 });
