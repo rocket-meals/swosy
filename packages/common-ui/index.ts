@@ -99,10 +99,10 @@ export type { SettingsListMyMapThemeSelectionProps } from './src/components/Sett
 
 export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
-export type { MyAvatarProps } from './src/components/MyAvatar';
+export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
 
 export { useAvatarEditorModal } from './src/components/MyAvatarEditor';
-export type { AvatarConfig, UseAvatarEditorModalOptions } from './src/components/MyAvatarEditor';
+export type { UseAvatarEditorModalOptions } from './src/components/MyAvatarEditor';
 
 export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
 export type { MyColorPickerProps } from './src/components/MyColorPicker';
