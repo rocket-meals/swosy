@@ -33,7 +33,6 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	titleNumberOfLines = 0,
 	isAccountRequired = false,
 	onAccountRequired,
-	valueNumberOfLines = 0,
 }) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -99,39 +98,16 @@ const SettingsList: React.FC<SettingsListProps> = ({
 			) : hasIcon ? (
 				leftIconComponent ? leftIconComponent : renderedLeftIcon
 			) : null}
-			{shouldReserveIconSpace ? <View style={[styles.iconPlaceholder, reverseLayout ? styles.iconPlaceholderReverse : null]} /> : null}
-			<View style={[styles.textWrapper, valueNumberOfLines ? { flexWrap: 'nowrap' } : null, reverseLayout ? styles.textWrapperReverse : null]}>
-				<View style={[styles.titleContainer, valueNumberOfLines ? { flexGrow: 0, flexShrink: 0 } : null]}>
-					<Text
-						selectable
-						style={[
-							styles.title,
-							{ color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal', textAlign: titleTextAlign } as TextStyle,
-						]}
-						numberOfLines={titleNumberOfLines}
-						ellipsizeMode="tail"
-					>
+			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
+			<View style={styles.textWrapper}>
+				<View style={styles.titleContainer}>
+					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={titleNumberOfLines} ellipsizeMode="tail">
 						{title || label}
 					</Text>
 				</View>
 				{value ? (
-					<View
-						style={[
-							valueNumberOfLines ? styles.valueContainer : null,
-							reverseLayout && titleTextAlign !== 'right' ? styles.valueContainerReverse : null,
-						]}
-					>
-						<Text
-							selectable
-							style={[
-								styles.value,
-								reverseLayout && titleTextAlign !== 'right' ? styles.valueReverse : null,
-								{ color: theme.screen.text } as TextStyle,
-								valueNumberOfLines ? { flexShrink: 1 } : null,
-							]}
-							numberOfLines={valueNumberOfLines}
-							ellipsizeMode={valueNumberOfLines ? 'tail' : undefined}
-						>
+					<View style={styles.valueContainer}>
+						<Text selectable style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
 							{value}
 						</Text>
 					</View>
