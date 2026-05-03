@@ -14,10 +14,13 @@ import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/Se
 
 export type { AvatarConfig } from '../MyAvatar';
 
+const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
+
 const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
 	seed: 'John Doe',
-	style: AvatarStyle.LORELEI,
+	style: DEFAULT_AVATAR_STYLE,
 	size: AvatarSize.LARGE,
+	options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
 };
 
 /** Built-in category keys (always available regardless of style). */
@@ -206,6 +209,25 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
 		'beard', 'clothes', 'clothesColor',
 	],
 };
+
+/**
+ * Returns a default set of component options for the given avatar style.
+ * For each component attribute, the value "default" is used when it exists
+ * in the allowed enum values, otherwise the first available value is used.
+ * Color attributes are intentionally excluded so they remain seed-based.
+ */
+function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]> {
+	const componentOptions = getStyleComponentOptions(style);
+	const defaults: Record<string, string[]> = {};
+	for (const [key, values] of Object.entries(componentOptions)) {
+		if (values.includes('default')) {
+			defaults[key] = ['default'];
+		} else if (values.length > 0) {
+			defaults[key] = [values[0]];
+		}
+	}
+	return defaults;
+}
 
 /**
  * Sorts avatar attribute keys (component + color) in a logical character-creation
@@ -476,7 +498,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const colorKeys = useMemo(() => getStyleColorKeys(config.style), [config.style]);
 
 	const handleStyleChange = (newStyle: AvatarStyle) => {
-		handleChange({ ...config, style: newStyle, options: undefined });
+		handleChange({ ...config, style: newStyle, options: getDefaultOptionsForStyle(newStyle) });
 	};
 
 	const handleOptionChange = (key: string, value: string) => {
