@@ -101,7 +101,7 @@ export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
 export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
 
-export { useAvatarEditorModal } from './src/components/MyAvatarEditor';
+export { useAvatarEditorModal, AvatarPropKey } from './src/components/MyAvatarEditor';
 export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps } from './src/components/MyAvatarEditor';
 
 export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
