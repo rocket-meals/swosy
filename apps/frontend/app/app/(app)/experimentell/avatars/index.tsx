@@ -15,11 +15,7 @@ import {
 	useAvatarEditorModal,
 	AvatarConfig,
 } from 'repo-depkit-common-ui';
-
-const DEFAULT_CONFIG: AvatarConfig = {
-	style: AvatarStyle.LORELEI,
-	size: AvatarSize.LARGE,
-};
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
@@ -27,18 +23,36 @@ const AvatarsScreen = () => {
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const debugMode = useDebugMode();
-	const { showAvatarEditor } = useAvatarEditorModal();
+	const { showAvatarEditor, showPresetSelection } = useAvatarEditorModal();
 
-	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(DEFAULT_CONFIG);
+	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig | null>(null);
 
-	const handleOpenEditor = () => {
+	const editorOptions = {
+		title: translate(TranslationKeys.avatars),
+		accentColor: primaryColor,
+		debugMode,
+		allowedStyles: [AvatarStyle.OPEN_PEEPS],
+	};
+
+	const handleEdit = () => {
+		if (!avatarConfig) return;
 		showAvatarEditor(avatarConfig, (updatedConfig) => {
 			setAvatarConfig(updatedConfig);
-		}, {
-			title: translate(TranslationKeys.avatars),
-			accentColor: primaryColor,
-			debugMode,
-		});
+		}, editorOptions);
+	};
+
+	const handleCreateNew = () => {
+		showPresetSelection((newConfig) => {
+			setAvatarConfig(newConfig);
+		}, editorOptions);
+	};
+
+	const handleDelete = () => {
+		setAvatarConfig(null);
+	};
+
+	const handleSave = () => {
+		// TODO: Persist the avatar config
 	};
 
 	return (
@@ -52,19 +66,53 @@ const AvatarsScreen = () => {
 				</Text>
 
 				<View style={styles.avatarContainer}>
-					<MyAvatar
-						config={avatarConfig}
-						borderRadius={avatarConfig.size / 2}
-					/>
+					{avatarConfig ? (
+						<MyAvatar
+							config={avatarConfig}
+							borderRadius={avatarConfig.size / 2}
+						/>
+					) : (
+						<View style={[styles.placeholderAvatar, { borderColor: theme.screen.text + '33' }]}>
+							<MaterialCommunityIcons name="account-outline" size={64} color={theme.screen.text + '66'} />
+						</View>
+					)}
 				</View>
 
 				<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
+				{avatarConfig && (
+					<>
+						<SettingsList
+							title="Save"
+							onPress={handleSave}
+							leftIcon={<MaterialCommunityIcons name="content-save" size={20} />}
+							iconBgColor={primaryColor}
+							groupPosition="top"
+							showSeparator={true}
+						/>
+						<SettingsList
+							title="Edit"
+							onPress={handleEdit}
+							leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
+							iconBgColor={primaryColor}
+							groupPosition="middle"
+							showSeparator={true}
+						/>
+						<SettingsList
+							title="Delete"
+							onPress={handleDelete}
+							leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+							iconBgColor={primaryColor}
+							groupPosition="middle"
+							showSeparator={true}
+						/>
+					</>
+				)}
 				<SettingsList
-					title={translate(TranslationKeys.avatar_style)}
-					value={avatarConfig.style}
-					onPress={handleOpenEditor}
+					title="Create New"
+					onPress={handleCreateNew}
+					leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
 					iconBgColor={primaryColor}
-					groupPosition="single"
+					groupPosition={avatarConfig ? 'bottom' : 'single'}
 				/>
 			</View>
 		</ScrollView>
@@ -85,6 +133,15 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingVertical: 24,
+	},
+	placeholderAvatar: {
+		width: AvatarSize.LARGE,
+		height: AvatarSize.LARGE,
+		borderRadius: AvatarSize.LARGE / 2,
+		borderWidth: 2,
+		borderStyle: 'dashed',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });
 
