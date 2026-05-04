@@ -808,10 +808,18 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
-			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
-			// Set probability to 100 so random selections are always visible
+			// For optional components, include "none" as a possible random selection
 			if (newProbabilityKeys[key]) {
-				randomOptions[newProbabilityKeys[key]] = ['100'];
+				const allValues = [NONE_OPTION, ...realValues];
+				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+				if (randomValue === NONE_OPTION) {
+					randomOptions[newProbabilityKeys[key]] = ['0'];
+				} else {
+					randomOptions[key] = [randomValue];
+					randomOptions[newProbabilityKeys[key]] = ['100'];
+				}
+			} else {
+				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
 			}
 		}
 		for (const key of newColorKeys) {
@@ -1237,9 +1245,18 @@ function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConf
 		for (const [key, values] of Object.entries(componentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
-			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			// For optional components, include "none" as a possible random selection
 			if (probabilityKeys[key]) {
-				randomOptions[probabilityKeys[key]] = ['100'];
+				const allValues = [NONE_OPTION, ...realValues];
+				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+				if (randomValue === NONE_OPTION) {
+					randomOptions[probabilityKeys[key]] = ['0'];
+				} else {
+					randomOptions[key] = [randomValue];
+					randomOptions[probabilityKeys[key]] = ['100'];
+				}
+			} else {
+				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
 			}
 		}
 		for (const key of colorKeys) {
