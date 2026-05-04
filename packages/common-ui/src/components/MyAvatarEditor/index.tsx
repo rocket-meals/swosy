@@ -31,6 +31,19 @@
  *   `MyScrollViewModal`. Gorhom manages the scroll-view height via its own
  *   BottomSheetContext; explicit flex sizing overrides that and breaks scrolling.
  *
+ * ─── SCROLL FIX 3 (ListHeaderComponent → stickyHeaderComponent, inside scroll) ──
+ *   After Fix 1 & 2 the avatar preview scrolled with the content (no longer pinned).
+ *   To restore the sticky-header UX, `MyScrollViewModal` was updated: it no longer
+ *   renders `stickyHeaderComponent` as a sibling View *outside* the
+ *   `BottomSheetScrollView` (which caused Fix-1's height problem).  Instead it
+ *   inserts the component *inside* the `BottomSheetScrollView` at a computed index
+ *   and passes that index via `stickyHeaderIndices` to the scroll view.  This way
+ *   gorhom correctly accounts for the header height in the scrollable range (because
+ *   the element is inside the scroll view), while React Native's native sticky-header
+ *   mechanism keeps it pinned to the top as the user scrolls.
+ *
+ *   Fix: changed `ListHeaderComponent` → `stickyHeaderComponent` in `showAvatarEditor`.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
@@ -967,7 +980,7 @@ export const useAvatarEditorModal = () => {
 				onClose: () => {
 					onClose(configRef.current);
 				},
-				ListHeaderComponent: (
+				stickyHeaderComponent: (
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
 					/>
