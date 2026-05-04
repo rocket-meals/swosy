@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
 import { Style } from '@dicebear/core';
@@ -218,12 +218,18 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
  */
 function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]> {
 	const componentOptions = getStyleComponentOptions(style);
+	const probabilityKeys = getStyleProbabilityKeys(style);
 	const defaults: Record<string, string[]> = {};
 	for (const [key, values] of Object.entries(componentOptions)) {
-		if (values.includes('default')) {
+		const realValues = values.filter((v) => v !== NONE_OPTION);
+		if (realValues.includes('default')) {
 			defaults[key] = ['default'];
-		} else if (values.length > 0) {
-			defaults[key] = [values[0]];
+		} else if (realValues.length > 0) {
+			defaults[key] = [realValues[0]];
+		}
+		// Set probability to 100 for the default selection so the component is visible
+		if (probabilityKeys[key]) {
+			defaults[probabilityKeys[key]] = ['100'];
 		}
 	}
 	const colorKeys = getStyleColorKeys(style);
@@ -255,21 +261,53 @@ function sortAttributeKeys(keys: string[], style: AvatarStyle): string[] {
 	return [...knownKeys, ...unknownKeys];
 }
 
+/** Sentinel value used to represent the "none" / disabled option for optional components. */
+const NONE_OPTION = '__none__';
+
+/**
+ * Returns a map of component keys to their corresponding probability property keys
+ * for a given DiceBear avatar style. For example, { glasses: 'glassesProbability' }.
+ */
+function getStyleProbabilityKeys(style: AvatarStyle): Record<string, string> {
+	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
+	const properties = dicebearStyle?.schema?.properties;
+	if (!properties) return {};
+
+	const result: Record<string, string> = {};
+	for (const key of Object.keys(properties)) {
+		if (key.endsWith('Probability')) {
+			const componentKey = key.replace('Probability', '');
+			if (properties[componentKey]) {
+				result[componentKey] = key;
+			}
+		}
+	}
+	return result;
+}
+
 /**
  * Returns the available component options (e.g. eyes, mouth, hair) for a given
  * DiceBear avatar style. Each key maps to its allowed enum values.
+ * For components that have an associated probability property, a "none" option
+ * is prepended so the user can disable the component.
  */
 function getStyleComponentOptions(style: AvatarStyle): Record<string, string[]> {
 	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
 	const properties = dicebearStyle?.schema?.properties;
 	if (!properties) return {};
 
+	const probabilityKeys = getStyleProbabilityKeys(style);
 	const result: Record<string, string[]> = {};
 	for (const [key, value] of Object.entries(properties)) {
 		if (key.endsWith('Color') || key.includes('Probability')) continue;
 		const items = (value as any)?.items;
 		if (items?.enum && Array.isArray(items.enum) && items.enum.length > 1) {
-			result[key] = items.enum as string[];
+			const options = items.enum as string[];
+			if (probabilityKeys[key]) {
+				result[key] = [NONE_OPTION, ...options];
+			} else {
+				result[key] = options;
+			}
 		}
 	}
 	return result;
@@ -304,7 +342,7 @@ function getSchemaDefaultColors(style: AvatarStyle, key: string): string[] {
  */
 function getPresetColorsForKey(key: string): string[] {
 	const lower = key.toLowerCase();
-	if (lower.includes('skin')) return SKIN_COLORS;
+	if (lower.includes('skin') || lower === 'basecolor') return SKIN_COLORS;
 	if (lower.includes('hair')) return HAIR_COLORS;
 	return PRESET_COLORS;
 }
@@ -446,6 +484,7 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 	onSelectAndClose,
 	accentColor,
 }) => {
+	const probKey = getStyleProbabilityKeys(config.style)[categoryKey];
 	return (
 		<>
 			{values.map((value, index) => {
@@ -457,11 +496,22 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 							: index === values.length - 1
 								? 'bottom'
 								: 'middle';
-				const previewOptions = { ...(config.options ?? {}), [categoryKey]: [value] };
+				const isNone = value === NONE_OPTION;
+				const previewOptions = { ...(config.options ?? {}) };
+				if (isNone) {
+					if (probKey) {
+						previewOptions[probKey] = ['0'];
+					}
+				} else {
+					previewOptions[categoryKey] = [value];
+					if (probKey) {
+						previewOptions[probKey] = ['100'];
+					}
+				}
 				return (
 					<SettingsListSelectOptionSingle
 						key={value}
-						label={value}
+						label={isNone ? 'None' : value}
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
@@ -481,6 +531,61 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 					/>
 				);
 			})}
+		</>
+	);
+};
+
+type DebugJsonInputProps = {
+	config: AvatarConfig;
+	onApply: (config: AvatarConfig) => void;
+	accentColor?: string;
+	theme: any;
+};
+
+const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accentColor, theme }) => {
+	const [jsonText, setJsonText] = useState<string>(JSON.stringify(config, null, 2));
+	const [error, setError] = useState<string | null>(null);
+
+	const handleShow = () => {
+		try {
+			const parsed = JSON.parse(jsonText);
+			if (parsed && typeof parsed === 'object' && parsed.style && parsed.size) {
+				setError(null);
+				onApply(parsed as AvatarConfig);
+			} else {
+				setError('JSON must contain at least "style" and "size" fields.');
+			}
+		} catch (e) {
+			setError('Invalid JSON: ' + (e instanceof Error ? e.message : String(e)));
+		}
+	};
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Debug" />
+			<Text style={[styles.debugJson, { color: theme.screen.text }]}>
+				{JSON.stringify(config, null, 2)}
+			</Text>
+			<TextInput
+				style={[styles.debugJsonInput, { color: theme.screen.text, borderColor: theme.screen.text + '33' }]}
+				multiline
+				value={jsonText}
+				onChangeText={(text) => {
+					setJsonText(text);
+					setError(null);
+				}}
+				placeholder="Paste JSON config here..."
+				placeholderTextColor={theme.screen.text + '66'}
+			/>
+			{error && <Text style={styles.debugJsonError}>{error}</Text>}
+			<TouchableOpacity
+				style={[styles.debugShowButton, { backgroundColor: accentColor ?? theme.screen.text }]}
+				onPress={handleShow}
+			>
+				<Text style={[styles.debugShowButtonText, { color: myContrastColor(accentColor ?? theme.screen.text, theme, false) }]}>
+					Show
+				</Text>
+			</TouchableOpacity>
 		</>
 	);
 };
@@ -508,12 +613,34 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		handleChange({ ...config, style: newStyle, options: getDefaultOptionsForStyle(newStyle) });
 	};
 
+	const probabilityKeys = useMemo(() => getStyleProbabilityKeys(config.style), [config.style]);
+
 	const handleOptionChange = (key: string, value: string) => {
-		const newOptions = { ...(config.options ?? {}), [key]: [value] };
+		const newOptions = { ...(config.options ?? {}) };
+		const probKey = probabilityKeys[key];
+		if (value === NONE_OPTION) {
+			// Disable the component via probability
+			if (probKey) {
+				newOptions[probKey] = ['0'];
+			}
+			delete newOptions[key];
+		} else {
+			newOptions[key] = [value];
+			// Ensure the component is visible by setting probability to 100
+			if (probKey) {
+				newOptions[probKey] = ['100'];
+			}
+		}
 		handleChange({ ...config, options: newOptions });
 	};
 
 	const getSelectedOptionValue = (key: string): string | null => {
+		// If probability is 0, the component is disabled
+		const probKey = probabilityKeys[key];
+		if (probKey) {
+			const prob = config.options?.[probKey];
+			if (prob && prob[0] === '0') return NONE_OPTION;
+		}
 		const selected = config.options?.[key];
 		if (selected && selected.length > 0) return selected[0];
 		return null;
@@ -522,9 +649,16 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const handleRandomize = () => {
 		const newComponentOptions = getStyleComponentOptions(config.style);
 		const newColorKeys = getStyleColorKeys(config.style);
+		const newProbabilityKeys = getStyleProbabilityKeys(config.style);
 		const randomOptions: Record<string, string[]> = {};
 		for (const [key, values] of Object.entries(newComponentOptions)) {
-			randomOptions[key] = [values[Math.floor(Math.random() * values.length)]];
+			const realValues = values.filter((v) => v !== NONE_OPTION);
+			if (realValues.length === 0) continue;
+			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			// Set probability to 100 so random selections are always visible
+			if (newProbabilityKeys[key]) {
+				randomOptions[newProbabilityKeys[key]] = ['100'];
+			}
 		}
 		for (const key of newColorKeys) {
 			const presetColors = getPresetColorsForKey(key);
@@ -612,7 +746,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const hex = config.options?.[cat]?.[0];
 			return hex ? '#' + hex : undefined;
 		}
-		return getSelectedOptionValue(cat) ?? undefined;
+		const val = getSelectedOptionValue(cat);
+		if (val === NONE_OPTION) return 'None';
+		return val ?? undefined;
 	};
 
 	/** Get the handler for opening a category's selection modal. */
@@ -699,12 +835,12 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			/>
 
 			{debugMode && (
-				<>
-					<SettingsListGroupTitle title="Debug" />
-					<Text style={[styles.debugJson, { color: theme.screen.text }]}>
-						{JSON.stringify(config, null, 2)}
-					</Text>
-				</>
+				<DebugJsonInput
+					config={config}
+					onApply={handleChange}
+					accentColor={accentColor}
+					theme={theme}
+				/>
 			)}
 		</View>
 	);
@@ -775,5 +911,33 @@ const styles = StyleSheet.create({
 		fontFamily: 'monospace',
 		fontSize: 12,
 		padding: 12,
+	},
+	debugJsonInput: {
+		fontFamily: 'monospace',
+		fontSize: 12,
+		padding: 12,
+		marginHorizontal: 12,
+		borderWidth: 1,
+		borderRadius: 8,
+		minHeight: 120,
+		textAlignVertical: 'top',
+	},
+	debugJsonError: {
+		color: '#ef4444',
+		fontSize: 12,
+		paddingHorizontal: 12,
+		paddingTop: 4,
+	},
+	debugShowButton: {
+		marginHorizontal: 12,
+		marginTop: 8,
+		marginBottom: 12,
+		paddingVertical: 10,
+		borderRadius: 8,
+		alignItems: 'center',
+	},
+	debugShowButtonText: {
+		fontFamily: 'Poppins_700Bold',
+		fontSize: 14,
 	},
 });
