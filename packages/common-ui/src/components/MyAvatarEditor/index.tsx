@@ -39,11 +39,17 @@ class ConfigObservable {
 
 const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
 
-const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
-	style: DEFAULT_AVATAR_STYLE,
-	size: AvatarSize.LARGE,
-	options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
-};
+let _defaultAvatarConfig: AvatarConfig | null = null;
+function getDefaultAvatarConfig(): AvatarConfig {
+	if (!_defaultAvatarConfig) {
+		_defaultAvatarConfig = {
+			style: DEFAULT_AVATAR_STYLE,
+			size: AvatarSize.LARGE,
+			options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
+		};
+	}
+	return _defaultAvatarConfig;
+}
 
 /** Built-in category keys (always available regardless of style). */
 const BUILTIN_CATEGORY_STYLE = 'Style';
@@ -388,12 +394,10 @@ type AvatarEditorModalContentProps = {
 
 type AvatarStickyHeaderProps = {
 	configObservable: ConfigObservable;
-	accentColor?: string;
 };
 
-const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor }) => {
+const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configObservable.get());
-	const { theme, isDark } = useTheme();
 
 	useEffect(() => {
 		return configObservable.subscribe(setConfig);
@@ -909,8 +913,8 @@ export type UseAvatarEditorModalOptions = {
 
 export const useAvatarEditorModal = () => {
 	const { show, close } = useMyScrollViewModal();
-	const configRef = useRef<AvatarConfig>(DEFAULT_AVATAR_CONFIG);
-	const observableRef = useRef<ConfigObservable>(new ConfigObservable(DEFAULT_AVATAR_CONFIG));
+	const configRef = useRef<AvatarConfig>(getDefaultAvatarConfig());
+	const observableRef = useRef<ConfigObservable>(new ConfigObservable(getDefaultAvatarConfig()));
 
 	const showAvatarEditor = useCallback(
 		(initialConfig: AvatarConfig, onClose: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
@@ -926,7 +930,6 @@ export const useAvatarEditorModal = () => {
 				stickyHeaderComponent: (
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
-						accentColor={options?.accentColor}
 					/>
 				),
 				children: (
