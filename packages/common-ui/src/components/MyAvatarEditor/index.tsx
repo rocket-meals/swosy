@@ -452,13 +452,14 @@ type AvatarStickyHeaderProps = {
 
 const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configObservable.get());
+	const { theme } = useTheme();
 
 	useEffect(() => {
 		return configObservable.subscribe(setConfig);
 	}, [configObservable]);
 
 	return (
-		<View style={styles.avatarContainer}>
+		<View style={[styles.avatarContainer, { backgroundColor: theme.screen.background }]}>
 			<MyAvatar
 				config={{ ...config, size: AvatarSize.XLARGE }}
 				borderRadius={AvatarSize.XLARGE / 2}
