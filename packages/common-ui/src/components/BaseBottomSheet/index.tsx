@@ -46,14 +46,13 @@ const backdropStyles = StyleSheet.create({
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
 	onClose?: () => void;
 	headerBackgroundColor?: string;
-	fullScreen?: boolean;
 }
 
-const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, fullScreen, ...props }, ref) => {
+const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
 	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <CustomBackdrop {...backdropProps} onPress={onClose} />, [onClose]);
 	const { theme } = useTheme();
 	const { top: topInset } = useSafeAreaInsets();
-	const snapPoints = useMemo(() => [fullScreen ? '100%' : '80%'], [fullScreen]);
+	const snapPoints = useMemo(() => ['80%'], []);
 
 	const usedHeaderBg = headerBackgroundColor || theme.screen.background;
 	const effectiveBackgroundStyle = { backgroundColor: usedHeaderBg };
@@ -71,7 +70,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 	);
 
 	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...props} enablePanDownToClose={fullScreen ? false : props.enablePanDownToClose}>
+		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...props}>
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />

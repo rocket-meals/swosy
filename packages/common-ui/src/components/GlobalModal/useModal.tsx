@@ -5,7 +5,7 @@ export const useModal = () => {
 	const { open, close, openAndDiscardOthers, closeAll, debug } = useModalContext();
 
 	const show = useCallback(
-		(content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string; fullScreen?: boolean }) => {
+		(content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
 			open(content, options);
 		},
 		[open],
@@ -16,7 +16,7 @@ export const useModal = () => {
 	}, [close]);
 
 	const showAndDiscardOthers = useCallback(
-		(content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string; fullScreen?: boolean }) => {
+		(content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
 			openAndDiscardOthers(content, options);
 		},
 		[openAndDiscardOthers],

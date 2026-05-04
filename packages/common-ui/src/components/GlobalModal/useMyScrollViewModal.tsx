@@ -4,7 +4,7 @@ import { useModal } from './useModal';
 
 export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
 
-type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string; fullScreen?: boolean };
+type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string };
 
 export const useMyScrollViewModal = () => {
 	const { show: showModal, close, showAndDiscardOthers: showAndDiscardOthersModal, closeAll, debug } = useModal();
@@ -13,22 +13,20 @@ export const useMyScrollViewModal = () => {
 		modalProps: MyScrollViewModalConfig,
 		options?: ScrollViewModalOptions,
 	): [React.ReactElement, ScrollViewModalOptions | undefined] => {
-		const { children, backgroundColor, fullScreen, ...restProps } = modalProps;
+		const { children, backgroundColor, ...restProps } = modalProps;
 
 		const backgroundStyle = backgroundColor
 			? { backgroundColor, ...options?.backgroundStyle }
 			: options?.backgroundStyle;
 		const headerBackgroundColor = backgroundColor ?? options?.headerBackgroundColor;
-		const mergedFullScreen = fullScreen ?? options?.fullScreen;
 		const mergedOptions: ScrollViewModalOptions = {
 			...options,
 			backgroundStyle,
 			headerBackgroundColor,
-			fullScreen: mergedFullScreen,
 		};
 
 		const element = (
-			<MyScrollViewModal closeSheet={close} backgroundColor={backgroundColor} fullScreen={fullScreen} {...restProps}>
+			<MyScrollViewModal closeSheet={close} backgroundColor={backgroundColor} {...restProps}>
 				{children}
 			</MyScrollViewModal>
 		);

@@ -923,7 +923,6 @@ export const useAvatarEditorModal = () => {
 
 			show({
 				title: options?.title ?? 'Avatar Editor',
-				fullScreen: true,
 				onClose: () => {
 					onClose(configRef.current);
 				},
