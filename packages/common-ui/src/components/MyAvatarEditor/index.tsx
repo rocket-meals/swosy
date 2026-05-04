@@ -546,15 +546,28 @@ const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accent
 	const [jsonText, setJsonText] = useState<string>(JSON.stringify(config, null, 2));
 	const [error, setError] = useState<string | null>(null);
 
+	// Keep the text input in sync when config changes externally
+	React.useEffect(() => {
+		setJsonText(JSON.stringify(config, null, 2));
+	}, [config]);
+
 	const handleShow = () => {
 		try {
 			const parsed = JSON.parse(jsonText);
-			if (parsed && typeof parsed === 'object' && parsed.style && parsed.size) {
-				setError(null);
-				onApply(parsed as AvatarConfig);
-			} else {
-				setError('JSON must contain at least "style" and "size" fields.');
+			if (!parsed || typeof parsed !== 'object') {
+				setError('JSON must be an object.');
+				return;
 			}
+			if (!parsed.style || !STYLE_MAP[parsed.style as AvatarStyle]) {
+				setError('Invalid or missing "style". Must be a valid AvatarStyle.');
+				return;
+			}
+			if (!parsed.size || typeof parsed.size !== 'number') {
+				setError('Invalid or missing "size". Must be a number.');
+				return;
+			}
+			setError(null);
+			onApply(parsed as AvatarConfig);
 		} catch (e) {
 			setError('Invalid JSON: ' + (e instanceof Error ? e.message : String(e)));
 		}
