@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
+import { myContrastColor } from '../../helpers/ColorHelper';
+import { lightTheme } from '../../themes';
 import SettingsList from '../SettingsList';
 import type { SettingsListItemBaseProps, SettingsListProps } from '../SettingsList/types';
 
@@ -39,7 +42,8 @@ const SettingsListLeftRight = <T extends string | number>({
 	onPress,
 	extraRightElement,
 }: SettingsListLeftRightProps<T>) => {
-	const { theme } = useTheme();
+	const { theme, isDark } = useTheme();
+	const settingsCtx = useSettingsContext();
 
 	const currentIndex = options.findIndex((o) => o.id === selectedOption);
 
@@ -57,6 +61,9 @@ const SettingsListLeftRight = <T extends string | number>({
 
 	const currentOption = currentIndex >= 0 ? options[currentIndex] : null;
 	const displayValue = currentOption?.label ?? '';
+
+	const resolvedIconBg = iconBgColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
+	const iconColor = myContrastColor(resolvedIconBg, theme, isDark);
 
 	const leftArrow = (
 		<TouchableOpacity
@@ -90,12 +97,24 @@ const SettingsListLeftRight = <T extends string | number>({
 		</TouchableOpacity>
 	);
 
+	// When a leftIcon is provided render [←][Icon] together so the row layout
+	// becomes: ArrowLeft | Icon | Name | Value | ArrowRight
+	const leftIconComponent = leftIcon ? (
+		<View style={styles.leftGroup}>
+			{leftArrow}
+			<View style={[styles.iconWrapper, { backgroundColor: resolvedIconBg }]}>
+				{React.isValidElement(leftIcon)
+					? React.cloneElement(leftIcon as React.ReactElement<any>, { color: iconColor })
+					: leftIcon}
+			</View>
+		</View>
+	) : leftArrow;
+
 	return (
 		<SettingsList
 			label={label}
 			value={displayValue}
-			leftIcon={leftIcon}
-			leftIconComponent={!leftIcon ? leftArrow : undefined}
+			leftIconComponent={leftIconComponent}
 			iconBgColor={iconBgColor}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
@@ -120,6 +139,19 @@ export default SettingsListLeftRight;
 const styles = StyleSheet.create({
 	arrowButton: {
 		padding: 2,
+	},
+	leftGroup: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginRight: 10,
+	},
+	iconWrapper: {
+		width: 34,
+		height: 34,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	rightContainer: {
 		flexDirection: 'row',
