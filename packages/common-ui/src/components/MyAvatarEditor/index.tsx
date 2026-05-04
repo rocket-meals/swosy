@@ -17,7 +17,7 @@ export type { AvatarConfig } from '../MyAvatar';
 type ConfigListener = (config: AvatarConfig) => void;
 
 class ConfigObservable {
-	private listeners: Set<ConfigListener> = new Set();
+	private readonly listeners: Set<ConfigListener> = new Set();
 	private current: AvatarConfig;
 
 	constructor(initial: AvatarConfig) {
