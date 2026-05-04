@@ -1,3 +1,27 @@
+/**
+ * MyAvatarEditor — History & known pitfalls for future AI agents
+ *
+ * SCROLL ISSUE (fixed):
+ *   The avatar preview was previously passed as `stickyHeaderComponent` to
+ *   `MyScrollViewModal`, which renders it as a sibling View *outside* the
+ *   `BottomSheetScrollView`. gorhom/bottom-sheet calculates the scrollable
+ *   height from the full sheet height and does NOT account for sibling views
+ *   above the scroll view. The result: the scroll view believed all content
+ *   was already visible and refused to scroll to the end of the category list.
+ *
+ *   Fix: pass the avatar preview as `ListHeaderComponent` instead, so it lives
+ *   *inside* the `BottomSheetScrollView`. This gives gorhom the correct height
+ *   to work with. The avatar preview scrolls with the content (it is no longer
+ *   pinned at the top while scrolling), which is acceptable.
+ *
+ * NESTED SCROLLVIEW:
+ *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
+ *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
+ *   to avoid gesture conflicts with gorhom/bottom-sheet. Sub-modals
+ *   (StylePickerModalContent, ComponentPickerModalContent, ColorPickerModalContent)
+ *   are opened via a separate useMyScrollViewModal instance and each get their
+ *   own BottomSheetScrollView — that is fine.
+ */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
@@ -926,7 +950,7 @@ export const useAvatarEditorModal = () => {
 				onClose: () => {
 					onClose(configRef.current);
 				},
-				stickyHeaderComponent: (
+				ListHeaderComponent: (
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
 					/>
