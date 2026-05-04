@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-04T09:17:27.129Z",
+  "report_timestamp": "2026-05-04T09:27:15.854Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.616880591209646,
-          "amountSavedValuesForKeys": 4157,
+          "average": 1.6155642023346304,
+          "amountSavedValuesForKeys": 4152,
           "amountKeys": 27
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 99,
-          "average": 1.6308356218124755,
-          "amountSavedValuesForKeys": 4157,
+          "average": 1.629513343799058,
+          "amountSavedValuesForKeys": 4152,
           "amountKeys": 28
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4287,
-        "detection_time_ms": 90,
+        "ast_generation_time_ms": 3285,
+        "detection_time_ms": 72,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 128.16,
-          "os_memory_free": 14899724288,
-          "os_memory_total": 16766427136,
+          "os_uptime": 125.28,
+          "os_memory_free": 14948179968,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 65,
-    "amount_files_with_data_clumps": 52,
+    "amount_classes_or_interfaces_with_data_clumps": 62,
+    "amount_files_with_data_clumps": 50,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 88,
+    "fields_to_fields_data_clump": 84,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 96
+    "amount_data_clumps": 92
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "ce1f75f609f699f54769002cf177e9f500449c07",
-    "project_commit_hash": "ce1f75f609f699f54769002cf177e9f500449c07",
+    "project_version": "7afe09e0f6e59ca3dbc8ec9c0d26c8d5c4de48b7",
+    "project_commit_hash": "7afe09e0f6e59ca3dbc8ec9c0d26c8d5c4de48b7",
     "project_tag": null,
-    "project_commit_date": "1777886136",
+    "project_commit_date": "1777886729",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 518,
     "number_of_classes_or_interfaces": 1064,
     "number_of_methods": 1381,
-    "number_of_data_fields": 4157,
+    "number_of_data_fields": 4152,
     "number_of_method_parameters": 1541
   },
   "detector": {
@@ -9981,394 +9981,6 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-backgroundStyleoverlayStylefullScreen": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-backgroundStyleoverlayStylefullScreen",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
-      "from_class_or_interface_name": "ModalOptions",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
-      "to_class_or_interface_name": "ModalStackItem",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
-          "name": "backgroundStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
-            "name": "backgroundStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 2,
-            "endLine": 7,
-            "endColumn": 24
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
-          "name": "overlayStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
-            "name": "overlayStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 9,
-            "startColumn": 2,
-            "endLine": 9,
-            "endColumn": 21
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen",
-          "name": "fullScreen",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/fullScreen",
-            "name": "fullScreen",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 2,
-            "endLine": 10,
-            "endColumn": 23
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 24,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions-backgroundStyleheaderBackgroundColorfullScreen": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions-backgroundStyleheaderBackgroundColorfullScreen",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
-      "from_class_or_interface_name": "ModalOptions",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions",
-      "to_class_or_interface_name": "ScrollViewModalOptions",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
-          "name": "backgroundStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/backgroundStyle",
-            "name": "backgroundStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 33,
-              "endLine": 7,
-              "endColumn": 55
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 2,
-            "endLine": 7,
-            "endColumn": 24
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
-          "name": "headerBackgroundColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/headerBackgroundColor",
-            "name": "headerBackgroundColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 56,
-              "endLine": 7,
-              "endColumn": 87
-            }
-          },
-          "position": {
-            "startLine": 8,
-            "startColumn": 2,
-            "endLine": 8,
-            "endColumn": 33
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen",
-          "name": "fullScreen",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/fullScreen",
-            "name": "fullScreen",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 88,
-              "endLine": 7,
-              "endColumn": 108
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 2,
-            "endLine": 10,
-            "endColumn": 23
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 24,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleoverlayStylefullScreen": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleoverlayStylefullScreen",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
-      "from_class_or_interface_name": "ModalStackItem",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
-      "to_class_or_interface_name": "ModalOptions",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
-          "name": "backgroundStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
-            "name": "backgroundStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 2,
-              "endLine": 7,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 23
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
-          "name": "overlayStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
-            "name": "overlayStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 9,
-              "startColumn": 2,
-              "endLine": 9,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 20
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/fullScreen": {
-          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/fullScreen",
-          "name": "fullScreen",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen",
-            "name": "fullScreen",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 2,
-              "endLine": 10,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 24,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColorfullScreen": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx-packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColorfullScreen",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions",
-      "from_class_or_interface_name": "ScrollViewModalOptions",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
-      "to_class_or_interface_name": "ModalOptions",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/backgroundStyle": {
-          "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/backgroundStyle",
-          "name": "backgroundStyle",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
-            "name": "backgroundStyle",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 2,
-              "endLine": 7,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 33,
-            "endLine": 7,
-            "endColumn": 55
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/headerBackgroundColor": {
-          "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/headerBackgroundColor",
-          "name": "headerBackgroundColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
-            "name": "headerBackgroundColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 8,
-              "startColumn": 2,
-              "endLine": 8,
-              "endColumn": 33
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 56,
-            "endLine": 7,
-            "endColumn": 87
-          }
-        },
-        "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/fullScreen": {
-          "key": "packages/common-ui/src/components/GlobalModal/useMyScrollViewModal.tsx/interface/ScrollViewModalOptions/memberField/fullScreen",
-          "name": "fullScreen",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/fullScreen",
-            "name": "fullScreen",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 2,
-              "endLine": 10,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 88,
-            "endLine": 7,
-            "endColumn": 108
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 24,
-        "cluster_type": 3
-      }
-    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor",
@@ -10462,7 +10074,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 25,
+        "cluster_id": 24,
         "cluster_type": 2
       }
     },
@@ -10559,7 +10171,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 25,
+        "cluster_id": 24,
         "cluster_type": 2
       }
     },
@@ -11513,7 +11125,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 26,
+        "cluster_id": 25,
         "cluster_type": 2
       }
     },
@@ -12389,7 +12001,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 26,
+        "cluster_id": 25,
         "cluster_type": 2
       }
     },
