@@ -23,6 +23,7 @@ import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 
 const profileHelper = new ProfileHelper();
+const AVATAR_BACKGROUND_COLOR = '#ffffff';
 
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
@@ -84,8 +85,8 @@ const AvatarsScreen = () => {
 			if (result) {
 				dispatch({ type: UPDATE_PROFILE, payload: result });
 			}
-		} catch {
-			// Silently ignore errors
+		} catch (error) {
+			console.error('[AvatarsScreen] Failed to save avatar:', error);
 		}
 	};
 
@@ -100,7 +101,7 @@ const AvatarsScreen = () => {
 						<MyAvatar
 							config={avatarConfig}
 							rounded={true}
-							backgroundColor="#ffffff"
+							backgroundColor={AVATAR_BACKGROUND_COLOR}
 						/>
 					) : (
 						<View style={[styles.placeholderAvatar, { borderColor: theme.screen.text + '33' }]}>
