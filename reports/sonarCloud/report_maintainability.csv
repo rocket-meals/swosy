@@ -1,5 +1,4 @@
 Key,Message,Component,Line
-"AZ3x-yeoPi00FShfoAur","Member 'listeners' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",20
 "AZ3x-yeoPi00FShfoAus","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",44
 "AZ3x-yeoPi00FShfoAut","Remove this useless assignment to variable ""diceIconColor"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",834
 "AZ3xhI74Pi00FShfjKGk","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",301
@@ -9188,8 +9187,6 @@ Key,Message,Component,Line
 "AZ0Tplh0ufp2jxPAhS6E","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AvatarHelper.ts",11
 "AZ0Tplh0ufp2jxPAhS6F","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AvatarHelper.ts",13
 "AZ0Tplj4ufp2jxPAhS6T","Remove this unused import of 'AccountHelper'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",11
-"AZ0Tplj4ufp2jxPAhS6U","Member 'useAdminAccountability' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",25
-"AZ0TplhYufp2jxPAhS5_","Member 'useAdminAccountability' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",123
 "AZ0Tpli5ufp2jxPAhS6K","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/pdf/PdfGeneratorInterfaces.ts",14
 "AZ0TplECufp2jxPAhS0J","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/frontend/app/components/TriStateCheckbox/TriStateCheckbox.tsx",19
 "AZ0TplECufp2jxPAhS0K","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/TriStateCheckbox/TriStateCheckbox.tsx",31
@@ -9207,7 +9204,6 @@ Key,Message,Component,Line
 "AZ0TpmNvufp2jxPAhTMl","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/form/FormHelperCommon.ts",5
 "AZ0TplqTufp2jxPAhTJ7","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",95
 "AZ0TplqTufp2jxPAhTJ-","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",166
-"AZ0TplqTufp2jxPAhTJ0","Member 'config' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",45
 "AZ0TplqTufp2jxPAhTJ1","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",47
 "AZ0TplqTufp2jxPAhTJ2","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",48
 "AZ0TplqTufp2jxPAhTJ3","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",70
@@ -9280,22 +9276,15 @@ Key,Message,Component,Line
 "AZ0TpmNIufp2jxPAhTMf","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/CronHelper.ts",69
 "AZ0Tplhfufp2jxPAhS6A","Remove this unused import of 'CollectionFieldNames'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFieldsServiceHelper.ts",3
 "AZ0Tplhfufp2jxPAhS6B","Remove this unused import of 'DatabaseTypes'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFieldsServiceHelper.ts",3
-"AZ0Tplhfufp2jxPAhS6C","Member 'myDatabaseHelper' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFieldsServiceHelper.ts",7
 "AZ0Tplhfufp2jxPAhS6D","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFieldsServiceHelper.ts",20
 "AZ0TplgYufp2jxPAhS5-","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyServiceClassHelpers.ts",5
 "AZ0TplfXufp2jxPAhS5i","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",57
-"AZ0TplfXufp2jxPAhS5j","Member 'props' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",74
 "AZ0TplfXufp2jxPAhS5k","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",97
 "AZ0TplfXufp2jxPAhS5l","Remove this useless assignment to variable ""input_tokens"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",100
 "AZ0TplfXufp2jxPAhS5m","Remove this useless assignment to variable ""output_tokens"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",101
 "AZ0TplfXufp2jxPAhS5n","Remove this useless assignment to variable ""total_tokens"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",102
 "AZ0TplfXufp2jxPAhS5o","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",103
 "AZ0TplfXufp2jxPAhS5p","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorChatGpt.ts",109
-"AZ0Tplfkufp2jxPAhS5r","Member 'props' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageRawGeneratorMock.ts",9
-"AZ0Tplffufp2jxPAhS5q","Member 'props' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/image/ImageSafeGenerator.ts",14
-"AZ0Tplfuufp2jxPAhS5t","Member 'props' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/moderation/ModerationCheckChatGpt.ts",20
-"AZ0Tplfuufp2jxPAhS5u","Member 'openai' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/moderation/ModerationCheckChatGpt.ts",21
-"AZ0Tplf1ufp2jxPAhS5v","Member 'props' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ai/moderation/ModerationCheckMock.ts",8
 "AZ0TplnZufp2jxPAhS6s","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",222
 "AZ0TplnZufp2jxPAhS6t","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",257
 "AZpKHyudSCN-fIsIx9M6","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTranslationFields.ts",2
@@ -9999,3 +9988,14 @@ Key,Message,Component,Line
 "AZ0TplEkufp2jxPAhS0R","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",115
 "AZ0TplEkufp2jxPAhS0S","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",127
 "AZ0TplEkufp2jxPAhS0T","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",139
+"AZkUSvCCS4VhJojFFARI","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",216
+"AZkUSvCCS4VhJojFFARJ","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",217
+"AZkUSvCCS4VhJojFFARK","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",226
+"AZkUSvCCS4VhJojFFARL","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",227
+"AZkUSvfLS4VhJojFFCV5","Duplicate enum member value May.","rocket-meals_rocket-meals:apps/frontend/app/locales/keys.ts",539
+"AZkUSu_GS4VhJojFFAPv","Replace this ""Boolean"" wrapper object with primitive type ""boolean"".","rocket-meals_rocket-meals:apps/frontend/app/components/Login/types.ts",14
+"AZlyj_l40YdgFOBafBMB","Prefer `globalThis.window` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/redux/store/store.ts",17
+"AZlyj_l40YdgFOBafBMC","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/redux/store/store.ts",19
+"AZ0TpkuJufp2jxPAhSvC","Remove this useless assignment to variable ""translate"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/index.tsx",51
+"AZkUSvC0S4VhJojFFARc","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",202
+"AZkUSvADS4VhJojFFAQO","Remove this useless assignment to variable ""translate"".","rocket-meals_rocket-meals:apps/frontend/app/components/ListWeekHeader/ListWeekHeader.tsx",13
