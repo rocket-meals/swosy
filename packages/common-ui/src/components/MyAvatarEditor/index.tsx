@@ -238,6 +238,9 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
 	],
 };
 
+/** Sentinel value used to represent the "none" / disabled option for optional components. */
+const NONE_OPTION = '__none__';
+
 /**
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
@@ -289,9 +292,6 @@ function sortAttributeKeys(keys: string[], style: AvatarStyle): string[] {
 	const unknownKeys = keys.filter((k) => !knownSet.has(k));
 	return [...knownKeys, ...unknownKeys];
 }
-
-/** Sentinel value used to represent the "none" / disabled option for optional components. */
-const NONE_OPTION = '__none__';
 
 /**
  * Returns a map of component keys to their corresponding probability property keys
