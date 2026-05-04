@@ -20,7 +20,6 @@ export interface MyScrollViewModalProps {
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
 	stickyHeaderComponent?: ReactNode;
-	fullScreen?: boolean;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -38,7 +37,6 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	onClose,
 	disableHorizontalPadding = false,
 	stickyHeaderComponent,
-	fullScreen = false,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();

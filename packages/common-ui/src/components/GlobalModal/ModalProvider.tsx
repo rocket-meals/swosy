@@ -7,7 +7,6 @@ type ModalOptions = {
 	backgroundStyle?: any;
 	headerBackgroundColor?: string;
 	overlayStyle?: any;
-	fullScreen?: boolean;
 };
 
 type ModalStackItem = {
@@ -15,7 +14,6 @@ type ModalStackItem = {
 	backgroundStyle: any;
 	overlayStyle: any;
 	headerBackgroundColor: string | undefined;
-	fullScreen: boolean;
 };
 
 type ModalContextType = {
@@ -82,7 +80,6 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			overlayStyle: options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' },
 			headerBackgroundColor:
 				options?.headerBackgroundColor ?? options?.backgroundStyle?.backgroundColor ?? undefined,
-			fullScreen: options?.fullScreen ?? false,
 		};
 
 		modalStackRef.current = [...modalStackRef.current, newItem];
@@ -109,7 +106,6 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			overlayStyle: options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' },
 			headerBackgroundColor:
 				options?.headerBackgroundColor ?? options?.backgroundStyle?.backgroundColor ?? undefined,
-			fullScreen: options?.fullScreen ?? false,
 		};
 
 		modalStackRef.current = [newItem];
@@ -272,7 +268,6 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 						onChange={handleSheetChange}
 						headerBackgroundColor={screenBackgroundColor}
 						backgroundStyle={currentItem.backgroundStyle}
-						fullScreen={currentItem.fullScreen}
 					>
 						{currentItem.content}
 					</BaseBottomSheet>
