@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
 import { Style } from '@dicebear/core';
@@ -834,7 +834,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
 
 	return (
-		<View style={styles.content}>
+		<ScrollView style={styles.content} nestedScrollEnabled={true} showsVerticalScrollIndicator={true}>
 			<SettingsListGroupTitle title="Category" />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
@@ -901,7 +901,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					theme={theme}
 				/>
 			)}
-		</View>
+		</ScrollView>
 	);
 };
 
