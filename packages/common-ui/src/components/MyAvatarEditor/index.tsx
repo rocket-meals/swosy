@@ -808,6 +808,11 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
+			// For openPeeps, mask is always none
+			if (config.style === AvatarStyle.OPEN_PEEPS && key === 'mask' && newProbabilityKeys[key]) {
+				randomOptions[newProbabilityKeys[key]] = ['0'];
+				continue;
+			}
 			// For optional components, include "none" as a possible random selection
 			if (newProbabilityKeys[key]) {
 				const allValues = [NONE_OPTION, ...realValues];
@@ -1245,6 +1250,11 @@ function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConf
 		for (const [key, values] of Object.entries(componentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
+			// For openPeeps, mask is always none
+			if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
+				randomOptions[probabilityKeys[key]] = ['0'];
+				continue;
+			}
 			// For optional components, include "none" as a possible random selection
 			if (probabilityKeys[key]) {
 				const allValues = [NONE_OPTION, ...realValues];
