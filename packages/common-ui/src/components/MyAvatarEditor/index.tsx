@@ -1,7 +1,11 @@
 /**
  * MyAvatarEditor — History & known pitfalls for future AI agents
  *
- * SCROLL ISSUE (fixed):
+ * NOTE FOR INSIDERS: Every scroll-related change in this modal stack MUST be
+ * documented below so that all maintainers (Insider) can follow the full history
+ * of fixes and understand why each decision was made.
+ *
+ * ─── SCROLL FIX 1 (stickyHeaderComponent → ListHeaderComponent) ───────────────
  *   The avatar preview was previously passed as `stickyHeaderComponent` to
  *   `MyScrollViewModal`, which renders it as a sibling View *outside* the
  *   `BottomSheetScrollView`. gorhom/bottom-sheet calculates the scrollable
@@ -14,7 +18,20 @@
  *   to work with. The avatar preview scrolls with the content (it is no longer
  *   pinned at the top while scrolling), which is acceptable.
  *
- * NESTED SCROLLVIEW:
+ * ─── SCROLL FIX 2 (remove flex:1 from MyScrollViewModal wrapper View) ─────────
+ *   Even after Fix 1, scrolling was still broken. Root cause: `MyScrollViewModal`
+ *   wrapped `BottomSheetScrollView` in a `<View style={{ flex: 1 }}>`. In gorhom
+ *   v5, that wrapper expanded unconstrained inside the BottomSheet content
+ *   container, causing gorhom to see contentHeight == containerHeight and
+ *   therefore set scrollEnabled=false — even though content was visually clipped
+ *   by the 80 % snap point.
+ *
+ *   Fix: removed `flex: 1` from both the outer wrapper View AND the
+ *   `BottomSheetScrollView`/`BottomSheetFlatList` style prop in
+ *   `MyScrollViewModal`. Gorhom manages the scroll-view height via its own
+ *   BottomSheetContext; explicit flex sizing overrides that and breaks scrolling.
+ *
+ * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
  *   to avoid gesture conflicts with gorhom/bottom-sheet. Sub-modals

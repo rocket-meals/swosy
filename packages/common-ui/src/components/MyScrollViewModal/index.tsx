@@ -71,9 +71,18 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	const containerStyle = { backgroundColor: resolvedBackgroundColor };
 
+	// SCROLL FIX (gorhom v5): Do NOT put flex:1 on the outer wrapper View or on the
+	// BottomSheetScrollView/BottomSheetFlatList's style prop.  When the wrapper carries
+	// flex:1 it expands unconstrained inside the BottomSheet content container, causing
+	// gorhom to calculate contentHeight == containerHeight and therefore disable
+	// scrolling entirely.  Letting gorhom manage the scroll-view height via its own
+	// BottomSheetContext is the correct pattern.
+	// NOTE FOR INSIDERS: Every scroll-related change in this modal stack must be
+	// documented here (and in MyAvatarEditor's header comment) so future maintainers
+	// understand the full history of attempted fixes.
 	if (useFlatList && renderItem && keyExtractor) {
 		return (
-			<View style={[containerStyle, { flex: 1 }]}>
+			<View style={containerStyle}>
 				{stickyHeaderComponent}
 				<BottomSheetFlatList
 					data={data}
@@ -81,7 +90,6 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 					renderItem={renderItem}
 					ListHeaderComponent={headerComponent}
 					ListFooterComponent={footerComponent}
-					style={{ flex: 1 }}
 					contentContainerStyle={contentStyle}
 					showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 					keyboardShouldPersistTaps={keyboardShouldPersistTaps}
@@ -92,10 +100,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	}
 
 	return (
-		<View style={[containerStyle, { flex: 1 }]}>
+		<View style={containerStyle}>
 			{stickyHeaderComponent}
 			<BottomSheetScrollView
-				style={{ flex: 1 }}
 				contentContainerStyle={contentStyle}
 				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 				keyboardShouldPersistTaps={keyboardShouldPersistTaps}
