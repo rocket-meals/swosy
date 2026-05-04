@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
@@ -13,6 +13,29 @@ import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 
 export type { AvatarConfig } from '../MyAvatar';
+
+type ConfigListener = (config: AvatarConfig) => void;
+
+class ConfigObservable {
+	private listeners: Set<ConfigListener> = new Set();
+	private current: AvatarConfig;
+
+	constructor(initial: AvatarConfig) {
+		this.current = initial;
+	}
+
+	subscribe(listener: ConfigListener) {
+		this.listeners.add(listener);
+		return () => { this.listeners.delete(listener); };
+	}
+
+	get() { return this.current; }
+
+	set(config: AvatarConfig) {
+		this.current = config;
+		this.listeners.forEach(l => l(config));
+	}
+}
 
 const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
 
@@ -358,8 +381,32 @@ const PREVIEW_AVATAR_SIZE = 80;
 type AvatarEditorModalContentProps = {
 	initialConfig: AvatarConfig;
 	accentColor?: string;
+	configObservable: ConfigObservable;
 	configRef: React.MutableRefObject<AvatarConfig>;
 	debugMode?: boolean;
+};
+
+type AvatarStickyHeaderProps = {
+	configObservable: ConfigObservable;
+	accentColor?: string;
+};
+
+const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor }) => {
+	const [config, setConfig] = useState<AvatarConfig>(configObservable.get());
+	const { theme, isDark } = useTheme();
+
+	useEffect(() => {
+		return configObservable.subscribe(setConfig);
+	}, [configObservable]);
+
+	return (
+		<View style={styles.avatarContainer}>
+			<MyAvatar
+				config={{ ...config, size: AvatarSize.XLARGE }}
+				borderRadius={AvatarSize.XLARGE / 2}
+			/>
+		</View>
+	);
 };
 
 type ColorPickerModalContentProps = {
@@ -606,6 +653,7 @@ const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accent
 const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	initialConfig,
 	accentColor,
+	configObservable,
 	configRef,
 	debugMode,
 }) => {
@@ -616,6 +664,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const handleChange = (newConfig: AvatarConfig) => {
 		setConfig(newConfig);
 		configRef.current = newConfig;
+		configObservable.set(newConfig);
 	};
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
@@ -782,21 +831,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	return (
 		<View style={styles.content}>
-			<View style={styles.avatarContainer}>
-				<MyAvatar
-					config={{ ...config, size: AvatarSize.XLARGE }}
-					borderRadius={AvatarSize.XLARGE / 2}
-				/>
-				<TouchableOpacity
-					style={[styles.diceButton, { backgroundColor: diceButtonBg }]}
-					onPress={handleRandomize}
-					accessibilityLabel="Randomize avatar"
-					accessibilityRole="button"
-				>
-					<MaterialCommunityIcons name="dice-multiple" size={24} color={diceIconColor} />
-				</TouchableOpacity>
-			</View>
-
 			<SettingsListGroupTitle title="Category" />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
@@ -840,11 +874,19 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			<SettingsListGroupTitle title="Actions" />
 			<SettingsList
+				title="Randomize"
+				onPress={handleRandomize}
+				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} />}
+				iconBgColor={accentColor}
+				groupPosition="top"
+				showSeparator={true}
+			/>
+			<SettingsList
 				title="Copy Config"
 				onPress={handleCopyConfig}
 				leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
 				iconBgColor={accentColor}
-				groupPosition="single"
+				groupPosition="bottom"
 			/>
 
 			{debugMode && (
@@ -868,20 +910,30 @@ export type UseAvatarEditorModalOptions = {
 export const useAvatarEditorModal = () => {
 	const { show, close } = useMyScrollViewModal();
 	const configRef = useRef<AvatarConfig>(DEFAULT_AVATAR_CONFIG);
+	const observableRef = useRef<ConfigObservable>(new ConfigObservable(DEFAULT_AVATAR_CONFIG));
 
 	const showAvatarEditor = useCallback(
 		(initialConfig: AvatarConfig, onClose: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
 			configRef.current = { ...initialConfig };
+			observableRef.current = new ConfigObservable({ ...initialConfig });
 
 			show({
 				title: options?.title ?? 'Avatar Editor',
+				fullScreen: true,
 				onClose: () => {
 					onClose(configRef.current);
 				},
+				stickyHeaderComponent: (
+					<AvatarStickyHeader
+						configObservable={observableRef.current}
+						accentColor={options?.accentColor}
+					/>
+				),
 				children: (
 					<AvatarEditorModalContent
 						initialConfig={initialConfig}
 						accentColor={options?.accentColor}
+						configObservable={observableRef.current}
 						configRef={configRef}
 						debugMode={options?.debugMode}
 					/>

@@ -19,6 +19,8 @@ export interface MyScrollViewModalProps {
 	keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
 	onClose?: () => void;
 	disableHorizontalPadding?: boolean;
+	stickyHeaderComponent?: ReactNode;
+	fullScreen?: boolean;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -35,6 +37,8 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	keyboardShouldPersistTaps = 'handled',
 	onClose,
 	disableHorizontalPadding = false,
+	stickyHeaderComponent,
+	fullScreen = false,
 }) => {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -71,33 +75,39 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	if (useFlatList && renderItem && keyExtractor) {
 		return (
-			<BottomSheetFlatList
-				data={data}
-				keyExtractor={keyExtractor}
-				renderItem={renderItem}
-				ListHeaderComponent={headerComponent}
-				ListFooterComponent={footerComponent}
-				style={containerStyle}
-				contentContainerStyle={contentStyle}
-				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-				keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-				scrollIndicatorInsets={scrollInsets}
-			/>
+			<View style={[containerStyle, { flex: 1 }]}>
+				{stickyHeaderComponent}
+				<BottomSheetFlatList
+					data={data}
+					keyExtractor={keyExtractor}
+					renderItem={renderItem}
+					ListHeaderComponent={headerComponent}
+					ListFooterComponent={footerComponent}
+					style={{ flex: 1 }}
+					contentContainerStyle={contentStyle}
+					showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+					keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+					scrollIndicatorInsets={scrollInsets}
+				/>
+			</View>
 		);
 	}
 
 	return (
-		<BottomSheetScrollView
-			style={containerStyle}
-			contentContainerStyle={contentStyle}
-			showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-			keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-			scrollIndicatorInsets={scrollInsets}
-		>
-			{headerComponent}
-			{children}
-			{footerComponent}
-		</BottomSheetScrollView>
+		<View style={[containerStyle, { flex: 1 }]}>
+			{stickyHeaderComponent}
+			<BottomSheetScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={contentStyle}
+				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+				keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+				scrollIndicatorInsets={scrollInsets}
+			>
+				{headerComponent}
+				{children}
+				{footerComponent}
+			</BottomSheetScrollView>
+		</View>
 	);
 };
 

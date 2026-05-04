@@ -46,13 +46,14 @@ const backdropStyles = StyleSheet.create({
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
 	onClose?: () => void;
 	headerBackgroundColor?: string;
+	fullScreen?: boolean;
 }
 
-const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
+const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, fullScreen, ...props }, ref) => {
 	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <CustomBackdrop {...backdropProps} onPress={onClose} />, [onClose]);
 	const { theme } = useTheme();
 	const { top: topInset } = useSafeAreaInsets();
-	const snapPoints = useMemo(() => ['80%'], []);
+	const snapPoints = useMemo(() => [fullScreen ? '100%' : '80%'], [fullScreen]);
 
 	const usedHeaderBg = headerBackgroundColor || theme.screen.background;
 	const effectiveBackgroundStyle = { backgroundColor: usedHeaderBg };
