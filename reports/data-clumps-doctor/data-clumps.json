@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-04T21:08:22.827Z",
+  "report_timestamp": "2026-05-04T21:42:52.399Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,18 +28,18 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4335,
-        "detection_time_ms": 96,
+        "ast_generation_time_ms": 4237,
+        "detection_time_ms": 92,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 118.57,
-          "os_memory_free": 14966329344,
-          "os_memory_total": 16766431232,
+          "os_uptime": 119.41,
+          "os_memory_free": 14894534656,
+          "os_memory_total": 16770760704,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "587020041025ab3e43eb90ba36eb193479214369",
-    "project_commit_hash": "587020041025ab3e43eb90ba36eb193479214369",
+    "project_version": "6305246f0d1373098705f0a35b0864f004794bf0",
+    "project_commit_hash": "6305246f0d1373098705f0a35b0864f004794bf0",
     "project_tag": null,
-    "project_commit_date": "1777928796",
+    "project_commit_date": "1777930865",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -10203,9 +10203,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1419,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1419,
               "endColumn": 23
             }
           },
@@ -10228,9 +10228,9 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1412,
+              "startLine": 1414,
               "startColumn": 2,
-              "endLine": 1412,
+              "endLine": 1414,
               "endColumn": 37
             }
           },
@@ -10253,9 +10253,9 @@
             "type": "React.MutableRefObject<AvatarConfig>",
             "modifiers": [],
             "position": {
-              "startLine": 1413,
+              "startLine": 1415,
               "startColumn": 2,
-              "endLine": 1413,
+              "endLine": 1415,
               "endColumn": 50
             }
           },
@@ -10278,9 +10278,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1418,
+              "startLine": 1420,
               "startColumn": 2,
-              "endLine": 1418,
+              "endLine": 1420,
               "endColumn": 22
             }
           },
@@ -10303,9 +10303,9 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1415,
+              "startLine": 1417,
               "startColumn": 2,
-              "endLine": 1415,
+              "endLine": 1417,
               "endColumn": 31
             }
           },
@@ -10328,9 +10328,9 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 1414,
+              "startLine": 1416,
               "startColumn": 2,
-              "endLine": 1414,
+              "endLine": 1416,
               "endColumn": 22
             }
           },
@@ -10375,9 +10375,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1395,
+              "startLine": 1397,
               "startColumn": 2,
-              "endLine": 1395,
+              "endLine": 1397,
               "endColumn": 23
             }
           },
@@ -10400,9 +10400,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1396,
+              "startLine": 1398,
               "startColumn": 2,
-              "endLine": 1396,
+              "endLine": 1398,
               "endColumn": 22
             }
           },
@@ -10425,9 +10425,9 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1398,
+              "startLine": 1400,
               "startColumn": 2,
-              "endLine": 1398,
+              "endLine": 1400,
               "endColumn": 32
             }
           },
@@ -10479,9 +10479,9 @@
             }
           },
           "position": {
-            "startLine": 1411,
+            "startLine": 1413,
             "startColumn": 2,
-            "endLine": 1411,
+            "endLine": 1413,
             "endColumn": 33
           }
         },
@@ -10504,9 +10504,9 @@
             }
           },
           "position": {
-            "startLine": 1412,
+            "startLine": 1414,
             "startColumn": 2,
-            "endLine": 1412,
+            "endLine": 1414,
             "endColumn": 37
           }
         },
@@ -10529,9 +10529,9 @@
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1419,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1419,
             "endColumn": 23
           }
         }
@@ -10576,9 +10576,9 @@
             }
           },
           "position": {
-            "startLine": 1412,
+            "startLine": 1414,
             "startColumn": 2,
-            "endLine": 1412,
+            "endLine": 1414,
             "endColumn": 37
           }
         },
@@ -10601,9 +10601,9 @@
             }
           },
           "position": {
-            "startLine": 1413,
+            "startLine": 1415,
             "startColumn": 2,
-            "endLine": 1413,
+            "endLine": 1415,
             "endColumn": 50
           }
         },
@@ -10626,9 +10626,9 @@
             }
           },
           "position": {
-            "startLine": 1414,
+            "startLine": 1416,
             "startColumn": 2,
-            "endLine": 1414,
+            "endLine": 1416,
             "endColumn": 22
           }
         },
@@ -10651,9 +10651,9 @@
             }
           },
           "position": {
-            "startLine": 1415,
+            "startLine": 1417,
             "startColumn": 2,
-            "endLine": 1415,
+            "endLine": 1417,
             "endColumn": 31
           }
         },
@@ -10676,9 +10676,9 @@
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1419,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1419,
             "endColumn": 23
           }
         },
@@ -10701,9 +10701,9 @@
             }
           },
           "position": {
-            "startLine": 1418,
+            "startLine": 1420,
             "startColumn": 2,
-            "endLine": 1418,
+            "endLine": 1420,
             "endColumn": 22
           }
         }
@@ -10741,16 +10741,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1343,
+              "startLine": 1345,
               "startColumn": 2,
-              "endLine": 1343,
+              "endLine": 1345,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1415,
+            "startLine": 1417,
             "startColumn": 2,
-            "endLine": 1415,
+            "endLine": 1417,
             "endColumn": 31
           }
         },
@@ -10766,16 +10766,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1344,
+              "startLine": 1346,
               "startColumn": 2,
-              "endLine": 1344,
+              "endLine": 1346,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1416,
+            "startLine": 1418,
             "startColumn": 2,
-            "endLine": 1416,
+            "endLine": 1418,
             "endColumn": 19
           }
         },
@@ -10791,16 +10791,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1345,
+              "startLine": 1347,
               "startColumn": 2,
-              "endLine": 1345,
+              "endLine": 1347,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1419,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1419,
             "endColumn": 23
           }
         }
@@ -10838,16 +10838,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1398,
+              "startLine": 1400,
               "startColumn": 2,
-              "endLine": 1398,
+              "endLine": 1400,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1415,
+            "startLine": 1417,
             "startColumn": 2,
-            "endLine": 1415,
+            "endLine": 1417,
             "endColumn": 31
           }
         },
@@ -10863,16 +10863,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1395,
+              "startLine": 1397,
               "startColumn": 2,
-              "endLine": 1395,
+              "endLine": 1397,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1419,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1419,
             "endColumn": 23
           }
         },
@@ -10888,16 +10888,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1396,
+              "startLine": 1398,
               "startColumn": 2,
-              "endLine": 1396,
+              "endLine": 1398,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1418,
+            "startLine": 1420,
             "startColumn": 2,
-            "endLine": 1418,
+            "endLine": 1420,
             "endColumn": 22
           }
         }
@@ -10935,9 +10935,9 @@
             "type": "ModeObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1411,
+              "startLine": 1413,
               "startColumn": 2,
-              "endLine": 1411,
+              "endLine": 1413,
               "endColumn": 33
             }
           },
@@ -10960,9 +10960,9 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1412,
+              "startLine": 1414,
               "startColumn": 2,
-              "endLine": 1412,
+              "endLine": 1414,
               "endColumn": 37
             }
           },
@@ -10985,9 +10985,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1419,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1419,
               "endColumn": 23
             }
           },
@@ -11032,16 +11032,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1415,
+              "startLine": 1417,
               "startColumn": 2,
-              "endLine": 1415,
+              "endLine": 1417,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1343,
+            "startLine": 1345,
             "startColumn": 2,
-            "endLine": 1343,
+            "endLine": 1345,
             "endColumn": 31
           }
         },
@@ -11057,16 +11057,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1416,
+              "startLine": 1418,
               "startColumn": 2,
-              "endLine": 1416,
+              "endLine": 1418,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1344,
+            "startLine": 1346,
             "startColumn": 2,
-            "endLine": 1344,
+            "endLine": 1346,
             "endColumn": 19
           }
         },
@@ -11082,16 +11082,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1419,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1419,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1345,
+            "startLine": 1347,
             "startColumn": 2,
-            "endLine": 1345,
+            "endLine": 1347,
             "endColumn": 23
           }
         }
@@ -11136,9 +11136,9 @@
             }
           },
           "position": {
-            "startLine": 1395,
+            "startLine": 1397,
             "startColumn": 2,
-            "endLine": 1395,
+            "endLine": 1397,
             "endColumn": 23
           }
         },
@@ -11161,9 +11161,9 @@
             }
           },
           "position": {
-            "startLine": 1396,
+            "startLine": 1398,
             "startColumn": 2,
-            "endLine": 1396,
+            "endLine": 1398,
             "endColumn": 22
           }
         },
@@ -11186,9 +11186,9 @@
             }
           },
           "position": {
-            "startLine": 1398,
+            "startLine": 1400,
             "startColumn": 2,
-            "endLine": 1398,
+            "endLine": 1400,
             "endColumn": 32
           }
         }
@@ -11226,16 +11226,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1419,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1419,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1395,
+            "startLine": 1397,
             "startColumn": 2,
-            "endLine": 1395,
+            "endLine": 1397,
             "endColumn": 23
           }
         },
@@ -11251,16 +11251,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1418,
+              "startLine": 1420,
               "startColumn": 2,
-              "endLine": 1418,
+              "endLine": 1420,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1396,
+            "startLine": 1398,
             "startColumn": 2,
-            "endLine": 1396,
+            "endLine": 1398,
             "endColumn": 22
           }
         },
@@ -11276,16 +11276,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1415,
+              "startLine": 1417,
               "startColumn": 2,
-              "endLine": 1415,
+              "endLine": 1417,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1398,
+            "startLine": 1400,
             "startColumn": 2,
-            "endLine": 1398,
+            "endLine": 1400,
             "endColumn": 32
           }
         }
