@@ -57,7 +57,12 @@ export type MyAvatarProps = {
 	config?: AvatarConfig;
 	style?: AvatarStyle;
 	size?: AvatarSize | number;
+	/** Explicit border radius. Ignored when `rounded` is true. */
 	borderRadius?: number;
+	/** When true (default), uses the avatar size as the border radius to produce a circle. */
+	rounded?: boolean;
+	/** Background color rendered behind the avatar. */
+	backgroundColor?: string;
 	/** Additional DiceBear options (e.g. eyes, mouth, hair, nose, etc.) */
 	options?: Record<string, string[]>;
 };
@@ -101,11 +106,15 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	style: styleProp = AvatarStyle.LORELEI,
 	size: sizeProp = AvatarSize.LARGE,
 	borderRadius = 0,
+	rounded = true,
+	backgroundColor,
 	options: optionsProp,
 }) => {
 	const style = config?.style ?? styleProp;
 	const size = config?.size ?? sizeProp;
 	const options = config?.options ?? optionsProp;
+
+	const resolvedBorderRadius = rounded ? size : borderRadius;
 
 	const svgXml = useMemo(() => {
 		const avatarStyle = STYLE_MAP[style];
@@ -116,7 +125,7 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	}, [style, size, options]);
 
 	return (
-		<View style={[styles.container, { width: size, height: size, borderRadius }]}>
+		<View style={[styles.container, { width: size, height: size, borderRadius: resolvedBorderRadius, backgroundColor }]}>
 			<SvgXml xml={svgXml} width={size} height={size} />
 		</View>
 	);

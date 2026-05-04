@@ -69,6 +69,23 @@ import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/Se
 
 export type { AvatarConfig } from '../MyAvatar';
 
+/**
+ * Namespaced avatar property key enums, organised by avatar style.
+ * Use enum values together with `lockedProps` in `UseAvatarEditorModalOptions`
+ * to hide a prop from the editor UI and always inject it with a fixed value.
+ *
+ * @example
+ * ```ts
+ * lockedProps: { [AvatarPropKey.OpenPeeps.SCALE]: '100' }
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace AvatarPropKey {
+	export enum OpenPeeps {
+		SCALE = 'scale',
+	}
+}
+
 type ConfigListener = (config: AvatarConfig) => void;
 
 class ConfigObservable {
@@ -329,6 +346,17 @@ const ATTRIBUTE_ORDER_BY_STYLE: Partial<Record<AvatarStyle, string[]>> = {
 const NONE_OPTION = '__none__';
 
 /**
+ * Per-style numeric property defaults that are not surfaced as enum options
+ * in the DiceBear schema but still need to be included in generated configs.
+ * Values are stored as single-element string arrays to match the options format.
+ */
+const STYLE_NUMERIC_DEFAULTS: Partial<Record<AvatarStyle, Partial<Record<string, string>>>> = {
+	[AvatarStyle.OPEN_PEEPS]: {
+		[AvatarPropKey.OpenPeeps.SCALE]: '100',
+	},
+};
+
+/**
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
  * in the allowed enum values, otherwise the first available value is used.
@@ -360,6 +388,15 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 			const presetColors = getPresetColorsForKey(key);
 			if (presetColors.length > 0) {
 				defaults[key] = [stripHashPrefix(presetColors[0])];
+			}
+		}
+	}
+	// Apply per-style numeric defaults (e.g. scale=100 for openPeeps)
+	const numericDefaults = STYLE_NUMERIC_DEFAULTS[style];
+	if (numericDefaults) {
+		for (const [key, value] of Object.entries(numericDefaults)) {
+			if (value !== undefined) {
+				defaults[key] = [value];
 			}
 		}
 	}
@@ -483,6 +520,11 @@ type AvatarEditorModalContentProps = {
 	showApplyButton?: boolean;
 	/** Called when the user presses "Apply". */
 	onApply?: () => void;
+	/**
+	 * Props that are always injected into the avatar config with a fixed value
+	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
+	 */
+	lockedProps?: Record<string, string>;
 };
 
 type AvatarStickyHeaderProps = {
@@ -790,17 +832,35 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	allowedStyles,
 	showApplyButton,
 	onApply,
+	lockedProps,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
 	const { theme, isDark } = useTheme();
 
+	const lockedPropKeys = useMemo(() => new Set(Object.keys(lockedProps ?? {})), [lockedProps]);
+
 	const effectiveAllowedStyles = allowedStyles ?? Object.values(AvatarStyle);
 
+	const applyLockedProps = useCallback(
+		(cfg: AvatarConfig): AvatarConfig => {
+			if (!lockedProps || Object.keys(lockedProps).length === 0) return cfg;
+			const newOptions = { ...(cfg.options ?? {}) };
+			for (const [key, value] of Object.entries(lockedProps)) {
+				if (value !== undefined) {
+					newOptions[key] = [value];
+				}
+			}
+			return { ...cfg, options: newOptions };
+		},
+		[lockedProps],
+	);
+
 	const handleChange = (newConfig: AvatarConfig) => {
-		setConfig(newConfig);
-		configRef.current = newConfig;
-		configObservable.set(newConfig);
+		const withLocked = applyLockedProps(newConfig);
+		setConfig(withLocked);
+		configRef.current = withLocked;
+		configObservable.set(withLocked);
 	};
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
@@ -997,9 +1057,11 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		[componentKeys, colorKeys, config.style],
 	);
 
-	// Hide categories that have only one option (no meaningful choice)
+	// Hide categories that have only one option (no meaningful choice) and locked props
 	const visibleAttributeKeys = useMemo(() => {
 		return sortedAttributeKeys.filter((cat) => {
+			// Always hide locked props from the editor UI
+			if (lockedPropKeys.has(cat)) return false;
 			if (colorKeys.includes(cat)) {
 				// Color keys always have multiple presets, keep them
 				return true;
@@ -1010,7 +1072,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			return realValues.length > 1;
 		});
-	}, [sortedAttributeKeys, colorKeys, componentOptions]);
+	}, [sortedAttributeKeys, colorKeys, componentOptions, lockedPropKeys]);
 
 	// Hide style selector when only one style is allowed
 	const showStyleCategory = effectiveAllowedStyles.length > 1;
@@ -1400,6 +1462,12 @@ export type UseAvatarEditorModalOptions = {
 	allowedStyles?: AvatarStyle[];
 	/** If true, show a delete button (for optional avatar). */
 	allowDelete?: boolean;
+	/**
+	 * Props that are always injected into the avatar config with a fixed value
+	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
+	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` locks the scale to 100.
+	 */
+	lockedProps?: Record<string, string>;
 };
 
 export type OpenAvatarEditorProps = {
@@ -1418,6 +1486,7 @@ type AvatarEditorUnifiedContentProps = {
 	size: AvatarSize;
 	accentColor?: string;
 	debugMode?: boolean;
+	lockedProps?: Record<string, string>;
 };
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
@@ -1429,6 +1498,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	size,
 	accentColor,
 	debugMode,
+	lockedProps,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -1474,6 +1544,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			allowedStyles={allowedStyles}
 			showApplyButton={true}
 			onApply={onApply}
+			lockedProps={lockedProps}
 		/>
 	);
 };
@@ -1518,6 +1589,7 @@ export const useAvatarEditorModal = () => {
 							onClose(configRef.current);
 							close();
 						}}
+						lockedProps={options?.lockedProps}
 					/>
 				),
 			});
@@ -1564,6 +1636,7 @@ export const useAvatarEditorModal = () => {
 								onDone(configRef.current);
 								close();
 							}}
+							lockedProps={options?.lockedProps}
 						/>
 					),
 				});
@@ -1638,6 +1711,7 @@ export const useAvatarEditorModal = () => {
 							onDone(configRef.current);
 							close();
 						}}
+						lockedProps={options?.lockedProps}
 					/>
 				),
 			});
@@ -1693,6 +1767,7 @@ export const useAvatarEditorModal = () => {
 						size={size}
 						accentColor={options?.accentColor}
 						debugMode={options?.debugMode}
+						lockedProps={options?.lockedProps}
 					/>
 				),
 			});
