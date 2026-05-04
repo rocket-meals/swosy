@@ -1,25 +1,25 @@
 Key,Message,Component,Line
-"AZ301COhgr0wrRDCJ9f3","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1658
-"AZ30alsNt1CZC8okTWJR","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1287
+"AZ301COhgr0wrRDCJ9f3","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1660
+"AZ30alsNt1CZC8okTWJR","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1289
 "AZ30I_67kYAhKoGLFmjB","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/avatars/index.tsx",50
-"AZ30JA-GkYAhKoGLFmjC","A fragment with only one child is redundant.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1029
-"AZ30JA-GkYAhKoGLFmjD","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1261
-"AZ30JA-GkYAhKoGLFmjE","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1274
-"AZ30JA-GkYAhKoGLFmjH","Do not use Array index in keys","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1369
+"AZ30JA-GkYAhKoGLFmjC","A fragment with only one child is redundant.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1028
+"AZ30JA-GkYAhKoGLFmjD","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1263
+"AZ30JA-GkYAhKoGLFmjE","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1276
+"AZ30JA-GkYAhKoGLFmjH","Do not use Array index in keys","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1371
 "AZ3ywE1xFbXHROefrrIW","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyScrollViewModal/index.tsx",122
 "AZ3x-yeoPi00FShfoAus","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",131
-"AZ3x-yeoPi00FShfoAut","Remove this useless assignment to variable ""diceIconColor"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1024
+"AZ3x-yeoPi00FShfoAut","Remove this useless assignment to variable ""diceIconColor"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1023
 "AZ3xhI74Pi00FShfjKGk","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",411
 "AZ3xhI74Pi00FShfjKGl","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",679
-"AZ3xhI74Pi00FShfjKGm","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",818
-"AZ3xhI74Pi00FShfjKGn","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",841
+"AZ3xhI74Pi00FShfjKGm","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",817
+"AZ3xhI74Pi00FShfjKGn","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",840
 "AZ3qrnFA1SbUOZuE_SnE","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",570
 "AZ3qfuixDB_MdPLc7AqS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",565
 "AZ3qfuixDB_MdPLc7AqT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",620
 "AZ3qfuixDB_MdPLc7AqU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",673
 "AZ3qfuixDB_MdPLc7AqV","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",675
-"AZ3qfuixDB_MdPLc7AqX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1045
-"AZ3qfuixDB_MdPLc7AqY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1047
+"AZ3qfuixDB_MdPLc7AqX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1044
+"AZ3qfuixDB_MdPLc7AqY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1046
 "AZ3qWhrYXYbs7ObcNfl6","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",448
 "AZ3qQNEoWw6vxPu01kuS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",567
 "AZ3qQNEoWw6vxPu01kuR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",618
