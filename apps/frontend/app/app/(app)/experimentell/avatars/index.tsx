@@ -59,7 +59,7 @@ const AvatarsScreen = () => {
 		debugMode,
 		allowedStyles: [AvatarStyle.OPEN_PEEPS],
 		lockedProps: {
-			[AvatarPropKey.SCALE]: '100',
+			[AvatarPropKey.OpenPeeps.SCALE]: '100',
 		},
 	};
 

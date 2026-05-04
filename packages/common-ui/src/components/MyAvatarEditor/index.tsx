@@ -70,12 +70,20 @@ import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/Se
 export type { AvatarConfig } from '../MyAvatar';
 
 /**
- * Enum of avatar property keys that may be locked (hidden from the editor UI
- * and always injected with a fixed value into generated configs).
- * Use this together with `lockedProps` in `UseAvatarEditorModalOptions`.
+ * Namespaced avatar property key enums, organised by avatar style.
+ * Use enum values together with `lockedProps` in `UseAvatarEditorModalOptions`
+ * to hide a prop from the editor UI and always inject it with a fixed value.
+ *
+ * @example
+ * ```ts
+ * lockedProps: { [AvatarPropKey.OpenPeeps.SCALE]: '100' }
+ * ```
  */
-export enum AvatarPropKey {
-	SCALE = 'scale',
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace AvatarPropKey {
+	export enum OpenPeeps {
+		SCALE = 'scale',
+	}
 }
 
 type ConfigListener = (config: AvatarConfig) => void;
@@ -344,7 +352,7 @@ const NONE_OPTION = '__none__';
  */
 const STYLE_NUMERIC_DEFAULTS: Partial<Record<AvatarStyle, Partial<Record<string, string>>>> = {
 	[AvatarStyle.OPEN_PEEPS]: {
-		[AvatarPropKey.SCALE]: '100',
+		[AvatarPropKey.OpenPeeps.SCALE]: '100',
 	},
 };
 
@@ -514,9 +522,9 @@ type AvatarEditorModalContentProps = {
 	onApply?: () => void;
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
-	 * and are hidden from the editor UI. Keys should use `AvatarPropKey` enum values.
+	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
 	 */
-	lockedProps?: Partial<Record<AvatarPropKey | string, string>>;
+	lockedProps?: Record<string, string>;
 };
 
 type AvatarStickyHeaderProps = {
@@ -1456,10 +1464,10 @@ export type UseAvatarEditorModalOptions = {
 	allowDelete?: boolean;
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
-	 * and are hidden from the editor UI. Keys should use `AvatarPropKey` enum values.
-	 * Example: `{ [AvatarPropKey.SCALE]: '100' }` locks the scale to 100.
+	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
+	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` locks the scale to 100.
 	 */
-	lockedProps?: Partial<Record<AvatarPropKey | string, string>>;
+	lockedProps?: Record<string, string>;
 };
 
 export type OpenAvatarEditorProps = {
@@ -1478,7 +1486,7 @@ type AvatarEditorUnifiedContentProps = {
 	size: AvatarSize;
 	accentColor?: string;
 	debugMode?: boolean;
-	lockedProps?: Partial<Record<AvatarPropKey | string, string>>;
+	lockedProps?: Record<string, string>;
 };
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
