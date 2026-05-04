@@ -469,7 +469,7 @@ function stripHashPrefix(color: string): string {
 }
 
 /** Size used for avatar previews inside selection modals. */
-const PREVIEW_AVATAR_SIZE = 80;
+const PREVIEW_AVATAR_SIZE = 100;
 
 type AvatarEditorModalContentProps = {
 	initialConfig: AvatarConfig;
@@ -571,7 +571,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 				return (
 					<SettingsListSelectOptionSingle
 						key={color}
-						label={color}
+						label=""
 						leftIcon={
 							<View style={styles.previewAvatarWrapper}>
 								<MyAvatar
@@ -754,7 +754,6 @@ const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accent
 
 	return (
 		<>
-			<SettingsListGroupTitle title="Debug" />
 			<Text style={[styles.debugJson, { color: theme.screen.text }]}>
 				{JSON.stringify(config, null, 2)}
 			</Text>
@@ -972,7 +971,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		if (colorKeys.includes(cat)) {
 			return getPresetColorsForKey(cat).map((color) => {
 				const hex = stripHashPrefix(color);
-				return { id: hex, label: '#' + hex };
+				return { id: hex, label: '' };
 			});
 		}
 		const values = componentOptions[cat] ?? [];
@@ -1085,24 +1084,27 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				onPress={handleRandomize}
 				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} />}
 				iconBgColor={accentColor}
-				groupPosition="top"
-				showSeparator={true}
-			/>
-			<SettingsList
-				title="Copy Config"
-				onPress={handleCopyConfig}
-				leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
-				iconBgColor={accentColor}
-				groupPosition="bottom"
+				groupPosition="single"
 			/>
 
 			{debugMode && (
-				<DebugJsonInput
-					config={config}
-					onApply={handleChange}
-					accentColor={accentColor}
-					theme={theme}
-				/>
+				<View style={styles.debugSection}>
+					<SettingsListGroupTitle title="Debug" />
+					<SettingsList
+						title="Copy Config"
+						onPress={handleCopyConfig}
+						leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
+						iconBgColor={accentColor}
+						groupPosition="top"
+						showSeparator={true}
+					/>
+					<DebugJsonInput
+						config={config}
+						onApply={handleChange}
+						accentColor={accentColor}
+						theme={theme}
+					/>
+				</View>
 			)}
 		</View>
 	);
@@ -1367,7 +1369,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={index}
-						style={[styles.presetItem, { borderColor: theme.screen.text + '22' }]}
+						style={[styles.presetItem, { borderColor: theme.screen.text }]}
 						onPress={() => onSelectPreset(presetConfig)}
 					>
 						<MyAvatar
@@ -1773,5 +1775,12 @@ const styles = StyleSheet.create({
 	debugShowButtonText: {
 		fontFamily: 'Poppins_700Bold',
 		fontSize: 14,
+	},
+	debugSection: {
+		borderWidth: 2,
+		borderColor: 'red',
+		borderRadius: 12,
+		marginTop: 16,
+		overflow: 'hidden',
 	},
 });
