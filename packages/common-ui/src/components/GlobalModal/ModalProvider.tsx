@@ -7,6 +7,7 @@ type ModalOptions = {
 	backgroundStyle?: any;
 	headerBackgroundColor?: string;
 	overlayStyle?: any;
+	fullScreen?: boolean;
 };
 
 type ModalStackItem = {
@@ -14,6 +15,7 @@ type ModalStackItem = {
 	backgroundStyle: any;
 	overlayStyle: any;
 	headerBackgroundColor: string | undefined;
+	fullScreen: boolean;
 };
 
 type ModalContextType = {
@@ -80,10 +82,12 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			overlayStyle: options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' },
 			headerBackgroundColor:
 				options?.headerBackgroundColor ?? options?.backgroundStyle?.backgroundColor ?? undefined,
+			fullScreen: options?.fullScreen ?? false,
 		};
 
 		modalStackRef.current = [...modalStackRef.current, newItem];
 		setModalStack([...modalStackRef.current]);
+		setOpenCount(c => c + 1);
 
 		setDebug(prev => ({
 			...prev,
@@ -105,10 +109,12 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			overlayStyle: options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' },
 			headerBackgroundColor:
 				options?.headerBackgroundColor ?? options?.backgroundStyle?.backgroundColor ?? undefined,
+			fullScreen: options?.fullScreen ?? false,
 		};
 
 		modalStackRef.current = [newItem];
 		setModalStack([newItem]);
+		setOpenCount(c => c + 1);
 
 		setDebug(prev => ({
 			...prev,
@@ -222,17 +228,14 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		};
 	};
 
-	const prevStackLengthRef = useRef(0);
-	useEffect(() => {
-		const prev = prevStackLengthRef.current;
-		const curr = modalStack.length;
-		prevStackLengthRef.current = curr;
+	const [openCount, setOpenCount] = useState(0);
 
-		if (curr > 0 && prev === 0) {
+	useEffect(() => {
+		if (openCount > 0 && modalStack.length > 0) {
 			const cancel = ensureExpand();
 			return () => cancel();
 		}
-	}, [modalStack.length]);
+	}, [openCount]);
 
 	const currentItem = modalStack[modalStack.length - 1] ?? null;
 	const screenBackgroundColor = currentItem?.headerBackgroundColor || theme.screen.background;
@@ -269,6 +272,7 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 						onChange={handleSheetChange}
 						headerBackgroundColor={screenBackgroundColor}
 						backgroundStyle={currentItem.backgroundStyle}
+						fullScreen={currentItem.fullScreen}
 					>
 						{currentItem.content}
 					</BaseBottomSheet>
