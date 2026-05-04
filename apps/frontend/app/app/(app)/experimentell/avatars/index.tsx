@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -56,10 +56,6 @@ const AvatarsScreen = () => {
 			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
 			<View style={styles.content}>
-				<Text style={[styles.heading, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.avatars)}
-				</Text>
-
 				<View style={styles.avatarContainer}>
 					{avatarConfig ? (
 						<MyAvatar
@@ -118,11 +114,6 @@ const styles = StyleSheet.create({
 	content: {
 		width: '100%',
 		padding: 20,
-	},
-	heading: {
-		fontSize: 24,
-		fontFamily: 'Poppins_700Bold',
-		marginVertical: 10,
 	},
 	avatarContainer: {
 		alignItems: 'center',

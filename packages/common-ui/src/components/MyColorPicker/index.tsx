@@ -75,6 +75,7 @@ export const HAIR_COLORS = [
 
 /** Human skin tone palette */
 export const SKIN_COLORS = [
+	'#ffffff', // White
 	'#ffe0bd', // Porcelain
 	'#fddbb4', // Very Light
 	'#edb98a', // Light
@@ -83,6 +84,7 @@ export const SKIN_COLORS = [
 	'#694d3d', // Medium Dark
 	'#4a312c', // Dark
 	'#3d1c02', // Very Dark
+	'#000000', // Black
 ];
 
 export type MyColorPickerProps = {
