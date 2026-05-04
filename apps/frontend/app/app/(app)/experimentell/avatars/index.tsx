@@ -23,7 +23,7 @@ const AvatarsScreen = () => {
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const debugMode = useDebugMode();
-	const { showAvatarEditor, showAvatarEditorQuickStart } = useAvatarEditorModal();
+	const { openAvatarEditor } = useAvatarEditorModal();
 
 	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig | null>(null);
 
@@ -34,17 +34,12 @@ const AvatarsScreen = () => {
 		allowedStyles: [AvatarStyle.OPEN_PEEPS],
 	};
 
-	const handleEdit = () => {
-		if (!avatarConfig) return;
-		showAvatarEditor(avatarConfig, (updatedConfig) => {
-			setAvatarConfig(updatedConfig);
-		}, editorOptions);
-	};
-
-	const handleCreateNew = () => {
-		showAvatarEditorQuickStart((newConfig) => {
-			setAvatarConfig(newConfig);
-		}, editorOptions);
+	const handleOpenEditor = () => {
+		openAvatarEditor({
+			currentAvatar: avatarConfig,
+			onDone: (config) => setAvatarConfig(config),
+			options: editorOptions,
+		});
 	};
 
 	const handleDelete = () => {
@@ -91,7 +86,7 @@ const AvatarsScreen = () => {
 						/>
 						<SettingsList
 							title="Edit"
-							onPress={handleEdit}
+							onPress={handleOpenEditor}
 							leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
 							iconBgColor={primaryColor}
 							groupPosition="middle"
@@ -109,7 +104,7 @@ const AvatarsScreen = () => {
 				)}
 				<SettingsList
 					title="Create New"
-					onPress={handleCreateNew}
+					onPress={handleOpenEditor}
 					leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
 					iconBgColor={primaryColor}
 					groupPosition={avatarConfig ? 'bottom' : 'single'}

@@ -101,6 +101,29 @@ class ConfigObservable {
 	}
 }
 
+type Mode = 'quickstart' | 'editor';
+
+class ModeObservable {
+	private mode: Mode;
+	private readonly listeners: Set<(mode: Mode) => void> = new Set();
+
+	constructor(initial: Mode) {
+		this.mode = initial;
+	}
+
+	subscribe(listener: (mode: Mode) => void) {
+		this.listeners.add(listener);
+		return () => { this.listeners.delete(listener); };
+	}
+
+	get() { return this.mode; }
+
+	set(mode: Mode) {
+		this.mode = mode;
+		this.listeners.forEach(l => l(mode));
+	}
+}
+
 const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
 
 let _defaultAvatarConfig: AvatarConfig | null = null;
@@ -492,6 +515,28 @@ const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservabl
 			</TouchableOpacity>
 		</View>
 	);
+};
+
+type AvatarStickyHeaderConditionalProps = {
+	modeObservable: ModeObservable;
+	configObservable: ConfigObservable;
+	accentColor?: string;
+};
+
+const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps> = ({
+	modeObservable,
+	configObservable,
+	accentColor,
+}) => {
+	const [mode, setMode] = useState<Mode>(modeObservable.get());
+
+	useEffect(() => {
+		return modeObservable.subscribe(setMode);
+	}, [modeObservable]);
+
+	if (mode === 'quickstart') return null;
+
+	return <AvatarStickyHeader configObservable={configObservable} accentColor={accentColor} />;
 };
 
 type ColorPickerModalContentProps = {
@@ -1355,6 +1400,82 @@ export type UseAvatarEditorModalOptions = {
 	allowDelete?: boolean;
 };
 
+export type OpenAvatarEditorProps = {
+	/** If provided, the editor opens directly in edit mode. If null/undefined, the QuickStart preset picker is shown first. */
+	currentAvatar?: AvatarConfig | null;
+	onDone: (config: AvatarConfig) => void;
+	options?: UseAvatarEditorModalOptions;
+};
+
+type AvatarEditorUnifiedContentProps = {
+	modeObservable: ModeObservable;
+	configObservable: ConfigObservable;
+	configRef: React.MutableRefObject<AvatarConfig>;
+	onApply: () => void;
+	allowedStyles: AvatarStyle[];
+	size: AvatarSize;
+	accentColor?: string;
+	debugMode?: boolean;
+};
+
+const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
+	modeObservable,
+	configObservable,
+	configRef,
+	onApply,
+	allowedStyles,
+	size,
+	accentColor,
+	debugMode,
+}) => {
+	const [mode, setMode] = useState<Mode>(modeObservable.get());
+
+	useEffect(() => {
+		return modeObservable.subscribe(setMode);
+	}, [modeObservable]);
+
+	const switchToEditor = useCallback(
+		(config: AvatarConfig) => {
+			configRef.current = { ...config };
+			configObservable.set({ ...config });
+			modeObservable.set('editor');
+		},
+		[configRef, configObservable, modeObservable],
+	);
+
+	if (mode === 'quickstart') {
+		const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
+		return (
+			<PresetSelectionModalContent
+				allowedStyles={allowedStyles}
+				size={size}
+				accentColor={accentColor}
+				onSelectPreset={switchToEditor}
+				onCustomize={() =>
+					switchToEditor({
+						style: defaultStyle,
+						size,
+						options: getDefaultOptionsForStyle(defaultStyle),
+					})
+				}
+			/>
+		);
+	}
+
+	return (
+		<AvatarEditorModalContent
+			initialConfig={configRef.current}
+			accentColor={accentColor}
+			configObservable={configObservable}
+			configRef={configRef}
+			debugMode={debugMode}
+			allowedStyles={allowedStyles}
+			showApplyButton={true}
+			onApply={onApply}
+		/>
+	);
+};
+
 export const useAvatarEditorModal = () => {
 	const { show, close } = useMyScrollViewModal();
 	const configRef = useRef<AvatarConfig>(getDefaultAvatarConfig());
@@ -1522,7 +1643,62 @@ export const useAvatarEditorModal = () => {
 		[show, close],
 	);
 
-	return { showAvatarEditor, showPresetSelection, showAvatarEditorQuickStart, close };
+	/**
+	 * Unified single-modal flow: opens QuickStart if currentAvatar is null/undefined,
+	 * or jumps directly to the editor if currentAvatar is provided.
+	 * The sticky header is only rendered in editor mode.
+	 * onDone is called when the user presses Apply or closes the modal.
+	 */
+	const openAvatarEditor = useCallback(
+		({ currentAvatar, onDone, options }: OpenAvatarEditorProps) => {
+			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
+			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
+			const size = AvatarSize.LARGE;
+
+			const initialMode: Mode = currentAvatar != null ? 'editor' : 'quickstart';
+			const initialConfig: AvatarConfig = currentAvatar ?? {
+				style: defaultStyle,
+				size,
+				options: getDefaultOptionsForStyle(defaultStyle),
+			};
+
+			configRef.current = { ...initialConfig };
+			observableRef.current = new ConfigObservable({ ...initialConfig });
+			const modeObservable = new ModeObservable(initialMode);
+
+			show({
+				title: options?.title ?? 'Avatar Editor',
+				onClose: () => {
+					onDone(configRef.current);
+				},
+				stickyHeaderComponent: (
+					<AvatarStickyHeaderConditional
+						modeObservable={modeObservable}
+						configObservable={observableRef.current}
+						accentColor={options?.accentColor}
+					/>
+				),
+				children: (
+					<AvatarEditorUnifiedContent
+						modeObservable={modeObservable}
+						configObservable={observableRef.current}
+						configRef={configRef}
+						onApply={() => {
+							onDone(configRef.current);
+							close();
+						}}
+						allowedStyles={allowedStyles}
+						size={size}
+						accentColor={options?.accentColor}
+						debugMode={options?.debugMode}
+					/>
+				),
+			});
+		},
+		[show, close],
+	);
+
+	return { showAvatarEditor, showPresetSelection, showAvatarEditorQuickStart, openAvatarEditor, close };
 };
 
 const styles = StyleSheet.create({
