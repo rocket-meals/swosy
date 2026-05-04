@@ -1224,6 +1224,7 @@ function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSi
 
 /**
  * Generates 12 random avatar configs for a given style.
+ * These are ephemeral preview avatars that may change on each generation.
  */
 function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
 	const configs: AvatarConfig[] = [];
