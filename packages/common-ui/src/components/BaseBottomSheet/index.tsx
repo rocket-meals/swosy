@@ -71,7 +71,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 	);
 
 	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...props} enableContentPanningGesture={fullScreen ? false : props.enableContentPanningGesture}>
+		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...props} enablePanDownToClose={fullScreen ? false : props.enablePanDownToClose}>
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
