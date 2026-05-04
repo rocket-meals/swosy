@@ -454,6 +454,12 @@ type AvatarEditorModalContentProps = {
 	configObservable: ConfigObservable;
 	configRef: React.MutableRefObject<AvatarConfig>;
 	debugMode?: boolean;
+	/** Allowed avatar styles. If only one is provided, the style selector is hidden. */
+	allowedStyles?: AvatarStyle[];
+	/** Show an "Apply" button at the top to accept changes and close. */
+	showApplyButton?: boolean;
+	/** Called when the user presses "Apply". */
+	onApply?: () => void;
 };
 
 type AvatarStickyHeaderProps = {
@@ -548,14 +554,16 @@ type StylePickerModalContentProps = {
 	currentStyle: AvatarStyle;
 	onSelectAndClose: (style: AvatarStyle) => void;
 	accentColor?: string;
+	allowedStyles?: AvatarStyle[];
 };
 
 const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	currentStyle,
 	onSelectAndClose,
 	accentColor,
+	allowedStyles,
 }) => {
-	const allStyles = Object.values(AvatarStyle);
+	const allStyles = allowedStyles ?? Object.values(AvatarStyle);
 	return (
 		<>
 			{allStyles.map((style, index) => {
@@ -735,10 +743,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	configObservable,
 	configRef,
 	debugMode,
+	allowedStyles,
+	showApplyButton,
+	onApply,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
 	const { theme, isDark } = useTheme();
+
+	const effectiveAllowedStyles = allowedStyles ?? Object.values(AvatarStyle);
 
 	const handleChange = (newConfig: AvatarConfig) => {
 		setConfig(newConfig);
@@ -826,6 +839,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				<StylePickerModalContent
 					currentStyle={config.style}
 					accentColor={accentColor}
+					allowedStyles={effectiveAllowedStyles}
 					onSelectAndClose={(style) => {
 						handleStyleChange(style);
 						closeCategoryModal();
@@ -895,7 +909,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const getCategoryOptions = (cat: string): SettingsListLeftRightItem<string>[] => {
 		if (cat === BUILTIN_CATEGORY_STYLE) {
-			return Object.values(AvatarStyle).map((style) => ({ id: style, label: style }));
+			return effectiveAllowedStyles.map((style) => ({ id: style, label: style }));
 		}
 		if (colorKeys.includes(cat)) {
 			return getPresetColorsForKey(cat).map((color) => {
@@ -925,13 +939,46 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		() => sortAttributeKeys([...componentKeys, ...colorKeys], config.style),
 		[componentKeys, colorKeys, config.style],
 	);
-	const allCategories = [BUILTIN_CATEGORY_STYLE, ...sortedAttributeKeys];
+
+	// Hide categories that have only one option (no meaningful choice)
+	const visibleAttributeKeys = useMemo(() => {
+		return sortedAttributeKeys.filter((cat) => {
+			if (colorKeys.includes(cat)) {
+				// Color keys always have multiple presets, keep them
+				return true;
+			}
+			const values = componentOptions[cat];
+			if (!values) return true;
+			// Filter out the none option for counting real choices
+			const realValues = values.filter((v) => v !== NONE_OPTION);
+			return realValues.length > 1;
+		});
+	}, [sortedAttributeKeys, colorKeys, componentOptions]);
+
+	// Hide style selector when only one style is allowed
+	const showStyleCategory = effectiveAllowedStyles.length > 1;
+	const allCategories = [
+		...(showStyleCategory ? [BUILTIN_CATEGORY_STYLE] : []),
+		...visibleAttributeKeys,
+	];
 
 	const diceButtonBg = accentColor ?? theme.screen.text;
 	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
 
 	return (
 		<View style={styles.content}>
+			{showApplyButton && onApply && (
+				<>
+					<SettingsList
+						title="Apply"
+						onPress={onApply}
+						leftIcon={<MaterialCommunityIcons name="check-circle" size={20} />}
+						iconBgColor={accentColor}
+						groupPosition="single"
+					/>
+				</>
+			)}
+
 			<SettingsListGroupTitle title="Category" />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
@@ -1003,10 +1050,281 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	);
 };
 
+export type AvatarPreset = {
+	name: string;
+	skinColor?: string[];
+	head?: string[];
+	headContrastColor?: string[];
+	face?: string[];
+	facialHair?: string[];
+	accessories?: string[];
+	mask?: string[];
+	[key: string]: string[] | string | undefined;
+};
+
+/**
+ * Predefined avatar presets for the OPEN_PEEPS style.
+ * Each preset defines a recognisable character that users can pick as a quick-start.
+ */
+const OPEN_PEEPS_PRESETS: AvatarPreset[] = [
+	{
+		name: 'Student Glasses',
+		skinColor: ['edb98a'],
+		head: ['short2'],
+		headContrastColor: ['4a312c'],
+		face: ['smile'],
+		facialHair: [],
+		accessories: ['glasses'],
+		mask: [],
+	},
+	{
+		name: 'Clean Short',
+		skinColor: ['ffdbb4'],
+		head: ['short3'],
+		headContrastColor: ['2c1b18'],
+		face: ['calm'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Long Straight',
+		skinColor: ['edb98a'],
+		head: ['long'],
+		headContrastColor: ['724133'],
+		face: ['smile'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Curly',
+		skinColor: ['d08b5b'],
+		head: ['longCurly'],
+		headContrastColor: ['2c1b18'],
+		face: ['smileBig'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Afro',
+		skinColor: ['694d3d'],
+		head: ['afro'],
+		headContrastColor: ['2c1b18'],
+		face: ['calm'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Bald Beard',
+		skinColor: ['ae5d29'],
+		head: ['noHair1'],
+		headContrastColor: ['4a312c'],
+		face: ['serious'],
+		facialHair: ['full'],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Moustache',
+		skinColor: ['edb98a'],
+		head: ['short4'],
+		headContrastColor: ['b58143'],
+		face: ['smile'],
+		facialHair: ['moustache2'],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Beanie',
+		skinColor: ['d08b5b'],
+		head: ['hatBeanie'],
+		headContrastColor: ['c93305'],
+		face: ['smile'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Glasses Long',
+		skinColor: ['694d3d'],
+		head: ['longBangs'],
+		headContrastColor: ['2c1b18'],
+		face: ['calm'],
+		facialHair: [],
+		accessories: ['glasses2'],
+		mask: [],
+	},
+	{
+		name: 'Red Tone',
+		skinColor: ['ffdbb4'],
+		head: ['mediumStraight'],
+		headContrastColor: ['c93305'],
+		face: ['smile'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Androgyn',
+		skinColor: ['d08b5b'],
+		head: ['medium2'],
+		headContrastColor: ['4a312c'],
+		face: ['calm'],
+		facialHair: [],
+		accessories: [],
+		mask: [],
+	},
+	{
+		name: 'Contrast Glasses',
+		skinColor: ['694d3d'],
+		head: ['short5'],
+		headContrastColor: ['d6b370'],
+		face: ['smileBig'],
+		facialHair: [],
+		accessories: ['glasses5'],
+		mask: [],
+	},
+];
+
+/**
+ * Map of avatar styles to their predefined presets.
+ * Styles without presets will use random avatars for quick-start selection.
+ */
+const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
+	[AvatarStyle.OPEN_PEEPS]: OPEN_PEEPS_PRESETS,
+};
+
+/**
+ * Converts a preset into a full AvatarConfig for a given style.
+ */
+function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
+	const options: Record<string, string[]> = {};
+	const probabilityKeys = getStyleProbabilityKeys(style);
+	for (const [key, value] of Object.entries(preset)) {
+		if (key === 'name') continue;
+		if (Array.isArray(value)) {
+			if (value.length > 0) {
+				options[key] = value;
+				if (probabilityKeys[key]) {
+					options[probabilityKeys[key]] = ['100'];
+				}
+			} else {
+				// Empty array means disabled
+				if (probabilityKeys[key]) {
+					options[probabilityKeys[key]] = ['0'];
+				}
+			}
+		}
+	}
+	return { style, size, options };
+}
+
+/**
+ * Generates 12 random avatar configs for a given style.
+ */
+function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
+	const configs: AvatarConfig[] = [];
+	const componentOptions = getStyleComponentOptions(style);
+	const colorKeys = getStyleColorKeys(style);
+	const probabilityKeys = getStyleProbabilityKeys(style);
+
+	for (let i = 0; i < 12; i++) {
+		const randomOptions: Record<string, string[]> = {};
+		for (const [key, values] of Object.entries(componentOptions)) {
+			const realValues = values.filter((v) => v !== NONE_OPTION);
+			if (realValues.length === 0) continue;
+			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			if (probabilityKeys[key]) {
+				randomOptions[probabilityKeys[key]] = ['100'];
+			}
+		}
+		for (const key of colorKeys) {
+			const presetColors = getPresetColorsForKey(key);
+			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+			randomOptions[key] = [stripHashPrefix(randomColor)];
+		}
+		configs.push({ style, size, options: randomOptions });
+	}
+	return configs;
+}
+
+/**
+ * Returns 12 preset AvatarConfigs for the given style.
+ * Uses defined presets if available, otherwise generates random ones.
+ */
+function getPresetsForStyle(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
+	const presets = AVATAR_PRESETS_BY_STYLE[style];
+	if (presets && presets.length > 0) {
+		return presets.map((p) => presetToConfig(p, style, size));
+	}
+	return generateRandomPresets(style, size);
+}
+
+/** Size used for preset grid avatars. */
+const PRESET_AVATAR_SIZE = 72;
+
+type PresetSelectionModalContentProps = {
+	allowedStyles: AvatarStyle[];
+	size: AvatarSize;
+	accentColor?: string;
+	onSelectPreset: (config: AvatarConfig) => void;
+	onCustomize: () => void;
+};
+
+const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = ({
+	allowedStyles,
+	size,
+	accentColor,
+	onSelectPreset,
+	onCustomize,
+}) => {
+	const { theme } = useTheme();
+
+	// Use the first allowed style for presets (if only one style, use that)
+	const style = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
+	const presets = useMemo(() => getPresetsForStyle(style, size), [style, size]);
+
+	return (
+		<View style={styles.content}>
+			<SettingsListGroupTitle title="Quick Start" />
+			<View style={styles.presetGrid}>
+				{presets.map((presetConfig, index) => (
+					<TouchableOpacity
+						key={index}
+						style={[styles.presetItem, { borderColor: theme.screen.text + '22' }]}
+						onPress={() => onSelectPreset(presetConfig)}
+					>
+						<MyAvatar
+							config={{ ...presetConfig, size: PRESET_AVATAR_SIZE as AvatarSize }}
+							borderRadius={PRESET_AVATAR_SIZE / 2}
+						/>
+					</TouchableOpacity>
+				))}
+			</View>
+
+			<SettingsListGroupTitle title="Actions" />
+			<SettingsList
+				title="Customize"
+				onPress={onCustomize}
+				leftIcon={<MaterialCommunityIcons name="tune-variant" size={20} />}
+				iconBgColor={accentColor}
+				groupPosition="single"
+			/>
+		</View>
+	);
+};
+
 export type UseAvatarEditorModalOptions = {
 	title?: string;
 	accentColor?: string;
 	debugMode?: boolean;
+	/** Restrict which avatar styles are available. If only one style is provided, the style selector is hidden. */
+	allowedStyles?: AvatarStyle[];
+	/** If true, show a delete button (for optional avatar). */
+	allowDelete?: boolean;
 };
 
 export const useAvatarEditorModal = () => {
@@ -1014,10 +1332,16 @@ export const useAvatarEditorModal = () => {
 	const configRef = useRef<AvatarConfig>(getDefaultAvatarConfig());
 	const observableRef = useRef<ConfigObservable>(new ConfigObservable(getDefaultAvatarConfig()));
 
+	/**
+	 * Shows the avatar editor directly (Component 1 flow: Edit existing avatar).
+	 * When the modal is closed, onClose is called with the final config.
+	 */
 	const showAvatarEditor = useCallback(
 		(initialConfig: AvatarConfig, onClose: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
 			configRef.current = { ...initialConfig };
 			observableRef.current = new ConfigObservable({ ...initialConfig });
+
+			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
 
 			show({
 				title: options?.title ?? 'Avatar Editor',
@@ -1037,14 +1361,89 @@ export const useAvatarEditorModal = () => {
 						configObservable={observableRef.current}
 						configRef={configRef}
 						debugMode={options?.debugMode}
+						allowedStyles={allowedStyles}
+						showApplyButton={true}
+						onApply={() => {
+							onClose(configRef.current);
+							close();
+						}}
 					/>
 				),
 			});
 		},
-		[show],
+		[show, close],
 	);
 
-	return { showAvatarEditor, close };
+	/**
+	 * Shows the preset selection (Component 2 flow: Create new from start).
+	 * After selecting a preset, the editor is opened for customization.
+	 * onDone is called when the user applies the final config.
+	 */
+	const showPresetSelection = useCallback(
+		(onDone: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
+			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
+			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
+			const size = AvatarSize.LARGE;
+
+			const openEditorWithConfig = (presetConfig: AvatarConfig) => {
+				configRef.current = { ...presetConfig };
+				observableRef.current = new ConfigObservable({ ...presetConfig });
+
+				show({
+					title: options?.title ?? 'Avatar Editor',
+					onClose: () => {
+						onDone(configRef.current);
+					},
+					stickyHeaderComponent: (
+						<AvatarStickyHeader
+							configObservable={observableRef.current}
+							accentColor={options?.accentColor}
+						/>
+					),
+					children: (
+						<AvatarEditorModalContent
+							initialConfig={presetConfig}
+							accentColor={options?.accentColor}
+							configObservable={observableRef.current}
+							configRef={configRef}
+							debugMode={options?.debugMode}
+							allowedStyles={allowedStyles}
+							showApplyButton={true}
+							onApply={() => {
+								onDone(configRef.current);
+								close();
+							}}
+						/>
+					),
+				});
+			};
+
+			const openCustomizeFromScratch = () => {
+				const defaultConfig: AvatarConfig = {
+					style: defaultStyle,
+					size,
+					options: getDefaultOptionsForStyle(defaultStyle),
+				};
+				openEditorWithConfig(defaultConfig);
+			};
+
+			show({
+				title: options?.title ?? 'Choose Avatar',
+				children: (
+					<PresetSelectionModalContent
+						allowedStyles={allowedStyles}
+						size={size}
+						accentColor={options?.accentColor}
+						onSelectPreset={openEditorWithConfig}
+						onCustomize={openCustomizeFromScratch}
+					/>
+				),
+			});
+		},
+		[show, close],
+	);
+
+	return { showAvatarEditor, showPresetSelection, close };
 };
 
 const styles = StyleSheet.create({
@@ -1072,6 +1471,20 @@ const styles = StyleSheet.create({
 	},
 	previewAvatarWrapper: {
 		marginRight: 10,
+	},
+	presetGrid: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		gap: 12,
+	},
+	presetItem: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 8,
+		borderRadius: 12,
+		borderWidth: 1,
 	},
 	debugJson: {
 		fontFamily: 'monospace',
