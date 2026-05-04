@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-04T20:18:23.900Z",
+  "report_timestamp": "2026-05-04T21:08:22.827Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6149380804953561,
-          "amountSavedValuesForKeys": 4173,
+          "average": 1.6173745173745173,
+          "amountSavedValuesForKeys": 4189,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 70,
-          "average": 2.3614088820826953,
-          "amountSavedValuesForKeys": 1542,
+          "average": 2.3572519083969468,
+          "amountSavedValuesForKeys": 1544,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6288056206088992,
-          "amountSavedValuesForKeys": 4173,
+          "average": 1.6312305295950156,
+          "amountSavedValuesForKeys": 4189,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4285,
-        "detection_time_ms": 94,
+        "ast_generation_time_ms": 4335,
+        "detection_time_ms": 96,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 688.34,
-          "os_memory_free": 15010570240,
-          "os_memory_total": 16766427136,
+          "os_uptime": 118.57,
+          "os_memory_free": 14966329344,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 64,
+    "amount_classes_or_interfaces_with_data_clumps": 67,
     "amount_files_with_data_clumps": 51,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 86,
+    "fields_to_fields_data_clump": 94,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 94
+    "amount_data_clumps": 102
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "9c094620a9671af7457e7eeb3c93ae1130cc924e",
-    "project_commit_hash": "9c094620a9671af7457e7eeb3c93ae1130cc924e",
+    "project_version": "587020041025ab3e43eb90ba36eb193479214369",
+    "project_commit_hash": "587020041025ab3e43eb90ba36eb193479214369",
     "project_tag": null,
-    "project_commit_date": "1777925762",
+    "project_commit_date": "1777928796",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 518,
-    "number_of_classes_or_interfaces": 1066,
-    "number_of_methods": 1383,
-    "number_of_data_fields": 4173,
-    "number_of_method_parameters": 1542
+    "number_of_classes_or_interfaces": 1071,
+    "number_of_methods": 1386,
+    "number_of_data_fields": 4189,
+    "number_of_method_parameters": 1544
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -10175,6 +10175,178 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApply": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApply",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
+      "from_class_or_interface_name": "AvatarEditorModalContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "to_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1417,
+              "startColumn": 2,
+              "endLine": 1417,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 476,
+            "startColumn": 2,
+            "endLine": 476,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configObservable",
+          "name": "configObservable",
+          "type": "ConfigObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable",
+            "name": "configObservable",
+            "type": "ConfigObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 1412,
+              "startColumn": 2,
+              "endLine": 1412,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 477,
+            "startColumn": 2,
+            "endLine": 477,
+            "endColumn": 37
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configRef": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configRef",
+          "name": "configRef",
+          "type": "React.MutableRefObject<AvatarConfig>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configRef",
+            "name": "configRef",
+            "type": "React.MutableRefObject<AvatarConfig>",
+            "modifiers": [],
+            "position": {
+              "startLine": 1413,
+              "startColumn": 2,
+              "endLine": 1413,
+              "endColumn": 50
+            }
+          },
+          "position": {
+            "startLine": 478,
+            "startColumn": 2,
+            "endLine": 478,
+            "endColumn": 50
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/debugMode": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/debugMode",
+          "name": "debugMode",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode",
+            "name": "debugMode",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 1418,
+              "startColumn": 2,
+              "endLine": 1418,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 479,
+            "startColumn": 2,
+            "endLine": 479,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 1415,
+              "startColumn": 2,
+              "endLine": 1415,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 481,
+            "startColumn": 2,
+            "endLine": 481,
+            "endColumn": 32
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/onApply": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/onApply",
+          "name": "onApply",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/onApply",
+            "name": "onApply",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 1414,
+              "startColumn": 2,
+              "endLine": 1414,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 485,
+            "startColumn": 2,
+            "endLine": 485,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyles": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyles",
@@ -10203,16 +10375,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1350,
+              "startLine": 1395,
               "startColumn": 2,
-              "endLine": 1350,
+              "endLine": 1395,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 453,
+            "startLine": 476,
             "startColumn": 2,
-            "endLine": 453,
+            "endLine": 476,
             "endColumn": 23
           }
         },
@@ -10228,16 +10400,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1351,
+              "startLine": 1396,
               "startColumn": 2,
-              "endLine": 1351,
+              "endLine": 1396,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 456,
+            "startLine": 479,
             "startColumn": 2,
-            "endLine": 456,
+            "endLine": 479,
             "endColumn": 22
           }
         },
@@ -10253,23 +10425,680 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1353,
+              "startLine": 1398,
               "startColumn": 2,
-              "endLine": 1353,
+              "endLine": 1398,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 458,
+            "startLine": 481,
             "startColumn": 2,
-            "endLine": 458,
+            "endLine": 481,
             "endColumn": 32
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 25,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps-modeObservableconfigObservableaccentColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps-modeObservableconfigObservableaccentColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "from_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps",
+      "to_class_or_interface_name": "AvatarStickyHeaderConditionalProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/modeObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/modeObservable",
+          "name": "modeObservable",
+          "type": "ModeObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/modeObservable",
+            "name": "modeObservable",
+            "type": "ModeObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 521,
+              "startColumn": 2,
+              "endLine": 521,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 1411,
+            "startColumn": 2,
+            "endLine": 1411,
+            "endColumn": 33
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable",
+          "name": "configObservable",
+          "type": "ConfigObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/configObservable",
+            "name": "configObservable",
+            "type": "ConfigObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 522,
+              "startColumn": 2,
+              "endLine": 522,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 1412,
+            "startColumn": 2,
+            "endLine": 1412,
+            "endColumn": 37
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 523,
+              "startColumn": 2,
+              "endLine": 523,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1417,
+            "startColumn": 2,
+            "endLine": 1417,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugMode": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugMode",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "from_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
+      "to_class_or_interface_name": "AvatarEditorModalContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable",
+          "name": "configObservable",
+          "type": "ConfigObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configObservable",
+            "name": "configObservable",
+            "type": "ConfigObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 477,
+              "startColumn": 2,
+              "endLine": 477,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 1412,
+            "startColumn": 2,
+            "endLine": 1412,
+            "endColumn": 37
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configRef": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configRef",
+          "name": "configRef",
+          "type": "React.MutableRefObject<AvatarConfig>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/configRef",
+            "name": "configRef",
+            "type": "React.MutableRefObject<AvatarConfig>",
+            "modifiers": [],
+            "position": {
+              "startLine": 478,
+              "startColumn": 2,
+              "endLine": 478,
+              "endColumn": 50
+            }
+          },
+          "position": {
+            "startLine": 1413,
+            "startColumn": 2,
+            "endLine": 1413,
+            "endColumn": 50
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/onApply": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/onApply",
+          "name": "onApply",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/onApply",
+            "name": "onApply",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 485,
+              "startColumn": 2,
+              "endLine": 485,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1414,
+            "startColumn": 2,
+            "endLine": 1414,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 481,
+              "startColumn": 2,
+              "endLine": 481,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 1415,
+            "startColumn": 2,
+            "endLine": 1415,
+            "endColumn": 31
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 476,
+              "startColumn": 2,
+              "endLine": 476,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1417,
+            "startColumn": 2,
+            "endLine": 1417,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode",
+          "name": "debugMode",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/debugMode",
+            "name": "debugMode",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 479,
+              "startColumn": 2,
+              "endLine": 479,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 1418,
+            "startColumn": 2,
+            "endLine": 1418,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps-allowedStylessizeaccentColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps-allowedStylessizeaccentColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "from_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps",
+      "to_class_or_interface_name": "PresetSelectionModalContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 1343,
+              "startColumn": 2,
+              "endLine": 1343,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 1415,
+            "startColumn": 2,
+            "endLine": 1415,
+            "endColumn": 31
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/size": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/size",
+          "name": "size",
+          "type": "AvatarSize",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/size",
+            "name": "size",
+            "type": "AvatarSize",
+            "modifiers": [],
+            "position": {
+              "startLine": 1344,
+              "startColumn": 2,
+              "endLine": 1344,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 1416,
+            "startColumn": 2,
+            "endLine": 1416,
+            "endColumn": 19
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1345,
+              "startColumn": 2,
+              "endLine": 1345,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1417,
+            "startColumn": 2,
+            "endLine": 1417,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugMode": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugMode",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "from_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
+      "to_class_or_interface_name": "UseAvatarEditorModalOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 1398,
+              "startColumn": 2,
+              "endLine": 1398,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 1415,
+            "startColumn": 2,
+            "endLine": 1415,
+            "endColumn": 31
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1395,
+              "startColumn": 2,
+              "endLine": 1395,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1417,
+            "startColumn": 2,
+            "endLine": 1417,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode",
+          "name": "debugMode",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/debugMode",
+            "name": "debugMode",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 1396,
+              "startColumn": 2,
+              "endLine": 1396,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 1418,
+            "startColumn": 2,
+            "endLine": 1418,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-modeObservableconfigObservableaccentColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-modeObservableconfigObservableaccentColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps",
+      "from_class_or_interface_name": "AvatarStickyHeaderConditionalProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "to_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/modeObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/modeObservable",
+          "name": "modeObservable",
+          "type": "ModeObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/modeObservable",
+            "name": "modeObservable",
+            "type": "ModeObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 1411,
+              "startColumn": 2,
+              "endLine": 1411,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 521,
+            "startColumn": 2,
+            "endLine": 521,
+            "endColumn": 33
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/configObservable": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/configObservable",
+          "name": "configObservable",
+          "type": "ConfigObservable",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/configObservable",
+            "name": "configObservable",
+            "type": "ConfigObservable",
+            "modifiers": [],
+            "position": {
+              "startLine": 1412,
+              "startColumn": 2,
+              "endLine": 1412,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 522,
+            "startColumn": 2,
+            "endLine": 522,
+            "endColumn": 37
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarStickyHeaderConditionalProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1417,
+              "startColumn": 2,
+              "endLine": 1417,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 523,
+            "startColumn": 2,
+            "endLine": 523,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-allowedStylessizeaccentColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-allowedStylessizeaccentColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps",
+      "from_class_or_interface_name": "PresetSelectionModalContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "to_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 1415,
+              "startColumn": 2,
+              "endLine": 1415,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 1343,
+            "startColumn": 2,
+            "endLine": 1343,
+            "endColumn": 31
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/size": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/size",
+          "name": "size",
+          "type": "AvatarSize",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/size",
+            "name": "size",
+            "type": "AvatarSize",
+            "modifiers": [],
+            "position": {
+              "startLine": 1416,
+              "startColumn": 2,
+              "endLine": 1416,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 1344,
+            "startColumn": 2,
+            "endLine": 1344,
+            "endColumn": 19
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/PresetSelectionModalContentProps/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1417,
+              "startColumn": 2,
+              "endLine": 1417,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1345,
+            "startColumn": 2,
+            "endLine": 1345,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyles": {
@@ -10300,16 +11129,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 453,
+              "startLine": 476,
               "startColumn": 2,
-              "endLine": 453,
+              "endLine": 476,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1350,
+            "startLine": 1395,
             "startColumn": 2,
-            "endLine": 1350,
+            "endLine": 1395,
             "endColumn": 23
           }
         },
@@ -10325,16 +11154,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 456,
+              "startLine": 479,
               "startColumn": 2,
-              "endLine": 456,
+              "endLine": 479,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1351,
+            "startLine": 1396,
             "startColumn": 2,
-            "endLine": 1351,
+            "endLine": 1396,
             "endColumn": 22
           }
         },
@@ -10350,23 +11179,120 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 458,
+              "startLine": 481,
               "startColumn": 2,
-              "endLine": 458,
+              "endLine": 481,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1353,
+            "startLine": 1398,
             "startColumn": 2,
-            "endLine": 1353,
+            "endLine": 1398,
             "endColumn": 32
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 25,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyles": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyles",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
+      "from_class_or_interface_name": "UseAvatarEditorModalOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
+      "to_class_or_interface_name": "AvatarEditorUnifiedContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/accentColor": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/accentColor",
+          "name": "accentColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/accentColor",
+            "name": "accentColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 1417,
+              "startColumn": 2,
+              "endLine": 1417,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 1395,
+            "startColumn": 2,
+            "endLine": 1395,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/debugMode": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/debugMode",
+          "name": "debugMode",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/debugMode",
+            "name": "debugMode",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 1418,
+              "startColumn": 2,
+              "endLine": 1418,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 1396,
+            "startColumn": 2,
+            "endLine": 1396,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/allowedStyles": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/allowedStyles",
+          "name": "allowedStyles",
+          "type": "AvatarStyle[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/allowedStyles",
+            "name": "allowedStyles",
+            "type": "AvatarStyle[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 1415,
+              "startColumn": 2,
+              "endLine": 1415,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 1398,
+            "startColumn": 2,
+            "endLine": 1398,
+            "endColumn": 32
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 25,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-packages/common-ui/src/components/MyMap/MyMapHelper.tsx-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText": {
