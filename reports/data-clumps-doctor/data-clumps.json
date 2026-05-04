@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-04T17:55:59.976Z",
+  "report_timestamp": "2026-05-04T19:12:48.178Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,16 +28,16 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4278,
+        "ast_generation_time_ms": 4249,
         "detection_time_ms": 90,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 190.12,
-          "os_memory_free": 14895960064,
-          "os_memory_total": 16766431232,
+          "os_uptime": 122.76,
+          "os_memory_free": 15011033088,
+          "os_memory_total": 16770764800,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "509393e48951a8e7a3a4a5ac484df4fc679828c2",
-    "project_commit_hash": "509393e48951a8e7a3a4a5ac484df4fc679828c2",
+    "project_version": "1c5ddcb23c07e5ac7ffea40d458b9960e1a0580c",
+    "project_commit_hash": "1c5ddcb23c07e5ac7ffea40d458b9960e1a0580c",
     "project_tag": null,
-    "project_commit_date": "1777917249",
+    "project_commit_date": "1777921864",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -10203,9 +10203,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1323,
+              "startLine": 1340,
               "startColumn": 2,
-              "endLine": 1323,
+              "endLine": 1340,
               "endColumn": 23
             }
           },
@@ -10228,9 +10228,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1324,
+              "startLine": 1341,
               "startColumn": 2,
-              "endLine": 1324,
+              "endLine": 1341,
               "endColumn": 22
             }
           },
@@ -10253,9 +10253,9 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1326,
+              "startLine": 1343,
               "startColumn": 2,
-              "endLine": 1326,
+              "endLine": 1343,
               "endColumn": 32
             }
           },
@@ -10307,9 +10307,9 @@
             }
           },
           "position": {
-            "startLine": 1323,
+            "startLine": 1340,
             "startColumn": 2,
-            "endLine": 1323,
+            "endLine": 1340,
             "endColumn": 23
           }
         },
@@ -10332,9 +10332,9 @@
             }
           },
           "position": {
-            "startLine": 1324,
+            "startLine": 1341,
             "startColumn": 2,
-            "endLine": 1324,
+            "endLine": 1341,
             "endColumn": 22
           }
         },
@@ -10357,9 +10357,9 @@
             }
           },
           "position": {
-            "startLine": 1326,
+            "startLine": 1343,
             "startColumn": 2,
-            "endLine": 1326,
+            "endLine": 1343,
             "endColumn": 32
           }
         }
