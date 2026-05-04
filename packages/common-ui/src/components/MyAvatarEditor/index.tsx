@@ -1471,7 +1471,58 @@ export const useAvatarEditorModal = () => {
 		[show, close],
 	);
 
-	return { showAvatarEditor, showPresetSelection, close };
+	/**
+	 * QuickStart flow: opens the editor directly with a default config (single modal).
+	 * No preset-selection step — user lands straight in the customize view.
+	 * onDone is called when the user presses Apply or closes the modal.
+	 */
+	const showAvatarEditorQuickStart = useCallback(
+		(onDone: (config: AvatarConfig) => void, options?: UseAvatarEditorModalOptions) => {
+			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
+			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
+			const size = AvatarSize.LARGE;
+
+			const defaultConfig: AvatarConfig = {
+				style: defaultStyle,
+				size,
+				options: getDefaultOptionsForStyle(defaultStyle),
+			};
+
+			configRef.current = { ...defaultConfig };
+			observableRef.current = new ConfigObservable({ ...defaultConfig });
+
+			show({
+				title: options?.title ?? 'Avatar Editor',
+				onClose: () => {
+					onDone(configRef.current);
+				},
+				stickyHeaderComponent: (
+					<AvatarStickyHeader
+						configObservable={observableRef.current}
+						accentColor={options?.accentColor}
+					/>
+				),
+				children: (
+					<AvatarEditorModalContent
+						initialConfig={defaultConfig}
+						accentColor={options?.accentColor}
+						configObservable={observableRef.current}
+						configRef={configRef}
+						debugMode={options?.debugMode}
+						allowedStyles={allowedStyles}
+						showApplyButton={true}
+						onApply={() => {
+							onDone(configRef.current);
+							close();
+						}}
+					/>
+				),
+			});
+		},
+		[show, close],
+	);
+
+	return { showAvatarEditor, showPresetSelection, showAvatarEditorQuickStart, close };
 };
 
 const styles = StyleSheet.create({

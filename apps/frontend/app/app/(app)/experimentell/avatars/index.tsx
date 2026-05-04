@@ -23,7 +23,7 @@ const AvatarsScreen = () => {
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const debugMode = useDebugMode();
-	const { showAvatarEditor, showPresetSelection } = useAvatarEditorModal();
+	const { showAvatarEditor, showAvatarEditorQuickStart } = useAvatarEditorModal();
 
 	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig | null>(null);
 
@@ -42,7 +42,7 @@ const AvatarsScreen = () => {
 	};
 
 	const handleCreateNew = () => {
-		showPresetSelection((newConfig) => {
+		showAvatarEditorQuickStart((newConfig) => {
 			setAvatarConfig(newConfig);
 		}, editorOptions);
 	};
