@@ -60,6 +60,7 @@ import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
+import SettingsListLeftRight, { type SettingsListLeftRightItem } from '../SettingsListLeftRight/SettingsListLeftRight';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -860,23 +861,39 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		});
 	};
 
-	/** Get current display value for a category. */
-	const getCategoryDisplayValue = (cat: string): string | undefined => {
-		if (cat === BUILTIN_CATEGORY_STYLE) return config.style;
-		if (colorKeys.includes(cat)) {
-			const hex = config.options?.[cat]?.[0];
-			return hex ? '#' + hex : undefined;
-		}
-		const val = getSelectedOptionValue(cat);
-		if (val === NONE_OPTION) return 'None';
-		return val ?? undefined;
-	};
-
 	/** Get the handler for opening a category's selection modal. */
 	const getCategoryHandler = (cat: string): (() => void) => {
 		if (cat === BUILTIN_CATEGORY_STYLE) return handleOpenStylePicker;
 		if (colorKeys.includes(cat)) return () => handleOpenColorPicker(cat);
 		return () => handleOpenComponentPicker(cat);
+	};
+
+	const getCategoryOptions = (cat: string): SettingsListLeftRightItem<string>[] => {
+		if (cat === BUILTIN_CATEGORY_STYLE) {
+			return Object.values(AvatarStyle).map((style) => ({ id: style, label: style }));
+		}
+		if (colorKeys.includes(cat)) {
+			return getPresetColorsForKey(cat).map((color) => {
+				const hex = stripHashPrefix(color);
+				return { id: hex, label: '#' + hex };
+			});
+		}
+		const values = componentOptions[cat] ?? [];
+		return values.map((value) => ({ id: value, label: value === NONE_OPTION ? 'None' : value }));
+	};
+
+	const getCategorySelectedOption = (cat: string): string | null => {
+		if (cat === BUILTIN_CATEGORY_STYLE) return config.style;
+		if (colorKeys.includes(cat)) return config.options?.[cat]?.[0] ?? null;
+		return getSelectedOptionValue(cat);
+	};
+
+	const handleCategorySelect = (cat: string, item: SettingsListLeftRightItem<string>) => {
+		if (cat === BUILTIN_CATEGORY_STYLE) {
+			handleStyleChange(item.id as AvatarStyle);
+		} else {
+			handleOptionChange(cat, item.id);
+		}
 	};
 
 	const sortedAttributeKeys = useMemo(
@@ -900,7 +917,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							: index === allCategories.length - 1
 								? 'bottom'
 								: 'middle';
-				const displayValue = getCategoryDisplayValue(cat);
 				const colorKey = colorKeys.includes(cat) ? config.options?.[cat]?.[0] : null;
 				const swatchColor = colorKey ? '#' + colorKey : undefined;
 				const swatchBorderColor = swatchColor ? myContrastColor(swatchColor, theme, isDark) : undefined;
@@ -908,16 +924,18 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				const iconName = CATEGORY_ICON_MAP[cat] ?? 'help-circle-outline';
 
 				return (
-					<SettingsList
+					<SettingsListLeftRight
 						key={cat}
-						title={cat}
-						value={displayValue}
+						label={cat}
+						options={getCategoryOptions(cat)}
+						selectedOption={getCategorySelectedOption(cat)}
+						onSelect={(item) => handleCategorySelect(cat, item)}
 						onPress={getCategoryHandler(cat)}
 						leftIcon={<MaterialCommunityIcons name={iconName} size={20} />}
 						iconBgColor={accentColor}
 						groupPosition={groupPosition}
 						showSeparator={index !== allCategories.length - 1}
-						rightElement={
+						extraRightElement={
 							swatchColor ? (
 								<View
 									style={[
