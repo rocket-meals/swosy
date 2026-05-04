@@ -87,6 +87,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 		modalStackRef.current = [...modalStackRef.current, newItem];
 		setModalStack([...modalStackRef.current]);
+		setOpenCount(c => c + 1);
 
 		setDebug(prev => ({
 			...prev,
@@ -113,6 +114,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 		modalStackRef.current = [newItem];
 		setModalStack([newItem]);
+		setOpenCount(c => c + 1);
 
 		setDebug(prev => ({
 			...prev,
@@ -226,17 +228,14 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		};
 	};
 
-	const prevStackLengthRef = useRef(0);
-	useEffect(() => {
-		const prev = prevStackLengthRef.current;
-		const curr = modalStack.length;
-		prevStackLengthRef.current = curr;
+	const [openCount, setOpenCount] = useState(0);
 
-		if (curr > 0 && prev === 0) {
+	useEffect(() => {
+		if (openCount > 0 && modalStack.length > 0) {
 			const cancel = ensureExpand();
 			return () => cancel();
 		}
-	}, [modalStack.length]);
+	}, [openCount]);
 
 	const currentItem = modalStack[modalStack.length - 1] ?? null;
 	const screenBackgroundColor = currentItem?.headerBackgroundColor || theme.screen.background;
