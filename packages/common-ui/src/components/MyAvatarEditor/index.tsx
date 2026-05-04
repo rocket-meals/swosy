@@ -74,6 +74,7 @@ type ConfigListener = (config: AvatarConfig) => void;
 class ConfigObservable {
 	private readonly listeners: Set<ConfigListener> = new Set();
 	private current: AvatarConfig;
+	private randomizeFn: (() => void) | null = null;
 
 	constructor(initial: AvatarConfig) {
 		this.current = initial;
@@ -89,6 +90,14 @@ class ConfigObservable {
 	set(config: AvatarConfig) {
 		this.current = config;
 		this.listeners.forEach(l => l(config));
+	}
+
+	setRandomizeFn(fn: () => void) {
+		this.randomizeFn = fn;
+	}
+
+	randomize() {
+		this.randomizeFn?.();
 	}
 }
 
@@ -449,15 +458,19 @@ type AvatarEditorModalContentProps = {
 
 type AvatarStickyHeaderProps = {
 	configObservable: ConfigObservable;
+	accentColor?: string;
 };
 
-const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable }) => {
+const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configObservable.get());
-	const { theme } = useTheme();
+	const { theme, isDark } = useTheme();
 
 	useEffect(() => {
 		return configObservable.subscribe(setConfig);
 	}, [configObservable]);
+
+	const diceButtonBg = accentColor ?? theme.screen.text;
+	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
 
 	return (
 		<View style={[styles.avatarContainer, { backgroundColor: theme.screen.background }]}>
@@ -465,6 +478,12 @@ const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservabl
 				config={{ ...config, size: AvatarSize.XLARGE }}
 				borderRadius={AvatarSize.XLARGE / 2}
 			/>
+			<TouchableOpacity
+				style={[styles.diceButton, { backgroundColor: diceButtonBg }]}
+				onPress={() => configObservable.randomize()}
+			>
+				<MaterialCommunityIcons name="dice-multiple" size={24} color={diceIconColor} />
+			</TouchableOpacity>
 		</View>
 	);
 };
@@ -790,6 +809,12 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		handleChange({ ...config, options: randomOptions });
 	};
 
+	const handleRandomizeRef = useRef(handleRandomize);
+	handleRandomizeRef.current = handleRandomize;
+	useEffect(() => {
+		configObservable.setRandomizeFn(() => handleRandomizeRef.current());
+	}, [configObservable]);
+
 	const handleCopyConfig = async () => {
 		await Clipboard.setStringAsync(JSON.stringify(config, null, 2));
 	};
@@ -1002,6 +1027,7 @@ export const useAvatarEditorModal = () => {
 				stickyHeaderComponent: (
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
+						accentColor={options?.accentColor}
 					/>
 				),
 				children: (
