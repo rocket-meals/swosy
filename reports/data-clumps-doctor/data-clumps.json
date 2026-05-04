@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-04T21:42:52.399Z",
+  "report_timestamp": "2026-05-04T23:47:43.385Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6173745173745173,
-          "amountSavedValuesForKeys": 4189,
+          "average": 1.6180555555555556,
+          "amountSavedValuesForKeys": 4194,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
@@ -22,22 +22,22 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6312305295950156,
-          "amountSavedValuesForKeys": 4189,
+          "average": 1.6319066147859922,
+          "amountSavedValuesForKeys": 4194,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4237,
-        "detection_time_ms": 92,
+        "ast_generation_time_ms": 4293,
+        "detection_time_ms": 94,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 119.41,
-          "os_memory_free": 14894534656,
-          "os_memory_total": 16770760704,
+          "os_uptime": 343.2,
+          "os_memory_free": 14891491328,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "6305246f0d1373098705f0a35b0864f004794bf0",
-    "project_commit_hash": "6305246f0d1373098705f0a35b0864f004794bf0",
+    "project_version": "cca6f3ba761e074b88f7d3644f77d84fcf2889e0",
+    "project_commit_hash": "cca6f3ba761e074b88f7d3644f77d84fcf2889e0",
     "project_tag": null,
-    "project_commit_date": "1777930865",
+    "project_commit_date": "1777938332",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 518,
     "number_of_classes_or_interfaces": 1071,
     "number_of_methods": 1386,
-    "number_of_data_fields": 4189,
+    "number_of_data_fields": 4194,
     "number_of_method_parameters": 1544
   },
   "detector": {
@@ -10175,9 +10175,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApply": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplylockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApply",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplylockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
@@ -10203,16 +10203,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1419,
+              "startLine": 1487,
               "startColumn": 2,
-              "endLine": 1419,
+              "endLine": 1487,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 476,
+            "startLine": 513,
             "startColumn": 2,
-            "endLine": 476,
+            "endLine": 513,
             "endColumn": 23
           }
         },
@@ -10228,16 +10228,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1414,
+              "startLine": 1482,
               "startColumn": 2,
-              "endLine": 1414,
+              "endLine": 1482,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 477,
+            "startLine": 514,
             "startColumn": 2,
-            "endLine": 477,
+            "endLine": 514,
             "endColumn": 37
           }
         },
@@ -10253,16 +10253,16 @@
             "type": "React.MutableRefObject<AvatarConfig>",
             "modifiers": [],
             "position": {
-              "startLine": 1415,
+              "startLine": 1483,
               "startColumn": 2,
-              "endLine": 1415,
+              "endLine": 1483,
               "endColumn": 50
             }
           },
           "position": {
-            "startLine": 478,
+            "startLine": 515,
             "startColumn": 2,
-            "endLine": 478,
+            "endLine": 515,
             "endColumn": 50
           }
         },
@@ -10278,16 +10278,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1420,
+              "startLine": 1488,
               "startColumn": 2,
-              "endLine": 1420,
+              "endLine": 1488,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 479,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 479,
+            "endLine": 516,
             "endColumn": 22
           }
         },
@@ -10303,16 +10303,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1485,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1485,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 481,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 481,
+            "endLine": 518,
             "endColumn": 32
           }
         },
@@ -10328,17 +10328,42 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 1416,
+              "startLine": 1484,
               "startColumn": 2,
-              "endLine": 1416,
+              "endLine": 1484,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 485,
+            "startLine": 522,
             "startColumn": 2,
-            "endLine": 485,
+            "endLine": 522,
             "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 1489,
+              "startColumn": 2,
+              "endLine": 1489,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 527,
+            "startColumn": 2,
+            "endLine": 527,
+            "endColumn": 39
           }
         }
       },
@@ -10347,9 +10372,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyles": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleslockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyles",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleslockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
@@ -10375,16 +10400,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1397,
+              "startLine": 1459,
               "startColumn": 2,
-              "endLine": 1397,
+              "endLine": 1459,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 476,
+            "startLine": 513,
             "startColumn": 2,
-            "endLine": 476,
+            "endLine": 513,
             "endColumn": 23
           }
         },
@@ -10400,16 +10425,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1398,
+              "startLine": 1460,
               "startColumn": 2,
-              "endLine": 1398,
+              "endLine": 1460,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 479,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 479,
+            "endLine": 516,
             "endColumn": 22
           }
         },
@@ -10425,17 +10450,42 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1400,
+              "startLine": 1462,
               "startColumn": 2,
-              "endLine": 1400,
+              "endLine": 1462,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 481,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 481,
+            "endLine": 518,
             "endColumn": 32
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 1470,
+              "startColumn": 2,
+              "endLine": 1470,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 527,
+            "startColumn": 2,
+            "endLine": 527,
+            "endColumn": 39
           }
         }
       },
@@ -10472,16 +10522,16 @@
             "type": "ModeObservable",
             "modifiers": [],
             "position": {
-              "startLine": 521,
+              "startLine": 563,
               "startColumn": 2,
-              "endLine": 521,
+              "endLine": 563,
               "endColumn": 33
             }
           },
           "position": {
-            "startLine": 1413,
+            "startLine": 1481,
             "startColumn": 2,
-            "endLine": 1413,
+            "endLine": 1481,
             "endColumn": 33
           }
         },
@@ -10497,16 +10547,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 522,
+              "startLine": 564,
               "startColumn": 2,
-              "endLine": 522,
+              "endLine": 564,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 1414,
+            "startLine": 1482,
             "startColumn": 2,
-            "endLine": 1414,
+            "endLine": 1482,
             "endColumn": 37
           }
         },
@@ -10522,16 +10572,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 523,
+              "startLine": 565,
               "startColumn": 2,
-              "endLine": 523,
+              "endLine": 565,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1419,
+            "startLine": 1487,
             "startColumn": 2,
-            "endLine": 1419,
+            "endLine": 1487,
             "endColumn": 23
           }
         }
@@ -10541,9 +10591,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugMode": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModelockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugMode",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModelockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
@@ -10569,16 +10619,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 477,
+              "startLine": 514,
               "startColumn": 2,
-              "endLine": 477,
+              "endLine": 514,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 1414,
+            "startLine": 1482,
             "startColumn": 2,
-            "endLine": 1414,
+            "endLine": 1482,
             "endColumn": 37
           }
         },
@@ -10594,16 +10644,16 @@
             "type": "React.MutableRefObject<AvatarConfig>",
             "modifiers": [],
             "position": {
-              "startLine": 478,
+              "startLine": 515,
               "startColumn": 2,
-              "endLine": 478,
+              "endLine": 515,
               "endColumn": 50
             }
           },
           "position": {
-            "startLine": 1415,
+            "startLine": 1483,
             "startColumn": 2,
-            "endLine": 1415,
+            "endLine": 1483,
             "endColumn": 50
           }
         },
@@ -10619,16 +10669,16 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 485,
+              "startLine": 522,
               "startColumn": 2,
-              "endLine": 485,
+              "endLine": 522,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1416,
+            "startLine": 1484,
             "startColumn": 2,
-            "endLine": 1416,
+            "endLine": 1484,
             "endColumn": 22
           }
         },
@@ -10644,16 +10694,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 481,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 481,
+              "endLine": 518,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1485,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1485,
             "endColumn": 31
           }
         },
@@ -10669,16 +10719,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 476,
+              "startLine": 513,
               "startColumn": 2,
-              "endLine": 476,
+              "endLine": 513,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1419,
+            "startLine": 1487,
             "startColumn": 2,
-            "endLine": 1419,
+            "endLine": 1487,
             "endColumn": 23
           }
         },
@@ -10694,17 +10744,42 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 479,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 479,
+              "endLine": 516,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1420,
+            "startLine": 1488,
             "startColumn": 2,
-            "endLine": 1420,
+            "endLine": 1488,
             "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 527,
+              "startColumn": 2,
+              "endLine": 527,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 1489,
+            "startColumn": 2,
+            "endLine": 1489,
+            "endColumn": 39
           }
         }
       },
@@ -10741,16 +10816,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1345,
+              "startLine": 1407,
               "startColumn": 2,
-              "endLine": 1345,
+              "endLine": 1407,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1485,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1485,
             "endColumn": 31
           }
         },
@@ -10766,16 +10841,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1346,
+              "startLine": 1408,
               "startColumn": 2,
-              "endLine": 1346,
+              "endLine": 1408,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1418,
+            "startLine": 1486,
             "startColumn": 2,
-            "endLine": 1418,
+            "endLine": 1486,
             "endColumn": 19
           }
         },
@@ -10791,16 +10866,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1347,
+              "startLine": 1409,
               "startColumn": 2,
-              "endLine": 1347,
+              "endLine": 1409,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1419,
+            "startLine": 1487,
             "startColumn": 2,
-            "endLine": 1419,
+            "endLine": 1487,
             "endColumn": 23
           }
         }
@@ -10810,9 +10885,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugMode": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModelockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugMode",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModelockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
@@ -10838,16 +10913,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1400,
+              "startLine": 1462,
               "startColumn": 2,
-              "endLine": 1400,
+              "endLine": 1462,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1417,
+            "startLine": 1485,
             "startColumn": 2,
-            "endLine": 1417,
+            "endLine": 1485,
             "endColumn": 31
           }
         },
@@ -10863,16 +10938,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1397,
+              "startLine": 1459,
               "startColumn": 2,
-              "endLine": 1397,
+              "endLine": 1459,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1419,
+            "startLine": 1487,
             "startColumn": 2,
-            "endLine": 1419,
+            "endLine": 1487,
             "endColumn": 23
           }
         },
@@ -10888,17 +10963,42 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1398,
+              "startLine": 1460,
               "startColumn": 2,
-              "endLine": 1398,
+              "endLine": 1460,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1420,
+            "startLine": 1488,
             "startColumn": 2,
-            "endLine": 1420,
+            "endLine": 1488,
             "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 1470,
+              "startColumn": 2,
+              "endLine": 1470,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 1489,
+            "startColumn": 2,
+            "endLine": 1489,
+            "endColumn": 39
           }
         }
       },
@@ -10935,16 +11035,16 @@
             "type": "ModeObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1413,
+              "startLine": 1481,
               "startColumn": 2,
-              "endLine": 1413,
+              "endLine": 1481,
               "endColumn": 33
             }
           },
           "position": {
-            "startLine": 521,
+            "startLine": 563,
             "startColumn": 2,
-            "endLine": 521,
+            "endLine": 563,
             "endColumn": 33
           }
         },
@@ -10960,16 +11060,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1414,
+              "startLine": 1482,
               "startColumn": 2,
-              "endLine": 1414,
+              "endLine": 1482,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 522,
+            "startLine": 564,
             "startColumn": 2,
-            "endLine": 522,
+            "endLine": 564,
             "endColumn": 37
           }
         },
@@ -10985,16 +11085,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1419,
+              "startLine": 1487,
               "startColumn": 2,
-              "endLine": 1419,
+              "endLine": 1487,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 523,
+            "startLine": 565,
             "startColumn": 2,
-            "endLine": 523,
+            "endLine": 565,
             "endColumn": 23
           }
         }
@@ -11032,16 +11132,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1485,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1485,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1345,
+            "startLine": 1407,
             "startColumn": 2,
-            "endLine": 1345,
+            "endLine": 1407,
             "endColumn": 31
           }
         },
@@ -11057,16 +11157,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1418,
+              "startLine": 1486,
               "startColumn": 2,
-              "endLine": 1418,
+              "endLine": 1486,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1346,
+            "startLine": 1408,
             "startColumn": 2,
-            "endLine": 1346,
+            "endLine": 1408,
             "endColumn": 19
           }
         },
@@ -11082,16 +11182,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1419,
+              "startLine": 1487,
               "startColumn": 2,
-              "endLine": 1419,
+              "endLine": 1487,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1347,
+            "startLine": 1409,
             "startColumn": 2,
-            "endLine": 1347,
+            "endLine": 1409,
             "endColumn": 23
           }
         }
@@ -11101,9 +11201,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyles": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleslockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyles",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleslockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
@@ -11129,16 +11229,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 476,
+              "startLine": 513,
               "startColumn": 2,
-              "endLine": 476,
+              "endLine": 513,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1397,
+            "startLine": 1459,
             "startColumn": 2,
-            "endLine": 1397,
+            "endLine": 1459,
             "endColumn": 23
           }
         },
@@ -11154,16 +11254,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 479,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 479,
+              "endLine": 516,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1398,
+            "startLine": 1460,
             "startColumn": 2,
-            "endLine": 1398,
+            "endLine": 1460,
             "endColumn": 22
           }
         },
@@ -11179,17 +11279,42 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 481,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 481,
+              "endLine": 518,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1400,
+            "startLine": 1462,
             "startColumn": 2,
-            "endLine": 1400,
+            "endLine": 1462,
             "endColumn": 32
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 527,
+              "startColumn": 2,
+              "endLine": 527,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 1470,
+            "startColumn": 2,
+            "endLine": 1470,
+            "endColumn": 39
           }
         }
       },
@@ -11198,9 +11323,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyles": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleslockedProps": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyles",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleslockedProps",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
@@ -11226,16 +11351,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1419,
+              "startLine": 1487,
               "startColumn": 2,
-              "endLine": 1419,
+              "endLine": 1487,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1397,
+            "startLine": 1459,
             "startColumn": 2,
-            "endLine": 1397,
+            "endLine": 1459,
             "endColumn": 23
           }
         },
@@ -11251,16 +11376,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1420,
+              "startLine": 1488,
               "startColumn": 2,
-              "endLine": 1420,
+              "endLine": 1488,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1398,
+            "startLine": 1460,
             "startColumn": 2,
-            "endLine": 1398,
+            "endLine": 1460,
             "endColumn": 22
           }
         },
@@ -11276,17 +11401,42 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1417,
+              "startLine": 1485,
               "startColumn": 2,
-              "endLine": 1417,
+              "endLine": 1485,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1400,
+            "startLine": 1462,
             "startColumn": 2,
-            "endLine": 1400,
+            "endLine": 1462,
             "endColumn": 32
+          }
+        },
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
+          "name": "lockedProps",
+          "type": "Record<string, string>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
+            "name": "lockedProps",
+            "type": "Record<string, string>",
+            "modifiers": [],
+            "position": {
+              "startLine": 1489,
+              "startColumn": 2,
+              "endLine": 1489,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 1470,
+            "startColumn": 2,
+            "endLine": 1470,
+            "endColumn": 39
           }
         }
       },
