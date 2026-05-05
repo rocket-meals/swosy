@@ -1225,7 +1225,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											showSeparator={index !== arr.length - 1}
 											initialValue={currentNumeric}
 											value={currentRaw ?? String(lockedNumeric)}
-											step={1}
+											step={!Number.isInteger(lockedNumeric) ? 0.1 : 1}
 											allowDecimal={!Number.isInteger(lockedNumeric)}
 											allowDisable={true}
 											disableLabel={`Reset (locked: ${value})`}
