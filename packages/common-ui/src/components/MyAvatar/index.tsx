@@ -101,6 +101,27 @@ export const STYLE_MAP: Record<AvatarStyle, Style<object>> = {
 	[AvatarStyle.TOON_HEAD]: collection.toonHead,
 };
 
+/**
+ * Returns a map of component keys to their corresponding probability property keys
+ * for a given DiceBear avatar style. For example, { glasses: 'glassesProbability' }.
+ */
+export function getStyleProbabilityKeys(style: AvatarStyle): Record<string, string> {
+	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
+	const properties = dicebearStyle?.schema?.properties;
+	if (!properties) return {};
+
+	const result: Record<string, string> = {};
+	for (const key of Object.keys(properties)) {
+		if (key.endsWith('Probability')) {
+			const componentKey = key.replace('Probability', '');
+			if (properties[componentKey]) {
+				result[componentKey] = key;
+			}
+		}
+	}
+	return result;
+}
+
 const MyAvatar: React.FC<MyAvatarProps> = ({
 	config,
 	style: styleProp = AvatarStyle.LORELEI,
@@ -123,6 +144,19 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		// to compensate for the off-centre positioning of the avatar inside the background.
 		if (style === AvatarStyle.OPEN_PEEPS && renderOptions['translateX'] === undefined) {
 			renderOptions['translateX'] = ['-6'];
+		}
+		// Derive probability at render time from component key presence.
+		// A component key present in options → probability 100 (visible).
+		// A component key absent from options → probability 0 (hidden).
+		// This keeps probability out of stored configs entirely.
+		const probabilityKeys = getStyleProbabilityKeys(style);
+		for (const [compKey, probKey] of Object.entries(probabilityKeys)) {
+			const compValue = renderOptions[compKey];
+			if (compValue && Array.isArray(compValue) && (compValue as string[]).length > 0) {
+				renderOptions[probKey] = ['100'];
+			} else {
+				renderOptions[probKey] = ['0'];
+			}
 		}
 		return createAvatar(avatarStyle, {
 			size,

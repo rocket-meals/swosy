@@ -55,7 +55,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig } from '../MyAvatar';
+import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
@@ -367,7 +367,6 @@ const STYLE_NUMERIC_DEFAULTS: Partial<Record<AvatarStyle, Partial<Record<string,
  */
 function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]> {
 	const componentOptions = getStyleComponentOptions(style);
-	const probabilityKeys = getStyleProbabilityKeys(style);
 	const defaults: Record<string, string[]> = {};
 	for (const [key, values] of Object.entries(componentOptions)) {
 		const realValues = values.filter((v) => v !== NONE_OPTION);
@@ -376,10 +375,7 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 		} else if (realValues.length > 0) {
 			defaults[key] = [realValues[0]];
 		}
-		// Set probability to 100 for the default selection so the component is visible
-		if (probabilityKeys[key]) {
-			defaults[probabilityKeys[key]] = ['100'];
-		}
+		// Probability is not stored – the renderer derives it from key presence at render time.
 	}
 	const colorKeys = getStyleColorKeys(style);
 	for (const key of colorKeys) {
@@ -417,27 +413,6 @@ function sortAttributeKeys(keys: string[], style: AvatarStyle): string[] {
 	const knownKeys = order.filter((k) => keys.includes(k));
 	const unknownKeys = keys.filter((k) => !knownSet.has(k));
 	return [...knownKeys, ...unknownKeys];
-}
-
-/**
- * Returns a map of component keys to their corresponding probability property keys
- * for a given DiceBear avatar style. For example, { glasses: 'glassesProbability' }.
- */
-function getStyleProbabilityKeys(style: AvatarStyle): Record<string, string> {
-	const dicebearStyle = STYLE_MAP[style] as Style<object> & { schema?: { properties?: Record<string, any> } };
-	const properties = dicebearStyle?.schema?.properties;
-	if (!properties) return {};
-
-	const result: Record<string, string> = {};
-	for (const key of Object.keys(properties)) {
-		if (key.endsWith('Probability')) {
-			const componentKey = key.replace('Probability', '');
-			if (properties[componentKey]) {
-				result[componentKey] = key;
-			}
-		}
-	}
-	return result;
 }
 
 /**
@@ -735,7 +710,6 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 	rounded,
 	backgroundColor,
 }) => {
-	const probKey = getStyleProbabilityKeys(config.style)[categoryKey];
 	return (
 		<>
 			{values.map((value, index) => {
@@ -750,14 +724,11 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 				const isNone = value === NONE_OPTION;
 				const previewOptions = { ...(config.options ?? {}) };
 				if (isNone) {
-					if (probKey) {
-						previewOptions[probKey] = ['0'];
-					}
+					// Remove the component key so the renderer sets probability=0 (hidden).
+					delete previewOptions[categoryKey];
 				} else {
 					previewOptions[categoryKey] = [value];
-					if (probKey) {
-						previewOptions[probKey] = ['100'];
-					}
+					// Probability is not stored – renderer derives it from key presence.
 				}
 				return (
 					<SettingsListSelectOptionSingle
@@ -878,6 +849,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const applyLockedProps = useCallback(
 		(cfg: AvatarConfig): AvatarConfig => {
+			// In debug mode locked props are not forced, so the user can freely edit them.
+			if (debugMode) return cfg;
 			if (!lockedProps || Object.keys(lockedProps).length === 0) return cfg;
 			const newOptions = { ...(cfg.options ?? {}) };
 			for (const [key, value] of Object.entries(lockedProps)) {
@@ -887,7 +860,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			}
 			return { ...cfg, options: newOptions };
 		},
-		[lockedProps],
+		[lockedProps, debugMode],
 	);
 
 	const handleChange = (newConfig: AvatarConfig) => {
@@ -909,31 +882,22 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const handleOptionChange = (key: string, value: string) => {
 		const newOptions = { ...(config.options ?? {}) };
-		const probKey = probabilityKeys[key];
 		if (value === NONE_OPTION) {
-			// Disable the component via probability
-			if (probKey) {
-				newOptions[probKey] = ['0'];
-			}
+			// Remove the component key; the renderer will set probability=0 since key is absent.
 			delete newOptions[key];
 		} else {
 			newOptions[key] = [value];
-			// Ensure the component is visible by setting probability to 100
-			if (probKey) {
-				newOptions[probKey] = ['100'];
-			}
+			// Probability is not stored – the renderer derives it from key presence at render time.
 		}
 		handleChange({ ...config, options: newOptions });
 	};
 
 	const getSelectedOptionValue = (key: string): string | null => {
-		// If probability is 0, the component is disabled
-		const probKey = probabilityKeys[key];
-		if (probKey) {
-			const prob = config.options?.[probKey];
-			if (prob && prob[0] === '0') return NONE_OPTION;
-		}
 		const selected = config.options?.[key];
+		// For optional components (those with a probability key), absence of the key means "none".
+		if (probabilityKeys[key] && (!selected || selected.length === 0)) {
+			return NONE_OPTION;
+		}
 		if (selected && selected.length > 0) return selected[0];
 		return null;
 	};
@@ -946,21 +910,18 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
-			// For openPeeps, mask is always none
+			// For openPeeps, mask is always none (key absent = renderer sets probability=0)
 			if (config.style === AvatarStyle.OPEN_PEEPS && key === 'mask' && newProbabilityKeys[key]) {
-				randomOptions[newProbabilityKeys[key]] = ['0'];
 				continue;
 			}
 			// For optional components, include "none" as a possible random selection
 			if (newProbabilityKeys[key]) {
 				const allValues = [NONE_OPTION, ...realValues];
 				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
-				if (randomValue === NONE_OPTION) {
-					randomOptions[newProbabilityKeys[key]] = ['0'];
-				} else {
+				if (randomValue !== NONE_OPTION) {
 					randomOptions[key] = [randomValue];
-					randomOptions[newProbabilityKeys[key]] = ['100'];
 				}
+				// Probability not stored – renderer derives it from key presence.
 			} else {
 				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
 			}
@@ -1100,8 +1061,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	// Hide categories that have only one option (no meaningful choice) and locked props
 	const visibleAttributeKeys = useMemo(() => {
 		return sortedAttributeKeys.filter((cat) => {
-			// Always hide locked props from the editor UI
-			if (lockedPropKeys.has(cat)) return false;
+			// Hide locked props from the editor UI, except in debug mode where they stay editable.
+			if (!debugMode && lockedPropKeys.has(cat)) return false;
 			if (colorKeys.includes(cat)) {
 				// Color keys always have multiple presets, keep them
 				return true;
@@ -1112,7 +1073,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			return realValues.length > 1;
 		});
-	}, [sortedAttributeKeys, colorKeys, componentOptions, lockedPropKeys]);
+	}, [sortedAttributeKeys, colorKeys, componentOptions, lockedPropKeys, debugMode]);
 
 	// Hide style selector when only one style is allowed
 	const showStyleCategory = effectiveAllowedStyles.length > 1;
@@ -1427,22 +1388,13 @@ const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
  */
 function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
 	const options: Record<string, string[]> = {};
-	const probabilityKeys = getStyleProbabilityKeys(style);
 	for (const [key, value] of Object.entries(preset)) {
 		if (key === 'name') continue;
-		if (Array.isArray(value)) {
-			if (value.length > 0) {
-				options[key] = value;
-				if (probabilityKeys[key]) {
-					options[probabilityKeys[key]] = ['100'];
-				}
-			} else {
-				// Empty array means disabled
-				if (probabilityKeys[key]) {
-					options[probabilityKeys[key]] = ['0'];
-				}
-			}
+		if (Array.isArray(value) && value.length > 0) {
+			options[key] = value;
+			// Probability not stored – renderer derives it from key presence.
 		}
+		// Empty array means disabled: omit the key so the renderer sets probability=0.
 	}
 	return { style, size, options };
 }
@@ -1462,21 +1414,18 @@ function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConf
 		for (const [key, values] of Object.entries(componentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
-			// For openPeeps, mask is always none
+			// For openPeeps, mask is always none (key absent = renderer sets probability=0)
 			if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
-				randomOptions[probabilityKeys[key]] = ['0'];
 				continue;
 			}
 			// For optional components, include "none" as a possible random selection
 			if (probabilityKeys[key]) {
 				const allValues = [NONE_OPTION, ...realValues];
 				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
-				if (randomValue === NONE_OPTION) {
-					randomOptions[probabilityKeys[key]] = ['0'];
-				} else {
+				if (randomValue !== NONE_OPTION) {
 					randomOptions[key] = [randomValue];
-					randomOptions[probabilityKeys[key]] = ['100'];
 				}
+				// Probability not stored – renderer derives it from key presence.
 			} else {
 				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
 			}
