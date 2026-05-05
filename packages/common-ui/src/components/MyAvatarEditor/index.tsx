@@ -66,6 +66,7 @@ import { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
+import SettingsListNumberInput from '../SettingsListNumberInput/SettingsListNumberInput';
 
 export type { AvatarConfig } from '../MyAvatar';
 
@@ -83,6 +84,7 @@ export type { AvatarConfig } from '../MyAvatar';
 export namespace AvatarPropKey {
 	export enum OpenPeeps {
 		SCALE = 'scale',
+		TRANSLATE_X = 'translateX',
 	}
 }
 
@@ -525,14 +527,20 @@ type AvatarEditorModalContentProps = {
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
 	 */
 	lockedProps?: Record<string, string>;
+	/** Forwarded from the caller's MyAvatar: when true (default), previews are circles. */
+	rounded?: boolean;
+	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
+	backgroundColor?: string;
 };
 
 type AvatarStickyHeaderProps = {
 	configObservable: ConfigObservable;
 	accentColor?: string;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
-const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor }) => {
+const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor, rounded, backgroundColor }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configObservable.get());
 	const { theme, isDark } = useTheme();
 
@@ -548,6 +556,8 @@ const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservabl
 			<MyAvatar
 				config={{ ...config, size: AvatarSize.XLARGE }}
 				borderRadius={AvatarSize.XLARGE / 2}
+				rounded={rounded}
+				backgroundColor={backgroundColor}
 			/>
 			<TouchableOpacity
 				style={[styles.diceButton, { backgroundColor: diceButtonBg }]}
@@ -563,12 +573,16 @@ type AvatarStickyHeaderConditionalProps = {
 	modeObservable: ModeObservable;
 	configObservable: ConfigObservable;
 	accentColor?: string;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps> = ({
 	modeObservable,
 	configObservable,
 	accentColor,
+	rounded,
+	backgroundColor,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -578,7 +592,7 @@ const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps
 
 	if (mode === 'quickstart') return null;
 
-	return <AvatarStickyHeader configObservable={configObservable} accentColor={accentColor} />;
+	return <AvatarStickyHeader configObservable={configObservable} accentColor={accentColor} rounded={rounded} backgroundColor={backgroundColor} />;
 };
 
 type ColorPickerModalContentProps = {
@@ -588,6 +602,8 @@ type ColorPickerModalContentProps = {
 	accentColor?: string;
 	config: AvatarConfig;
 	colorKey: string;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
@@ -597,6 +613,8 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	accentColor,
 	config,
 	colorKey,
+	rounded,
+	backgroundColor,
 }) => {
 	return (
 		<>
@@ -620,6 +638,8 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+									rounded={rounded}
+									backgroundColor={backgroundColor}
 									options={previewOptions}
 								/>
 							</View>
@@ -642,6 +662,8 @@ type StylePickerModalContentProps = {
 	onSelectAndClose: (style: AvatarStyle) => void;
 	accentColor?: string;
 	allowedStyles?: AvatarStyle[];
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
@@ -649,6 +671,8 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	onSelectAndClose,
 	accentColor,
 	allowedStyles,
+	rounded,
+	backgroundColor,
 }) => {
 	const allStyles = allowedStyles ?? Object.values(AvatarStyle);
 	return (
@@ -672,6 +696,8 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 									style={style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+									rounded={rounded}
+									backgroundColor={backgroundColor}
 								/>
 							</View>
 						}
@@ -695,6 +721,8 @@ type ComponentPickerModalContentProps = {
 	config: AvatarConfig;
 	onSelectAndClose: (value: string) => void;
 	accentColor?: string;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = ({
@@ -704,6 +732,8 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 	config,
 	onSelectAndClose,
 	accentColor,
+	rounded,
+	backgroundColor,
 }) => {
 	const probKey = getStyleProbabilityKeys(config.style)[categoryKey];
 	return (
@@ -739,6 +769,8 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 									style={config.style}
 									size={PREVIEW_AVATAR_SIZE}
 									borderRadius={PREVIEW_AVATAR_SIZE / 2}
+									rounded={rounded}
+									backgroundColor={backgroundColor}
 									options={previewOptions}
 								/>
 							</View>
@@ -833,6 +865,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	showApplyButton,
 	onApply,
 	lockedProps,
+	rounded,
+	backgroundColor,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
@@ -957,6 +991,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					currentStyle={config.style}
 					accentColor={accentColor}
 					allowedStyles={effectiveAllowedStyles}
+					rounded={rounded}
+					backgroundColor={backgroundColor}
 					onSelectAndClose={(style) => {
 						handleStyleChange(style);
 						closeCategoryModal();
@@ -978,6 +1014,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					currentValue={getSelectedOptionValue(key)}
 					config={config}
 					accentColor={accentColor}
+					rounded={rounded}
+					backgroundColor={backgroundColor}
 					onSelectAndClose={(value) => {
 						handleOptionChange(key, value);
 						closeCategoryModal();
@@ -1008,6 +1046,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					accentColor={accentColor}
 					config={config}
 					colorKey={key}
+					rounded={rounded}
+					backgroundColor={backgroundColor}
 					onSelectAndClose={(color) => {
 						handleOptionChange(key, stripHashPrefix(color));
 						closeCategoryModal();
@@ -1159,6 +1199,43 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						iconBgColor={accentColor}
 						groupPosition="top"
 						showSeparator={true}
+					/>
+					<SettingsListNumberInput
+						title="translateX"
+						leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
+						iconBgColor={accentColor}
+						groupPosition="bottom"
+						showSeparator={false}
+						initialValue={
+							config.options?.translateX !== undefined
+								? parseInt(config.options.translateX[0], 10)
+								: config.style === AvatarStyle.OPEN_PEEPS
+									? -5
+									: 0
+						}
+						value={
+							config.options?.translateX !== undefined
+								? config.options.translateX[0]
+								: config.style === AvatarStyle.OPEN_PEEPS
+									? '-5 (default)'
+									: undefined
+						}
+						min={-100}
+						max={100}
+						step={1}
+						allowDisable={true}
+						disableLabel="Reset (undefined)"
+						onDisable={() => {
+							const newOptions = { ...(config.options ?? {}) };
+							delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_X];
+							handleChange({ ...config, options: newOptions });
+						}}
+						onSave={(value) => {
+							handleChange({
+								...config,
+								options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(value)] },
+							});
+						}}
 					/>
 					<DebugJsonInput
 						config={config}
@@ -1409,6 +1486,8 @@ type PresetSelectionModalContentProps = {
 	accentColor?: string;
 	onSelectPreset: (config: AvatarConfig) => void;
 	onCustomize: () => void;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = ({
@@ -1417,6 +1496,8 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	accentColor,
 	onSelectPreset,
 	onCustomize,
+	rounded,
+	backgroundColor,
 }) => {
 	const { theme } = useTheme();
 
@@ -1437,6 +1518,8 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 						<MyAvatar
 							config={{ ...presetConfig, size: PRESET_AVATAR_SIZE as AvatarSize }}
 							borderRadius={PRESET_AVATAR_SIZE / 2}
+							rounded={rounded}
+							backgroundColor={backgroundColor}
 						/>
 					</TouchableOpacity>
 				))}
@@ -1468,6 +1551,10 @@ export type UseAvatarEditorModalOptions = {
 	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` locks the scale to 100.
 	 */
 	lockedProps?: Record<string, string>;
+	/** Forwarded to all avatar previews inside the editor. When true (default), avatars are rendered as circles. */
+	rounded?: boolean;
+	/** Forwarded to all avatar previews inside the editor. Background colour shown behind each avatar. */
+	backgroundColor?: string;
 };
 
 export type OpenAvatarEditorProps = {
@@ -1487,6 +1574,8 @@ type AvatarEditorUnifiedContentProps = {
 	accentColor?: string;
 	debugMode?: boolean;
 	lockedProps?: Record<string, string>;
+	rounded?: boolean;
+	backgroundColor?: string;
 };
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
@@ -1499,6 +1588,8 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	accentColor,
 	debugMode,
 	lockedProps,
+	rounded,
+	backgroundColor,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -1522,6 +1613,8 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				allowedStyles={allowedStyles}
 				size={size}
 				accentColor={accentColor}
+				rounded={rounded}
+				backgroundColor={backgroundColor}
 				onSelectPreset={switchToEditor}
 				onCustomize={() =>
 					switchToEditor({
@@ -1545,6 +1638,8 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			showApplyButton={true}
 			onApply={onApply}
 			lockedProps={lockedProps}
+			rounded={rounded}
+			backgroundColor={backgroundColor}
 		/>
 	);
 };
@@ -1574,6 +1669,8 @@ export const useAvatarEditorModal = () => {
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
 						accentColor={options?.accentColor}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 				children: (
@@ -1590,6 +1687,8 @@ export const useAvatarEditorModal = () => {
 							close();
 						}}
 						lockedProps={options?.lockedProps}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 			});
@@ -1621,6 +1720,8 @@ export const useAvatarEditorModal = () => {
 						<AvatarStickyHeader
 							configObservable={observableRef.current}
 							accentColor={options?.accentColor}
+							rounded={options?.rounded}
+							backgroundColor={options?.backgroundColor}
 						/>
 					),
 					children: (
@@ -1637,6 +1738,8 @@ export const useAvatarEditorModal = () => {
 								close();
 							}}
 							lockedProps={options?.lockedProps}
+							rounded={options?.rounded}
+							backgroundColor={options?.backgroundColor}
 						/>
 					),
 				});
@@ -1658,6 +1761,8 @@ export const useAvatarEditorModal = () => {
 						allowedStyles={allowedStyles}
 						size={size}
 						accentColor={options?.accentColor}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 						onSelectPreset={openEditorWithConfig}
 						onCustomize={openCustomizeFromScratch}
 					/>
@@ -1696,6 +1801,8 @@ export const useAvatarEditorModal = () => {
 					<AvatarStickyHeader
 						configObservable={observableRef.current}
 						accentColor={options?.accentColor}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 				children: (
@@ -1712,6 +1819,8 @@ export const useAvatarEditorModal = () => {
 							close();
 						}}
 						lockedProps={options?.lockedProps}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 			});
@@ -1752,6 +1861,8 @@ export const useAvatarEditorModal = () => {
 						modeObservable={modeObservable}
 						configObservable={observableRef.current}
 						accentColor={options?.accentColor}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 				children: (
@@ -1768,6 +1879,8 @@ export const useAvatarEditorModal = () => {
 						accentColor={options?.accentColor}
 						debugMode={options?.debugMode}
 						lockedProps={options?.lockedProps}
+						rounded={options?.rounded}
+						backgroundColor={options?.backgroundColor}
 					/>
 				),
 			});
