@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ36CDivD6vS1LGSj89-","Remove this useless assignment to variable ""theme"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1508
 "AZ35__9bcUa8YvF8RrkL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1200
 "AZ35__9bcUa8YvF8RrkM","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1224
 "AZ35__9bcUa8YvF8RrkN","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1225
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZ0TplNwufp2jxPAhS1-","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/StatisticsCard/StatisticsCard.tsx",10
 "AZ0TplLKufp2jxPAhS1r","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningModal/SubmissionWarningModal.tsx",14
 "AZ0TplH7ufp2jxPAhS1T","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/WashingMachines/index.tsx",17
-"AZkUSvadS4VhJojFFCSq","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts",251
