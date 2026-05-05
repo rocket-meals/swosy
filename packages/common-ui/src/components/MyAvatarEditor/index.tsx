@@ -1212,7 +1212,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 												: 'middle';
 								const currentRaw = config.options?.[key]?.[0];
 								const lockedNumeric = parseFloat(value);
-								const currentNumeric = currentRaw !== undefined ? parseFloat(currentRaw) : lockedNumeric;
+								const safeLockedNumeric = isNaN(lockedNumeric) ? 0 : lockedNumeric;
+								const parsedCurrent = currentRaw !== undefined ? parseFloat(currentRaw) : NaN;
+								const currentNumeric = isNaN(parsedCurrent) ? safeLockedNumeric : parsedCurrent;
 								return (
 									<SettingsListNumberInput
 										key={key}
@@ -1222,7 +1224,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 										groupPosition={groupPosition}
 										showSeparator={index !== arr.length - 1}
 										initialValue={currentNumeric}
-										value={currentRaw ?? String(lockedNumeric)}
+										value={currentRaw ?? String(safeLockedNumeric)}
 										step={1}
 										allowDisable={true}
 										disableLabel={`Reset (locked: ${value})`}
