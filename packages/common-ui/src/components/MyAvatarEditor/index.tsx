@@ -1210,35 +1210,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											: index === arr.length - 1
 												? 'bottom'
 												: 'middle';
-								const currentRaw = config.options?.[key]?.[0];
-								const lockedNumeric = parseFloat(value);
-								const safeLockedNumeric = isNaN(lockedNumeric) ? 0 : lockedNumeric;
-								const parsedCurrent = currentRaw !== undefined ? parseFloat(currentRaw) : NaN;
-								const currentNumeric = isNaN(parsedCurrent) ? safeLockedNumeric : parsedCurrent;
 								return (
-									<SettingsListNumberInput
+									<SettingsList
 										key={key}
 										title={key}
-										leftIcon={<MaterialCommunityIcons name="lock-open-variant" size={20} />}
+										value={String(value)}
+										leftIcon={<MaterialCommunityIcons name="lock" size={20} />}
 										iconBgColor={accentColor}
 										groupPosition={groupPosition}
 										showSeparator={index !== arr.length - 1}
-										initialValue={currentNumeric}
-										value={currentRaw ?? String(safeLockedNumeric)}
-										step={1}
-										allowDisable={true}
-										disableLabel={`Reset (locked: ${value})`}
-										onDisable={() => {
-											const newOptions = { ...(config.options ?? {}) };
-											delete newOptions[key];
-											handleChange({ ...config, options: newOptions });
-										}}
-										onSave={(newValue) => {
-											handleChange({
-												...config,
-												options: { ...(config.options ?? {}), [key]: [String(newValue)] },
-											});
-										}}
 									/>
 								);
 							})}
