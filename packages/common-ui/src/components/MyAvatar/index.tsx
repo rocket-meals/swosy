@@ -107,7 +107,7 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	size: sizeProp = AvatarSize.LARGE,
 	borderRadius = 0,
 	rounded = true,
-	backgroundColor,
+	backgroundColor = '#ffffff',
 	options: optionsProp,
 }) => {
 	const style = config?.style ?? styleProp;
@@ -119,10 +119,10 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 	const svgXml = useMemo(() => {
 		const avatarStyle = STYLE_MAP[style];
 		const renderOptions: Record<string, unknown> = { ...options };
-		// For OpenPeeps, apply a visual default translateX of -5 when not explicitly set,
+		// For OpenPeeps, apply a visual default translateX of -6 when not explicitly set,
 		// to compensate for the off-centre positioning of the avatar inside the background.
 		if (style === AvatarStyle.OPEN_PEEPS && renderOptions['translateX'] === undefined) {
-			renderOptions['translateX'] = ['-5'];
+			renderOptions['translateX'] = ['-6'];
 		}
 		return createAvatar(avatarStyle, {
 			size,
