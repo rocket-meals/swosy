@@ -1518,7 +1518,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={index}
-						style={[styles.presetItem, { borderColor: theme.screen.text }]}
+						style={styles.presetItem}
 						onPress={() => onSelectPreset(presetConfig)}
 					>
 						<MyAvatar
@@ -1935,7 +1935,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		padding: 8,
 		borderRadius: 12,
-		borderWidth: 1,
 	},
 	debugJson: {
 		fontFamily: 'monospace',
