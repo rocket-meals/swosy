@@ -1158,58 +1158,89 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						onPress={handleCopyConfig}
 						leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
 						iconBgColor={accentColor}
-						groupPosition="top"
-						showSeparator={true}
-					/>
-					<SettingsListNumberInput
-						title="translateX"
-						leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
-						iconBgColor={accentColor}
-						groupPosition="bottom"
+						groupPosition="single"
 						showSeparator={false}
-						initialValue={
-							config.options?.translateX !== undefined
-								? parseInt(config.options.translateX[0], 10)
-								: config.style === AvatarStyle.OPEN_PEEPS
-									? -6
-									: 0
-						}
-						value={
-							config.options?.translateX !== undefined
-								? config.options.translateX[0]
-								: config.style === AvatarStyle.OPEN_PEEPS
-									? '-6 (default)'
-									: undefined
-						}
-						min={-100}
-						max={100}
-						step={1}
-						allowDisable={true}
-						disableLabel="Reset (undefined)"
-						onDisable={() => {
-							const newOptions = { ...(config.options ?? {}) };
-							delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_X];
-							handleChange({ ...config, options: newOptions });
-						}}
-						onSave={(value) => {
-							handleChange({
-								...config,
-								options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(value)] },
-							});
-						}}
 					/>
-					{lockedProps && Object.keys(lockedProps).length > 0 && (
-						<>
-							<SettingsListGroupTitle title="Blocked Props" />
-							{Object.entries(lockedProps).map(([key, value], index, arr) => {
+					<>
+						<SettingsListGroupTitle title="Hidden Props" />
+						<SettingsListNumberInput
+							title="translateX"
+							leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition={lockedProps && Object.keys(lockedProps).length > 0 ? 'top' : 'single'}
+							showSeparator={!!(lockedProps && Object.keys(lockedProps).length > 0)}
+							initialValue={
+								config.options?.translateX !== undefined
+									? parseInt(config.options.translateX[0], 10)
+									: config.style === AvatarStyle.OPEN_PEEPS
+										? -6
+										: 0
+							}
+							value={
+								config.options?.translateX !== undefined
+									? config.options.translateX[0]
+									: config.style === AvatarStyle.OPEN_PEEPS
+										? '-6 (default)'
+										: undefined
+							}
+							min={-100}
+							max={100}
+							step={1}
+							allowDisable={true}
+							disableLabel="Reset (undefined)"
+							onDisable={() => {
+								const newOptions = { ...(config.options ?? {}) };
+								delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_X];
+								handleChange({ ...config, options: newOptions });
+							}}
+							onSave={(newValue) => {
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(newValue)] },
+								});
+							}}
+						/>
+						{lockedProps &&
+							Object.entries(lockedProps).map(([key, value], index, arr) => {
 								const groupPosition =
 									arr.length === 1
-										? 'single'
+										? 'bottom'
 										: index === 0
-											? 'top'
+											? 'middle'
 											: index === arr.length - 1
 												? 'bottom'
 												: 'middle';
+								if (key === AvatarPropKey.OpenPeeps.SCALE) {
+									return (
+										<SettingsListNumberInput
+											key={key}
+											title={key}
+											leftIcon={<MaterialCommunityIcons name="magnify" size={20} />}
+											iconBgColor={accentColor}
+											groupPosition={groupPosition}
+											showSeparator={index !== arr.length - 1}
+											initialValue={
+												config.options?.scale !== undefined
+													? parseInt(config.options.scale[0], 10)
+													: parseInt(value, 10)
+											}
+											value={
+												config.options?.scale !== undefined
+													? config.options.scale[0]
+													: `${value} (locked)`
+											}
+											min={50}
+											max={200}
+											step={1}
+											onSave={(newValue) => {
+												handleChange({
+													...config,
+													options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.SCALE]: [String(newValue)] },
+												});
+											}}
+										/>
+									);
+								}
 								return (
 									<SettingsList
 										key={key}
@@ -1222,8 +1253,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 									/>
 								);
 							})}
-						</>
-					)}
+					</>
 					<DebugJsonInput
 						config={config}
 						onApply={handleChange}
