@@ -323,7 +323,7 @@
   {
     "show_header": false,
     "position_x": 1,
-    "position_y": 2,
+    "position_y": 13,
     "width": 60,
     "height": 4,
     "note": null,
@@ -470,7 +470,7 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 12,
+    "position_y": 23,
     "width": 60,
     "height": 7,
     "note": null,
@@ -1560,7 +1560,7 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 41,
+    "position_y": 50,
     "width": 60,
     "height": 13,
     "note": null,
@@ -2042,7 +2042,7 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 27,
+    "position_y": 37,
     "width": 60,
     "height": 13,
     "note": null,
@@ -2672,6 +2672,25 @@
     "name": "Waschmaschinen gestartet Monatgs",
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "_syncId": "582f4221-1ae5-41b5-a02f-8ad91dc8d35b"
+  },
+  {
+    "show_header": true,
+    "position_x": 1,
+    "position_y": 1,
+    "width": 27,
+    "height": 7,
+    "note": null,
+    "options": {
+      "collection": "canteen_visits",
+      "field": "id",
+      "function": "countDistinct"
+    },
+    "type": "metric",
+    "color": null,
+    "icon": null,
+    "name": "Mensa Verabredungen (insgesamt)",
+    "dashboard": "a3d32433-5676-4bc7-8aaf-cef6425a78dd",
+    "_syncId": "591a475a-a96c-4067-8667-ed8a49637631"
   },
   {
     "show_header": true,
@@ -5179,7 +5198,7 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 19,
+    "position_y": 30,
     "width": 60,
     "height": 6,
     "note": null,
@@ -5581,7 +5600,7 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 6,
+    "position_y": 17,
     "width": 30,
     "height": 6,
     "note": null,
@@ -7258,7 +7277,7 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 6,
+    "position_y": 17,
     "width": 30,
     "height": 6,
     "note": null,
