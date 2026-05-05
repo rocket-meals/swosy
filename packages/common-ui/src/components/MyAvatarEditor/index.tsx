@@ -1061,8 +1061,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	// Hide categories that have only one option (no meaningful choice) and locked props
 	const visibleAttributeKeys = useMemo(() => {
 		return sortedAttributeKeys.filter((cat) => {
-			// Hide locked props from the editor UI, except in debug mode where they stay editable.
-			if (!debugMode && lockedPropKeys.has(cat)) return false;
+			// Always hide locked props from the main category list; they appear in the debug section instead.
+			if (lockedPropKeys.has(cat)) return false;
 			if (colorKeys.includes(cat)) {
 				// Color keys always have multiple presets, keep them
 				return true;
@@ -1212,46 +1212,31 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 												: 'middle';
 								const currentRaw = config.options?.[key]?.[0];
 								const lockedNumeric = parseFloat(value);
-								const isNumeric = !isNaN(lockedNumeric);
-								if (isNumeric) {
-									const currentNumeric = currentRaw !== undefined ? parseFloat(currentRaw) : lockedNumeric;
-									return (
-										<SettingsListNumberInput
-											key={key}
-											title={key}
-											leftIcon={<MaterialCommunityIcons name="lock-open-variant" size={20} />}
-											iconBgColor={accentColor}
-											groupPosition={groupPosition}
-											showSeparator={index !== arr.length - 1}
-											initialValue={currentNumeric}
-											value={currentRaw ?? String(lockedNumeric)}
-											step={!Number.isInteger(lockedNumeric) ? 0.1 : 1}
-											allowDecimal={!Number.isInteger(lockedNumeric)}
-											allowDisable={true}
-											disableLabel={`Reset (locked: ${value})`}
-											onDisable={() => {
-												const newOptions = { ...(config.options ?? {}) };
-												delete newOptions[key];
-												handleChange({ ...config, options: newOptions });
-											}}
-											onSave={(newValue) => {
-												handleChange({
-													...config,
-													options: { ...(config.options ?? {}), [key]: [String(newValue)] },
-												});
-											}}
-										/>
-									);
-								}
+								const currentNumeric = currentRaw !== undefined ? parseFloat(currentRaw) : lockedNumeric;
 								return (
-									<SettingsList
+									<SettingsListNumberInput
 										key={key}
 										title={key}
-										value={String(value)}
-										leftIcon={<MaterialCommunityIcons name="lock" size={20} />}
+										leftIcon={<MaterialCommunityIcons name="lock-open-variant" size={20} />}
 										iconBgColor={accentColor}
 										groupPosition={groupPosition}
 										showSeparator={index !== arr.length - 1}
+										initialValue={currentNumeric}
+										value={currentRaw ?? String(lockedNumeric)}
+										step={1}
+										allowDisable={true}
+										disableLabel={`Reset (locked: ${value})`}
+										onDisable={() => {
+											const newOptions = { ...(config.options ?? {}) };
+											delete newOptions[key];
+											handleChange({ ...config, options: newOptions });
+										}}
+										onSave={(newValue) => {
+											handleChange({
+												...config,
+												options: { ...(config.options ?? {}), [key]: [String(newValue)] },
+											});
+										}}
 									/>
 								);
 							})}
