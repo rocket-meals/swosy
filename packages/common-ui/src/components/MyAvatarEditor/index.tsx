@@ -1061,8 +1061,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	// Hide categories that have only one option (no meaningful choice) and locked props
 	const visibleAttributeKeys = useMemo(() => {
 		return sortedAttributeKeys.filter((cat) => {
-			// Hide locked props from the editor UI, except in debug mode where they stay editable.
-			if (!debugMode && lockedPropKeys.has(cat)) return false;
+			// Always hide locked props from the main category list; they appear in the debug section instead.
+			if (lockedPropKeys.has(cat)) return false;
 			if (colorKeys.includes(cat)) {
 				// Color keys always have multiple presets, keep them
 				return true;
