@@ -849,7 +849,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const applyLockedProps = useCallback(
 		(cfg: AvatarConfig): AvatarConfig => {
-			// In debug mode locked props are not forced, so the user can freely edit them.
+			// In debug mode, skip applying locked props so users can view and edit them freely.
 			if (debugMode) return cfg;
 			if (!lockedProps || Object.keys(lockedProps).length === 0) return cfg;
 			const newOptions = { ...(cfg.options ?? {}) };

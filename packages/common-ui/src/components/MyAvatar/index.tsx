@@ -152,7 +152,7 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		const probabilityKeys = getStyleProbabilityKeys(style);
 		for (const [compKey, probKey] of Object.entries(probabilityKeys)) {
 			const compValue = renderOptions[compKey];
-			if (compValue && Array.isArray(compValue) && (compValue as string[]).length > 0) {
+			if (compValue && Array.isArray(compValue) && compValue.length > 0) {
 				renderOptions[probKey] = ['100'];
 			} else {
 				renderOptions[probKey] = ['0'];
