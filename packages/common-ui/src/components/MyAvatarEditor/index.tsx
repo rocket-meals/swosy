@@ -1210,14 +1210,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							config.options?.translateX !== undefined
 								? parseInt(config.options.translateX[0], 10)
 								: config.style === AvatarStyle.OPEN_PEEPS
-									? -5
+									? -6
 									: 0
 						}
 						value={
 							config.options?.translateX !== undefined
 								? config.options.translateX[0]
 								: config.style === AvatarStyle.OPEN_PEEPS
-									? '-5 (default)'
+									? '-6 (default)'
 									: undefined
 						}
 						min={-100}
@@ -1237,6 +1237,32 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							});
 						}}
 					/>
+					{lockedProps && Object.keys(lockedProps).length > 0 && (
+						<>
+							<SettingsListGroupTitle title="Blocked Props" />
+							{Object.entries(lockedProps).map(([key, value], index, arr) => {
+								const groupPosition =
+									arr.length === 1
+										? 'single'
+										: index === 0
+											? 'top'
+											: index === arr.length - 1
+												? 'bottom'
+												: 'middle';
+								return (
+									<SettingsList
+										key={key}
+										title={key}
+										value={String(value)}
+										leftIcon={<MaterialCommunityIcons name="lock" size={20} />}
+										iconBgColor={accentColor}
+										groupPosition={groupPosition}
+										showSeparator={index !== arr.length - 1}
+									/>
+								);
+							})}
+						</>
+					)}
 					<DebugJsonInput
 						config={config}
 						onApply={handleChange}
