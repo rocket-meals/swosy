@@ -1206,8 +1206,20 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						iconBgColor={accentColor}
 						groupPosition="bottom"
 						showSeparator={false}
-						initialValue={config.options?.translateX !== undefined ? parseInt(config.options.translateX[0], 10) : 0}
-						value={config.options?.translateX?.[0]}
+						initialValue={
+							config.options?.translateX !== undefined
+								? parseInt(config.options.translateX[0], 10)
+								: config.style === AvatarStyle.OPEN_PEEPS
+									? -5
+									: 0
+						}
+						value={
+							config.options?.translateX !== undefined
+								? config.options.translateX[0]
+								: config.style === AvatarStyle.OPEN_PEEPS
+									? '-5 (default)'
+									: undefined
+						}
 						min={-100}
 						max={100}
 						step={1}
