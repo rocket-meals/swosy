@@ -1202,7 +1202,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							}}
 						/>
 						{hasLockedProps &&
-							Object.entries(lockedProps!).map(([key, value], index, arr) => {
+							Object.entries(lockedProps ?? {}).map(([key, value], index, arr) => {
 								const groupPosition =
 									arr.length === 1
 										? 'bottom'
