@@ -1084,6 +1084,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const diceButtonBg = accentColor ?? theme.screen.text;
 	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
+	const hasLockedProps = !!(lockedProps && Object.keys(lockedProps).length > 0);
 
 	return (
 		<View style={styles.content}>
@@ -1167,8 +1168,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							title="translateX"
 							leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
 							iconBgColor={accentColor}
-							groupPosition={lockedProps && Object.keys(lockedProps).length > 0 ? 'top' : 'single'}
-							showSeparator={!!(lockedProps && Object.keys(lockedProps).length > 0)}
+							groupPosition={hasLockedProps ? 'top' : 'single'}
+							showSeparator={hasLockedProps}
 							initialValue={
 								config.options?.translateX !== undefined
 									? parseInt(config.options.translateX[0], 10)
@@ -1200,8 +1201,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								});
 							}}
 						/>
-						{lockedProps &&
-							Object.entries(lockedProps).map(([key, value], index, arr) => {
+						{hasLockedProps &&
+							Object.entries(lockedProps!).map(([key, value], index, arr) => {
 								const groupPosition =
 									arr.length === 1
 										? 'bottom'
