@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-05-05T21:23:30.218Z",
+  "report_timestamp": "2026-05-06T19:35:25.736Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,19 +28,19 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3343,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 4015,
+        "detection_time_ms": 97,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 134.62,
-          "os_memory_free": 14925266944,
-          "os_memory_total": 16766431232,
+          "os_uptime": 127.39,
+          "os_memory_free": 14913433600,
+          "os_memory_total": 16765394944,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3479
         }
       }
     },
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "ceaf1ccc1d19ab3c62b36adf27d99077e1ec227e",
-    "project_commit_hash": "ceaf1ccc1d19ab3c62b36adf27d99077e1ec227e",
+    "project_version": "311072850cb4547e8250df78deefe438085a9aac",
+    "project_commit_hash": "311072850cb4547e8250df78deefe438085a9aac",
     "project_tag": null,
-    "project_commit_date": "1778016100",
+    "project_commit_date": "1778096004",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -10175,9 +10175,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplylockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplyhiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplylockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColorconfigObservableconfigRefdebugModeallowedStylesonApplyhiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
@@ -10203,16 +10203,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10228,16 +10228,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1575,
+              "startLine": 1626,
               "startColumn": 2,
-              "endLine": 1575,
+              "endLine": 1626,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 491,
+            "startLine": 494,
             "startColumn": 2,
-            "endLine": 491,
+            "endLine": 494,
             "endColumn": 37
           }
         },
@@ -10253,16 +10253,16 @@
             "type": "React.MutableRefObject<AvatarConfig>",
             "modifiers": [],
             "position": {
-              "startLine": 1576,
+              "startLine": 1627,
               "startColumn": 2,
-              "endLine": 1576,
+              "endLine": 1627,
               "endColumn": 50
             }
           },
           "position": {
-            "startLine": 492,
+            "startLine": 495,
             "startColumn": 2,
-            "endLine": 492,
+            "endLine": 495,
             "endColumn": 50
           }
         },
@@ -10278,16 +10278,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1581,
+              "startLine": 1632,
               "startColumn": 2,
-              "endLine": 1581,
+              "endLine": 1632,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 493,
+            "startLine": 496,
             "startColumn": 2,
-            "endLine": 493,
+            "endLine": 496,
             "endColumn": 22
           }
         },
@@ -10303,16 +10303,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1578,
+              "startLine": 1629,
               "startColumn": 2,
-              "endLine": 1578,
+              "endLine": 1629,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 495,
+            "startLine": 498,
             "startColumn": 2,
-            "endLine": 495,
+            "endLine": 498,
             "endColumn": 32
           }
         },
@@ -10328,41 +10328,41 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 1577,
+              "startLine": 1628,
               "startColumn": 2,
-              "endLine": 1577,
+              "endLine": 1628,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 499,
+            "startLine": 502,
             "startColumn": 2,
-            "endLine": 499,
+            "endLine": 502,
             "endColumn": 23
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 1582,
+              "startLine": 1633,
               "startColumn": 2,
-              "endLine": 1582,
+              "endLine": 1633,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 504,
+            "startLine": 507,
             "startColumn": 2,
-            "endLine": 504,
+            "endLine": 507,
             "endColumn": 39
           }
         },
@@ -10378,16 +10378,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10403,16 +10403,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -10450,16 +10450,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10475,16 +10475,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 549,
+              "startLine": 552,
               "startColumn": 2,
-              "endLine": 549,
+              "endLine": 552,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 491,
+            "startLine": 494,
             "startColumn": 2,
-            "endLine": 491,
+            "endLine": 494,
             "endColumn": 37
           }
         },
@@ -10500,16 +10500,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10525,16 +10525,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -10572,16 +10572,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10597,16 +10597,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 512,
+              "startLine": 515,
               "startColumn": 2,
-              "endLine": 512,
+              "endLine": 515,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 491,
+            "startLine": 494,
             "startColumn": 2,
-            "endLine": 491,
+            "endLine": 494,
             "endColumn": 37
           }
         },
@@ -10622,16 +10622,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10647,16 +10647,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -10694,16 +10694,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10719,16 +10719,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10744,16 +10744,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -10791,16 +10791,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10816,16 +10816,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10841,16 +10841,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -10888,16 +10888,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -10913,16 +10913,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1490,
+              "startLine": 1541,
               "startColumn": 2,
-              "endLine": 1490,
+              "endLine": 1541,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 495,
+            "startLine": 498,
             "startColumn": 2,
-            "endLine": 495,
+            "endLine": 498,
             "endColumn": 32
           }
         },
@@ -10938,16 +10938,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -10963,16 +10963,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -11010,16 +11010,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -11035,16 +11035,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 639,
+              "startLine": 642,
               "startColumn": 2,
-              "endLine": 639,
+              "endLine": 642,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 495,
+            "startLine": 498,
             "startColumn": 2,
-            "endLine": 495,
+            "endLine": 498,
             "endColumn": 32
           }
         },
@@ -11060,16 +11060,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -11085,16 +11085,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -11104,9 +11104,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps",
@@ -11132,16 +11132,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 490,
+            "startLine": 493,
             "startColumn": 2,
-            "endLine": 490,
+            "endLine": 493,
             "endColumn": 23
           }
         },
@@ -11157,16 +11157,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1549,
+              "startLine": 1600,
               "startColumn": 2,
-              "endLine": 1549,
+              "endLine": 1600,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 493,
+            "startLine": 496,
             "startColumn": 2,
-            "endLine": 493,
+            "endLine": 496,
             "endColumn": 22
           }
         },
@@ -11182,41 +11182,41 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1551,
+              "startLine": 1602,
               "startColumn": 2,
-              "endLine": 1551,
+              "endLine": 1602,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 495,
+            "startLine": 498,
             "startColumn": 2,
-            "endLine": 495,
+            "endLine": 498,
             "endColumn": 32
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 1559,
+              "startLine": 1610,
               "startColumn": 2,
-              "endLine": 1559,
+              "endLine": 1610,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 504,
+            "startLine": 507,
             "startColumn": 2,
-            "endLine": 504,
+            "endLine": 507,
             "endColumn": 39
           }
         },
@@ -11232,16 +11232,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 506,
+            "startLine": 509,
             "startColumn": 2,
-            "endLine": 506,
+            "endLine": 509,
             "endColumn": 20
           }
         },
@@ -11257,16 +11257,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 508,
+            "startLine": 511,
             "startColumn": 2,
-            "endLine": 508,
+            "endLine": 511,
             "endColumn": 27
           }
         }
@@ -11304,16 +11304,16 @@
             "type": "ModeObservable",
             "modifiers": [],
             "position": {
-              "startLine": 548,
+              "startLine": 551,
               "startColumn": 2,
-              "endLine": 548,
+              "endLine": 551,
               "endColumn": 33
             }
           },
           "position": {
-            "startLine": 1574,
+            "startLine": 1625,
             "startColumn": 2,
-            "endLine": 1574,
+            "endLine": 1625,
             "endColumn": 33
           }
         },
@@ -11329,16 +11329,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 549,
+              "startLine": 552,
               "startColumn": 2,
-              "endLine": 549,
+              "endLine": 552,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 1575,
+            "startLine": 1626,
             "startColumn": 2,
-            "endLine": 1575,
+            "endLine": 1626,
             "endColumn": 37
           }
         },
@@ -11354,16 +11354,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -11379,16 +11379,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -11404,16 +11404,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -11423,9 +11423,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModelockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModehiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModelockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-configObservableconfigRefonApplyallowedStylesaccentColordebugModehiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
@@ -11451,16 +11451,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 491,
+              "startLine": 494,
               "startColumn": 2,
-              "endLine": 491,
+              "endLine": 494,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 1575,
+            "startLine": 1626,
             "startColumn": 2,
-            "endLine": 1575,
+            "endLine": 1626,
             "endColumn": 37
           }
         },
@@ -11476,16 +11476,16 @@
             "type": "React.MutableRefObject<AvatarConfig>",
             "modifiers": [],
             "position": {
-              "startLine": 492,
+              "startLine": 495,
               "startColumn": 2,
-              "endLine": 492,
+              "endLine": 495,
               "endColumn": 50
             }
           },
           "position": {
-            "startLine": 1576,
+            "startLine": 1627,
             "startColumn": 2,
-            "endLine": 1576,
+            "endLine": 1627,
             "endColumn": 50
           }
         },
@@ -11501,16 +11501,16 @@
             "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 499,
+              "startLine": 502,
               "startColumn": 2,
-              "endLine": 499,
+              "endLine": 502,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1577,
+            "startLine": 1628,
             "startColumn": 2,
-            "endLine": 1577,
+            "endLine": 1628,
             "endColumn": 22
           }
         },
@@ -11526,16 +11526,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 495,
+              "startLine": 498,
               "startColumn": 2,
-              "endLine": 495,
+              "endLine": 498,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1578,
+            "startLine": 1629,
             "startColumn": 2,
-            "endLine": 1578,
+            "endLine": 1629,
             "endColumn": 31
           }
         },
@@ -11551,16 +11551,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -11576,41 +11576,41 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 493,
+              "startLine": 496,
               "startColumn": 2,
-              "endLine": 493,
+              "endLine": 496,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1581,
+            "startLine": 1632,
             "startColumn": 2,
-            "endLine": 1581,
+            "endLine": 1632,
             "endColumn": 22
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 504,
+              "startLine": 507,
               "startColumn": 2,
-              "endLine": 504,
+              "endLine": 507,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 1582,
+            "startLine": 1633,
             "startColumn": 2,
-            "endLine": 1582,
+            "endLine": 1633,
             "endColumn": 39
           }
         },
@@ -11626,16 +11626,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -11651,16 +11651,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -11698,16 +11698,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 512,
+              "startLine": 515,
               "startColumn": 2,
-              "endLine": 512,
+              "endLine": 515,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 1575,
+            "startLine": 1626,
             "startColumn": 2,
-            "endLine": 1575,
+            "endLine": 1626,
             "endColumn": 37
           }
         },
@@ -11723,16 +11723,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -11748,16 +11748,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -11773,16 +11773,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -11820,16 +11820,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1490,
+              "startLine": 1541,
               "startColumn": 2,
-              "endLine": 1490,
+              "endLine": 1541,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1578,
+            "startLine": 1629,
             "startColumn": 2,
-            "endLine": 1578,
+            "endLine": 1629,
             "endColumn": 31
           }
         },
@@ -11845,16 +11845,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1491,
+              "startLine": 1542,
               "startColumn": 2,
-              "endLine": 1491,
+              "endLine": 1542,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1579,
+            "startLine": 1630,
             "startColumn": 2,
-            "endLine": 1579,
+            "endLine": 1630,
             "endColumn": 19
           }
         },
@@ -11870,16 +11870,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -11895,16 +11895,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -11920,16 +11920,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -11967,16 +11967,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 639,
+              "startLine": 642,
               "startColumn": 2,
-              "endLine": 639,
+              "endLine": 642,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1578,
+            "startLine": 1629,
             "startColumn": 2,
-            "endLine": 1578,
+            "endLine": 1629,
             "endColumn": 31
           }
         },
@@ -11992,16 +11992,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -12017,16 +12017,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -12042,16 +12042,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -12061,9 +12061,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModelockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModehiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModelockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-allowedStylesaccentColordebugModehiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps",
@@ -12089,16 +12089,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1551,
+              "startLine": 1602,
               "startColumn": 2,
-              "endLine": 1551,
+              "endLine": 1602,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1578,
+            "startLine": 1629,
             "startColumn": 2,
-            "endLine": 1578,
+            "endLine": 1629,
             "endColumn": 31
           }
         },
@@ -12114,16 +12114,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -12139,41 +12139,41 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1549,
+              "startLine": 1600,
               "startColumn": 2,
-              "endLine": 1549,
+              "endLine": 1600,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1581,
+            "startLine": 1632,
             "startColumn": 2,
-            "endLine": 1581,
+            "endLine": 1632,
             "endColumn": 22
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 1559,
+              "startLine": 1610,
               "startColumn": 2,
-              "endLine": 1559,
+              "endLine": 1610,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 1582,
+            "startLine": 1633,
             "startColumn": 2,
-            "endLine": 1582,
+            "endLine": 1633,
             "endColumn": 39
           }
         },
@@ -12189,16 +12189,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -12214,16 +12214,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -12261,16 +12261,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -12286,16 +12286,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -12311,16 +12311,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -12358,16 +12358,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1580,
+            "startLine": 1631,
             "startColumn": 2,
-            "endLine": 1580,
+            "endLine": 1631,
             "endColumn": 23
           }
         },
@@ -12383,16 +12383,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1583,
+            "startLine": 1634,
             "startColumn": 2,
-            "endLine": 1583,
+            "endLine": 1634,
             "endColumn": 20
           }
         },
@@ -12408,16 +12408,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1584,
+            "startLine": 1635,
             "startColumn": 2,
-            "endLine": 1584,
+            "endLine": 1635,
             "endColumn": 27
           }
         }
@@ -12455,16 +12455,16 @@
             "type": "ModeObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1574,
+              "startLine": 1625,
               "startColumn": 2,
-              "endLine": 1574,
+              "endLine": 1625,
               "endColumn": 33
             }
           },
           "position": {
-            "startLine": 548,
+            "startLine": 551,
             "startColumn": 2,
-            "endLine": 548,
+            "endLine": 551,
             "endColumn": 33
           }
         },
@@ -12480,16 +12480,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1575,
+              "startLine": 1626,
               "startColumn": 2,
-              "endLine": 1575,
+              "endLine": 1626,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 549,
+            "startLine": 552,
             "startColumn": 2,
-            "endLine": 549,
+            "endLine": 552,
             "endColumn": 37
           }
         },
@@ -12505,16 +12505,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -12530,16 +12530,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -12555,16 +12555,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -12602,16 +12602,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 491,
+              "startLine": 494,
               "startColumn": 2,
-              "endLine": 491,
+              "endLine": 494,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 549,
+            "startLine": 552,
             "startColumn": 2,
-            "endLine": 549,
+            "endLine": 552,
             "endColumn": 37
           }
         },
@@ -12627,16 +12627,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -12652,16 +12652,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -12677,16 +12677,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -12724,16 +12724,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 512,
+              "startLine": 515,
               "startColumn": 2,
-              "endLine": 512,
+              "endLine": 515,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 549,
+            "startLine": 552,
             "startColumn": 2,
-            "endLine": 549,
+            "endLine": 552,
             "endColumn": 37
           }
         },
@@ -12749,16 +12749,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -12774,16 +12774,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -12799,16 +12799,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -12846,16 +12846,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -12871,16 +12871,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -12896,16 +12896,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -12943,16 +12943,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -12968,16 +12968,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -12993,16 +12993,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -13040,16 +13040,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -13065,16 +13065,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -13090,16 +13090,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -13137,16 +13137,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -13162,16 +13162,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -13187,16 +13187,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -13234,16 +13234,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 550,
+            "startLine": 553,
             "startColumn": 2,
-            "endLine": 550,
+            "endLine": 553,
             "endColumn": 23
           }
         },
@@ -13259,16 +13259,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 551,
+            "startLine": 554,
             "startColumn": 2,
-            "endLine": 551,
+            "endLine": 554,
             "endColumn": 20
           }
         },
@@ -13284,16 +13284,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 552,
+            "startLine": 555,
             "startColumn": 2,
-            "endLine": 552,
+            "endLine": 555,
             "endColumn": 27
           }
         }
@@ -13331,16 +13331,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 491,
+              "startLine": 494,
               "startColumn": 2,
-              "endLine": 491,
+              "endLine": 494,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 512,
+            "startLine": 515,
             "startColumn": 2,
-            "endLine": 512,
+            "endLine": 515,
             "endColumn": 37
           }
         },
@@ -13356,16 +13356,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13381,16 +13381,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13406,16 +13406,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13453,16 +13453,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 1575,
+              "startLine": 1626,
               "startColumn": 2,
-              "endLine": 1575,
+              "endLine": 1626,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 512,
+            "startLine": 515,
             "startColumn": 2,
-            "endLine": 512,
+            "endLine": 515,
             "endColumn": 37
           }
         },
@@ -13478,16 +13478,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13503,16 +13503,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13528,16 +13528,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13575,16 +13575,16 @@
             "type": "ConfigObservable",
             "modifiers": [],
             "position": {
-              "startLine": 549,
+              "startLine": 552,
               "startColumn": 2,
-              "endLine": 549,
+              "endLine": 552,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 512,
+            "startLine": 515,
             "startColumn": 2,
-            "endLine": 512,
+            "endLine": 515,
             "endColumn": 37
           }
         },
@@ -13600,16 +13600,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13625,16 +13625,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13650,16 +13650,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13697,16 +13697,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13722,16 +13722,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13747,16 +13747,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13794,16 +13794,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13819,16 +13819,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13844,16 +13844,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13891,16 +13891,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -13916,16 +13916,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -13941,16 +13941,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -13988,16 +13988,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -14013,16 +14013,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -14038,16 +14038,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -14085,16 +14085,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 513,
+            "startLine": 516,
             "startColumn": 2,
-            "endLine": 513,
+            "endLine": 516,
             "endColumn": 23
           }
         },
@@ -14110,16 +14110,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 514,
+            "startLine": 517,
             "startColumn": 2,
-            "endLine": 514,
+            "endLine": 517,
             "endColumn": 20
           }
         },
@@ -14135,16 +14135,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 515,
+            "startLine": 518,
             "startColumn": 2,
-            "endLine": 515,
+            "endLine": 518,
             "endColumn": 27
           }
         }
@@ -14182,16 +14182,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14207,16 +14207,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14232,16 +14232,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14279,16 +14279,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14304,16 +14304,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14329,16 +14329,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14376,16 +14376,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14401,16 +14401,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14426,16 +14426,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14473,16 +14473,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14498,16 +14498,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14523,16 +14523,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14570,16 +14570,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14595,16 +14595,16 @@
             "type": "AvatarConfig",
             "modifiers": [],
             "position": {
-              "startLine": 696,
+              "startLine": 699,
               "startColumn": 2,
-              "endLine": 696,
+              "endLine": 699,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 578,
+            "startLine": 581,
             "startColumn": 2,
-            "endLine": 578,
+            "endLine": 581,
             "endColumn": 23
           }
         },
@@ -14620,16 +14620,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14645,16 +14645,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14692,16 +14692,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14717,16 +14717,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14742,16 +14742,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14789,16 +14789,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14814,16 +14814,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14839,16 +14839,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14886,16 +14886,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 577,
+            "startLine": 580,
             "startColumn": 2,
-            "endLine": 577,
+            "endLine": 580,
             "endColumn": 23
           }
         },
@@ -14911,16 +14911,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -14936,16 +14936,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -14990,9 +14990,9 @@
             }
           },
           "position": {
-            "startLine": 578,
+            "startLine": 581,
             "startColumn": 2,
-            "endLine": 578,
+            "endLine": 581,
             "endColumn": 23
           }
         },
@@ -15015,9 +15015,9 @@
             }
           },
           "position": {
-            "startLine": 580,
+            "startLine": 583,
             "startColumn": 2,
-            "endLine": 580,
+            "endLine": 583,
             "endColumn": 20
           }
         },
@@ -15040,9 +15040,9 @@
             }
           },
           "position": {
-            "startLine": 581,
+            "startLine": 584,
             "startColumn": 2,
-            "endLine": 581,
+            "endLine": 584,
             "endColumn": 27
           }
         }
@@ -15080,16 +15080,16 @@
             "type": "AvatarConfig",
             "modifiers": [],
             "position": {
-              "startLine": 578,
+              "startLine": 581,
               "startColumn": 2,
-              "endLine": 578,
+              "endLine": 581,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 696,
+            "startLine": 699,
             "startColumn": 2,
-            "endLine": 696,
+            "endLine": 699,
             "endColumn": 23
           }
         },
@@ -15105,16 +15105,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15130,16 +15130,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15155,16 +15155,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15209,9 +15209,9 @@
             }
           },
           "position": {
-            "startLine": 696,
+            "startLine": 699,
             "startColumn": 2,
-            "endLine": 696,
+            "endLine": 699,
             "endColumn": 23
           }
         },
@@ -15234,9 +15234,9 @@
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15259,9 +15259,9 @@
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15299,16 +15299,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15324,16 +15324,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15349,16 +15349,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15396,16 +15396,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15421,16 +15421,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15446,16 +15446,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15493,16 +15493,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15518,16 +15518,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15543,16 +15543,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15590,16 +15590,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15615,16 +15615,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15640,16 +15640,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15687,16 +15687,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15712,16 +15712,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15737,16 +15737,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15784,16 +15784,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15809,16 +15809,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15834,16 +15834,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15881,16 +15881,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 698,
+            "startLine": 701,
             "startColumn": 2,
-            "endLine": 698,
+            "endLine": 701,
             "endColumn": 23
           }
         },
@@ -15906,16 +15906,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 699,
+            "startLine": 702,
             "startColumn": 2,
-            "endLine": 699,
+            "endLine": 702,
             "endColumn": 20
           }
         },
@@ -15931,16 +15931,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 700,
+            "startLine": 703,
             "startColumn": 2,
-            "endLine": 700,
+            "endLine": 703,
             "endColumn": 27
           }
         }
@@ -15978,16 +15978,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 495,
+              "startLine": 498,
               "startColumn": 2,
-              "endLine": 495,
+              "endLine": 498,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1490,
+            "startLine": 1541,
             "startColumn": 2,
-            "endLine": 1490,
+            "endLine": 1541,
             "endColumn": 31
           }
         },
@@ -16003,16 +16003,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16028,16 +16028,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16053,16 +16053,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16100,16 +16100,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1578,
+              "startLine": 1629,
               "startColumn": 2,
-              "endLine": 1578,
+              "endLine": 1629,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1490,
+            "startLine": 1541,
             "startColumn": 2,
-            "endLine": 1490,
+            "endLine": 1541,
             "endColumn": 31
           }
         },
@@ -16125,16 +16125,16 @@
             "type": "AvatarSize",
             "modifiers": [],
             "position": {
-              "startLine": 1579,
+              "startLine": 1630,
               "startColumn": 2,
-              "endLine": 1579,
+              "endLine": 1630,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 1491,
+            "startLine": 1542,
             "startColumn": 2,
-            "endLine": 1491,
+            "endLine": 1542,
             "endColumn": 19
           }
         },
@@ -16150,16 +16150,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16175,16 +16175,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16200,16 +16200,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16247,16 +16247,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 639,
+              "startLine": 642,
               "startColumn": 2,
-              "endLine": 639,
+              "endLine": 642,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1490,
+            "startLine": 1541,
             "startColumn": 2,
-            "endLine": 1490,
+            "endLine": 1541,
             "endColumn": 31
           }
         },
@@ -16272,16 +16272,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16297,16 +16297,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16322,16 +16322,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16369,16 +16369,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1551,
+              "startLine": 1602,
               "startColumn": 2,
-              "endLine": 1551,
+              "endLine": 1602,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1490,
+            "startLine": 1541,
             "startColumn": 2,
-            "endLine": 1490,
+            "endLine": 1541,
             "endColumn": 31
           }
         },
@@ -16394,16 +16394,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16419,16 +16419,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16444,16 +16444,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16491,16 +16491,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16516,16 +16516,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16541,16 +16541,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16588,16 +16588,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16613,16 +16613,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16638,16 +16638,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16685,16 +16685,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16710,16 +16710,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16735,16 +16735,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16782,16 +16782,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1492,
+            "startLine": 1543,
             "startColumn": 2,
-            "endLine": 1492,
+            "endLine": 1543,
             "endColumn": 23
           }
         },
@@ -16807,16 +16807,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1495,
+            "startLine": 1546,
             "startColumn": 2,
-            "endLine": 1495,
+            "endLine": 1546,
             "endColumn": 20
           }
         },
@@ -16832,16 +16832,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1496,
+            "startLine": 1547,
             "startColumn": 2,
-            "endLine": 1496,
+            "endLine": 1547,
             "endColumn": 27
           }
         }
@@ -16879,16 +16879,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -16904,16 +16904,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 495,
+              "startLine": 498,
               "startColumn": 2,
-              "endLine": 495,
+              "endLine": 498,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 639,
+            "startLine": 642,
             "startColumn": 2,
-            "endLine": 639,
+            "endLine": 642,
             "endColumn": 32
           }
         },
@@ -16929,16 +16929,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -16954,16 +16954,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17001,16 +17001,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17026,16 +17026,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1578,
+              "startLine": 1629,
               "startColumn": 2,
-              "endLine": 1578,
+              "endLine": 1629,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 639,
+            "startLine": 642,
             "startColumn": 2,
-            "endLine": 639,
+            "endLine": 642,
             "endColumn": 32
           }
         },
@@ -17051,16 +17051,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17076,16 +17076,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17123,16 +17123,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17148,16 +17148,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17173,16 +17173,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17220,16 +17220,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17245,16 +17245,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17270,16 +17270,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17317,16 +17317,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17342,16 +17342,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17367,16 +17367,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17414,16 +17414,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17439,16 +17439,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17464,16 +17464,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17511,16 +17511,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17536,16 +17536,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1490,
+              "startLine": 1541,
               "startColumn": 2,
-              "endLine": 1490,
+              "endLine": 1541,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 639,
+            "startLine": 642,
             "startColumn": 2,
-            "endLine": 639,
+            "endLine": 642,
             "endColumn": 32
           }
         },
@@ -17561,16 +17561,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17586,16 +17586,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17633,16 +17633,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1548,
+              "startLine": 1599,
               "startColumn": 2,
-              "endLine": 1548,
+              "endLine": 1599,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 638,
+            "startLine": 641,
             "startColumn": 2,
-            "endLine": 638,
+            "endLine": 641,
             "endColumn": 23
           }
         },
@@ -17658,16 +17658,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1551,
+              "startLine": 1602,
               "startColumn": 2,
-              "endLine": 1551,
+              "endLine": 1602,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 639,
+            "startLine": 642,
             "startColumn": 2,
-            "endLine": 639,
+            "endLine": 642,
             "endColumn": 32
           }
         },
@@ -17683,16 +17683,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1561,
+              "startLine": 1612,
               "startColumn": 2,
-              "endLine": 1561,
+              "endLine": 1612,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 640,
+            "startLine": 643,
             "startColumn": 2,
-            "endLine": 640,
+            "endLine": 643,
             "endColumn": 20
           }
         },
@@ -17708,16 +17708,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1563,
+              "startLine": 1614,
               "startColumn": 2,
-              "endLine": 1563,
+              "endLine": 1614,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 641,
+            "startLine": 644,
             "startColumn": 2,
-            "endLine": 641,
+            "endLine": 644,
             "endColumn": 27
           }
         }
@@ -17727,9 +17727,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
@@ -17755,16 +17755,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 490,
+              "startLine": 493,
               "startColumn": 2,
-              "endLine": 490,
+              "endLine": 493,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -17780,16 +17780,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 493,
+              "startLine": 496,
               "startColumn": 2,
-              "endLine": 493,
+              "endLine": 496,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1549,
+            "startLine": 1600,
             "startColumn": 2,
-            "endLine": 1549,
+            "endLine": 1600,
             "endColumn": 22
           }
         },
@@ -17805,41 +17805,41 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 495,
+              "startLine": 498,
               "startColumn": 2,
-              "endLine": 495,
+              "endLine": 498,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1551,
+            "startLine": 1602,
             "startColumn": 2,
-            "endLine": 1551,
+            "endLine": 1602,
             "endColumn": 32
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorModalContentProps/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 504,
+              "startLine": 507,
               "startColumn": 2,
-              "endLine": 504,
+              "endLine": 507,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 1559,
+            "startLine": 1610,
             "startColumn": 2,
-            "endLine": 1559,
+            "endLine": 1610,
             "endColumn": 39
           }
         },
@@ -17855,16 +17855,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 506,
+              "startLine": 509,
               "startColumn": 2,
-              "endLine": 506,
+              "endLine": 509,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -17880,16 +17880,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 508,
+              "startLine": 511,
               "startColumn": 2,
-              "endLine": 508,
+              "endLine": 511,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -17899,9 +17899,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleslockedPropsroundedbackgroundColor",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyAvatarEditor/index.tsx-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions-packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps-accentColordebugModeallowedStyleshiddenPropsroundedbackgroundColor",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/MyAvatarEditor/index.tsx",
       "from_class_or_interface_key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions",
@@ -17927,16 +17927,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1580,
+              "startLine": 1631,
               "startColumn": 2,
-              "endLine": 1580,
+              "endLine": 1631,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -17952,16 +17952,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1581,
+              "startLine": 1632,
               "startColumn": 2,
-              "endLine": 1581,
+              "endLine": 1632,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 1549,
+            "startLine": 1600,
             "startColumn": 2,
-            "endLine": 1549,
+            "endLine": 1600,
             "endColumn": 22
           }
         },
@@ -17977,41 +17977,41 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1578,
+              "startLine": 1629,
               "startColumn": 2,
-              "endLine": 1578,
+              "endLine": 1629,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1551,
+            "startLine": 1602,
             "startColumn": 2,
-            "endLine": 1551,
+            "endLine": 1602,
             "endColumn": 32
           }
         },
-        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps": {
-          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/lockedProps",
-          "name": "lockedProps",
+        "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps": {
+          "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/UseAvatarEditorModalOptions/memberField/hiddenProps",
+          "name": "hiddenProps",
           "type": "Record<string, string>",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/lockedProps",
-            "name": "lockedProps",
+            "key": "packages/common-ui/src/components/MyAvatarEditor/index.tsx/interface/AvatarEditorUnifiedContentProps/memberField/hiddenProps",
+            "name": "hiddenProps",
             "type": "Record<string, string>",
             "modifiers": [],
             "position": {
-              "startLine": 1582,
+              "startLine": 1633,
               "startColumn": 2,
-              "endLine": 1582,
+              "endLine": 1633,
               "endColumn": 39
             }
           },
           "position": {
-            "startLine": 1559,
+            "startLine": 1610,
             "startColumn": 2,
-            "endLine": 1559,
+            "endLine": 1610,
             "endColumn": 39
           }
         },
@@ -18027,16 +18027,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1583,
+              "startLine": 1634,
               "startColumn": 2,
-              "endLine": 1583,
+              "endLine": 1634,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18052,16 +18052,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1584,
+              "startLine": 1635,
               "startColumn": 2,
-              "endLine": 1584,
+              "endLine": 1635,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18099,16 +18099,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 550,
+              "startLine": 553,
               "startColumn": 2,
-              "endLine": 550,
+              "endLine": 553,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18124,16 +18124,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 551,
+              "startLine": 554,
               "startColumn": 2,
-              "endLine": 551,
+              "endLine": 554,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18149,16 +18149,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 552,
+              "startLine": 555,
               "startColumn": 2,
-              "endLine": 552,
+              "endLine": 555,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18196,16 +18196,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 513,
+              "startLine": 516,
               "startColumn": 2,
-              "endLine": 513,
+              "endLine": 516,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18221,16 +18221,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 514,
+              "startLine": 517,
               "startColumn": 2,
-              "endLine": 514,
+              "endLine": 517,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18246,16 +18246,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 515,
+              "startLine": 518,
               "startColumn": 2,
-              "endLine": 515,
+              "endLine": 518,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18293,16 +18293,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 577,
+              "startLine": 580,
               "startColumn": 2,
-              "endLine": 577,
+              "endLine": 580,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18318,16 +18318,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18343,16 +18343,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18390,16 +18390,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 698,
+              "startLine": 701,
               "startColumn": 2,
-              "endLine": 698,
+              "endLine": 701,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18415,16 +18415,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18440,16 +18440,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18487,16 +18487,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1492,
+              "startLine": 1543,
               "startColumn": 2,
-              "endLine": 1492,
+              "endLine": 1543,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18512,16 +18512,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 1490,
+              "startLine": 1541,
               "startColumn": 2,
-              "endLine": 1490,
+              "endLine": 1541,
               "endColumn": 31
             }
           },
           "position": {
-            "startLine": 1551,
+            "startLine": 1602,
             "startColumn": 2,
-            "endLine": 1551,
+            "endLine": 1602,
             "endColumn": 32
           }
         },
@@ -18537,16 +18537,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 1495,
+              "startLine": 1546,
               "startColumn": 2,
-              "endLine": 1495,
+              "endLine": 1546,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18562,16 +18562,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 1496,
+              "startLine": 1547,
               "startColumn": 2,
-              "endLine": 1496,
+              "endLine": 1547,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18609,16 +18609,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 638,
+              "startLine": 641,
               "startColumn": 2,
-              "endLine": 638,
+              "endLine": 641,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 1548,
+            "startLine": 1599,
             "startColumn": 2,
-            "endLine": 1548,
+            "endLine": 1599,
             "endColumn": 23
           }
         },
@@ -18634,16 +18634,16 @@
             "type": "AvatarStyle[]",
             "modifiers": [],
             "position": {
-              "startLine": 639,
+              "startLine": 642,
               "startColumn": 2,
-              "endLine": 639,
+              "endLine": 642,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 1551,
+            "startLine": 1602,
             "startColumn": 2,
-            "endLine": 1551,
+            "endLine": 1602,
             "endColumn": 32
           }
         },
@@ -18659,16 +18659,16 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 640,
+              "startLine": 643,
               "startColumn": 2,
-              "endLine": 640,
+              "endLine": 643,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 1561,
+            "startLine": 1612,
             "startColumn": 2,
-            "endLine": 1561,
+            "endLine": 1612,
             "endColumn": 20
           }
         },
@@ -18684,16 +18684,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 641,
+              "startLine": 644,
               "startColumn": 2,
-              "endLine": 641,
+              "endLine": 644,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 1563,
+            "startLine": 1614,
             "startColumn": 2,
-            "endLine": 1563,
+            "endLine": 1614,
             "endColumn": 27
           }
         }
@@ -18731,9 +18731,9 @@
             "type": "AvatarConfig",
             "modifiers": [],
             "position": {
-              "startLine": 578,
+              "startLine": 581,
               "startColumn": 2,
-              "endLine": 578,
+              "endLine": 581,
               "endColumn": 23
             }
           },
@@ -18756,9 +18756,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 580,
+              "startLine": 583,
               "startColumn": 2,
-              "endLine": 580,
+              "endLine": 583,
               "endColumn": 20
             }
           },
@@ -18781,9 +18781,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 581,
+              "startLine": 584,
               "startColumn": 2,
-              "endLine": 581,
+              "endLine": 584,
               "endColumn": 27
             }
           },
@@ -18828,9 +18828,9 @@
             "type": "AvatarConfig",
             "modifiers": [],
             "position": {
-              "startLine": 696,
+              "startLine": 699,
               "startColumn": 2,
-              "endLine": 696,
+              "endLine": 699,
               "endColumn": 23
             }
           },
@@ -18853,9 +18853,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 699,
+              "startLine": 702,
               "startColumn": 2,
-              "endLine": 699,
+              "endLine": 702,
               "endColumn": 20
             }
           },
@@ -18878,9 +18878,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 700,
+              "startLine": 703,
               "startColumn": 2,
-              "endLine": 700,
+              "endLine": 703,
               "endColumn": 27
             }
           },
