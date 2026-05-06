@@ -1195,20 +1195,16 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							iconBgColor={accentColor}
 							groupPosition="top"
 							showSeparator={true}
-							initialValue={
-								Array.isArray(config.options?.translateX)
-									? parseInt(config.options!.translateX[0] as string, 10)
-									: config.style === AvatarStyle.OPEN_PEEPS
-										? -6
-										: 0
-							}
-							value={
-								Array.isArray(config.options?.translateX)
-									? String(config.options!.translateX[0])
-									: config.style === AvatarStyle.OPEN_PEEPS
-										? '-6 (default)'
-										: undefined
-							}
+							initialValue={(() => {
+								const tx = config.options?.translateX;
+								if (Array.isArray(tx)) return parseInt(tx[0] ?? '0', 10);
+								return config.style === AvatarStyle.OPEN_PEEPS ? -6 : 0;
+							})()}
+							value={(() => {
+								const tx = config.options?.translateX;
+								if (Array.isArray(tx)) return String(tx[0]);
+								return config.style === AvatarStyle.OPEN_PEEPS ? '-6 (default)' : undefined;
+							})()}
 							min={-100}
 							max={100}
 							step={1}
@@ -1232,16 +1228,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							iconBgColor={accentColor}
 							groupPosition="middle"
 							showSeparator={true}
-							initialValue={
-								Array.isArray(config.options?.translateY)
-									? parseInt(config.options!.translateY[0] as string, 10)
-									: 0
-							}
-							value={
-								Array.isArray(config.options?.translateY)
-									? String(config.options!.translateY[0])
-									: undefined
-							}
+							initialValue={(() => {
+								const ty = config.options?.translateY;
+								return Array.isArray(ty) ? parseInt(ty[0] ?? '0', 10) : 0;
+							})()}
+							value={(() => {
+								const ty = config.options?.translateY;
+								return Array.isArray(ty) ? String(ty[0]) : undefined;
+							})()}
 							min={-100}
 							max={100}
 							step={1}
@@ -1265,16 +1259,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							iconBgColor={accentColor}
 							groupPosition="middle"
 							showSeparator={true}
-							initialValue={
-								Array.isArray(config.options?.rotate)
-									? parseInt(config.options!.rotate[0] as string, 10)
-									: 0
-							}
-							value={
-								Array.isArray(config.options?.rotate)
-									? String(config.options!.rotate[0])
-									: undefined
-							}
+							initialValue={(() => {
+								const rot = config.options?.rotate;
+								return Array.isArray(rot) ? parseInt(rot[0] ?? '0', 10) : 0;
+							})()}
+							value={(() => {
+								const rot = config.options?.rotate;
+								return Array.isArray(rot) ? String(rot[0]) : undefined;
+							})()}
 							min={0}
 							max={360}
 							step={1}
@@ -1292,46 +1284,52 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								});
 							}}
 						/>
-						<SettingsListBoolean
-							title="flip"
-							leftIcon={<MaterialCommunityIcons name="flip-horizontal" size={20} />}
-							iconBgColor={accentColor}
-							groupPosition="middle"
-							showSeparator={true}
-							isEnabled={
-								config.options?.flip === true ||
-								(Array.isArray(config.options?.flip) && (config.options!.flip as string[])[0] === 'true')
-							}
-							onToggle={() => {
-								const current =
-									config.options?.flip === true ||
-									(Array.isArray(config.options?.flip) && (config.options!.flip as string[])[0] === 'true');
-								handleChange({
-									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: !current },
-								});
-							}}
-						/>
-						<SettingsListBoolean
-							title="clip"
-							leftIcon={<MaterialCommunityIcons name="content-cut" size={20} />}
-							iconBgColor={accentColor}
-							groupPosition={hasHiddenProps ? 'middle' : 'bottom'}
-							showSeparator={hasHiddenProps}
-							isEnabled={
-								config.options?.clip === true ||
-								(Array.isArray(config.options?.clip) && (config.options!.clip as string[])[0] === 'true')
-							}
-							onToggle={() => {
-								const current =
-									config.options?.clip === true ||
-									(Array.isArray(config.options?.clip) && (config.options!.clip as string[])[0] === 'true');
-								handleChange({
-									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.CLIP]: !current },
-								});
-							}}
-						/>
+						{(() => {
+							const rawFlip = config.options?.flip;
+							const isFlipEnabled =
+								typeof rawFlip === 'boolean' ? rawFlip :
+								Array.isArray(rawFlip) ? rawFlip[0] === 'true' :
+								false;
+							return (
+								<SettingsListBoolean
+									title="flip"
+									leftIcon={<MaterialCommunityIcons name="flip-horizontal" size={20} />}
+									iconBgColor={accentColor}
+									groupPosition="middle"
+									showSeparator={true}
+									isEnabled={isFlipEnabled}
+									onToggle={() => {
+										handleChange({
+											...config,
+											options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: !isFlipEnabled },
+										});
+									}}
+								/>
+							);
+						})()}
+						{(() => {
+							const rawClip = config.options?.clip;
+							const isClipEnabled =
+								typeof rawClip === 'boolean' ? rawClip :
+								Array.isArray(rawClip) ? rawClip[0] === 'true' :
+								false;
+							return (
+								<SettingsListBoolean
+									title="clip"
+									leftIcon={<MaterialCommunityIcons name="content-cut" size={20} />}
+									iconBgColor={accentColor}
+									groupPosition={hasHiddenProps ? 'middle' : 'bottom'}
+									showSeparator={hasHiddenProps}
+									isEnabled={isClipEnabled}
+									onToggle={() => {
+										handleChange({
+											...config,
+											options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.CLIP]: !isClipEnabled },
+										});
+									}}
+								/>
+							);
+						})()}
 						{hasHiddenProps &&
 							Object.entries(hiddenProps ?? {}).map(([key, value], index, arr) => {
 								const groupPosition =
@@ -1344,6 +1342,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 												: 'middle';
 								if (key === AvatarPropKey.OpenPeeps.SCALE) {
 									const scaleVal = config.options?.scale;
+									const scaleArr = Array.isArray(scaleVal) ? scaleVal : null;
 									return (
 										<SettingsListNumberInput
 											key={key}
@@ -1353,13 +1352,13 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											groupPosition={groupPosition}
 											showSeparator={index !== arr.length - 1}
 											initialValue={
-												Array.isArray(scaleVal)
-													? parseInt(scaleVal[0] as string, 10)
+												scaleArr !== null
+													? parseInt(scaleArr[0] ?? String(value), 10)
 													: parseInt(value, 10)
 											}
 											value={
-												Array.isArray(scaleVal)
-													? String(scaleVal[0])
+												scaleArr !== null
+													? String(scaleArr[0])
 													: `${value} (hidden)`
 											}
 											min={50}
