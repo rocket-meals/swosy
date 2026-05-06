@@ -67,6 +67,7 @@ import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 import SettingsListNumberInput from '../SettingsListNumberInput/SettingsListNumberInput';
+import SettingsListBoolean from '../SettingsListBoolean/SettingsListBoolean';
 
 export type { AvatarConfig } from '../MyAvatar';
 
@@ -85,6 +86,8 @@ export namespace AvatarPropKey {
 	export enum OpenPeeps {
 		SCALE = 'scale',
 		TRANSLATE_X = 'translateX',
+		TRANSLATE_Y = 'translateY',
+		FLIP = 'flip',
 	}
 }
 
@@ -1168,8 +1171,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							title="translateX"
 							leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
 							iconBgColor={accentColor}
-							groupPosition={hasLockedProps ? 'top' : 'single'}
-							showSeparator={hasLockedProps}
+							groupPosition="top"
+							showSeparator={true}
 							initialValue={
 								config.options?.translateX !== undefined
 									? parseInt(config.options.translateX[0], 10)
@@ -1198,6 +1201,54 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								handleChange({
 									...config,
 									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(newValue)] },
+								});
+							}}
+						/>
+						<SettingsListNumberInput
+							title="translateY"
+							leftIcon={<MaterialCommunityIcons name="arrow-up-down" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition="middle"
+							showSeparator={true}
+							initialValue={
+								config.options?.translateY !== undefined
+									? parseInt(config.options.translateY[0], 10)
+									: 0
+							}
+							value={
+								config.options?.translateY !== undefined
+									? config.options.translateY[0]
+									: undefined
+							}
+							min={-100}
+							max={100}
+							step={1}
+							allowDisable={true}
+							disableLabel="Reset (undefined)"
+							onDisable={() => {
+								const newOptions = { ...(config.options ?? {}) };
+								delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_Y];
+								handleChange({ ...config, options: newOptions });
+							}}
+							onSave={(newValue) => {
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_Y]: [String(newValue)] },
+								});
+							}}
+						/>
+						<SettingsListBoolean
+							title="flip"
+							leftIcon={<MaterialCommunityIcons name="flip-horizontal" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition={hasLockedProps ? 'middle' : 'bottom'}
+							showSeparator={hasLockedProps}
+							isEnabled={config.options?.flip?.[0] === 'true'}
+							onToggle={() => {
+								const current = config.options?.flip?.[0] === 'true';
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: [String(!current)] },
 								});
 							}}
 						/>
