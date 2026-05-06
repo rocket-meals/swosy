@@ -48,8 +48,12 @@ export enum AvatarSize {
 export type AvatarConfig = {
 	style: AvatarStyle;
 	size: AvatarSize;
-	/** Style-specific options like eyes, mouth, hair, etc. Each key maps to a single-element array. */
-	options?: Record<string, string[]>;
+	/**
+	 * Style-specific options. Array values for component/color options (e.g. `skinColor: ['edb98a']`).
+	 * Boolean values for flag options (e.g. `flip: true`, `clip: false`).
+	 * Number values for numeric options (e.g. `rotate: 90`).
+	 */
+	options?: Record<string, string[] | boolean | number>;
 };
 
 export type MyAvatarProps = {
@@ -64,7 +68,7 @@ export type MyAvatarProps = {
 	/** Background color rendered behind the avatar. */
 	backgroundColor?: string;
 	/** Additional DiceBear options (e.g. eyes, mouth, hair, nose, etc.) */
-	options?: Record<string, string[]>;
+	options?: Record<string, string[] | boolean | number>;
 };
 
 export const STYLE_MAP: Record<AvatarStyle, Style<object>> = {
@@ -144,6 +148,25 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		// to compensate for the off-centre positioning of the avatar inside the background.
 		if (style === AvatarStyle.OPEN_PEEPS && renderOptions['translateX'] === undefined) {
 			renderOptions['translateX'] = ['-6'];
+		}
+		// Normalize flip to a proper boolean.
+		// Supports both the current boolean format and legacy ["true"]/["false"] string-array format.
+		const rawFlip = renderOptions['flip'];
+		const flipValue: boolean =
+			typeof rawFlip === 'boolean' ? rawFlip :
+			Array.isArray(rawFlip) ? rawFlip[0] === 'true' :
+			false;
+		renderOptions['flip'] = flipValue;
+		// When flip is true, mirror translateX so the avatar faces the correct direction.
+		if (flipValue) {
+			const rawTX = renderOptions['translateX'];
+			let txNum = 0;
+			if (Array.isArray(rawTX) && rawTX.length > 0) {
+				txNum = parseInt(rawTX[0], 10) || 0;
+			} else if (typeof rawTX === 'number') {
+				txNum = rawTX;
+			}
+			renderOptions['translateX'] = [String(-txNum)];
 		}
 		// Derive probability at render time from component key presence.
 		// A component key present in options → probability 100 (visible).
