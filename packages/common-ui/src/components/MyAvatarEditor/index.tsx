@@ -87,7 +87,9 @@ export namespace AvatarPropKey {
 		SCALE = 'scale',
 		TRANSLATE_X = 'translateX',
 		TRANSLATE_Y = 'translateY',
+		ROTATE = 'rotate',
 		FLIP = 'flip',
+		CLIP = 'clip',
 	}
 }
 
@@ -898,10 +900,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const getSelectedOptionValue = (key: string): string | null => {
 		const selected = config.options?.[key];
 		// For optional components (those with a probability key), absence of the key means "none".
-		if (probabilityKeys[key] && (!selected || selected.length === 0)) {
+		if (probabilityKeys[key] && (!selected || (Array.isArray(selected) && selected.length === 0))) {
 			return NONE_OPTION;
 		}
-		if (selected && selected.length > 0) return selected[0];
+		if (Array.isArray(selected) && selected.length > 0) return selected[0];
 		return null;
 	};
 
@@ -909,7 +911,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		const newComponentOptions = getStyleComponentOptions(config.style);
 		const newColorKeys = getStyleColorKeys(config.style);
 		const newProbabilityKeys = getStyleProbabilityKeys(config.style);
-		const randomOptions: Record<string, string[]> = {};
+		const randomOptions: Record<string, string[] | boolean | number> = {};
 		for (const [key, values] of Object.entries(newComponentOptions)) {
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			if (realValues.length === 0) continue;
@@ -933,6 +935,21 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const presetColors = getPresetColorsForKey(key);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
 			randomOptions[key] = [stripHashPrefix(randomColor)];
+		}
+		// Preserve boolean flags (flip, clip) and numeric options (scale, translateX, translateY, rotate)
+		// so that user-set positioning/orientation is not lost on randomize.
+		const preserveKeys: string[] = [
+			AvatarPropKey.OpenPeeps.FLIP,
+			AvatarPropKey.OpenPeeps.CLIP,
+			AvatarPropKey.OpenPeeps.SCALE,
+			AvatarPropKey.OpenPeeps.TRANSLATE_X,
+			AvatarPropKey.OpenPeeps.TRANSLATE_Y,
+			AvatarPropKey.OpenPeeps.ROTATE,
+		];
+		for (const key of preserveKeys) {
+			if (config.options?.[key] !== undefined) {
+				randomOptions[key] = config.options[key]!;
+			}
 		}
 		handleChange({ ...config, options: randomOptions });
 	};
@@ -991,7 +1008,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const handleOpenColorPicker = (key: string) => {
 		const presetColors = getPresetColorsForKey(key);
-		const storedHex = config.options?.[key]?.[0] ?? null;
+		const rawVal = config.options?.[key];
+		const storedHex = Array.isArray(rawVal) ? rawVal[0] ?? null : null;
 		let displayHex = storedHex;
 		if (!displayHex) {
 			const schemaDefaults = getSchemaDefaultColors(config.style, key);
@@ -1044,7 +1062,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const getCategorySelectedOption = (cat: string): string | null => {
 		if (cat === BUILTIN_CATEGORY_STYLE) return config.style;
-		if (colorKeys.includes(cat)) return config.options?.[cat]?.[0] ?? null;
+		if (colorKeys.includes(cat)) {
+			const v = config.options?.[cat];
+			return Array.isArray(v) ? v[0] ?? null : null;
+		}
 		return getSelectedOptionValue(cat);
 	};
 
@@ -1113,7 +1134,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							: index === allCategories.length - 1
 								? 'bottom'
 								: 'middle';
-				const colorKey = colorKeys.includes(cat) ? config.options?.[cat]?.[0] : null;
+				const rawColor = colorKeys.includes(cat) ? config.options?.[cat] : null;
+				const colorKey = Array.isArray(rawColor) ? rawColor[0] ?? null : null;
 				const swatchColor = colorKey ? '#' + colorKey : undefined;
 				const swatchBorderColor = swatchColor ? myContrastColor(swatchColor, theme, isDark) : undefined;
 
@@ -1174,15 +1196,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							groupPosition="top"
 							showSeparator={true}
 							initialValue={
-								config.options?.translateX !== undefined
-									? parseInt(config.options.translateX[0], 10)
+								Array.isArray(config.options?.translateX)
+									? parseInt(config.options!.translateX[0] as string, 10)
 									: config.style === AvatarStyle.OPEN_PEEPS
 										? -6
 										: 0
 							}
 							value={
-								config.options?.translateX !== undefined
-									? config.options.translateX[0]
+								Array.isArray(config.options?.translateX)
+									? String(config.options!.translateX[0])
 									: config.style === AvatarStyle.OPEN_PEEPS
 										? '-6 (default)'
 										: undefined
@@ -1211,13 +1233,13 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							groupPosition="middle"
 							showSeparator={true}
 							initialValue={
-								config.options?.translateY !== undefined
-									? parseInt(config.options.translateY[0], 10)
+								Array.isArray(config.options?.translateY)
+									? parseInt(config.options!.translateY[0] as string, 10)
 									: 0
 							}
 							value={
-								config.options?.translateY !== undefined
-									? config.options.translateY[0]
+								Array.isArray(config.options?.translateY)
+									? String(config.options!.translateY[0])
 									: undefined
 							}
 							min={-100}
@@ -1237,18 +1259,76 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								});
 							}}
 						/>
+						<SettingsListNumberInput
+							title="rotate"
+							leftIcon={<MaterialCommunityIcons name="rotate-right" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition="middle"
+							showSeparator={true}
+							initialValue={
+								Array.isArray(config.options?.rotate)
+									? parseInt(config.options!.rotate[0] as string, 10)
+									: 0
+							}
+							value={
+								Array.isArray(config.options?.rotate)
+									? String(config.options!.rotate[0])
+									: undefined
+							}
+							min={0}
+							max={360}
+							step={1}
+							allowDisable={true}
+							disableLabel="Reset (undefined)"
+							onDisable={() => {
+								const newOptions = { ...(config.options ?? {}) };
+								delete newOptions[AvatarPropKey.OpenPeeps.ROTATE];
+								handleChange({ ...config, options: newOptions });
+							}}
+							onSave={(newValue) => {
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.ROTATE]: [String(newValue)] },
+								});
+							}}
+						/>
 						<SettingsListBoolean
 							title="flip"
 							leftIcon={<MaterialCommunityIcons name="flip-horizontal" size={20} />}
 							iconBgColor={accentColor}
-							groupPosition={hasHiddenProps ? 'middle' : 'bottom'}
-							showSeparator={hasHiddenProps}
-							isEnabled={config.options?.flip?.[0] === 'true'}
+							groupPosition="middle"
+							showSeparator={true}
+							isEnabled={
+								config.options?.flip === true ||
+								(Array.isArray(config.options?.flip) && (config.options!.flip as string[])[0] === 'true')
+							}
 							onToggle={() => {
-								const current = config.options?.flip?.[0] === 'true';
+								const current =
+									config.options?.flip === true ||
+									(Array.isArray(config.options?.flip) && (config.options!.flip as string[])[0] === 'true');
 								handleChange({
 									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: [String(!current)] },
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: !current },
+								});
+							}}
+						/>
+						<SettingsListBoolean
+							title="clip"
+							leftIcon={<MaterialCommunityIcons name="content-cut" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition={hasHiddenProps ? 'middle' : 'bottom'}
+							showSeparator={hasHiddenProps}
+							isEnabled={
+								config.options?.clip === true ||
+								(Array.isArray(config.options?.clip) && (config.options!.clip as string[])[0] === 'true')
+							}
+							onToggle={() => {
+								const current =
+									config.options?.clip === true ||
+									(Array.isArray(config.options?.clip) && (config.options!.clip as string[])[0] === 'true');
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.CLIP]: !current },
 								});
 							}}
 						/>
@@ -1263,6 +1343,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 												? 'bottom'
 												: 'middle';
 								if (key === AvatarPropKey.OpenPeeps.SCALE) {
+									const scaleVal = config.options?.scale;
 									return (
 										<SettingsListNumberInput
 											key={key}
@@ -1272,13 +1353,13 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											groupPosition={groupPosition}
 											showSeparator={index !== arr.length - 1}
 											initialValue={
-												config.options?.scale !== undefined
-													? parseInt(config.options.scale[0], 10)
+												Array.isArray(scaleVal)
+													? parseInt(scaleVal[0] as string, 10)
 													: parseInt(value, 10)
 											}
 											value={
-												config.options?.scale !== undefined
-													? config.options.scale[0]
+												Array.isArray(scaleVal)
+													? String(scaleVal[0])
 													: `${value} (hidden)`
 											}
 											min={50}
