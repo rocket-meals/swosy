@@ -67,17 +67,18 @@ import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 import SettingsListNumberInput from '../SettingsListNumberInput/SettingsListNumberInput';
+import SettingsListBoolean from '../SettingsListBoolean/SettingsListBoolean';
 
 export type { AvatarConfig } from '../MyAvatar';
 
 /**
  * Namespaced avatar property key enums, organised by avatar style.
- * Use enum values together with `lockedProps` in `UseAvatarEditorModalOptions`
+ * Use enum values together with `hiddenProps` in `UseAvatarEditorModalOptions`
  * to hide a prop from the editor UI and always inject it with a fixed value.
  *
  * @example
  * ```ts
- * lockedProps: { [AvatarPropKey.OpenPeeps.SCALE]: '100' }
+ * hiddenProps: { [AvatarPropKey.OpenPeeps.SCALE]: '100' }
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -85,6 +86,8 @@ export namespace AvatarPropKey {
 	export enum OpenPeeps {
 		SCALE = 'scale',
 		TRANSLATE_X = 'translateX',
+		TRANSLATE_Y = 'translateY',
+		FLIP = 'flip',
 	}
 }
 
@@ -501,7 +504,7 @@ type AvatarEditorModalContentProps = {
 	 * Props that are always injected into the avatar config with a fixed value
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
 	 */
-	lockedProps?: Record<string, string>;
+	hiddenProps?: Record<string, string>;
 	/** Forwarded from the caller's MyAvatar: when true (default), previews are circles. */
 	rounded?: boolean;
 	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
@@ -835,7 +838,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	allowedStyles,
 	showApplyButton,
 	onApply,
-	lockedProps,
+	hiddenProps,
 	rounded,
 	backgroundColor,
 }) => {
@@ -843,31 +846,31 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
 	const { theme, isDark } = useTheme();
 
-	const lockedPropKeys = useMemo(() => new Set(Object.keys(lockedProps ?? {})), [lockedProps]);
+	const hiddenPropKeys = useMemo(() => new Set(Object.keys(hiddenProps ?? {})), [hiddenProps]);
 
 	const effectiveAllowedStyles = allowedStyles ?? Object.values(AvatarStyle);
 
-	const applyLockedProps = useCallback(
+	const applyHiddenProps = useCallback(
 		(cfg: AvatarConfig): AvatarConfig => {
-			// In debug mode, skip applying locked props so users can view and edit them freely.
+			// In debug mode, skip applying hidden props so users can view and edit them freely.
 			if (debugMode) return cfg;
-			if (!lockedProps || Object.keys(lockedProps).length === 0) return cfg;
+			if (!hiddenProps || Object.keys(hiddenProps).length === 0) return cfg;
 			const newOptions = { ...(cfg.options ?? {}) };
-			for (const [key, value] of Object.entries(lockedProps)) {
+			for (const [key, value] of Object.entries(hiddenProps)) {
 				if (value !== undefined) {
 					newOptions[key] = [value];
 				}
 			}
 			return { ...cfg, options: newOptions };
 		},
-		[lockedProps, debugMode],
+		[hiddenProps, debugMode],
 	);
 
 	const handleChange = (newConfig: AvatarConfig) => {
-		const withLocked = applyLockedProps(newConfig);
-		setConfig(withLocked);
-		configRef.current = withLocked;
-		configObservable.set(withLocked);
+		const withHidden = applyHiddenProps(newConfig);
+		setConfig(withHidden);
+		configRef.current = withHidden;
+		configObservable.set(withHidden);
 	};
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
@@ -1058,11 +1061,11 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		[componentKeys, colorKeys, config.style],
 	);
 
-	// Hide categories that have only one option (no meaningful choice) and locked props
+	// Hide categories that have only one option (no meaningful choice) and hidden props
 	const visibleAttributeKeys = useMemo(() => {
 		return sortedAttributeKeys.filter((cat) => {
-			// Always hide locked props from the main category list; they appear in the debug section instead.
-			if (lockedPropKeys.has(cat)) return false;
+			// Always hide hidden props from the main category list; they appear in the "Hidden Props" debug section instead.
+			if (hiddenPropKeys.has(cat)) return false;
 			if (colorKeys.includes(cat)) {
 				// Color keys always have multiple presets, keep them
 				return true;
@@ -1073,7 +1076,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			const realValues = values.filter((v) => v !== NONE_OPTION);
 			return realValues.length > 1;
 		});
-	}, [sortedAttributeKeys, colorKeys, componentOptions, lockedPropKeys, debugMode]);
+	}, [sortedAttributeKeys, colorKeys, componentOptions, hiddenPropKeys, debugMode]);
 
 	// Hide style selector when only one style is allowed
 	const showStyleCategory = effectiveAllowedStyles.length > 1;
@@ -1084,7 +1087,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const diceButtonBg = accentColor ?? theme.screen.text;
 	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
-	const hasLockedProps = !!(lockedProps && Object.keys(lockedProps).length > 0);
+	const hasHiddenProps = !!(hiddenProps && Object.keys(hiddenProps).length > 0);
 
 	return (
 		<View style={styles.content}>
@@ -1168,8 +1171,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							title="translateX"
 							leftIcon={<MaterialCommunityIcons name="arrow-left-right" size={20} />}
 							iconBgColor={accentColor}
-							groupPosition={hasLockedProps ? 'top' : 'single'}
-							showSeparator={hasLockedProps}
+							groupPosition="top"
+							showSeparator={true}
 							initialValue={
 								config.options?.translateX !== undefined
 									? parseInt(config.options.translateX[0], 10)
@@ -1201,8 +1204,56 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								});
 							}}
 						/>
-						{hasLockedProps &&
-							Object.entries(lockedProps ?? {}).map(([key, value], index, arr) => {
+						<SettingsListNumberInput
+							title="translateY"
+							leftIcon={<MaterialCommunityIcons name="arrow-up-down" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition="middle"
+							showSeparator={true}
+							initialValue={
+								config.options?.translateY !== undefined
+									? parseInt(config.options.translateY[0], 10)
+									: 0
+							}
+							value={
+								config.options?.translateY !== undefined
+									? config.options.translateY[0]
+									: undefined
+							}
+							min={-100}
+							max={100}
+							step={1}
+							allowDisable={true}
+							disableLabel="Reset (undefined)"
+							onDisable={() => {
+								const newOptions = { ...(config.options ?? {}) };
+								delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_Y];
+								handleChange({ ...config, options: newOptions });
+							}}
+							onSave={(newValue) => {
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_Y]: [String(newValue)] },
+								});
+							}}
+						/>
+						<SettingsListBoolean
+							title="flip"
+							leftIcon={<MaterialCommunityIcons name="flip-horizontal" size={20} />}
+							iconBgColor={accentColor}
+							groupPosition={hasHiddenProps ? 'middle' : 'bottom'}
+							showSeparator={hasHiddenProps}
+							isEnabled={config.options?.flip?.[0] === 'true'}
+							onToggle={() => {
+								const current = config.options?.flip?.[0] === 'true';
+								handleChange({
+									...config,
+									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: [String(!current)] },
+								});
+							}}
+						/>
+						{hasHiddenProps &&
+							Object.entries(hiddenProps ?? {}).map(([key, value], index, arr) => {
 								const groupPosition =
 									arr.length === 1
 										? 'bottom'
@@ -1228,7 +1279,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											value={
 												config.options?.scale !== undefined
 													? config.options.scale[0]
-													: `${value} (locked)`
+													: `${value} (hidden)`
 											}
 											min={50}
 											max={200}
@@ -1554,9 +1605,9 @@ export type UseAvatarEditorModalOptions = {
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
-	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` locks the scale to 100.
+	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` hides the scale and pins it to 100.
 	 */
-	lockedProps?: Record<string, string>;
+	hiddenProps?: Record<string, string>;
 	/** Forwarded to all avatar previews inside the editor. When true (default), avatars are rendered as circles. */
 	rounded?: boolean;
 	/** Forwarded to all avatar previews inside the editor. Background colour shown behind each avatar. */
@@ -1579,7 +1630,7 @@ type AvatarEditorUnifiedContentProps = {
 	size: AvatarSize;
 	accentColor?: string;
 	debugMode?: boolean;
-	lockedProps?: Record<string, string>;
+	hiddenProps?: Record<string, string>;
 	rounded?: boolean;
 	backgroundColor?: string;
 };
@@ -1593,7 +1644,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	size,
 	accentColor,
 	debugMode,
-	lockedProps,
+	hiddenProps,
 	rounded,
 	backgroundColor,
 }) => {
@@ -1643,7 +1694,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			allowedStyles={allowedStyles}
 			showApplyButton={true}
 			onApply={onApply}
-			lockedProps={lockedProps}
+			hiddenProps={hiddenProps}
 			rounded={rounded}
 			backgroundColor={backgroundColor}
 		/>
@@ -1692,7 +1743,7 @@ export const useAvatarEditorModal = () => {
 							onClose(configRef.current);
 							close();
 						}}
-						lockedProps={options?.lockedProps}
+						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
 					/>
@@ -1743,7 +1794,7 @@ export const useAvatarEditorModal = () => {
 								onDone(configRef.current);
 								close();
 							}}
-							lockedProps={options?.lockedProps}
+							hiddenProps={options?.hiddenProps}
 							rounded={options?.rounded}
 							backgroundColor={options?.backgroundColor}
 						/>
@@ -1824,7 +1875,7 @@ export const useAvatarEditorModal = () => {
 							onDone(configRef.current);
 							close();
 						}}
-						lockedProps={options?.lockedProps}
+						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
 					/>
@@ -1884,7 +1935,7 @@ export const useAvatarEditorModal = () => {
 						size={size}
 						accentColor={options?.accentColor}
 						debugMode={options?.debugMode}
-						lockedProps={options?.lockedProps}
+						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
 					/>
