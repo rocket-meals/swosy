@@ -58,7 +58,7 @@ const AvatarsScreen = () => {
 		accentColor: primaryColor,
 		debugMode,
 		allowedStyles: [AvatarStyle.OPEN_PEEPS],
-		lockedProps: {
+		hiddenProps: {
 			[AvatarPropKey.OpenPeeps.SCALE]: '100',
 		},
 	};
