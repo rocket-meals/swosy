@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ4DHAw8SXjfS0q6Tqyq","Remove this unused import of 'View'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/app-download-management/index.tsx",2
 "AZ3_ByBqxBiyTwy6NSQO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",157
 "AZ3_ByBqxBiyTwy6NSQP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",165
 "AZ3_Bx_oxBiyTwy6NSQB","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",910
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZ0TplI8ufp2jxPAhS1X","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomCollapsible/CustomCollapsible.tsx",10
 "AZ0TplGqufp2jxPAhS01","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",21
 "AZ0TplDEufp2jxPAhSz_","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",14
-"AZ0TplCbufp2jxPAhSz1","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FilterFormSheet/FilterFormSheet.tsx",12
