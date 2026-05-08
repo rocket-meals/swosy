@@ -89,8 +89,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L144
 
 - **React Hook "usePlatformHelper" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/helper/NotificationHelper.ts:75
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L75
+  apps/frontend/app/helper/NotificationHelper.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L82
 
 - **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
   apps/frontend/app/helper/SystemActionHelper.ts:6
