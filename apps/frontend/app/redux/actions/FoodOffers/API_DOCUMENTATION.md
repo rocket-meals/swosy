@@ -591,6 +591,7 @@ Für eine vollständige Implementierung des Speiseplans wird folgender Ablauf em
 ```
 5. GET /items/foodoffers?fields=*,markings.*,food.*,food.translations.*,attribute_values.*,attribute_values.food_attribute.*,attribute_values.food_attribute.group.*,attribute_values.food_attribute.translations.*&limit=-1&filter={"_and":[{"canteen":{"_eq":"<CANTEEN_ID>"}},{"_or":[{"_and":[{"date":{"_gte":"<DATUM>"}},{"date":{"_lte":"<DATUM>"}}]},{"date":{"_null":true}}]}]}
    → Alle Speiseangebote der gewählten Mensa für das gewählte Datum
+   → <DATUM> im Format YYYY-MM-DD, z.B. "2025-01-15"
 ```
 
 ### Schritt 3: Detail-Ansicht (bei Klick auf ein Angebot)
