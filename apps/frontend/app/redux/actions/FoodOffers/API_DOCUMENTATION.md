@@ -2,7 +2,7 @@
 
 Diese Dokumentation beschreibt die Directus REST-API-Endpunkte zum Abrufen des Speiseplans, inklusive Mensen, Speiseangeboten, Allergenen/Markierungen und Übersetzungen.
 
-**Base-URL:** `https://<SERVER_URL>` (z.B. `https://rocket-meals.de`)
+**Base-URL:** `https://studi-futter.rocket-meals.de/rocket-meals/api`
 
 Alle Endpunkte verwenden die [Directus REST-API](https://docs.directus.io/reference/items.html). Für öffentliche Daten ist keine Authentifizierung nötig, sofern die Berechtigungen im Directus-Backend entsprechend konfiguriert sind.
 
