@@ -644,6 +644,7 @@ export class ParseSchedule {
     let createJSON = {
       alias: marking_external_identifier,
       external_identifier: marking_external_identifier,
+      status: 'draft',
     };
     return this.context.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
   }
@@ -808,21 +809,11 @@ export class ParseSchedule {
       }
     }
 
-    let shouldCreateNewMarkings = false;
-    if (!!this.foodParser) {
-      // if the food parser should create new markings instead of the marking parser
-      shouldCreateNewMarkings = this.foodParser.shouldCreateNewMarkingsWhenTheyDoNotExistYet();
-    }
-
     // create markings
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      if (shouldCreateNewMarkings) {
-        marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
-      } else {
-        marking = await this.findMarkingByExternalIdentifier(markingExternalIdentifier);
-      }
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
 
       if (!!marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
@@ -1035,18 +1026,9 @@ export class ParseSchedule {
 
     // create markings
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
-    let shouldCreateNewMarkings = false;
-    if (!!this.foodParser) {
-      // if the food parser should create new markings instead of the marking parser
-      shouldCreateNewMarkings = this.foodParser.shouldCreateNewMarkingsWhenTheyDoNotExistYet();
-    }
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      if (shouldCreateNewMarkings) {
-        marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
-      } else {
-        marking = await this.findMarkingByExternalIdentifier(markingExternalIdentifier);
-      }
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
       if (!!marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
       }
@@ -1084,6 +1066,11 @@ export class ParseSchedule {
       }
       const markingsAllFound = markings.length === marking_external_identifiers.length;
 
+      if (!markingsAllFound) {
+        const missingMarkings = marking_external_identifiers.filter(id => !dictMarkingExternalIdentifierToMarking[id]);
+        await this.context.logger.appendLog('Warning Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - some markings not found: [' + missingMarkings.join(', ') + '] - proceeding with available markings');
+      }
+
       const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
       let foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined = undefined;
       if (!!foodofferCategoryExternalIdentifier) {
@@ -1094,13 +1081,13 @@ export class ParseSchedule {
       const food = dictFoodsFound[food_id];
       const foodFound = !!food;
 
-      if (canteenFound && markingsAllFound && foodFound) {
+      if (canteenFound && foodFound) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
         const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
         let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash);
         foodoffersToCreate.push(foodOfferToCreate);
       } else {
-        await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - markingsAllFound: ' + markingsAllFound + ' - foodFound: ' + foodFound);
+        await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - foodFound: ' + foodFound + ' - food_id: ' + food_id);
       }
     }
 
@@ -1173,6 +1160,7 @@ export class ParseSchedule {
         let adaptedMarkingJSON: Partial<DatabaseTypes.Markings> = {
           ...markingJSONCopy,
           short_code: markingJSONCopy.external_identifier, // Set short_code to external_identifier
+          status: 'draft', // New markings start as draft; admin must publish them
         };
 
         let marking_id = await itemService.createOne(adaptedMarkingJSON);
