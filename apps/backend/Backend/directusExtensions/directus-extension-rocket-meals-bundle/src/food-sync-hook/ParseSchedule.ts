@@ -656,18 +656,6 @@ export class ParseSchedule {
     return await this.context.myDatabaseHelper.getMarkingsHelper().findFirstItem(searchJSON);
   }
 
-  async findOrCreateMarkingAsDraftByExternalIdentifier(marking_external_identifier: string) {
-    let searchJSON = {
-      external_identifier: marking_external_identifier,
-    };
-    let createJSON = {
-      alias: marking_external_identifier,
-      external_identifier: marking_external_identifier,
-      status: 'draft',
-    };
-    return this.context.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
-  }
-
   async updateCanteens(canteenList: CanteensTypeForParser[]): Promise<void> {
     let amountOfCanteens = canteenList.length;
     let currentCanteen = 0;
@@ -821,21 +809,11 @@ export class ParseSchedule {
       }
     }
 
-    let shouldCreateNewMarkings = false;
-    if (!!this.foodParser) {
-      // if the food parser should create new markings instead of the marking parser
-      shouldCreateNewMarkings = this.foodParser.shouldCreateNewMarkingsWhenTheyDoNotExistYet();
-    }
-
     // create markings
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      if (shouldCreateNewMarkings) {
-        marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
-      } else {
-        marking = await this.findOrCreateMarkingAsDraftByExternalIdentifier(markingExternalIdentifier);
-      }
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
 
       if (!!marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
@@ -1050,7 +1028,7 @@ export class ParseSchedule {
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      marking = await this.findOrCreateMarkingAsDraftByExternalIdentifier(markingExternalIdentifier);
+      marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
       if (!!marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
       }
