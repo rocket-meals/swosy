@@ -644,6 +644,7 @@ export class ParseSchedule {
     let createJSON = {
       alias: marking_external_identifier,
       external_identifier: marking_external_identifier,
+      status: 'draft',
     };
     return this.context.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
   }
@@ -653,6 +654,18 @@ export class ParseSchedule {
       external_identifier: marking_external_identifier,
     };
     return await this.context.myDatabaseHelper.getMarkingsHelper().findFirstItem(searchJSON);
+  }
+
+  async findOrCreateMarkingAsDraftByExternalIdentifier(marking_external_identifier: string) {
+    let searchJSON = {
+      external_identifier: marking_external_identifier,
+    };
+    let createJSON = {
+      alias: marking_external_identifier,
+      external_identifier: marking_external_identifier,
+      status: 'draft',
+    };
+    return this.context.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
   }
 
   async updateCanteens(canteenList: CanteensTypeForParser[]): Promise<void> {
@@ -821,7 +834,7 @@ export class ParseSchedule {
       if (shouldCreateNewMarkings) {
         marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
       } else {
-        marking = await this.findMarkingByExternalIdentifier(markingExternalIdentifier);
+        marking = await this.findOrCreateMarkingAsDraftByExternalIdentifier(markingExternalIdentifier);
       }
 
       if (!!marking) {
@@ -1035,18 +1048,9 @@ export class ParseSchedule {
 
     // create markings
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
-    let shouldCreateNewMarkings = false;
-    if (!!this.foodParser) {
-      // if the food parser should create new markings instead of the marking parser
-      shouldCreateNewMarkings = this.foodParser.shouldCreateNewMarkingsWhenTheyDoNotExistYet();
-    }
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
-      if (shouldCreateNewMarkings) {
-        marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
-      } else {
-        marking = await this.findMarkingByExternalIdentifier(markingExternalIdentifier);
-      }
+      marking = await this.findOrCreateMarkingAsDraftByExternalIdentifier(markingExternalIdentifier);
       if (!!marking) {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
       }
@@ -1178,6 +1182,7 @@ export class ParseSchedule {
         let adaptedMarkingJSON: Partial<DatabaseTypes.Markings> = {
           ...markingJSONCopy,
           short_code: markingJSONCopy.external_identifier, // Set short_code to external_identifier
+          status: 'draft', // New markings start as draft; admin must publish them
         };
 
         let marking_id = await itemService.createOne(adaptedMarkingJSON);
