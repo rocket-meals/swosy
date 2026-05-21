@@ -1084,6 +1084,11 @@ export class ParseSchedule {
       }
       const markingsAllFound = markings.length === marking_external_identifiers.length;
 
+      if (!markingsAllFound) {
+        const missingMarkings = marking_external_identifiers.filter(id => !dictMarkingExternalIdentifierToMarking[id]);
+        await this.context.logger.appendLog('Warning Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - some markings not found: [' + missingMarkings.join(', ') + '] - proceeding with available markings');
+      }
+
       const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
       let foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined = undefined;
       if (!!foodofferCategoryExternalIdentifier) {
@@ -1094,13 +1099,13 @@ export class ParseSchedule {
       const food = dictFoodsFound[food_id];
       const foodFound = !!food;
 
-      if (canteenFound && markingsAllFound && foodFound) {
+      if (canteenFound && foodFound) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
         const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
         let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash);
         foodoffersToCreate.push(foodOfferToCreate);
       } else {
-        await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - markingsAllFound: ' + markingsAllFound + ' - foodFound: ' + foodFound);
+        await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - foodFound: ' + foodFound + ' - food_id: ' + food_id);
       }
     }
 
