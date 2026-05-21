@@ -53,6 +53,7 @@ Key,Message,Component,Line
 "AZ0cP4wTSUO5CDbnER0W","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",307
 "AZ0cP4wTSUO5CDbnER0X","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",307
 "AZ0cP4wTSUO5CDbnER0a","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",785
+"AZ5JdOehjvp1UF7n1YmL","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",64
 "AZ0cP4sOSUO5CDbnEPxL","Use `Math.trunc` instead of `>> 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",188
 "AZ0cP4sOSUO5CDbnEPxM","Use `Math.trunc` instead of `>> 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",191
 "AZ0cP4sOSUO5CDbnEPxO","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",200

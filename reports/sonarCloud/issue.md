@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 17 | 17 |
-| 🐛 Reliability | 6846 | 33 |
+| 🐛 Reliability | 6847 | 33 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16863 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16864 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -82,7 +82,7 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (33/6846)
+## 🐛 Reliability (33/6847)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
