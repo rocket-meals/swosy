@@ -1,6 +1,6 @@
 export type TranslationRequest = {
   text: string;
-  source_language: string;
+  source_language?: string;
   destination_language: string;
 };
 

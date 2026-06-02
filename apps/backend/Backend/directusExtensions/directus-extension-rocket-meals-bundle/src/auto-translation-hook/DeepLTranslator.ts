@@ -45,7 +45,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
     return str.replace(new RegExp(StringHelper.replaceAllWithOptions({ str: find, find: String.raw`[-\/\\^$*+?.()|[\]{}]`, replace: String.raw`\$&` }), 'g'), replace);
   }
 
-  async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {
+  async translateRaw(text: string, source_language_code: SourceLanguageCode | null, destination_language_code: TargetLanguageCode) {
     //copy text string to another variable
     let textToTranslate: string = text;
 
@@ -102,15 +102,15 @@ export class DeepLTranslator implements MyTranslatorInterface {
    * Private Methods
    */
 
-  getDeepLLanguageCodeSource(directus_language_code: string) {
-    return this.getDeepLLanguageCode(directus_language_code) as SourceLanguageCode;
+  getDeepLLanguageCodeSource(directus_language_code?: string): SourceLanguageCode | null {
+    return this.getDeepLLanguageCode(directus_language_code) as SourceLanguageCode | null;
   }
 
   getDeepLLanguageCodeTarget(directus_language_code: string) {
     return this.getDeepLLanguageCode(directus_language_code) as TargetLanguageCode;
   }
 
-  getDeepLLanguageCode(directus_language_code: string) {
+  getDeepLLanguageCode(directus_language_code?: string) {
     /** directus_language_code
      * e.g. "en-US" -> "en"
      */
@@ -180,6 +180,6 @@ export class DeepLTranslator implements MyTranslatorInterface {
       return splits[0];
     }
 
-    return directus_language_code;
+    return null;
   }
 }
