@@ -1,6 +1,6 @@
 Key,Message,Component,Line
-"AZ6HQcROOdZXxk7mATjP","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",103
-"AZ6HQcROOdZXxk7mATjQ","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",183
+"AZ6HQcROOdZXxk7mATjP","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",104
+"AZ6HQcROOdZXxk7mATjQ","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",196
 "AZ4DHAw8SXjfS0q6Tqyq","Remove this unused import of 'View'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/app-download-management/index.tsx",2
 "AZ3_ByBqxBiyTwy6NSQO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",157
 "AZ3_ByBqxBiyTwy6NSQP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",165
