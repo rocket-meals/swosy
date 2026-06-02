@@ -18,6 +18,7 @@ export enum CollectionNames {
   COLLECTIBLE_EVENT_PARTICIPANTS = "collectible_event_participants",
   BUILDINGS = 'buildings',
   FOODS = 'foods',
+  FOODS_TRANSLATIONS = 'foods_translations',
   FOODS_FEEDBACKS = 'foods_feedbacks',
   FOODS_CATEGORIES = 'foods_categories',
   FOODS_ATTRIBUTES = 'foods_attributes',

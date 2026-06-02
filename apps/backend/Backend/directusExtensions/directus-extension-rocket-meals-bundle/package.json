@@ -222,6 +222,11 @@
         "type": "hook",
         "name": "workflows-runs-cleanup-schedule",
         "source": "src/workflows-runs-cleanup-schedule/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "foods-translation-fix-missing-schedule",
+        "source": "src/foods-translation-fix-missing-schedule/index.ts"
       }
     ],
     "host": "^10.10.0"
