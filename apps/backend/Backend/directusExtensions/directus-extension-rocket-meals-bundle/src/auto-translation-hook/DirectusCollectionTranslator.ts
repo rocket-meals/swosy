@@ -91,7 +91,10 @@ export class DirectusCollectionTranslator {
     for (let translation of translations) {
       const FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
       if (FIELD_LANGUAGES_ID_OR_CODE) {
-        languagesCodeDict[translation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code] = translation;
+        const languageCode = DirectusCollectionTranslator.extractLanguageCode(translation?.[FIELD_LANGUAGES_ID_OR_CODE]);
+        if (languageCode) {
+          languagesCodeDict[languageCode] = translation;
+        }
       }
     }
     return languagesCodeDict;
@@ -129,7 +132,7 @@ export class DirectusCollectionTranslator {
       return payload;
     }
 
-    const sourceTranslationLanguageCode = sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code;
+    const sourceTranslationLanguageCode = DirectusCollectionTranslator.extractLanguageCode(sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]);
 
     const languagesService = myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Languages>(DirectusCollectionTranslator.COLLECTION_LANGUAGES);
     const languages = await languagesService.readByQuery({});
@@ -188,7 +191,10 @@ export class DirectusCollectionTranslator {
     for (const translation of currentTranslations) {
       const field = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
       if (field) {
-        existingTranslations[translation?.[field]] = translation;
+        const languageCode = DirectusCollectionTranslator.extractLanguageCode(translation?.[field]);
+        if (languageCode) {
+          existingTranslations[languageCode] = translation;
+        }
       }
     }
     return existingTranslations;
@@ -276,15 +282,29 @@ export class DirectusCollectionTranslator {
     }
   }
 
+  /**
+   * Extracts the language code string from a language field value,
+   * which can be either a string (e.g., "de-DE") or an object (e.g., {code: "de-DE"}).
+   */
+  static extractLanguageCode(languageFieldValue: any): string | undefined {
+    if (typeof languageFieldValue === 'string') {
+      return languageFieldValue;
+    } else if (languageFieldValue && typeof languageFieldValue === 'object' && 'code' in languageFieldValue) {
+      return languageFieldValue.code;
+    }
+    return undefined;
+  }
+
   static async translateTranslationItem(options: TranslationEntryOptions) {
     const { sourceTranslation, language_code, translator, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
     let translatedItem: any = {};
     if (fieldsToTranslate && fieldsToTranslate.length > 0) {
+      const sourceLanguageCode = DirectusCollectionTranslator.extractLanguageCode(sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]);
       for (const field of fieldsToTranslate) {
         const fieldValue = sourceTranslation[field];
         if (fieldValue) {
           try {
-            const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code, destination_language: language_code });
+            const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
             if (translatedValue) {
               translatedItem[field] = translatedValue;
             }
