@@ -1,7 +1,6 @@
-import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
-import {WorkflowScheduleHelper} from '../workflows-runs-hook';
+import {WorkflowScheduler} from '../workflows-runs-hook';
 import {SingleWorkflowRun} from '../workflows-runs-hook/WorkflowRunJobInterface';
-import {CollectionNames, CronHelper, DatabaseTypes} from 'repo-depkit-common';
+import {CollectionNames, DatabaseTypes} from 'repo-depkit-common';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
 import {MyDefineHook} from '../helpers/MyDefineHook';
@@ -204,13 +203,6 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({schedule}, apiContext) => {
-  const myDatabaseHelper = new MyDatabaseHelper(apiContext);
-
-  WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
-    workflowRunInterface: new FoodsTranslationFixMissingWorkflow(),
-    myDatabaseHelper: myDatabaseHelper,
-    schedule: schedule,
-    cronOject: CronHelper.EVERY_DAY_AT_4AM,
-  });
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async (registerFunctions, apiContext) => {
+  WorkflowScheduler.registerWorkflow(new FoodsTranslationFixMissingWorkflow());
 });
