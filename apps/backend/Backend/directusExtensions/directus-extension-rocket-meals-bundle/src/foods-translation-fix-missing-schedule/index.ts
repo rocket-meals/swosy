@@ -76,6 +76,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
           break;
         }
         try {
+          await context.logger.appendLog('Processing food ' + (processedCount + 1) + '/' + foodsWithMissingTranslations.length + ' (id=' + food.id + ')...');
           const fixedCount = await this.fixTranslationsForFood(food, translator, translatorSettings, context);
           totalFixed += fixedCount;
           processedCount++;
@@ -108,6 +109,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
   ): Promise<number> {
     const translations = food.translations as DatabaseTypes.FoodsTranslations[];
     if (!translations || translations.length === 0) {
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - no translations found.');
       return 0;
     }
 
@@ -118,20 +120,25 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     // Find the source translation (the one marked as be_source_for_translations)
     const sourceTranslation = DirectusCollectionTranslator.getSourceTranslationFromTranslations(translations, schemaContext);
     if (!sourceTranslation) {
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - no source translation found (none marked as be_source_for_translations).');
       return 0;
     }
 
     // Check if source translation has a name - if not, we can't translate
     if (!sourceTranslation.name) {
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - source translation has no name to translate from.');
       return 0;
     }
 
     const FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(sourceTranslation);
     if (!FIELD_LANGUAGES_ID_OR_CODE) {
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - could not detect language ID or code field on source translation.');
       return 0;
     }
 
     const fieldsToTranslate = DirectusCollectionTranslator.getFieldsToTranslate(schemaContext);
+    await context.logger.appendLog('Food ' + food.id + ': Source translation name="' + sourceTranslation.name + '", language field="' + FIELD_LANGUAGES_ID_OR_CODE + '", fields to translate: [' + fieldsToTranslate.join(', ') + ']');
+
     let fixedCount = 0;
 
     for (const translation of translations) {
@@ -142,6 +149,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
       // Skip if let_be_translated is explicitly false
       if (translation.let_be_translated === false) {
+        await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - let_be_translated is false.');
         continue;
       }
 
@@ -149,6 +157,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       if (!translation.name) {
         const languageField = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
         if (!languageField) {
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not detect language field.');
           continue;
         }
 
@@ -161,8 +170,16 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         }
 
         if (!languageCode) {
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not resolve language code from field "' + languageField + '".');
           continue;
         }
+
+        const missingFields = fieldsToTranslate.filter(field => {
+          const value = (translation as any)[field];
+          return !value;
+        });
+
+        await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Attempting translation for missing fields: [' + missingFields.join(', ') + ']');
 
         // Translate missing fields for this translation
         const translatedItem = await DirectusCollectionTranslator.translateTranslationItem({
@@ -171,11 +188,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
           language_code: languageCode,
           translator,
           translatorSettings,
-          fieldsToTranslate: fieldsToTranslate.filter(field => {
-            // Only translate fields that are missing in this translation
-            const value = (translation as any)[field];
-            return !value;
-          }),
+          fieldsToTranslate: missingFields,
           FIELD_LANGUAGES_ID_OR_CODE,
           context: schemaContext,
         });
@@ -195,10 +208,14 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
             },
           } as any);
           fixedCount++;
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Successfully translated name="' + translatedItem.name + '".');
+        } else {
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Translation returned no name. translatedItem=' + JSON.stringify(translatedItem));
         }
       }
     }
 
+    await context.logger.appendLog('Food ' + food.id + ': Done. Fixed ' + fixedCount + ' translations.');
     return fixedCount;
   }
 }
