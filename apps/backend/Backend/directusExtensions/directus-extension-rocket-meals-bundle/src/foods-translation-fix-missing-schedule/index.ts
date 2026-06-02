@@ -12,7 +12,6 @@ import type {Filter} from '@directus/types';
 
 const SCHEDULE_NAME = 'foods-translation-fix-missing-schedule';
 const WORKFLOW_ID = 'foods-translation-fix-missing';
-const BATCH_SIZE = 100;
 const MAX_FOODS = 1000;
 
 class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
@@ -36,12 +35,9 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         });
       }
 
-      // Find foods_translations where name is empty or null
-      const foodsTranslationsCollection = 'foods_translations';
       const foodsHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(CollectionNames.FOODS);
 
       // Query foods that have translations with empty name
-      // We query the foods collection with translations to find which have missing names
       const filter: Filter = {
         _and: [
           {
@@ -54,48 +50,37 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         ],
       };
 
-      let totalProcessed = 0;
-      let totalFixed = 0;
-      let offset = 0;
+      // Fetch up to MAX_FOODS in a single query - no while loop needed
+      const foodsWithMissingTranslations = await foodsHelper.readByQuery({
+        filter,
+        fields: ['id', 'translations.*'],
+        limit: MAX_FOODS,
+      });
 
-      while (totalProcessed < MAX_FOODS) {
-        const currentBatchSize = Math.min(BATCH_SIZE, MAX_FOODS - totalProcessed);
-
-        const foodsWithMissingTranslations = await foodsHelper.readByQuery({
-          filter,
-          fields: ['id', 'translations.*'],
-          limit: currentBatchSize,
-          offset: offset,
+      if (foodsWithMissingTranslations.length === 0) {
+        await context.logger.appendLog('No foods with missing translation names found.');
+        return context.logger.getFinalLogWithStateAndParams({
+          state: WORKFLOW_RUN_STATE.SUCCESS,
         });
+      }
 
-        if (foodsWithMissingTranslations.length === 0) {
-          await context.logger.appendLog('No more foods with missing translation names found.');
-          break;
-        }
+      await context.logger.appendLog(
+        'Found ' + foodsWithMissingTranslations.length + ' foods with missing translation names. Processing...'
+      );
 
-        await context.logger.appendLog(
-          'Processing batch of ' + foodsWithMissingTranslations.length + ' foods (total processed so far: ' + totalProcessed + ')'
-        );
+      let totalFixed = 0;
 
-        for (const food of foodsWithMissingTranslations) {
-          try {
-            const fixedCount = await this.fixTranslationsForFood(food, translator, translatorSettings, context);
-            totalFixed += fixedCount;
-          } catch (err: any) {
-            await context.logger.appendLog('Error processing food ' + food.id + ': ' + err.toString());
-          }
-          totalProcessed++;
-        }
-
-        offset += foodsWithMissingTranslations.length;
-
-        if (foodsWithMissingTranslations.length < currentBatchSize) {
-          break;
+      for (const food of foodsWithMissingTranslations) {
+        try {
+          const fixedCount = await this.fixTranslationsForFood(food, translator, translatorSettings, context);
+          totalFixed += fixedCount;
+        } catch (err: any) {
+          await context.logger.appendLog('Error processing food ' + food.id + ': ' + err.toString());
         }
       }
 
       await context.logger.appendLog(
-        'Completed. Processed ' + totalProcessed + ' foods, fixed ' + totalFixed + ' translations.'
+        'Completed. Processed ' + foodsWithMissingTranslations.length + ' foods, fixed ' + totalFixed + ' translations.'
       );
 
       return context.logger.getFinalLogWithStateAndParams({
@@ -191,8 +176,8 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
 
         if (translatedItem && translatedItem.name) {
           // Update the translation directly
-          const foodsHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(CollectionNames.FOODS);
-          await foodsHelper.updateOne(food.id, {
+          const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(CollectionNames.FOODS);
+          await foodsUpdateHelper.updateOne(food.id, {
             translations: {
               create: [],
               update: [{
