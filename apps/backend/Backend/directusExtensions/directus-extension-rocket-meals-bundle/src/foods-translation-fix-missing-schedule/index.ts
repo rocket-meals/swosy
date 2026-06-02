@@ -69,13 +69,20 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       );
 
       let totalFixed = 0;
+      let processedCount = 0;
 
       for (const food of foodsWithMissingTranslations) {
+        if (processedCount >= MAX_FOODS) {
+          await context.logger.appendLog('Reached maximum limit of ' + MAX_FOODS + ' foods. Stopping.');
+          break;
+        }
         try {
           const fixedCount = await this.fixTranslationsForFood(food, translator, translatorSettings, context);
           totalFixed += fixedCount;
+          processedCount++;
         } catch (err: any) {
           await context.logger.appendLog('Error processing food ' + food.id + ': ' + err.toString());
+          processedCount++;
         }
       }
 
