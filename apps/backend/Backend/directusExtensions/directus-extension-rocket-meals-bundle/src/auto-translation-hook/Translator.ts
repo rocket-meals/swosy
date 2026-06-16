@@ -43,7 +43,7 @@ export class Translator {
       await this.reloadUsage(); //update usage stats
     } catch (err) {
       // Don't let usage reload failure lose the translation result
-      console.log('Error reloading usage after translation:', err);
+      console.error('Error reloading usage after translation:', err);
     }
     return translation;
   }
