@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 17 | 17 |
-| 🐛 Reliability | 6847 | 33 |
+| 🔒 Security | 32 | 32 |
+| 🐛 Reliability | 6848 | 18 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16864 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16880 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (17/17)
+## 🔒 Security (32/32)
 
 - **inputs.previous-commit-sha is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:34
@@ -54,9 +54,41 @@
   .github/workflows/pr-expo-preview.yml:67
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L67
 
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:75
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L75
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:103
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L103
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:315
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L315
+
+- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted OS commands before using them.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:251
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L251
+
 - **Review this potentially hard-coded password.**
   apps/backend-sync/src/SyncDatabaseSchema.ts:45
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L45
+
+- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted OS commands before using them.**
+  apps/backend/sync/importSchema.js:274
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L274
+
+- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
+  apps/backend/sync/importSchema.js:465
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L465
+
+- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
+  apps/backend/sync/importSchema.js:499
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L499
+
+- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
+  apps/backend/sync/importSchema.js:548
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L548
 
 - **Change this code to not log user-controlled data.**
   apps/backend/sync/importSchema.js:234
@@ -70,6 +102,14 @@
   apps/backend/sync/importSchema.js:240
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L240
 
+- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
+  apps/backend/sync/importSchema.js:212
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L212
+
+- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
+  apps/backend/sync/importSchema.js:245
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L245
+
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L117
@@ -82,7 +122,31 @@
   apps/geonexia/frontend/helpers/h3/libh3.js:147
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
 
-## 🐛 Reliability (33/6847)
+- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
+  apps/screenshotGenerator/src/helpers.ts:9
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L9
+
+- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
+  apps/screenshotGenerator/src/helpers.ts:72
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L72
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:25
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L25
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:332
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L332
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
+
+## 🐛 Reliability (18/6848)
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L39
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -151,68 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:518
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L518
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:519
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L519
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:1868
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1868
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:111
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L111
-
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:1170
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1170
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:766
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L766
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L60
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2836
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2836
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:916
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L916
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:72
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L72
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L84
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:119
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L119
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:120
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L120
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:158
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L158
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:159
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:466
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L466
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:353
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L353
 

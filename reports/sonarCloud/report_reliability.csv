@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ7SzdXZMiqnvvdaMpzi","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",39
 "AZ3_ByBqxBiyTwy6NSQP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",165
 "AZ3_Bx_oxBiyTwy6NSQC","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1200
 "AZ3_Bx_oxBiyTwy6NSQD","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1233
