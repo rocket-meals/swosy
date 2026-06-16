@@ -26,6 +26,13 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       const translator = new Translator(translatorSettings, context.myDatabaseHelper);
       await translator.init();
 
+      if (!translator.isReady()) {
+        await context.logger.appendLog('Translator is not ready. Please check that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.');
+        return context.logger.getFinalLogWithStateAndParams({
+          state: WORKFLOW_RUN_STATE.FAILED,
+        });
+      }
+
       const autoTranslateEnabled = await translatorSettings.isAutoTranslationEnabled();
       if (!autoTranslateEnabled) {
         await context.logger.appendLog('Auto-translation is not enabled. Aborting.');
