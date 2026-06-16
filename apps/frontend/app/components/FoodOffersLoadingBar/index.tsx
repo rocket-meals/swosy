@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 interface FoodOffersLoadingBarProps {
     color: string;
@@ -12,7 +12,7 @@ const ANIMATION_DURATION = 1200;
 const FoodOffersLoadingBar: React.FC<FoodOffersLoadingBarProps> = ({ color, visible }) => {
     const translateX = useRef(new Animated.Value(-1)).current;
     const animationRef = useRef<Animated.CompositeAnimation | null>(null);
-    const screenWidth = Dimensions.get('window').width;
+    const { width: screenWidth } = useWindowDimensions();
 
     useEffect(() => {
         if (visible) {

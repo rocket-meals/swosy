@@ -283,7 +283,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				const offers = res?.data || [];
 				const sortedOffers = sortOffers(offers);
 				// Persist to AsyncStorage cache
-				cacheFoodOffers(canteenId, date, offers);
+				await cacheFoodOffers(canteenId, date, offers);
 				return { date, offers: sortedOffers } as DayData;
 			} catch (e) {
 				console.error('Error loading food offers', e);
