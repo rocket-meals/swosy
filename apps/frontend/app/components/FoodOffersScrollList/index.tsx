@@ -28,6 +28,8 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { CanteenVisitsDateRow } from '@/components/CanteenVisitsDateRow';
+import FoodOffersLoadingBar from '@/components/FoodOffersLoadingBar';
+import { cacheFoodOffers, getCachedFoodOffers, computeFoodOffersHash } from '@/helper/FoodOffersCacheHelper';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -63,6 +65,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
+	const [serverLoading, setServerLoading] = useState(false);
+	const dayHashesRef = useRef<Record<string, string>>({});
 	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
@@ -278,11 +282,24 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				const res = await fetchFoodOffersByCanteen(canteenId, date);
 				const offers = res?.data || [];
 				const sortedOffers = sortOffers(offers);
+				// Persist to AsyncStorage cache
+				cacheFoodOffers(canteenId, date, offers);
 				return { date, offers: sortedOffers } as DayData;
 			} catch (e) {
 				console.error('Error loading food offers', e);
 				return { date, offers: [] } as DayData;
 			}
+		},
+		[canteenId, sortOffers]
+	);
+
+	const loadCachedDay = useCallback(
+		async (date: string): Promise<DayData | null> => {
+			const cached = await getCachedFoodOffers(canteenId, date);
+			if (!cached || cached.offers.length === 0) return null;
+			const sortedOffers = sortOffers(cached.offers);
+			dayHashesRef.current[date] = cached.hash;
+			return { date, offers: sortedOffers };
 		},
 		[canteenId, sortOffers]
 	);
@@ -295,19 +312,65 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				return;
 			}
 
-			setLoading(true);
 			const baseDate = parseDateOnly(startDate);
-			const toLoad = [0, 1, 2];
-			const loaded: DayData[] = [];
-			for (const offset of toLoad) {
-				const d = format(addDays(baseDate, offset), 'yyyy-MM-dd');
-				loaded.push(await loadDay(d));
+			const datesToLoad = [0, 1, 2].map(offset =>
+				format(addDays(baseDate, offset), 'yyyy-MM-dd')
+			);
+
+			// Step 1: Try loading from persistent cache first
+			const cachedDays: (DayData | null)[] = await Promise.all(
+				datesToLoad.map(d => loadCachedDay(d))
+			);
+			const hasCachedData = cachedDays.some(d => d !== null);
+
+			if (hasCachedData) {
+				// Show cached data immediately (fill missing days with empty)
+				const initialDays = datesToLoad.map((d, i) =>
+					cachedDays[i] || { date: d, offers: [] }
+				);
+				setDays(initialDays);
+				updateCache(initialDays);
+				setLoading(false);
+
+				// Step 2: Fetch from server in background and update if data changed
+				setServerLoading(true);
+				try {
+					const serverDays: DayData[] = [];
+					let anyChanged = false;
+					for (const date of datesToLoad) {
+						const day = await loadDay(date);
+						serverDays.push(day);
+						const serverHash = computeFoodOffersHash(day.offers);
+						const cachedHash = dayHashesRef.current[date] || '';
+						if (serverHash !== cachedHash) {
+							anyChanged = true;
+						}
+						dayHashesRef.current[date] = serverHash;
+					}
+
+					if (anyChanged) {
+						setDays(serverDays);
+						updateCache(serverDays);
+					}
+				} finally {
+					setServerLoading(false);
+				}
+			} else {
+				// No cached data, do a full load with loading spinner
+				setLoading(true);
+				try {
+					const loaded: DayData[] = [];
+					for (const date of datesToLoad) {
+						loaded.push(await loadDay(date));
+					}
+					setDays(loaded);
+					updateCache(loaded);
+				} finally {
+					setLoading(false);
+				}
 			}
-			setDays(loaded);
-			updateCache(loaded);
-			setLoading(false);
 		},
-		[startDate, loadDay, cacheKey, updateCache]
+		[startDate, loadDay, loadCachedDay, cacheKey, updateCache]
 	);
 
 	const openManagementSheet = useCallback(
@@ -478,6 +541,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	return (
 		<>
+			<FoodOffersLoadingBar color={foods_area_color} visible={serverLoading} />
 			<FlatList
 				ref={flatListRef}
 				data={days}
