@@ -300,16 +300,21 @@ export class DirectusCollectionTranslator {
     let translatedItem: any = {};
     if (fieldsToTranslate && fieldsToTranslate.length > 0) {
       const sourceLanguageCode = DirectusCollectionTranslator.extractLanguageCode(sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]);
-      for (const field of fieldsToTranslate) {
-        const fieldValue = sourceTranslation[field];
-        if (fieldValue) {
-          try {
-            const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
-            if (translatedValue) {
-              translatedItem[field] = translatedValue;
+      if (!translator.isReady()) {
+        console.warn('Translator is not ready - skipping translation for language: ' + language_code);
+        // Skip translation attempts since translator cannot translate
+      } else {
+        for (const field of fieldsToTranslate) {
+          const fieldValue = sourceTranslation[field];
+          if (fieldValue) {
+            try {
+              const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
+              if (translatedValue) {
+                translatedItem[field] = translatedValue;
+              }
+            } catch (err) {
+              console.error('Translation error for field "' + field + '" to language "' + language_code + '":', err);
             }
-          } catch (err) {
-            console.log(err);
           }
         }
       }

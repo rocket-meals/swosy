@@ -32,10 +32,19 @@ export class Translator {
     }
   }
 
+  isReady(): boolean {
+    return !!this.translatorImplementation;
+  }
+
   async translate(request: TranslationRequest) {
     if (!this.translatorImplementation) return null;
     const translation = await this.translatorImplementation.translate(request);
-    await this.reloadUsage(); //update usage stats
+    try {
+      await this.reloadUsage(); //update usage stats
+    } catch (err) {
+      // Don't let usage reload failure lose the translation result
+      console.error('Error reloading usage after translation:', err);
+    }
     return translation;
   }
 

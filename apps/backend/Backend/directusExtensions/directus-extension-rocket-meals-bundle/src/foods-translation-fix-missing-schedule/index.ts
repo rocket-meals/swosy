@@ -26,6 +26,13 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       const translator = new Translator(translatorSettings, context.myDatabaseHelper);
       await translator.init();
 
+      if (!translator.isReady()) {
+        await context.logger.appendLog('Translator is not ready. Please check that the AUTO_TRANSLATE_API_KEY environment variable is set and valid. Aborting.');
+        return context.logger.getFinalLogWithStateAndParams({
+          state: WORKFLOW_RUN_STATE.FAILED,
+        });
+      }
+
       const autoTranslateEnabled = await translatorSettings.isAutoTranslationEnabled();
       if (!autoTranslateEnabled) {
         await context.logger.appendLog('Auto-translation is not enabled. Aborting.');
@@ -113,6 +120,8 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       return 0;
     }
 
+    await context.logger.appendLog('Food ' + food.id + ': Found ' + translations.length + ' translation(s).');
+
     const schema = await context.myDatabaseHelper.getSchema();
     const translationField = 'translations';
     const schemaContext = {schema, collectionName: CollectionNames.FOODS, translation_field: translationField};
@@ -120,30 +129,45 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     // Find the source translation (the one marked as be_source_for_translations)
     const sourceTranslation = DirectusCollectionTranslator.getSourceTranslationFromTranslations(translations, schemaContext);
     if (!sourceTranslation) {
-      await context.logger.appendLog('Food ' + food.id + ': Skipped - no source translation found (none marked as be_source_for_translations).');
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - no source translation found (none marked as be_source_for_translations). Translation ids: [' + translations.map(t => t.id).join(', ') + ']');
       return 0;
     }
 
     // Check if source translation has a name - if not, we can't translate
     if (!sourceTranslation.name) {
-      await context.logger.appendLog('Food ' + food.id + ': Skipped - source translation has no name to translate from.');
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - source translation (id=' + sourceTranslation.id + ') has no name to translate from.');
       return 0;
     }
 
     const FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(sourceTranslation);
     if (!FIELD_LANGUAGES_ID_OR_CODE) {
-      await context.logger.appendLog('Food ' + food.id + ': Skipped - could not detect language ID or code field on source translation.');
+      await context.logger.appendLog('Food ' + food.id + ': Skipped - could not detect language ID or code field on source translation (id=' + sourceTranslation.id + '). Keys: [' + Object.keys(sourceTranslation).join(', ') + ']');
       return 0;
     }
 
+    const sourceLanguageCode = DirectusCollectionTranslator.extractLanguageCode((sourceTranslation as any)[FIELD_LANGUAGES_ID_OR_CODE]);
     const fieldsToTranslate = DirectusCollectionTranslator.getFieldsToTranslate(schemaContext);
-    await context.logger.appendLog('Food ' + food.id + ': Source translation name="' + sourceTranslation.name + '", language field="' + FIELD_LANGUAGES_ID_OR_CODE + '", fields to translate: [' + fieldsToTranslate.join(', ') + ']');
+
+    await context.logger.appendLog(
+      'Food ' + food.id + ': Source translation id=' + sourceTranslation.id +
+      ', sourceLanguageCode="' + sourceLanguageCode + '"' +
+      ', languageField="' + FIELD_LANGUAGES_ID_OR_CODE + '"' +
+      ', name="' + sourceTranslation.name + '"' +
+      ', fieldsToTranslate=[' + fieldsToTranslate.join(', ') + ']'
+    );
+
+    // Log source field values so we can see what will actually be sent to the translator
+    for (const field of fieldsToTranslate) {
+      const value = (sourceTranslation as any)[field];
+      await context.logger.appendLog('Food ' + food.id + ': Source field "' + field + '" = ' + (value ? '"' + String(value).substring(0, 80) + '"' : 'null/empty'));
+    }
 
     let fixedCount = 0;
 
     for (const translation of translations) {
       // Skip the source translation
       if (translation.be_source_for_translations) {
+        await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - is source translation.');
         continue;
       }
 
@@ -157,7 +181,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       if (!translation.name) {
         const languageField = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
         if (!languageField) {
-          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not detect language field.');
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not detect language field. Keys: [' + Object.keys(translation).join(', ') + ']');
           continue;
         }
 
@@ -170,7 +194,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         }
 
         if (!languageCode) {
-          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not resolve language code from field "' + languageField + '".');
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ': Skipped - could not resolve language code. Raw value: ' + JSON.stringify(languageCodeValue));
           continue;
         }
 
@@ -179,22 +203,44 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
           return !value;
         });
 
+        if (missingFields.length === 0) {
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Skipped - no missing fields (all fields already have values).');
+          continue;
+        }
+
         await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Attempting translation for missing fields: [' + missingFields.join(', ') + ']');
 
-        // Translate missing fields for this translation
-        const translatedItem = await DirectusCollectionTranslator.translateTranslationItem({
-          isSourceTranslation: false,
-          sourceTranslation,
-          language_code: languageCode,
-          translator,
-          translatorSettings,
-          fieldsToTranslate: missingFields,
-          FIELD_LANGUAGES_ID_OR_CODE,
-          context: schemaContext,
-        });
+        // Translate each missing field inline so we can log each result
+        const translatedItem: any = {};
+        for (const field of missingFields) {
+          const sourceValue = (sourceTranslation as any)[field];
+          if (!sourceValue) {
+            await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Field "' + field + '" skipped - source has no value for this field.');
+            continue;
+          }
+          try {
+            await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Translating field "' + field + '" from "' + sourceLanguageCode + '" to "' + languageCode + '", source value="' + String(sourceValue).substring(0, 80) + '"');
+            const translatedValue = await translator.translate({
+              text: sourceValue,
+              source_language: sourceLanguageCode,
+              destination_language: languageCode,
+            });
+            await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Field "' + field + '" translator returned: ' + (translatedValue !== null && translatedValue !== undefined ? '"' + String(translatedValue).substring(0, 80) + '"' : 'null/undefined'));
+            if (translatedValue) {
+              translatedItem[field] = translatedValue;
+            }
+          } catch (err: any) {
+            await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Error translating field "' + field + '": ' + err.toString());
+          }
+        }
 
-        if (translatedItem && translatedItem.name) {
-          // Update the translation directly
+        translatedItem[FIELD_LANGUAGES_ID_OR_CODE] = {code: languageCode};
+        translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
+        translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
+
+        await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): translatedItem=' + JSON.stringify(translatedItem));
+
+        if (translatedItem.name) {
           const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(CollectionNames.FOODS);
           await foodsUpdateHelper.updateOne(food.id, {
             translations: {
@@ -208,9 +254,9 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
             },
           } as any);
           fixedCount++;
-          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Successfully translated name="' + translatedItem.name + '".');
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Successfully saved translated name="' + translatedItem.name + '".');
         } else {
-          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Translation returned no name. translatedItem=' + JSON.stringify(translatedItem));
+          await context.logger.appendLog('Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): Skipped saving - no name in translatedItem.');
         }
       }
     }
