@@ -385,7 +385,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
       translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
 
-      if (translatedItem.name || translatedItem.description) {
+      if (fieldsToTranslate.some(field => translatedItem[field])) {
         const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(
           CollectionNames.FOODS
         );
