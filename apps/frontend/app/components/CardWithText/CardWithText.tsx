@@ -1,29 +1,28 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import { ImageSourcePropType, ImageStyle, StyleProp } from 'react-native';
 import { CardWithText as BaseCardWithText, CardWithTextProps } from 'repo-depkit-common-ui';
 import MyImage from '@/components/MyImage';
 
-const CardWithText: React.FC<CardWithTextProps> = ({ renderImage, ...props }) => {
-	const defaultRenderImage = useCallback((source: ImageSourcePropType, style: StyleProp<ImageStyle>) => {
-		const src = source as { uri?: string };
-		if (src?.uri) {
-			return (
-				<MyImage
-					remote_image_url={src.uri}
-					style={style}
-					contentFit="cover"
-				/>
-			);
-		}
+function defaultRenderImage(source: ImageSourcePropType, style: StyleProp<ImageStyle>): React.ReactNode {
+	if (typeof source === 'object' && source !== null && !Array.isArray(source) && 'uri' in source) {
 		return (
 			<MyImage
-				defaultImage={source}
+				remote_image_url={(source as { uri?: string }).uri}
 				style={style}
 				contentFit="cover"
 			/>
 		);
-	}, []);
+	}
+	return (
+		<MyImage
+			defaultImage={source}
+			style={style}
+			contentFit="cover"
+		/>
+	);
+}
 
+const CardWithText: React.FC<CardWithTextProps> = ({ renderImage, ...props }) => {
 	return <BaseCardWithText renderImage={renderImage ?? defaultRenderImage} {...props} />;
 };
 
