@@ -71,9 +71,9 @@ const FoodOffersLoadingBar: React.FC<FoodOffersLoadingBarProps> = ({ color, load
                 )}
             </View>
             {isOffline && (
-                <View style={styles.offlineRow}>
-                    <MaterialCommunityIcons name="cloud-off-outline" size={14} color={textColor} style={styles.offlineIcon} />
-                    <Text style={[styles.offlineText, { color: textColor }]}>Offline</Text>
+                <View style={styles.offlineRow} accessibilityLabel="Offline" accessibilityRole="text">
+                    <MaterialCommunityIcons name="cloud-off-outline" size={14} color={textColor} style={styles.offlineIcon} accessibilityElementsHidden />
+                    <Text style={[styles.offlineText, { color: textColor }]} accessibilityElementsHidden>Offline</Text>
                 </View>
             )}
         </View>
