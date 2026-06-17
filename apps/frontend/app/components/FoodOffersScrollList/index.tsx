@@ -66,6 +66,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [serverLoading, setServerLoading] = useState(false);
+	const [isOffline, setIsOffline] = useState(false);
+	const serverLoadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const dayHashesRef = useRef<Record<string, string>>({});
 	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
@@ -89,6 +91,15 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		};
 		fetchLabels();
 	}, [dispatch]);
+
+	// Cleanup server loading timer on unmount
+	useEffect(() => {
+		return () => {
+			if (serverLoadingTimerRef.current) {
+				clearTimeout(serverLoadingTimerRef.current);
+			}
+		};
+	}, []);
 
 	const cacheKey = useMemo(
 		() => `${canteenId}_${startDate}`,
@@ -334,6 +345,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 				// Step 2: Fetch from server in background and update if data changed
 				setServerLoading(true);
+				setIsOffline(false);
+				// Start a 5-second timer; if server fetch hasn't finished, show offline hint
+				serverLoadingTimerRef.current = setTimeout(() => {
+					setIsOffline(true);
+				}, 5000);
 				try {
 					const serverDays: DayData[] = [];
 					let anyChanged = false;
@@ -352,7 +368,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						setDays(serverDays);
 						updateCache(serverDays);
 					}
+					// Server responded successfully – clear offline hint
+					setIsOffline(false);
 				} finally {
+					if (serverLoadingTimerRef.current) {
+						clearTimeout(serverLoadingTimerRef.current);
+						serverLoadingTimerRef.current = null;
+					}
 					setServerLoading(false);
 				}
 			} else {
@@ -541,7 +563,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	return (
 		<>
-			<FoodOffersLoadingBar color={foods_area_color} visible={serverLoading} />
+			<FoodOffersLoadingBar color={foods_area_color} loading={serverLoading} isOffline={isOffline} textColor={theme.screen.text} />
 			<FlatList
 				ref={flatListRef}
 				data={days}

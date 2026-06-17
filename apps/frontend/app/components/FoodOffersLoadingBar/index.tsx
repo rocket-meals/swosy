@@ -1,21 +1,25 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface FoodOffersLoadingBarProps {
     color: string;
-    visible: boolean;
+    loading: boolean;
+    isOffline: boolean;
+    textColor: string;
 }
 
 const BAR_HEIGHT = 3;
+const OFFLINE_ROW_HEIGHT = 20;
 const ANIMATION_DURATION = 1200;
 
-const FoodOffersLoadingBar: React.FC<FoodOffersLoadingBarProps> = ({ color, visible }) => {
+const FoodOffersLoadingBar: React.FC<FoodOffersLoadingBarProps> = ({ color, loading, isOffline, textColor }) => {
     const translateX = useRef(new Animated.Value(-1)).current;
     const animationRef = useRef<Animated.CompositeAnimation | null>(null);
     const { width: screenWidth } = useWindowDimensions();
 
     useEffect(() => {
-        if (visible) {
+        if (loading) {
             translateX.setValue(-1);
             const animation = Animated.loop(
                 Animated.timing(translateX, {
@@ -34,34 +38,50 @@ const FoodOffersLoadingBar: React.FC<FoodOffersLoadingBarProps> = ({ color, visi
         return () => {
             animationRef.current?.stop();
         };
-    }, [visible, translateX]);
+    }, [loading, translateX]);
 
-    if (!visible) return null;
+    const accessibilityLabel = loading
+        ? 'Lädt Daten und zeigt gespeicherte Angebote'
+        : 'Aktuelle Angebote';
 
     return (
-        <View style={styles.container}>
-            <Animated.View
-                style={[
-                    styles.bar,
-                    {
-                        backgroundColor: color,
-                        transform: [
+        <View
+            accessibilityLabel={accessibilityLabel}
+            accessibilityRole="progressbar"
+            accessibilityState={{ busy: loading }}
+        >
+            <View style={styles.barContainer}>
+                {loading && (
+                    <Animated.View
+                        style={[
+                            styles.bar,
                             {
-                                translateX: translateX.interpolate({
-                                    inputRange: [-1, 1],
-                                    outputRange: [-screenWidth * 0.4, screenWidth],
-                                }),
+                                backgroundColor: color,
+                                transform: [
+                                    {
+                                        translateX: translateX.interpolate({
+                                            inputRange: [-1, 1],
+                                            outputRange: [-screenWidth * 0.4, screenWidth],
+                                        }),
+                                    },
+                                ],
                             },
-                        ],
-                    },
-                ]}
-            />
+                        ]}
+                    />
+                )}
+            </View>
+            {isOffline && (
+                <View style={styles.offlineRow}>
+                    <MaterialCommunityIcons name="cloud-off-outline" size={14} color={textColor} style={styles.offlineIcon} />
+                    <Text style={[styles.offlineText, { color: textColor }]}>Offline</Text>
+                </View>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    barContainer: {
         width: '100%',
         height: BAR_HEIGHT,
         backgroundColor: 'transparent',
@@ -72,6 +92,20 @@ const styles = StyleSheet.create({
         height: '100%',
         borderRadius: BAR_HEIGHT / 2,
         opacity: 0.7,
+    },
+    offlineRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: OFFLINE_ROW_HEIGHT,
+    },
+    offlineIcon: {
+        marginRight: 4,
+        opacity: 0.6,
+    },
+    offlineText: {
+        fontSize: 12,
+        opacity: 0.6,
     },
 });
 
