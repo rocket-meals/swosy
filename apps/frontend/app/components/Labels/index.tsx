@@ -93,13 +93,21 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
-	const sortMarkingIds = (ids: string[]): string[] => {
-		const markingObjects = ids
-			.map(id => markings.find((m: DatabaseTypes.Markings) => m.id === id))
-			.filter((m): m is DatabaseTypes.Markings => Boolean(m));
-		const sorted = sortMarkingsByGroup(markingObjects, markingGroups);
-		return sorted.map(m => m.id);
-	};
+	const markingsMap = useMemo(() => {
+		const map = new Map<string, DatabaseTypes.Markings>();
+		markings.forEach((m: DatabaseTypes.Markings) => map.set(m.id, m));
+		return map;
+	}, [markings]);
+
+	const sortMarkingIds = useMemo(() => {
+		return (ids: string[]): string[] => {
+			const markingObjects = ids
+				.map(id => markingsMap.get(id))
+				.filter((m): m is DatabaseTypes.Markings => Boolean(m));
+			const sorted = sortMarkingsByGroup(markingObjects, markingGroups);
+			return sorted.map(m => m.id);
+		};
+	}, [markingsMap, markingGroups]);
 
 	const globalMarkingIds = useMemo(() => {
 		const allComponentMarkingIds = new Set<string>(
