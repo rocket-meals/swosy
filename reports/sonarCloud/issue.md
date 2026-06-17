@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 32 | 32 |
-| 🐛 Reliability | 6848 | 18 |
+| 🐛 Reliability | 6850 | 18 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16880 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16882 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -142,7 +142,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (18/6848)
+## 🐛 Reliability (18/6850)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
@@ -163,6 +163,14 @@
 - **React Hook "usePlatformHelper" is called in function "getDeviceInformationWithoutPushToken" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
   apps/frontend/app/helper/DeviceHelper.ts:144
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L144
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/frontend/app/helper/FoodOffersCacheHelper.ts:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L15
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/frontend/app/helper/FoodOffersCacheHelper.ts:101
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L101
 
 - **React Hook "usePlatformHelper" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.**
   apps/frontend/app/helper/NotificationHelper.ts:82
@@ -207,12 +215,4 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:108
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L108
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:518
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L518
 
