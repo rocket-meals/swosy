@@ -288,18 +288,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, [sortOffers, updateCache, cacheKey]);
 
 	const loadDay = useCallback(
-		async (date: string) => {
-			try {
-				const res = await fetchFoodOffersByCanteen(canteenId, date);
-				const offers = res?.data || [];
-				const sortedOffers = sortOffers(offers);
-				// Persist to AsyncStorage cache
-				await cacheFoodOffers(canteenId, date, offers);
-				return { date, offers: sortedOffers } as DayData;
-			} catch (e) {
-				console.error('Error loading food offers', e);
-				return { date, offers: [] } as DayData;
-			}
+		async (date: string): Promise<DayData> => {
+			const res = await fetchFoodOffersByCanteen(canteenId, date);
+			const offers = res?.data || [];
+			const sortedOffers = sortOffers(offers);
+			// Persist to AsyncStorage cache
+			await cacheFoodOffers(canteenId, date, offers);
+			return { date, offers: sortedOffers } as DayData;
 		},
 		[canteenId, sortOffers]
 	);
@@ -370,6 +365,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 					}
 					// Server responded successfully – clear offline hint
 					setIsOffline(false);
+				} catch (e) {
+					// Network error / offline – keep showing cached data
+					console.error('Error fetching food offers from server, keeping cached data', e);
+					setIsOffline(true);
 				} finally {
 					if (serverLoadingTimerRef.current) {
 						clearTimeout(serverLoadingTimerRef.current);
@@ -387,6 +386,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 					}
 					setDays(loaded);
 					updateCache(loaded);
+				} catch (e) {
+					// Network error / offline with no cache – show empty state
+					console.error('Error fetching food offers (no cache available)', e);
+					setIsOffline(true);
 				} finally {
 					setLoading(false);
 				}

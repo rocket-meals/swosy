@@ -7,7 +7,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Image } from 'expo-image';
 import BaseBottomModal from '@/components/BaseBottomModal';
 import SettingsList from '@/components/SettingsList';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -17,6 +16,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useDebugMode from '@/hooks/useDebugMode';
+import MyImage from '@/components/MyImage';
 
 export default function ImageFullScreen() {
 	const { uri, assetId } = useLocalSearchParams<{
@@ -248,8 +248,12 @@ export default function ImageFullScreen() {
 				<Animated.View style={styles.flex}>
 					<TouchableWithoutFeedback onPress={toggleControls} onLongPress={() => setModalVisible(true)}>
 						<Animated.View style={[styles.imageWrapper, animatedStyle]}>
-							<Image source={{ uri: lowResUri || undefined }} style={styles.image} contentFit="contain" />
-							<Image source={{ uri: highResUri || undefined }} style={[styles.image, StyleSheet.absoluteFill]} contentFit="contain" />
+							<MyImage
+								remote_image_url={!assetId ? (lowResUri || undefined) : undefined}
+								directus_asset_id={assetId || undefined}
+								style={styles.image}
+								contentFit="contain"
+							/>
 						</Animated.View>
 					</TouchableWithoutFeedback>
 				</Animated.View>
