@@ -18,6 +18,8 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     rateFood: (rating: number) => void;
     appSettings: any;
     defaultImage?: string | null;
+    initialImageAssetId?: string | null;
+    initialImageRemoteUrl?: string | null;
 }
 
 const FoodHeader = ({
@@ -34,6 +36,8 @@ const FoodHeader = ({
     isAccountRequired,
     onAccountRequired,
     containerWidth,
+    initialImageAssetId,
+    initialImageRemoteUrl,
 }: FoodHeaderProps) => {
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
@@ -42,6 +46,9 @@ const FoodHeader = ({
         width: isLargeScreen ? 400 : screenWidth - 40,
         height: isLargeScreen ? 400 : screenWidth - 40,
     }), [isLargeScreen, screenWidth]);
+
+    const imageRemoteUrl = foodDetails?.image_remote_url || initialImageRemoteUrl;
+    const imageAssetId = foodDetails?.image || initialImageAssetId;
 
     const renderRatingStars = useCallback(() => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
@@ -104,8 +111,8 @@ const FoodHeader = ({
                             <TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.featuredImage}>
                                 <MyImage
                                     style={styles.featuredImage}
-                                    remote_image_url={foodDetails?.image_remote_url}
-                                    directus_asset_id={foodDetails?.image}
+                                    remote_image_url={imageRemoteUrl}
+                                    directus_asset_id={imageAssetId}
                                     defaultImageUrl={defaultImage}
                                     contentFit="cover"
                                 />
@@ -184,8 +191,8 @@ const FoodHeader = ({
             <TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.mobileFeaturedImage}>
                 <MyImage
                     style={styles.mobileFeaturedImage}
-                    remote_image_url={foodDetails?.image_remote_url}
-                    directus_asset_id={foodDetails?.image}
+                    remote_image_url={imageRemoteUrl}
+                    directus_asset_id={imageAssetId}
                     defaultImageUrl={defaultImage}
                     contentFit="cover"
                 />
@@ -252,6 +259,8 @@ export default memo(FoodHeader, (prevProps, nextProps) => {
         prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
         prevProps.theme === nextProps.theme &&
         prevProps.defaultImage === nextProps.defaultImage &&
-        prevProps.isAccountRequired === nextProps.isAccountRequired
+        prevProps.isAccountRequired === nextProps.isAccountRequired &&
+        prevProps.initialImageAssetId === nextProps.initialImageAssetId &&
+        prevProps.initialImageRemoteUrl === nextProps.initialImageRemoteUrl
     );
 });
