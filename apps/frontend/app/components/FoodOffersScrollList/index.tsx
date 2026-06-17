@@ -435,12 +435,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		if (!days.length) return;
 		const lastDate = days[days.length - 1].date;
 		const nextDate = format(addDays(parseDateOnly(lastDate), 1), 'yyyy-MM-dd');
-		const nextDay = await loadDay(nextDate);
-		setDays(prev => {
-			const updated = [...prev, nextDay];
-			updateCache(updated);
-			return updated;
-		});
+		try {
+			const nextDay = await loadDay(nextDate);
+			setDays(prev => {
+				const updated = [...prev, nextDay];
+				updateCache(updated);
+				return updated;
+			});
+		} catch (e) {
+			console.error('Error loading next day food offers', e);
+		}
 	};
 
 	const onEndReached = () => {
