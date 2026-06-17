@@ -40,7 +40,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 export interface FoodOfferDetailsContentProps {
     offerId?: string;
     foodId?: string;
-    initialImageAssetId?: string | null;
+    initialImageAssetId?: string | number | null;
     initialImageRemoteUrl?: string | null;
 }
 

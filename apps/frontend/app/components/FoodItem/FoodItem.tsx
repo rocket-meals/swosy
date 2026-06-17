@@ -309,7 +309,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               onPress={() =>
                 item.redirect_url
                   ? openInBrowser(item.redirect_url)
-                  : openFoodOfferDetailsModal(item?.id, foodItem?.id || '', foodItem?.image as string || null, foodItem?.image_remote_url || null)
+                  : openFoodOfferDetailsModal(item?.id, foodItem?.id || '', foodItem?.image || null, foodItem?.image_remote_url || null)
               }
               imageSource={{
                 uri: imageUri as string,

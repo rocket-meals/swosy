@@ -18,7 +18,7 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     rateFood: (rating: number) => void;
     appSettings: any;
     defaultImage?: string | null;
-    initialImageAssetId?: string | null;
+    initialImageAssetId?: string | number | null;
     initialImageRemoteUrl?: string | null;
 }
 
@@ -47,8 +47,8 @@ const FoodHeader = ({
         height: isLargeScreen ? 400 : screenWidth - 40,
     }), [isLargeScreen, screenWidth]);
 
-    const imageRemoteUrl = foodDetails?.image_remote_url || initialImageRemoteUrl;
-    const imageAssetId = foodDetails?.image || initialImageAssetId;
+    const imageRemoteUrl = useMemo(() => foodDetails?.image_remote_url || initialImageRemoteUrl, [foodDetails?.image_remote_url, initialImageRemoteUrl]);
+    const imageAssetId = useMemo(() => foodDetails?.image || initialImageAssetId, [foodDetails?.image, initialImageAssetId]);
 
     const renderRatingStars = useCallback(() => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
