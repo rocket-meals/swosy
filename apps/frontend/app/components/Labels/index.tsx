@@ -102,8 +102,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		const foodOfferMarkingIds: string[] = (foodOfferDetails?.markings ?? foodOffer?.markings ?? [])
 			.map((m: DatabaseTypes.FoodoffersMarkings) => m?.markings_id as string)
 			.filter(Boolean);
-		return foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
-	}, [foodofferComponents, foodOfferDetails, foodOffer]);
+		const filteredIds = foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
+		const filteredMarkingObjects = filteredIds
+			.map(id => markings.find((m: DatabaseTypes.Markings) => m.id === id))
+			.filter((m): m is DatabaseTypes.Markings => Boolean(m));
+		return sortMarkingsByGroup(filteredMarkingObjects, markingGroups).map(m => m.id);
+	}, [foodofferComponents, foodOfferDetails, foodOffer, markings, markingGroups]);
 
 	return (
 		<View style={styles.container}>
@@ -118,9 +122,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 							getTextFromTranslation(componentFoodoffer?.translations, language) ||
 							componentFoodoffer?.alias ||
 							`Component #${componentFoodoffer?.id}`;
-						const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-							(m: any) => m?.markings_id
-						);
+						const componentMarkingObjects = (componentFoodoffer?.markings ?? [])
+							.map((m: any) => markings.find((mark: DatabaseTypes.Markings) => mark.id === m?.markings_id))
+							.filter((m: any): m is DatabaseTypes.Markings => Boolean(m));
+						const componentMarkingIds: string[] = sortMarkingsByGroup(componentMarkingObjects, markingGroups).map(m => m.id);
 						return (
 							<View key={componentFoodoffer?.id}>
 								<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
@@ -151,9 +156,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 						getTextFromTranslation(componentFoodoffer?.translations, language) ||
 						componentFoodoffer?.alias ||
 						`Component #${componentFoodoffer?.id}`;
-					const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-						(m: any) => m?.markings_id
-					);
+					const componentMarkingObjects = (componentFoodoffer?.markings ?? [])
+						.map((m: any) => markings.find((mark: DatabaseTypes.Markings) => mark.id === m?.markings_id))
+						.filter((m: any): m is DatabaseTypes.Markings => Boolean(m));
+					const componentMarkingIds: string[] = sortMarkingsByGroup(componentMarkingObjects, markingGroups).map(m => m.id);
 					return (
 						<View key={componentFoodoffer?.id}>
 							<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
