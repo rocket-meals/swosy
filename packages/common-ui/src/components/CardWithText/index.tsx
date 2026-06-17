@@ -49,6 +49,12 @@ export interface CardWithTextProps extends TouchableOpacityProps {
 	 * Pass `false` to omit the aspect-ratio constraint entirely.
 	 */
 	aspectRatio?: number | boolean;
+	/**
+	 * Optional custom image renderer. Receives the image source and computed style.
+	 * Use this to render with a caching image component (e.g. expo-image).
+	 * When omitted, the default React Native Image is used.
+	 */
+	renderImage?: (source: ImageSourcePropType, style: StyleProp<ImageStyle>) => React.ReactNode;
 }
 
 const CardWithText: React.FC<CardWithTextProps> = ({
@@ -64,6 +70,7 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 	bottomContent,
 	knownCardWidth,
 	aspectRatio = 1,
+	renderImage,
 	...rest
 }) => {
 	const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
@@ -107,7 +114,9 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 			>
 				<View style={[{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, ...resolvedImageContainerStyle]}>
 					{imageSource ? (
-						<Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" />
+						renderImage
+							? renderImage(imageSource, [styles.image, imageStyle])
+							: <Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" />
 					) : null}
 					{imageChildren}
 				</View>
