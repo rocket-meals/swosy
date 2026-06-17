@@ -93,6 +93,14 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
+	const sortMarkingIds = (ids: string[]): string[] => {
+		const markingObjects = ids
+			.map(id => markings.find((m: DatabaseTypes.Markings) => m.id === id))
+			.filter((m): m is DatabaseTypes.Markings => Boolean(m));
+		const sorted = sortMarkingsByGroup(markingObjects, markingGroups);
+		return sorted.map(m => m.id);
+	};
+
 	const globalMarkingIds = useMemo(() => {
 		const allComponentMarkingIds = new Set<string>(
 			foodofferComponents.flatMap((component: any) =>
@@ -102,8 +110,8 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		const foodOfferMarkingIds: string[] = (foodOfferDetails?.markings ?? foodOffer?.markings ?? [])
 			.map((m: DatabaseTypes.FoodoffersMarkings) => m?.markings_id as string)
 			.filter(Boolean);
-		return foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
-	}, [foodofferComponents, foodOfferDetails, foodOffer]);
+		return sortMarkingIds(foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id)));
+	}, [foodofferComponents, foodOfferDetails, foodOffer, markings, markingGroups]);
 
 	return (
 		<View style={styles.container}>
@@ -118,8 +126,8 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 							getTextFromTranslation(componentFoodoffer?.translations, language) ||
 							componentFoodoffer?.alias ||
 							`Component #${componentFoodoffer?.id}`;
-						const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-							(m: any) => m?.markings_id
+						const componentMarkingIds: string[] = sortMarkingIds(
+							(componentFoodoffer?.markings ?? []).map((m: any) => m?.markings_id)
 						);
 						return (
 							<View key={componentFoodoffer?.id}>
@@ -151,8 +159,8 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 						getTextFromTranslation(componentFoodoffer?.translations, language) ||
 						componentFoodoffer?.alias ||
 						`Component #${componentFoodoffer?.id}`;
-					const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-						(m: any) => m?.markings_id
+					const componentMarkingIds: string[] = sortMarkingIds(
+						(componentFoodoffer?.markings ?? []).map((m: any) => m?.markings_id)
 					);
 					return (
 						<View key={componentFoodoffer?.id}>
