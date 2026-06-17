@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { SafeAreaView, View } from 'react-native';
 import { DatabaseTypes } from 'repo-depkit-common';
+import { useRouter } from 'expo-router';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -32,6 +33,7 @@ import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateChec
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusinessHours';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
+import { useMyScrollviewModalFoodOffersOptions } from '@/hooks/useMyScrollviewModalFoodOffersOptions';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useSheetHandling, useNotifications } from './hooks';
@@ -81,6 +83,21 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
 	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
+	const router = useRouter();
+
+	const handleOpenUtilization = useCallback(() => {
+		openUtilizationModal(selectedDate, selectedCanteen);
+	}, [openUtilizationModal, selectedDate, selectedCanteen]);
+
+	const { openFoodOffersOptionsModal } = useMyScrollviewModalFoodOffersOptions({
+		onSort: openFoodofferSortingModal,
+		onPriceGroup: () => router.navigate('/price-group'),
+		onEatingHabits: () => router.navigate('/eating-habits'),
+		onCanteen: openChangeMyCanteenSelectionModal,
+		onCalendar: () => openDatePickerModal({ updateGlobal: true }),
+		onBusinessHours: openBusinessHoursModal,
+		onUtilization: handleOpenUtilization,
+	});
 
 	const openSheet = useCallback((sheet: string, props = {}) => {
 		if (sheet === 'canteen') {
@@ -139,11 +156,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				drawerPosition={drawerPosition as 'left' | 'right'}
 				hasUnreadChats={hasUnreadChats}
 				selectedCanteen={selectedCanteen}
-				selectedDate={selectedDate}
-				profile={profile}
-				appSettings={appSettings}
 				openSheet={openSheet}
-				openUtilizationModal={openUtilizationModal}
+				openOptionsModal={openFoodOffersOptionsModal}
 			/>
 			<View style={styles.contentWrapper}>
 				{selectedCanteen && (
