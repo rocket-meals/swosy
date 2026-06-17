@@ -5,7 +5,6 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList/SettingsList';
-import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { shallowEqual } from 'react-redux';
 
@@ -37,7 +36,6 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	onUtilization,
 }) => {
 	const { translate } = useLanguage();
-	const { theme } = useTheme();
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 
 	const options = [
@@ -45,19 +43,19 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'canteen',
 			title: translate(TranslationKeys.canteen),
 			icon: <MaterialIcons name="restaurant-menu" size={20} />,
-			onPress: () => { closeSheet(); onCanteen(); },
+			onPress: () => { onCanteen(); },
 		},
 		{
 			key: 'calendar',
 			title: translate(TranslationKeys.date),
 			icon: <MaterialIcons name="calendar-month" size={20} />,
-			onPress: () => { closeSheet(); onCalendar(); },
+			onPress: () => { onCalendar(); },
 		},
 		{
 			key: 'sort',
 			title: translate(TranslationKeys.sort),
 			icon: <MaterialIcons name="sort" size={20} />,
-			onPress: () => { closeSheet(); onSort(); },
+			onPress: () => { onSort(); },
 		},
 		{
 			key: 'priceGroup',
@@ -75,7 +73,7 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'businessHours',
 			title: translate(TranslationKeys.businesshours),
 			icon: <MaterialCommunityIcons name="clock-time-eight" size={20} />,
-			onPress: () => { closeSheet(); onBusinessHours(); },
+			onPress: () => { onBusinessHours(); },
 		},
 	];
 
@@ -84,7 +82,7 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'utilization',
 			title: `${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`,
 			icon: <FontAwesome6 name="people-group" size={20} />,
-			onPress: () => { closeSheet(); onUtilization(); },
+			onPress: () => { onUtilization(); },
 		});
 	}
 
@@ -128,8 +126,9 @@ export const useMyScrollviewModalFoodOffersOptions = (params: UseMyScrollviewMod
 
 	const openFoodOffersOptionsModal = useCallback(() => {
 		showScrollViewModal({
-			title: translate(TranslationKeys.filter),
+			title: translate(TranslationKeys.more_options),
 			onClose: closeScrollViewModal,
+			disableHorizontalPadding: true,
 			children: (
 				<FoodOffersOptionsContent
 					closeSheet={closeScrollViewModal}

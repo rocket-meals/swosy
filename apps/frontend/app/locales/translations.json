@@ -6116,5 +6116,15 @@
     "ru": "Выключено",
     "tr": "Kapalı",
     "zh": "关闭"
+  },
+  "more_options": {
+    "de": "Weitere Optionen",
+    "en": "More Options",
+    "ar": "المزيد من الخيارات",
+    "es": "Más opciones",
+    "fr": "Plus d'options",
+    "ru": "Дополнительные параметры",
+    "tr": "Daha fazla seçenek",
+    "zh": "更多选项"
   }
 }

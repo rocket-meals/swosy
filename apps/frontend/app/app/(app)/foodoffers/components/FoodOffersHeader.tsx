@@ -96,7 +96,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
                             <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-                                {translate(TranslationKeys.filter)}
+                                {translate(TranslationKeys.more_options)}
                             </TooltipText>
                         </TooltipContent>
                     </CustomTooltip>
