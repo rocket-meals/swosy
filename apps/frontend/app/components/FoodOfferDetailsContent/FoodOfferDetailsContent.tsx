@@ -40,12 +40,14 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 export interface FoodOfferDetailsContentProps {
     offerId?: string;
     foodId?: string;
+    initialImageAssetId?: string | number | null;
+    initialImageRemoteUrl?: string | null;
 }
 
 const selectFoodState = (state: RootState) => state.food;
 const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
 
-const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId }) => {
+const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId, initialImageAssetId, initialImageRemoteUrl }) => {
     const { theme } = useTheme();
     const { translate } = useLanguage();
     const dispatch = useDispatch();
@@ -355,6 +357,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         isAccountRequired={!user?.id}
                         onAccountRequired={openAccountRequiredModal}
                         containerWidth={getContainerWidth}
+                        initialImageAssetId={initialImageAssetId}
+                        initialImageRemoteUrl={initialImageRemoteUrl}
                     />
 
                     <NotificationSection

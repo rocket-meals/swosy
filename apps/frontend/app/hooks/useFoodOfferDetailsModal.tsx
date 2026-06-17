@@ -5,9 +5,9 @@ import FoodOfferDetailsContent from '@/components/FoodOfferDetailsContent/FoodOf
 const useFoodOfferDetailsModal = () => {
     const { show, close } = useMyScrollViewModal();
 
-    const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string) => {
+    const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string, initialImageAssetId?: string | number | null, initialImageRemoteUrl?: string | null) => {
         show({
-            children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} />,
+            children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} initialImageAssetId={initialImageAssetId} initialImageRemoteUrl={initialImageRemoteUrl} />,
             disableHorizontalPadding: true,
         });
     }, [show]);
