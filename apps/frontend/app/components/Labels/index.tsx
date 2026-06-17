@@ -93,22 +93,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
-	const markingsMap = useMemo(() => {
-		const map = new Map<string, DatabaseTypes.Markings>();
-		markings.forEach((m: DatabaseTypes.Markings) => map.set(m.id, m));
-		return map;
-	}, [markings]);
-
-	const sortMarkingIds = useMemo(() => {
-		return (ids: string[]): string[] => {
-			const markingObjects = ids
-				.map(id => markingsMap.get(id))
-				.filter((m): m is DatabaseTypes.Markings => Boolean(m));
-			const sorted = sortMarkingsByGroup(markingObjects, markingGroups);
-			return sorted.map(m => m.id);
-		};
-	}, [markingsMap, markingGroups]);
-
 	const globalMarkingIds = useMemo(() => {
 		const allComponentMarkingIds = new Set<string>(
 			foodofferComponents.flatMap((component: any) =>
@@ -118,7 +102,11 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		const foodOfferMarkingIds: string[] = (foodOfferDetails?.markings ?? foodOffer?.markings ?? [])
 			.map((m: DatabaseTypes.FoodoffersMarkings) => m?.markings_id as string)
 			.filter(Boolean);
-		return sortMarkingIds(foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id)));
+		const filteredIds = foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
+		const filteredMarkingObjects = filteredIds
+			.map(id => markings.find((m: DatabaseTypes.Markings) => m.id === id))
+			.filter((m): m is DatabaseTypes.Markings => Boolean(m));
+		return sortMarkingsByGroup(filteredMarkingObjects, markingGroups).map(m => m.id);
 	}, [foodofferComponents, foodOfferDetails, foodOffer, markings, markingGroups]);
 
 	return (
@@ -134,9 +122,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 							getTextFromTranslation(componentFoodoffer?.translations, language) ||
 							componentFoodoffer?.alias ||
 							`Component #${componentFoodoffer?.id}`;
-						const componentMarkingIds: string[] = sortMarkingIds(
-							(componentFoodoffer?.markings ?? []).map((m: any) => m?.markings_id)
-						);
+						const componentMarkingObjects = (componentFoodoffer?.markings ?? [])
+							.map((m: any) => markings.find((mark: DatabaseTypes.Markings) => mark.id === m?.markings_id))
+							.filter((m: any): m is DatabaseTypes.Markings => Boolean(m));
+						const componentMarkingIds: string[] = sortMarkingsByGroup(componentMarkingObjects, markingGroups).map(m => m.id);
 						return (
 							<View key={componentFoodoffer?.id}>
 								<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
@@ -167,9 +156,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 						getTextFromTranslation(componentFoodoffer?.translations, language) ||
 						componentFoodoffer?.alias ||
 						`Component #${componentFoodoffer?.id}`;
-					const componentMarkingIds: string[] = sortMarkingIds(
-						(componentFoodoffer?.markings ?? []).map((m: any) => m?.markings_id)
-					);
+					const componentMarkingObjects = (componentFoodoffer?.markings ?? [])
+						.map((m: any) => markings.find((mark: DatabaseTypes.Markings) => mark.id === m?.markings_id))
+						.filter((m: any): m is DatabaseTypes.Markings => Boolean(m));
+					const componentMarkingIds: string[] = sortMarkingsByGroup(componentMarkingObjects, markingGroups).map(m => m.id);
 					return (
 						<View key={componentFoodoffer?.id}>
 							<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
