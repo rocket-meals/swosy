@@ -19,7 +19,8 @@
     "deploy:local": "yarn run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export --platform web",
     "export:web:dev": "expo export --platform web",
-    "maestro": "export PATH=\"$HOME/.maestro/bin:$PATH\" && (command -v maestro > /dev/null 2>&1 || curl -fsSL \"https://get.maestro.mobile.dev\" | bash) && maestro test ../.maestro/"
+    "maestro:generate": "ts-node --project ../maestro-tests/tsconfig.json ../maestro-tests/src/framework/generate.ts",
+    "maestro": "yarn maestro:generate && export PATH=\"$HOME/.maestro/bin:$PATH\" && (command -v maestro > /dev/null 2>&1 || curl -fsSL \"https://get.maestro.mobile.dev\" | bash) && maestro test ../maestro-tests/generated/"
   },
   "jest": {
     "preset": "jest-expo"

@@ -1,6 +1,10 @@
 **/*.DS_Store
 .idea/**
 
+# Ignore generated Maestro YAML files (produced by maestro-tests/src/framework/generate.ts)
+apps/frontend/maestro-tests/generated/*
+!apps/frontend/maestro-tests/generated/.keep
+
 # Ignore the env files
 .env
 
