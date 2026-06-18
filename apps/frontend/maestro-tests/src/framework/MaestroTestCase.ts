@@ -54,6 +54,9 @@ export class MaestroTestCase {
 
 	/** Launch the app and navigate to the given URL. */
 	openPage(url: string): this {
+		// The first URL is used as the YAML header `url:` field, which Maestro uses
+		// to identify this as a web flow and as the default navigation target for
+		// all launchApp steps (the header url becomes the appId for the web driver).
 		if (this.url === null) {
 			this.url = url;
 		}
