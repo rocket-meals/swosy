@@ -44,6 +44,7 @@ export class MaestroTestCase {
 	readonly appId: string;
 	readonly tags: string[];
 	readonly outputFileName: string;
+	private url: string | null = null;
 
 	constructor(options: MaestroTestCaseOptions) {
 		this.appId = options.appId;
@@ -53,6 +54,12 @@ export class MaestroTestCase {
 
 	/** Launch the app and navigate to the given URL. */
 	openPage(url: string): this {
+		// The first URL is used as the YAML header `url:` field, which Maestro uses
+		// to identify this as a web flow and as the default navigation target for
+		// all launchApp steps (the header url becomes the appId for the web driver).
+		if (this.url === null) {
+			this.url = url;
+		}
 		this.steps.push({ type: 'launchApp', url });
 		return this;
 	}
@@ -123,6 +130,11 @@ export class MaestroTestCase {
 		const lines: string[] = [];
 
 		// --- YAML header ---
+		// `url:` must be present for Maestro to detect this as a web flow
+		// (see FileUtils.isWebFlow() which checks config.url != null).
+		if (this.url !== null) {
+			lines.push(`url: ${yamlString(this.url)}`);
+		}
 		lines.push(`appId: ${this.appId}`);
 		if (this.tags.length > 0) {
 			lines.push('tags:');
