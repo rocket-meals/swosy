@@ -1,0 +1,15 @@
+appId: com.rocket-meals.web
+tags:
+  - web
+  - smoke
+---
+
+# Simple smoke test: open the web app and verify it loads
+- launchApp:
+    clearState: true
+
+# Wait for the app to be visible (login screen or main screen)
+- waitForAnimationToEnd
+
+# Take a screenshot to confirm the app loaded
+- takeScreenshot: app-loaded
