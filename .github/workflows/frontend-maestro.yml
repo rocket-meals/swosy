@@ -23,8 +23,8 @@ jobs:
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: "🏗️ Export Expo Web"
-        run: yarn export:web
+      - name: "🏗️ Export Expo Web (dev build for E2E tests)"
+        run: yarn export:web:dev
         working-directory: apps/frontend/app
 
       - name: "🌐 Serve exported web app"
@@ -34,7 +34,7 @@ jobs:
           python3 -m http.server 8081 --directory /tmp/webroot &
           echo "Web server started on port 8081"
           # Wait until the server is ready
-          for i in $(seq 1 15); do
+          for i in {1..15}; do
             if curl -sf http://localhost:8081/rocket-meals/ > /dev/null; then
               echo "Server is ready"
               break

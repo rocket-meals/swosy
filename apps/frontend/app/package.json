@@ -20,7 +20,7 @@
     "export:web": "expo export --platform web",
     "export:web:dev": "expo export --platform web",
     "maestro": "maestro test ../.maestro/",
-    "maestro:install": "curl -fsSL \"https://get.maestro.mobile.dev\" | bash"
+    "maestro:install": "curl -fsSL \"https://get.maestro.mobile.dev\" | bash && echo 'Run: export PATH=\"$HOME/.maestro/bin:$PATH\" then yarn maestro'"
   },
   "jest": {
     "preset": "jest-expo"
