@@ -43,19 +43,19 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'canteen',
 			title: translate(TranslationKeys.canteen),
 			icon: <MaterialIcons name="restaurant-menu" size={20} />,
-			onPress: () => { closeSheet(); onCanteen(); },
+			onPress: () => { onCanteen(); },
 		},
 		{
 			key: 'calendar',
 			title: translate(TranslationKeys.date),
 			icon: <MaterialIcons name="calendar-month" size={20} />,
-			onPress: () => { closeSheet(); onCalendar(); },
+			onPress: () => { onCalendar(); },
 		},
 		{
 			key: 'sort',
 			title: translate(TranslationKeys.sort),
 			icon: <MaterialIcons name="sort" size={20} />,
-			onPress: () => { closeSheet(); onSort(); },
+			onPress: () => { onSort(); },
 		},
 		{
 			key: 'priceGroup',
@@ -73,7 +73,7 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'businessHours',
 			title: translate(TranslationKeys.businesshours),
 			icon: <MaterialCommunityIcons name="clock-time-eight" size={20} />,
-			onPress: () => { closeSheet(); onBusinessHours(); },
+			onPress: () => { onBusinessHours(); },
 		},
 	];
 
@@ -82,7 +82,7 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			key: 'utilization',
 			title: `${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`,
 			icon: <FontAwesome6 name="people-group" size={20} />,
-			onPress: () => { closeSheet(); onUtilization(); },
+			onPress: () => { onUtilization(); },
 		});
 	}
 
