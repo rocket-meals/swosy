@@ -1,14 +1,11 @@
 name: "🎭 Maestro Web E2E Tests"
 
 on:
-  push:
-    branches: [main, master, dev]
-    paths:
-      - "apps/frontend/**"
-  pull_request:
-    paths:
-      - "apps/frontend/**"
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual triggering
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   maestro-web:
@@ -62,6 +59,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: maestro-screenshots
-          path: |
-            ~/.maestro/tests/**/*.png
+          path: ~/.maestro/tests/**/*.png
           if-no-files-found: ignore
+          retention-days: 30
