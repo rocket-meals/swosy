@@ -18,7 +18,9 @@
     "eas-build-post-install": "node ./scripts/eas-build-post-install.js",
     "deploy:local": "yarn run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export --platform web",
-    "export:web:dev": "expo export --platform web"
+    "export:web:dev": "expo export --platform web",
+    "maestro:generate": "ts-node --project ../maestro-tests/tsconfig.json ../maestro-tests/src/framework/generate.ts",
+    "maestro": "yarn maestro:generate && maestro test ../maestro-tests/generated/"
   },
   "jest": {
     "preset": "jest-expo"
