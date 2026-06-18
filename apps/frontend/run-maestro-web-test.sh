@@ -5,10 +5,10 @@
 # Usage (from apps/frontend/):
 #   ./run-maestro-web-test.sh
 #
-# Preferred usage via yarn (from apps/frontend/app/):
+# Or run individual steps manually (from apps/frontend/app/):
 #   yarn web              # start Expo web dev server
 #   yarn maestro:generate # compile TS tests → maestro-tests/generated/*.yaml
-#   yarn maestro          # generate + install Maestro CLI + run all tests
+#   yarn maestro          # generate YAMLs + run all tests (Maestro must be installed)
 # =============================================================================
 
 set -e
