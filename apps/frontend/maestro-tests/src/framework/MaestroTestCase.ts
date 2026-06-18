@@ -177,7 +177,8 @@ export class MaestroTestCase {
 	}
 }
 
-/** Wrap a string value in double quotes, escaping any embedded double quotes. */
+/** Wrap a string value in double quotes, escaping backslashes and double quotes in one pass. */
 function yamlString(value: string): string {
-	return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+	const escaped = value.replace(/[\\"]/g, (ch) => `\\${ch}`);
+	return `"${escaped}"`;
 }

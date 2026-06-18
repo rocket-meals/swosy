@@ -17,7 +17,14 @@ type TranslationKey = keyof typeof translations;
 
 /** Return the translation string for `key` in the given language (default: German). */
 function t(key: TranslationKey, lang: string = 'de'): string {
-	return (translations[key] as Record<string, string>)[lang] ?? String(key);
+	const value = (translations[key] as Record<string, string>)[lang];
+	if (!value) {
+		console.warn(
+			`Warning: No translation found for key "${key}" in language "${lang}". ` +
+				`The raw key will be used, which will likely cause test failures.`,
+		);
+	}
+	return value ?? String(key);
 }
 
 const test = new MaestroTestCase({

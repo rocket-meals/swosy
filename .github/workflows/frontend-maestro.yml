@@ -48,8 +48,12 @@ jobs:
           curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
+      - name: "📝 Generate Maestro YAML from TypeScript tests"
+        run: yarn maestro:generate
+        working-directory: apps/frontend/app
+
       - name: "▶️ Run Maestro tests"
-        run: maestro test apps/frontend/.maestro/web-smoke-test.yaml --platform web
+        run: maestro test apps/frontend/maestro-tests/generated/ --platform web
         env:
           APP_URL: "http://localhost:8081/rocket-meals/"
 
