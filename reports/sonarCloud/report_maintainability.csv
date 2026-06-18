@@ -1,4 +1,12 @@
 Key,Message,Component,Line
+"AZ7csaX1YHFvwFUOeLOy","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",134
+"AZ7csaX1YHFvwFUOeLOz","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",141
+"AZ7csaX1YHFvwFUOeLO0","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",142
+"AZ7csaX1YHFvwFUOeLO1","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",143
+"AZ7csaX1YHFvwFUOeLO2","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",171
+"AZ7csaZuYHFvwFUOeLO3","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",11
+"AZ7csaZuYHFvwFUOeLO4","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",12
+"AZ7csaZ9YHFvwFUOeLO6","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",35
 "AZ7XznO8_c1oKk55Rx7t","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",252
 "AZ7XznWl_c1oKk55Rx7u","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",314
 "AZ7XT5ga25-90VeWqLM9","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",117
@@ -9991,11 +9999,3 @@ Key,Message,Component,Line
 "AZkUSu_tS4VhJojFFAQD","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",127
 "AZ0TplPCufp2jxPAhS2G","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodLabelingInfo/index.tsx",8
 "AZ0TpmN7ufp2jxPAhTMm","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common/src/SortingHelper.ts",103
-"AZ0TpmN7ufp2jxPAhTMn","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common/src/SortingHelper.ts",103
-"AZkUSvcRS4VhJojFFCTM","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/popupEventsHashReducer.ts",7
-"AZkUSvP-S4VhJojFFAcZ","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",49
-"AZkUSvUYS4VhJojFFAho","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",5
-"AZkUSvuzS4VhJojFFCfE","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/hannover/StudentenwerkHannoverNews_Parser.ts",6
-"AZkUSvuzS4VhJojFFCfF","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/hannover/StudentenwerkHannoverNews_Parser.ts",11
-"AZkUSvuzS4VhJojFFCfD","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/hannover/StudentenwerkHannoverNews_Parser.ts",1
-"AZkUSvfzS4VhJojFFCWe","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",757
