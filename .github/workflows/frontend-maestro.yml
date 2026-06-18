@@ -54,7 +54,14 @@ jobs:
         run: |
           chromedriver --port=9515 &
           echo "ChromeDriver started on port 9515"
-          sleep 2
+          for i in {1..15}; do
+            if curl -sf http://localhost:9515/status > /dev/null; then
+              echo "ChromeDriver is ready"
+              break
+            fi
+            echo "Waiting for ChromeDriver... ($i)"
+            sleep 2
+          done
 
       - name: "📝 Generate Maestro YAML from TypeScript tests"
         run: yarn maestro:generate
