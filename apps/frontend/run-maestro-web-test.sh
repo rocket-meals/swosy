@@ -2,15 +2,13 @@
 # =============================================================================
 # Maestro Web Smoke Test Runner
 # =============================================================================
-# Prerequisites:
-#   1. Install Maestro CLI: https://maestro.mobile.dev/getting-started/installing-maestro
-#      curl -fsSL "https://get.maestro.mobile.dev" | bash
+# Usage (from apps/frontend/):
+#   ./run-maestro-web-test.sh
 #
-#   2. Start the Expo web dev server first:
-#      cd apps/frontend/app && yarn web
-#
-#   3. Then run this script from apps/frontend/:
-#      ./run-maestro-web-test.sh
+# Or via yarn (from apps/frontend/app/):
+#   yarn maestro:install   # install Maestro CLI once
+#   yarn web               # start Expo web dev server
+#   yarn maestro           # run all Maestro tests
 # =============================================================================
 
 set -e
@@ -20,18 +18,26 @@ MAESTRO_DIR="$SCRIPT_DIR/.maestro"
 
 echo "=== Maestro Web Smoke Test ==="
 echo ""
-echo "Make sure your Expo web dev server is running:"
-echo "  cd apps/frontend/app && yarn web"
-echo ""
 
-# Check if maestro is installed
+# Auto-install Maestro CLI if not present
 if ! command -v maestro &> /dev/null; then
-    echo "ERROR: Maestro CLI is not installed."
-    echo "Install it with: curl -fsSL \"https://get.maestro.mobile.dev\" | bash"
+    echo "Maestro CLI not found – installing..."
+    curl -fsSL "https://get.maestro.mobile.dev" | bash
+    # Add to PATH for this session
+    export PATH="$HOME/.maestro/bin:$PATH"
+fi
+
+if ! command -v maestro &> /dev/null; then
+    echo "ERROR: Maestro CLI installation failed."
+    echo "Install manually: curl -fsSL \"https://get.maestro.mobile.dev\" | bash"
+    echo "Then re-run: export PATH=\"\$HOME/.maestro/bin:\$PATH\""
     exit 1
 fi
 
-echo "Running Maestro test..."
+echo "Make sure your Expo web dev server is running:"
+echo "  cd apps/frontend/app && yarn web"
+echo ""
+echo "Running Maestro tests..."
 echo ""
 
 maestro test "$MAESTRO_DIR/web-smoke-test.yaml" --platform web

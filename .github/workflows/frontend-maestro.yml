@@ -1,0 +1,63 @@
+name: "🎭 Maestro Web E2E Tests"
+
+on:
+  push:
+    branches: [main, master, dev]
+    paths:
+      - "apps/frontend/**"
+  pull_request:
+    paths:
+      - "apps/frontend/**"
+  workflow_dispatch:
+
+jobs:
+  maestro-web:
+    name: "🎭 Maestro Web Smoke Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: "🏗️ Export Expo Web"
+        run: yarn export:web
+        working-directory: apps/frontend/app
+
+      - name: "🌐 Serve exported web app"
+        run: |
+          mkdir -p /tmp/webroot/rocket-meals
+          cp -r apps/frontend/app/dist/* /tmp/webroot/rocket-meals/
+          python3 -m http.server 8081 --directory /tmp/webroot &
+          echo "Web server started on port 8081"
+          # Wait until the server is ready
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8081/rocket-meals/ > /dev/null; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i)"
+            sleep 2
+          done
+
+      - name: "🎭 Install Maestro CLI"
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: "▶️ Run Maestro tests"
+        run: maestro test apps/frontend/.maestro/web-smoke-test.yaml --platform web
+        env:
+          APP_URL: "http://localhost:8081/rocket-meals/"
+
+      - name: "📸 Upload screenshots"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-screenshots
+          path: |
+            ~/.maestro/tests/**/*.png
+          if-no-files-found: ignore

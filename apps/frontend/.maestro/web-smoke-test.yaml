@@ -7,6 +7,8 @@ tags:
 # Simple smoke test: open the web app and verify it loads
 - launchApp:
     clearState: true
+    arguments:
+      url: ${APP_URL:-"http://localhost:8081/rocket-meals/"}
 
 # Wait for the app to be visible (login screen or main screen)
 - waitForAnimationToEnd
