@@ -47,11 +47,11 @@ test
 	.tapOn(t(TranslationKeys.confirm))
 
 	// Step 4: Wait for the canteen selection screen to load
-	// Without a backend, no canteens will be fetched, so verify the
-	// "no canteens found" message appears to confirm the app loaded correctly.
+	// The default web export connects to the test backend, so canteens should load.
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selection')
-	.assertVisible(t(TranslationKeys.no_canteens_found))
+	.assertVisible(t(TranslationKeys.please_select_your_canteen))
+	.assertNotVisible(t(TranslationKeys.no_canteens_found))
 	.takeScreenshot('smoke-test-complete');
 
 export default test;
