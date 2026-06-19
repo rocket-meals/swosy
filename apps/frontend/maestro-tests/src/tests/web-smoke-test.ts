@@ -51,6 +51,7 @@ test
 	.takeScreenshot('canteen-selection')
 
 	// Step 5: Tap on the first available canteen
+	.takeScreenshot('before-canteen-tap')
 	.tapOn(t(TranslationKeys.canteen))
 
 	// Step 6: Wait for the food offers screen to load
