@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 38 | 38 |
-| 🐛 Reliability | 6850 | 12 |
+| 🔒 Security | 39 | 39 |
+| 🐛 Reliability | 6850 | 11 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16888 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16889 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (38/38)
+## 🔒 Security (39/39)
 
 - **inputs.previous-commit-sha is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:34
@@ -41,6 +41,10 @@
 - **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/score-tracker-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/score-tracker-expo-update/action.yml#L184
+
+- **Use full commit SHA hash for this dependency.**
+  .github/workflows/frontend-maestro.yml:44
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L44
 
 - **Avoid executing downloaded artifacts directly without verification.**
   .github/workflows/frontend-maestro.yml:50
@@ -166,7 +170,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (12/6850)
+## 🐛 Reliability (11/6850)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
@@ -211,8 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:117
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L117
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:187
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L187
 
