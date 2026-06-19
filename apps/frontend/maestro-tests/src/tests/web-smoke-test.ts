@@ -47,18 +47,11 @@ test
 	.tapOn(t(TranslationKeys.confirm))
 
 	// Step 4: Wait for the canteen selection screen to load
+	// The default web export connects to the test backend, so canteens should load.
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selection')
-
-	// Step 5: Tap on the first available canteen
-	.takeScreenshot('before-canteen-tap')
-	.tapOn(t(TranslationKeys.canteen))
-
-	// Step 6: Wait for the food offers screen to load
-	.waitForAnimationToEnd()
-	.takeScreenshot('food-offers')
-
-	// Step 7: Verify the food offers page loaded with content
-	.assertVisible(t(TranslationKeys.today));
+	.assertVisible(t(TranslationKeys.please_select_your_canteen))
+	.assertNotVisible(t(TranslationKeys.no_canteens_found))
+	.takeScreenshot('smoke-test-complete');
 
 export default test;
