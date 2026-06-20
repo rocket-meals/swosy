@@ -75,6 +75,7 @@ jobs:
 
       - name: "📸 Show failure screenshots in summary"
         if: failure()
+        shell: bash
         run: |
           echo "## 🎭 Maestro Test Failure Screenshots" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -94,6 +95,7 @@ jobs:
 
       - name: "🖼️ Show preview screenshot in summary"
         if: always()
+        shell: bash
         run: |
           echo "## 🖼️ Maestro Screenshot Preview" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
