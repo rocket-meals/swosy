@@ -59,17 +59,27 @@ jobs:
         env:
           APP_URL: "http://localhost:8081/rocket-meals/"
 
+      - name: "📂 List screenshot locations"
+        if: always()
+        run: |
+          echo "=== ~/.maestro/tests/ ==="
+          find "$HOME/.maestro/tests/" -type f -name "*.png" 2>/dev/null || echo "No files found"
+          echo ""
+          echo "=== /tmp/maestro-debug/ ==="
+          find /tmp/maestro-debug/ -type f -name "*.png" 2>/dev/null || echo "No files found"
+
       - name: "📸 Show failure screenshots in summary"
         if: failure()
         run: |
           echo "## 🎭 Maestro Test Failure Screenshots" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           shopt -s globstar nullglob
-          files=(/tmp/maestro-debug/**/*.png)
+          files=("$HOME/.maestro/tests/"**/*.png /tmp/maestro-debug/**/*.png)
           if [ ${#files[@]} -eq 0 ]; then
-            echo "No failure screenshots found in debug output." >> "$GITHUB_STEP_SUMMARY"
+            echo "No failure screenshots found." >> "$GITHUB_STEP_SUMMARY"
           else
             for img in "${files[@]}"; do
+              [ -f "$img" ] || continue
               name=$(basename "$img")
               echo "### $name" >> "$GITHUB_STEP_SUMMARY"
               echo "![${name}](data:image/png;base64,$(base64 -w 0 < "$img"))" >> "$GITHUB_STEP_SUMMARY"
@@ -77,13 +87,20 @@ jobs:
             done
           fi
 
+      - name: "📸 Collect screenshots for upload"
+        if: always()
+        run: |
+          mkdir -p /tmp/maestro-screenshots
+          find "$HOME/.maestro/tests/" -type f -name "*.png" -exec cp {} /tmp/maestro-screenshots/ \; 2>/dev/null || true
+          find /tmp/maestro-debug/ -type f -name "*.png" -exec cp {} /tmp/maestro-screenshots/ \; 2>/dev/null || true
+          echo "Collected screenshots:"
+          ls -la /tmp/maestro-screenshots/ 2>/dev/null || echo "No screenshots collected"
+
       - name: "📸 Upload screenshots"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: maestro-screenshots
-          path: |
-            ~/.maestro/tests/**/*.png
-            /tmp/maestro-debug/**/*.png
-          if-no-files-found: ignore
+          path: /tmp/maestro-screenshots/
+          if-no-files-found: warn
           retention-days: 30
