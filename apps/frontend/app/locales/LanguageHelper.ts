@@ -29,6 +29,10 @@ export function getLanguageLabel(languageCode: string): string {
  * Note: SettingData.languages must be imported successfully before this constant
  * is evaluated. Since SettingData is a static constant array that doesn't depend
  * on any initialization logic, this is safe to initialize at module load time.
+ * 
+ * The fail-fast initialization is intentional: if any language is missing from
+ * SettingData, the error will be caught immediately at application startup rather
+ * than at runtime when a language label is accessed.
  */
 export const LanguageLabels = {
 	ENGLISH: getLanguageLabel('en'),
