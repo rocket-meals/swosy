@@ -55,7 +55,9 @@ jobs:
         working-directory: apps/frontend/app
 
       - name: "▶️ Run Maestro tests"
-        run: maestro test apps/frontend/maestro-tests/generated/ --platform web --headless --debug-output /tmp/maestro-debug
+        run: |
+          mkdir -p /tmp/maestro-screenshots
+          maestro test apps/frontend/maestro-tests/generated/ --platform web --headless --debug-output /tmp/maestro-debug --output /tmp/maestro-screenshots
         env:
           APP_URL: "http://localhost:8081/rocket-meals/"
 
@@ -67,6 +69,9 @@ jobs:
           echo ""
           echo "=== /tmp/maestro-debug/ ==="
           find /tmp/maestro-debug/ -type f -name "*.png" 2>/dev/null || echo "No files found"
+          echo ""
+          echo "=== /tmp/maestro-screenshots/ ==="
+          find /tmp/maestro-screenshots/ -type f -name "*.png" 2>/dev/null || echo "No files found"
 
       - name: "📸 Show failure screenshots in summary"
         if: failure()
@@ -74,7 +79,7 @@ jobs:
           echo "## 🎭 Maestro Test Failure Screenshots" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           shopt -s globstar nullglob
-          files=("$HOME"/.maestro/tests/**/*.png /tmp/maestro-debug/**/*.png)
+          files=("$HOME"/.maestro/tests/**/*.png /tmp/maestro-debug/**/*.png /tmp/maestro-screenshots/**/*.png)
           if [ ${#files[@]} -eq 0 ]; then
             echo "No failure screenshots found." >> "$GITHUB_STEP_SUMMARY"
           else
@@ -93,6 +98,7 @@ jobs:
           mkdir -p /tmp/maestro-screenshots
           find "$HOME/.maestro/tests/" -type f -name "*.png" -exec cp {} /tmp/maestro-screenshots/ \; 2>/dev/null || true
           find /tmp/maestro-debug/ -type f -name "*.png" -exec cp {} /tmp/maestro-screenshots/ \; 2>/dev/null || true
+          find . -maxdepth 1 -type f -name "*.png" -exec cp {} /tmp/maestro-screenshots/ \; 2>/dev/null || true
           echo "Collected screenshots:"
           ls -la /tmp/maestro-screenshots/ 2>/dev/null || echo "No screenshots collected"
 
