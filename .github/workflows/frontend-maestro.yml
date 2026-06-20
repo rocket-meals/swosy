@@ -74,7 +74,7 @@ jobs:
           echo "## 🎭 Maestro Test Failure Screenshots" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           shopt -s globstar nullglob
-          files=("$HOME/.maestro/tests/"**/*.png /tmp/maestro-debug/**/*.png)
+          files=("$HOME"/.maestro/tests/**/*.png /tmp/maestro-debug/**/*.png)
           if [ ${#files[@]} -eq 0 ]; then
             echo "No failure screenshots found." >> "$GITHUB_STEP_SUMMARY"
           else
