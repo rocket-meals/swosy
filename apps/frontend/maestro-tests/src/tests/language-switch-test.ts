@@ -14,7 +14,7 @@
  * - Language option labels (from SettingData.ts languages array, via LanguageLabels):
  *   - LanguageLabels.ENGLISH: English language option
  *   - LanguageLabels.GERMAN: German language option
- *   - Also available: TURKISH, SPANISH, FRENCH, CHINESE, ARABIC, RUSSIAN
+ *   - Other available constants: TURKISH, SPANISH, FRENCH, CHINESE, ARABIC, RUSSIAN
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
