@@ -3,6 +3,16 @@
  *
  * After completing the anonymous login and selecting a canteen, verifies that
  * the user can open the drawer and navigate to different sections.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - food_offers: "Food Offers" navigation option
+ *   - settings: "Settings" navigation option
+ *   - group_app_settings: "App Settings" section header
+ *   - news: "News" navigation option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

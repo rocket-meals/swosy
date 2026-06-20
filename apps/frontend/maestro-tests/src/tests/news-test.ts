@@ -2,6 +2,13 @@
  * news-test.ts – Tests the news screen.
  *
  * After login: navigate to news → verify content loads.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - news: "News" navigation option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

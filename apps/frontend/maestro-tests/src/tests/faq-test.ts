@@ -2,6 +2,15 @@
  * faq-test.ts – Tests the FAQ screen.
  *
  * After login: navigate to FAQ → verify categories load → browse content.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - settings: Enters settings screen
+ *   - feedback_and_support: "Feedback & Support" section
+ *   - feedback_support_faq: "FAQ" option within Feedback & Support
+ *   - All text lookups use the t() helper to fetch German translations
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

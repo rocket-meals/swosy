@@ -3,6 +3,17 @@
  *
  * After login: navigate to settings → switch language from DE to EN →
  * verify that translated texts change.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - settings: Enters settings screen
+ *   - group_app_settings: Settings group title in German/English
+ *   - language: Language setting option
+ * - Language option labels (from SettingData.ts languages array):
+ *   - 'English (English)': English language option
+ *   - 'German (Deutsch)': German language option
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
@@ -36,7 +47,7 @@ test
 	.takeScreenshot('language-options')
 
 	// Select English
-	.tapOn('English')
+	.tapOn('English (English)')
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-switched-to-en')
 
@@ -47,7 +58,7 @@ test
 	// Switch back to German
 	.tapOn(t(TranslationKeys.language, 'en'))
 	.waitForAnimationToEnd()
-	.tapOn('Deutsch')
+	.tapOn('German (Deutsch)')
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-back-to-de');
 

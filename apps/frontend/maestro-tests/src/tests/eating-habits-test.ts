@@ -3,6 +3,15 @@
  *
  * After login: navigate to eating habits → set preferences →
  * verify markings are available.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - settings: Enters settings screen
+ *   - eating_habits: "Eating Habits" setting option
+ *   - markings: "Markings" / "Allergies" section
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

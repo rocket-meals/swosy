@@ -2,6 +2,14 @@
  * housing-test.ts – Tests the housing/apartments screen.
  *
  * After login: navigate to housing → verify list loads → check details.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - housing: "Housing" navigation option
+ *   - search_apartment_here: "Search apartment here" option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
