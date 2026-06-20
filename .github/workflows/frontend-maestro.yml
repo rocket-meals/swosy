@@ -92,6 +92,29 @@ jobs:
             done
           fi
 
+      - name: "🖼️ Show preview screenshot in summary"
+        if: always()
+        run: |
+          echo "## 🖼️ Maestro Screenshot Preview" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          shopt -s globstar nullglob
+          files=("$HOME"/.maestro/tests/**/*.png /tmp/maestro-debug/**/*.png /tmp/maestro-screenshots/**/*.png)
+          shown=false
+          for img in "${files[@]}"; do
+            [ -f "$img" ] || continue
+            name=$(basename "$img")
+            echo "### $name" >> "$GITHUB_STEP_SUMMARY"
+            echo "![${name}](data:image/png;base64,$(base64 -w 0 < "$img"))" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            shown=true
+            break
+          done
+          if [ "$shown" = false ]; then
+            echo "No screenshots found." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_All screenshots are available in the **maestro-screenshots** artifact above._" >> "$GITHUB_STEP_SUMMARY"
+
       - name: "📸 Collect screenshots for upload"
         if: always()
         run: |
