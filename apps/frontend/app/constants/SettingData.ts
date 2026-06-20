@@ -5,52 +5,73 @@ export const themes = [
 	{ id: 'systematic', name: 'color_scheme_system', icon: 'theme-light-dark' },
 ];
 
+// Language Code Enum - Type-safe language key management
+export enum LanguageCode {
+	EN = 'en',
+	TR = 'tr',
+	ES = 'es',
+	FR = 'fr',
+	DE = 'de',
+	ZH = 'zh',
+	AR = 'ar',
+	RU = 'ru',
+}
+
 // Languages - Dictionary for O(1) lookups by language code
 export const languageDict = {
-	en: {
+	[LanguageCode.EN]: {
 		label: 'English (English)',
 		emoji: '🇬🇧',
-		value: 'en',
+		value: LanguageCode.EN,
 	},
-	tr: {
+	[LanguageCode.TR]: {
 		label: 'Turkish (Türkçe)',
 		emoji: '🇹🇷',
-		value: 'tr',
+		value: LanguageCode.TR,
 	},
-	es: {
+	[LanguageCode.ES]: {
 		label: 'Spanish (Español)',
 		emoji: '🇪🇸',
-		value: 'es',
+		value: LanguageCode.ES,
 	},
-	fr: {
+	[LanguageCode.FR]: {
 		label: 'French (Français)',
 		emoji: '🇫🇷',
-		value: 'fr',
+		value: LanguageCode.FR,
 	},
-	de: {
+	[LanguageCode.DE]: {
 		label: 'German (Deutsch)',
 		emoji: '🇩🇪',
-		value: 'de',
+		value: LanguageCode.DE,
 	},
-	zh: {
+	[LanguageCode.ZH]: {
 		label: 'Chinese (中文)',
 		emoji: '🇨🇳',
-		value: 'zh',
+		value: LanguageCode.ZH,
 	},
-	ar: {
+	[LanguageCode.AR]: {
 		label: 'Arabic (العربية)',
 		emoji: '🇸🇦',
-		value: 'ar',
+		value: LanguageCode.AR,
 	},
-	ru: {
+	[LanguageCode.RU]: {
 		label: 'Russian (Русский)',
 		emoji: '🇷🇺',
-		value: 'ru',
+		value: LanguageCode.RU,
 	},
 } as const;
 
 // Language order - preserves UI display order
-export const languageOrder = ['en', 'tr', 'es', 'fr', 'de', 'zh', 'ar', 'ru'] as const;
+export const languageOrder = [
+	LanguageCode.EN,
+	LanguageCode.TR,
+	LanguageCode.ES,
+	LanguageCode.FR,
+	LanguageCode.DE,
+	LanguageCode.ZH,
+	LanguageCode.AR,
+	LanguageCode.RU,
+] as const;
 
 // Legacy export for backward compatibility - returns ordered array
 export const languages = languageOrder.map((code) => languageDict[code]);

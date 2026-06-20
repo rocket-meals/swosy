@@ -9,7 +9,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import { languageDict, languageOrder } from '@/constants/SettingData';
+import { languageDict, languageOrder, LanguageCode } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
 
 const styles = StyleSheet.create({
@@ -98,16 +98,16 @@ export const useLanguageModal = () => {
         const { primaryColor } = useAppSelector((state) => state.settings);
 
         const changeLanguage = useCallback(
-                (languageCode: string) => {
-                        setLanguageMode(languageCode as any);
+                (languageCode: LanguageCode) => {
+                        setLanguageMode(languageCode);
                         closeScrollViewModal();
                 },
                 [closeScrollViewModal, setLanguageMode]
         );
 
         const LanguageOption = useCallback(
-                ({ languageCode, index }: { languageCode: string; index: number }) => {
-                        const languageOption = languageDict[languageCode as keyof typeof languageDict];
+                ({ languageCode, index }: { languageCode: LanguageCode; index: number }) => {
+                        const languageOption = languageDict[languageCode];
                         const isSelected = language === languageCode;
                         const groupPosition =
                                 languageOrder.length === 1

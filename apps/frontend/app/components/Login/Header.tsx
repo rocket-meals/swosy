@@ -7,7 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useLocales } from 'expo-localization';
 import { useDispatch } from 'react-redux';
 import { SET_DRAWER_POSITION } from '@/redux/Types/types';
-import { languageDict } from '../../constants/SettingData';
+import { languageDict, LanguageCode } from '../../constants/SettingData';
 import MyImage from '@/components/MyImage';
 import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -52,15 +52,15 @@ const LoginHeader = () => {
 	useEffect(() => {
 		if (!language) {
 			const langCode = deviceLocale[0]?.split('-')[0];
-			setLanguageMode(langCode);
-			if (langCode === 'ar') {
+			setLanguageMode(langCode as LanguageCode);
+			if (langCode === LanguageCode.AR) {
 				dispatch({
 					type: SET_DRAWER_POSITION,
 					payload: 'right',
 				});
 			}
 		} else {
-			if (language === 'ar') {
+			if (language === LanguageCode.AR) {
 				dispatch({
 					type: SET_DRAWER_POSITION,
 					payload: 'right',

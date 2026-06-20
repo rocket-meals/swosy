@@ -3,8 +3,9 @@ import { configureStore } from '@/redux/store';
 import translations from '@/locales/translations.json';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
 import { StringHelper } from 'repo-depkit-common';
+import { LanguageCode } from '@/constants/SettingData';
 
-const changeLanguage = (language: 'en' | 'de' | 'fr' | 'ar' | 'es' | 'ru' | 'tr' | 'zh') => ({
+const changeLanguage = (language: LanguageCode) => ({
 	type: CHANGE_LANGUAGE,
 	payload: language,
 });
@@ -121,7 +122,7 @@ export const useLanguage = () => {
 	const [pirateLanguage, setPirateLanguageState] = useState(configureStore.getState().settings.pirateLanguage);
 	const [funLanguageMode, setFunLanguageModeState] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
 
-	const setLanguageMode = (language: 'en' | 'de' | 'fr' | 'ar' | 'es' | 'ru' | 'tr' | 'zh') => {
+	const setLanguageMode = (language: LanguageCode) => {
 		configureStore.dispatch(changeLanguage(language));
 	};
 

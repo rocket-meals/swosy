@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { LanguageCode } from '@/constants/SettingData';
 
 export const isWeb = Platform.OS === 'web';
 export const borderRadiusContainer = 10;
@@ -187,9 +188,9 @@ export const campuses = [
 
 export const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
-export const languageCode = 'en';
+export const languageCode = LanguageCode.EN;
 export const itemStatus = 'published';
-// export const languageCode = 'de';
+// export const languageCode = LanguageCode.DE;
 
 // let assetId: string | DirectusFiles | null | undefined = undefined
 // let image_url: string | undefined = undefined

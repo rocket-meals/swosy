@@ -5,16 +5,16 @@
  * SettingData.ts, making them available to both the app and maestro tests.
  */
 
-import { languageDict } from '../constants/SettingData';
+import { languageDict, LanguageCode } from '../constants/SettingData';
 
 /**
  * Get the language label for a given language code.
  * Examples:
- *   getLanguageLabel('en') → 'English (English)'
- *   getLanguageLabel('de') → 'German (Deutsch)'
+ *   getLanguageLabel(LanguageCode.EN) → 'English (English)'
+ *   getLanguageLabel(LanguageCode.DE) → 'German (Deutsch)'
  */
-export function getLanguageLabel(languageCode: string): string {
-	const language = languageDict[languageCode as keyof typeof languageDict];
+export function getLanguageLabel(languageCode: LanguageCode): string {
+	const language = languageDict[languageCode];
 	if (!language) {
 		const availableCodes = Object.keys(languageDict).join(', ');
 		throw new Error(
@@ -35,12 +35,12 @@ export function getLanguageLabel(languageCode: string): string {
  * than at runtime when a language label is accessed.
  */
 export const LanguageLabels = {
-	ENGLISH: getLanguageLabel('en'),
-	GERMAN: getLanguageLabel('de'),
-	TURKISH: getLanguageLabel('tr'),
-	SPANISH: getLanguageLabel('es'),
-	FRENCH: getLanguageLabel('fr'),
-	CHINESE: getLanguageLabel('zh'),
-	ARABIC: getLanguageLabel('ar'),
-	RUSSIAN: getLanguageLabel('ru'),
+	ENGLISH: getLanguageLabel(LanguageCode.EN),
+	GERMAN: getLanguageLabel(LanguageCode.DE),
+	TURKISH: getLanguageLabel(LanguageCode.TR),
+	SPANISH: getLanguageLabel(LanguageCode.ES),
+	FRENCH: getLanguageLabel(LanguageCode.FR),
+	CHINESE: getLanguageLabel(LanguageCode.ZH),
+	ARABIC: getLanguageLabel(LanguageCode.AR),
+	RUSSIAN: getLanguageLabel(LanguageCode.RU),
 };
