@@ -9,19 +9,7 @@
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
-import translations from '../../../app/locales/translations.json';
-
-/** Return the German translation for the given TranslationKeys value. */
-function t(key: TranslationKeys, lang: string = 'de'): string {
-	const value = (translations[key as keyof typeof translations] as Record<string, string>)?.[lang];
-	if (!value) {
-		console.warn(
-			`Warning: No translation found for key "${key}" in language "${lang}". ` +
-				`The raw key will be used, which will likely cause test failures.`,
-		);
-	}
-	return value ?? String(key);
-}
+import { t } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
