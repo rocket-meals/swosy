@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import translations from './locales/translations.json';
+import { LanguageCode } from '@/constants/SettingData';
 
 // Preprocess translations to create a structure compatible with i18next
 const formattedTranslations: any = {};
@@ -24,7 +25,7 @@ const languageDetector = {
 			if (language) {
 				callback(language);
 			} else {
-				callback(Localization.getLocales()[0]?.languageCode ?? 'de'); // Use device language
+				callback(Localization.getLocales()[0]?.languageCode ?? LanguageCode.DE); // Use device language
 			}
 		});
 	},

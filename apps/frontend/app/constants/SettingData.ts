@@ -5,49 +5,76 @@ export const themes = [
 	{ id: 'systematic', name: 'color_scheme_system', icon: 'theme-light-dark' },
 ];
 
-// Languages
-export const languages = [
-        {
-                label: 'English (English)',
-                emoji: '🇬🇧',
-                value: 'en',
-        },
-        {
-                label: 'Turkish (Türkçe)',
-                emoji: '🇹🇷',
-                value: 'tr',
-        },
-        {
-                label: 'Spanish (Español)',
-                emoji: '🇪🇸',
-                value: 'es',
-        },
-        {
-                label: 'French (Français)',
-                emoji: '🇫🇷',
-                value: 'fr',
-        },
-        {
-                label: 'German (Deutsch)',
-                emoji: '🇩🇪',
-                value: 'de',
-        },
-        {
-                label: 'Chinese (中文)',
-                emoji: '🇨🇳',
-                value: 'zh',
-        },
-        {
-                label: 'Arabic (العربية)',
-                emoji: '🇸🇦',
-                value: 'ar',
-        },
-        {
-                label: 'Russian (Русский)',
-                emoji: '🇷🇺',
-                value: 'ru',
-        },
-];
+// Language Code Enum - Type-safe language key management
+export enum LanguageCode {
+	EN = 'en',
+	TR = 'tr',
+	ES = 'es',
+	FR = 'fr',
+	DE = 'de',
+	ZH = 'zh',
+	AR = 'ar',
+	RU = 'ru',
+}
+
+// Languages - Dictionary for O(1) lookups by language code
+export const languageDict = {
+	[LanguageCode.EN]: {
+		label: 'English (English)',
+		emoji: '🇬🇧',
+		value: LanguageCode.EN,
+	},
+	[LanguageCode.TR]: {
+		label: 'Turkish (Türkçe)',
+		emoji: '🇹🇷',
+		value: LanguageCode.TR,
+	},
+	[LanguageCode.ES]: {
+		label: 'Spanish (Español)',
+		emoji: '🇪🇸',
+		value: LanguageCode.ES,
+	},
+	[LanguageCode.FR]: {
+		label: 'French (Français)',
+		emoji: '🇫🇷',
+		value: LanguageCode.FR,
+	},
+	[LanguageCode.DE]: {
+		label: 'German (Deutsch)',
+		emoji: '🇩🇪',
+		value: LanguageCode.DE,
+	},
+	[LanguageCode.ZH]: {
+		label: 'Chinese (中文)',
+		emoji: '🇨🇳',
+		value: LanguageCode.ZH,
+	},
+	[LanguageCode.AR]: {
+		label: 'Arabic (العربية)',
+		emoji: '🇸🇦',
+		value: LanguageCode.AR,
+	},
+	[LanguageCode.RU]: {
+		label: 'Russian (Русский)',
+		emoji: '🇷🇺',
+		value: LanguageCode.RU,
+	},
+} as const;
+
+// Language order - preserves UI display order
+export const languageOrder = [
+	LanguageCode.AR,
+	LanguageCode.DE,
+	LanguageCode.EN,
+	LanguageCode.ES,
+	LanguageCode.FR,
+	LanguageCode.RU,
+	LanguageCode.TR,
+	LanguageCode.ZH,
+] as const;
+
+// Legacy export for backward compatibility - returns ordered array
+export const languages = languageOrder.map((code) => languageDict[code]);
 
 // Drawers
 export const drawers = [
