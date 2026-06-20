@@ -3,6 +3,18 @@
  *
  * Verifies that multiple canteens are shown, one can be selected,
  * and the selection is persisted.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - please_select_your_canteen: "Please select your canteen" title
+ *   - no_canteens_found: "No canteens found" message (should NOT be visible initially)
+ *   - select: "Select" button for choosing a canteen
+ *   - open_drawer: Opens side navigation menu
+ *   - settings: Enters settings screen
+ *   - group_canteen_usage: Canteen settings group
+ *   - canteen: Canteen selection setting option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

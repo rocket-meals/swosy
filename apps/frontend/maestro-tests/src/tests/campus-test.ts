@@ -2,6 +2,14 @@
  * campus-test.ts – Tests the campus information screen.
  *
  * After login: navigate to campus → verify content loads → check details.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - campus: "Campus" navigation option
+ *   - no_campus_found: "No campus found" message (should NOT be visible when content loads)
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

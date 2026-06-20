@@ -5,6 +5,17 @@
  * with the codebase.  Run `yarn maestro:generate` (from `apps/frontend/app/`)
  * to produce `maestro-tests/generated/web-smoke-test.yaml`, then `yarn maestro`
  * (or `./run-maestro-web-test.sh`) to execute it with the Maestro CLI.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - i_accept_privacy_policy_and_terms_of_service: Privacy policy acceptance button
+ *   - continue_without_account: Anonymous login button
+ *   - attention: "Attention!" dialog about anonymous account limitations
+ *   - confirm: Confirm button on attention dialog
+ *   - please_select_your_canteen: Canteen selection screen message (from selectFirstCanteen)
+ *   - select: Canteen selection button (from selectFirstCanteen)
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

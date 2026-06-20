@@ -3,6 +3,18 @@
  *
  * After login: navigate to settings → verify groups are visible →
  * change color scheme → verify UI change.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - settings: Enters settings screen
+ *   - group_app_settings: "App Settings" section header
+ *   - color_scheme: Color scheme setting option
+ *   - color_scheme_dark: "Dark Mode" option
+ *   - color_scheme_light: "Light Mode" option
+ *   - language: Language setting option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

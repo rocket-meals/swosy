@@ -2,6 +2,14 @@
  * map-test.ts – Tests the map screen.
  *
  * After login: navigate to map → verify it renders.
+ *
+ * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
+ * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Key screen texts (via t() function):
+ *   - open_drawer: Opens side navigation menu
+ *   - map: "Map" navigation option
+ *   - map_variants: Map variants/style selector option
+ *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
