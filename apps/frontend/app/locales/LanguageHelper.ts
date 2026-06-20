@@ -16,13 +16,17 @@ import { languages } from '../constants/SettingData';
 export function getLanguageLabel(languageCode: string): string {
 	const language = languages.find((lang) => lang.value === languageCode);
 	if (!language) {
-		throw new Error(`Language not found for code: ${languageCode}`);
+		const availableCodes = languages.map((l) => l.value).join(', ');
+		throw new Error(
+			`Language not found for code: ${languageCode}. Available codes: ${availableCodes}`,
+		);
 	}
 	return language.label;
 }
 
 /**
  * Export language labels as constants for easy access.
+ * These are initialized at module load time based on the SettingData languages array.
  */
 export const LanguageLabels = {
 	ENGLISH: getLanguageLabel('en'),
