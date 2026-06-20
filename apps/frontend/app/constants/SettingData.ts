@@ -63,14 +63,14 @@ export const languageDict = {
 
 // Language order - preserves UI display order
 export const languageOrder = [
+	LanguageCode.AR,
+	LanguageCode.DE,
 	LanguageCode.EN,
-	LanguageCode.TR,
 	LanguageCode.ES,
 	LanguageCode.FR,
-	LanguageCode.DE,
-	LanguageCode.ZH,
-	LanguageCode.AR,
 	LanguageCode.RU,
+	LanguageCode.TR,
+	LanguageCode.ZH,
 ] as const;
 
 // Legacy export for backward compatibility - returns ordered array
