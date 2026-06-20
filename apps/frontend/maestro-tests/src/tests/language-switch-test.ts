@@ -12,13 +12,14 @@
  *   - group_app_settings: Settings group title in German/English
  *   - language: Language setting option
  * - Language option labels (from SettingData.ts languages array):
- *   - 'English (English)': English language option
- *   - 'German (Deutsch)': German language option
+ *   - LanguageLabels.ENGLISH: English language option
+ *   - LanguageLabels.GERMAN: German language option
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
 import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { LanguageLabels } from '../framework/languageHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -47,7 +48,7 @@ test
 	.takeScreenshot('language-options')
 
 	// Select English
-	.tapOn('English (English)')
+	.tapOn(LanguageLabels.ENGLISH)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-switched-to-en')
 
@@ -58,7 +59,7 @@ test
 	// Switch back to German
 	.tapOn(t(TranslationKeys.language, 'en'))
 	.waitForAnimationToEnd()
-	.tapOn('German (Deutsch)')
+	.tapOn(LanguageLabels.GERMAN)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-back-to-de');
 
