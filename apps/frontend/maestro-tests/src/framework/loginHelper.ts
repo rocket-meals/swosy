@@ -49,6 +49,7 @@ export function performAnonymousLogin(test: MaestroTestCase): MaestroTestCase {
 export function selectFirstCanteen(test: MaestroTestCase): MaestroTestCase {
 	return test
 		.assertVisible(t(TranslationKeys.please_select_your_canteen))
-		.tapOn(t(TranslationKeys.canteen))
+		.scroll()
+		.tapOn(t(TranslationKeys.select))
 		.waitForAnimationToEnd();
 }

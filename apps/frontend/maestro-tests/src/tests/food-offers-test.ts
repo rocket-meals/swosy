@@ -6,7 +6,7 @@
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
-import { t, performAnonymousLogin } from '../framework/loginHelper';
+import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -14,15 +14,11 @@ const test = new MaestroTestCase({
 	outputFileName: 'food-offers-test',
 });
 
-// Login and get past onboarding
+// Login and select a canteen
 performAnonymousLogin(test);
+selectFirstCanteen(test);
 
 test
-	// Select a canteen
-	.assertVisible(t(TranslationKeys.please_select_your_canteen))
-	.scroll()
-	.tapOn(t(TranslationKeys.select))
-	.waitForAnimationToEnd()
 	.takeScreenshot('food-offers-after-canteen-selected')
 
 	// Navigate to food offers via drawer
