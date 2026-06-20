@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ7mDunl4ZKJmrimqT4U","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/constants/Constants.ts",193
+"AZ7mDutK4ZKJmrimqT4V","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",117
 "AZ7c5fbaOeTK70NpnmF6","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",60
 "AZ7csaX1YHFvwFUOeLOy","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",146
 "AZ7csaX1YHFvwFUOeLOz","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",153
@@ -8913,9 +8915,9 @@ Key,Message,Component,Line
 "AZ0Tpk31ufp2jxPAhSxf","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",96
 "AZ0Tpk31ufp2jxPAhSxv","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",681
 "AZ0TplGSufp2jxPAhS0l","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",303
-"AZ0TpleXufp2jxPAhS5g","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",122
+"AZ0TpleXufp2jxPAhS5g","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",123
 "AZ0Tpkvcufp2jxPAhSvM","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",21
-"AZ0TpleXufp2jxPAhS5f","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",121
+"AZ0TpleXufp2jxPAhS5f","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",122
 "AZ0Tpk31ufp2jxPAhSxs","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",678
 "AZ0Tpk31ufp2jxPAhSxt","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",679
 "AZ0Tpk31ufp2jxPAhSxu","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",680
@@ -9192,8 +9194,7 @@ Key,Message,Component,Line
 "AZ0TplJyufp2jxPAhS1h","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/components/BaseBottomSheet/BaseBottomSheet.tsx",66
 "AZ0TplJyufp2jxPAhS1i","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/components/BaseBottomSheet/BaseBottomSheet.tsx",71
 "AZ0Tplefufp2jxPAhS5h","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useAppForegroundUpdateCheckModal.tsx",199
-"AZ0Tplc2ufp2jxPAhS5A","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",114
-"AZ0Tplc2ufp2jxPAhS5B","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",116
+"AZ0Tplc2ufp2jxPAhS5A","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",115
 "AZ0Tpk_Oufp2jxPAhSzY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingBottomSheet/MarkingBottomSheet.tsx",57
 "AZ0TpkyPufp2jxPAhSwI","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-events/index.tsx",79
 "AZ0Tpk3aufp2jxPAhSxZ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",735
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSu_tS4VhJojFFAQB","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",86
 "AZkUSu_tS4VhJojFFAQC","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",122
 "AZkUSu_tS4VhJojFFAQD","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",127
-"AZ0TplPCufp2jxPAhS2G","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodLabelingInfo/index.tsx",8
