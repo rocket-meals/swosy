@@ -12,8 +12,9 @@
  *   - group_app_settings: Settings group title in German/English
  *   - language: Language setting option
  * - Language option labels (from SettingData.ts languages array, via LanguageLabels):
- *   - LanguageLabels.ENGLISH: English language option (also available: TURKISH, SPANISH, FRENCH, CHINESE, ARABIC, RUSSIAN)
+ *   - LanguageLabels.ENGLISH: English language option
  *   - LanguageLabels.GERMAN: German language option
+ *   - Also available: TURKISH, SPANISH, FRENCH, CHINESE, ARABIC, RUSSIAN
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
