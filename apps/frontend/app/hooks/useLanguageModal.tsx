@@ -9,7 +9,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import { languages } from '@/constants/SettingData';
+import { languageDict, languageOrder } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
 
 const styles = StyleSheet.create({
@@ -98,28 +98,29 @@ export const useLanguageModal = () => {
         const { primaryColor } = useAppSelector((state) => state.settings);
 
         const changeLanguage = useCallback(
-                (languageOption: (typeof languages)[number]) => {
-                        setLanguageMode(languageOption.value as any);
+                (languageCode: string) => {
+                        setLanguageMode(languageCode as any);
                         closeScrollViewModal();
                 },
                 [closeScrollViewModal, setLanguageMode]
         );
 
         const LanguageOption = useCallback(
-                ({ languageOption, index }: { languageOption: (typeof languages)[number]; index: number }) => {
-                        const isSelected = language === languageOption.value;
+                ({ languageCode, index }: { languageCode: string; index: number }) => {
+                        const languageOption = languageDict[languageCode as keyof typeof languageDict];
+                        const isSelected = language === languageCode;
                         const groupPosition =
-                                languages.length === 1
+                                languageOrder.length === 1
                                         ? 'single'
                                         : index === 0
-                                                ? 'top'
-                                                : index === languages.length - 1
+                                                        ? 'top'
+                                                        : index === languageOrder.length - 1
                                                         ? 'bottom'
                                                         : 'middle';
 
                         return (
                                 <SettingsList
-                                        key={`${languageOption.value}-${index}`}
+                                        key={`${languageCode}-${index}`}
                                         label={languageOption.label}
                                         leftIcon={
                                                 <View style={styles.flagWrapper}>
@@ -127,7 +128,7 @@ export const useLanguageModal = () => {
                                                 </View>
                                         }
                                         iconBgColor="transparent"
-                                        showSeparator={index !== languages.length - 1}
+                                        showSeparator={index !== languageOrder.length - 1}
                                         groupPosition={groupPosition}
                                         noIconIndent
                                         rightIcon={
@@ -137,7 +138,7 @@ export const useLanguageModal = () => {
                                                         color={isSelected ? primaryColor : theme.screen.icon}
                                                 />
                                         }
-                                        handleFunction={() => changeLanguage(languageOption)}
+                                        handleFunction={() => changeLanguage(languageCode)}
                                 />
                         );
                 },
@@ -150,10 +151,10 @@ export const useLanguageModal = () => {
                                 title: translate(TranslationKeys.language),
                                 children: (
                                         <View style={styles.optionsContainer}>
-                                                {languages.map((languageOption, index) => (
+                                                {languageOrder.map((languageCode, index) => (
                                                         <LanguageOption
-                                                                key={`${languageOption.value}-${index}`}
-                                                                languageOption={languageOption}
+                                                                key={`${languageCode}-${index}`}
+                                                                languageCode={languageCode}
                                                                 index={index}
                                                         />
                                                 ))}

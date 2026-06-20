@@ -7,7 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useLocales } from 'expo-localization';
 import { useDispatch } from 'react-redux';
 import { SET_DRAWER_POSITION } from '@/redux/Types/types';
-import { languages } from '../../constants/SettingData';
+import { languageDict } from '../../constants/SettingData';
 import MyImage from '@/components/MyImage';
 import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -70,7 +70,7 @@ const LoginHeader = () => {
 	}, []);
 
         const selectedLanguage = language;
-        const selectedLanguageOption = languages.find(lang => lang.value === selectedLanguage);
+        const selectedLanguageOption = selectedLanguage ? languageDict[selectedLanguage as keyof typeof languageDict] : undefined;
 	return (
 		<View style={styles.header}>
 			<MyImage

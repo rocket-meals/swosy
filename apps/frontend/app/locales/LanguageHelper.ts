@@ -5,7 +5,7 @@
  * SettingData.ts, making them available to both the app and maestro tests.
  */
 
-import { languages } from '../constants/SettingData';
+import { languageDict } from '../constants/SettingData';
 
 /**
  * Get the language label for a given language code.
@@ -14,9 +14,9 @@ import { languages } from '../constants/SettingData';
  *   getLanguageLabel('de') → 'German (Deutsch)'
  */
 export function getLanguageLabel(languageCode: string): string {
-	const language = languages.find((lang) => lang.value === languageCode);
+	const language = languageDict[languageCode as keyof typeof languageDict];
 	if (!language) {
-		const availableCodes = languages.map((l) => l.value).join(', ');
+		const availableCodes = Object.keys(languageDict).join(', ');
 		throw new Error(
 			`Language not found for code: ${languageCode}. Available codes: ${availableCodes}`,
 		);

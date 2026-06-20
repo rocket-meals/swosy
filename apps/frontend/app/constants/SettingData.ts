@@ -5,49 +5,55 @@ export const themes = [
 	{ id: 'systematic', name: 'color_scheme_system', icon: 'theme-light-dark' },
 ];
 
-// Languages
-export const languages = [
-        {
-                label: 'English (English)',
-                emoji: '🇬🇧',
-                value: 'en',
-        },
-        {
-                label: 'Turkish (Türkçe)',
-                emoji: '🇹🇷',
-                value: 'tr',
-        },
-        {
-                label: 'Spanish (Español)',
-                emoji: '🇪🇸',
-                value: 'es',
-        },
-        {
-                label: 'French (Français)',
-                emoji: '🇫🇷',
-                value: 'fr',
-        },
-        {
-                label: 'German (Deutsch)',
-                emoji: '🇩🇪',
-                value: 'de',
-        },
-        {
-                label: 'Chinese (中文)',
-                emoji: '🇨🇳',
-                value: 'zh',
-        },
-        {
-                label: 'Arabic (العربية)',
-                emoji: '🇸🇦',
-                value: 'ar',
-        },
-        {
-                label: 'Russian (Русский)',
-                emoji: '🇷🇺',
-                value: 'ru',
-        },
-];
+// Languages - Dictionary for O(1) lookups by language code
+export const languageDict = {
+	en: {
+		label: 'English (English)',
+		emoji: '🇬🇧',
+		value: 'en',
+	},
+	tr: {
+		label: 'Turkish (Türkçe)',
+		emoji: '🇹🇷',
+		value: 'tr',
+	},
+	es: {
+		label: 'Spanish (Español)',
+		emoji: '🇪🇸',
+		value: 'es',
+	},
+	fr: {
+		label: 'French (Français)',
+		emoji: '🇫🇷',
+		value: 'fr',
+	},
+	de: {
+		label: 'German (Deutsch)',
+		emoji: '🇩🇪',
+		value: 'de',
+	},
+	zh: {
+		label: 'Chinese (中文)',
+		emoji: '🇨🇳',
+		value: 'zh',
+	},
+	ar: {
+		label: 'Arabic (العربية)',
+		emoji: '🇸🇦',
+		value: 'ar',
+	},
+	ru: {
+		label: 'Russian (Русский)',
+		emoji: '🇷🇺',
+		value: 'ru',
+	},
+} as const;
+
+// Language order - preserves UI display order
+export const languageOrder = ['en', 'tr', 'es', 'fr', 'de', 'zh', 'ar', 'ru'] as const;
+
+// Legacy export for backward compatibility - returns ordered array
+export const languages = languageOrder.map((code) => languageDict[code]);
 
 // Drawers
 export const drawers = [
