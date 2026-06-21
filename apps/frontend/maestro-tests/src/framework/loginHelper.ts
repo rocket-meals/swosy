@@ -45,11 +45,13 @@ export function performAnonymousLogin(test: MaestroTestCase): MaestroTestCase {
 /**
  * After login, select the first available canteen to proceed past the
  * canteen selection screen into the main app.
+ * Uses accessibility label matching since the canteen cards use
+ * accessibilityLabel={translate(select) + ' ' + canteenAlias}.
  */
 export function selectFirstCanteen(test: MaestroTestCase): MaestroTestCase {
 	return test
 		.assertVisible(t(TranslationKeys.please_select_your_canteen))
 		.scroll()
-		.tapOn(t(TranslationKeys.select))
+		.tapOnId(`${t(TranslationKeys.select)}.*`)
 		.waitForAnimationToEnd();
 }

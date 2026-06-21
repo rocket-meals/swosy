@@ -41,7 +41,7 @@ test
 	.takeScreenshot('canteen-selection-scrolled')
 
 	// Select a canteen
-	.tapOn(t(TranslationKeys.select))
+	.tapOnId(`${t(TranslationKeys.select)}.*`)
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selected-main-app')
 
