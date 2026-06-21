@@ -35,7 +35,7 @@ test
 	// Navigate to Settings
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.settings))
+	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('dark-mode-before-light')
 
@@ -52,14 +52,14 @@ test
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.takeScreenshot('dark-mode-drawer-dark')
-	.tapOn(t(TranslationKeys.food_offers))
+	.tapOnId(ComponentIds.DRAWER_ITEM_FOOD_OFFERS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('dark-mode-food-offers-dark')
 
 	// Switch back to light for comparison
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.settings))
+	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 	.tapOn(t(TranslationKeys.color_scheme))
 	.waitForAnimationToEnd()

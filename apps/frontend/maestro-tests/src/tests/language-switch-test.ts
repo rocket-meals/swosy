@@ -38,7 +38,7 @@ test
 	// Navigate to Settings
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.settings))
+	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-settings-de')
 

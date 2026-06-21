@@ -32,7 +32,7 @@ test
 	// Navigate to Map
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.map))
+	.tapOnId(ComponentIds.DRAWER_ITEM_MAP)
 	.waitForAnimationToEnd()
 	.takeScreenshot('map-screen-loaded')
 

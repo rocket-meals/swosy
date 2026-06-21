@@ -50,7 +50,7 @@ test
 	// Navigate to settings to verify selected canteen is remembered
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.settings))
+	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 
 	// Look for canteen-related settings

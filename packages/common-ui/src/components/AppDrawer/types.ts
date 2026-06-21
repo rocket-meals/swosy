@@ -7,6 +7,7 @@ export interface DrawerItem {
 	onPress: () => void;
 	hasUnread?: boolean;
 	activeColor?: string;
+	testID?: string;
 }
 
 export interface AppDrawerProps {

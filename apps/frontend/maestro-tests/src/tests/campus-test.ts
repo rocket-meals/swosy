@@ -32,7 +32,7 @@ test
 	// Navigate to Campus
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.campus))
+	.tapOnId(ComponentIds.DRAWER_ITEM_CAMPUS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('campus-screen-loaded')
 
