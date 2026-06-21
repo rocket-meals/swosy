@@ -1,14 +1,16 @@
 Key,Message,Component,Line
-"AZ7nwI548gEfmPglRtWo","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",178
-"AZ7nwI548gEfmPglRtWp","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",179
+"AZ7pC0Fbbz3NXuDGl2jr","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",200
+"AZ7pC0Fbbz3NXuDGl2js","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",207
+"AZ7nwI548gEfmPglRtWo","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",195
+"AZ7nwI548gEfmPglRtWp","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",196
 "AZ7mDunl4ZKJmrimqT4U","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/constants/Constants.ts",193
 "AZ7mDutK4ZKJmrimqT4V","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguageModal.tsx",117
-"AZ7c5fbaOeTK70NpnmF6","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",61
-"AZ7csaX1YHFvwFUOeLOy","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",156
-"AZ7csaX1YHFvwFUOeLOz","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",163
-"AZ7csaX1YHFvwFUOeLO0","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",164
-"AZ7csaX1YHFvwFUOeLO1","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",165
-"AZ7csaX1YHFvwFUOeLO2","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",198
+"AZ7c5fbaOeTK70NpnmF6","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",63
+"AZ7csaX1YHFvwFUOeLOy","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",173
+"AZ7csaX1YHFvwFUOeLOz","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",180
+"AZ7csaX1YHFvwFUOeLO0","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",181
+"AZ7csaX1YHFvwFUOeLO1","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",182
+"AZ7csaX1YHFvwFUOeLO2","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",223
 "AZ7csaZuYHFvwFUOeLO3","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",11
 "AZ7csaZuYHFvwFUOeLO4","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",12
 "AZ7csaZ9YHFvwFUOeLO6","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",35
@@ -9997,5 +9999,3 @@ Key,Message,Component,Line
 "AZotV56syrDQpCspziJz","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",26
 "AZlyj_Bu0YdgFOBafBKn","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",236
 "AZkUSvItS4VhJojFFAT3","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/ExpoUpdateLoader/ExpoUpdateLoader.tsx",43
-"AZ0TplBCufp2jxPAhSzj","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",8
-"AZkUSu_tS4VhJojFFAQB","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",86
