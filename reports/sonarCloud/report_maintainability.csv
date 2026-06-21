@@ -8814,7 +8814,7 @@ Key,Message,Component,Line
 "AZ0Y6QT_yJsjaJPaNj_Q","This assertion is unnecessary since the receiver accepts the original type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.tsx",49
 "AZ0Y6QT_yJsjaJPaNj_R","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.tsx",52
 "AZ0Y6QUMyJsjaJPaNj_U","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",56
-"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",84
+"AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",85
 "AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",134
 "AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",154
 "AZ0YwZFETb56BCVJHZIL","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",179
@@ -9218,7 +9218,7 @@ Key,Message,Component,Line
 "AZ0Tpk_Bufp2jxPAhSzW","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/MyImage/index.tsx",46
 "AZ0Tpkypufp2jxPAhSwQ","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/news/index.tsx",15
 "AZ0Tpk3Fufp2jxPAhSxU","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/notification/index.tsx",23
-"AZ0Tpk_8ufp2jxPAhSzc","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",23
+"AZ0Tpk_8ufp2jxPAhSzc","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",24
 "AZ0Tpk2yufp2jxPAhSxH","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",33
 "AZ0TplYdufp2jxPAhS4z","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/collectibleEventsReducer.ts",37
 "AZ0Tpk4yufp2jxPAhSyS","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",10
@@ -9953,7 +9953,7 @@ Key,Message,Component,Line
 "AZ0TplF9ufp2jxPAhS0e","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",183
 "AZ0TplF9ufp2jxPAhS0f","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",246
 "AZ0Tpk_8ufp2jxPAhSza","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",16
-"AZ0Tpk_8ufp2jxPAhSze","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",113
+"AZ0Tpk_8ufp2jxPAhSze","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",115
 "AZ0TplNWufp2jxPAhS16","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/ImageUpload/ImageUpload.tsx",108
 "AZkUSva0S4VhJojFFCTB","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodFeedbacks/FoodFeedbacks.ts",91
 "AZ0TplVJufp2jxPAhS4Z","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodFeedbacks/FoodFeedbacks.ts",96
@@ -9997,5 +9997,5 @@ Key,Message,Component,Line
 "AZkUSvJKS4VhJojFFAT7","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/components/AutoImageScroller/index.tsx",32
 "AZkUSvVsS4VhJojFFAiU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/helper/CardDimensionHelper.ts",31
 "AZotV56syrDQpCspziJz","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",26
-"AZlyj_Bu0YdgFOBafBKn","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",236
+"AZlyj_Bu0YdgFOBafBKn","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",247
 "AZkUSvItS4VhJojFFAT3","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/ExpoUpdateLoader/ExpoUpdateLoader.tsx",43
