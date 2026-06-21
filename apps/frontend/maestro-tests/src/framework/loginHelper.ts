@@ -41,7 +41,6 @@ export function performAnonymousLogin(test: MaestroTestCase): MaestroTestCase {
 export function selectFirstCanteen(test: MaestroTestCase): MaestroTestCase {
 	return test
 		.assertVisibleId(ComponentIds.CANTEEN_SELECTION_TITLE)
-		.scroll()
 		.tapOnId(ComponentIds.CANTEEN_SELECT_BUTTON)
 		.waitForAnimationToEnd();
 }

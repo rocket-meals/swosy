@@ -30,7 +30,7 @@ const Home = () => {
 	const buildingsOrganizationsHelper = new BuildingsOrganizationsHelper();
 	const organizationsHelper = new OrganizationsHelper();
 	const { isManagement, profile } = useAppSelector(state => state.authReducer);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const { canteens } = useAppSelector(state => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
