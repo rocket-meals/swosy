@@ -64,7 +64,6 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 					value={query}
 					placeholder={translate(TranslationKeys.search_apartment_here)}
 					testID={ComponentIds.HOUSING_SEARCH}
-					accessibilityLabel={ComponentIds.HOUSING_SEARCH}
 				/>
 			</View>
 		</View>

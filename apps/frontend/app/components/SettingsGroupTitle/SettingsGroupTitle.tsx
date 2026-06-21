@@ -10,7 +10,7 @@ type Props = {
 
 const SettingsGroupTitle: React.FC<Props> = ({ children, fontSize, testID }) => {
 	const { theme } = useTheme();
-	return <Text testID={testID} accessibilityLabel={testID} style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }) }]}>{children}</Text>;
+	return <Text testID={testID} style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }) }]}>{children}</Text>;
 };
 
 export default SettingsGroupTitle;

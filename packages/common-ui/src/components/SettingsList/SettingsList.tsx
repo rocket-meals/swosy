@@ -89,7 +89,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	}
 
 	const inner = (
-		<Container onPress={pressHandler} style={containerStyles} testID={testID} accessibilityLabel={testID}>
+		<Container onPress={pressHandler} style={containerStyles} testID={testID}>
 			{showIconWrapper ? (
 				leftIconComponent ? (
 					leftIconComponent

@@ -141,7 +141,7 @@ const Home = () => {
 					backgroundColor: theme.screen.background,
 				}}
 			>
-				<Text style={{ color: theme.screen.text }} testID={ComponentIds.CANTEEN_SELECTION_EMPTY} accessibilityLabel={ComponentIds.CANTEEN_SELECTION_EMPTY}>{translate(TranslationKeys.no_canteens_found)}</Text>
+					<Text style={{ color: theme.screen.text }} testID={ComponentIds.CANTEEN_SELECTION_EMPTY}>{translate(TranslationKeys.no_canteens_found)}</Text>
 				<TouchableOpacity
 					style={{
 						...styles.continueButton,
@@ -163,7 +163,6 @@ const Home = () => {
 				backgroundColor: theme.screen.background,
 			}}
 			testID={ComponentIds.CANTEEN_SELECTION_TITLE}
-			accessibilityLabel={ComponentIds.CANTEEN_SELECTION_TITLE}
 		>
 			<ScrollView>
 				{loading ? (
