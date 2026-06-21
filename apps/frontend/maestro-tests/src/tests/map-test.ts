@@ -2,7 +2,9 @@
  * map-test.ts – Tests the map screen.
  *
  * After login: navigate to map → verify it renders.
- * Uses ComponentIds enum for stable element targeting via testIDs.
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
+ * Maestro web tests can locate elements by their id attribute.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

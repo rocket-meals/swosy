@@ -2,7 +2,9 @@
  * campus-test.ts – Tests the campus information screen.
  *
  * After login: navigate to campus → verify content loads → check details.
- * Uses ComponentIds enum for stable element targeting via testIDs.
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
+ * Maestro web tests can locate elements by their id attribute.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
