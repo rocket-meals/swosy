@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionSheet, providers }) => {
 	const [isChecked, setChecked] = useState(false);
@@ -91,6 +92,8 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						setChecked(!isChecked);
 					}}
 					style={styles.section}
+					testID={ComponentIds.LOGIN_ACCEPT_PRIVACY}
+					accessibilityLabel={ComponentIds.LOGIN_ACCEPT_PRIVACY}
 				>
 					<Checkbox style={styles.checkbox} value={isChecked} onValueChange={setChecked} color={isChecked ? '#000000' : undefined} />
 					<Text
@@ -133,6 +136,8 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 					}}
 					disabled={!isChecked}
 					onPress={openAttentionSheet}
+					testID={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
+					accessibilityLabel={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
 				>
 					<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
 						<MaterialCommunityIcons name="incognito" size={28} color={contrastColor} />

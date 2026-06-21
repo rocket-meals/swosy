@@ -13,6 +13,7 @@ export type SettingsListSelectOptionSingleProps = Pick<
 	selectionColor?: string;
 	isSelected: boolean;
 	groupPosition?: SettingsListProps['groupPosition'];
+	testID?: string;
 };
 
 const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSingleProps> = ({
@@ -25,6 +26,7 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 	groupPosition,
 	showSeparator = true,
 	noIconIndent = false,
+	testID,
 }) => {
 	const { theme } = useTheme();
 	const resolvedSelectionColor = selectionColor ?? iconBgColor;
@@ -37,6 +39,7 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			noIconIndent={noIconIndent}
+			testID={testID}
 			rightIcon={
 				<MaterialCommunityIcons
 					name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}

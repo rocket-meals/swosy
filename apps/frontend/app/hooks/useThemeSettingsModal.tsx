@@ -4,6 +4,7 @@ import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 type ThemeSettingsModalOptions = {
         selectedTheme: string;

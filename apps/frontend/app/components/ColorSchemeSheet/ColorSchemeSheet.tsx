@@ -11,6 +11,13 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import DebugView from '@/components/DebugView';
+import { ComponentIds } from '@/constants/ComponentIds';
+
+const themeTestIds: Record<string, string> = {
+	light: ComponentIds.COLOR_SCHEME_LIGHT,
+	dark: ComponentIds.COLOR_SCHEME_DARK,
+	systematic: ComponentIds.COLOR_SCHEME_SYSTEM,
+};
 
 const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selectedTheme, onSelect }) => {
 	const { translate } = useLanguage();
@@ -26,6 +33,7 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 						id: themeOption.id,
 						label: translate(themeOption.name),
 						icon: <MaterialCommunityIcons name={themeOption.icon as any} size={24} />,
+						testID: themeTestIds[themeOption.id],
 					}))}
 					selectedOption={activeSelectedTheme}
 					onSelect={(option) => {

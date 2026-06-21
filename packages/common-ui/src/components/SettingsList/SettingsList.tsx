@@ -33,6 +33,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	titleNumberOfLines = 0,
 	isAccountRequired = false,
 	onAccountRequired,
+	testID,
 }) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -88,7 +89,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	}
 
 	const inner = (
-		<Container onPress={pressHandler} style={containerStyles}>
+		<Container onPress={pressHandler} style={containerStyles} testID={testID} accessibilityLabel={testID}>
 			{showIconWrapper ? (
 				leftIconComponent ? (
 					leftIconComponent

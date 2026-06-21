@@ -25,6 +25,7 @@ type MaestroStep =
 	| { type: 'assertVisible'; label: string }
 	| { type: 'assertVisibleId'; id: string }
 	| { type: 'assertNotVisible'; label: string }
+	| { type: 'assertNotVisibleId'; id: string }
 	| { type: 'inputText'; text: string }
 	| { type: 'pressKey'; key: string }
 	| { type: 'scroll' }
@@ -125,6 +126,12 @@ export class MaestroTestCase {
 		return this;
 	}
 
+	/** Assert that no element with accessibility label / id matching `id` is visible. */
+	assertNotVisibleId(id: string): this {
+		this.steps.push({ type: 'assertNotVisibleId', id });
+		return this;
+	}
+
 	/** Type `text` into the currently focused input field. */
 	inputText(text: string): this {
 		this.steps.push({ type: 'inputText', text });
@@ -208,6 +215,10 @@ export class MaestroTestCase {
 					break;
 				case 'assertNotVisible':
 					lines.push(`- assertNotVisible: ${yamlString(step.label)}`);
+					break;
+				case 'assertNotVisibleId':
+					lines.push('- assertNotVisible:');
+					lines.push(`    id: ${yamlString(step.id)}`);
 					break;
 				case 'inputText':
 					lines.push(`- inputText: ${yamlString(step.text)}`);

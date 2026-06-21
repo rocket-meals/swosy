@@ -11,6 +11,10 @@ export type SettingsListItemBaseProps = {
 
 type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	/**
+	 * Test identifier for automated testing (e.g. Maestro).
+	 */
+	testID?: string;
+	/**
 	 * Custom component rendered in place of the default left icon wrapper.
 	 */
 	leftIconComponent?: React.ReactNode;

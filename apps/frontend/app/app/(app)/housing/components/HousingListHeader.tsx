@@ -6,6 +6,7 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 import styles from '../styles';
 
 interface HousingListHeaderProps {
@@ -62,6 +63,8 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 					onChangeText={setQuery}
 					value={query}
 					placeholder={translate(TranslationKeys.search_apartment_here)}
+					testID={ComponentIds.HOUSING_SEARCH}
+					accessibilityLabel={ComponentIds.HOUSING_SEARCH}
 				/>
 			</View>
 		</View>
