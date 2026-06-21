@@ -3,8 +3,8 @@
  *
  * After completing the anonymous login and selecting a canteen, verifies that
  * the user can open the drawer and navigate to different sections.
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
- * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
  * Maestro web tests can locate elements by their id attribute.
  */
 

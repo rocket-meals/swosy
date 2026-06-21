@@ -2,8 +2,8 @@
  * housing-test.ts – Tests the housing/apartments screen.
  *
  * After login: navigate to housing → verify list loads → check details.
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
- * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
  * Maestro web tests can locate elements by their id attribute.
  */
 

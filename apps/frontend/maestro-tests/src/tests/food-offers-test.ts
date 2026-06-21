@@ -2,8 +2,8 @@
  * food-offers-test.ts – Tests the food offers flow.
  *
  * After login: select a canteen → verify food offers load → open a detail view.
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
- * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
  * Maestro web tests can locate elements by their id attribute.
  */
 

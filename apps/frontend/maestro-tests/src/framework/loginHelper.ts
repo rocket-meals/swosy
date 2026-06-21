@@ -6,9 +6,9 @@
  * each test file stays concise.
  *
  * CONVENTION: Always use ComponentIds (from app/constants/ComponentIds.ts) for
- * element targeting via nativeID. This ensures stable, refactor-safe selectors
+ * element targeting via testID. This ensures stable, refactor-safe selectors
  * that are decoupled from visible text or component hierarchy. Components must
- * set `nativeID={ComponentIds.XXX}` so Maestro web tests can locate them by id.
+ * set `testID={ComponentIds.XXX}` so Maestro web tests can locate them by id.
  */
 
 import { MaestroTestCase } from './MaestroTestCase';
@@ -42,6 +42,6 @@ export function selectFirstCanteen(test: MaestroTestCase): MaestroTestCase {
 	return test
 		.assertVisibleId(ComponentIds.CANTEEN_SELECTION_TITLE)
 		.scroll()
-		.tapOnId(`${ComponentIds.CANTEEN_SELECT_BUTTON}.*`)
+		.tapOnId(ComponentIds.CANTEEN_SELECT_BUTTON)
 		.waitForAnimationToEnd();
 }

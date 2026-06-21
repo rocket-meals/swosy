@@ -3,8 +3,8 @@
  *
  * Verifies that multiple canteens are shown, one can be selected,
  * and the selection is persisted.
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
- * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
  * Maestro web tests can locate elements by their id attribute.
  */
 
@@ -32,7 +32,7 @@ test
 	.takeScreenshot('canteen-selection-scrolled')
 
 	// Select a canteen
-	.tapOnId(`${ComponentIds.CANTEEN_SELECT_BUTTON}.*`)
+	.tapOnId(ComponentIds.CANTEEN_SELECT_BUTTON)
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selected-main-app')
 

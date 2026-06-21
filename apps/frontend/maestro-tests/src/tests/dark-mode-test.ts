@@ -3,8 +3,8 @@
  *
  * After login: navigate to settings → activate dark mode → take screenshots
  * for visual comparison.
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
- * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
+ * for element targeting. Components must set testID={ComponentIds.XXX} so that
  * Maestro web tests can locate elements by their id attribute.
  */
 
