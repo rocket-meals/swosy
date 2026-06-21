@@ -5,8 +5,9 @@
  *
  * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
  * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
  * - Key screen texts (via t() function):
- *   - open_drawer: Opens side navigation menu
+ *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
  *   - settings: Enters settings screen
  *   - feedback_and_support: "Feedback & Support" section
  *   - feedback_support_faq: "FAQ" option within Feedback & Support
@@ -15,6 +16,7 @@
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
+import { ComponentIds } from '../../../app/constants/ComponentIds';
 import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
@@ -29,7 +31,7 @@ selectFirstCanteen(test);
 
 test
 	// Navigate to Settings → Feedback & Support → FAQ
-	.tapOn(t(TranslationKeys.open_drawer))
+	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.tapOn(t(TranslationKeys.settings))
 	.waitForAnimationToEnd()
