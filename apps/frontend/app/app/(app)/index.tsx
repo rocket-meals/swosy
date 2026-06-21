@@ -141,7 +141,7 @@ const Home = () => {
 					backgroundColor: theme.screen.background,
 				}}
 			>
-					<Text style={{ color: theme.screen.text }} testID={ComponentIds.CANTEEN_SELECTION_EMPTY}>{translate(TranslationKeys.no_canteens_found)}</Text>
+				<Text style={{ color: theme.screen.text }} testID={ComponentIds.CANTEEN_SELECTION_EMPTY}>{translate(TranslationKeys.no_canteens_found)}</Text>
 				<TouchableOpacity
 					style={{
 						...styles.continueButton,
