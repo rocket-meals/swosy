@@ -69,6 +69,7 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 			{canteens.map((canteen, index: number) => {
 				const isSelected = selectedCanteen && String(selectedCanteen.id) === String(canteen.id);
 				const imageUrl = canteen?.image_url || canteensData[index]?.image;
+				const canteenButtonId = `${ComponentIds.CANTEEN_SELECT_BUTTON}-${canteen.id}`;
 				return (
 					<View
 						key={canteen.id + canteen.alias}
@@ -84,8 +85,8 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 								onSelectCanteen(canteen);
 							}}
 							accessibilityLabel={translate(TranslationKeys.select) + ' ' + String(canteen.alias)}
-							nativeID={`${ComponentIds.CANTEEN_SELECT_BUTTON}-${canteen.id}`}
-							testID={`${ComponentIds.CANTEEN_SELECT_BUTTON}-${canteen.id}`}
+							nativeID={canteenButtonId}
+							testID={canteenButtonId}
 							imageSource={{ uri: imageUrl || defaultImage || '' }}
 							containerStyle={{
 								width: '100%',
