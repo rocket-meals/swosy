@@ -6,8 +6,8 @@
  *
  * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
  * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
  * - Key screen texts (via t() function):
- *   - open_drawer: Opens side navigation menu
  *   - food_offers: "Food Offers" navigation option
  *   - settings: "Settings" navigation option
  *   - group_app_settings: "App Settings" section header
@@ -17,6 +17,7 @@
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
+import { ComponentIds } from '../../../app/constants/ComponentIds';
 import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
@@ -33,7 +34,7 @@ test
 	.takeScreenshot('navigation-main-screen')
 
 	// Open the drawer
-	.tapOn(t(TranslationKeys.open_drawer))
+	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-drawer-open')
 
@@ -48,14 +49,14 @@ test
 	.assertVisible(t(TranslationKeys.group_app_settings))
 
 	// Open drawer again and navigate to News
-	.tapOn(t(TranslationKeys.open_drawer))
+	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.tapOn(t(TranslationKeys.news))
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-news-screen')
 
 	// Open drawer again and navigate to Food Offers
-	.tapOn(t(TranslationKeys.open_drawer))
+	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.tapOn(t(TranslationKeys.food_offers))
 	.waitForAnimationToEnd()

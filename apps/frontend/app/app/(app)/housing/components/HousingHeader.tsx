@@ -7,6 +7,7 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 import { isWeb } from '@/constants/Constants';
 import { RootDrawerParamList } from '../types';
 import styles from '../styles';
@@ -59,6 +60,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 								{...triggerProps}
 								onPress={() => navigation.toggleDrawer()}
 								style={{ padding: 10 }}
+								nativeID={ComponentIds.OPEN_DRAWER}
 							>
 								<Ionicons name="menu" size={24} color={theme.header.text} />
 							</IconButton>

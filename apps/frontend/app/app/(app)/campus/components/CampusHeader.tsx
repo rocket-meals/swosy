@@ -4,6 +4,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 
@@ -33,7 +34,7 @@ const CampusHeader: React.FC<CampusHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={onToggleDrawer} style={{ padding: 10 }}>
+                            <IconButton {...triggerProps} onPress={onToggleDrawer} style={{ padding: 10 }} nativeID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                             </IconButton>
                         )}

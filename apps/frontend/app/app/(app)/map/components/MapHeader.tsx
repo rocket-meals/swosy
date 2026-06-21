@@ -4,6 +4,7 @@ import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useNavigation } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -47,6 +48,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 							{...triggerProps}
 							onPress={() => drawerNavigation.toggleDrawer()}
 							style={styles.iconButton}
+							nativeID={ComponentIds.OPEN_DRAWER}
 						>
 							<Ionicons name="menu" size={24} color={theme.header.text} />
 						</IconButton>

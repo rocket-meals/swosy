@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 import { excerpt } from '@/constants/HelperFunctions';
 import { isWeb } from '@/constants/Constants';
 import styles from '../styles';
@@ -68,7 +69,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle}>
+                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} nativeID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                                 {hasUnreadChats ? (
                                     <View
