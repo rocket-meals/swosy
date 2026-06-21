@@ -17,6 +17,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const Home = () => {
 	const dispatch = useDispatch();
@@ -140,7 +141,7 @@ const Home = () => {
 					backgroundColor: theme.screen.background,
 				}}
 			>
-				<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_canteens_found)}</Text>
+				<Text style={{ color: theme.screen.text }} testID={ComponentIds.CANTEEN_SELECTION_EMPTY}>{translate(TranslationKeys.no_canteens_found)}</Text>
 				<TouchableOpacity
 					style={{
 						...styles.continueButton,
@@ -161,6 +162,7 @@ const Home = () => {
 				...styles.mainContainer,
 				backgroundColor: theme.screen.background,
 			}}
+			testID={ComponentIds.CANTEEN_SELECTION_TITLE}
 		>
 			<ScrollView>
 				{loading ? (

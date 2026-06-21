@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 interface CampusEmptyStateProps {
     loading: boolean;
@@ -19,7 +20,7 @@ const CampusEmptyState: React.FC<CampusEmptyStateProps> = ({ loading, theme, tra
 
     return (
         <View style={emptyStyles.container}>
-            <Text style={{ fontSize: 16, fontFamily: 'Poppins_400Regular', color: theme.screen.text }}>
+            <Text style={{ fontSize: 16, fontFamily: 'Poppins_400Regular', color: theme.screen.text }} testID={ComponentIds.CAMPUS_EMPTY}>
                 {translate(TranslationKeys.no_campus_found)}
             </Text>
         </View>

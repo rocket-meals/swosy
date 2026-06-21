@@ -29,6 +29,7 @@ import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -257,7 +258,7 @@ const Index = () => {
 	), []);
 
 	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
+		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }} testID={ComponentIds.EATING_HABITS_MARKINGS}>
 			<FlatList
 				data={markingIds}
 				renderItem={renderItem}

@@ -1,4 +1,5 @@
 export enum ComponentIds {
+	// Drawer navigation
 	OPEN_DRAWER = 'open-drawer',
 	DRAWER_ITEM_FOOD_OFFERS = 'drawer-item-foodoffers',
 	DRAWER_ITEM_CAMPUS = 'drawer-item-campus',
@@ -13,4 +14,55 @@ export enum ComponentIds {
 	DRAWER_ITEM_MANAGEMENT = 'drawer-item-management',
 	DRAWER_ITEM_EXPERIMENTAL = 'drawer-item-experimental',
 	DRAWER_ITEM_CHATS = 'drawer-item-chats',
+
+	// Login / Onboarding
+	LOGIN_ACCEPT_PRIVACY = 'login-accept-privacy',
+	LOGIN_CONTINUE_WITHOUT_ACCOUNT = 'login-continue-without-account',
+	LOGIN_ATTENTION_TITLE = 'login-attention-title',
+	LOGIN_ATTENTION_CONFIRM = 'login-attention-confirm',
+
+	// Canteen selection
+	CANTEEN_SELECTION_TITLE = 'canteen-selection-title',
+	CANTEEN_SELECTION_EMPTY = 'canteen-selection-empty',
+	CANTEEN_SELECT_BUTTON = 'canteen-select-button',
+
+	// Settings groups
+	SETTINGS_GROUP_APP_SETTINGS = 'settings-group-app-settings',
+	SETTINGS_GROUP_CANTEEN_USAGE = 'settings-group-canteen-usage',
+
+	// Settings items
+	SETTINGS_COLOR_SCHEME = 'settings-color-scheme',
+	SETTINGS_LANGUAGE = 'settings-language',
+	SETTINGS_EATING_HABITS = 'settings-eating-habits',
+	SETTINGS_CANTEEN = 'settings-canteen',
+	SETTINGS_FEEDBACK_SUPPORT_FAQ = 'settings-feedback-support-faq',
+	SETTINGS_MAP_VARIANTS = 'settings-map-variants',
+
+	// Color scheme options
+	COLOR_SCHEME_DARK = 'color-scheme-dark',
+	COLOR_SCHEME_LIGHT = 'color-scheme-light',
+	COLOR_SCHEME_SYSTEM = 'color-scheme-system',
+
+	// Language options
+	LANGUAGE_ENGLISH = 'language-en',
+	LANGUAGE_GERMAN = 'language-de',
+	LANGUAGE_TURKISH = 'language-tr',
+	LANGUAGE_SPANISH = 'language-es',
+	LANGUAGE_FRENCH = 'language-fr',
+	LANGUAGE_CHINESE = 'language-zh',
+	LANGUAGE_ARABIC = 'language-ar',
+	LANGUAGE_RUSSIAN = 'language-ru',
+
+	// Eating habits
+	EATING_HABITS_MARKINGS = 'eating-habits-markings',
+	EATING_HABITS_ALLERGENE = 'eating-habits-allergene',
+
+	// Housing
+	HOUSING_SEARCH = 'housing-search',
+
+	// Campus
+	CAMPUS_EMPTY = 'campus-empty',
+
+	// Feedback
+	FEEDBACK_AND_SUPPORT_TITLE = 'feedback-and-support-title',
 }

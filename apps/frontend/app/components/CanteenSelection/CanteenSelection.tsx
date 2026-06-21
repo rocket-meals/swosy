@@ -11,6 +11,7 @@ import { useAppSelector } from '@/redux/hooks';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 interface CanteenSelectionProps {
 	onSelectCanteen: (canteen: DatabaseTypes.Canteens) => void;
@@ -83,6 +84,7 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 								onSelectCanteen(canteen);
 							}}
 							accessibilityLabel={translate(TranslationKeys.select) + ' ' + String(canteen.alias)}
+							testID={ComponentIds.CANTEEN_SELECT_BUTTON}
 							imageSource={{ uri: imageUrl || defaultImage || '' }}
 							containerStyle={{
 								width: '100%',

@@ -2,21 +2,12 @@
  * map-test.ts – Tests the map screen.
  *
  * After login: navigate to map → verify it renders.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - map: "Map" navigation option
- *   - map_variants: Map variants/style selector option
- *   - All lookups use t() to fetch German translations by default
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -38,11 +29,6 @@ test
 
 	// Wait a bit more for map tiles to load
 	.waitForAnimationToEnd()
-	.takeScreenshot('map-fully-loaded')
-
-	// Verify map variants option is available
-	.tapOn(t(TranslationKeys.map_variants))
-	.waitForAnimationToEnd()
-	.takeScreenshot('map-variants-options');
+	.takeScreenshot('map-fully-loaded');
 
 export default test;

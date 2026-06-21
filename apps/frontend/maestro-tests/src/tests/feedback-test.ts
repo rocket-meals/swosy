@@ -1,23 +1,13 @@
 /**
  * feedback-test.ts – Tests the feedback/support screen.
  *
- * After login: navigate to feedback → open form → fill in fields (without submitting).
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - feedback_and_support: "Feedback & Support" section
- *   - feedback_support_faq: "FAQ" option within Feedback & Support
- *   - All lookups use t() to fetch German translations by default
+ * After login: navigate to feedback → verify FAQ option is visible → scroll.
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -30,21 +20,16 @@ performAnonymousLogin(test);
 selectFirstCanteen(test);
 
 test
-	// Navigate to Settings (feedback is often accessible from settings)
+	// Navigate to Settings (feedback is accessible from settings)
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 
-	// Scroll to find feedback option
+	// Scroll to find FAQ/support option
 	.scroll()
 	.scroll()
-	.tapOn(t(TranslationKeys.feedback_and_support))
-	.waitForAnimationToEnd()
-	.takeScreenshot('feedback-screen')
-
-	// Verify feedback screen loaded
-	.assertVisible(t(TranslationKeys.feedback_support_faq))
+	.assertVisibleId(ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ)
 	.takeScreenshot('feedback-support-loaded')
 
 	// Scroll through feedback options

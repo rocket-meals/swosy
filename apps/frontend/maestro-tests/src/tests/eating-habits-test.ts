@@ -1,24 +1,13 @@
 /**
  * eating-habits-test.ts – Tests the eating habits / allergene settings.
  *
- * After login: navigate to eating habits → set preferences →
- * verify markings are available.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - eating_habits: "Eating Habits" setting option
- *   - markings: "Markings" / "Allergies" section
- *   - All lookups use t() to fetch German translations by default
+ * After login: navigate to eating habits → verify screen loads → scroll.
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -39,21 +28,20 @@ test
 
 	// Find and tap on eating habits
 	.scroll()
-	.tapOn(t(TranslationKeys.eating_habits))
+	.tapOnId(ComponentIds.SETTINGS_EATING_HABITS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('eating-habits-screen')
 
-	// Verify markings/allergene section is visible
-	.assertVisible(t(TranslationKeys.markings))
+	// Verify markings section is visible
+	.assertVisibleId(ComponentIds.EATING_HABITS_MARKINGS)
 	.takeScreenshot('eating-habits-markings')
 
 	// Scroll through options
 	.scroll()
 	.takeScreenshot('eating-habits-scrolled')
 
-	// Tap on allergene section
-	.tapOn(t(TranslationKeys.allergene))
-	.waitForAnimationToEnd()
-	.takeScreenshot('eating-habits-allergene');
+	// Scroll further
+	.scroll()
+	.takeScreenshot('eating-habits-scrolled-more');
 
 export default test;

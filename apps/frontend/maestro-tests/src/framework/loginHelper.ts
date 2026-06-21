@@ -7,20 +7,7 @@
  */
 
 import { MaestroTestCase } from './MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
-import translations from '../../../app/locales/translations.json';
-
-/** Return the translation for the given key (defaults to German). */
-export function t(key: TranslationKeys, lang: string = 'de'): string {
-	const value = (translations[key as keyof typeof translations] as Record<string, string>)?.[lang];
-	if (!value) {
-		console.warn(
-			`Warning: No translation found for key "${key}" in language "${lang}". ` +
-				`The raw key will be used, which will likely cause test failures.`,
-		);
-	}
-	return value ?? String(key);
-}
+import { ComponentIds } from '../../../app/constants/ComponentIds';
 
 /**
  * Perform anonymous login: accept privacy policy, tap "Continue without account",
@@ -31,13 +18,13 @@ export function performAnonymousLogin(test: MaestroTestCase): MaestroTestCase {
 		.openPage('http://localhost:8081/rocket-meals/')
 		.waitForAnimationToEnd()
 		// Accept privacy policy
-		.tapOn(t(TranslationKeys.i_accept_privacy_policy_and_terms_of_service))
+		.tapOnId(ComponentIds.LOGIN_ACCEPT_PRIVACY)
 		// Tap "Continue without account"
-		.tapOn(t(TranslationKeys.continue_without_account))
+		.tapOnId(ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT)
 		// Confirm attention dialog
 		.waitForAnimationToEnd()
-		.assertVisible(t(TranslationKeys.attention))
-		.tapOn(t(TranslationKeys.confirm))
+		.assertVisibleId(ComponentIds.LOGIN_ATTENTION_TITLE)
+		.tapOnId(ComponentIds.LOGIN_ATTENTION_CONFIRM)
 		// Wait for canteen selection screen
 		.waitForAnimationToEnd();
 }
@@ -45,13 +32,11 @@ export function performAnonymousLogin(test: MaestroTestCase): MaestroTestCase {
 /**
  * After login, select the first available canteen to proceed past the
  * canteen selection screen into the main app.
- * Uses accessibility label matching since the canteen cards use
- * accessibilityLabel={translate(select) + ' ' + canteenAlias}.
  */
 export function selectFirstCanteen(test: MaestroTestCase): MaestroTestCase {
 	return test
-		.assertVisible(t(TranslationKeys.please_select_your_canteen))
+		.assertVisibleId(ComponentIds.CANTEEN_SELECTION_TITLE)
 		.scroll()
-		.tapOnId(`${t(TranslationKeys.select)}.*`)
+		.tapOnId(`${ComponentIds.CANTEEN_SELECT_BUTTON}.*`)
 		.waitForAnimationToEnd();
 }

@@ -25,6 +25,7 @@ export type SettingsListMyMapThemeSelectionProps = {
 	modalTitle?: string;
 	leftIcon?: React.ReactNode;
 	iconBgColor?: string;
+	testID?: string;
 };
 
 const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionProps> = ({
@@ -38,6 +39,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	modalTitle = '🗺️ Map Style',
 	leftIcon,
 	iconBgColor,
+	testID,
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { theme } = useTheme();
@@ -112,6 +114,7 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 			rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 			onPress={handleOpenSelection}
 			groupPosition={groupPosition}
+			testID={testID}
 		/>
 	);
 };

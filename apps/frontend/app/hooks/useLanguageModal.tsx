@@ -11,6 +11,18 @@ import SettingsListBoolean from '@/components/SettingsListBoolean';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { languageDict, languageOrder, LanguageCode } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
+import { ComponentIds } from '@/constants/ComponentIds';
+
+const languageTestIds: Record<string, string> = {
+	[LanguageCode.EN]: ComponentIds.LANGUAGE_ENGLISH,
+	[LanguageCode.DE]: ComponentIds.LANGUAGE_GERMAN,
+	[LanguageCode.TR]: ComponentIds.LANGUAGE_TURKISH,
+	[LanguageCode.ES]: ComponentIds.LANGUAGE_SPANISH,
+	[LanguageCode.FR]: ComponentIds.LANGUAGE_FRENCH,
+	[LanguageCode.ZH]: ComponentIds.LANGUAGE_CHINESE,
+	[LanguageCode.AR]: ComponentIds.LANGUAGE_ARABIC,
+	[LanguageCode.RU]: ComponentIds.LANGUAGE_RUSSIAN,
+};
 
 const styles = StyleSheet.create({
         optionsContainer: {
@@ -131,6 +143,7 @@ export const useLanguageModal = () => {
                                         showSeparator={index !== languageOrder.length - 1}
                                         groupPosition={groupPosition}
                                         noIconIndent
+                                        testID={languageTestIds[languageCode]}
                                         rightIcon={
                                                 <MaterialCommunityIcons
                                                         name={isSelected ? 'circle' : 'circle-outline'}
