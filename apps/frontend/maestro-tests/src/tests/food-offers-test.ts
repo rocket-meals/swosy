@@ -2,14 +2,7 @@
  * food-offers-test.ts – Tests the food offers flow.
  *
  * After login: select a canteen → verify food offers load → open a detail view.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - food_offers: "Food Offers" navigation option
- *   - All lookups use t() to fetch German translations by default
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

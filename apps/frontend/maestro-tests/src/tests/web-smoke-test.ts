@@ -1,26 +1,14 @@
 /**
  * web-smoke-test.ts – Web smoke test for the Rocket Meals frontend.
  *
- * Strings are sourced from the app's TranslationKeys enum so they stay in sync
- * with the codebase.  Run `yarn maestro:generate` (from `apps/frontend/app/`)
+ * Uses ComponentIds enum for stable element targeting via testIDs.
+ * Run `yarn maestro:generate` (from `apps/frontend/app/`)
  * to produce `maestro-tests/generated/web-smoke-test.yaml`, then `yarn maestro`
  * (or `./run-maestro-web-test.sh`) to execute it with the Maestro CLI.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Key screen texts (via t() function):
- *   - i_accept_privacy_policy_and_terms_of_service: Privacy policy acceptance button
- *   - continue_without_account: Anonymous login button
- *   - attention: "Attention!" dialog about anonymous account limitations
- *   - confirm: Confirm button on attention dialog
- *   - please_select_your_canteen: Canteen selection screen message (from selectFirstCanteen)
- *   - select: Canteen selection button (from selectFirstCanteen)
- *   - All lookups use t() to fetch German translations by default
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
-import { t } from '../framework/loginHelper';
+import { ComponentIds } from '../../../app/constants/ComponentIds';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -35,22 +23,21 @@ test
 	.takeScreenshot('app-loaded')
 
 	// Step 1: Accept the privacy policy (required to enable the login buttons)
-	.tapOn(t(TranslationKeys.i_accept_privacy_policy_and_terms_of_service))
+	.tapOnId(ComponentIds.LOGIN_ACCEPT_PRIVACY)
 
 	// Step 2: Tap "Continue without account" for anonymous login
-	.tapOn(t(TranslationKeys.continue_without_account))
+	.tapOnId(ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT)
 
 	// Step 3: Confirm the attention sheet about anonymous account limitations
 	.waitForAnimationToEnd()
-	.assertVisible(t(TranslationKeys.attention))
-	.tapOn(t(TranslationKeys.confirm))
+	.assertVisibleId(ComponentIds.LOGIN_ATTENTION_TITLE)
+	.tapOnId(ComponentIds.LOGIN_ATTENTION_CONFIRM)
 
 	// Step 4: Wait for the canteen selection screen to load
-	// The default web export connects to the test backend, so canteens should load.
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selection')
-	.assertVisible(t(TranslationKeys.please_select_your_canteen))
-	.assertNotVisible(t(TranslationKeys.no_canteens_found))
+	.assertVisibleId(ComponentIds.CANTEEN_SELECTION_TITLE)
+	.assertNotVisibleId(ComponentIds.CANTEEN_SELECTION_EMPTY)
 	.takeScreenshot('smoke-test-complete');
 
 export default test;

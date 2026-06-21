@@ -3,23 +3,12 @@
  *
  * After login: navigate to settings → activate dark mode → take screenshots
  * for visual comparison.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - color_scheme: Color scheme setting option
- *   - color_scheme_dark: "Dark Mode" option
- *   - color_scheme_light: "Light Mode" option
- *   - All lookups use t() to fetch German translations by default
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -40,11 +29,11 @@ test
 	.takeScreenshot('dark-mode-before-light')
 
 	// Tap on color scheme
-	.tapOn(t(TranslationKeys.color_scheme))
+	.tapOnId(ComponentIds.SETTINGS_COLOR_SCHEME)
 	.waitForAnimationToEnd()
 
 	// Select dark mode
-	.tapOn(t(TranslationKeys.color_scheme_dark))
+	.tapOnId(ComponentIds.COLOR_SCHEME_DARK)
 	.waitForAnimationToEnd()
 	.takeScreenshot('dark-mode-settings-dark')
 
@@ -61,9 +50,9 @@ test
 	.waitForAnimationToEnd()
 	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.color_scheme))
+	.tapOnId(ComponentIds.SETTINGS_COLOR_SCHEME)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.color_scheme_light))
+	.tapOnId(ComponentIds.COLOR_SCHEME_LIGHT)
 	.waitForAnimationToEnd()
 	.takeScreenshot('dark-mode-back-to-light');
 

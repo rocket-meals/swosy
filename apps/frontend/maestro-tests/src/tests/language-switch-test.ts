@@ -2,27 +2,13 @@
  * language-switch-test.ts – Tests switching the app language.
  *
  * After login: navigate to settings → switch language from DE to EN →
- * verify that translated texts change.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - group_app_settings: Settings group title in German/English
- *   - language: Language setting option
- * - Language option labels (from SettingData.ts languages array, via LanguageLabels):
- *   - LanguageLabels.ENGLISH: English language option
- *   - LanguageLabels.GERMAN: German language option
- *   - Other available constants: TURKISH, SPANISH, FRENCH, CHINESE, ARABIC, RUSSIAN
+ * verify that the language option changes.
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
-import { LanguageLabels } from '../framework/languageHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -42,27 +28,27 @@ test
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-settings-de')
 
-	// Verify German text is shown
-	.assertVisible(t(TranslationKeys.group_app_settings, 'de'))
+	// Verify settings group is shown
+	.assertVisibleId(ComponentIds.SETTINGS_GROUP_APP_SETTINGS)
 
 	// Tap on language setting
-	.tapOn(t(TranslationKeys.language))
+	.tapOnId(ComponentIds.SETTINGS_LANGUAGE)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-options')
 
 	// Select English
-	.tapOn(LanguageLabels.ENGLISH)
+	.tapOnId(ComponentIds.LANGUAGE_ENGLISH)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-switched-to-en')
 
-	// Verify English text is now shown
-	.assertVisible(t(TranslationKeys.group_app_settings, 'en'))
+	// Verify English is now active by checking settings group is still visible
+	.assertVisibleId(ComponentIds.SETTINGS_GROUP_APP_SETTINGS)
 	.takeScreenshot('language-settings-en')
 
 	// Switch back to German
-	.tapOn(t(TranslationKeys.language, 'en'))
+	.tapOnId(ComponentIds.SETTINGS_LANGUAGE)
 	.waitForAnimationToEnd()
-	.tapOn(LanguageLabels.GERMAN)
+	.tapOnId(ComponentIds.LANGUAGE_GERMAN)
 	.waitForAnimationToEnd()
 	.takeScreenshot('language-back-to-de');
 

@@ -3,25 +3,12 @@
  *
  * Verifies that multiple canteens are shown, one can be selected,
  * and the selection is persisted.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - please_select_your_canteen: "Please select your canteen" title
- *   - no_canteens_found: "No canteens found" message (should NOT be visible initially)
- *   - select: "Select" button for choosing a canteen
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - group_canteen_usage: Canteen settings group
- *   - canteen: Canteen selection setting option
- *   - All lookups use t() to fetch German translations by default
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin } from '../framework/loginHelper';
+import { performAnonymousLogin } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -34,8 +21,8 @@ performAnonymousLogin(test);
 
 test
 	// Verify canteen selection screen loads with canteens
-	.assertVisible(t(TranslationKeys.please_select_your_canteen))
-	.assertNotVisible(t(TranslationKeys.no_canteens_found))
+	.assertVisibleId(ComponentIds.CANTEEN_SELECTION_TITLE)
+	.assertNotVisibleId(ComponentIds.CANTEEN_SELECTION_EMPTY)
 	.takeScreenshot('canteen-selection-initial')
 
 	// Scroll through canteen list
@@ -43,7 +30,7 @@ test
 	.takeScreenshot('canteen-selection-scrolled')
 
 	// Select a canteen
-	.tapOnId(`${t(TranslationKeys.select)}.*`)
+	.tapOnId(`${ComponentIds.CANTEEN_SELECT_BUTTON}.*`)
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selected-main-app')
 
@@ -54,11 +41,11 @@ test
 	.waitForAnimationToEnd()
 
 	// Look for canteen-related settings
-	.assertVisible(t(TranslationKeys.group_canteen_usage))
+	.assertVisibleId(ComponentIds.SETTINGS_GROUP_CANTEEN_USAGE)
 	.takeScreenshot('canteen-selection-in-settings')
 
 	// Tap on canteen setting to change it
-	.tapOn(t(TranslationKeys.canteen))
+	.tapOnId(ComponentIds.SETTINGS_CANTEEN)
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-change-screen');
 

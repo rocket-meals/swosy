@@ -3,22 +3,12 @@
  *
  * After completing the anonymous login and selecting a canteen, verifies that
  * the user can open the drawer and navigate to different sections.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - food_offers: "Food Offers" navigation option
- *   - settings: "Settings" navigation option
- *   - group_app_settings: "App Settings" section header
- *   - news: "News" navigation option
- *   - All lookups use t() to fetch German translations by default
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -46,7 +36,7 @@ test
 	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-settings-screen')
-	.assertVisible(t(TranslationKeys.group_app_settings))
+	.assertVisibleId(ComponentIds.SETTINGS_GROUP_APP_SETTINGS)
 
 	// Open drawer again and navigate to News
 	.tapOnId(ComponentIds.OPEN_DRAWER)

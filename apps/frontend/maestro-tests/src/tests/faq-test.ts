@@ -2,22 +2,12 @@
  * faq-test.ts – Tests the FAQ screen.
  *
  * After login: navigate to FAQ → verify categories load → browse content.
- *
- * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
- * - Uses translation keys from TranslationKeys enum, never hardcoded strings
- * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
- * - Key screen texts (via t() function):
- *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
- *   - settings: Enters settings screen
- *   - feedback_and_support: "Feedback & Support" section
- *   - feedback_support_faq: "FAQ" option within Feedback & Support
- *   - All text lookups use the t() helper to fetch German translations
+ * Uses ComponentIds enum for stable element targeting via testIDs.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -36,15 +26,10 @@ test
 	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 
-	// Scroll to find feedback/FAQ section
+	// Scroll to find FAQ section and tap on it
 	.scroll()
 	.scroll()
-	.tapOn(t(TranslationKeys.feedback_and_support))
-	.waitForAnimationToEnd()
-	.takeScreenshot('faq-access-screen')
-
-	// Tap on FAQ
-	.tapOn(t(TranslationKeys.feedback_support_faq))
+	.tapOnId(ComponentIds.SETTINGS_FEEDBACK_SUPPORT_FAQ)
 	.waitForAnimationToEnd()
 	.takeScreenshot('faq-screen-loaded')
 
