@@ -4,6 +4,11 @@
  * Many Maestro tests require the user to be logged in (anonymously) and past
  * the onboarding screens.  This helper encapsulates the common steps so that
  * each test file stays concise.
+ *
+ * CONVENTION: Always use ComponentIds (from app/constants/ComponentIds.ts) for
+ * element targeting via nativeID. This ensures stable, refactor-safe selectors
+ * that are decoupled from visible text or component hierarchy. Components must
+ * set `nativeID={ComponentIds.XXX}` so Maestro web tests can locate them by id.
  */
 
 import { MaestroTestCase } from './MaestroTestCase';

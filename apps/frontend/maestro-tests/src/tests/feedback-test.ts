@@ -2,7 +2,9 @@
  * feedback-test.ts – Tests the feedback/support screen.
  *
  * After login: navigate to feedback → verify FAQ option is visible → scroll.
- * Uses ComponentIds enum for stable element targeting via testIDs.
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
+ * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * Maestro web tests can locate elements by their id attribute.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';

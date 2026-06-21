@@ -2,7 +2,9 @@
  * news-test.ts – Tests the news screen.
  *
  * After login: navigate to news → verify content loads.
- * Uses ComponentIds enum for stable element targeting via testIDs.
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
+ * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * Maestro web tests can locate elements by their id attribute.
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
