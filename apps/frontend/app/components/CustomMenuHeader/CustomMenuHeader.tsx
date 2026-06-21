@@ -52,7 +52,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
                                                                 {...triggerProps}
                                                                 onPress={() => navigation.toggleDrawer()}
                                                                 style={styles.menuButton}
-                                                                testID={ComponentIds.OPEN_DRAWER}
+                                                                nativeID={ComponentIds.OPEN_DRAWER}
                                                         >
                                                                 <View style={styles.menuIconWrapper}>
                                                                         <Ionicons name="menu" size={24} color={theme.header.text} />
