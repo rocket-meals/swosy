@@ -5,8 +5,9 @@
  *
  * SCREEN ELEMENTS AND EXPECTED TEXT STRINGS:
  * - Uses translation keys from TranslationKeys enum, never hardcoded strings
+ * - Uses ComponentIds enum for stable element IDs (e.g. open_drawer button)
  * - Key screen texts (via t() function):
- *   - open_drawer: Opens side navigation menu
+ *   - open_drawer: Uses ComponentIds.OPEN_DRAWER for stable tap target
  *   - map: "Map" navigation option
  *   - map_variants: Map variants/style selector option
  *   - All lookups use t() to fetch German translations by default
@@ -14,6 +15,7 @@
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
 import { TranslationKeys } from '../../../app/locales/keys';
+import { ComponentIds } from '../../../app/constants/ComponentIds';
 import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
@@ -28,7 +30,7 @@ selectFirstCanteen(test);
 
 test
 	// Navigate to Map
-	.tapOn(t(TranslationKeys.open_drawer))
+	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
 	.tapOn(t(TranslationKeys.map))
 	.waitForAnimationToEnd()
