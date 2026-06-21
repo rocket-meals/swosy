@@ -21,7 +21,9 @@ type MaestroStep =
 	| { type: 'takeScreenshot'; name: string }
 	| { type: 'tapOn'; label: string }
 	| { type: 'tapOnIndex'; label: string; index: number }
+	| { type: 'tapOnId'; id: string }
 	| { type: 'assertVisible'; label: string }
+	| { type: 'assertVisibleId'; id: string }
 	| { type: 'assertNotVisible'; label: string }
 	| { type: 'inputText'; text: string }
 	| { type: 'pressKey'; key: string }
@@ -96,9 +98,24 @@ export class MaestroTestCase {
 		return this;
 	}
 
+	/**
+	 * Tap on the first element whose accessibility label / id matches `id`.
+	 * Maestro performs a regex match, so partial patterns like `"Auswählen.*"` work.
+	 */
+	tapOnId(id: string): this {
+		this.steps.push({ type: 'tapOnId', id });
+		return this;
+	}
+
 	/** Assert that an element with text containing `label` is visible. */
 	assertVisible(label: string): this {
 		this.steps.push({ type: 'assertVisible', label });
+		return this;
+	}
+
+	/** Assert that an element with accessibility label / id matching `id` is visible. */
+	assertVisibleId(id: string): this {
+		this.steps.push({ type: 'assertVisibleId', id });
 		return this;
 	}
 
@@ -178,8 +195,16 @@ export class MaestroTestCase {
 					lines.push(`    text: ${yamlString(step.label)}`);
 					lines.push(`    index: ${step.index}`);
 					break;
+				case 'tapOnId':
+					lines.push('- tapOn:');
+					lines.push(`    id: ${yamlString(step.id)}`);
+					break;
 				case 'assertVisible':
 					lines.push(`- assertVisible: ${yamlString(step.label)}`);
+					break;
+				case 'assertVisibleId':
+					lines.push('- assertVisible:');
+					lines.push(`    id: ${yamlString(step.id)}`);
 					break;
 				case 'assertNotVisible':
 					lines.push(`- assertNotVisible: ${yamlString(step.label)}`);
