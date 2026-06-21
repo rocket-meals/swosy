@@ -20,6 +20,7 @@ type MaestroStep =
 	| { type: 'waitForAnimationToEnd' }
 	| { type: 'takeScreenshot'; name: string }
 	| { type: 'tapOn'; label: string }
+	| { type: 'tapOnIndex'; label: string; index: number }
 	| { type: 'assertVisible'; label: string }
 	| { type: 'assertNotVisible'; label: string }
 	| { type: 'inputText'; text: string }
@@ -83,6 +84,15 @@ export class MaestroTestCase {
 	 */
 	tapOn(label: string): this {
 		this.steps.push({ type: 'tapOn', label });
+		return this;
+	}
+
+	/**
+	 * Tap on the Nth element (0-based) whose visible text matches `label`.
+	 * Useful when multiple elements share the same text and you need a specific one.
+	 */
+	tapOnIndex(label: string, index: number): this {
+		this.steps.push({ type: 'tapOnIndex', label, index });
 		return this;
 	}
 
@@ -162,6 +172,11 @@ export class MaestroTestCase {
 					break;
 				case 'tapOn':
 					lines.push(`- tapOn: ${yamlString(step.label)}`);
+					break;
+				case 'tapOnIndex':
+					lines.push('- tapOn:');
+					lines.push(`    text: ${yamlString(step.label)}`);
+					lines.push(`    index: ${step.index}`);
 					break;
 				case 'assertVisible':
 					lines.push(`- assertVisible: ${yamlString(step.label)}`);

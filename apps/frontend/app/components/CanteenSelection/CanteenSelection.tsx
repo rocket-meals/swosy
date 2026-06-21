@@ -9,6 +9,8 @@ import CardWithText from '../CardWithText/CardWithText';
 import styles from '../CanteenSelectionSheet/styles';
 import { useAppSelector } from '@/redux/hooks';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 interface CanteenSelectionProps {
 	onSelectCanteen: (canteen: DatabaseTypes.Canteens) => void;
@@ -16,6 +18,7 @@ interface CanteenSelectionProps {
 
 const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
 	const { canteens, selectedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -79,6 +82,7 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 							onPress={() => {
 								onSelectCanteen(canteen);
 							}}
+							accessibilityLabel={translate(TranslationKeys.select) + ' ' + String(canteen.alias)}
 							imageSource={{ uri: imageUrl || defaultImage || '' }}
 							containerStyle={{
 								width: '100%',
