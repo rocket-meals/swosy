@@ -13,9 +13,8 @@
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -33,7 +32,7 @@ test
 	// Navigate to food offers via drawer
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.food_offers))
+	.tapOnId(ComponentIds.DRAWER_ITEM_FOOD_OFFERS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('food-offers-list')
 

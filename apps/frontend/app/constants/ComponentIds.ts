@@ -1,3 +1,16 @@
 export enum ComponentIds {
 	OPEN_DRAWER = 'open-drawer',
+	DRAWER_ITEM_FOOD_OFFERS = 'drawer-item-foodoffers',
+	DRAWER_ITEM_CAMPUS = 'drawer-item-campus',
+	DRAWER_ITEM_HOUSING = 'drawer-item-housing',
+	DRAWER_ITEM_NEWS = 'drawer-item-news',
+	DRAWER_ITEM_MAP = 'drawer-item-map',
+	DRAWER_ITEM_SETTINGS = 'drawer-item-settings',
+	DRAWER_ITEM_LOGOUT = 'drawer-item-logout',
+	DRAWER_ITEM_BALANCE = 'drawer-item-balance',
+	DRAWER_ITEM_COURSE_TIMETABLE = 'drawer-item-course-timetable',
+	DRAWER_ITEM_COLLECTIBLE_EVENT = 'drawer-item-collectible-event',
+	DRAWER_ITEM_MANAGEMENT = 'drawer-item-management',
+	DRAWER_ITEM_EXPERIMENTAL = 'drawer-item-experimental',
+	DRAWER_ITEM_CHATS = 'drawer-item-chats',
 }

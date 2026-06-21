@@ -39,11 +39,11 @@ test
 	.takeScreenshot('navigation-drawer-open')
 
 	// Verify key navigation items are visible in the drawer
-	.assertVisible(t(TranslationKeys.food_offers))
-	.assertVisible(t(TranslationKeys.settings))
+	.assertVisibleId(ComponentIds.DRAWER_ITEM_FOOD_OFFERS)
+	.assertVisibleId(ComponentIds.DRAWER_ITEM_SETTINGS)
 
 	// Navigate to Settings
-	.tapOn(t(TranslationKeys.settings))
+	.tapOnId(ComponentIds.DRAWER_ITEM_SETTINGS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-settings-screen')
 	.assertVisible(t(TranslationKeys.group_app_settings))
@@ -51,14 +51,14 @@ test
 	// Open drawer again and navigate to News
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.news))
+	.tapOnId(ComponentIds.DRAWER_ITEM_NEWS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-news-screen')
 
 	// Open drawer again and navigate to Food Offers
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.food_offers))
+	.tapOnId(ComponentIds.DRAWER_ITEM_FOOD_OFFERS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('navigation-food-offers-screen');
 

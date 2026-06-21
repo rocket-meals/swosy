@@ -32,7 +32,7 @@ test
 	// Navigate to Housing
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.housing))
+	.tapOnId(ComponentIds.DRAWER_ITEM_HOUSING)
 	.waitForAnimationToEnd()
 	.takeScreenshot('housing-screen-loaded')
 

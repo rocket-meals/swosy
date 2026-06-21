@@ -13,9 +13,8 @@
  */
 
 import { MaestroTestCase } from '../framework/MaestroTestCase';
-import { TranslationKeys } from '../../../app/locales/keys';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
-import { t, performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
+import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 
 const test = new MaestroTestCase({
 	appId: 'com.rocketmeals.web',
@@ -31,7 +30,7 @@ test
 	// Navigate to News
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
-	.tapOn(t(TranslationKeys.news))
+	.tapOnId(ComponentIds.DRAWER_ITEM_NEWS)
 	.waitForAnimationToEnd()
 	.takeScreenshot('news-screen-loaded')
 
