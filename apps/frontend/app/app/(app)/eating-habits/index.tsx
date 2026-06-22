@@ -258,7 +258,7 @@ const Index = () => {
 	), []);
 
 	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }} testID={ComponentIds.EATING_HABITS_MARKINGS}>
+		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }} nativeID={ComponentIds.EATING_HABITS_MARKINGS}>
 			<FlatList
 				data={markingIds}
 				renderItem={renderItem}

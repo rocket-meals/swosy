@@ -33,7 +33,7 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 						id: themeOption.id,
 						label: translate(themeOption.name),
 						icon: <MaterialCommunityIcons name={themeOption.icon as any} size={24} />,
-						testID: themeTestIds[themeOption.id],
+						nativeID: themeTestIds[themeOption.id],
 					}))}
 					selectedOption={activeSelectedTheme}
 					onSelect={(option) => {

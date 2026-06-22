@@ -61,6 +61,29 @@ jobs:
         env:
           APP_URL: "http://localhost:8081/rocket-meals/"
 
+      - name: "❌ Print failure reasons"
+        if: failure()
+        shell: bash
+        run: |
+          echo ""
+          echo "=== Maestro Failure Reasons ==="
+          found=false
+          shopt -s globstar nullglob
+          for logfile in /tmp/maestro-debug/**/*.log /tmp/maestro-debug/**/*.txt /tmp/maestro-debug/**/*.xml "$HOME"/.maestro/tests/**/*.log "$HOME"/.maestro/tests/**/*.txt; do
+            [ -f "$logfile" ] || continue
+            errors=$(grep -iE "(FAILED|ERROR|Exception|Element not found|No element|Timeout|assert|tapOn)" "$logfile" 2>/dev/null | grep -v "^#" | head -20)
+            if [ -n "$errors" ]; then
+              echo ""
+              echo "📄 $(basename "$logfile"):"
+              echo "$errors" | sed 's/^/  /'
+              found=true
+            fi
+          done
+          if [ "$found" = false ]; then
+            echo "  (no detailed error logs found)"
+          fi
+          echo ""
+
       - name: "📂 List screenshot locations"
         if: always()
         run: |

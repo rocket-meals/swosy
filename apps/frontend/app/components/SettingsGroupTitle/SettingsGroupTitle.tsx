@@ -5,12 +5,12 @@ import { useTheme } from '@/hooks/useTheme';
 type Props = {
 	children: React.ReactNode;
 	fontSize?: number;
-	testID?: string;
+	nativeID?: string;
 };
 
-const SettingsGroupTitle: React.FC<Props> = ({ children, fontSize, testID }) => {
+const SettingsGroupTitle: React.FC<Props> = ({ children, fontSize, nativeID }) => {
 	const { theme } = useTheme();
-	return <Text testID={testID} style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }) }]}>{children}</Text>;
+	return <Text nativeID={nativeID} style={[styles.heading, { color: theme.screen.text, ...(fontSize && { fontSize }) }]}>{children}</Text>;
 };
 
 export default SettingsGroupTitle;

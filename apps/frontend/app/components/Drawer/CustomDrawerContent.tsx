@@ -53,7 +53,7 @@ interface MenuItemProps {
         position: number;
         hasUnread?: boolean;
         activeColor?: string;
-        testID?: string;
+        nativeID?: string;
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
@@ -140,7 +140,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'foodoffers',
 				position: 1,
 				activeColor: foods_area_color,
-				testID: ComponentIds.DRAWER_ITEM_FOOD_OFFERS,
+				nativeID: ComponentIds.DRAWER_ITEM_FOOD_OFFERS,
 			});
 		}
 
@@ -153,7 +153,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'account-balance/index',
 				position: 3,
 				activeColor: balance_area_color,
-				testID: ComponentIds.DRAWER_ITEM_BALANCE,
+				nativeID: ComponentIds.DRAWER_ITEM_BALANCE,
 			});
 		}
 
@@ -166,7 +166,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'campus',
 				position: 5,
 				activeColor: campus_area_color,
-				testID: ComponentIds.DRAWER_ITEM_CAMPUS,
+				nativeID: ComponentIds.DRAWER_ITEM_CAMPUS,
 			});
 		}
 
@@ -179,7 +179,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'housing',
 				position: 6,
 				activeColor: housing_area_color,
-				testID: ComponentIds.DRAWER_ITEM_HOUSING,
+				nativeID: ComponentIds.DRAWER_ITEM_HOUSING,
 			});
 		}
 
@@ -192,7 +192,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'news/index',
 				position: 7,
 				activeColor: news_area_color,
-				testID: ComponentIds.DRAWER_ITEM_NEWS,
+				nativeID: ComponentIds.DRAWER_ITEM_NEWS,
 			});
 		}
 
@@ -205,7 +205,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 route: 'course-timetable/index',
                                 position: 8,
                                 activeColor: course_timetable_area_color,
-                                testID: ComponentIds.DRAWER_ITEM_COURSE_TIMETABLE,
+                                nativeID: ComponentIds.DRAWER_ITEM_COURSE_TIMETABLE,
                         });
                 }
 
@@ -218,7 +218,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 route: 'collectible-event/index',
                                 position: 2,
                                 hasUnread: true,
-                                testID: ComponentIds.DRAWER_ITEM_COLLECTIBLE_EVENT,
+                                nativeID: ComponentIds.DRAWER_ITEM_COLLECTIBLE_EVENT,
                         });
                 }
 
@@ -230,7 +230,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 activeKey: 'map/index',
                                 route: 'map/index',
                                 position: 4,
-                                testID: ComponentIds.DRAWER_ITEM_MAP,
+                                nativeID: ComponentIds.DRAWER_ITEM_MAP,
                         });
                 }
 
@@ -242,7 +242,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'management/index',
 				route: 'management/index',
 				position: 9,
-				testID: ComponentIds.DRAWER_ITEM_MANAGEMENT,
+				nativeID: ComponentIds.DRAWER_ITEM_MANAGEMENT,
 			});
 			menuItems.push({
 				label: translate(TranslationKeys.experimentell),
@@ -251,7 +251,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'experimentell/index',
 				route: 'experimentell/index',
 				position: 10,
-				testID: ComponentIds.DRAWER_ITEM_EXPERIMENTAL,
+				nativeID: ComponentIds.DRAWER_ITEM_EXPERIMENTAL,
 			});
 		}
 
@@ -299,7 +299,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 route: 'chats',
                                 position: 9999,
                                 hasUnread: hasUnreadChats,
-                                testID: ComponentIds.DRAWER_ITEM_CHATS,
+                                nativeID: ComponentIds.DRAWER_ITEM_CHATS,
                         });
                 }
 
@@ -317,7 +317,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			onPress: () => (item.route ? navigation.navigate(item.route) : item.action?.()),
 			hasUnread: item.hasUnread,
 			activeColor: item.activeColor,
-			testID: item.testID,
+			nativeID: item.nativeID,
 		}));
 
 	const bottomItems: DrawerItem[] = [
@@ -327,14 +327,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={28} color={color} />,
 			onPress: () => navigation.navigate('settings/index'),
 			activeColor: getRouteActiveColor('settings/index'),
-			testID: ComponentIds.DRAWER_ITEM_SETTINGS,
+			nativeID: ComponentIds.DRAWER_ITEM_SETTINGS,
 		},
 		{
 			key: 'logout',
 			label: logoutButtonLabel,
 			renderIcon: (_, color) => <MaterialCommunityIcons name="logout" size={28} color={color} />,
 			onPress: openConfirmLogoutModal,
-			testID: ComponentIds.DRAWER_ITEM_LOGOUT,
+			nativeID: ComponentIds.DRAWER_ITEM_LOGOUT,
 		},
 	];
 

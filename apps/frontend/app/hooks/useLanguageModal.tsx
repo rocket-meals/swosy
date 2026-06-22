@@ -143,7 +143,7 @@ export const useLanguageModal = () => {
                                         showSeparator={index !== languageOrder.length - 1}
                                         groupPosition={groupPosition}
                                         noIconIndent
-                                        testID={languageTestIds[languageCode]}
+                                        nativeID={languageTestIds[languageCode]}
                                         rightIcon={
                                                 <MaterialCommunityIcons
                                                         name={isSelected ? 'circle' : 'circle-outline'}

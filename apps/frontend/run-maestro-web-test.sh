@@ -111,6 +111,23 @@ if [ "$MAESTRO_EXIT_CODE" -ne 0 ]; then
     if [ "$FOUND_SCREENSHOTS" = false ]; then
         echo "  (no screenshots found)"
     fi
+
+    echo ""
+    echo "=== Failure Reasons ==="
+    FOUND_ERRORS=false
+    # Search for error/failure messages in Maestro debug log files
+    while IFS= read -r -d '' logfile; do
+        ERRORS=$(grep -iE "(FAILED|ERROR|Exception|Element not found|No element|Timeout|assert|tapOn)" "$logfile" 2>/dev/null | grep -v "^#" | head -20)
+        if [ -n "$ERRORS" ]; then
+            echo ""
+            echo "  📄 $(basename "$logfile"):"
+            echo "$ERRORS" | sed 's/^/    /'
+            FOUND_ERRORS=true
+        fi
+    done < <(find "$MAESTRO_DEBUG_DIR" "$HOME/.maestro/tests" -type f \( -name "*.log" -o -name "*.txt" -o -name "*.xml" \) -print0 2>/dev/null)
+    if [ "$FOUND_ERRORS" = false ]; then
+        echo "  (no detailed error logs found in $MAESTRO_DEBUG_DIR)"
+    fi
     echo ""
     exit "$MAESTRO_EXIT_CODE"
 fi

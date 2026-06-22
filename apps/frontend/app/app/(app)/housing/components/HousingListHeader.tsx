@@ -63,7 +63,7 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 					onChangeText={setQuery}
 					value={query}
 					placeholder={translate(TranslationKeys.search_apartment_here)}
-					testID={ComponentIds.HOUSING_SEARCH}
+					nativeID={ComponentIds.HOUSING_SEARCH}
 				/>
 			</View>
 		</View>
