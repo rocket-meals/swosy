@@ -320,12 +320,20 @@ function stepDescription(step: MaestroStep): string {
  * Generate a Maestro evalScript step that logs a message to the console.
  * Format: [Test: <testName>]: <message>
  *
- * Single quotes in the message are escaped for the JavaScript string literal.
- * The `${}` syntax is Maestro's expression interpolation (not a JS template literal).
+ * The entire YAML scalar is wrapped in single quotes so that `${...}`,
+ * colons, and other special characters are not mis-parsed by the YAML parser.
+ * Inside the JS string we use double quotes; any literal double quote in the
+ * message is escaped as `\"`.
+ *
+ * Result example:
+ *   - evalScript: '${console.log("[Test: dark-mode-test]: started")}'
  */
 function evalScriptLog(testName: string, message: string): string {
 	const fullMsg = `[Test: ${testName}]: ${message}`;
-	// Escape backslashes first, then single quotes for the JS single-quoted string literal
-	const jsEscaped = fullMsg.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-	return `- evalScript: \${console.log('${jsEscaped}')}`;
+	// Escape backslashes and double quotes for the JS double-quoted string literal
+	const jsEscaped = fullMsg.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+	// Wrap the whole YAML value in single quotes so the YAML parser leaves it alone.
+	// Single quotes inside the YAML scalar are represented as '' (two single quotes).
+	const yamlEscaped = jsEscaped.replace(/'/g, "''");
+	return `- evalScript: '\${console.log("${yamlEscaped}")}'`;
 }
