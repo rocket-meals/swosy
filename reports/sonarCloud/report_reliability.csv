@@ -1,7 +1,10 @@
 Key,Message,Component,Line
-"AZ7u4579I9TVtwnJRYAh","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",103
-"AZ7u4579I9TVtwnJRYAi","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",111
-"AZ7uygSu20gtn1HC5Sgm","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",56
+"AZ7v17-MhkdGLBATgzL-","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",110
+"AZ7v17-MhkdGLBATgzL_","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",152
+"AZ7v17-MhkdGLBATgzMA","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",159
+"AZ7u4579I9TVtwnJRYAh","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",134
+"AZ7u4579I9TVtwnJRYAi","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",142
+"AZ7uygSu20gtn1HC5Sgm","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",74
 "AZ7UkHlOJxU5Iy-S6QAW","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",15
 "AZ7UkHlOJxU5Iy-S6QAX","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",101
 "AZ7SzdXZMiqnvvdaMpzi","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",39
@@ -11,6 +14,8 @@ Key,Message,Component,Line
 "AZ3_Bx_oxBiyTwy6NSQE","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1264
 "AZ3_Bx_oxBiyTwy6NSQM","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1356
 "AZ35__9bcUa8YvF8RrkO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1357
+"AZ7v17RYhkdGLBATgzLz","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",19
+"AZ7v17RYhkdGLBATgzL0","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",20
 "AZ2xyckhWySueEBavmdA","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",92
 "AZ2xyckhWySueEBavmc_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",117
 "AZ2V4Kjcj7vGheiRHJU2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",74
@@ -4948,6 +4953,8 @@ Key,Message,Component,Line
 "AZ0cP4sUSUO5CDbnERJv","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9293
 "AZ0cP4sUSUO5CDbnERJw","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9293
 "AZ0cP4sUSUO5CDbnERJx","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9293
+"AZ7v18GfhkdGLBATgzMD","Do not check floating point equality or inequality with exact values, use a range instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9294
+"AZ7v18GfhkdGLBATgzME","Do not check floating point equality or inequality with exact values, use a range instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9294
 "AZ0cP4sUSUO5CDbnERJ1","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9297
 "AZ0cP4sUSUO5CDbnERJ2","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9303
 "AZ0cP4sUSUO5CDbnERJ3","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",9306
@@ -6852,3 +6859,15 @@ Key,Message,Component,Line
 "AZ0cP4sXSUO5CDbnERwl","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14290
 "AZ0cP4sXSUO5CDbnERxa","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14667
 "AZ0ZJmx5-tgOj4n6nrhZ","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",140
+"AZ7v16XYhkdGLBATgzLt","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",689
+"AZ7v18ffhkdGLBATgzMH","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/src/NumberHelper.ts",38
+"AZ7v16Y8hkdGLBATgzLu","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",511
+"AZ7v17NghkdGLBATgzLy","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/EmailInput/EmailInput.tsx",9
+"AZ7v169dhkdGLBATgzLx","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",15
+"AZ7v18fJhkdGLBATgzMG","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/src/EmailHelper.ts",2
+"AZ7v16SEhkdGLBATgzLr","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts",40
+"AZ7v17RYhkdGLBATgzL1","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",22
+"AZ7v17wJhkdGLBATgzL2","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/constants/MarkdownPatterns.ts",16
+"AZ7v16sMhkdGLBATgzLv","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",28
+"AZ7v16sMhkdGLBATgzLw","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",117
+"AZ7v16XYhkdGLBATgzLs","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",577
