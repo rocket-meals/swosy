@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 39 | 39 |
-| 🐛 Reliability | 6850 | 11 |
+| 🔒 Security | 40 | 40 |
+| 🐛 Reliability | 6851 | 10 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16889 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16891 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (39/39)
+## 🔒 Security (40/40)
 
 - **inputs.previous-commit-sha is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:34
@@ -130,9 +130,13 @@
   apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py:53
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py#L53
 
+- **"npx" can install packages on-demand and run their lifecycle scripts.**
+  apps/frontend/run-maestro-web-test.sh:32
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L32
+
 - **Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.**
-  apps/frontend/run-maestro-web-test.sh:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L31
+  apps/frontend/run-maestro-web-test.sh:69
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L69
 
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
@@ -170,7 +174,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (11/6850)
+## 🐛 Reliability (10/6851)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
@@ -211,8 +215,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:92
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L92
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L117
 
