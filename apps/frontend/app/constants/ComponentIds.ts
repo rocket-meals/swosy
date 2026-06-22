@@ -8,8 +8,19 @@
  * IMPORTANT: Always use `nativeID={ComponentIds.XXX}`, NOT `testID`.
  * - `nativeID` renders as `id="..."` in HTML → Maestro locates elements by `id`
  * - `testID` renders as `data-testid="..."` → Maestro cannot find this on web
+ *
+ * NOTE: IDs from the common-ui package are re-exported here so that all Maestro
+ * tests and app components can import from a single location.
  */
-export enum ComponentIds {
+// NOTE: We import directly from the common-ui source file (bypassing the package
+// index) so that the Maestro test generator (tsconfig without `jsx`) can also
+// import this file without triggering a JSX compilation error that would occur
+// if the full `repo-depkit-common-ui` entry point were used.
+import { CommonUiComponentIds } from '../../../../packages/common-ui/src/constants/ComponentIds';
+
+export { CommonUiComponentIds };
+
+export enum AppComponentIds {
 	// Drawer navigation
 	OPEN_DRAWER = 'open-drawer',
 	DRAWER_ITEM_FOOD_OFFERS = 'drawer-item-foodoffers',
@@ -77,3 +88,10 @@ export enum ComponentIds {
 	// Feedback
 	FEEDBACK_AND_SUPPORT_TITLE = 'feedback-and-support-title',
 }
+
+/**
+ * Combined component IDs from both the app and the common-ui package.
+ * Use this object for all element targeting in Maestro tests and app components.
+ */
+export const ComponentIds = { ...AppComponentIds, ...CommonUiComponentIds };
+export type ComponentIdValue = AppComponentIds | CommonUiComponentIds;

@@ -23,6 +23,7 @@ type MaestroStep =
 	| { type: 'tapOnIndex'; label: string; index: number }
 	| { type: 'tapOnId'; id: string }
 	| { type: 'tapOnIdIndex'; id: string; index: number }
+	| { type: 'optionalTapOnId'; id: string }
 	| { type: 'assertVisible'; label: string }
 	| { type: 'assertVisibleId'; id: string }
 	| { type: 'assertVisibleIdIndex'; id: string; index: number }
@@ -117,6 +118,16 @@ export class MaestroTestCase {
 	 */
 	tapOnIdIndex(id: string, index: number): this {
 		this.steps.push({ type: 'tapOnIdIndex', id, index });
+		return this;
+	}
+
+	/**
+	 * Optionally tap on an element whose testID / id matches `id`.
+	 * If the element is not found the step is silently skipped – useful for
+	 * dismissing modals or popups that may or may not be present.
+	 */
+	optionalTapOnId(id: string): this {
+		this.steps.push({ type: 'optionalTapOnId', id });
 		return this;
 	}
 
@@ -237,6 +248,11 @@ export class MaestroTestCase {
 					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					lines.push(`    index: ${step.index}`);
 					break;
+				case 'optionalTapOnId':
+					lines.push('- tapOn:');
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
+					lines.push('    optional: true');
+					break;
 				case 'assertVisible':
 					lines.push(`- assertVisible: ${yamlString(step.label)}`);
 					break;
@@ -312,6 +328,7 @@ function stepDescription(step: MaestroStep): string {
 		case 'tapOnIndex': return `TapOnIndex: ${step.label}[${step.index}]`;
 		case 'tapOnId': return `TapOnId: ${step.id}`;
 		case 'tapOnIdIndex': return `TapOnIdIndex: ${step.id}[${step.index}]`;
+		case 'optionalTapOnId': return `OptionalTapOnId: ${step.id}`;
 		case 'assertVisible': return `AssertVisible: ${step.label}`;
 		case 'assertVisibleId': return `AssertVisibleId: ${step.id}`;
 		case 'assertVisibleIdIndex': return `AssertVisibleIdIndex: ${step.id}[${step.index}]`;
