@@ -8,17 +8,18 @@
 #   ./run-maestro-web-test.sh [--skip-generate]  (from apps/frontend/)
 #
 # Flags:
-#   --skip-generate   Skip step 4 (YAML generation from TypeScript).
+#   --skip-generate   Skip step 5 (YAML generation from TypeScript).
 #                     Use when the generated files are already up-to-date.
 #
 # The script:
 #   1. Starts the Expo web dev server in the background (output suppressed)
 #   2. Waits until the server is reachable
 #   3. Installs Maestro CLI if not already present
-#   4. Generates YAML test files from TypeScript  (skipped with --skip-generate)
-#   5. Runs all Maestro tests
-#   6. Lists failed tests and screenshot paths (on failure)
-#   7. Stops the dev server on exit (success or failure)
+#   4. Cleans previously generated YAML files and screenshots
+#   5. Generates YAML test files from TypeScript  (skipped with --skip-generate)
+#   6. Runs all Maestro tests
+#   7. Lists failed tests and screenshot paths (on failure)
+#   8. Stops the dev server on exit (success or failure)
 # =============================================================================
 
 set -e
@@ -95,7 +96,16 @@ if ! command -v maestro &> /dev/null; then
 fi
 
 # ---------------------------------------------------------------------------
-# 4. Generate YAML test files from TypeScript
+# 4. Clean previously generated YAML files and screenshots
+# ---------------------------------------------------------------------------
+echo "Cleaning previously generated YAML files..."
+find "$GENERATED_DIR" -maxdepth 1 -type f -name "*.yaml" -delete
+echo "Cleaning previous Maestro screenshots..."
+find "$HOME/.maestro/tests" -type f -name "*.png" -delete 2>/dev/null || true
+echo ""
+
+# ---------------------------------------------------------------------------
+# 5. Generate YAML test files from TypeScript
 # ---------------------------------------------------------------------------
 if [ "$SKIP_GENERATE" = true ]; then
     echo "Skipping YAML generation (--skip-generate flag set)."
@@ -106,7 +116,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 5. Run Maestro tests
+# 6. Run Maestro tests
 # ---------------------------------------------------------------------------
 MAESTRO_DEBUG_DIR="/tmp/maestro-debug-$$"
 mkdir -p "$MAESTRO_DEBUG_DIR"
@@ -119,7 +129,7 @@ MAESTRO_EXIT_CODE=$?
 set -e
 
 # ---------------------------------------------------------------------------
-# 6. Report failed tests and screenshot paths
+# 7. Report failed tests and screenshot paths
 # ---------------------------------------------------------------------------
 if [ "$MAESTRO_EXIT_CODE" -ne 0 ]; then
     echo ""
