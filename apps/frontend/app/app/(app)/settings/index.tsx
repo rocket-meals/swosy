@@ -12,7 +12,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -63,7 +63,6 @@ const Settings = () => {
         const { theme, setThemeMode } = useTheme();
         const dispatch = useDispatch();
         const toast = useToast();
-        const [isActive, setIsActive] = useState(false);
         const { translate, language } = useLanguage();
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -228,15 +227,6 @@ const Settings = () => {
                 },
                 [dispatch, isRegisteredUser, profile, profileHelper]
         );
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	useEffect(() => {
 		const onChange = ({ window }: { window: any }) => {
