@@ -20,7 +20,7 @@ const CampusEmptyState: React.FC<CampusEmptyStateProps> = ({ loading, theme, tra
 
     return (
         <View style={emptyStyles.container}>
-            <Text style={{ fontSize: 16, fontFamily: 'Poppins_400Regular', color: theme.screen.text }} testID={ComponentIds.CAMPUS_EMPTY}>
+            <Text style={{ fontSize: 16, fontFamily: 'Poppins_400Regular', color: theme.screen.text }} nativeID={ComponentIds.CAMPUS_EMPTY}>
                 {translate(TranslationKeys.no_campus_found)}
             </Text>
         </View>

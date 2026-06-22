@@ -1,3 +1,14 @@
+/**
+ * ComponentIds – stable identifiers for UI elements targeted by Maestro E2E tests.
+ *
+ * WICHTIG: Immer `nativeID={ComponentIds.XXX}` verwenden, NICHT `testID`.
+ * - `nativeID` wird im Web zu `id="..."` (HTML-Attribut) → Maestro findet Elemente über die `id`
+ * - `testID` wird zu `data-testid="..."` → Maestro kann das im Web NICHT finden
+ *
+ * IMPORTANT: Always use `nativeID={ComponentIds.XXX}`, NOT `testID`.
+ * - `nativeID` renders as `id="..."` in HTML → Maestro locates elements by `id`
+ * - `testID` renders as `data-testid="..."` → Maestro cannot find this on web
+ */
 export enum ComponentIds {
 	// Drawer navigation
 	OPEN_DRAWER = 'open-drawer',

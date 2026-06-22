@@ -11,9 +11,11 @@ export type SettingsListItemBaseProps = {
 
 type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	/**
-	 * Test identifier for automated testing (e.g. Maestro).
+	 * Element identifier for automated testing (e.g. Maestro).
+	 * Rendered as `nativeID` (HTML `id` attribute) so Maestro web tests can locate the element.
+	 * Always use `nativeID={ComponentIds.XXX}` on the component, not `testID`.
 	 */
-	testID?: string;
+	nativeID?: string;
 	/**
 	 * Custom component rendered in place of the default left icon wrapper.
 	 */

@@ -6,9 +6,13 @@
  * each test file stays concise.
  *
  * CONVENTION: Always use ComponentIds (from app/constants/ComponentIds.ts) for
- * element targeting via testID. This ensures stable, refactor-safe selectors
+ * element targeting via nativeID. This ensures stable, refactor-safe selectors
  * that are decoupled from visible text or component hierarchy. Components must
- * set `testID={ComponentIds.XXX}` so Maestro web tests can locate them by id.
+ * set `nativeID={ComponentIds.XXX}` so Maestro web tests can locate them by HTML id.
+ *
+ * NOTE: The `MaestroTestCase` framework automatically appends `.*` to every `id:`
+ * pattern in the generated YAML so that Maestro's anchored regex matches even when
+ * the rendered HTML id has a dynamic suffix (e.g. `canteen-select-button-23456543`).
  */
 
 import { MaestroTestCase } from './MaestroTestCase';

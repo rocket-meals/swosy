@@ -5,7 +5,7 @@ export type SettingsListSelectOptionItem<T> = {
 	id: T;
 	label: string;
 	icon?: React.ReactNode;
-	testID?: string;
+	nativeID?: string;
 };
 
 export type SettingsListSelectOptionProps<T extends string | number> = {
@@ -49,7 +49,7 @@ const SettingsListSelectOption = <T extends string | number>({
 						showSeparator={index !== options.length - 1}
 						noIconIndent={noIconIndent}
 						onPress={() => onSelect(option)}
-						testID={option.testID}
+						nativeID={option.nativeID}
 					/>
 				);
 			})}

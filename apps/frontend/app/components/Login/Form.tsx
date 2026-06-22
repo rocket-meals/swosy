@@ -92,7 +92,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						setChecked(!isChecked);
 					}}
 					style={styles.section}
-					testID={ComponentIds.LOGIN_ACCEPT_PRIVACY}
+					nativeID={ComponentIds.LOGIN_ACCEPT_PRIVACY}
 				>
 					<Checkbox style={styles.checkbox} value={isChecked} onValueChange={setChecked} color={isChecked ? '#000000' : undefined} />
 					<Text
@@ -135,7 +135,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 					}}
 					disabled={!isChecked}
 					onPress={openAttentionSheet}
-					testID={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
+					nativeID={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
 				>
 					<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
 						<MaterialCommunityIcons name="incognito" size={28} color={contrastColor} />
