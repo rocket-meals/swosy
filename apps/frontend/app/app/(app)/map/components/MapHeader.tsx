@@ -48,7 +48,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 							{...triggerProps}
 							onPress={() => drawerNavigation.toggleDrawer()}
 							style={styles.iconButton}
-							testID={ComponentIds.OPEN_DRAWER}
+							nativeID={ComponentIds.OPEN_DRAWER}
 						>
 							<Ionicons name="menu" size={24} color={theme.header.text} />
 						</IconButton>

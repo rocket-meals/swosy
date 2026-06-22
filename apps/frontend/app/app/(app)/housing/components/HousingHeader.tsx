@@ -60,7 +60,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 								{...triggerProps}
 								onPress={() => navigation.toggleDrawer()}
 								style={{ padding: 10 }}
-								testID={ComponentIds.OPEN_DRAWER}
+								nativeID={ComponentIds.OPEN_DRAWER}
 							>
 								<Ionicons name="menu" size={24} color={theme.header.text} />
 							</IconButton>
