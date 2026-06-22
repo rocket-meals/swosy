@@ -150,7 +150,7 @@ export class MaestroTestCase {
 		return this;
 	}
 
-	/** Assert that no Nth element (0-based) with testID / id matching `id` is visible. */
+	/** Assert that the Nth element (0-based) with testID / id matching `id` is not visible. */
 	assertNotVisibleIdIndex(id: string, index: number): this {
 		this.steps.push({ type: 'assertNotVisibleIdIndex', id, index });
 		return this;
