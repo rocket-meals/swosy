@@ -34,7 +34,7 @@ const CampusHeader: React.FC<CampusHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={onToggleDrawer} style={{ padding: 10 }} nativeID={ComponentIds.OPEN_DRAWER}>
+                            <IconButton {...triggerProps} onPress={onToggleDrawer} style={{ padding: 10 }} testID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                             </IconButton>
                         )}

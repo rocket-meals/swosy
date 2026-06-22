@@ -69,7 +69,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} nativeID={ComponentIds.OPEN_DRAWER}>
+                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} testID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                                 {hasUnreadChats ? (
                                     <View

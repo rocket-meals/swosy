@@ -85,7 +85,6 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 							}}
 							accessibilityLabel={translate(TranslationKeys.select) + ' ' + String(canteen.alias)}
 							testID={ComponentIds.CANTEEN_SELECT_BUTTON}
-							nativeID={ComponentIds.CANTEEN_SELECT_BUTTON}
 							imageSource={{ uri: imageUrl || defaultImage || '' }}
 							containerStyle={{
 								width: '100%',
