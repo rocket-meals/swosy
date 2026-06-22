@@ -203,8 +203,13 @@ export class MaestroTestCase {
 		lines.push('---');
 		lines.push('');
 
+		// Log test start
+		lines.push(evalScriptLog(this.outputFileName, 'started'));
+		lines.push('');
+
 		// --- steps ---
 		for (const step of this.steps) {
+			lines.push(evalScriptLog(this.outputFileName, stepDescription(step)));
 			switch (step.type) {
 				case 'launchApp':
 					lines.push('- launchApp:');
@@ -283,4 +288,44 @@ export class MaestroTestCase {
 function yamlString(value: string): string {
 	const escaped = value.replace(/[\\"]/g, (ch) => `\\${ch}`);
 	return `"${escaped}"`;
+}
+
+/**
+ * Build a human-readable description of a Maestro step for logging.
+ * Used by evalScriptLog to annotate each step before it executes.
+ */
+function stepDescription(step: MaestroStep): string {
+	switch (step.type) {
+		case 'launchApp': return `LaunchApp: ${step.url}`;
+		case 'waitForAnimationToEnd': return 'WaitForAnimationToEnd';
+		case 'takeScreenshot': return `TakeScreenshot: ${step.name}`;
+		case 'tapOn': return `TapOn: ${step.label}`;
+		case 'tapOnIndex': return `TapOnIndex: ${step.label}[${step.index}]`;
+		case 'tapOnId': return `TapOnId: ${step.id}`;
+		case 'tapOnIdIndex': return `TapOnIdIndex: ${step.id}[${step.index}]`;
+		case 'assertVisible': return `AssertVisible: ${step.label}`;
+		case 'assertVisibleId': return `AssertVisibleId: ${step.id}`;
+		case 'assertVisibleIdIndex': return `AssertVisibleIdIndex: ${step.id}[${step.index}]`;
+		case 'assertNotVisible': return `AssertNotVisible: ${step.label}`;
+		case 'assertNotVisibleId': return `AssertNotVisibleId: ${step.id}`;
+		case 'assertNotVisibleIdIndex': return `AssertNotVisibleIdIndex: ${step.id}[${step.index}]`;
+		case 'inputText': return `InputText: ${step.text}`;
+		case 'pressKey': return `PressKey: ${step.key}`;
+		case 'scroll': return 'Scroll';
+		case 'swipe': return `Swipe: ${step.direction}`;
+	}
+}
+
+/**
+ * Generate a Maestro evalScript step that logs a message to the console.
+ * Format: [Test: <testName>]: <message>
+ *
+ * Single quotes in the message are escaped for the JavaScript string literal.
+ * The `${}` syntax is Maestro's expression interpolation (not a JS template literal).
+ */
+function evalScriptLog(testName: string, message: string): string {
+	const fullMsg = `[Test: ${testName}]: ${message}`;
+	// Escape backslashes first, then single quotes for the JS single-quoted string literal
+	const jsEscaped = fullMsg.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+	return `- evalScript: \${console.log('${jsEscaped}')}`;
 }
