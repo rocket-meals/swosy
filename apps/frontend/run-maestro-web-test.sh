@@ -19,7 +19,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GENERATED_DIR="$SCRIPT_DIR/maestro-tests/generated"
-DEV_URL="http://localhost:8081/rocket-meals/"
+DEV_URL="http://localhost:8081/"
 export PATH="$HOME/.maestro/bin:$PATH"
 
 echo "=== Maestro Web Smoke Test ==="
