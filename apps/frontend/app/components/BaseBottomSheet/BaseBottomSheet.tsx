@@ -6,7 +6,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
-import { ComponentIds } from '@/constants/ComponentIds';
 
 // Custom backdrop that calls onClose directly (like the close button) without
 // triggering the sheet's own close animation. This prevents the sheet from
@@ -89,7 +88,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 			<View style={[styles.header]}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
-				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose} nativeID={ComponentIds.MODAL_CLOSE_BUTTON}>
+				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose}>
 					<AntDesign name="close" size={24} color={theme.sheet.closeIcon} />
 				</TouchableOpacity>
 			</View>

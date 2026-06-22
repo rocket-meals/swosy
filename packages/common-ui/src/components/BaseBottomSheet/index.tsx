@@ -5,6 +5,7 @@ import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetProps } fro
 import { AntDesign } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
+import { CommonUiComponentIds } from '../../constants/ComponentIds';
 
 interface CustomBackdropProps extends BottomSheetBackdropProps {
 	onPress?: () => void;
@@ -74,7 +75,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
-				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose}>
+				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose} nativeID={CommonUiComponentIds.MODAL_CLOSE_BUTTON}>
 					<AntDesign name="close" size={24} color={theme.sheet.closeIcon} />
 				</TouchableOpacity>
 			</View>
