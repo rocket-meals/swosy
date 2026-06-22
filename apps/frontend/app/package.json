@@ -20,7 +20,8 @@
     "export:web": "expo export --platform web",
     "export:web:dev": "expo export --platform web",
     "maestro:generate": "ts-node --project ../maestro-tests/tsconfig.json ../maestro-tests/src/framework/generate.ts",
-    "maestro": "bash ../run-maestro-web-test.sh"
+    "maestro": "bash ../run-maestro-web-test.sh",
+    "maestro:runOnly": "bash ../run-maestro-web-test.sh --skip-generate"
   },
   "jest": {
     "preset": "jest-expo"

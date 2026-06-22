@@ -205,7 +205,11 @@ export class MaestroTestCase {
 
 		// --- steps ---
 		for (const step of this.steps) {
-			lines.push(`# [Test: ${this.outputFileName}]: ${stepDescription(step)}`);
+			const desc = stepDescription(step);
+			// Use runShell echo for runtime CLI output; the YAML comment mirrors it for readability.
+			lines.push(`# [Test: ${this.outputFileName}]: ${desc}`);
+			lines.push(`- runShell:`);
+			lines.push(`    command: "echo '[Test: ${this.outputFileName}]: ${desc}'"`);
 			switch (step.type) {
 				case 'launchApp':
 					lines.push('- launchApp:');

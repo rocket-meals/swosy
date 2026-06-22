@@ -3,20 +3,37 @@
 # Maestro Web Smoke Test Runner
 # =============================================================================
 # Usage:
-#   yarn maestro          (from apps/frontend/app/)
-#   ./run-maestro-web-test.sh  (from apps/frontend/)
+#   yarn maestro              (from apps/frontend/app/)  – generates + runs tests
+#   yarn maestro:runOnly      (from apps/frontend/app/)  – runs tests without regenerating
+#   ./run-maestro-web-test.sh [--skip-generate]  (from apps/frontend/)
+#
+# Flags:
+#   --skip-generate   Skip step 4 (YAML generation from TypeScript).
+#                     Use when the generated files are already up-to-date.
 #
 # The script:
 #   1. Starts the Expo web dev server in the background (output suppressed)
 #   2. Waits until the server is reachable
 #   3. Installs Maestro CLI if not already present
-#   4. Generates YAML test files from TypeScript
+#   4. Generates YAML test files from TypeScript  (skipped with --skip-generate)
 #   5. Runs all Maestro tests
 #   6. Lists failed tests and screenshot paths (on failure)
 #   7. Stops the dev server on exit (success or failure)
 # =============================================================================
 
 set -e
+
+# ---------------------------------------------------------------------------
+# Parse flags
+# ---------------------------------------------------------------------------
+SKIP_GENERATE=false
+for arg in "$@"; do
+    case "$arg" in
+        --skip-generate)
+            SKIP_GENERATE=true
+            ;;
+    esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GENERATED_DIR="$SCRIPT_DIR/maestro-tests/generated"
@@ -80,8 +97,12 @@ fi
 # ---------------------------------------------------------------------------
 # 4. Generate YAML test files from TypeScript
 # ---------------------------------------------------------------------------
-echo "Generating YAML test files from TypeScript..."
-(cd "$SCRIPT_DIR/app" && yarn maestro:generate)
+if [ "$SKIP_GENERATE" = true ]; then
+    echo "Skipping YAML generation (--skip-generate flag set)."
+else
+    echo "Generating YAML test files from TypeScript..."
+    (cd "$SCRIPT_DIR/app" && yarn maestro:generate)
+fi
 echo ""
 
 # ---------------------------------------------------------------------------
