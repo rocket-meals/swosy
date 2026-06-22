@@ -7,12 +7,13 @@
 #   ./run-maestro-web-test.sh  (from apps/frontend/)
 #
 # The script:
-#   1. Starts the Expo web dev server in the background
+#   1. Starts the Expo web dev server in the background (output suppressed)
 #   2. Waits until the server is reachable
 #   3. Installs Maestro CLI if not already present
 #   4. Generates YAML test files from TypeScript
 #   5. Runs all Maestro tests
-#   6. Stops the dev server on exit (success or failure)
+#   6. Lists failed tests and screenshot paths (on failure)
+#   7. Stops the dev server on exit (success or failure)
 # =============================================================================
 
 set -e
@@ -26,10 +27,10 @@ echo "=== Maestro Web Smoke Test ==="
 echo ""
 
 # ---------------------------------------------------------------------------
-# 1. Start Expo web dev server in the background
+# 1. Start Expo web dev server in the background (output suppressed)
 # ---------------------------------------------------------------------------
 echo "Starting Expo web dev server..."
-(cd "$SCRIPT_DIR/app" && BROWSER=none npx expo start --web --non-interactive) &
+(cd "$SCRIPT_DIR/app" && BROWSER=none npx expo start --web --non-interactive) > /dev/null 2>&1 &
 WEB_PID=$!
 
 # Stop the dev server (and any child processes) when the script exits
@@ -86,6 +87,30 @@ echo ""
 # ---------------------------------------------------------------------------
 # 5. Run Maestro tests
 # ---------------------------------------------------------------------------
+MAESTRO_DEBUG_DIR="/tmp/maestro-debug-$$"
+mkdir -p "$MAESTRO_DEBUG_DIR"
+
 echo "Running Maestro tests..."
 echo ""
-maestro test "$GENERATED_DIR" --platform web
+set +e
+maestro test "$GENERATED_DIR" --platform web --debug-output "$MAESTRO_DEBUG_DIR"
+MAESTRO_EXIT_CODE=$?
+set -e
+
+# ---------------------------------------------------------------------------
+# 6. Report failed tests and screenshot paths
+# ---------------------------------------------------------------------------
+if [ "$MAESTRO_EXIT_CODE" -ne 0 ]; then
+    echo ""
+    echo "=== Failed Tests & Screenshots ==="
+    FOUND_SCREENSHOTS=false
+    while IFS= read -r -d '' png; do
+        echo "  📸 $png"
+        FOUND_SCREENSHOTS=true
+    done < <(find "$MAESTRO_DEBUG_DIR" "$HOME/.maestro/tests" -type f -name "*.png" -print0 2>/dev/null)
+    if [ "$FOUND_SCREENSHOTS" = false ]; then
+        echo "  (no screenshots found)"
+    fi
+    echo ""
+    exit "$MAESTRO_EXIT_CODE"
+fi
