@@ -1,9 +1,12 @@
 /**
  * web-smoke-test.ts – Web smoke test for the Rocket Meals frontend.
  *
- * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with testID
- * for element targeting. Components must set testID={ComponentIds.XXX} so that
- * Maestro web tests can locate elements by their id attribute.
+ * IMPORTANT: Always use ComponentIds (from app/constants/ComponentIds.ts) with nativeID
+ * for element targeting. Components must set nativeID={ComponentIds.XXX} so that
+ * Maestro web tests can locate elements by their HTML id attribute.
+ * The MaestroTestCase framework automatically appends `.*` to every `id:` pattern
+ * in the generated YAML so Maestro's anchored regex matches even when the rendered
+ * HTML id has a dynamic suffix.
  * Run `yarn maestro:generate` (from `apps/frontend/app/`)
  * to produce `maestro-tests/generated/web-smoke-test.yaml`, then `yarn maestro`
  * (or `./run-maestro-web-test.sh`) to execute it with the Maestro CLI.

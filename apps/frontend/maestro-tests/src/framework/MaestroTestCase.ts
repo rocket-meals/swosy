@@ -233,11 +233,11 @@ export class MaestroTestCase {
 					break;
 				case 'tapOnId':
 					lines.push('- tapOn:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'tapOnIdIndex':
 					lines.push('- tapOn:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					lines.push(`    index: ${step.index}`);
 					break;
 				case 'assertVisible':
@@ -245,11 +245,11 @@ export class MaestroTestCase {
 					break;
 				case 'assertVisibleId':
 					lines.push('- assertVisible:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'assertVisibleIdIndex':
 					lines.push('- assertVisible:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					lines.push(`    index: ${step.index}`);
 					break;
 				case 'assertNotVisible':
@@ -257,11 +257,11 @@ export class MaestroTestCase {
 					break;
 				case 'assertNotVisibleId':
 					lines.push('- assertNotVisible:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'assertNotVisibleIdIndex':
 					lines.push('- assertNotVisible:');
-					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
 					lines.push(`    index: ${step.index}`);
 					break;
 				case 'inputText':
@@ -288,6 +288,18 @@ export class MaestroTestCase {
 function yamlString(value: string): string {
 	const escaped = value.replace(/[\\"]/g, (ch) => `\\${ch}`);
 	return `"${escaped}"`;
+}
+
+/**
+ * Ensure an `id:` pattern ends with `.*` so that Maestro's fully-anchored
+ * regex (`^pattern$`) also matches elements whose rendered HTML `id` attribute
+ * has a dynamic suffix (e.g. `canteen-select-button-23456543`).
+ *
+ * Adding `.*` is always safe: if the id has no suffix the pattern still
+ * matches the exact value, and it also matches any suffixed variant.
+ */
+function idPattern(id: string): string {
+	return id.endsWith('.*') ? id : id + '.*';
 }
 
 /**
