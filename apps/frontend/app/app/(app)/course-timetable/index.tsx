@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
-import { useFocusEffect } from 'expo-router';
 import TimeTableData from '@/constants/TimeTable';
 import CourseTimetable from '../../../components/CourseTimeTable/CourseTimetable';
 import CourseBottomSheet from '../../../components/CourseTimeTable/CourseBottomSheet';
 import styles from './styles';
 import { FontAwesome } from '@expo/vector-icons';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { EventTypes } from './types';
 import { courseTimetableDescriptionEmpty } from '@/constants/translationConstants';
 import RedirectButton from '@/components/RedirectButton';
@@ -45,9 +43,8 @@ const TimetableScreen = () => {
     const { translate } = useLanguage();
     const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
     const { profile } = useAppSelector((state) => state.authReducer);
-	const bottomSheetRef = useRef<BottomSheet>(null);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const [events, setEvents] = useState<EventTypes[]>([]);
-	const [isActive, setIsActive] = useState(false);
 	const [isUpdate, setIsUpdate] = useState(false);
 	const [selectedEventId, setSelectedEventId] = useState('');
 	const [timeTableData, setTimeTableData] = useState(() => TimeTableData(theme).map(item => ({ ...item })));
@@ -56,22 +53,15 @@ const TimetableScreen = () => {
 	const { text, label, link } = extractTextAndLink(courseTimetableDescriptionEmpty[language as keyof typeof courseTimetableDescriptionEmpty] || courseTimetableDescriptionEmpty.en);
 
 	const openSheet = useCallback(() => {
-		bottomSheetRef?.current?.expand();
-	}, []);
+		showScrollViewModal({
+			children: <CourseBottomSheet timeTableData={timeTableData} closeSheet={closeScrollViewModal} isUpdate={isUpdate} selectedEventId={selectedEventId} />,
+		});
+	}, [showScrollViewModal, closeScrollViewModal, timeTableData, isUpdate, selectedEventId]);
 
 	const closeSheet = () => {
-		bottomSheetRef?.current?.close();
+		closeScrollViewModal();
 		setIsUpdate(false);
 	};
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	const capitalizeFirstLetter = (string: string) => {
 		return string?.charAt(0)?.toUpperCase() + string?.slice(1)?.toLowerCase();
@@ -168,21 +158,6 @@ const TimetableScreen = () => {
                                 )}
                                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_course_timetable} />
                         </ScrollView>
-                        {isActive && (
-                                <BaseBottomSheet
-                                        ref={bottomSheetRef}
-                                        index={-1}
-                                        backgroundStyle={{
-                                                ...styles.sheetBackground,
-                                                backgroundColor: theme.sheet.sheetBg,
-                                        }}
-                                        enablePanDownToClose
-                                        handleComponent={null}
-                                        onClose={closeSheet}
-                                >
-                                        <CourseBottomSheet timeTableData={timeTableData} closeSheet={closeSheet} isUpdate={isUpdate} selectedEventId={selectedEventId} />
-                                </BaseBottomSheet>
-                        )}
                 </View>
         );
 };

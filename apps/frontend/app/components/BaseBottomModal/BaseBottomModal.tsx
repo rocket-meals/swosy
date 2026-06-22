@@ -1,6 +1,6 @@
 import React, { ReactNode, useRef } from 'react';
 import { Text, View } from 'react-native';
-import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
 import { useTheme } from '@/hooks/useTheme';
 
 export interface BaseBottomModalProps {
