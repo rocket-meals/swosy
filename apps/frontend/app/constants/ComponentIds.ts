@@ -10,6 +10,9 @@
  * - `testID` renders as `data-testid="..."` → Maestro cannot find this on web
  */
 export enum ComponentIds {
+	// Modal
+	MODAL_CLOSE_BUTTON = 'modal-close-button',
+
 	// Drawer navigation
 	OPEN_DRAWER = 'open-drawer',
 	DRAWER_ITEM_FOOD_OFFERS = 'drawer-item-foodoffers',

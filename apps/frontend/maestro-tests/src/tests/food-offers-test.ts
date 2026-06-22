@@ -24,6 +24,10 @@ selectFirstCanteen(test);
 test
 	.takeScreenshot('food-offers-after-canteen-selected')
 
+	// Dismiss any popup/event modal that may have appeared after canteen selection
+	.optionalTapOnId(ComponentIds.MODAL_CLOSE_BUTTON)
+	.waitForAnimationToEnd()
+
 	// Navigate to food offers via drawer
 	.tapOnId(ComponentIds.OPEN_DRAWER)
 	.waitForAnimationToEnd()
