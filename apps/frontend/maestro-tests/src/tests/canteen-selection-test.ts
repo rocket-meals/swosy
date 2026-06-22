@@ -31,8 +31,8 @@ test
 	.scroll()
 	.takeScreenshot('canteen-selection-scrolled')
 
-	// Select a canteen
-	.tapOnId(ComponentIds.CANTEEN_SELECT_BUTTON)
+	// Select the first canteen
+	.tapOnIdIndex(ComponentIds.CANTEEN_SELECT_BUTTON, 0)
 	.waitForAnimationToEnd()
 	.takeScreenshot('canteen-selected-main-app')
 
