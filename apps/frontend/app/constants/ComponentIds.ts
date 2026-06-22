@@ -12,6 +12,10 @@
  * NOTE: IDs from the common-ui package are re-exported here so that all Maestro
  * tests and app components can import from a single location.
  */
+// NOTE: We import directly from the common-ui source file (bypassing the package
+// index) so that the Maestro test generator (tsconfig without `jsx`) can also
+// import this file without triggering a JSX compilation error that would occur
+// if the full `repo-depkit-common-ui` entry point were used.
 import { CommonUiComponentIds } from '../../../../packages/common-ui/src/constants/ComponentIds';
 
 export { CommonUiComponentIds };
@@ -90,4 +94,4 @@ export enum AppComponentIds {
  * Use this object for all element targeting in Maestro tests and app components.
  */
 export const ComponentIds = { ...AppComponentIds, ...CommonUiComponentIds };
-export type ComponentIds = AppComponentIds | CommonUiComponentIds;
+export type ComponentIdValue = AppComponentIds | CommonUiComponentIds;
