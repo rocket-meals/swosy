@@ -22,10 +22,13 @@ type MaestroStep =
 	| { type: 'tapOn'; label: string }
 	| { type: 'tapOnIndex'; label: string; index: number }
 	| { type: 'tapOnId'; id: string }
+	| { type: 'tapOnIdIndex'; id: string; index: number }
 	| { type: 'assertVisible'; label: string }
 	| { type: 'assertVisibleId'; id: string }
+	| { type: 'assertVisibleIdIndex'; id: string; index: number }
 	| { type: 'assertNotVisible'; label: string }
 	| { type: 'assertNotVisibleId'; id: string }
+	| { type: 'assertNotVisibleIdIndex'; id: string; index: number }
 	| { type: 'inputText'; text: string }
 	| { type: 'pressKey'; key: string }
 	| { type: 'scroll' }
@@ -100,11 +103,20 @@ export class MaestroTestCase {
 	}
 
 	/**
-	 * Tap on the first element whose accessibility label / id matches `id`.
+	 * Tap on the first element whose testID / id matches `id`.
 	 * Maestro performs a regex match, so partial patterns like `"Auswählen.*"` work.
 	 */
 	tapOnId(id: string): this {
 		this.steps.push({ type: 'tapOnId', id });
+		return this;
+	}
+
+	/**
+	 * Tap on the Nth element (0-based) whose testID / id matches `id`.
+	 * Useful when multiple elements share the same testID and you need a specific one.
+	 */
+	tapOnIdIndex(id: string, index: number): this {
+		this.steps.push({ type: 'tapOnIdIndex', id, index });
 		return this;
 	}
 
@@ -114,9 +126,15 @@ export class MaestroTestCase {
 		return this;
 	}
 
-	/** Assert that an element with accessibility label / id matching `id` is visible. */
+	/** Assert that an element with testID / id matching `id` is visible. */
 	assertVisibleId(id: string): this {
 		this.steps.push({ type: 'assertVisibleId', id });
+		return this;
+	}
+
+	/** Assert that the Nth element (0-based) with testID / id matching `id` is visible. */
+	assertVisibleIdIndex(id: string, index: number): this {
+		this.steps.push({ type: 'assertVisibleIdIndex', id, index });
 		return this;
 	}
 
@@ -126,9 +144,15 @@ export class MaestroTestCase {
 		return this;
 	}
 
-	/** Assert that no element with accessibility label / id matching `id` is visible. */
+	/** Assert that no element with testID / id matching `id` is visible. */
 	assertNotVisibleId(id: string): this {
 		this.steps.push({ type: 'assertNotVisibleId', id });
+		return this;
+	}
+
+	/** Assert that the Nth element (0-based) with testID / id matching `id` is not visible. */
+	assertNotVisibleIdIndex(id: string, index: number): this {
+		this.steps.push({ type: 'assertNotVisibleIdIndex', id, index });
 		return this;
 	}
 
@@ -206,6 +230,11 @@ export class MaestroTestCase {
 					lines.push('- tapOn:');
 					lines.push(`    id: ${yamlString(step.id)}`);
 					break;
+				case 'tapOnIdIndex':
+					lines.push('- tapOn:');
+					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    index: ${step.index}`);
+					break;
 				case 'assertVisible':
 					lines.push(`- assertVisible: ${yamlString(step.label)}`);
 					break;
@@ -213,12 +242,22 @@ export class MaestroTestCase {
 					lines.push('- assertVisible:');
 					lines.push(`    id: ${yamlString(step.id)}`);
 					break;
+				case 'assertVisibleIdIndex':
+					lines.push('- assertVisible:');
+					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    index: ${step.index}`);
+					break;
 				case 'assertNotVisible':
 					lines.push(`- assertNotVisible: ${yamlString(step.label)}`);
 					break;
 				case 'assertNotVisibleId':
 					lines.push('- assertNotVisible:');
 					lines.push(`    id: ${yamlString(step.id)}`);
+					break;
+				case 'assertNotVisibleIdIndex':
+					lines.push('- assertNotVisible:');
+					lines.push(`    id: ${yamlString(step.id)}`);
+					lines.push(`    index: ${step.index}`);
 					break;
 				case 'inputText':
 					lines.push(`- inputText: ${yamlString(step.text)}`);
