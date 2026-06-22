@@ -1,5 +1,5 @@
 Key,Message,Component,Line
-"AZ7uygSu20gtn1HC5Sgn","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",56
+"AZ7uygSu20gtn1HC5Sgn","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",57
 "AZ7utNq4CoslCNECNYhO","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",235
 "AZ7utNq4CoslCNECNYhP","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",236
 "AZ7utNq4CoslCNECNYhQ","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",247
@@ -23,7 +23,7 @@ Key,Message,Component,Line
 "AZ7csaX1YHFvwFUOeLO2","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/MaestroTestCase.ts",273
 "AZ7csaZuYHFvwFUOeLO3","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",11
 "AZ7csaZuYHFvwFUOeLO4","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/src/framework/generate.ts",12
-"AZ7csaZ9YHFvwFUOeLO6","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",74
+"AZ7csaZ9YHFvwFUOeLO6","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",75
 "AZ7XznO8_c1oKk55Rx7t","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",252
 "AZ7XznWl_c1oKk55Rx7u","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",314
 "AZ7XT5ga25-90VeWqLM9","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",117

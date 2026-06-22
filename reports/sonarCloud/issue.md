@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 40 | 40 |
-| 🐛 Reliability | 6851 | 10 |
+| 🐛 Reliability | 6853 | 10 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16891 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16893 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -131,12 +131,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py#L53
 
 - **"npx" can install packages on-demand and run their lifecycle scripts.**
-  apps/frontend/run-maestro-web-test.sh:32
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L32
+  apps/frontend/run-maestro-web-test.sh:33
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L33
 
 - **Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.**
-  apps/frontend/run-maestro-web-test.sh:69
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L69
+  apps/frontend/run-maestro-web-test.sh:70
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L70
 
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
@@ -174,7 +174,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (10/6851)
+## 🐛 Reliability (10/6853)
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
