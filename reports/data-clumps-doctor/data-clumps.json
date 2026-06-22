@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-06-22T10:30:05.726Z",
+  "report_timestamp": "2026-06-22T14:56:49.065Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,18 +28,18 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4375,
-        "detection_time_ms": 89,
+        "ast_generation_time_ms": 4239,
+        "detection_time_ms": 92,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1018-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 352.71,
-          "os_memory_free": 14978011136,
-          "os_memory_total": 16770752512,
+          "os_uptime": 122.25,
+          "os_memory_free": 14912950272,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "9088c2b1aa6280b0523eec52e3d81cd9dae7d290",
-    "project_commit_hash": "9088c2b1aa6280b0523eec52e3d81cd9dae7d290",
+    "project_version": "60983f79e806cd03f23bf48a16a91c7f8edfbde8",
+    "project_commit_hash": "60983f79e806cd03f23bf48a16a91c7f8edfbde8",
     "project_tag": null,
-    "project_commit_date": "1782124103",
+    "project_commit_date": "1782140101",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -1824,9 +1824,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColortestID": {
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColornativeID": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColortestID",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColornativeID",
       "probability": 1,
       "from_file_path": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",
       "from_class_or_interface_key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps",
@@ -1915,29 +1915,29 @@
             "endColumn": 30
           }
         },
-        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/testID": {
-          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/testID",
-          "name": "testID",
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/nativeID": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/nativeID",
+          "name": "nativeID",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/testID",
-            "name": "testID",
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/nativeID",
+            "name": "nativeID",
             "type": "string",
             "modifiers": [],
             "position": {
               "startLine": 10,
               "startColumn": 2,
               "endLine": 10,
-              "endColumn": 18
+              "endColumn": 20
             }
           },
           "position": {
             "startLine": 56,
             "startColumn": 9,
             "endLine": 56,
-            "endColumn": 25
+            "endColumn": 27
           }
         }
       },
@@ -9909,9 +9909,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColortestID": {
+    "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColornativeID": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColortestID",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColornativeID",
       "probability": 1,
       "from_file_path": "packages/common-ui/src/components/AppDrawer/types.ts",
       "from_class_or_interface_key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem",
@@ -10000,29 +10000,29 @@
             "endColumn": 23
           }
         },
-        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/testID": {
-          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/testID",
-          "name": "testID",
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/nativeID": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/nativeID",
+          "name": "nativeID",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/testID",
-            "name": "testID",
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/nativeID",
+            "name": "nativeID",
             "type": "string",
             "modifiers": [],
             "position": {
               "startLine": 56,
               "startColumn": 9,
               "endLine": 56,
-              "endColumn": 25
+              "endColumn": 27
             }
           },
           "position": {
             "startLine": 10,
             "startColumn": 2,
             "endLine": 10,
-            "endColumn": 18
+            "endColumn": 20
           }
         }
       },
