@@ -203,13 +203,9 @@ export class MaestroTestCase {
 		lines.push('---');
 		lines.push('');
 
-		// Log test start
-		lines.push(evalScriptLog(this.outputFileName, 'started'));
-		lines.push('');
-
 		// --- steps ---
 		for (const step of this.steps) {
-			lines.push(evalScriptLog(this.outputFileName, stepDescription(step)));
+			lines.push(`# [Test: ${this.outputFileName}]: ${stepDescription(step)}`);
 			switch (step.type) {
 				case 'launchApp':
 					lines.push('- launchApp:');
@@ -291,8 +287,8 @@ function yamlString(value: string): string {
 }
 
 /**
- * Build a human-readable description of a Maestro step for logging.
- * Used by evalScriptLog to annotate each step before it executes.
+ * Build a human-readable description of a Maestro step.
+ * Used to generate YAML comments that annotate each step in the generated file.
  */
 function stepDescription(step: MaestroStep): string {
 	switch (step.type) {
@@ -314,26 +310,4 @@ function stepDescription(step: MaestroStep): string {
 		case 'scroll': return 'Scroll';
 		case 'swipe': return `Swipe: ${step.direction}`;
 	}
-}
-
-/**
- * Generate a Maestro evalScript step that logs a message to the console.
- * Format: [Test: <testName>]: <message>
- *
- * The entire YAML scalar is wrapped in single quotes so that `${...}`,
- * colons, and other special characters are not mis-parsed by the YAML parser.
- * Inside the JS string we use double quotes; any literal double quote in the
- * message is escaped as `\"`.
- *
- * Result example:
- *   - evalScript: '${console.log("[Test: dark-mode-test]: started")}'
- */
-function evalScriptLog(testName: string, message: string): string {
-	const fullMsg = `[Test: ${testName}]: ${message}`;
-	// Escape backslashes and double quotes for the JS double-quoted string literal
-	const jsEscaped = fullMsg.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-	// Wrap the whole YAML value in single quotes so the YAML parser leaves it alone.
-	// Single quotes inside the YAML scalar are represented as '' (two single quotes).
-	const yamlEscaped = jsEscaped.replace(/'/g, "''");
-	return `- evalScript: '\${console.log("${yamlEscaped}")}'`;
 }
