@@ -11,7 +11,7 @@ const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 	const { translate } = useLanguage();
 	console.log('Content Value', content?.value);
 	return (
-		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
+		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg, ...styles.contentContainer }}>
 			<View
 				style={{
 					...styles.sheetHeader,

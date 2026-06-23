@@ -29,7 +29,7 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 	};
 
 	return (
-		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
+		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg, ...styles.contentContainer }}>
 			<View
 				style={{
 					...styles.sheetHeader,

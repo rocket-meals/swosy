@@ -290,7 +290,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 				</Text>
 			</View>
 
-			<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
+			<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg, ...styles.contentContainer }}>
 				{selectedItem ? (
 					selectedItem.label === 'color' ? (
 						<View
