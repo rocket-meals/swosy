@@ -13,7 +13,7 @@ import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks'
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
+import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
 import { MarkingContent } from '@/components/MarkingBottomSheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
@@ -63,6 +63,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
     const serverInfo = useAppSelector((state) => state.settings.serverInfo, shallowEqual);
     const mode = useAppSelector((state) => state.settings.selectedTheme);
+    // Zuletzt ausgewählte Reiter-Gruppe aus dem dauerhaften Settings-Store lesen
+    const foodDetailsLastTab = useAppSelector((state) => state.settings.foodDetailsLastTab);
 
     const ownFoodFeedbacks = useAppSelector(selectOwnFoodFeedbacks);
     const previousFeedback = useMemo(() => {
@@ -86,7 +88,17 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
     const { openAccountRequiredModal } = useAccountRequiredModal();
 
-    const [activeTab, setActiveTab] = useState('feedbacks');
+    // Initialisierung mit dem zuletzt gespeicherten Reiter.
+    // Ist noch kein Wert gespeichert (null oder undefined bei alten Installationen),
+    // wird der Standardreiter 'feedbacks' verwendet.
+    const [activeTab, setActiveTab] = useState(foodDetailsLastTab || 'feedbacks');
+
+    // Beim Wechsel des Reiters den neuen Wert dauerhaft im Settings-Store speichern,
+    // damit beim nächsten Öffnen der Food Details automatisch der richtige Reiter aktiv ist.
+    const handleSetActiveTab = useCallback((tab: string) => {
+        setActiveTab(tab);
+        dispatch({ type: SET_FOOD_DETAILS_LAST_TAB, payload: tab });
+    }, [dispatch]);
 
     const getFoodDetails = useCallback(async () => {
         try {
@@ -374,7 +386,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
 
                     <TabController
                         activeTab={activeTab}
-                        setActiveTab={setActiveTab}
+                        setActiveTab={handleSetActiveTab}
                         theme={theme}
                         contrastColor={contrastColor}
                         translate={translate}
