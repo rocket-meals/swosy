@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 import React from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DataSheetProps } from './types';
@@ -12,7 +11,7 @@ const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 	const { translate } = useLanguage();
 	console.log('Content Value', content?.value);
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
 			<View
 				style={{
 					...styles.sheetHeader,
@@ -35,7 +34,7 @@ const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
 			</View>
 
 			<Text style={{ fontSize: isWeb ? 18 : 16, color: theme.sheet.text }}>{content?.value ? JSON.stringify(content.value, null, 2) : JSON.stringify({}, null, 2)}</Text>
-		</BottomSheetScrollView>
+		</View>
 	);
 };
 

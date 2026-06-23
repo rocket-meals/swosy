@@ -1,6 +1,5 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from '../FilterFormSheet/styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -30,7 +29,7 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 	};
 
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
 			<View
 				style={{
 					...styles.sheetHeader,
@@ -91,7 +90,7 @@ const FormSubmissionSortSheet: React.FC<FormSubmissionSortSheetProps> = ({ close
 					</TouchableOpacity>
 				))}
 			</View>
-		</BottomSheetScrollView>
+		</View>
 	);
 };
 

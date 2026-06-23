@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { days } from '../../constants/SettingData';
@@ -291,7 +290,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 				</Text>
 			</View>
 
-			<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+			<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
 				{selectedItem ? (
 					selectedItem.label === 'color' ? (
 						<View
@@ -458,7 +457,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						</View>
 					</View>
 				)}
-			</BottomSheetScrollView>
+			</View>
 		</View>
 	);
 };
