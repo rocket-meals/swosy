@@ -58,7 +58,7 @@ export type SettingsState = {
         wikis: DatabaseTypes.Wikis[];
         nickNameLocal: string;
         amountColumnsForcard: number;
-        foodDetailsLastTab: string;
+        foodDetailsLastTab: 'feedbacks' | 'details' | 'labels';
         useWebpForAssets: boolean;
         foodOffersNextDayThreshold: string | null;
         debugMode: boolean;

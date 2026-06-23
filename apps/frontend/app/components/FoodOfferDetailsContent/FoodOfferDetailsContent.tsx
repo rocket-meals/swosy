@@ -89,7 +89,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const { openAccountRequiredModal } = useAccountRequiredModal();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter (Standard: 'feedbacks')
-    const [activeTab, setActiveTab] = useState(foodDetailsLastTab || 'feedbacks');
+    const [activeTab, setActiveTab] = useState(foodDetailsLastTab);
 
     // Beim Wechsel des Reiters den neuen Wert dauerhaft im Settings-Store speichern,
     // damit beim nächsten Öffnen der Food Details automatisch der richtige Reiter aktiv ist.
