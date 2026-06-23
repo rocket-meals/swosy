@@ -23,7 +23,8 @@ const initialState = {
         // Zuletzt ausgewählte Reiter-Gruppe in den Food Details (feedbacks, details, labels).
         // Wird dauerhaft gespeichert, damit der Nutzer beim nächsten Öffnen automatisch
         // zum zuletzt aktiven Reiter zurückkehrt.
-        foodDetailsLastTab: 'feedbacks',
+        // null = noch kein Reiter explizit gewählt → Standardreiter (feedbacks) wird verwendet.
+        foodDetailsLastTab: null as 'feedbacks' | 'details' | 'labels' | null,
         useWebpForAssets: true,
         foodOffersNextDayThreshold: null,
         debugMode: false,
