@@ -1,5 +1,6 @@
 import { ConfigCustomerEnum } from '@/config';
 import { ApartmentSortOption, CampusSortOption, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
+import { FoodOfferDetailTab } from '@/constants/TabEnums';
 
 export type AuthState = {
 	user: DatabaseTypes.DirectusUsers | Record<string, any> | null;
@@ -58,7 +59,7 @@ export type SettingsState = {
         wikis: DatabaseTypes.Wikis[];
         nickNameLocal: string;
         amountColumnsForcard: number;
-        foodDetailsLastTab: 'feedbacks' | 'details' | 'labels' | null;
+        foodDetailsLastTab: FoodOfferDetailTab | null;
         useWebpForAssets: boolean;
         foodOffersNextDayThreshold: string | null;
         debugMode: boolean;

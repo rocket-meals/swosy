@@ -20,6 +20,7 @@ import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle/SettingsGroupTitle';
 import DebugView from '@/components/DebugView';
 import { TranslationKeys } from '@/locales/keys';
+import { CampusDetailTab } from '@/constants/TabEnums';
 
 export interface BuildingDetailsContentProps {
     id?: string;
@@ -65,7 +66,7 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
 
     const projectLogo = serverInfo?.info?.project?.project_logo;
     const defaultImage = useMemo(() => getImageUrl(projectLogo), [projectLogo]);
-    const [activeTab, setActiveTab] = useState<'information' | 'description'>('information');
+    const [activeTab, setActiveTab] = useState<CampusDetailTab>(CampusDetailTab.INFORMATION);
 
     const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
     const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
@@ -99,9 +100,9 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
     }, [campusDetails, openLinkCoordinateModal]);
 
     const renderContent = useMemo(() => {
-        if (activeTab === 'information') return <LocationInformation campusDetails={campusDetails} />;
-        if (activeTab === 'description') return <BuildingDescription campusDetails={campusDetails} />;
-        return null;
+        if (activeTab === CampusDetailTab.INFORMATION) return <LocationInformation campusDetails={campusDetails} />;
+        if (activeTab === CampusDetailTab.DESCRIPTION) return <BuildingDescription campusDetails={campusDetails} />;
+        return <LocationInformation campusDetails={campusDetails} />;
     }, [activeTab, campusDetails]);
 
     const themeStyles = useMemo(

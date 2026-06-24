@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     DimensionValue,
@@ -19,6 +19,7 @@ import HousingDetailsImage from '@/app/(app)/housing/details/components/HousingD
 import HousingDetailsHeader from '@/app/(app)/housing/details/components/HousingDetailsHeader';
 import HousingDetailsTabs from '@/app/(app)/housing/details/components/HousingDetailsTabs';
 import HousingDetailsContent from '@/app/(app)/housing/details/components/HousingDetailsContent';
+import { HousingDetailTab } from '@/constants/TabEnums';
 
 export interface ApartmentDetailsContentProps {
     id?: string;
@@ -35,12 +36,23 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
     const primaryColor = useAppSelector((state) => state.settings.primaryColor);
     const mode = useAppSelector((state) => state.settings.selectedTheme);
 
-    const [activeTab, setActiveTab] = useState('information');
-
     const apartmentDetails = useAppSelector((state) => {
         if (!id) return null;
         return state.apartment.apartmentsDict[String(id)] || null;
     }, shallowEqual);
+
+    const [activeTab, setActiveTab] = useState<HousingDetailTab>(HousingDetailTab.INFORMATION);
+
+    // Wenn der aktive Reiter 'washing-machine' ist, aber keine Waschmaschinen vorhanden sind,
+    // wird automatisch auf den ersten Reiter (information) zurückgefallen.
+    useEffect(() => {
+        if (
+            activeTab === HousingDetailTab.WASHING_MACHINE &&
+            !((apartmentDetails as any)?.washingmachines?.length > 0)
+        ) {
+            setActiveTab(HousingDetailTab.INFORMATION);
+        }
+    }, [activeTab, apartmentDetails]);
 
     const defaultImage = useMemo(() => getImageUrl(projectLogo), [projectLogo]);
 

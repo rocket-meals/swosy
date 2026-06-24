@@ -3,9 +3,10 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
 import WashingMachines from '@/components/WashingMachines';
+import { HousingDetailTab } from '@/constants/TabEnums';
 
 interface HousingDetailsContentProps {
-	activeTab: string;
+	activeTab: HousingDetailTab;
 	apartmentDetails: DatabaseTypes.Apartments | null;
 }
 
@@ -14,14 +15,14 @@ const HousingDetailsContent: React.FC<HousingDetailsContentProps> = ({
 	apartmentDetails,
 }) => {
 	switch (activeTab) {
-		case 'information':
+		case HousingDetailTab.INFORMATION:
 			return <LocationInformation campusDetails={apartmentDetails} />;
-		case 'description':
+		case HousingDetailTab.DESCRIPTION:
 			return <BuildingDescription campusDetails={apartmentDetails} />;
-		case 'washing-machine':
+		case HousingDetailTab.WASHING_MACHINE:
 			return <WashingMachines campusDetails={apartmentDetails} />;
 		default:
-			return null;
+			return <LocationInformation campusDetails={apartmentDetails} />;
 	}
 };
 
