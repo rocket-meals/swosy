@@ -36,6 +36,11 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
     const primaryColor = useAppSelector((state) => state.settings.primaryColor);
     const mode = useAppSelector((state) => state.settings.selectedTheme);
 
+    const apartmentDetails = useAppSelector((state) => {
+        if (!id) return null;
+        return state.apartment.apartmentsDict[String(id)] || null;
+    }, shallowEqual);
+
     const [activeTab, setActiveTab] = useState<HousingDetailTab>(HousingDetailTab.INFORMATION);
 
     // Wenn der aktive Reiter 'washing-machine' ist, aber keine Waschmaschinen vorhanden sind,
@@ -48,11 +53,6 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
             setActiveTab(HousingDetailTab.INFORMATION);
         }
     }, [activeTab, apartmentDetails]);
-
-    const apartmentDetails = useAppSelector((state) => {
-        if (!id) return null;
-        return state.apartment.apartmentsDict[String(id)] || null;
-    }, shallowEqual);
 
     const defaultImage = useMemo(() => getImageUrl(projectLogo), [projectLogo]);
 

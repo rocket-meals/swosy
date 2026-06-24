@@ -48,6 +48,8 @@ export interface FoodOfferDetailsContentProps {
 const selectFoodState = (state: RootState) => state.food;
 const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
 
+const VALID_FOOD_TABS = Object.values(FoodOfferDetailTab);
+
 const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId, initialImageAssetId, initialImageRemoteUrl }) => {
     const { theme } = useTheme();
     const { translate } = useLanguage();
@@ -92,8 +94,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
     // Ist der gespeicherte Wert kein gültiger Tab (z. B. null, undefined oder ein veralteter Wert),
     // wird automatisch der erste Reiter (feedbacks) als Standard verwendet.
-    const validFoodTabs = Object.values(FoodOfferDetailTab);
-    const initialFoodTab = foodDetailsLastTab && validFoodTabs.includes(foodDetailsLastTab)
+    const initialFoodTab = foodDetailsLastTab && VALID_FOOD_TABS.includes(foodDetailsLastTab)
         ? foodDetailsLastTab
         : FoodOfferDetailTab.FEEDBACKS;
     const [activeTab, setActiveTab] = useState<FoodOfferDetailTab>(initialFoodTab);
