@@ -8,10 +8,11 @@ import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { TabsStyleProps } from '@/components/shared/tabsStyleProps';
+import { HousingDetailTab } from '@/constants/TabEnums';
 
 interface HousingDetailsTabsProps extends TabsStyleProps {
-	activeTab: string;
-	setActiveTab: (tab: string) => void;
+	activeTab: HousingDetailTab;
+	setActiveTab: (tab: HousingDetailTab) => void;
 	translate: (key: string) => string;
 	apartmentDetails: DatabaseTypes.Apartments | null;
 }
@@ -27,7 +28,7 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 	screenWidth,
 }) => {
 	const renderTab = (
-		key: string,
+		key: HousingDetailTab,
 		icon: React.ReactNode,
 		translationKey: string
 	) => (
@@ -66,20 +67,20 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 			]}
 		>
 			{renderTab(
-				'information',
+				HousingDetailTab.INFORMATION,
 				<Foundation
 					name="info"
 					size={26}
-					color={activeTab === 'information' ? contrastColor : theme.screen.icon}
+					color={activeTab === HousingDetailTab.INFORMATION ? contrastColor : theme.screen.icon}
 				/>,
 				TranslationKeys.information
 			)}
 			{renderTab(
-				'description',
+				HousingDetailTab.DESCRIPTION,
 				<MaterialCommunityIcons
 					name="sort-variant"
 					size={26}
-					color={activeTab === 'description' ? contrastColor : theme.screen.icon}
+					color={activeTab === HousingDetailTab.DESCRIPTION ? contrastColor : theme.screen.icon}
 				/>,
 				TranslationKeys.description
 			)}
@@ -87,11 +88,11 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 			{apartmentDetails &&
 				(apartmentDetails as any)?.washingmachines?.length > 0 &&
 				renderTab(
-					'washing-machine',
+					HousingDetailTab.WASHING_MACHINE,
 					<MaterialCommunityIcons
 						name="washing-machine"
 						size={26}
-						color={activeTab === 'washing-machine' ? contrastColor : theme.screen.icon}
+						color={activeTab === HousingDetailTab.WASHING_MACHINE ? contrastColor : theme.screen.icon}
 					/>,
 					TranslationKeys.washing_machine
 				)}

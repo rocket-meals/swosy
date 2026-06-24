@@ -14,6 +14,7 @@ import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, SET_FOOD_DETAILS_LAST_TAB, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
+import { FoodOfferDetailTab } from '@/constants/TabEnums';
 import { MarkingContent } from '@/components/MarkingBottomSheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
@@ -89,13 +90,17 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const { openAccountRequiredModal } = useAccountRequiredModal();
 
     // Initialisierung mit dem zuletzt gespeicherten Reiter.
-    // Ist noch kein Wert gespeichert (null oder undefined bei alten Installationen),
-    // wird der Standardreiter 'feedbacks' verwendet.
-    const [activeTab, setActiveTab] = useState(foodDetailsLastTab || 'feedbacks');
+    // Ist der gespeicherte Wert kein gültiger Tab (z. B. null, undefined oder ein veralteter Wert),
+    // wird automatisch der erste Reiter (feedbacks) als Standard verwendet.
+    const validFoodTabs = Object.values(FoodOfferDetailTab);
+    const initialFoodTab = foodDetailsLastTab && validFoodTabs.includes(foodDetailsLastTab)
+        ? foodDetailsLastTab
+        : FoodOfferDetailTab.FEEDBACKS;
+    const [activeTab, setActiveTab] = useState<FoodOfferDetailTab>(initialFoodTab);
 
     // Beim Wechsel des Reiters den neuen Wert dauerhaft im Settings-Store speichern,
     // damit beim nächsten Öffnen der Food Details automatisch der richtige Reiter aktiv ist.
-    const handleSetActiveTab = useCallback((tab: string) => {
+    const handleSetActiveTab = useCallback((tab: FoodOfferDetailTab) => {
         setActiveTab(tab);
         dispatch({ type: SET_FOOD_DETAILS_LAST_TAB, payload: tab });
     }, [dispatch]);
@@ -183,14 +188,14 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
 
     const renderContent = useCallback(() => {
         switch (activeTab) {
-            case 'feedbacks':
+            case FoodOfferDetailTab.FEEDBACKS:
                 return FeedbacksContent;
-            case 'details':
+            case FoodOfferDetailTab.DETAILS:
                 return DetailsContent;
-            case 'labels':
+            case FoodOfferDetailTab.LABELS:
                 return LabelsContent;
             default:
-                return null;
+                return FeedbacksContent;
         }
     }, [activeTab, FeedbacksContent, DetailsContent, LabelsContent]);
 

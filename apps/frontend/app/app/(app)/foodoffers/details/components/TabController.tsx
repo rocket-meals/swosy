@@ -7,10 +7,11 @@ import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 import { FoodAreaDisplayProps } from './types';
+import { FoodOfferDetailTab } from '@/constants/TabEnums';
 
 interface TabControllerProps extends FoodAreaDisplayProps {
-    activeTab: string;
-    setActiveTab: (tab: string) => void;
+    activeTab: FoodOfferDetailTab;
+    setActiveTab: (tab: FoodOfferDetailTab) => void;
     contrastColor: string;
     translate: (key: string) => string;
     containerWidth: string | number;
@@ -25,14 +26,14 @@ const TabController = ({
     containerWidth,
     foodsAreaColor,
 }: TabControllerProps) => {
-    const getTabStyle = useCallback((tabName: string) => [
+    const getTabStyle = useCallback((tabName: FoodOfferDetailTab) => [
         styles.tab,
         activeTab === tabName 
             ? { backgroundColor: foodsAreaColor, borderColor: foodsAreaColor } 
             : { backgroundColor: theme.screen.iconBg }
     ], [activeTab, foodsAreaColor, theme.screen.iconBg]);
 
-    const renderTab = (tabName: string, iconName: any, labelKey: string) => (
+    const renderTab = (tabName: FoodOfferDetailTab, iconName: any, labelKey: string) => (
         <CustomTooltip
             placement="top"
             trigger={(triggerProps) => (
@@ -77,9 +78,9 @@ const TabController = ({
                     isWeb ? styles.tabsWeb : styles.tabsMobile
                 ]}
             >
-                {renderTab('feedbacks', 'chat', TranslationKeys.food_feedbacks)}
-                {renderTab('details', 'nutrition', TranslationKeys.food_data)}
-                {renderTab('labels', 'medical-bag', TranslationKeys.markings)}
+                {renderTab(FoodOfferDetailTab.FEEDBACKS, 'chat', TranslationKeys.food_feedbacks)}
+                {renderTab(FoodOfferDetailTab.DETAILS, 'nutrition', TranslationKeys.food_data)}
+                {renderTab(FoodOfferDetailTab.LABELS, 'medical-bag', TranslationKeys.markings)}
             </View>
         </View>
     );

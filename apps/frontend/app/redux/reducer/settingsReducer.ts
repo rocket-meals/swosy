@@ -2,6 +2,7 @@ import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_C
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { ConfigCustomerEnum, getCustomerConfig, getCustomerEnumForConfig } from '@/config';
 import { MapStyleKey } from 'repo-depkit-common-ui';
+import { FoodOfferDetailTab } from '@/constants/TabEnums';
 
 const initialState = {
 	selectedTheme: 'systematic',
@@ -24,7 +25,7 @@ const initialState = {
         // Wird dauerhaft gespeichert, damit der Nutzer beim nächsten Öffnen automatisch
         // zum zuletzt aktiven Reiter zurückkehrt.
         // null = noch kein Reiter explizit gewählt → Standardreiter (feedbacks) wird verwendet.
-        foodDetailsLastTab: null as 'feedbacks' | 'details' | 'labels' | null,
+        foodDetailsLastTab: null as FoodOfferDetailTab | null,
         useWebpForAssets: true,
         foodOffersNextDayThreshold: null,
         debugMode: false,

@@ -6,12 +6,11 @@ import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { TabsStyleProps } from '@/components/shared/tabsStyleProps';
-
-type TabType = 'information' | 'description';
+import { CampusDetailTab } from '@/constants/TabEnums';
 
 interface DetailsTabsProps extends TabsStyleProps {
-    activeTab: TabType;
-    setActiveTab: (tab: TabType) => void;
+    activeTab: CampusDetailTab;
+    setActiveTab: (tab: CampusDetailTab) => void;
     translate: (key: string) => string;
     children: React.ReactNode;
 }
@@ -34,16 +33,16 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                     trigger={triggerProps => (
                         <IconButton
                             {...triggerProps}
-                            onPress={() => setActiveTab('information')}
+                            onPress={() => setActiveTab(CampusDetailTab.INFORMATION)}
                             style={[
                                 styles.tab,
-                                activeTab === 'information' ? themeStyles : { backgroundColor: theme.screen.iconBg }
+                                activeTab === CampusDetailTab.INFORMATION ? themeStyles : { backgroundColor: theme.screen.iconBg }
                             ]}
                         >
                             <Foundation
                                 name="info"
                                 size={26}
-                                color={activeTab === 'information' ? contrastColor : theme.screen.icon}
+                                color={activeTab === CampusDetailTab.INFORMATION ? contrastColor : theme.screen.icon}
                             />
                         </IconButton>
                     )}
@@ -62,14 +61,14 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                             {...triggerProps}
                             style={[
                                 styles.tab,
-                                activeTab === 'description' ? themeStyles : { backgroundColor: theme.screen.iconBg }
+                                activeTab === CampusDetailTab.DESCRIPTION ? themeStyles : { backgroundColor: theme.screen.iconBg }
                             ]}
-                            onPress={() => setActiveTab('description')}
+                            onPress={() => setActiveTab(CampusDetailTab.DESCRIPTION)}
                         >
                             <MaterialCommunityIcons
                                 name="sort-variant"
                                 size={26}
-                                color={activeTab === 'description' ? contrastColor : theme.screen.icon}
+                                color={activeTab === CampusDetailTab.DESCRIPTION ? contrastColor : theme.screen.icon}
                             />
                         </IconButton>
                     )}
