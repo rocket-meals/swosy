@@ -197,12 +197,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L39
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/(app)/course-timetable/index.tsx:28
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L28
+  apps/frontend/app/app/(app)/course-timetable/index.tsx:26
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L26
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/(app)/course-timetable/index.tsx:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L117
+  apps/frontend/app/app/(app)/course-timetable/index.tsx:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
