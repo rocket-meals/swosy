@@ -1,5 +1,5 @@
 import { Dimensions, ScrollView, Text, View } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import StatisticsCard from '@/components/StatisticsCard/StatisticsCard';
@@ -8,10 +8,8 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MOST_DISLIKED_FOODS, SET_MOST_LIKED_FOODS } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
-import { useFocusEffect } from 'expo-router';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -19,19 +17,16 @@ const Index = () => {
 	useSetPageTitle(TranslationKeys.statistiken);
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const [isActive, setIsActive] = useState(false);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const [selectedFoodId, setSelectedFoodId] = useState('');
-	const imageManagementSheetRef = useRef<BottomSheet>(null);
 
 	const { mostLikedFoods, mostDislikedFoods } = useAppSelector((state) => state.food);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const openImageManagementSheet = () => {
-		imageManagementSheetRef?.current?.expand();
-	};
-
-	const closeImageManagementSheet = () => {
-		imageManagementSheetRef?.current?.close();
+		showScrollViewModal({
+			children: <ImageManagementSheet closeSheet={closeScrollViewModal} selectedFoodId={selectedFoodId} handleFetch={fetchFoods} fileName="foods" />,
+		});
 	};
 
 	const fetchMostLikedFoods = async () => {
@@ -67,15 +62,6 @@ const Index = () => {
 		return () => subscription?.remove();
 	}, []);
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
-
 	return (
 		<View style={{ ...styles.container, backgroundColor: theme.screen.background }}>
 			<View
@@ -95,23 +81,6 @@ const Index = () => {
 					<ScrollView>{mostDislikedFoods && mostDislikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
 				</View>
 			</View>
-			{isActive && (
-				<BaseBottomSheet
-					ref={imageManagementSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					handleComponent={null}
-					enablePanDownToClose
-					enableHandlePanningGesture={false}
-					enableContentPanningGesture={false}
-					onClose={closeImageManagementSheet}
-				>
-					<ImageManagementSheet closeSheet={closeImageManagementSheet} selectedFoodId={selectedFoodId} handleFetch={fetchFoods} fileName="foods" />
-				</BaseBottomSheet>
-			)}
 		</View>
 	);
 };

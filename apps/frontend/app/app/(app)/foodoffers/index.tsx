@@ -12,7 +12,6 @@ import {
 	SET_BUSINESS_HOURS,
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -34,9 +33,10 @@ import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusin
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
-import { useSheetHandling, useNotifications } from './hooks';
+import { useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -69,14 +69,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	useAppForegroundUpdateCheckModal();
 	useNotifications();
 
-	const {
-		bottomSheetRef,
-		selectedSheet,
-		sheetProps,
-		openSheet: openSheetBase,
-		closeSheet,
-		isActive
-	} = useSheetHandling(openFoodofferSortingModal);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
@@ -95,8 +88,17 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			openDatePickerModal({ updateGlobal: true });
 			return;
 		}
-		openSheetBase(sheet, props);
-	}, [openSheetBase, openChangeMyCanteenSelectionModal, openBusinessHoursModal, openDatePickerModal]);
+		if (sheet === 'sort') {
+			openFoodofferSortingModal();
+			return;
+		}
+		const SheetComp = SHEET_COMPONENTS[sheet as keyof typeof SHEET_COMPONENTS];
+		if (SheetComp) {
+			showScrollViewModal({
+				children: <SheetComp closeSheet={closeScrollViewModal} {...props} />,
+			});
+		}
+	}, [openChangeMyCanteenSelectionModal, openBusinessHoursModal, openDatePickerModal, openFoodofferSortingModal, showScrollViewModal, closeScrollViewModal]);
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
@@ -131,8 +133,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		getBusinessHours();
 	}, [getBusinessHours]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
-
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
 			<FoodOffersHeader
@@ -154,31 +154,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				)}
 			</View>
 
-			{isActive &&
-				!kioskMode && (
-					<BaseBottomSheet
-						key={selectedSheet || 'sheet'}
-						ref={bottomSheetRef}
-						backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }}
-						enablePanDownToClose
-						enableContentPanningGesture
-						enableHandlePanningGesture
-						enableDynamicSizing
-						onChange={index => {
-							if (index === -1) closeSheet();
-						}}
-						onClose={closeSheet}
-						handleComponent={null}
-					>
-						{SheetComponent && (
-							selectedSheet === 'calendar' ? (
-								<SheetComponent closeSheet={closeSheet} {...sheetProps} updateGlobal={true} />
-							) : (
-								<SheetComponent closeSheet={closeSheet} {...sheetProps} />
-							)
-						)}
-					</BaseBottomSheet>
-				)}
 		</SafeAreaView>
 	);
 };

@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import styles from './styles';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
-import { AntDesign, Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_PLAN } from '@/redux/Types/types';
 import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
@@ -39,18 +37,12 @@ const Index = () => {
 	const [foodAttributes, setFoodAttributes] = useState<FoodAttribute[]>();
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { foodPlan } = useAppSelector((state) => state.management);
-	const [isActive, setIsActive] = useState(false);
-	const [value, setValue] = useState('');
-	const intervalSheetRef = useRef<BottomSheet>(null);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
 	const { openSelectFoodPlanCanteenModal } = useMyScrollviewModalSelectFoodPlanCanteen();
 
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-	const [selectedInterval, setSelectedInterval] = useState({
-		key: '',
-		label: '',
-	});
 
 	const getAllFoodAttributes = async () => {
 		try {
@@ -110,31 +102,83 @@ const Index = () => {
 		openSelectFoodPlanCanteenModal(option);
 	};
 
-	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
-		setSelectedInterval({ key: intervalKey, label: intervalLabel });
-
-		// Set the value based on the selected interval
-		if (intervalKey === 'foodInterval') {
-			setValue(foodPlan?.nextFoodInterval ? String(foodPlan.nextFoodInterval) : '');
-		} else if (intervalKey === 'refreshFoodInterval') {
-			setValue(foodPlan?.refreshInterval ? String(foodPlan.refreshInterval) : '');
-		}
-
-		intervalSheetRef?.current?.expand();
-	};
-
 	const closeIntervalSheet = () => {
-		intervalSheetRef?.current?.close();
+		closeScrollViewModal();
 	};
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
+	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
+		const initialValue = intervalKey === 'foodInterval'
+			? (foodPlan?.nextFoodInterval ? String(foodPlan.nextFoodInterval) : '')
+			: (foodPlan?.refreshInterval ? String(foodPlan.refreshInterval) : '');
+
+		let currentValue = initialValue;
+
+		showScrollViewModal({
+			title: intervalLabel,
+			children: (
+				<View style={[styles.modalContent, { paddingHorizontal: windowWidth < 600 ? 5 : 30 }]}>
+					<TextInput
+						style={{
+							...styles.input,
+							color: 'black',
+							backgroundColor: '#fff',
+							borderWidth: 1,
+							height: 60,
+							textAlignVertical: 'top',
+						}}
+						defaultValue={initialValue}
+						onChangeText={text => {
+							currentValue = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
+						}}
+						keyboardType="number-pad"
+					/>
+					<View
+						style={[
+							styles.buttonContainer,
+							{
+								width: windowWidth < 500 ? '70%' : windowWidth < 800 ? '50%' : '30%',
+							},
+						]}
+					>
+						<TouchableOpacity
+							onPress={() => {
+								closeScrollViewModal();
+							}}
+							style={{
+								...styles.cancelButton,
+								borderColor: foods_area_color,
+							}}
+						>
+							<Text style={[styles.buttonText, { color: contrastColor }]}>cancel</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => {
+								if (intervalKey === 'foodInterval') {
+									dispatch({
+										type: SET_FOOD_PLAN,
+										payload: { nextFoodInterval: currentValue },
+									});
+								} else {
+									dispatch({
+										type: SET_FOOD_PLAN,
+										payload: { refreshInterval: currentValue },
+									});
+								}
+								closeScrollViewModal();
+							}}
+							style={{
+								...styles.saveButton,
+								backgroundColor: foods_area_color,
+							}}
+						>
+							<Text style={[styles.buttonText, { color: contrastColor }]}>save</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			),
+		});
+	};
+
 
 	useEffect(() => {
 		const onChange = ({ window }: { window: any }) => {
@@ -320,114 +364,6 @@ const Index = () => {
 					</View>
 				</TouchableOpacity>
 			</ScrollView>
-
-			{isActive && (
-				<BaseBottomSheet
-					ref={intervalSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeIntervalSheet}
-				>
-					<BottomSheetView
-						style={{
-							...styles.sheetView,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-					>
-						<View style={styles.modalHeader}>
-							<View />
-							<Text
-								style={{
-									...styles.modalHeading,
-									color: theme.modal.text,
-									fontSize: 28,
-								}}
-							>
-								{selectedInterval?.label}
-							</Text>
-
-							<TouchableOpacity
-								style={{
-									...styles.closeButton,
-									backgroundColor: theme.modal.closeBg,
-									height: 40,
-									width: 40,
-								}}
-								onPress={closeIntervalSheet}
-							>
-								<AntDesign name="close" size={26} color={theme.modal.closeIcon} />
-							</TouchableOpacity>
-						</View>
-						<View style={[styles.modalContent, { paddingHorizontal: windowWidth < 600 ? 5 : 30 }]}>
-							<TextInput
-								style={{
-									...styles.input,
-									color: 'black',
-									backgroundColor: '#fff',
-									borderWidth: 1,
-									height: 60,
-									textAlignVertical: 'top',
-								}}
-								value={value}
-								onChangeText={text => {
-									const numericValue = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
-									setValue(numericValue);
-								}}
-								keyboardType="number-pad"
-							/>
-
-							<View
-								style={[
-									styles.buttonContainer,
-									{
-										width: windowWidth < 500 ? '70%' : windowWidth < 800 ? '50%' : '30%',
-									},
-								]}
-							>
-								<TouchableOpacity
-									onPress={() => {
-										closeIntervalSheet();
-										setValue('');
-									}}
-									style={{
-										...styles.cancelButton,
-										borderColor: foods_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>cancel</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() => {
-										if (selectedInterval.key === 'foodInterval') {
-											dispatch({
-												type: SET_FOOD_PLAN,
-												payload: { nextFoodInterval: value },
-											});
-										} else {
-											dispatch({
-												type: SET_FOOD_PLAN,
-												payload: { refreshInterval: value },
-											});
-										}
-										closeIntervalSheet();
-									}}
-									style={{
-										...styles.saveButton,
-										backgroundColor: foods_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>save</Text>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</BottomSheetView>
-				</BaseBottomSheet>
-			)}
 		</>
 	);
 };

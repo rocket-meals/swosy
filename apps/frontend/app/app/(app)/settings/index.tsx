@@ -12,7 +12,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -22,8 +22,6 @@ import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -65,9 +63,7 @@ const Settings = () => {
         const { theme, setThemeMode } = useTheme();
         const dispatch = useDispatch();
         const toast = useToast();
-        const [isActive, setIsActive] = useState(false);
         const { translate, language } = useLanguage();
-        const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -232,15 +228,6 @@ const Settings = () => {
                 [dispatch, isRegisteredUser, profile, profileHelper]
         );
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
-
 	useEffect(() => {
 		const onChange = ({ window }: { window: any }) => {
 			setWindowWidth(window.width);
@@ -278,11 +265,22 @@ const Settings = () => {
         }, [handleTheme, openThemeSettingsModal, selectedTheme]);
 
         const openFoodOffersTimeSheet = () => {
-                foodOffersTimeSheetRef?.current?.expand();
-        };
-
-        const closeFoodOffersTimeSheet = () => {
-                foodOffersTimeSheetRef?.current?.close();
+                showScrollViewModal({
+                        title: translate(TranslationKeys.foodoffers_next_day_time),
+                        children: (
+                                <FoodOffersNextDayTimeSheet
+                                        closeSheet={closeScrollViewModal}
+                                        initialValue={foodOffersNextDayThreshold}
+                                        onSave={value => {
+                                                dispatch({
+                                                        type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
+                                                        payload: value,
+                                                });
+                                                closeScrollViewModal();
+                                        }}
+                                />
+                        ),
+                });
         };
 
         const handleSelectServer = useCallback(
@@ -787,31 +785,6 @@ const Settings = () => {
 				}}
 				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
 			/>
-			{isActive && (
-				<BaseBottomSheet
-					ref={foodOffersTimeSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeFoodOffersTimeSheet}
-				>
-					<FoodOffersNextDayTimeSheet
-						closeSheet={closeFoodOffersTimeSheet}
-						initialValue={foodOffersNextDayThreshold}
-						onSave={value => {
-							dispatch({
-								type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
-								payload: value,
-							});
-							closeFoodOffersTimeSheet();
-						}}
-					/>
-				</BaseBottomSheet>
-			)}
 		</SafeAreaView>
 	);
 };

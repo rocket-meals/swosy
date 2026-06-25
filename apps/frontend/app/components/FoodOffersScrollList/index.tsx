@@ -10,8 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useFocusEffect } from 'expo-router';
 
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
@@ -69,11 +68,9 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [isOffline, setIsOffline] = useState(false);
 	const serverLoadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const dayHashesRef = useRef<Record<string, string>>({});
-	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
-	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const bottomSheetRef = useRef<BottomSheet>(null);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const foods_area_color = appSettings?.foods_area_color || primaryColor;
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
@@ -210,10 +207,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const openSheet = useCallback(
 			(sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
-				setSelectedSheet(sheet);
-				setSheetProps(props);
+				const SheetComp = SHEET_COMPONENTS[sheet];
+				if (SheetComp) {
+					showScrollViewModal({
+						children: <SheetComp closeSheet={closeScrollViewModal} {...props} />,
+					});
+				}
 			},
-			[]
+			[showScrollViewModal, closeScrollViewModal]
 	);
 
 	useEffect(() => {
@@ -222,24 +223,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [listWidth, screenWidth]);
 
-	const closeSheet = useCallback(() => {
-		bottomSheetRef.current?.snapToIndex(-1);
-		bottomSheetRef.current?.close();
-		setTimeout(() => {
-			setSelectedSheet(null);
-			setSheetProps({});
-		}, 150);
-	}, []);
-
-	useEffect(() => {
-		if (selectedSheet) {
-			setTimeout(() => {
-				bottomSheetRef.current?.expand();
-			}, 150);
-		}
-	}, [selectedSheet]);
-
-	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 	const numColumns = useMemo(() => {
 		return CardDimensionHelper.getGridNumColumns(listWidth || 0, amountColumnsForcard);
 	}, [amountColumnsForcard, listWidth]);
@@ -583,11 +566,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				style={{ flex: 1 }}
 				contentContainerStyle={{ backgroundColor: theme.screen.background }}
 			/>
-			{selectedSheet && (
-				<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
-					{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
-				</BaseBottomSheet>
-			)}
 		</>
 	);
 };

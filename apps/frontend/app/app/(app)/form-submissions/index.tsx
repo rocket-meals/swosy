@@ -1,5 +1,5 @@
 import { ActivityIndicator, Dimensions, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo, FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,8 +8,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { isWeb } from '@/constants/Constants';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { filterOptions } from './constants';
@@ -39,10 +38,9 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { form_id } = useLocalSearchParams();
-	const sortSheetRef = useRef<BottomSheet>(null);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const [loading, setLoading] = useState(false);
 	const [query, setQuery] = useState<string>('');
-	const [isActive, setIsActive] = useState(false);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const [formSubmissions, setFormSubmissions] = useState<DatabaseTypes.FormSubmissions[]>([]);
@@ -194,11 +192,9 @@ const Index = () => {
 	};
 
 	const openSortSheet = () => {
-		sortSheetRef.current?.expand();
-	};
-
-	const closeSortSheet = () => {
-		sortSheetRef.current?.close();
+		showScrollViewModal({
+			children: <FormSubmissionSortSheet closeSheet={closeScrollViewModal} selectedOption={sortOption} setSelectedOption={setSortOption} />,
+		});
 	};
 
 	const sortFormSubmissions = useCallback(
@@ -329,15 +325,6 @@ const Index = () => {
 	const handleSearchFilter = () => {
 		loadFormSubmissions(1, false);
 	};
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -592,23 +579,6 @@ const Index = () => {
 			</View>
 		</View>
 			<FilterFormSheet isVisible={isFilterModalVisible} closeSheet={closeFilterSheet} isFormSubmission={true} setSelectedOption={setSelectedOption} selectedOption={selectedOption} options={filterOptions} />
-			{isActive && (
-				<>
-					<BaseBottomSheet
-						ref={sortSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeSortSheet}
-					>
-						<FormSubmissionSortSheet closeSheet={closeSortSheet} selectedOption={sortOption} setSelectedOption={setSortOption} />
-					</BaseBottomSheet>
-				</>
-			)}
 		</View>
 	);
 };

@@ -8,8 +8,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { isWeb } from '@/constants/Constants';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import SubmissionWarningModal from '@/components/SubmissionWarningModal/SubmissionWarningModal';
@@ -169,10 +168,8 @@ const Index = () => {
 	const { form_submission_id, queue_entry_id } = useLocalSearchParams();
 	const formAnswersHelper = new FormAnswersHelper();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
-	const editSheetRef = useRef<BottomSheet>(null);
-	const warningSheetRef = useRef<BottomSheet>(null);
+	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const [loading, setLoading] = useState(false);
-	const [isActive, setIsActive] = useState(false);
 	const [isWarning, setIsWarning] = useState(false);
 	const [formAnswers, setFormAnswers] = useState<DatabaseTypes.FormAnswers[]>([]);
 	const [loadingCollection, setLoadingCollection] = useState(false);
@@ -250,19 +247,23 @@ const Index = () => {
 	};
 
 	const openEditSheet = () => {
-		editSheetRef.current?.expand();
+		showScrollViewModal({
+			children: <EditFormSubmissionSheet id={String(form_submission_id)} closeSheet={closeScrollViewModal} />,
+		});
 	};
 
 	const closeEditSheet = () => {
-		editSheetRef?.current?.close();
+		closeScrollViewModal();
 	};
 
 	const openWarningSheet = () => {
-		warningSheetRef.current?.expand();
+		showScrollViewModal({
+			children: <SubmissionWarningSheet id={String(form_submission_id)} closeSheet={closeScrollViewModal} />,
+		});
 	};
 
 	const closeWarningSheet = () => {
-		warningSheetRef?.current?.close();
+		closeScrollViewModal();
 	};
 
 	const getDirectusFilesData = async (data: any) => {
@@ -844,15 +845,6 @@ const Index = () => {
 		}, [form_submission_id])
 	);
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
-
 	useEffect(() => {
 		const handleResize = () => {
 			setScreenWidth(Dimensions.get('window').width);
@@ -1125,35 +1117,6 @@ const Index = () => {
 				</TouchableOpacity>
 			</View>
 			<SubmissionWarningModal isVisible={isWarning} setIsVisible={setIsWarning} id={String(form_submission_id)} />
-			{isActive && (
-				<BaseBottomSheet
-					ref={editSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeEditSheet}
-				>
-					<EditFormSubmissionSheet id={String(form_submission_id)} closeSheet={closeEditSheet} />
-				</BaseBottomSheet>
-			)}
-			{isActive && (
-				<BaseBottomSheet
-					ref={warningSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose={false}
-					handleComponent={null}
-				>
-					<SubmissionWarningSheet id={String(form_submission_id)} closeSheet={closeWarningSheet} />
-				</BaseBottomSheet>
-			)}
 			<FilterFormSheet isVisible={isFilterModalVisible} closeSheet={closeFilterSheet} isFormSubmission={true} setSelectedOption={setSelectedState} selectedOption={selectedState} options={filterOptions} isEditMode={isEditMode} />
 		</View>
 	);
