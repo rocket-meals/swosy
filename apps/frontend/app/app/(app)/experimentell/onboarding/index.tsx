@@ -46,10 +46,10 @@ const OnboardingScreen = () => {
 			try {
 				const buildingsData = (await buildingsHelper.fetchBuildings({})) as DatabaseTypes.Buildings[];
 				const buildings = buildingsData || [];
-				const buildingsDict = buildings.reduce((acc: Record<string, any>, building: any) => {
+				const buildingsDict = buildings.reduce((acc: Record<string, DatabaseTypes.Buildings>, building: DatabaseTypes.Buildings) => {
 					acc[building.id] = building;
 					return acc;
-				}, {});
+				}, {} as Record<string, DatabaseTypes.Buildings>);
 				dispatch({ type: SET_BUILDINGS_DICT, payload: buildingsDict });
 
 				const canteensData = (await canteenHelper.fetchCanteens({})) as DatabaseTypes.Canteens[];
@@ -76,7 +76,7 @@ const OnboardingScreen = () => {
 		};
 
 		loadCanteens();
-	}, [isManagement]);
+	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
 
 	const handleNext = useCallback(() => {
 		if (!isLastStep) {
@@ -100,7 +100,8 @@ const OnboardingScreen = () => {
 				const Notifications = await import('expo-notifications');
 				const { status } = await Notifications.requestPermissionsAsync();
 				setNotificationsEnabled(status === 'granted');
-			} catch {
+			} catch (error) {
+				console.error('Error requesting notification permissions:', error);
 				setNotificationsEnabled(!notificationsEnabled);
 			}
 		} else {
