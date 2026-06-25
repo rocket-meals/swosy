@@ -6116,5 +6116,175 @@
     "ru": "Выключено",
     "tr": "Kapalı",
     "zh": "关闭"
+  },
+  "onboarding": {
+    "de": "Einrichtung",
+    "en": "Setup",
+    "ar": "الإعداد",
+    "es": "Configuración",
+    "fr": "Configuration",
+    "ru": "Настройка",
+    "tr": "Kurulum",
+    "zh": "设置"
+  },
+  "onboarding_welcome": {
+    "de": "Willkommen",
+    "en": "Welcome",
+    "ar": "مرحبًا",
+    "es": "Bienvenido",
+    "fr": "Bienvenue",
+    "ru": "Добро пожаловать",
+    "tr": "Hoş geldiniz",
+    "zh": "欢迎"
+  },
+  "onboarding_welcome_description": {
+    "de": "Lass uns die App für dich einrichten. Es dauert nur einen Moment.",
+    "en": "Let's set up the app for you. It only takes a moment.",
+    "ar": "دعنا نقوم بإعداد التطبيق لك. لن يستغرق الأمر سوى لحظة.",
+    "es": "Configuremos la app para ti. Solo toma un momento.",
+    "fr": "Configurons l'application pour vous. Cela ne prend qu'un instant.",
+    "ru": "Давайте настроим приложение для вас. Это займёт всего мгновение.",
+    "tr": "Uygulamayı sizin için ayarlayalım. Sadece bir dakika sürer.",
+    "zh": "让我们为你设置应用程序，只需片刻。"
+  },
+  "onboarding_select_canteen": {
+    "de": "Wähle deine Mensa",
+    "en": "Choose your canteen",
+    "ar": "اختر مطعمك",
+    "es": "Elige tu comedor",
+    "fr": "Choisissez votre cantine",
+    "ru": "Выберите вашу столовую",
+    "tr": "Yemekhanenizi seçin",
+    "zh": "选择你的食堂"
+  },
+  "onboarding_select_canteen_description": {
+    "de": "Welche Mensa besuchst du am häufigsten?",
+    "en": "Which canteen do you visit most often?",
+    "ar": "أي مطعم تزوره في أغلب الأحيان؟",
+    "es": "¿Qué comedor visitas con más frecuencia?",
+    "fr": "Quelle cantine visitez-vous le plus souvent ?",
+    "ru": "Какую столовую вы посещаете чаще всего?",
+    "tr": "Hangi yemekhaneyi en sık ziyaret ediyorsunuz?",
+    "zh": "你最常去哪个食堂？"
+  },
+  "onboarding_no_canteens_available": {
+    "de": "Derzeit sind keine Mensen verfügbar.",
+    "en": "No canteens are currently available.",
+    "ar": "لا توجد مطاعم متاحة حالياً.",
+    "es": "Actualmente no hay comedores disponibles.",
+    "fr": "Aucune cantine n'est actuellement disponible.",
+    "ru": "В данный момент нет доступных столовых.",
+    "tr": "Şu anda kullanılabilir yemekhane yok.",
+    "zh": "目前没有可用的食堂。"
+  },
+  "onboarding_preferences": {
+    "de": "Ernährungspräferenzen",
+    "en": "Dietary preferences",
+    "ar": "التفضيلات الغذائية",
+    "es": "Preferencias alimentarias",
+    "fr": "Préférences alimentaires",
+    "ru": "Диетические предпочтения",
+    "tr": "Beslenme tercihleri",
+    "zh": "饮食偏好"
+  },
+  "onboarding_preferences_description": {
+    "de": "Hast du Allergien, Unverträglichkeiten oder einen bestimmten Lebensstil? Markiere hier, was für dich relevant ist.",
+    "en": "Do you have allergies, intolerances, or a specific lifestyle? Mark what is relevant to you here.",
+    "ar": "هل لديك حساسية أو عدم تحمل أو نمط حياة معين؟ حدد ما يهمك هنا.",
+    "es": "¿Tienes alergias, intolerancias o un estilo de vida específico? Marca lo que sea relevante para ti.",
+    "fr": "Avez-vous des allergies, des intolérances ou un mode de vie particulier ? Marquez ce qui est pertinent pour vous.",
+    "ru": "У вас есть аллергии, непереносимость или особый образ жизни? Отметьте то, что для вас актуально.",
+    "tr": "Alerjiniz, intoleransınız veya belirli bir yaşam tarzınız var mı? Sizin için geçerli olanları işaretleyin.",
+    "zh": "你有过敏、不耐受或特定的生活方式吗？在这里标记与你相关的内容。"
+  },
+  "onboarding_notifications": {
+    "de": "Benachrichtigungen",
+    "en": "Notifications",
+    "ar": "الإشعارات",
+    "es": "Notificaciones",
+    "fr": "Notifications",
+    "ru": "Уведомления",
+    "tr": "Bildirimler",
+    "zh": "通知"
+  },
+  "onboarding_notifications_description": {
+    "de": "Möchtest du benachrichtigt werden, wenn dein Lieblingsessen angeboten wird? Ohne deine Zustimmung werden keine Push-Nachrichten gesendet.",
+    "en": "Would you like to be notified when your favorite food is available? No push notifications will be sent without your consent.",
+    "ar": "هل تريد أن يتم إعلامك عندما يتوفر طعامك المفضل؟ لن يتم إرسال إشعارات بدون موافقتك.",
+    "es": "¿Te gustaría recibir notificaciones cuando tu comida favorita esté disponible? No se enviarán notificaciones sin tu consentimiento.",
+    "fr": "Souhaitez-vous être notifié lorsque votre plat préféré est disponible ? Aucune notification ne sera envoyée sans votre accord.",
+    "ru": "Хотите получать уведомления, когда будет доступно ваше любимое блюдо? Без вашего согласия push-уведомления не отправляются.",
+    "tr": "Favori yemeğiniz mevcut olduğunda bilgilendirilmek ister misiniz? Onayınız olmadan bildirim gönderilmez.",
+    "zh": "你想在你喜欢的食物供应时收到通知吗？未经你同意，不会发送推送通知。"
+  },
+  "onboarding_complete": {
+    "de": "Alles bereit!",
+    "en": "All set!",
+    "ar": "كل شيء جاهز!",
+    "es": "¡Todo listo!",
+    "fr": "Tout est prêt !",
+    "ru": "Всё готово!",
+    "tr": "Her şey hazır!",
+    "zh": "一切就绪！"
+  },
+  "onboarding_complete_description": {
+    "de": "Du kannst diese Einstellungen jederzeit in den App-Einstellungen ändern. Viel Spaß!",
+    "en": "You can change these settings anytime in the app settings. Enjoy!",
+    "ar": "يمكنك تغيير هذه الإعدادات في أي وقت من إعدادات التطبيق. استمتع!",
+    "es": "Puedes cambiar esta configuración en cualquier momento en los ajustes de la app. ¡Disfruta!",
+    "fr": "Vous pouvez modifier ces paramètres à tout moment dans les réglages de l'application. Profitez-en !",
+    "ru": "Вы можете изменить эти настройки в любое время в настройках приложения. Приятного пользования!",
+    "tr": "Bu ayarları istediğiniz zaman uygulama ayarlarından değiştirebilirsiniz. Keyfini çıkarın!",
+    "zh": "你可以随时在应用设置中更改这些设置。祝你使用愉快！"
+  },
+  "onboarding_next": {
+    "de": "Weiter",
+    "en": "Next",
+    "ar": "التالي",
+    "es": "Siguiente",
+    "fr": "Suivant",
+    "ru": "Далее",
+    "tr": "İleri",
+    "zh": "下一步"
+  },
+  "onboarding_back": {
+    "de": "Zurück",
+    "en": "Back",
+    "ar": "رجوع",
+    "es": "Atrás",
+    "fr": "Retour",
+    "ru": "Назад",
+    "tr": "Geri",
+    "zh": "返回"
+  },
+  "onboarding_finish": {
+    "de": "Fertig",
+    "en": "Finish",
+    "ar": "إنهاء",
+    "es": "Finalizar",
+    "fr": "Terminer",
+    "ru": "Готово",
+    "tr": "Bitir",
+    "zh": "完成"
+  },
+  "onboarding_skip": {
+    "de": "Überspringen",
+    "en": "Skip",
+    "ar": "تخطي",
+    "es": "Omitir",
+    "fr": "Passer",
+    "ru": "Пропустить",
+    "tr": "Atla",
+    "zh": "跳过"
+  },
+  "onboarding_enable_notifications": {
+    "de": "Benachrichtigungen aktivieren",
+    "en": "Enable notifications",
+    "ar": "تفعيل الإشعارات",
+    "es": "Activar notificaciones",
+    "fr": "Activer les notifications",
+    "ru": "Включить уведомления",
+    "tr": "Bildirimleri etkinleştir",
+    "zh": "启用通知"
   }
 }
