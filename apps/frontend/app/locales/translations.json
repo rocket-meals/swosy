@@ -6286,5 +6286,15 @@
     "ru": "Включить уведомления",
     "tr": "Bildirimleri etkinleştir",
     "zh": "启用通知"
+  },
+  "onboarding_start": {
+    "de": "Los geht's!",
+    "en": "Let's go!",
+    "ar": "هيا بنا!",
+    "es": "¡Vamos!",
+    "fr": "C'est parti !",
+    "ru": "Поехали!",
+    "tr": "Haydi başlayalım!",
+    "zh": "开始吧！"
   }
 }

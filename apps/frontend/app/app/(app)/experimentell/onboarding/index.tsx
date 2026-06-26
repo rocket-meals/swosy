@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
+import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
@@ -10,7 +11,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS } from '@/redux/Types/types';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -33,6 +34,8 @@ const OnboardingScreen = () => {
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const scrollViewRef = useRef<ScrollView>(null);
 
 	const currentStep = STEPS[currentStepIndex];
 	const isFirstStep = currentStepIndex === 0;
@@ -40,6 +43,13 @@ const OnboardingScreen = () => {
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
+
+	useEffect(() => {
+		const subscription = Dimensions.addEventListener('change', ({ window }) => {
+			setScreenWidth(window.width);
+		});
+		return () => subscription?.remove();
+	}, []);
 
 	useEffect(() => {
 		const loadCanteens = async () => {
@@ -78,21 +88,34 @@ const OnboardingScreen = () => {
 		loadCanteens();
 	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
 
+	const goToStep = useCallback((index: number) => {
+		setCurrentStepIndex(index);
+		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
+	}, [screenWidth]);
+
 	const handleNext = useCallback(() => {
 		if (!isLastStep) {
-			setCurrentStepIndex((prev) => prev + 1);
+			goToStep(currentStepIndex + 1);
 		}
-	}, [isLastStep]);
+	}, [isLastStep, currentStepIndex, goToStep]);
 
 	const handleBack = useCallback(() => {
 		if (!isFirstStep) {
-			setCurrentStepIndex((prev) => prev - 1);
+			goToStep(currentStepIndex - 1);
 		}
-	}, [isFirstStep]);
+	}, [isFirstStep, currentStepIndex, goToStep]);
 
 	const handleSelectCanteen = useCallback((canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-	}, [dispatch]);
+		const canteenStepIndex = STEPS.indexOf('canteen');
+		if (canteenStepIndex < STEPS.length - 1) {
+			setTimeout(() => goToStep(canteenStepIndex + 1), 300);
+		}
+	}, [dispatch, goToStep]);
+
+	const handleStart = useCallback(() => {
+		router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+	}, []);
 
 	const handleToggleNotifications = useCallback(async () => {
 		if (Platform.OS !== 'web') {
@@ -109,13 +132,22 @@ const OnboardingScreen = () => {
 		}
 	}, [notificationsEnabled]);
 
+	const handleScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+		const offsetX = event.nativeEvent.contentOffset.x;
+		const newIndex = Math.round(offsetX / screenWidth);
+		if (newIndex >= 0 && newIndex < STEPS.length && newIndex !== currentStepIndex) {
+			setCurrentStepIndex(newIndex);
+		}
+	}, [screenWidth, currentStepIndex]);
+
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
 	const renderStepIndicator = () => (
 		<View style={styles.stepIndicatorContainer}>
 			{STEPS.map((_, index) => (
-				<View
+				<TouchableOpacity
 					key={index}
+					onPress={() => goToStep(index)}
 					style={[
 						styles.stepDot,
 						{
@@ -129,129 +161,143 @@ const OnboardingScreen = () => {
 	);
 
 	const renderWelcome = () => (
-		<View style={styles.stepContent}>
-			<MaterialCommunityIcons name="rocket-launch" size={80} color={primaryColor} />
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_welcome)}
-			</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_welcome_description)}
-			</Text>
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<MaterialCommunityIcons name="rocket-launch" size={80} color={primaryColor} />
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_welcome)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_welcome_description)}
+				</Text>
+			</ScrollView>
 		</View>
 	);
 
 	const renderCanteenStep = () => (
-		<View style={styles.stepContent}>
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_select_canteen)}
-			</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_select_canteen_description)}
-			</Text>
-			{canteens.length === 0 ? (
-				<View style={styles.emptyStateContainer}>
-					<MaterialCommunityIcons name="store-off-outline" size={48} color={theme.screen.icon} />
-					<Text style={[styles.emptyStateText, { color: theme.screen.text }]}>
-						{translate(TranslationKeys.onboarding_no_canteens_available)}
-					</Text>
-				</View>
-			) : (
-				<CanteenSelection onSelectCanteen={handleSelectCanteen} />
-			)}
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_select_canteen)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_select_canteen_description)}
+				</Text>
+				{canteens.length === 0 ? (
+					<View style={styles.emptyStateContainer}>
+						<MaterialCommunityIcons name="store-off-outline" size={48} color={theme.screen.icon} />
+						<Text style={[styles.emptyStateText, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_no_canteens_available)}
+						</Text>
+					</View>
+				) : (
+					<CanteenSelection onSelectCanteen={handleSelectCanteen} />
+				)}
+			</ScrollView>
 		</View>
 	);
 
 	const renderPreferencesStep = () => (
-		<View style={styles.stepContent}>
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_preferences)}
-			</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_preferences_description)}
-			</Text>
-			<View style={styles.markingsContainer}>
-				{markingIds.map((markingId, index) => {
-					const total = markingIds.length;
-					const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
-					return (
-						<SettingsListMarkingLabelFast
-							key={markingId}
-							markingId={markingId}
-							groupPosition={groupPosition}
-						/>
-					);
-				})}
-			</View>
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_preferences)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_preferences_description)}
+				</Text>
+				<View style={styles.markingsContainer}>
+					{markingIds.map((markingId, index) => {
+						const total = markingIds.length;
+						const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListMarkingLabelFast
+								key={markingId}
+								markingId={markingId}
+								groupPosition={groupPosition}
+							/>
+						);
+					})}
+				</View>
+			</ScrollView>
 		</View>
 	);
 
 	const renderNotificationsStep = () => (
-		<View style={styles.stepContent}>
-			<MaterialCommunityIcons
-				name={notificationsEnabled ? 'bell-ring' : 'bell-outline'}
-				size={64}
-				color={primaryColor}
-			/>
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_notifications)}
-			</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_notifications_description)}
-			</Text>
-			<ProjectButton
-				text={translate(TranslationKeys.onboarding_enable_notifications)}
-				onPress={handleToggleNotifications}
-				style={[
-					styles.notificationButton,
-					notificationsEnabled && { backgroundColor: primaryColor },
-				]}
-			/>
-			{notificationsEnabled && (
-				<View style={styles.enabledIndicator}>
-					<MaterialCommunityIcons name="check-circle" size={24} color={primaryColor} />
-					<Text style={[styles.enabledText, { color: primaryColor }]}>
-						{translate(TranslationKeys.checked)}
-					</Text>
-				</View>
-			)}
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<MaterialCommunityIcons
+					name={notificationsEnabled ? 'bell-ring' : 'bell-outline'}
+					size={64}
+					color={primaryColor}
+				/>
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_notifications)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_notifications_description)}
+				</Text>
+				<ProjectButton
+					text={translate(TranslationKeys.onboarding_enable_notifications)}
+					onPress={handleToggleNotifications}
+					style={[
+						styles.notificationButton,
+						notificationsEnabled && { backgroundColor: primaryColor },
+					]}
+				/>
+				{notificationsEnabled && (
+					<View style={styles.enabledIndicator}>
+						<MaterialCommunityIcons name="check-circle" size={24} color={primaryColor} />
+						<Text style={[styles.enabledText, { color: primaryColor }]}>
+							{translate(TranslationKeys.checked)}
+						</Text>
+					</View>
+				)}
+			</ScrollView>
 		</View>
 	);
 
 	const renderCompleteStep = () => (
-		<View style={styles.stepContent}>
-			<MaterialCommunityIcons name="check-decagram" size={80} color={primaryColor} />
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_complete)}
-			</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-				{translate(TranslationKeys.onboarding_complete_description)}
-			</Text>
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<MaterialCommunityIcons name="check-decagram" size={80} color={primaryColor} />
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_complete)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{translate(TranslationKeys.onboarding_complete_description)}
+				</Text>
+				<TouchableOpacity
+					onPress={handleStart}
+					style={[styles.startButton, { backgroundColor: primaryColor }]}
+					activeOpacity={0.8}
+				>
+					<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
+					<Text style={[styles.startButtonText, { color: contrastColor }]}>
+						{translate(TranslationKeys.onboarding_start)}
+					</Text>
+				</TouchableOpacity>
+			</ScrollView>
 		</View>
 	);
 
-	const renderCurrentStep = () => {
-		switch (currentStep) {
-			case 'welcome':
-				return renderWelcome();
-			case 'canteen':
-				return renderCanteenStep();
-			case 'preferences':
-				return renderPreferencesStep();
-			case 'notifications':
-				return renderNotificationsStep();
-			case 'complete':
-				return renderCompleteStep();
-		}
-	};
-
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
+			{renderStepIndicator()}
 			<ScrollView
-				contentContainerStyle={styles.scrollContent}
-				style={{ backgroundColor: theme.screen.background }}
+				ref={scrollViewRef}
+				horizontal
+				pagingEnabled
+				showsHorizontalScrollIndicator={false}
+				onMomentumScrollEnd={handleScrollEnd}
+				scrollEventThrottle={16}
+				style={styles.horizontalScroll}
 			>
-				{renderStepIndicator()}
-				{renderCurrentStep()}
+				{renderWelcome()}
+				{renderCanteenStep()}
+				{renderPreferencesStep()}
+				{renderNotificationsStep()}
+				{renderCompleteStep()}
 			</ScrollView>
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
 				{!isFirstStep ? (
@@ -286,16 +332,15 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	scrollContent: {
-		flexGrow: 1,
-		padding: 20,
+	horizontalScroll: {
+		flex: 1,
 	},
 	stepIndicatorContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 8,
-		marginBottom: 24,
+		marginBottom: 8,
 		marginTop: 12,
 	},
 	stepDot: {
@@ -304,8 +349,12 @@ const styles = StyleSheet.create({
 	},
 	stepContent: {
 		flex: 1,
+	},
+	stepScrollContent: {
+		flexGrow: 1,
 		alignItems: 'center',
 		gap: 16,
+		padding: 20,
 		paddingVertical: 20,
 	},
 	stepTitle: {
@@ -346,6 +395,19 @@ const styles = StyleSheet.create({
 	enabledText: {
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
+	},
+	startButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+		paddingHorizontal: 32,
+		paddingVertical: 16,
+		borderRadius: 32,
+		marginTop: 24,
+	},
+	startButtonText: {
+		fontSize: 20,
+		fontFamily: 'Poppins_700Bold',
 	},
 	navigationContainer: {
 		flexDirection: 'row',
