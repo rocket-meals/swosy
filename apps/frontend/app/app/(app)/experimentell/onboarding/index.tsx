@@ -355,7 +355,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 16,
 		padding: 20,
-		paddingVertical: 20,
 	},
 	stepTitle: {
 		fontSize: 24,
