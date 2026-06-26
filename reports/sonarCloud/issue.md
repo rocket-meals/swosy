@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 40 | 40 |
-| 🐛 Reliability | 6872 | 10 |
+| 🔒 Security | 42 | 42 |
+| 🐛 Reliability | 6872 | 8 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16912 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16914 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (40/40)
+## 🔒 Security (42/42)
 
 - **inputs.previous-commit-sha is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/check-build-number/action.yml:34
@@ -53,6 +53,14 @@
 - **Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.**
   .github/workflows/frontend-maestro.yml:50
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L50
+
+- **"npx" can install packages on-demand and run their lifecycle scripts.**
+  .github/workflows/pr-expo-preview.yml:175
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L175
+
+- **Define exact package version to avoid installing unverified releases.**
+  .github/workflows/pr-expo-preview.yml:175
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L175
 
 - **The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/workflows/pr-expo-preview.yml:51
@@ -174,7 +182,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (10/6872)
+## 🐛 Reliability (8/6872)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -207,12 +215,4 @@
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/index.tsx:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L19
 
