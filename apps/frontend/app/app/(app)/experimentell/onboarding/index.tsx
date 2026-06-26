@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,16 +10,13 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
-import SettingsList from '@/components/SettingsList';
-import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS, UPDATE_PROFILE } from '@/redux/Types/types';
+import PriceGroupSettingsList from '@/components/PriceGroupSettingsList';
+import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS } from '@/redux/Types/types';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { PriceGroupKey } from '@/app/(app)/settings/types';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { UserHelper } from '@/helper/UserHelper';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'complete'] as const;
 type Step = typeof STEPS[number];
@@ -32,12 +29,10 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode, serverInfo } = useAppSelector((state) => state.settings);
 	const { canteens, selectedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement, user, profile } = useAppSelector((state) => state.authReducer);
+	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
-	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
-	const [selectedPriceGroup, setSelectedPriceGroup] = useState<string | null>(profile?.price_group || PriceGroupKey.student);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const scrollViewRef = useRef<ScrollView>(null);
 
@@ -47,11 +42,6 @@ const OnboardingScreen = () => {
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
-
-	useEffect(() => {
-		setSelectedPriceGroup(profile?.price_group || PriceGroupKey.student);
-	}, [profile]);
 
 	useEffect(() => {
 		const subscription = Dimensions.addEventListener('change', ({ window }) => {
@@ -125,24 +115,6 @@ const OnboardingScreen = () => {
 	const handleStart = useCallback(() => {
 		router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 	}, []);
-
-	const handleSelectPriceGroup = useCallback(async (option: string) => {
-		try {
-			setSelectedPriceGroup(option);
-			const payload = { ...profile, price_group: option };
-			if (isRegisteredUser) {
-				const result = (await profileHelper.updateProfile(payload)) as DatabaseTypes.Profiles;
-				if (result) {
-					dispatch({ type: UPDATE_PROFILE, payload: result });
-				}
-			} else {
-				dispatch({ type: UPDATE_PROFILE, payload });
-			}
-		} catch (error) {
-			console.error('Error updating price group:', error);
-			setSelectedPriceGroup(profile?.price_group || PriceGroupKey.student);
-		}
-	}, [profile, isRegisteredUser, profileHelper, dispatch]);
 
 	const handleScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
 		const offsetX = event.nativeEvent.contentOffset.x;
@@ -235,24 +207,6 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
-	const priceGroupOptions = useMemo(() => [
-		{
-			id: PriceGroupKey.student,
-			label: translate(TranslationKeys.price_group_student),
-			icon: <FontAwesome name="graduation-cap" size={24} color={theme.screen.icon} />,
-		},
-		{
-			id: PriceGroupKey.employee,
-			label: translate(TranslationKeys.price_group_employee),
-			icon: <Ionicons name="bag" size={24} color={theme.screen.icon} />,
-		},
-		{
-			id: PriceGroupKey.guest,
-			label: translate(TranslationKeys.price_group_guest),
-			icon: <FontAwesome5 name="users" size={24} color={theme.screen.icon} />,
-		},
-	], [translate, theme.screen.icon]);
-
 	const renderPriceGroupStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContent}>
@@ -263,36 +217,7 @@ const OnboardingScreen = () => {
 					{translate(TranslationKeys.onboarding_price_group_description)}
 				</Text>
 				<View style={styles.priceGroupContainer}>
-					{priceGroupOptions.map((option, index) => {
-						const isSelected = selectedPriceGroup === option.id;
-						const groupPosition =
-							priceGroupOptions.length === 1
-								? 'single'
-								: index === 0
-									? 'top'
-									: index === priceGroupOptions.length - 1
-										? 'bottom'
-										: 'middle';
-
-						return (
-							<SettingsList
-								key={option.id}
-								label={option.label}
-								leftIcon={option.icon}
-								iconBgColor={primaryColor}
-								groupPosition={groupPosition}
-								showSeparator={index !== priceGroupOptions.length - 1}
-								rightIcon={
-									<MaterialCommunityIcons
-										name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-										size={24}
-										color={isSelected ? primaryColor : theme.screen.icon}
-									/>
-								}
-								handleFunction={() => handleSelectPriceGroup(option.id)}
-							/>
-						);
-					})}
+					<PriceGroupSettingsList />
 				</View>
 			</ScrollView>
 		</View>
