@@ -632,6 +632,8 @@ export enum TranslationKeys {
 	onboarding_select_canteen = 'onboarding_select_canteen',
 	onboarding_select_canteen_description = 'onboarding_select_canteen_description',
 	onboarding_no_canteens_available = 'onboarding_no_canteens_available',
+	onboarding_price_group = 'onboarding_price_group',
+	onboarding_price_group_description = 'onboarding_price_group_description',
 	onboarding_preferences = 'onboarding_preferences',
 	onboarding_preferences_description = 'onboarding_preferences_description',
 	onboarding_notifications = 'onboarding_notifications',

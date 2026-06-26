@@ -6177,6 +6177,26 @@
     "tr": "Şu anda kullanılabilir yemekhane yok.",
     "zh": "目前没有可用的食堂。"
   },
+  "onboarding_price_group": {
+    "de": "Preisstatus",
+    "en": "Price status",
+    "ar": "حالة السعر",
+    "es": "Estado de precio",
+    "fr": "Statut tarifaire",
+    "ru": "Ценовой статус",
+    "tr": "Fiyat durumu",
+    "zh": "价格状态"
+  },
+  "onboarding_price_group_description": {
+    "de": "Wähle deinen Preisstatus aus, um die passenden Preise für dich zu sehen.",
+    "en": "Select your price status to see the correct prices for you.",
+    "ar": "اختر حالة السعر الخاصة بك لرؤية الأسعار المناسبة لك.",
+    "es": "Selecciona tu estado de precio para ver los precios correctos para ti.",
+    "fr": "Sélectionnez votre statut tarifaire pour voir les prix qui vous correspondent.",
+    "ru": "Выберите свой ценовой статус, чтобы увидеть подходящие для вас цены.",
+    "tr": "Size uygun fiyatları görmek için fiyat durumunuzu seçin.",
+    "zh": "选择你的价格状态以查看适合你的价格。"
+  },
   "onboarding_preferences": {
     "de": "Ernährungspräferenzen",
     "en": "Dietary preferences",

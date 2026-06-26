@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,15 +10,18 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
-import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS } from '@/redux/Types/types';
+import SettingsList from '@/components/SettingsList';
+import { SET_SELECTED_CANTEEN, SET_BUILDINGS_DICT, SET_CANTEENS, UPDATE_PROFILE } from '@/redux/Types/types';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
-import ProjectButton from '@/components/ProjectButton';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { UserHelper } from '@/helper/UserHelper';
 
-const STEPS = ['welcome', 'canteen', 'preferences', 'notifications', 'complete'] as const;
+const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'complete'] as const;
 type Step = typeof STEPS[number];
 
 const OnboardingScreen = () => {
@@ -29,11 +32,12 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode, serverInfo } = useAppSelector((state) => state.settings);
 	const { canteens, selectedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement } = useAppSelector((state) => state.authReducer);
+	const { isManagement, user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
-	const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+	const [selectedPriceGroup, setSelectedPriceGroup] = useState<string | null>(profile?.price_group || PriceGroupKey.student);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const scrollViewRef = useRef<ScrollView>(null);
 
@@ -43,6 +47,11 @@ const OnboardingScreen = () => {
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
+
+	useEffect(() => {
+		setSelectedPriceGroup(profile?.price_group || PriceGroupKey.student);
+	}, [profile]);
 
 	useEffect(() => {
 		const subscription = Dimensions.addEventListener('change', ({ window }) => {
@@ -117,20 +126,23 @@ const OnboardingScreen = () => {
 		router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 	}, []);
 
-	const handleToggleNotifications = useCallback(async () => {
-		if (Platform.OS !== 'web') {
-			try {
-				const Notifications = await import('expo-notifications');
-				const { status } = await Notifications.requestPermissionsAsync();
-				setNotificationsEnabled(status === 'granted');
-			} catch (error) {
-				console.error('Error requesting notification permissions:', error);
-				setNotificationsEnabled(!notificationsEnabled);
+	const handleSelectPriceGroup = useCallback(async (option: string) => {
+		try {
+			setSelectedPriceGroup(option);
+			const payload = { ...profile, price_group: option };
+			if (isRegisteredUser) {
+				const result = (await profileHelper.updateProfile(payload)) as DatabaseTypes.Profiles;
+				if (result) {
+					dispatch({ type: UPDATE_PROFILE, payload: result });
+				}
+			} else {
+				dispatch({ type: UPDATE_PROFILE, payload });
 			}
-		} else {
-			setNotificationsEnabled(!notificationsEnabled);
+		} catch (error) {
+			console.error('Error updating price group:', error);
+			setSelectedPriceGroup(profile?.price_group || PriceGroupKey.student);
 		}
-	}, [notificationsEnabled]);
+	}, [profile, isRegisteredUser, profileHelper, dispatch]);
 
 	const handleScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
 		const offsetX = event.nativeEvent.contentOffset.x;
@@ -223,36 +235,65 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
-	const renderNotificationsStep = () => (
+	const priceGroupOptions = useMemo(() => [
+		{
+			id: PriceGroupKey.student,
+			label: translate(TranslationKeys.price_group_student),
+			icon: <FontAwesome name="graduation-cap" size={24} color={theme.screen.icon} />,
+		},
+		{
+			id: PriceGroupKey.employee,
+			label: translate(TranslationKeys.price_group_employee),
+			icon: <Ionicons name="bag" size={24} color={theme.screen.icon} />,
+		},
+		{
+			id: PriceGroupKey.guest,
+			label: translate(TranslationKeys.price_group_guest),
+			icon: <FontAwesome5 name="users" size={24} color={theme.screen.icon} />,
+		},
+	], [translate, theme.screen.icon]);
+
+	const renderPriceGroupStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContent}>
-				<MaterialCommunityIcons
-					name={notificationsEnabled ? 'bell-ring' : 'bell-outline'}
-					size={64}
-					color={primaryColor}
-				/>
 				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.onboarding_notifications)}
+					{translate(TranslationKeys.onboarding_price_group)}
 				</Text>
 				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.onboarding_notifications_description)}
+					{translate(TranslationKeys.onboarding_price_group_description)}
 				</Text>
-				<ProjectButton
-					text={translate(TranslationKeys.onboarding_enable_notifications)}
-					onPress={handleToggleNotifications}
-					style={[
-						styles.notificationButton,
-						notificationsEnabled && { backgroundColor: primaryColor },
-					]}
-				/>
-				{notificationsEnabled && (
-					<View style={styles.enabledIndicator}>
-						<MaterialCommunityIcons name="check-circle" size={24} color={primaryColor} />
-						<Text style={[styles.enabledText, { color: primaryColor }]}>
-							{translate(TranslationKeys.checked)}
-						</Text>
-					</View>
-				)}
+				<View style={styles.priceGroupContainer}>
+					{priceGroupOptions.map((option, index) => {
+						const isSelected = selectedPriceGroup === option.id;
+						const groupPosition =
+							priceGroupOptions.length === 1
+								? 'single'
+								: index === 0
+									? 'top'
+									: index === priceGroupOptions.length - 1
+										? 'bottom'
+										: 'middle';
+
+						return (
+							<SettingsList
+								key={option.id}
+								label={option.label}
+								leftIcon={option.icon}
+								iconBgColor={primaryColor}
+								groupPosition={groupPosition}
+								showSeparator={index !== priceGroupOptions.length - 1}
+								rightIcon={
+									<MaterialCommunityIcons
+										name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
+										size={24}
+										color={isSelected ? primaryColor : theme.screen.icon}
+									/>
+								}
+								handleFunction={() => handleSelectPriceGroup(option.id)}
+							/>
+						);
+					})}
+				</View>
 			</ScrollView>
 		</View>
 	);
@@ -295,8 +336,8 @@ const OnboardingScreen = () => {
 			>
 				{renderWelcome()}
 				{renderCanteenStep()}
+				{renderPriceGroupStep()}
 				{renderPreferencesStep()}
-				{renderNotificationsStep()}
 				{renderCompleteStep()}
 			</ScrollView>
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
@@ -383,17 +424,9 @@ const styles = StyleSheet.create({
 		width: '100%',
 		marginTop: 8,
 	},
-	notificationButton: {
-		marginVertical: 16,
-	},
-	enabledIndicator: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	enabledText: {
-		fontSize: 16,
-		fontFamily: 'Poppins_400Regular',
+	priceGroupContainer: {
+		width: '100%',
+		marginTop: 8,
 	},
 	startButton: {
 		flexDirection: 'row',
