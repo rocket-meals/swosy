@@ -127,7 +127,7 @@ jobs:
             }
 
   web-preview-deploy:
-    name: "🌐 Web Preview Deploy – ${{ matrix.customer }} (PR #${{ github.event.pull_request.number }})"
+    name: "🌐 Web Preview Deploy (PR #${{ github.event.pull_request.number }})"
     runs-on: ubuntu-latest
     needs: check-repository
     if: >-
@@ -137,16 +137,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    strategy:
-      matrix:
-        include:
-          - customer: test
-            baseUrlPath: rocket-meals
-          - customer: swosy
-            baseUrlPath: swosy
-          - customer: studi-futter
-            baseUrlPath: studi-futter
-      fail-fast: false
     steps:
       - name: "🔄 Checkout PR Head"
         uses: actions/checkout@v4
@@ -166,48 +156,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "🔨 Build & Deploy Web Preview – ${{ matrix.customer }}"
+      - name: "🔨 Build & Deploy Web Preview"
         run: |
           expo export -p web
           yarn run copy-assets
-          gh-pages --nojekyll -d dist --dest "${{ matrix.baseUrlPath }}-${{ github.event.pull_request.number }}"
+          gh-pages --nojekyll -d dist --dest "swosy-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
         env:
-          CUSTOMER: ${{ matrix.customer }}
-          EXPO_PUBLIC_CUSTOMER: ${{ matrix.customer }}
+          CUSTOMER: swosy
+          EXPO_PUBLIC_CUSTOMER: swosy
           EXPO_PUBLIC_BASE_URL_SUFFIX: -${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  web-preview-comment:
-    name: "💬 Comment Web Preview Links (PR #${{ github.event.pull_request.number }})"
-    runs-on: ubuntu-latest
-    needs: [check-repository, web-preview-deploy]
-    if: >-
-      github.event.action != 'closed'
-      && needs.check-repository.outputs.is-upstream == 'true'
-      && github.event.pull_request.head.repo.full_name == github.repository
-    permissions:
-      pull-requests: write
-    steps:
       - name: "💬 Comment on PR"
         uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
             const marker = '<!-- web-preview-comment -->';
-            const baseHost = 'https://rocket-meals.de';
+            const url = `https://rocket-meals.de/swosy-${prNumber}/`;
 
             const body = [
               marker,
               '## 🌐 Web Preview',
               '',
-              `A web preview has been deployed for this PR at the following URLs:`,
+              `A web preview for this PR has been deployed:`,
               '',
-              `| Customer | URL |`,
-              `|----------|-----|`,
-              `| 🍽️ Rocket Meals (test) | [${baseHost}/rocket-meals-${prNumber}/](${baseHost}/rocket-meals-${prNumber}/) |`,
-              `| 🥗 SWOSY | [${baseHost}/swosy-${prNumber}/](${baseHost}/swosy-${prNumber}/) |`,
-              `| 🍜 Studi\\|Futter | [${baseHost}/studi-futter-${prNumber}/](${baseHost}/studi-futter-${prNumber}/) |`,
+              `**🥗 SWOSY:** [${url}](${url})`,
               '',
               '> ℹ️ The preview is rebuilt on every push to this PR and removed when the PR is closed or merged.',
             ].join('\n');
@@ -272,7 +247,7 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: "🗑️ Delete Web Previews from gh-pages"
+      - name: "🗑️ Delete Web Preview from gh-pages"
         continue-on-error: true
         run: |
           git clone --depth 1 "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" -b gh-pages /tmp/gh-pages-cleanup
@@ -280,18 +255,13 @@ jobs:
           git config user.name 'Rocket Meals'
           git config user.email 'nils@baumgartner-software.de'
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          REMOVED=false
-          for dir in "swosy-${PR_NUMBER}" "studi-futter-${PR_NUMBER}" "rocket-meals-${PR_NUMBER}"; do
-            if [ -d "$dir" ]; then
-              git rm -rf "$dir"
-              REMOVED=true
-            fi
-          done
-          if [ "$REMOVED" = "true" ]; then
+          DIR="swosy-${PR_NUMBER}"
+          if [ -d "$DIR" ]; then
+            git rm -rf "$DIR"
             git commit -m "chore: remove web preview for PR #${PR_NUMBER}"
             git push
           else
-            echo "No web preview directories found to remove"
+            echo "No web preview directory found to remove"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
