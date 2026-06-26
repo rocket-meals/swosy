@@ -342,14 +342,17 @@ const OnboardingScreen = () => {
 			{renderStepIndicator()}
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
 				{!isFirstStep ? (
-					<TouchableOpacity onPress={handleBack} style={styles.navButton}>
+					<TouchableOpacity
+						onPress={handleBack}
+						style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
+					>
 						<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
-						<Text style={[styles.navButtonText, { color: theme.screen.text }]}>
+						<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
 							{translate(TranslationKeys.onboarding_back)}
 						</Text>
 					</TouchableOpacity>
 				) : (
-					<View style={styles.navButton} />
+					<View style={styles.navButtonPrimary} />
 				)}
 				{!isLastStep ? (
 					<TouchableOpacity
@@ -362,7 +365,7 @@ const OnboardingScreen = () => {
 						<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
 					</TouchableOpacity>
 				) : (
-					<View style={styles.navButton} />
+					<View style={styles.navButtonPrimary} />
 				)}
 			</View>
 		</SafeAreaView>
@@ -449,16 +452,6 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		borderTopWidth: 1,
 	},
-	navButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-		minWidth: 80,
-	},
-	navButtonText: {
-		fontSize: 16,
-		fontFamily: 'Poppins_400Regular',
-	},
 	navButtonPrimary: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -466,6 +459,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20,
 		paddingVertical: 10,
 		borderRadius: 24,
+		minWidth: 80,
 	},
 	navButtonPrimaryText: {
 		fontSize: 16,
