@@ -172,7 +172,7 @@ jobs:
 
       - name: "🔨 Build & Deploy Web Preview"
         run: |
-          expo export -p web
+          npx expo export -p web
           yarn run copy-assets
           gh-pages --nojekyll -d dist --dest "${{ env.WEB_BASE_PATH }}/pr-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
