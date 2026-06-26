@@ -174,7 +174,7 @@ jobs:
         run: |
           npx expo export -p web
           yarn run copy-assets
-          yarn gh-pages --nojekyll -d dist --dest "${{ env.WEB_BASE_PATH }}/pr-${{ github.event.pull_request.number }}"
+          yarn gh-pages --nojekyll -d dist --dest "pr-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
         env:
           EXPO_PUBLIC_BASE_URL_SUFFIX: /pr-${{ github.event.pull_request.number }}
@@ -265,21 +265,12 @@ jobs:
       - name: "🗑️ Delete Web Preview from gh-pages"
         continue-on-error: true
         run: |
-          WEB_BASE_PATH=$(node - <<'EOF'
-          require('ts-node').register({
-            transpileOnly: true,
-            compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
-          });
-          const { getCustomerConfig } = require('./config.ts');
-          console.log(getCustomerConfig().baseUrl.replace(/^\//, ''));
-          EOF
-          )
           git clone --depth 1 "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" -b gh-pages /tmp/gh-pages-cleanup
           cd /tmp/gh-pages-cleanup
           git config user.name 'Rocket Meals'
           git config user.email 'nils@baumgartner-software.de'
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          DIR="${WEB_BASE_PATH}/pr-${PR_NUMBER}"
+          DIR="pr-${PR_NUMBER}"
           if [ -d "$DIR" ]; then
             git rm -rf "$DIR"
             git commit -m "chore: remove web preview for PR #${PR_NUMBER}"
