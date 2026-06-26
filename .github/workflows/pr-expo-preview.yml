@@ -174,10 +174,10 @@ jobs:
         run: |
           expo export -p web
           yarn run copy-assets
-          gh-pages --nojekyll -d dist --dest "${{ env.WEB_BASE_PATH }}-${{ github.event.pull_request.number }}"
+          gh-pages --nojekyll -d dist --dest "${{ env.WEB_BASE_PATH }}/pr-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
         env:
-          EXPO_PUBLIC_BASE_URL_SUFFIX: -${{ github.event.pull_request.number }}
+          EXPO_PUBLIC_BASE_URL_SUFFIX: /pr-${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "💬 Comment on PR"
@@ -189,7 +189,7 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const marker = '<!-- web-preview-comment -->';
             const baseUrlPath = process.env.WEB_BASE_PATH;
-            const url = `https://rocket-meals.de/${baseUrlPath}-${prNumber}/`;
+            const url = `https://rocket-meals.de/${baseUrlPath}/pr-${prNumber}/`;
 
             const body = [
               marker,
@@ -279,7 +279,7 @@ jobs:
           git config user.name 'Rocket Meals'
           git config user.email 'nils@baumgartner-software.de'
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          DIR="${WEB_BASE_PATH}-${PR_NUMBER}"
+          DIR="${WEB_BASE_PATH}/pr-${PR_NUMBER}"
           if [ -d "$DIR" ]; then
             git rm -rf "$DIR"
             git commit -m "chore: remove web preview for PR #${PR_NUMBER}"
