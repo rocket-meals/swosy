@@ -126,6 +126,118 @@ jobs:
               console.log(`Created comment #${created.id}`);
             }
 
+  web-preview-deploy:
+    name: "🌐 Web Preview Deploy – ${{ matrix.customer }} (PR #${{ github.event.pull_request.number }})"
+    runs-on: ubuntu-latest
+    needs: check-repository
+    if: >-
+      github.event.action != 'closed'
+      && needs.check-repository.outputs.is-upstream == 'true'
+      && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      matrix:
+        include:
+          - customer: test
+            baseUrlPath: rocket-meals
+          - customer: swosy
+            baseUrlPath: swosy
+          - customer: studi-futter
+            baseUrlPath: studi-futter
+      fail-fast: false
+    steps:
+      - name: "🔄 Checkout PR Head"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: "👤 Git User Configuration"
+        run: |
+          git config --global user.name 'Rocket Meals'
+          git config --global user.email 'nils@baumgartner-software.de'
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "🔨 Build & Deploy Web Preview – ${{ matrix.customer }}"
+        run: |
+          expo export -p web
+          yarn run copy-assets
+          gh-pages --nojekyll -d dist --dest "${{ matrix.baseUrlPath }}-${{ github.event.pull_request.number }}"
+        working-directory: ./apps/frontend/app
+        env:
+          CUSTOMER: ${{ matrix.customer }}
+          EXPO_PUBLIC_CUSTOMER: ${{ matrix.customer }}
+          EXPO_PUBLIC_BASE_URL_SUFFIX: -${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  web-preview-comment:
+    name: "💬 Comment Web Preview Links (PR #${{ github.event.pull_request.number }})"
+    runs-on: ubuntu-latest
+    needs: [check-repository, web-preview-deploy]
+    if: >-
+      github.event.action != 'closed'
+      && needs.check-repository.outputs.is-upstream == 'true'
+      && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      pull-requests: write
+    steps:
+      - name: "💬 Comment on PR"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const marker = '<!-- web-preview-comment -->';
+            const baseHost = 'https://rocket-meals.de';
+
+            const body = [
+              marker,
+              '## 🌐 Web Preview',
+              '',
+              `A web preview has been deployed for this PR at the following URLs:`,
+              '',
+              `| Customer | URL |`,
+              `|----------|-----|`,
+              `| 🍽️ Rocket Meals (test) | [${baseHost}/rocket-meals-${prNumber}/](${baseHost}/rocket-meals-${prNumber}/) |`,
+              `| 🥗 SWOSY | [${baseHost}/swosy-${prNumber}/](${baseHost}/swosy-${prNumber}/) |`,
+              `| 🍜 Studi\\|Futter | [${baseHost}/studi-futter-${prNumber}/](${baseHost}/studi-futter-${prNumber}/) |`,
+              '',
+              '> ℹ️ The preview is rebuilt on every push to this PR and removed when the PR is closed or merged.',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+              console.log(`Updated existing comment #${existing.id}`);
+            } else {
+              const { data: created } = await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: body,
+              });
+              console.log(`Created comment #${created.id}`);
+            }
+
   expo-preview-cleanup:
     name: "🗑️ EAS Preview Cleanup (PR #${{ github.event.pull_request.number }})"
     runs-on: ubuntu-latest
@@ -159,3 +271,27 @@ jobs:
         working-directory: ./apps/score-tracker/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: "🗑️ Delete Web Previews from gh-pages"
+        continue-on-error: true
+        run: |
+          git clone --depth 1 "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" -b gh-pages /tmp/gh-pages-cleanup
+          cd /tmp/gh-pages-cleanup
+          git config user.name 'Rocket Meals'
+          git config user.email 'nils@baumgartner-software.de'
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          REMOVED=false
+          for dir in "swosy-${PR_NUMBER}" "studi-futter-${PR_NUMBER}" "rocket-meals-${PR_NUMBER}"; do
+            if [ -d "$dir" ]; then
+              git rm -rf "$dir"
+              REMOVED=true
+            fi
+          done
+          if [ "$REMOVED" = "true" ]; then
+            git commit -m "chore: remove web preview for PR #${PR_NUMBER}"
+            git push
+          else
+            echo "No web preview directories found to remove"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
