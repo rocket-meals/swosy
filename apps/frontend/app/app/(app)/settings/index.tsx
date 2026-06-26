@@ -682,6 +682,7 @@ const Settings = () => {
 						/>
 					</View>
 					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo, customerConfig)}</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 12, opacity: 0.5, marginTop: 2 }}>rocket meals</Text>
 				</TouchableOpacity>
 			),
 		});
