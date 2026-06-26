@@ -324,7 +324,6 @@ const OnboardingScreen = () => {
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
-			{renderStepIndicator()}
 			<ScrollView
 				ref={scrollViewRef}
 				horizontal
@@ -340,6 +339,7 @@ const OnboardingScreen = () => {
 				{renderPreferencesStep()}
 				{renderCompleteStep()}
 			</ScrollView>
+			{renderStepIndicator()}
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
 				{!isFirstStep ? (
 					<TouchableOpacity onPress={handleBack} style={styles.navButton}>
@@ -381,8 +381,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 8,
-		marginBottom: 8,
-		marginTop: 12,
+		marginTop: 8,
+		marginBottom: 4,
 	},
 	stepDot: {
 		height: 8,
