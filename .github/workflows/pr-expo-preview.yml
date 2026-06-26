@@ -148,6 +148,20 @@ jobs:
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+      - name: "🗂️ Resolve web base path from customer config"
+        run: |
+          WEB_BASE_PATH=$(node - <<'EOF'
+          require('ts-node').register({
+            transpileOnly: true,
+            compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+          });
+          const { getCustomerConfig } = require('./config.ts');
+          console.log(getCustomerConfig().baseUrl.replace(/^\//, ''));
+          EOF
+          )
+          echo "WEB_BASE_PATH=${WEB_BASE_PATH}" >> "$GITHUB_ENV"
+        working-directory: ./apps/frontend/app
+
       - name: "👤 Git User Configuration"
         run: |
           git config --global user.name 'Rocket Meals'
@@ -160,21 +174,22 @@ jobs:
         run: |
           expo export -p web
           yarn run copy-assets
-          gh-pages --nojekyll -d dist --dest "swosy-${{ github.event.pull_request.number }}"
+          gh-pages --nojekyll -d dist --dest "${{ env.WEB_BASE_PATH }}-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
         env:
-          CUSTOMER: swosy
-          EXPO_PUBLIC_CUSTOMER: swosy
           EXPO_PUBLIC_BASE_URL_SUFFIX: -${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "💬 Comment on PR"
         uses: actions/github-script@v7
+        env:
+          WEB_BASE_PATH: ${{ env.WEB_BASE_PATH }}
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
             const marker = '<!-- web-preview-comment -->';
-            const url = `https://rocket-meals.de/swosy-${prNumber}/`;
+            const baseUrlPath = process.env.WEB_BASE_PATH;
+            const url = `https://rocket-meals.de/${baseUrlPath}-${prNumber}/`;
 
             const body = [
               marker,
@@ -182,7 +197,7 @@ jobs:
               '',
               `A web preview for this PR has been deployed:`,
               '',
-              `**🥗 SWOSY:** [${url}](${url})`,
+              `**🌍 Preview:** [${url}](${url})`,
               '',
               '> ℹ️ The preview is rebuilt on every push to this PR and removed when the PR is closed or merged.',
             ].join('\n');
@@ -250,12 +265,21 @@ jobs:
       - name: "🗑️ Delete Web Preview from gh-pages"
         continue-on-error: true
         run: |
+          WEB_BASE_PATH=$(node - <<'EOF'
+          require('ts-node').register({
+            transpileOnly: true,
+            compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+          });
+          const { getCustomerConfig } = require('./config.ts');
+          console.log(getCustomerConfig().baseUrl.replace(/^\//, ''));
+          EOF
+          )
           git clone --depth 1 "https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" -b gh-pages /tmp/gh-pages-cleanup
           cd /tmp/gh-pages-cleanup
           git config user.name 'Rocket Meals'
           git config user.email 'nils@baumgartner-software.de'
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          DIR="swosy-${PR_NUMBER}"
+          DIR="${WEB_BASE_PATH}-${PR_NUMBER}"
           if [ -d "$DIR" ]; then
             git rm -rf "$DIR"
             git commit -m "chore: remove web preview for PR #${PR_NUMBER}"
@@ -263,5 +287,6 @@ jobs:
           else
             echo "No web preview directory found to remove"
           fi
+        working-directory: ./apps/frontend/app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
