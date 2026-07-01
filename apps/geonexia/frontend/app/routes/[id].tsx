@@ -97,7 +97,7 @@ function ManualActivityContent({
 
 		const now = Date.now();
 		const activity: SavedActivity = {
-			id: String(now),
+			id: `${now}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt: now - totalSeconds * 1000,
 			endedAt: now,
 			routePoints: [],

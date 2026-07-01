@@ -1306,8 +1306,9 @@ export default function ActivityDetailScreen() {
 	// ── Weather & Rating handlers ─────────────────────────────────────────────
 	const handleWeatherTemperatureChange = useCallback((value: string) => {
 		if (!activity) return;
-		const numVal = value.trim() === '' ? null : parseFloat(value);
-		if (value.trim() !== '' && (isNaN(numVal!) || numVal === undefined)) return;
+		const trimmed = value.trim();
+		const numVal = trimmed === '' ? null : parseFloat(trimmed);
+		if (trimmed !== '' && (numVal === null || isNaN(numVal))) return;
 		const updated: SavedActivity = { ...activity, weatherTemperature: numVal };
 		saveActivity(updated);
 		setActivity(updated);
@@ -1355,6 +1356,8 @@ export default function ActivityDetailScreen() {
 		: activity.routeId === null
 		? 'Keine'
 		: '—';
+
+	const currentWeatherDef = activity.weatherType ? WEATHER_TYPES.find(w => w.type === activity.weatherType) : null;
 
 	// Compute the route centre so the map starts at the correct position immediately.
 	const routeInitialCenter = (() => {
@@ -1547,10 +1550,10 @@ export default function ActivityDetailScreen() {
 					}}
 				/>
 				<SettingsList
-					leftIcon={<MaterialIcons name={activity.weatherType ? (WEATHER_TYPES.find(w => w.type === activity.weatherType)?.icon ?? 'cloud') as React.ComponentProps<typeof MaterialIcons>['name'] : 'cloud'} size={20} color="#ffffff" />}
+					leftIcon={<MaterialIcons name={(currentWeatherDef?.icon ?? 'cloud') as React.ComponentProps<typeof MaterialIcons>['name']} size={20} color="#ffffff" />}
 					iconBackgroundColor="#3b82f6"
 					title="Wetter"
-					value={activity.weatherType ? (WEATHER_TYPES.find(w => w.type === activity.weatherType)?.label ?? '—') : '—'}
+					value={currentWeatherDef?.label ?? '—'}
 					groupPosition="middle"
 					showSeparator
 					onPress={() => {
