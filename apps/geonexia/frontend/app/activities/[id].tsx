@@ -15,7 +15,7 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
@@ -266,6 +266,90 @@ function DeleteConfirmContent({
 			<TouchableOpacity style={styles.cancelButton} onPress={onCancel} activeOpacity={0.8}>
 				<Text style={[styles.cancelButtonText, { color: theme.screen.text }]}>Cancel</Text>
 			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Temperature Input Content (shown inside bottom sheet modal) ──────────────
+
+function TemperatureInputContent({
+	currentValue,
+	onSave,
+	onClose,
+	theme,
+}: {
+	currentValue: number | null;
+	onSave: (value: string) => void;
+	onClose: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const [text, setText] = useState(currentValue != null ? String(currentValue) : '');
+	return (
+		<View style={{ paddingTop: 4, gap: 12 }}>
+			<Text style={{ fontSize: 14, lineHeight: 20, color: theme.screen.text }}>
+				Temperatur in °C eingeben (leer lassen zum Entfernen):
+			</Text>
+			<TextInput
+				style={{ borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }}
+				placeholder="z.B. 18"
+				placeholderTextColor={theme.screen.icon}
+				value={text}
+				onChangeText={setText}
+				keyboardType="numeric"
+				autoFocus
+			/>
+			<TouchableOpacity
+				style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: 10, backgroundColor: '#2563eb', gap: 8 }}
+				onPress={() => { onSave(text); onClose(); }}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="check" size={18} color="#ffffff" />
+				<Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '600' }}>Speichern</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={{ alignItems: 'center', paddingVertical: 10 }} onPress={onClose} activeOpacity={0.8}>
+				<Text style={{ fontSize: 15, fontWeight: '500', color: theme.screen.text }}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Weather Type Picker Content (shown inside bottom sheet modal) ─────────────
+
+function WeatherTypePickerContent({
+	currentValue,
+	onSelect,
+	onClose,
+	theme,
+}: {
+	currentValue: WeatherType | null;
+	onSelect: (type: WeatherType | null) => void;
+	onClose: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	return (
+		<View style={{ paddingTop: 4, gap: 8 }}>
+			{WEATHER_TYPES.map((w) => (
+				<TouchableOpacity
+					key={w.type}
+					style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 12, borderRadius: 10, backgroundColor: currentValue === w.type ? '#2563eb22' : 'transparent' }}
+					onPress={() => { onSelect(w.type); onClose(); }}
+					activeOpacity={0.7}
+				>
+					<MaterialIcons name={w.icon as React.ComponentProps<typeof MaterialIcons>['name']} size={24} color={currentValue === w.type ? '#2563eb' : theme.screen.icon} />
+					<Text style={{ marginLeft: 12, fontSize: 16, color: currentValue === w.type ? '#2563eb' : theme.screen.text, fontWeight: currentValue === w.type ? '600' : '400' }}>{w.label}</Text>
+					{currentValue === w.type && <MaterialIcons name="check" size={20} color="#2563eb" style={{ marginLeft: 'auto' }} />}
+				</TouchableOpacity>
+			))}
+			{currentValue != null && (
+				<TouchableOpacity
+					style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 12, borderRadius: 10 }}
+					onPress={() => { onSelect(null); onClose(); }}
+					activeOpacity={0.7}
+				>
+					<MaterialIcons name="close" size={24} color="#ef4444" />
+					<Text style={{ marginLeft: 12, fontSize: 16, color: '#ef4444' }}>Entfernen</Text>
+				</TouchableOpacity>
+			)}
 		</View>
 	);
 }
@@ -1219,6 +1303,31 @@ export default function ActivityDetailScreen() {
 		});
 	}, [activity, showShareModal, closeModal, router, theme]);
 
+	// ── Weather & Rating handlers ─────────────────────────────────────────────
+	const handleWeatherTemperatureChange = useCallback((value: string) => {
+		if (!activity) return;
+		const numVal = value.trim() === '' ? null : parseFloat(value);
+		if (value.trim() !== '' && (isNaN(numVal!) || numVal === undefined)) return;
+		const updated: SavedActivity = { ...activity, weatherTemperature: numVal };
+		saveActivity(updated);
+		setActivity(updated);
+	}, [activity]);
+
+	const handleWeatherTypeChange = useCallback((type: WeatherType | null) => {
+		if (!activity) return;
+		const updated: SavedActivity = { ...activity, weatherType: type };
+		saveActivity(updated);
+		setActivity(updated);
+	}, [activity]);
+
+	const handleRatingChange = useCallback((newRating: ActivityRating | null) => {
+		if (!activity) return;
+		// Tap same star again → clear rating
+		const updated: SavedActivity = { ...activity, rating: activity.rating === newRating ? null : newRating };
+		saveActivity(updated);
+		setActivity(updated);
+	}, [activity]);
+
 	if (notFound) {
 		return (
 			<View style={[styles.centeredContainer, { backgroundColor: theme.screen.background }]}>
@@ -1412,6 +1521,74 @@ export default function ActivityDetailScreen() {
 						<ActivityAggregateStatsSection activities={routeSiblingActivities} />
 					</>
 				)}
+
+				{/* ── Weather & Rating ──────────────────────────────────── */}
+				<SettingsListGroupTitle title="Wetter & Bewertung" />
+				<SettingsList
+					leftIcon={<MaterialIcons name="thermostat" size={20} color="#ffffff" />}
+					iconBackgroundColor="#f59e0b"
+					title="Temperatur"
+					value={activity.weatherTemperature != null ? `${activity.weatherTemperature} °C` : '—'}
+					groupPosition="top"
+					showSeparator
+					onPress={() => {
+						showShareModal({
+							title: '🌡️ Temperatur',
+							keyboardShouldPersistTaps: 'handled',
+							children: (
+								<TemperatureInputContent
+									currentValue={activity.weatherTemperature ?? null}
+									onSave={handleWeatherTemperatureChange}
+									onClose={closeModal}
+									theme={theme}
+								/>
+							),
+						});
+					}}
+				/>
+				<SettingsList
+					leftIcon={<MaterialIcons name={activity.weatherType ? (WEATHER_TYPES.find(w => w.type === activity.weatherType)?.icon ?? 'cloud') as React.ComponentProps<typeof MaterialIcons>['name'] : 'cloud'} size={20} color="#ffffff" />}
+					iconBackgroundColor="#3b82f6"
+					title="Wetter"
+					value={activity.weatherType ? (WEATHER_TYPES.find(w => w.type === activity.weatherType)?.label ?? '—') : '—'}
+					groupPosition="middle"
+					showSeparator
+					onPress={() => {
+						showShareModal({
+							title: '🌤️ Wetter',
+							children: (
+								<WeatherTypePickerContent
+									currentValue={activity.weatherType ?? null}
+									onSelect={handleWeatherTypeChange}
+									onClose={closeModal}
+									theme={theme}
+								/>
+							),
+						});
+					}}
+				/>
+				<View style={ratingStyles.ratingRow}>
+					<View style={[ratingStyles.ratingRowInner, { backgroundColor: theme.screen.iconBg }]}>
+						<View style={ratingStyles.ratingLabelRow}>
+							<View style={[ratingStyles.ratingIconBg, { backgroundColor: '#eab308' }]}>
+								<MaterialIcons name="star" size={20} color="#ffffff" />
+							</View>
+							<Text style={[ratingStyles.ratingLabel, { color: theme.screen.text }]}>Bewertung</Text>
+						</View>
+						<View style={ratingStyles.starsRow}>
+							{([1, 2, 3, 4, 5] as ActivityRating[]).map((star) => (
+								<TouchableOpacity key={star} onPress={() => handleRatingChange(star)} activeOpacity={0.7}>
+									<MaterialIcons
+										name={activity.rating != null && star <= activity.rating ? 'star' : 'star-border'}
+										size={32}
+										color="#eab308"
+									/>
+								</TouchableOpacity>
+							))}
+						</View>
+					</View>
+				</View>
+
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
 					<Text style={styles.shareButtonText}>Share Activity</Text>
@@ -1524,6 +1701,40 @@ export default function ActivityDetailScreen() {
 		</ScrollView>
 	);
 }
+
+const ratingStyles = StyleSheet.create({
+	ratingRow: {
+		marginTop: 0,
+	},
+	ratingRowInner: {
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	ratingLabelRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
+	},
+	ratingIconBg: {
+		width: 30,
+		height: 30,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	ratingLabel: {
+		fontSize: 15,
+		fontWeight: '500',
+	},
+	starsRow: {
+		flexDirection: 'row',
+		gap: 2,
+	},
+});
 
 const styles = StyleSheet.create({
 	container: {

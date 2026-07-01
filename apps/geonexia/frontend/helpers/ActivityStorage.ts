@@ -1,6 +1,35 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { SportType } from '../store/sportTypeSlice';
 
+// ─── Weather & Rating types ───────────────────────────────────────────────────
+
+/**
+ * Possible weather condition types for an activity.
+ */
+export type WeatherType =
+	| 'sunny'
+	| 'partly_cloudy'
+	| 'cloudy'
+	| 'rainy'
+	| 'snowy'
+	| 'stormy'
+	| 'foggy'
+	| 'windy';
+
+export const WEATHER_TYPES: { type: WeatherType; label: string; icon: string }[] = [
+	{ type: 'sunny', label: 'Sonnig', icon: 'wb-sunny' },
+	{ type: 'partly_cloudy', label: 'Teilweise bewölkt', icon: 'cloud-queue' },
+	{ type: 'cloudy', label: 'Bewölkt', icon: 'cloud' },
+	{ type: 'rainy', label: 'Regnerisch', icon: 'water-drop' },
+	{ type: 'snowy', label: 'Schnee', icon: 'ac-unit' },
+	{ type: 'stormy', label: 'Stürmisch', icon: 'thunderstorm' },
+	{ type: 'foggy', label: 'Nebelig', icon: 'blur-on' },
+	{ type: 'windy', label: 'Windig', icon: 'air' },
+];
+
+/** Rating value 1–5 stars */
+export type ActivityRating = 1 | 2 | 3 | 4 | 5;
+
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
 /**
@@ -126,6 +155,26 @@ export type SavedActivity = {
 	 * Optional for backward-compat with older saves.
 	 */
 	computed?: ComputedActivityData;
+	/**
+	 * Weather temperature in °C at the time of the activity.
+	 * Optional – user can set this manually after the activity.
+	 */
+	weatherTemperature?: number | null;
+	/**
+	 * Weather condition type during the activity.
+	 * Optional – user can set this manually after the activity.
+	 */
+	weatherType?: WeatherType | null;
+	/**
+	 * User rating of the activity (1–5 stars).
+	 * Optional – user can rate the activity afterwards.
+	 */
+	rating?: ActivityRating | null;
+	/**
+	 * Whether this activity was created manually (duration-only, no GPS data).
+	 * Manual activities only have a duration and are assigned to an existing route.
+	 */
+	isManual?: boolean;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

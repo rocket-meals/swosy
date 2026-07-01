@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ import {
 import { useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
-import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
+import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
@@ -69,6 +69,111 @@ function formatDate(timestamp: number): string {
 		month: 'long',
 		year: 'numeric',
 	});
+}
+
+// ─── Manual Activity Modal Content ───────────────────────────────────────────
+
+function ManualActivityContent({
+	routeId,
+	onSave,
+	onClose,
+	theme,
+}: {
+	routeId: string;
+	onSave: (activity: SavedActivity) => void;
+	onClose: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const [hours, setHours] = useState('');
+	const [minutes, setMinutes] = useState('');
+	const [seconds, setSeconds] = useState('');
+
+	const handleSave = () => {
+		const h = parseInt(hours, 10) || 0;
+		const m = parseInt(minutes, 10) || 0;
+		const s = parseInt(seconds, 10) || 0;
+		const totalSeconds = h * 3600 + m * 60 + s;
+		if (totalSeconds <= 0) return;
+
+		const now = Date.now();
+		const activity: SavedActivity = {
+			id: String(now),
+			startedAt: now - totalSeconds * 1000,
+			endedAt: now,
+			routePoints: [],
+			stats: {
+				distanceKm: 0,
+				durationSeconds: totalSeconds,
+				paceMinPerKm: 0,
+				maxSpeedKmh: 0,
+				minSpeedKmh: 0,
+				avgSpeedKmh: 0,
+				medianSpeedKmh: 0,
+				kcal: 0,
+				steps: 0,
+				elevationGainM: 0,
+				elevationLossM: 0,
+				fluidNeedsMl: 0,
+			},
+			routeId,
+			isManual: true,
+		};
+		onSave(activity);
+	};
+
+	const totalSeconds = (parseInt(hours, 10) || 0) * 3600 + (parseInt(minutes, 10) || 0) * 60 + (parseInt(seconds, 10) || 0);
+
+	return (
+		<View style={{ paddingTop: 4, gap: 12 }}>
+			<Text style={{ fontSize: 14, lineHeight: 20, color: theme.screen.text }}>
+				Dauer der Aktivität eingeben:
+			</Text>
+			<View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+				<TextInput
+					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
+					placeholder="Std"
+					placeholderTextColor={theme.screen.icon}
+					value={hours}
+					onChangeText={setHours}
+					keyboardType="numeric"
+					maxLength={2}
+				/>
+				<Text style={{ fontSize: 20, color: theme.screen.text, fontWeight: '700' }}>:</Text>
+				<TextInput
+					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
+					placeholder="Min"
+					placeholderTextColor={theme.screen.icon}
+					value={minutes}
+					onChangeText={setMinutes}
+					keyboardType="numeric"
+					maxLength={2}
+					autoFocus
+				/>
+				<Text style={{ fontSize: 20, color: theme.screen.text, fontWeight: '700' }}>:</Text>
+				<TextInput
+					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
+					placeholder="Sek"
+					placeholderTextColor={theme.screen.icon}
+					value={seconds}
+					onChangeText={setSeconds}
+					keyboardType="numeric"
+					maxLength={2}
+				/>
+			</View>
+			<TouchableOpacity
+				style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: 10, backgroundColor: '#2563eb', gap: 8, opacity: totalSeconds <= 0 ? 0.4 : 1 }}
+				onPress={handleSave}
+				disabled={totalSeconds <= 0}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="check" size={18} color="#ffffff" />
+				<Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '600' }}>Aktivität speichern</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={{ alignItems: 'center', paddingVertical: 10 }} onPress={onClose} activeOpacity={0.8}>
+				<Text style={{ fontSize: 15, fontWeight: '500', color: theme.screen.text }}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
 }
 
 export default function RouteDetailScreen() {
@@ -648,6 +753,34 @@ export default function RouteDetailScreen() {
 		}
 	}, [isEditing, editedHexTiles, mapEditSubMode, addAnchorTileIndex, mapMounted]);
 
+	// ── Add manual (duration-only) activity ──────────────────────────────
+	const { show: showManualActivityModal, close: closeManualActivityModal } = useMyScrollViewModal();
+
+	const handleAddManualActivity = useCallback(() => {
+		if (!route) return;
+		showManualActivityModal({
+			title: '⏱️ Manuelle Aktivität',
+			keyboardShouldPersistTaps: 'handled',
+			children: (
+				<ManualActivityContent
+					routeId={route.id}
+					onSave={(activity) => {
+						saveActivity(activity);
+						// Also add activity ID to route.activityIds
+						const updatedIds = [...new Set([...(route.activityIds ?? []), activity.id])];
+						saveRoute({ ...route, activityIds: updatedIds });
+						setRoute({ ...route, activityIds: updatedIds });
+						setRouteActivities((prev) => [activity, ...prev]);
+						closeManualActivityModal();
+						router.push(`/activities/${activity.id}`);
+					}}
+					onClose={closeManualActivityModal}
+					theme={theme}
+				/>
+			),
+		});
+	}, [route, showManualActivityModal, closeManualActivityModal, theme, router]);
+
 	const handleDelete = useCallback(() => {
 		if (!route) return;
 		showAlert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
@@ -849,7 +982,8 @@ export default function RouteDetailScreen() {
 					title="Aktivitäten"
 					value={String(routeActivities.length)}
 					rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
-					groupPosition="single"
+					groupPosition="top"
+					showSeparator
 					onPress={() => {
 						showActivitiesModal({
 							title: '🏃 Aktivitäten',
@@ -872,6 +1006,13 @@ export default function RouteDetailScreen() {
 							),
 						});
 					}}
+				/>
+				<SettingsList
+					leftIcon={<MaterialIcons name="add" size={20} color="#ffffff" />}
+					iconBackgroundColor="#22c55e"
+					title="Manuelle Aktivität hinzufügen"
+					groupPosition="bottom"
+					onPress={handleAddManualActivity}
 				/>
 
 				{/* ── Route Statistics ────────────────────────────────────── */}
