@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 35 | 35 |
-| 🐛 Reliability | 6872 | 15 |
+| 🔒 Security | 36 | 36 |
+| 🐛 Reliability | 6880 | 14 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16907 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16916 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (35/35)
+## 🔒 Security (36/36)
 
 - **Use full commit SHA hash for this dependency.**
   .github/workflows/frontend-maestro.yml:44
@@ -118,6 +118,10 @@
   apps/frontend/run-maestro-web-test.sh:88
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L88
 
+- **Make sure that using this pseudorandom number generator is safe here.**
+  apps/geonexia/frontend/app/routes/[id].tsx:100
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L100
+
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L117
@@ -154,7 +158,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (15/6872)
+## 🐛 Reliability (14/6880)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -211,8 +215,4 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
-
-- **React Hook "usePlatformHelper" is called in function "handleNativeLogin" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
-  apps/frontend/app/helper/authHelper.ts:38
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L38
 
