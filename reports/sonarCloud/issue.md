@@ -123,8 +123,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L180
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/routes/[id].tsx:146
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L146
+  apps/geonexia/frontend/app/routes/[id].tsx:159
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L159
 
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
