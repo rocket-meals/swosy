@@ -856,7 +856,7 @@ export default function RouteDetailScreen() {
 								dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
 							}
 							// Record hex-to-hex transitions so walk path spokes are drawn
-							const edges = computeEdgesFromHexTiles(route.hexTiles);
+							const edges = computeEdgesFromHexTiles(activity.hexTilesOrdered ?? route.hexTiles);
 							if (edges.length > 0) {
 								dispatch(addWalkedEdges(edges));
 							}
