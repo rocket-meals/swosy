@@ -882,6 +882,26 @@ export default function ActivityDetailScreen() {
 		loadActivity(id)
 			.then(async (a) => {
 				if (!a) { setNotFound(true); return; }
+
+				// Migrate activities saved before the computed field was introduced.
+				// Compute and persist it so subsequent loads skip this step.
+				if (!a.computed && (a.hexTilesOrdered?.length ?? 0) > 0 && isH3Available()) {
+					try {
+						const h3Res = a.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+						const enclosed = a.hexTilesOrdered!.length >= MIN_TILES_FOR_ENCLOSED_POLYGON
+							? findEnclosedCellsFromHexTiles(
+								buildFullRouteTileIds(a.hexTilesOrdered!, a.routePoints, h3Res),
+								h3Res,
+							)
+							: (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []);
+						const computedData = computeActivityData(a, enclosed);
+						a = { ...a, computed: computedData };
+						saveActivity(a);
+					} catch {
+						// Migration failed; continue without computed
+					}
+				}
+
 				setActivity(a);
 
 				// Load the assigned route for display
