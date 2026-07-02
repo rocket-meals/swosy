@@ -13,7 +13,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
@@ -28,9 +28,16 @@ import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
-import type { RootState } from '../../store/store';
+import type { AppDispatch, RootState } from '../../store/store';
+import { startRun, markVisited } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+
+const DEFAULT_RUNNER_WEIGHT_KG = 75;
+const KCAL_PER_KG_PER_KM = 0.9;
+const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
+const FLUID_BASELINE_DURATION_SECONDS = 3600;
+const FLUID_BASELINE_ML = 600;
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
@@ -90,12 +97,12 @@ function formatDate(timestamp: number): string {
 // ─── Manual Activity Modal Content ───────────────────────────────────────────
 
 function ManualActivityContent({
-	routeId,
+	route,
 	onSave,
 	onClose,
 	theme,
 }: {
-	routeId: string;
+	route: SavedRoute;
 	onSave: (activity: SavedActivity) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
@@ -129,26 +136,35 @@ function ManualActivityContent({
 		if (totalSeconds <= 0) return;
 
 		const startedAt = dateStringToStartOfDay(selectedDate);
+		const hexTilesOrdered = route.hexTiles;
+		const distanceKm = isH3Available() ? computeRouteLengthKm(hexTilesOrdered) : 0;
+		const paceMinPerKm = distanceKm > 0 ? totalSeconds / 60 / distanceKm : 0;
+		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
+		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
+		const fluidNeedsMl = Math.round((totalSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 		const activity: SavedActivity = {
 			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
 			routePoints: [],
 			stats: {
-				distanceKm: 0,
+				distanceKm,
 				durationSeconds: totalSeconds,
-				paceMinPerKm: 0,
+				paceMinPerKm,
 				maxSpeedKmh: 0,
 				minSpeedKmh: 0,
-				avgSpeedKmh: 0,
+				avgSpeedKmh: distanceKm > 0 && totalSeconds > 0 ? (distanceKm / totalSeconds) * 3600 : 0,
 				medianSpeedKmh: 0,
-				kcal: 0,
-				steps: 0,
+				kcal,
+				steps,
 				elevationGainM: 0,
 				elevationLossM: 0,
-				fluidNeedsMl: 0,
+				fluidNeedsMl,
 			},
-			routeId,
+			routeId: route.id,
+			h3Resolution: route.h3Resolution,
+			hexTilesOrdered,
+			visitedTileCount: hexTilesOrdered.length,
 			isManual: true,
 		};
 		onSave(activity);
@@ -236,6 +252,7 @@ export default function RouteDetailScreen() {
 	const [addAnchorTileIndex, setAddAnchorTileIndex] = useState<number | null>(null);
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const dispatch = useDispatch<AppDispatch>();
 	const isDebugMode = useDebugMode();
 	const { showAlert } = useGeonexiaAlert();
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
@@ -805,7 +822,7 @@ export default function RouteDetailScreen() {
 			keyboardShouldPersistTaps: 'handled',
 			children: (
 				<ManualActivityContent
-					routeId={route.id}
+					route={route}
 					onSave={(activity) => {
 						saveActivity(activity);
 						// Also add activity ID to route.activityIds
@@ -813,6 +830,11 @@ export default function RouteDetailScreen() {
 						saveRoute({ ...route, activityIds: updatedIds });
 						setRoute({ ...route, activityIds: updatedIds });
 						setRouteActivities((prev) => [activity, ...prev]);
+						// Apply the route's hex tiles to the in-memory map state
+						if (isH3Available() && route.hexTiles.length > 0) {
+							dispatch(startRun());
+							dispatch(markVisited({ h3Indices: route.hexTiles, timestamp: activity.startedAt }));
+						}
 						closeManualActivityModal();
 						router.push(`/activities/${activity.id}`);
 					}}
@@ -821,7 +843,7 @@ export default function RouteDetailScreen() {
 				/>
 			),
 		});
-	}, [route, showManualActivityModal, closeManualActivityModal, theme, router]);
+	}, [route, showManualActivityModal, closeManualActivityModal, theme, router, dispatch]);
 
 	const handleDelete = useCallback(() => {
 		if (!route) return;
