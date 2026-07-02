@@ -477,6 +477,62 @@ function computeParentInfo(
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
+ * Synthesize GPS-like route points along the ordered hex tile centers for a
+ * manual (duration-only) activity.
+ *
+ * Timestamps are distributed evenly so that
+ * `last.timestamp − first.timestamp === durationMs`. Each point is tagged
+ * `interpolated: true` so rebuild helpers can distinguish them from real GPS
+ * measurements, following the same convention used for routes that were
+ * completed via gap-filling interpolation.
+ *
+ * Speed is set to the constant average derived from `distanceKm` and
+ * `durationMs` (in m/s, matching Expo Location's unit). This gives
+ * `computeActivityData` meaningful per-tile speed values instead of leaving
+ * every tile at 0 km/h.
+ *
+ * @param hexTilesOrdered  Ordered H3 cell IDs along the route.
+ * @param startedAt        Unix timestamp (ms) of activity start.
+ * @param durationMs       Total activity duration in milliseconds.
+ * @param distanceKm       Route distance in km (used to derive avg speed).
+ * @returns Array of synthetic `RoutePoint` values tagged `interpolated: true`.
+ */
+export function synthesizeManualActivityRoutePoints(
+	hexTilesOrdered: string[],
+	startedAt: number,
+	durationMs: number,
+	distanceKm: number,
+): RoutePoint[] {
+	if (hexTilesOrdered.length === 0 || durationMs <= 0 || !isH3Available()) return [];
+
+	const durationSeconds = durationMs / 1000;
+	const avgSpeedMs = distanceKm > 0 && durationSeconds > 0
+		? (distanceKm * 1000) / durationSeconds
+		: 0;
+
+	// Distribute timestamps evenly: first point at startedAt, last at startedAt + durationMs.
+	const step = hexTilesOrdered.length > 1 ? durationMs / (hexTilesOrdered.length - 1) : 0;
+
+	const points: RoutePoint[] = [];
+	for (let i = 0; i < hexTilesOrdered.length; i++) {
+		try {
+			const [lat, lng] = cellToLatLng(hexTilesOrdered[i]);
+			points.push({
+				lat,
+				lng,
+				altitude: null,
+				speed: avgSpeedMs > 0 ? avgSpeedMs : null,
+				timestamp: startedAt + Math.round(i * step),
+				interpolated: true,
+			});
+		} catch {
+			// skip invalid cells
+		}
+	}
+	return points;
+}
+
+/**
  * Compute the `ComputedActivityData` blob for a `SavedActivity`.
  *
  * Call this:
