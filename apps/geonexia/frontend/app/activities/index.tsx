@@ -502,7 +502,7 @@ export default function ActivitiesScreen() {
 				/>
 			),
 		});
-	}, [routes, showManualModal, closeManualModal, theme, router]);
+	}, [routes, showManualModal, closeManualModal, showAlert, theme, router]);
 
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
