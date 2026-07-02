@@ -103,7 +103,7 @@ function ManualActivityContent({
 	const [hours, setHours] = useState('');
 	const [minutes, setMinutes] = useState('');
 	const [seconds, setSeconds] = useState('');
-	const [selectedDate, setSelectedDate] = useState(todayString);
+	const [selectedDate, setSelectedDate] = useState(todayString());
 	const { show: showCalendarModal, close: closeCalendarModal } = useMyScrollViewModal();
 
 	const openCalendar = () => {
