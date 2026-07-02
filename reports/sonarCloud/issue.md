@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 36 | 36 |
-| 🐛 Reliability | 6880 | 14 |
+| 🔒 Security | 37 | 37 |
+| 🐛 Reliability | 6886 | 13 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16916 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16923 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (36/36)
+## 🔒 Security (37/37)
 
 - **Use full commit SHA hash for this dependency.**
   .github/workflows/frontend-maestro.yml:44
@@ -119,6 +119,10 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L88
 
 - **Make sure that using this pseudorandom number generator is safe here.**
+  apps/geonexia/frontend/app/activities/index.tsx:104
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L104
+
+- **Make sure that using this pseudorandom number generator is safe here.**
   apps/geonexia/frontend/app/routes/[id].tsx:100
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L100
 
@@ -158,7 +162,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (14/6880)
+## 🐛 Reliability (13/6886)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -211,8 +215,4 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/EmailInput/EmailInput.tsx:9
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/EmailInput/EmailInput.tsx#L9
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/constants/MarkdownPatterns.ts:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
 
