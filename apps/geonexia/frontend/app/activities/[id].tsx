@@ -1203,6 +1203,8 @@ export default function ActivityDetailScreen() {
 	// the marker moves at the speed the route was actually recorded.
 	// The WebView runs the animation loop internally; the overview auto-rotate
 	// continues uninterrupted so the map keeps its normal rotation behaviour.
+	// For manual activities that have no GPS points, synthetic points are
+	// derived from the hex tile centres with evenly-distributed timestamps.
 	useEffect(() => {
 		if (replayIsDisabled || !mapMounted || !activity) {
 			if (mapRef.current && mapMounted) {
@@ -1211,9 +1213,24 @@ export default function ActivityDetailScreen() {
 			return;
 		}
 
-		// Always use the raw GPS points so the marker follows the actual recorded
-		// path at the recorded speed (real timestamps).
-		const points = activity.routePoints;
+		// For manual activities without GPS points, synthesize route points from
+		// hex tile centres with evenly-distributed timestamps so the replay
+		// marker can still traverse the walked path.
+		let points: typeof activity.routePoints = activity.routePoints;
+		if (points.length < 2 && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 2 && isH3Available()) {
+			const tiles = activity.hexTilesOrdered!;
+			const start = activity.startedAt;
+			const end = activity.endedAt ?? start + (activity.stats.durationSeconds * 1000);
+			const step = tiles.length > 1 ? (end - start) / (tiles.length - 1) : 0;
+			points = tiles.flatMap((cell, i) => {
+				try {
+					const [lat, lng] = cellToLatLng(cell);
+					return [{ lat, lng, altitude: null, speed: null, timestamp: start + i * step }];
+				} catch {
+					return [];
+				}
+			});
+		}
 
 		if (points.length < 2) {
 			mapRef.current?.sendToMap({ replayAnimation: null });
@@ -1439,10 +1456,15 @@ export default function ActivityDetailScreen() {
 	const currentWeatherDef = activity.weatherType ? WEATHER_TYPES.find(w => w.type === activity.weatherType) : null;
 
 	// Compute the route centre so the map starts at the correct position immediately.
+	// For manual activities without GPS points, fall back to the hex tile bounding box centre.
 	const routeInitialCenter = (() => {
 		const bounds = computeRouteBounds(activity.routePoints);
-		if (!bounds) return undefined;
-		return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+		if (bounds) return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+		if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0 && isH3Available()) {
+			const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
+			if (hexBounds) return { lat: (hexBounds.minLat + hexBounds.maxLat) / 2, lng: (hexBounds.minLng + hexBounds.maxLng) / 2 };
+		}
+		return undefined;
 	})();
 
 	const statsRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
