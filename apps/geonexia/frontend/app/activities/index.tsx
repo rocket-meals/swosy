@@ -11,13 +11,13 @@ import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
 import SettingsListActivity from '../../components/SettingsListActivity';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
-import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
+import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
 import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
@@ -75,6 +75,165 @@ function ImportContent({
 	);
 }
 
+// ─── Manual Activity: Duration Input ──────────────────────────────────────────
+
+function ManualActivityDurationContent({
+	routeId,
+	onSave,
+	onClose,
+	theme,
+}: {
+	routeId: string;
+	onSave: (activity: SavedActivity) => void;
+	onClose: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const [hours, setHours] = useState('');
+	const [minutes, setMinutes] = useState('');
+	const [seconds, setSeconds] = useState('');
+
+	const handleSave = () => {
+		const h = parseInt(hours, 10) || 0;
+		const m = parseInt(minutes, 10) || 0;
+		const s = parseInt(seconds, 10) || 0;
+		const totalSeconds = h * 3600 + m * 60 + s;
+		if (totalSeconds <= 0) return;
+
+		const now = Date.now();
+		const activity: SavedActivity = {
+			id: `${now}-${Math.random().toString(36).substring(2, 9)}`,
+			startedAt: now - totalSeconds * 1000,
+			endedAt: now,
+			routePoints: [],
+			stats: {
+				distanceKm: 0,
+				durationSeconds: totalSeconds,
+				paceMinPerKm: 0,
+				maxSpeedKmh: 0,
+				minSpeedKmh: 0,
+				avgSpeedKmh: 0,
+				medianSpeedKmh: 0,
+				kcal: 0,
+				steps: 0,
+				elevationGainM: 0,
+				elevationLossM: 0,
+				fluidNeedsMl: 0,
+			},
+			routeId,
+			isManual: true,
+		};
+		onSave(activity);
+	};
+
+	const totalSeconds = (parseInt(hours, 10) || 0) * 3600 + (parseInt(minutes, 10) || 0) * 60 + (parseInt(seconds, 10) || 0);
+
+	return (
+		<View style={styles.manualContainer}>
+			<Text style={[styles.manualDescription, { color: theme.screen.text }]}>
+				Dauer der Aktivität eingeben:
+			</Text>
+			<View style={styles.manualTimeRow}>
+				<TextInput
+					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
+					placeholder="Std"
+					placeholderTextColor={theme.screen.icon}
+					value={hours}
+					onChangeText={setHours}
+					keyboardType="numeric"
+					maxLength={2}
+				/>
+				<Text style={[styles.manualTimeSeparator, { color: theme.screen.text }]}>:</Text>
+				<TextInput
+					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
+					placeholder="Min"
+					placeholderTextColor={theme.screen.icon}
+					value={minutes}
+					onChangeText={setMinutes}
+					keyboardType="numeric"
+					maxLength={2}
+					autoFocus
+				/>
+				<Text style={[styles.manualTimeSeparator, { color: theme.screen.text }]}>:</Text>
+				<TextInput
+					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
+					placeholder="Sek"
+					placeholderTextColor={theme.screen.icon}
+					value={seconds}
+					onChangeText={setSeconds}
+					keyboardType="numeric"
+					maxLength={2}
+				/>
+			</View>
+			<TouchableOpacity
+				style={[styles.manualSaveButton, { opacity: totalSeconds <= 0 ? 0.4 : 1 }]}
+				onPress={handleSave}
+				disabled={totalSeconds <= 0}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="check" size={18} color="#ffffff" />
+				<Text style={styles.manualSaveButtonText}>Aktivität speichern</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.manualCancelButton} onPress={onClose} activeOpacity={0.8}>
+				<Text style={[styles.manualCancelButtonText, { color: theme.screen.text }]}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Manual Activity: Route Selection ────────────────────────────────────────
+
+function RouteSelectionContent({
+	routes,
+	onSelect,
+	onClose,
+	theme,
+}: {
+	routes: SavedRoute[];
+	onSelect: (route: SavedRoute) => void;
+	onClose: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	if (routes.length === 0) {
+		return (
+			<View style={styles.manualContainer}>
+				<Text style={[styles.manualDescription, { color: theme.screen.icon, textAlign: 'center', marginTop: 16 }]}>
+					Keine Routen vorhanden. Erstelle zuerst eine Route.
+				</Text>
+				<TouchableOpacity style={styles.manualCancelButton} onPress={onClose} activeOpacity={0.8}>
+					<Text style={[styles.manualCancelButtonText, { color: theme.screen.text }]}>Schließen</Text>
+				</TouchableOpacity>
+			</View>
+		);
+	}
+
+	return (
+		<View style={styles.manualContainer}>
+			<Text style={[styles.manualDescription, { color: theme.screen.text }]}>
+				Route auswählen:
+			</Text>
+			{routes.map((route, idx) => {
+				const count = routes.length;
+				const groupPosition = count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+				return (
+					<SettingsList
+						key={route.id}
+						leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title={route.name}
+						groupPosition={groupPosition}
+						showSeparator={idx < count - 1}
+						onPress={() => onSelect(route)}
+						rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+					/>
+				);
+			})}
+			<TouchableOpacity style={styles.manualCancelButton} onPress={onClose} activeOpacity={0.8}>
+				<Text style={[styles.manualCancelButtonText, { color: theme.screen.text }]}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -83,6 +242,7 @@ export default function ActivitiesScreen() {
 	const navigation = useNavigation();
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const { show: showManualModal, close: closeManualModal } = useMyScrollViewModal();
 	const { showAlert } = useGeonexiaAlert();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
@@ -301,6 +461,49 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, closeImportModal, theme]);
 
+	const openManualActivityModal = useCallback(() => {
+		if (routes.length === 0) {
+			showAlert('Keine Routen', 'Erstelle zuerst eine Route, bevor du eine manuelle Aktivität hinzufügen kannst.');
+			return;
+		}
+		showManualModal({
+			title: '➕ Manuelle Aktivität',
+			children: (
+				<RouteSelectionContent
+					routes={routes}
+					onSelect={(selectedRoute) => {
+						closeManualModal();
+						// Show duration input in a fresh modal
+						showManualModal({
+							title: '⏱️ Dauer eingeben',
+							keyboardShouldPersistTaps: 'handled',
+							children: (
+								<ManualActivityDurationContent
+									routeId={selectedRoute.id}
+									onSave={(activity) => {
+										saveActivity(activity);
+										// Add activity ID to route.activityIds
+										const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
+										const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
+										saveRoute(updatedRoute);
+										setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
+										setActivities((prev) => [activity, ...prev]);
+										closeManualModal();
+										router.push(`/activities/${activity.id}`);
+									}}
+									onClose={closeManualModal}
+									theme={theme}
+								/>
+							),
+						});
+					}}
+					onClose={closeManualModal}
+					theme={theme}
+				/>
+			),
+		});
+	}, [routes, showManualModal, closeManualModal, theme, router]);
+
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -326,13 +529,23 @@ export default function ActivitiesScreen() {
 
 	if (!loading && activities.length === 0) {
 		return (
-			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
-				<Ionicons name="fitness-outline" size={64} color={theme.screen.icon} />
-				<Text style={[styles.emptyTitle, { color: theme.screen.text }]}>No activities yet</Text>
-				<Text style={[styles.emptySubtitle, { color: theme.screen.icon }]}>
-					Start recording to see your activities here.
-				</Text>
-			</View>
+			<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.listContent}>
+				<SettingsList
+					leftIcon={<MaterialIcons name="add" size={20} color="#ffffff" />}
+					iconBackgroundColor="#22c55e"
+					title="Manuelle Aktivität hinzufügen"
+					groupPosition="single"
+					onPress={openManualActivityModal}
+					rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+				/>
+				<View style={styles.emptyInnerContainer}>
+					<Ionicons name="fitness-outline" size={64} color={theme.screen.icon} />
+					<Text style={[styles.emptyTitle, { color: theme.screen.text }]}>No activities yet</Text>
+					<Text style={[styles.emptySubtitle, { color: theme.screen.icon }]}>
+						Start recording to see your activities here.
+					</Text>
+				</View>
+			</ScrollView>
 		);
 	}
 
@@ -360,6 +573,14 @@ export default function ActivitiesScreen() {
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.listContent}>
+			<SettingsList
+				leftIcon={<MaterialIcons name="add" size={20} color="#ffffff" />}
+				iconBackgroundColor="#22c55e"
+				title="Manuelle Aktivität hinzufügen"
+				groupPosition="single"
+				onPress={openManualActivityModal}
+				rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+			/>
 			{groupOrder.map((routeId) => {
 				const groupActivities = groupMap.get(routeId) ?? [];
 				const routeName = routeId !== null ? (routeMap.get(routeId)?.name ?? routeId) : 'Ohne Route';
@@ -403,6 +624,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		gap: 12,
 		paddingHorizontal: 32,
+	},
+	emptyInnerContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 12,
+		paddingHorizontal: 32,
+		paddingTop: 48,
 	},
 	emptyTitle: {
 		fontSize: 20,
@@ -459,6 +687,54 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 	},
 	importCancelButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
+	},
+	manualContainer: {
+		paddingTop: 4,
+		gap: 12,
+	},
+	manualDescription: {
+		fontSize: 14,
+		lineHeight: 20,
+	},
+	manualTimeRow: {
+		flexDirection: 'row',
+		gap: 8,
+		alignItems: 'center',
+	},
+	manualTimeInput: {
+		flex: 1,
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 10,
+		fontSize: 16,
+		textAlign: 'center',
+	},
+	manualTimeSeparator: {
+		fontSize: 20,
+		fontWeight: '700',
+	},
+	manualSaveButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		backgroundColor: '#2563eb',
+		gap: 8,
+	},
+	manualSaveButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	manualCancelButton: {
+		alignItems: 'center',
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	manualCancelButtonText: {
 		fontSize: 15,
 		fontWeight: '500',
 	},
