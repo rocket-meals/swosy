@@ -32,10 +32,15 @@ const PRIMARY_COLOR = '#2563eb';
 
 // ─── Stats helpers for manual activities ─────────────────────────────────────
 
+/** Assumed runner body weight used for calorie estimation. */
 const DEFAULT_RUNNER_WEIGHT_KG = 75;
+/** Energy expenditure per kg per km of running (MET-based approximation). */
 const KCAL_PER_KG_PER_KM = 0.9;
+/** Average stride length in metres for pace-based step count. */
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
+/** Reference duration (seconds) for fluid-needs baseline. */
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
+/** Fluid intake recommended for the reference duration (ml). */
 const FLUID_BASELINE_ML = 600;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -166,7 +171,7 @@ function ManualActivityDurationContent({
 
 		const startedAt = dateStringToStartOfDay(selectedDate);
 		const hexTilesOrdered = route.hexTiles;
-		const distanceKm = isH3Available() ? computeHexTilesDistanceKm(hexTilesOrdered) : 0;
+		const distanceKm = isH3Available() ? computeHexTilesDistanceKm(hexTilesOrdered) : (console.warn('[ManualActivity] H3 not available – distance defaults to 0'), 0);
 		const paceMinPerKm = distanceKm > 0 ? totalSeconds / 60 / distanceKm : 0;
 		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
