@@ -20,6 +20,7 @@ import { loadActivities, saveActivity, SavedActivity } from '../../helpers/Activ
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
+import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
@@ -33,6 +34,21 @@ import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
+
+function todayString(): string {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function dateStringToStartOfDay(dateStr: string): number {
+	const [year, month, day] = dateStr.split('-').map(Number);
+	return new Date(year, month - 1, day, 0, 0, 0, 0).getTime();
+}
+
+function formatDateDisplay(dateStr: string): string {
+	const [year, month, day] = dateStr.split('-');
+	return `${day}.${month}.${year}`;
+}
 
 type MapEditSubMode = 'add' | 'remove';
 
@@ -87,6 +103,23 @@ function ManualActivityContent({
 	const [hours, setHours] = useState('');
 	const [minutes, setMinutes] = useState('');
 	const [seconds, setSeconds] = useState('');
+	const [selectedDate, setSelectedDate] = useState(todayString);
+	const { show: showCalendarModal, close: closeCalendarModal } = useMyScrollViewModal();
+
+	const openCalendar = () => {
+		showCalendarModal({
+			title: 'Datum auswählen',
+			children: (
+				<CalendarDatePickerContent
+					selectedDate={selectedDate}
+					onSelect={(dateString) => {
+						setSelectedDate(dateString);
+						closeCalendarModal();
+					}}
+				/>
+			),
+		});
+	};
 
 	const handleSave = () => {
 		const h = parseInt(hours, 10) || 0;
@@ -95,11 +128,11 @@ function ManualActivityContent({
 		const totalSeconds = h * 3600 + m * 60 + s;
 		if (totalSeconds <= 0) return;
 
-		const now = Date.now();
+		const startedAt = dateStringToStartOfDay(selectedDate);
 		const activity: SavedActivity = {
-			id: `${now}-${Math.random().toString(36).substring(2, 9)}`,
-			startedAt: now - totalSeconds * 1000,
-			endedAt: now,
+			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
+			startedAt,
+			endedAt: startedAt + totalSeconds * 1000,
 			routePoints: [],
 			stats: {
 				distanceKm: 0,
@@ -125,6 +158,15 @@ function ManualActivityContent({
 
 	return (
 		<View style={{ paddingTop: 4, gap: 12 }}>
+			<SettingsList
+				leftIcon={<MaterialIcons name="calendar-today" size={20} color="#ffffff" />}
+				iconBackgroundColor={PRIMARY_COLOR}
+				title="Datum"
+				value={formatDateDisplay(selectedDate)}
+				groupPosition="single"
+				onPress={openCalendar}
+				rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+			/>
 			<Text style={{ fontSize: 14, lineHeight: 20, color: theme.screen.text }}>
 				Dauer der Aktivität eingeben:
 			</Text>

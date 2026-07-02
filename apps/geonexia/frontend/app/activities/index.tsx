@@ -14,6 +14,7 @@ import * as Clipboard from 'expo-clipboard';
 import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
 import SettingsListActivity from '../../components/SettingsListActivity';
+import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
@@ -28,6 +29,21 @@ import { AppDispatch, store } from '../../store/store';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
+
+function todayString(): string {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function dateStringToStartOfDay(dateStr: string): number {
+	const [year, month, day] = dateStr.split('-').map(Number);
+	return new Date(year, month - 1, day, 0, 0, 0, 0).getTime();
+}
+
+function formatDateDisplay(dateStr: string): string {
+	const [year, month, day] = dateStr.split('-');
+	return `${day}.${month}.${year}`;
+}
 
 // ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
 
@@ -91,6 +107,23 @@ function ManualActivityDurationContent({
 	const [hours, setHours] = useState('');
 	const [minutes, setMinutes] = useState('');
 	const [seconds, setSeconds] = useState('');
+	const [selectedDate, setSelectedDate] = useState(todayString);
+	const { show: showCalendarModal, close: closeCalendarModal } = useMyScrollViewModal();
+
+	const openCalendar = () => {
+		showCalendarModal({
+			title: 'Datum auswählen',
+			children: (
+				<CalendarDatePickerContent
+					selectedDate={selectedDate}
+					onSelect={(dateString) => {
+						setSelectedDate(dateString);
+						closeCalendarModal();
+					}}
+				/>
+			),
+		});
+	};
 
 	const handleSave = () => {
 		const h = parseInt(hours, 10) || 0;
@@ -99,11 +132,11 @@ function ManualActivityDurationContent({
 		const totalSeconds = h * 3600 + m * 60 + s;
 		if (totalSeconds <= 0) return;
 
-		const now = Date.now();
+		const startedAt = dateStringToStartOfDay(selectedDate);
 		const activity: SavedActivity = {
-			id: `${now}-${Math.random().toString(36).substring(2, 9)}`,
-			startedAt: now - totalSeconds * 1000,
-			endedAt: now,
+			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
+			startedAt,
+			endedAt: startedAt + totalSeconds * 1000,
 			routePoints: [],
 			stats: {
 				distanceKm: 0,
@@ -129,6 +162,15 @@ function ManualActivityDurationContent({
 
 	return (
 		<View style={styles.manualContainer}>
+			<SettingsList
+				leftIcon={<MaterialIcons name="calendar-today" size={20} color="#ffffff" />}
+				iconBackgroundColor={PRIMARY_COLOR}
+				title="Datum"
+				value={formatDateDisplay(selectedDate)}
+				groupPosition="single"
+				onPress={openCalendar}
+				rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+			/>
 			<Text style={[styles.manualDescription, { color: theme.screen.text }]}>
 				Dauer der Aktivität eingeben:
 			</Text>
@@ -211,22 +253,24 @@ function RouteSelectionContent({
 			<Text style={[styles.manualDescription, { color: theme.screen.text }]}>
 				Route auswählen:
 			</Text>
-			{routes.map((route, idx) => {
-				const count = routes.length;
-				const groupPosition = count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
-				return (
-					<SettingsList
-						key={route.id}
-						leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
-						iconBackgroundColor={PRIMARY_COLOR}
-						title={route.name}
-						groupPosition={groupPosition}
-						showSeparator={idx < count - 1}
-						onPress={() => onSelect(route)}
-						rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
-					/>
-				);
-			})}
+			<View>
+				{routes.map((route, idx) => {
+					const count = routes.length;
+					const groupPosition = count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+					return (
+						<SettingsList
+							key={route.id}
+							leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title={route.name}
+							groupPosition={groupPosition}
+							showSeparator={idx < count - 1}
+							onPress={() => onSelect(route)}
+							rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+						/>
+					);
+				})}
+			</View>
 			<TouchableOpacity style={styles.manualCancelButton} onPress={onClose} activeOpacity={0.8}>
 				<Text style={[styles.manualCancelButtonText, { color: theme.screen.text }]}>Abbrechen</Text>
 			</TouchableOpacity>
