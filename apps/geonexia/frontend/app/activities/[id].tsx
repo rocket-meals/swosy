@@ -23,7 +23,7 @@ import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
-import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
+import { computeEdgesFromRoutePoints, computeEdgesFromHexTiles, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
@@ -882,6 +882,26 @@ export default function ActivityDetailScreen() {
 		loadActivity(id)
 			.then(async (a) => {
 				if (!a) { setNotFound(true); return; }
+
+				// Migrate activities saved before the computed field was introduced.
+				// Compute and persist it so subsequent loads skip this step.
+				if (!a.computed && (a.hexTilesOrdered?.length ?? 0) > 0 && isH3Available()) {
+					try {
+						const h3Res = a.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+						const enclosed = a.hexTilesOrdered!.length >= MIN_TILES_FOR_ENCLOSED_POLYGON
+							? findEnclosedCellsFromHexTiles(
+								buildFullRouteTileIds(a.hexTilesOrdered!, a.routePoints, h3Res),
+								h3Res,
+							)
+							: (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []);
+						const computedData = computeActivityData(a, enclosed);
+						a = { ...a, computed: computedData };
+						saveActivity(a);
+					} catch {
+						// Migration failed; continue without computed
+					}
+				}
+
 				setActivity(a);
 
 				// Load the assigned route for display
@@ -1023,6 +1043,50 @@ export default function ActivityDetailScreen() {
 			} catch (err) {
 				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
 			}
+		} else if (isH3Available() && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0) {
+			// Manual activity has no GPS points – build the hex tile and walk path
+			// GeoJSON directly from the ordered hex tile list.
+			try {
+				const hexTiles = activity.hexTilesOrdered!;
+				const tileFeatures: object[] = [];
+				for (const cell of hexTiles) {
+					try {
+						const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+						if (boundary.length === 0) continue;
+						const level = hexTileRecords[cell]?.level ?? 0;
+						tileFeatures.push({
+							type: 'Feature',
+							geometry: { type: 'Polygon', coordinates: [boundary] },
+							properties: { h3Index: cell, level },
+						});
+					} catch {
+						// Skip invalid cells
+					}
+				}
+				const edges = computeEdgesFromHexTiles(hexTiles);
+				const pathFeatures: object[] = [];
+				for (const edge of edges) {
+					const colonIdx = edge.indexOf(':');
+					if (colonIdx === -1) continue;
+					const cellA = edge.slice(0, colonIdx);
+					const cellB = edge.slice(colonIdx + 1);
+					try {
+						const [aLat, aLng] = cellToLatLng(cellA);
+						const [bLat, bLng] = cellToLatLng(cellB);
+						pathFeatures.push({
+							type: 'Feature',
+							geometry: { type: 'LineString', coordinates: [[aLng, aLat], [bLng, bLat]] },
+							properties: {},
+						});
+					} catch {
+						// Skip invalid cells
+					}
+				}
+				mapRef.current.sendToMap({ hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures } });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson: { type: 'FeatureCollection', features: pathFeatures } });
+			} catch (err) {
+				console.warn('[ActivityDetailScreen] Failed to build manual activity hex GeoJSON:', err);
+			}
 		}
 
 		// Fit the camera to the full route extent
@@ -1050,6 +1114,21 @@ export default function ActivityDetailScreen() {
 				pitch: 45,
 				bearing: 0,
 			});
+		} else if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 1) {
+			// Manual activity: fit the camera to the hex tile bounding box
+			const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
+			if (hexBounds) {
+				const { minLat, maxLat, minLng, maxLng } = hexBounds;
+				routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+				const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+				const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+				mapRef.current.sendToMap({
+					fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+					fitBoundsPadding: 20,
+					pitch: 45,
+					bearing: 0,
+				});
+			}
 		}
 
 		// Start smooth auto-rotate after the fitBounds animation finishes.
@@ -1124,6 +1203,8 @@ export default function ActivityDetailScreen() {
 	// the marker moves at the speed the route was actually recorded.
 	// The WebView runs the animation loop internally; the overview auto-rotate
 	// continues uninterrupted so the map keeps its normal rotation behaviour.
+	// For manual activities that have no GPS points, synthetic points are
+	// derived from the hex tile centres with evenly-distributed timestamps.
 	useEffect(() => {
 		if (replayIsDisabled || !mapMounted || !activity) {
 			if (mapRef.current && mapMounted) {
@@ -1132,9 +1213,24 @@ export default function ActivityDetailScreen() {
 			return;
 		}
 
-		// Always use the raw GPS points so the marker follows the actual recorded
-		// path at the recorded speed (real timestamps).
-		const points = activity.routePoints;
+		// For manual activities without GPS points, synthesize route points from
+		// hex tile centres with evenly-distributed timestamps so the replay
+		// marker can still traverse the walked path.
+		let points: typeof activity.routePoints = activity.routePoints;
+		if (points.length < 2 && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 2 && isH3Available()) {
+			const tiles = activity.hexTilesOrdered!;
+			const start = activity.startedAt;
+			const end = activity.endedAt ?? start + (activity.stats.durationSeconds * 1000);
+			const step = tiles.length > 1 ? (end - start) / (tiles.length - 1) : 0;
+			points = tiles.flatMap((cell, i) => {
+				try {
+					const [lat, lng] = cellToLatLng(cell);
+					return [{ lat, lng, altitude: null, speed: null, timestamp: start + i * step }];
+				} catch {
+					return [];
+				}
+			});
+		}
 
 		if (points.length < 2) {
 			mapRef.current?.sendToMap({ replayAnimation: null });
@@ -1360,10 +1456,15 @@ export default function ActivityDetailScreen() {
 	const currentWeatherDef = activity.weatherType ? WEATHER_TYPES.find(w => w.type === activity.weatherType) : null;
 
 	// Compute the route centre so the map starts at the correct position immediately.
+	// For manual activities without GPS points, fall back to the hex tile bounding box centre.
 	const routeInitialCenter = (() => {
 		const bounds = computeRouteBounds(activity.routePoints);
-		if (!bounds) return undefined;
-		return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+		if (bounds) return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+		if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0 && isH3Available()) {
+			const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
+			if (hexBounds) return { lat: (hexBounds.minLat + hexBounds.maxLat) / 2, lng: (hexBounds.minLng + hexBounds.maxLng) / 2 };
+		}
+		return undefined;
 	})();
 
 	const statsRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
