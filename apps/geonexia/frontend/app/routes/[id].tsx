@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
-import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
@@ -28,7 +28,7 @@ import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
-import { computeActivityData, findEnclosedCellsFromHexTiles, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import type { AppDispatch, RootState } from '../../store/store';
 import { startRun, markVisited, markEnclosed, addWalkedEdges } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -144,6 +144,18 @@ function ManualActivityContent({
 		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 		const fluidNeedsMl = Math.round((totalSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 
+		// Synthesize route points from hex tile centers with evenly-distributed
+		// timestamps so that rebuild / recalculate flows derive correct distance
+		// and per-tile speed metrics. Each point is marked interpolated: true so
+		// it is treated the same way as gap-filling points added to incomplete
+		// recorded routes.
+		const routePoints: RoutePoint[] = synthesizeManualActivityRoutePoints(
+			hexTilesOrdered,
+			startedAt,
+			totalSeconds * 1000,
+			distanceKm,
+		);
+
 		// Pre-compute enclosed tiles from the route hex tiles so they are stored
 		// on the activity and used by the map rebuild / activity detail screen.
 		let enclosedHexTiles: string[] = [];
@@ -159,7 +171,7 @@ function ManualActivityContent({
 			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
-			routePoints: [],
+			routePoints,
 			stats: {
 				distanceKm,
 				durationSeconds: totalSeconds,

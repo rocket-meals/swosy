@@ -17,12 +17,13 @@ import SettingsListActivity from '../../components/SettingsListActivity';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
 
-import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches } from '../../helpers/ActivityMapRebuildHelper';
+import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
-import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
+import { startRun, markVisited, markEnclosed, addWalkedEdges, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
@@ -42,30 +43,6 @@ const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 /** Fluid intake recommended for the reference duration (ml). */
 const FLUID_BASELINE_ML = 600;
-
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-	const R = 6371;
-	const dLat = ((lat2 - lat1) * Math.PI) / 180;
-	const dLng = ((lng2 - lng1) * Math.PI) / 180;
-	const a =
-		Math.sin(dLat / 2) ** 2 +
-		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-/**
- * Compute the total distance in km along a sequence of H3 cell centres.
- */
-function computeHexTilesDistanceKm(hexTiles: string[]): number {
-	if (hexTiles.length < 2) return 0;
-	let totalKm = 0;
-	for (let i = 1; i < hexTiles.length; i++) {
-		const [lat1, lng1] = cellToLatLng(hexTiles[i - 1]);
-		const [lat2, lng2] = cellToLatLng(hexTiles[i]);
-		totalKm += haversineKm(lat1, lng1, lat2, lng2);
-	}
-	return totalKm;
-}
 
 function todayString(): string {
 	const d = new Date();
@@ -171,16 +148,43 @@ function ManualActivityDurationContent({
 
 		const startedAt = dateStringToStartOfDay(selectedDate);
 		const hexTilesOrdered = route.hexTiles;
-		const distanceKm = isH3Available() ? computeHexTilesDistanceKm(hexTilesOrdered) : (console.warn('[ManualActivity] H3 not available – distance defaults to 0'), 0);
+		let distanceKm = 0;
+		if (isH3Available()) {
+			distanceKm = computeRouteLengthKm(hexTilesOrdered);
+		} else {
+			console.warn('[ManualActivity] H3 not available – distance defaults to 0');
+		}
 		const paceMinPerKm = distanceKm > 0 ? totalSeconds / 60 / distanceKm : 0;
 		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 		const fluidNeedsMl = Math.round((totalSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
+
+		// Synthesize route points from hex tile centers with evenly-distributed
+		// timestamps so that rebuild / recalculate flows derive correct distance
+		// and per-tile speed metrics. Points are marked interpolated: true.
+		const routePoints: RoutePoint[] = synthesizeManualActivityRoutePoints(
+			hexTilesOrdered,
+			startedAt,
+			totalSeconds * 1000,
+			distanceKm,
+		);
+
+		// Pre-compute enclosed tiles so they are stored on the activity and used
+		// by the map rebuild / activity detail screen.
+		let enclosedHexTiles: string[] = [];
+		if (isH3Available() && hexTilesOrdered.length >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
+			try {
+				enclosedHexTiles = findEnclosedCellsFromHexTiles(hexTilesOrdered, route.h3Resolution);
+			} catch {
+				// ignore – enclosed tiles remain empty if detection fails
+			}
+		}
+
 		const activity: SavedActivity = {
 			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
-			routePoints: [],
+			routePoints,
 			stats: {
 				distanceKm,
 				durationSeconds: totalSeconds,
@@ -199,8 +203,11 @@ function ManualActivityDurationContent({
 			h3Resolution: route.h3Resolution,
 			hexTilesOrdered,
 			visitedTileCount: hexTilesOrdered.length,
+			enclosedTileCount: enclosedHexTiles.length,
+			enclosedHexTiles,
 			isManual: true,
 		};
+		activity.computed = computeActivityData(activity, enclosedHexTiles);
 		onSave(activity);
 	};
 
@@ -578,10 +585,20 @@ export default function ActivitiesScreen() {
 										saveRoute(updatedRoute);
 										setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
 										setActivities((prev) => [activity, ...prev]);
-										// Apply the route's hex tiles to the in-memory map state
+										// Apply the route's hex tiles and edges to the in-memory map state
 										if (isH3Available() && selectedRoute.hexTiles.length > 0) {
 											dispatch(startRun());
 											dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
+											// Apply enclosed tiles so the map rebuild produces the correct terrain
+											const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
+											if (enclosed.length > 0) {
+												dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
+											}
+											// Record hex-to-hex transitions so walk path spokes are drawn
+											const edges = computeEdgesFromHexTiles(activity.hexTilesOrdered ?? selectedRoute.hexTiles);
+											if (edges.length > 0) {
+												dispatch(addWalkedEdges(edges));
+											}
 										}
 										closeManualModal();
 										router.push(`/activities/${activity.id}`);
