@@ -1,18 +1,18 @@
 Key,Message,Component,Line
-"AZ8htJeczJPy0PNbx4Ub","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",166
-"AZ8htJeczJPy0PNbx4Uc","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",167
-"AZ8htJeczJPy0PNbx4Ud","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",168
-"AZ8htJeczJPy0PNbx4Uf","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",207
-"AZ8htJeczJPy0PNbx4Ug","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",207
-"AZ8htJeczJPy0PNbx4Uh","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",207
+"AZ8htJeczJPy0PNbx4Ub","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",143
+"AZ8htJeczJPy0PNbx4Uc","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",144
+"AZ8htJeczJPy0PNbx4Ud","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",145
+"AZ8htJeczJPy0PNbx4Uf","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",214
+"AZ8htJeczJPy0PNbx4Ug","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",214
+"AZ8htJeczJPy0PNbx4Uh","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",214
 "AZ8foeC0bkkhrvlSX1p_","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1406
 "AZ8foeC0bkkhrvlSX1qA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1407
 "AZ8foeAVbkkhrvlSX1p1","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",133
 "AZ8foeAVbkkhrvlSX1p2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",134
 "AZ8foeAVbkkhrvlSX1p3","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",135
-"AZ8foeAVbkkhrvlSX1p5","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",189
-"AZ8foeAVbkkhrvlSX1p6","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",189
-"AZ8foeAVbkkhrvlSX1p7","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",189
+"AZ8foeAVbkkhrvlSX1p5","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",201
+"AZ8foeAVbkkhrvlSX1p6","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",201
+"AZ8foeAVbkkhrvlSX1p7","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",201
 "AZ7v17-MhkdGLBATgzL-","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",110
 "AZ7v17-MhkdGLBATgzL_","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",152
 "AZ7v17-MhkdGLBATgzMA","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",159
