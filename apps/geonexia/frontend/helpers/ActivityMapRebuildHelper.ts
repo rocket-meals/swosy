@@ -506,7 +506,7 @@ export function synthesizeManualActivityRoutePoints(
 	if (hexTilesOrdered.length === 0 || durationMs <= 0 || !isH3Available()) return [];
 
 	const durationSeconds = durationMs / 1000;
-	const avgSpeedMs = distanceKm > 0 && durationSeconds > 0
+	const avgSpeedMps = distanceKm > 0 && durationSeconds > 0
 		? (distanceKm * 1000) / durationSeconds
 		: 0;
 
@@ -521,7 +521,7 @@ export function synthesizeManualActivityRoutePoints(
 				lat,
 				lng,
 				altitude: null,
-				speed: avgSpeedMs > 0 ? avgSpeedMs : null,
+				speed: avgSpeedMps > 0 ? avgSpeedMps : null,
 				timestamp: startedAt + Math.round(i * step),
 				interpolated: true,
 			});

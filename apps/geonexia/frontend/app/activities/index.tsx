@@ -148,7 +148,12 @@ function ManualActivityDurationContent({
 
 		const startedAt = dateStringToStartOfDay(selectedDate);
 		const hexTilesOrdered = route.hexTiles;
-		const distanceKm = isH3Available() ? computeRouteLengthKm(hexTilesOrdered) : (console.warn('[ManualActivity] H3 not available – distance defaults to 0'), 0);
+		let distanceKm = 0;
+		if (isH3Available()) {
+			distanceKm = computeRouteLengthKm(hexTilesOrdered);
+		} else {
+			console.warn('[ManualActivity] H3 not available – distance defaults to 0');
+		}
 		const paceMinPerKm = distanceKm > 0 ? totalSeconds / 60 / distanceKm : 0;
 		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
