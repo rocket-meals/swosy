@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
-import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng } from '../../helpers/H3Helper';
 import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
@@ -29,6 +29,43 @@ import { AppDispatch, store } from '../../store/store';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
+
+// ─── Stats helpers for manual activities ─────────────────────────────────────
+
+/** Assumed runner body weight used for calorie estimation. */
+const DEFAULT_RUNNER_WEIGHT_KG = 75;
+/** Energy expenditure per kg per km of running (MET-based approximation). */
+const KCAL_PER_KG_PER_KM = 0.9;
+/** Average stride length in metres for pace-based step count. */
+const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
+/** Reference duration (seconds) for fluid-needs baseline. */
+const FLUID_BASELINE_DURATION_SECONDS = 3600;
+/** Fluid intake recommended for the reference duration (ml). */
+const FLUID_BASELINE_ML = 600;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const R = 6371;
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLng = ((lng2 - lng1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) ** 2 +
+		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Compute the total distance in km along a sequence of H3 cell centres.
+ */
+function computeHexTilesDistanceKm(hexTiles: string[]): number {
+	if (hexTiles.length < 2) return 0;
+	let totalKm = 0;
+	for (let i = 1; i < hexTiles.length; i++) {
+		const [lat1, lng1] = cellToLatLng(hexTiles[i - 1]);
+		const [lat2, lng2] = cellToLatLng(hexTiles[i]);
+		totalKm += haversineKm(lat1, lng1, lat2, lng2);
+	}
+	return totalKm;
+}
 
 function todayString(): string {
 	const d = new Date();
@@ -94,12 +131,12 @@ function ImportContent({
 // ─── Manual Activity: Duration Input ──────────────────────────────────────────
 
 function ManualActivityDurationContent({
-	routeId,
+	route,
 	onSave,
 	onClose,
 	theme,
 }: {
-	routeId: string;
+	route: SavedRoute;
 	onSave: (activity: SavedActivity) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
@@ -133,26 +170,35 @@ function ManualActivityDurationContent({
 		if (totalSeconds <= 0) return;
 
 		const startedAt = dateStringToStartOfDay(selectedDate);
+		const hexTilesOrdered = route.hexTiles;
+		const distanceKm = isH3Available() ? computeHexTilesDistanceKm(hexTilesOrdered) : (console.warn('[ManualActivity] H3 not available – distance defaults to 0'), 0);
+		const paceMinPerKm = distanceKm > 0 ? totalSeconds / 60 / distanceKm : 0;
+		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
+		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
+		const fluidNeedsMl = Math.round((totalSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 		const activity: SavedActivity = {
 			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
 			routePoints: [],
 			stats: {
-				distanceKm: 0,
+				distanceKm,
 				durationSeconds: totalSeconds,
-				paceMinPerKm: 0,
+				paceMinPerKm,
 				maxSpeedKmh: 0,
 				minSpeedKmh: 0,
-				avgSpeedKmh: 0,
+				avgSpeedKmh: distanceKm > 0 && totalSeconds > 0 ? (distanceKm / totalSeconds) * 3600 : 0,
 				medianSpeedKmh: 0,
-				kcal: 0,
-				steps: 0,
+				kcal,
+				steps,
 				elevationGainM: 0,
 				elevationLossM: 0,
-				fluidNeedsMl: 0,
+				fluidNeedsMl,
 			},
-			routeId,
+			routeId: route.id,
+			h3Resolution: route.h3Resolution,
+			hexTilesOrdered,
+			visitedTileCount: hexTilesOrdered.length,
 			isManual: true,
 		};
 		onSave(activity);
@@ -523,7 +569,7 @@ export default function ActivitiesScreen() {
 							keyboardShouldPersistTaps: 'handled',
 							children: (
 								<ManualActivityDurationContent
-									routeId={selectedRoute.id}
+									route={selectedRoute}
 									onSave={(activity) => {
 										saveActivity(activity);
 										// Add activity ID to route.activityIds
@@ -532,6 +578,11 @@ export default function ActivitiesScreen() {
 										saveRoute(updatedRoute);
 										setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
 										setActivities((prev) => [activity, ...prev]);
+										// Apply the route's hex tiles to the in-memory map state
+										if (isH3Available() && selectedRoute.hexTiles.length > 0) {
+											dispatch(startRun());
+											dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
+										}
 										closeManualModal();
 										router.push(`/activities/${activity.id}`);
 									}}
@@ -546,7 +597,7 @@ export default function ActivitiesScreen() {
 				/>
 			),
 		});
-	}, [routes, showManualModal, closeManualModal, showAlert, theme, router]);
+	}, [routes, showManualModal, closeManualModal, showAlert, theme, router, dispatch]);
 
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
