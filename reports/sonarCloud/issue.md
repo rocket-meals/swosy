@@ -119,12 +119,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L88
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/activities/index.tsx:104
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L104
+  apps/geonexia/frontend/app/activities/index.tsx:137
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L137
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/routes/[id].tsx:100
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L100
+  apps/geonexia/frontend/app/routes/[id].tsx:133
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L133
 
 - **Ensure that tainted data is validated before being used to construct a client-side request URL.**
   apps/geonexia/frontend/helpers/h3/libh3.js:117
