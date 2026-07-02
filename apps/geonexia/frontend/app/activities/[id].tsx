@@ -23,7 +23,7 @@ import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
-import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
+import { computeEdgesFromRoutePoints, computeEdgesFromHexTiles, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
@@ -1023,6 +1023,50 @@ export default function ActivityDetailScreen() {
 			} catch (err) {
 				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
 			}
+		} else if (isH3Available() && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0) {
+			// Manual activity has no GPS points – build the hex tile and walk path
+			// GeoJSON directly from the ordered hex tile list.
+			try {
+				const hexTiles = activity.hexTilesOrdered!;
+				const tileFeatures: object[] = [];
+				for (const cell of hexTiles) {
+					try {
+						const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+						if (boundary.length === 0) continue;
+						const level = hexTileRecords[cell]?.level ?? 0;
+						tileFeatures.push({
+							type: 'Feature',
+							geometry: { type: 'Polygon', coordinates: [boundary] },
+							properties: { h3Index: cell, level },
+						});
+					} catch {
+						// Skip invalid cells
+					}
+				}
+				const edges = computeEdgesFromHexTiles(hexTiles);
+				const pathFeatures: object[] = [];
+				for (const edge of edges) {
+					const colonIdx = edge.indexOf(':');
+					if (colonIdx === -1) continue;
+					const cellA = edge.slice(0, colonIdx);
+					const cellB = edge.slice(colonIdx + 1);
+					try {
+						const [aLat, aLng] = cellToLatLng(cellA);
+						const [bLat, bLng] = cellToLatLng(cellB);
+						pathFeatures.push({
+							type: 'Feature',
+							geometry: { type: 'LineString', coordinates: [[aLng, aLat], [bLng, bLat]] },
+							properties: {},
+						});
+					} catch {
+						// Skip invalid cells
+					}
+				}
+				mapRef.current.sendToMap({ hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures } });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson: { type: 'FeatureCollection', features: pathFeatures } });
+			} catch (err) {
+				console.warn('[ActivityDetailScreen] Failed to build manual activity hex GeoJSON:', err);
+			}
 		}
 
 		// Fit the camera to the full route extent
@@ -1050,6 +1094,21 @@ export default function ActivityDetailScreen() {
 				pitch: 45,
 				bearing: 0,
 			});
+		} else if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 1) {
+			// Manual activity: fit the camera to the hex tile bounding box
+			const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
+			if (hexBounds) {
+				const { minLat, maxLat, minLng, maxLng } = hexBounds;
+				routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+				const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+				const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+				mapRef.current.sendToMap({
+					fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+					fitBoundsPadding: 20,
+					pitch: 45,
+					bearing: 0,
+				});
+			}
 		}
 
 		// Start smooth auto-rotate after the fitBounds animation finishes.

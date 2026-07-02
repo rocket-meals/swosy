@@ -28,8 +28,9 @@ import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
+import { computeActivityData, findEnclosedCellsFromHexTiles, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
 import type { AppDispatch, RootState } from '../../store/store';
-import { startRun, markVisited } from '../../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, addWalkedEdges } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
@@ -142,6 +143,18 @@ function ManualActivityContent({
 		const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 		const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 		const fluidNeedsMl = Math.round((totalSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
+
+		// Pre-compute enclosed tiles from the route hex tiles so they are stored
+		// on the activity and used by the map rebuild / activity detail screen.
+		let enclosedHexTiles: string[] = [];
+		if (isH3Available() && hexTilesOrdered.length >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
+			try {
+				enclosedHexTiles = findEnclosedCellsFromHexTiles(hexTilesOrdered, route.h3Resolution);
+			} catch {
+				// ignore – enclosed tiles remain empty if detection fails
+			}
+		}
+
 		const activity: SavedActivity = {
 			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
 			startedAt,
@@ -165,8 +178,11 @@ function ManualActivityContent({
 			h3Resolution: route.h3Resolution,
 			hexTilesOrdered,
 			visitedTileCount: hexTilesOrdered.length,
+			enclosedTileCount: enclosedHexTiles.length,
+			enclosedHexTiles,
 			isManual: true,
 		};
+		activity.computed = computeActivityData(activity, enclosedHexTiles);
 		onSave(activity);
 	};
 
@@ -830,10 +846,20 @@ export default function RouteDetailScreen() {
 						saveRoute({ ...route, activityIds: updatedIds });
 						setRoute({ ...route, activityIds: updatedIds });
 						setRouteActivities((prev) => [activity, ...prev]);
-						// Apply the route's hex tiles to the in-memory map state
+						// Apply the route's hex tiles and edges to the in-memory map state
 						if (isH3Available() && route.hexTiles.length > 0) {
 							dispatch(startRun());
 							dispatch(markVisited({ h3Indices: route.hexTiles, timestamp: activity.startedAt }));
+							// Apply enclosed tiles so the map rebuild produces the correct terrain
+							const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
+							if (enclosed.length > 0) {
+								dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
+							}
+							// Record hex-to-hex transitions so walk path spokes are drawn
+							const edges = computeEdgesFromHexTiles(route.hexTiles);
+							if (edges.length > 0) {
+								dispatch(addWalkedEdges(edges));
+							}
 						}
 						closeManualActivityModal();
 						router.push(`/activities/${activity.id}`);
