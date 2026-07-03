@@ -16,6 +16,7 @@ const SCORE_THRESHOLD = 100;
 const SCORE_APP_START = 5;
 const SCORE_FOODOFFER_DETAILS_OPEN = 10;
 const SCORE_FOODOFFER_DETAILS_TAB_SWITCH = 5;
+const SCORE_BALANCE_READ = 100;
 
 /**
  * Hook that manages a persistent "App Rating Score".
@@ -150,11 +151,17 @@ const useAppRatingScore = () => {
 		addPoints(SCORE_FOODOFFER_DETAILS_TAB_SWITCH);
 	}, [addPoints]);
 
+	const addPointsForBalanceRead = useCallback(() => {
+		addPoints(SCORE_BALANCE_READ);
+	}, [addPoints]);
+
 	return {
 		score,
+		persistScore,
 		checkAndRequestRatingOnFocus,
 		addPointsForDetailsOpen,
 		addPointsForTabSwitch,
+		addPointsForBalanceRead,
 	};
 };
 
