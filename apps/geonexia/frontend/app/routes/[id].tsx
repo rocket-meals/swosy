@@ -402,7 +402,15 @@ export default function RouteDetailScreen() {
 		if (!route || !isH3Available()) return;
 		if (route.walkedEdgesH11 !== undefined) return;
 		// Find the oldest activity with routePoints to use as the reference path.
-		const reference = [...routeActivities].reverse().find((a) => a.routePoints && a.routePoints.length > 0);
+		// routeActivities is sorted newest-first, so iterate backwards.
+		let reference: SavedActivity | undefined;
+		for (let i = routeActivities.length - 1; i >= 0; i--) {
+			const a = routeActivities[i];
+			if (a.routePoints && a.routePoints.length > 0) {
+				reference = a;
+				break;
+			}
+		}
 		if (!reference) return;
 		const h11Edges = computeEdgesFromRoutePoints(reference.routePoints, H3_ROUTE_PATH_RESOLUTION);
 		const updatedRoute: SavedRoute = { ...route, walkedEdgesH11: h11Edges };

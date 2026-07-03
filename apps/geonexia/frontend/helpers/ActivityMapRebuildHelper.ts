@@ -527,6 +527,7 @@ export function synthesizeManualActivityRoutePoints(
 			// Place each synthetic point at the h11 center-child of the h10 tile so
 			// that computeEdgesFromRoutePoints(..., H3_ROUTE_PATH_RESOLUTION) can
 			// derive a finer walk path for the route's walkedEdgesH11 field.
+			// Falls back to the h10 cell centre if h11 child computation fails.
 			const h11Cell = cellToCenterChild(hexTilesOrdered[i], H3_ROUTE_PATH_RESOLUTION);
 			const [lat, lng] = cellToLatLng(h11Cell || hexTilesOrdered[i]);
 			points.push({
