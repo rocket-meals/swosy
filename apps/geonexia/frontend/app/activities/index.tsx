@@ -385,8 +385,27 @@ export default function ActivitiesScreen() {
 			return;
 		}
 
-		// Support both a single activity object and an array of activities.
-		const rawActivities: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+		// Support three formats:
+		//  1. New: { activities: [...], routes: [...] }
+		//  2. Old: [...] (array of activities)
+		//  3. Old: single activity object
+		let rawActivities: unknown[];
+		let exportedRoutes: SavedRoute[] = [];
+		if (
+			typeof parsed === 'object' &&
+			parsed !== null &&
+			!Array.isArray(parsed) &&
+			Array.isArray((parsed as Record<string, unknown>).activities)
+		) {
+			const wrapper = parsed as Record<string, unknown>;
+			rawActivities = wrapper.activities as unknown[];
+			if (Array.isArray(wrapper.routes)) {
+				exportedRoutes = wrapper.routes as SavedRoute[];
+			}
+		} else {
+			rawActivities = Array.isArray(parsed) ? parsed : [parsed];
+		}
+
 		const validActivities: SavedActivity[] = [];
 		for (const item of rawActivities) {
 			const activity = item as SavedActivity;
@@ -400,6 +419,10 @@ export default function ActivitiesScreen() {
 			}
 			validActivities.push(activity);
 		}
+
+		// Build a lookup map for exported route names so new routes inherit the
+		// original name instead of a generated date-based fallback.
+		const exportedRouteMap = new Map(exportedRoutes.map((r) => [r.id, r]));
 
 		// Load existing routes once so we can check for matches without
 		// re-reading from disk for every activity.
@@ -425,8 +448,10 @@ export default function ActivitiesScreen() {
 					if (idx >= 0) existingRoutes[idx] = updatedRoute;
 				} else {
 					// No matching route on this device — create one from the imported tiles.
+					// Prefer the exported route's name when available.
+					const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
 					const d = new Date(activity.startedAt);
-					const name = `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+					const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 					const routePoints =
 						activity.routePoints.length > 0
 							? activity.routePoints
@@ -471,7 +496,21 @@ export default function ActivitiesScreen() {
 			showAlert('Nothing to Export', 'There are no activities to export.');
 			return;
 		}
-		const json = JSON.stringify(allActivities, null, 2);
+		// Collect the routes referenced by the exported activities so the
+		// receiver knows route names and can re-use them on import.
+		const allRoutes = await loadRoutes();
+		const referencedRouteIds = new Set(
+			allActivities.map((a) => a.routeId).filter((id): id is string => typeof id === 'string'),
+		);
+		const exportedRoutes = allRoutes.filter((r) => referencedRouteIds.has(r.id));
+
+		// Ensure every activity carries its id (guard against legacy saves).
+		const exportedActivities = allActivities.map((a, idx) => ({
+			...a,
+			id: a.id ?? `${a.startedAt}-export-${idx}`,
+		}));
+
+		const json = JSON.stringify({ activities: exportedActivities, routes: exportedRoutes }, null, 2);
 		await Clipboard.setStringAsync(json);
 		const count = allActivities.length;
 		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
@@ -657,14 +696,9 @@ export default function ActivitiesScreen() {
 											if (edges.length > 0) {
 												dispatch(addWalkedEdges(edges));
 											}
-											// Also record red-line edges for the finer walk-path line
-											const syntheticPoints = synthesizeManualActivityRoutePoints(
-												hexTilesOrdered,
-												activity.startedAt,
-												activity.endedAt - activity.startedAt,
-												activity.distanceKm,
-											);
-											const edgesRedLine = computeEdgesFromRoutePoints(syntheticPoints, RED_LINE_GRID_RESOLUTION);
+											// Record red-line edges using the activity's already-computed
+											// h11 route points (synthesized in handleSave).
+											const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
 											if (edgesRedLine.length > 0) {
 												dispatch(addWalkedEdgesRedLine(edgesRedLine));
 											}

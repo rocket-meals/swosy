@@ -15,7 +15,7 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available, cellToParent, cellToChildren, cellToCenterChild, getResolution } from './H3Helper';
+import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available, cellToParent, cellToChildren, cellToCenterChild, getResolution, gridPathCells } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
 import type { SavedRoute } from './RouteStorage';
@@ -520,18 +520,45 @@ export function synthesizeManualActivityRoutePoints(
 		? (distanceKm * 1000) / durationSeconds
 		: 0;
 
-	// Distribute timestamps evenly: first point at startedAt, last at startedAt + durationMs.
-	const step = hexTilesOrdered.length > 1 ? durationMs / (hexTilesOrdered.length - 1) : 0;
-
-	const points: RoutePoint[] = [];
+	// Build a fine-grained h11 path:
+	//  1. Convert every h10 tile to its h11 center-child.
+	//  2. Between consecutive h11 cells, fill in intermediate h11 cells using
+	//     gridPathCells so the synthetic route points follow the actual h11 grid
+	//     instead of jumping from h10 centre to h10 centre.
+	const h11Path: string[] = [];
 	for (let i = 0; i < hexTilesOrdered.length; i++) {
 		try {
-			// Place each synthetic point at the red-line center-child of the h10 tile
-			// so that computeEdgesFromRoutePoints(..., RED_LINE_GRID_RESOLUTION) can
-			// derive a finer walk path for the route's walkedEdgesRedLine field.
-			// Falls back to the h10 cell centre if child computation fails.
-			const redLineCell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION);
-			const [lat, lng] = cellToLatLng(redLineCell || hexTilesOrdered[i]);
+			const h11Cell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION) || hexTilesOrdered[i];
+			if (h11Path.length === 0) {
+				h11Path.push(h11Cell);
+			} else {
+				const prev = h11Path[h11Path.length - 1];
+				if (prev === h11Cell) continue;
+				try {
+					const pathCells = gridPathCells(prev, h11Cell);
+					// pathCells[0] is prev (already included); add the rest.
+					for (let j = 1; j < pathCells.length; j++) {
+						h11Path.push(pathCells[j]);
+					}
+				} catch {
+					// Cells on different icosahedron faces – add directly.
+					h11Path.push(h11Cell);
+				}
+			}
+		} catch {
+			// skip invalid cells
+		}
+	}
+
+	if (h11Path.length === 0) return [];
+
+	// Distribute timestamps evenly: first point at startedAt, last at startedAt + durationMs.
+	const step = h11Path.length > 1 ? durationMs / (h11Path.length - 1) : 0;
+
+	const points: RoutePoint[] = [];
+	for (let i = 0; i < h11Path.length; i++) {
+		try {
+			const [lat, lng] = cellToLatLng(h11Path[i]);
 			points.push({
 				lat,
 				lng,
