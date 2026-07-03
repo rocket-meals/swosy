@@ -34,8 +34,8 @@ const SCORE_FOODOFFER_DETAILS_TAB_SWITCH = 5;
  */
 const useAppRatingScore = () => {
 	const [score, setScore] = useState(0);
+	const [loaded, setLoaded] = useState(false);
 	const scoreRef = useRef(0);
-	const loadedRef = useRef(false);
 	const debugMode = useDebugMode();
 	const { show } = useMyScrollViewModal();
 	const { translate } = useLanguage();
@@ -48,11 +48,9 @@ const useAppRatingScore = () => {
 				const loadedScore = typeof value === 'number' ? value : 0;
 				setScore(loadedScore);
 				scoreRef.current = loadedScore;
-				loadedRef.current = true;
 			})
-			.catch(() => {
-				loadedRef.current = true;
-			});
+			.catch(() => {})
+			.finally(() => setLoaded(true));
 	}, []);
 
 	const persistScore = useCallback(async (newScore: number) => {
@@ -62,10 +60,10 @@ const useAppRatingScore = () => {
 	}, []);
 
 	const addPoints = useCallback(async (points: number) => {
-		if (!loadedRef.current) return;
+		if (!loaded) return;
 		const newScore = scoreRef.current + points;
 		await persistScore(newScore);
-	}, [persistScore]);
+	}, [loaded, persistScore]);
 
 	const resetScore = useCallback(async () => {
 		await persistScore(0);
@@ -74,23 +72,27 @@ const useAppRatingScore = () => {
 	// +5 points on app start (foreground)
 	const appStartHandledRef = useRef(false);
 	useEffect(() => {
-		if (!loadedRef.current) return;
+		if (!loaded) return;
 		if (appStartHandledRef.current) return;
 		appStartHandledRef.current = true;
-		addPoints(SCORE_APP_START);
-	}, [score]); // triggers once score is loaded
+		const doAdd = async () => {
+			const newScore = scoreRef.current + SCORE_APP_START;
+			await persistScore(newScore);
+		};
+		doAdd();
+	}, [loaded, persistScore]);
 
 	// +5 points on app returning to foreground
 	useEffect(() => {
 		const handleAppStateChange = (nextAppState: AppStateStatus) => {
-			if (nextAppState === 'active' && loadedRef.current) {
+			if (nextAppState === 'active' && loaded) {
 				addPoints(SCORE_APP_START);
 			}
 		};
 
 		const subscription = AppState.addEventListener('change', handleAppStateChange);
 		return () => subscription.remove();
-	}, [addPoints]);
+	}, [addPoints, loaded]);
 
 	const showDebugRatingModal = useCallback(() => {
 		show({
