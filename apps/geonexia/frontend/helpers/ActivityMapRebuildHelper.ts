@@ -35,6 +35,14 @@ export const WORLD_BUILDING_ID = 16;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
+
+/**
+ * H3 resolution used for the internal route path (walked edges).  One step
+ * finer than the displayed h10 tile resolution, giving a more accurate line
+ * when drawing the red walk path on the map.
+ */
+export const H3_ROUTE_PATH_RESOLUTION = 11;
+
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
 
@@ -516,7 +524,11 @@ export function synthesizeManualActivityRoutePoints(
 	const points: RoutePoint[] = [];
 	for (let i = 0; i < hexTilesOrdered.length; i++) {
 		try {
-			const [lat, lng] = cellToLatLng(hexTilesOrdered[i]);
+			// Place each synthetic point at the h11 center-child of the h10 tile so
+			// that computeEdgesFromRoutePoints(..., H3_ROUTE_PATH_RESOLUTION) can
+			// derive a finer walk path for the route's walkedEdgesH11 field.
+			const h11Cell = cellToCenterChild(hexTilesOrdered[i], H3_ROUTE_PATH_RESOLUTION);
+			const [lat, lng] = cellToLatLng(h11Cell || hexTilesOrdered[i]);
 			points.push({
 				lat,
 				lng,

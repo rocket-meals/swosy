@@ -23,12 +23,12 @@ import SettingsListMapFeature from '../../components/SettingsListMapFeature';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
-import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
+import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles, computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
-import { computeActivityData, findEnclosedCellsFromHexTiles, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import type { AppDispatch, RootState } from '../../store/store';
 import { startRun, markVisited, markEnclosed, addWalkedEdges } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -395,6 +395,24 @@ export default function RouteDetailScreen() {
 			setRouteActivities(filtered);
 		}).catch(() => setRouteActivities([]));
 	}, [id]);
+
+	// Migration: compute walkedEdgesH11 from the first activity's routePoints
+	// when the field is absent (older saves that pre-date this feature).
+	useEffect(() => {
+		if (!route || !isH3Available()) return;
+		if (route.walkedEdgesH11 !== undefined) return;
+		// Find the oldest activity with routePoints to use as the reference path.
+		const reference = [...routeActivities].reverse().find((a) => a.routePoints && a.routePoints.length > 0);
+		if (!reference) return;
+		const h11Edges = computeEdgesFromRoutePoints(reference.routePoints, H3_ROUTE_PATH_RESOLUTION);
+		const updatedRoute: SavedRoute = { ...route, walkedEdgesH11: h11Edges };
+		try {
+			saveRoute(updatedRoute);
+			setRoute(updatedRoute);
+		} catch {
+			// Non-critical: display will fall back to walkedEdges
+		}
+	}, [route, routeActivities]);
 
 	// Once both route and map are ready, send hex tiles and fit bounds
 	useEffect(() => {
@@ -764,6 +782,8 @@ export default function RouteDetailScreen() {
 			walkedEdges: computeEdgesFromHexTiles(editedHexTiles),
 			// Clear cached enclosed tiles so they are recomputed for the new tile set.
 			enclosedTiles: undefined,
+			// Clear the h11 path so it is recomputed from activities after saving.
+			walkedEdgesH11: undefined,
 		};
 		try {
 			saveRoute(updatedRoute);

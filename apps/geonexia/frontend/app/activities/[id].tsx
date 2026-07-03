@@ -28,7 +28,7 @@ import ActivityAggregateStatsSection from '../../components/ActivityAggregateSta
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad } from '../../helpers/RouteSmootherHelper';
 
@@ -536,6 +536,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 			createdAt: Date.now(),
 			sportType: activity.sportType,
 			walkedEdges: computeEdgesFromRoutePoints(activity.routePoints, h3Res),
+			walkedEdgesH11: computeEdgesFromRoutePoints(activity.routePoints, H3_ROUTE_PATH_RESOLUTION),
 		};
 		try {
 			saveRoute(newRoute);

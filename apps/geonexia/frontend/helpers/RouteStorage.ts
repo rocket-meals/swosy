@@ -36,6 +36,19 @@ export type SavedRoute = {
 	 * Optional for backward-compat with older saves that lack this field.
 	 */
 	enclosedTiles?: string[];
+	/**
+	 * Ordered H3 cell transitions at resolution 11 (one step finer than the
+	 * displayed h10 hex tiles), stored as "cellA:cellB" strings where cellA is
+	 * lexicographically smaller than cellB.  Used to draw the red walk path
+	 * line at a finer granularity than the h10 tile centres.
+	 *
+	 * Computed from the first activity's `routePoints` and cached here.
+	 * `undefined` means not yet computed (older saves before this field was
+	 * introduced, or the route's tile set was manually edited).  In that case
+	 * the display falls back to `walkedEdges` (h10).
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	walkedEdgesH11?: string[];
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────
