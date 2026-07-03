@@ -1253,18 +1253,13 @@ export default function ActivityDetailScreen() {
 		// marker can still traverse the walked path.
 		let points: typeof activity.routePoints = activity.routePoints;
 		if (points.length < 2 && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 2 && isH3Available()) {
-			const tiles = activity.hexTilesOrdered!;
-			const start = activity.startedAt;
-			const end = activity.endedAt ?? start + (activity.stats.durationSeconds * 1000);
-			const step = tiles.length > 1 ? (end - start) / (tiles.length - 1) : 0;
-			points = tiles.flatMap((cell, i) => {
-				try {
-					const [lat, lng] = cellToLatLng(cell);
-					return [{ lat, lng, altitude: null, speed: null, timestamp: start + i * step }];
-				} catch {
-					return [];
-				}
-			});
+			const durationMs = (activity.endedAt ?? activity.startedAt + activity.stats.durationSeconds * 1000) - activity.startedAt;
+			points = synthesizeManualActivityRoutePoints(
+				activity.hexTilesOrdered!,
+				activity.startedAt,
+				durationMs,
+				activity.stats.distanceKm,
+			);
 		}
 
 		if (points.length < 2) {

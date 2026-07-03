@@ -28,6 +28,7 @@ import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+import { findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -375,7 +376,7 @@ export default function ActivitiesScreen() {
 		}
 	}, [dispatch]);
 
-	const handleImport = useCallback((code: string) => {
+	const handleImport = useCallback(async (code: string) => {
 		let parsed: unknown;
 		try {
 			parsed = JSON.parse(code);
@@ -399,9 +400,64 @@ export default function ActivitiesScreen() {
 			}
 			validActivities.push(activity);
 		}
+
+		// Load existing routes once so we can check for matches without
+		// re-reading from disk for every activity.
+		const existingRoutes = await loadRoutes();
+		let routeIdOffset = 0;
+
 		for (const activity of validActivities) {
-			saveActivity(activity);
-			applyImportedHexTiles(activity);
+			const hexTiles = activity.hexTilesOrdered ?? [];
+			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+			let routeId: string | null | undefined = activity.routeId;
+
+			if (hexTiles.length > 0 && isH3Available()) {
+				const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
+				if (match) {
+					// Link to the existing matching route.
+					routeId = match.route.id;
+					const updatedRoute: SavedRoute = {
+						...match.route,
+						activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
+					};
+					saveRoute(updatedRoute);
+					const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
+					if (idx >= 0) existingRoutes[idx] = updatedRoute;
+				} else {
+					// No matching route on this device — create one from the imported tiles.
+					const d = new Date(activity.startedAt);
+					const name = `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+					const routePoints =
+						activity.routePoints.length > 0
+							? activity.routePoints
+							: synthesizeManualActivityRoutePoints(
+								hexTiles,
+								activity.startedAt,
+								(activity.endedAt - activity.startedAt),
+								activity.stats.distanceKm,
+							);
+					const newRoute: SavedRoute = {
+						id: String(Date.now() + routeIdOffset++),
+						name,
+						hexTiles,
+						h3Resolution: h3Res,
+						createdAt: activity.startedAt,
+						sportType: activity.sportType,
+						walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
+						walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
+						walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
+						activityIds: [activity.id],
+					};
+					saveRoute(newRoute);
+					existingRoutes.push(newRoute);
+					routeId = newRoute.id;
+				}
+			}
+
+			const activityToSave: SavedActivity =
+				routeId !== activity.routeId ? { ...activity, routeId } : activity;
+			saveActivity(activityToSave);
+			applyImportedHexTiles(activityToSave);
 		}
 		closeImportModal();
 		loadData();
