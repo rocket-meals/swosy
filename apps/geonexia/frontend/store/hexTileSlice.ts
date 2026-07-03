@@ -42,6 +42,11 @@ export type HexTileSliceState = {
 	 * consecutively, instead of connecting all adjacent walked-on hexagons.
 	 */
 	walkedEdges: string[];
+	/**
+	 * Same as `walkedEdges` but at H3 resolution 11 for a finer walk path line.
+	 * Used on the home map and activity screens to draw a more accurate red line.
+	 */
+	walkedEdgesH11: string[];
 };
 
 const initialState: HexTileSliceState = {
@@ -51,6 +56,7 @@ const initialState: HexTileSliceState = {
 	isDevMode: false,
 	isDebugMode: false,
 	walkedEdges: [],
+	walkedEdgesH11: [],
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -255,11 +261,12 @@ const hexTileSlice = createSlice({
 		 */
 		setDevMode(
 			state,
-			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord>; walkedEdges?: string[] }>,
+			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord>; walkedEdges?: string[]; walkedEdgesH11?: string[] }>,
 		) {
 			state.isDevMode = action.payload.isDevMode;
 			state.records = action.payload.records;
 			state.walkedEdges = action.payload.walkedEdges ?? [];
+			state.walkedEdgesH11 = action.payload.walkedEdgesH11 ?? [];
 			state.runStartLevels = {};
 			state.resetToken += 1;
 		},
@@ -289,8 +296,29 @@ const hexTileSlice = createSlice({
 		loadWalkedEdgesState(state, action: PayloadAction<string[]>) {
 			state.walkedEdges = action.payload;
 		},
+
+		/**
+		 * Record one or more h11 hex-to-hex transitions for the finer walk path.
+		 * Each edge is provided as "cellA:cellB" with the lexicographically smaller
+		 * index first. Duplicate edges are silently ignored.
+		 */
+		addWalkedEdgesH11(state, action: PayloadAction<string[]>) {
+			const edgeSet = new Set(state.walkedEdgesH11);
+			for (const edge of action.payload) {
+				edgeSet.add(edge);
+			}
+			state.walkedEdgesH11 = Array.from(edgeSet);
+		},
+
+		/**
+		 * Replace the h11 walked-edges list with data loaded from persistent storage.
+		 * Called once at app startup alongside loadPersistedState / setDevMode.
+		 */
+		loadWalkedEdgesH11State(state, action: PayloadAction<string[]>) {
+			state.walkedEdgesH11 = action.payload;
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState, addWalkedEdgesH11, loadWalkedEdgesH11State } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

@@ -28,7 +28,7 @@ import ActivityAggregateStatsSection from '../../components/ActivityAggregateSta
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad } from '../../helpers/RouteSmootherHelper';
 
@@ -698,10 +698,11 @@ const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 /**
  * Derive the sequence of unique H3 cells visited during an activity, including
  * interpolated cells for GPS gaps, and build:
- *  - a hexTileGeoJSON with one polygon per visited cell, colored by its level
- *    from the global Redux store.
+ *  - a hexTileGeoJSON with one polygon per visited cell (at `h3Resolution`, typically h10),
+ *    colored by its level from the global Redux store.
  *  - a hexWalkPathGeoJSON with LineString features for each actual transition
- *    between consecutive cells.
+ *    between consecutive cells at resolution `H3_ROUTE_PATH_RESOLUTION` (h11)
+ *    for a finer, more accurate red walk-path line.
  */
 function buildActivityHexGeoJson(
 	routePoints: RoutePoint[],
@@ -711,39 +712,63 @@ function buildActivityHexGeoJson(
 	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
 	hexWalkPathGeoJson: { type: 'FeatureCollection'; features: object[] };
 } {
+	// h10 tile tracking
 	const visitedCells = new Set<string>();
-	const edges = new Set<string>();
 	let lastCell: string | null = null;
 
+	// h11 walk-path edge tracking
+	const edges = new Set<string>();
+	let lastH11Cell: string | null = null;
+
 	for (const point of routePoints) {
+		// ── h10 tile display ──────────────────────────────────────────────────
 		try {
 			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
-			if (!cell) continue;
-			if (lastCell && cell !== lastCell) {
-				try {
-					const pathCells = gridPathCells(lastCell, cell);
-					if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
-						for (let i = 0; i < pathCells.length - 1; i++) {
-							const a = pathCells[i];
-							const b = pathCells[i + 1];
-							visitedCells.add(a);
-							visitedCells.add(b);
-							edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+			if (cell) {
+				if (lastCell && cell !== lastCell) {
+					try {
+						const pathCells = gridPathCells(lastCell, cell);
+						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
+							for (const c of pathCells) visitedCells.add(c);
 						}
+					} catch {
+						// Different icosahedron faces; just mark the two endpoints
 					}
-				} catch {
-					// Different icosahedron faces – just add direct edge
-					edges.add(lastCell < cell ? `${lastCell}:${cell}` : `${cell}:${lastCell}`);
 				}
+				visitedCells.add(cell);
+				lastCell = cell;
 			}
-			visitedCells.add(cell);
-			lastCell = cell;
+		} catch {
+			// Skip invalid GPS points
+		}
+
+		// ── h11 walk-path edges ───────────────────────────────────────────────
+		try {
+			const h11Cell = latLngToCell(point.lat, point.lng, H3_ROUTE_PATH_RESOLUTION);
+			if (h11Cell) {
+				if (lastH11Cell && h11Cell !== lastH11Cell) {
+					try {
+						const pathCells = gridPathCells(lastH11Cell, h11Cell);
+						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
+							for (let i = 0; i < pathCells.length - 1; i++) {
+								const a = pathCells[i];
+								const b = pathCells[i + 1];
+								edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+							}
+						}
+					} catch {
+						// Different icosahedron faces – add direct h11 edge
+						edges.add(lastH11Cell < h11Cell ? `${lastH11Cell}:${h11Cell}` : `${h11Cell}:${lastH11Cell}`);
+					}
+				}
+				lastH11Cell = h11Cell;
+			}
 		} catch {
 			// Skip invalid GPS points
 		}
 	}
 
-	// Build hex tile polygon features
+	// Build hex tile polygon features (h10)
 	const tileFeatures: object[] = [];
 	for (const cell of visitedCells) {
 		try {
@@ -760,7 +785,7 @@ function buildActivityHexGeoJson(
 		}
 	}
 
-	// Build walk path LineString features
+	// Build walk path LineString features (h11)
 	const pathFeatures: object[] = [];
 	for (const edge of edges) {
 		const colonIdx = edge.indexOf(':');
@@ -1064,7 +1089,15 @@ export default function ActivityDetailScreen() {
 						// Skip invalid cells
 					}
 				}
-				const edges = computeEdgesFromHexTiles(hexTiles);
+				// Build h11 walk-path edges via synthetic GPS points placed at h11
+				// center-children, matching the accuracy of real GPS activities.
+				const syntheticPoints = synthesizeManualActivityRoutePoints(
+					hexTiles,
+					activity.startedAt,
+					activity.endedAt - activity.startedAt,
+					activity.distanceKm,
+				);
+				const edges = computeEdgesFromRoutePoints(syntheticPoints, H3_ROUTE_PATH_RESOLUTION);
 				const pathFeatures: object[] = [];
 				for (const edge of edges) {
 					const colonIdx = edge.indexOf(':');

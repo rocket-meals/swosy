@@ -238,6 +238,14 @@ function getDevWalkedEdgesFile(): File {
 	return new File(Paths.document, 'geonexia-dev-walked-edges.json');
 }
 
+function getWalkedEdgesH11File(): File {
+	return new File(Paths.document, 'geonexia-walked-edges-h11.json');
+}
+
+function getDevWalkedEdgesH11File(): File {
+	return new File(Paths.document, 'geonexia-dev-walked-edges-h11.json');
+}
+
 /**
  * Persist the full hex tile record map to disk (synchronous write).
  * Silently ignores write errors to avoid crashing on storage failures.
@@ -340,6 +348,61 @@ export function saveDevWalkedEdges(edges: string[]): void {
 export async function loadDevWalkedEdges(): Promise<string[]> {
 	try {
 		const file = getDevWalkedEdgesFile();
+		if (!file.exists) return [];
+		const content = await file.text();
+		return JSON.parse(content) as string[];
+	} catch {
+		return [];
+	}
+}
+
+/**
+ * Persist the resolution-11 walked edges array to disk (synchronous write).
+ * Each edge is stored as "cellA:cellB" with the lexicographically smaller
+ * index first. Silently ignores write errors.
+ */
+export function saveWalkedEdgesH11(edges: string[]): void {
+	try {
+		getWalkedEdgesH11File().write(JSON.stringify(edges));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save h11 walked edges:', err);
+	}
+}
+
+/**
+ * Load resolution-11 walked edges from disk. Returns an empty array when the
+ * file does not yet exist or cannot be parsed.
+ */
+export async function loadWalkedEdgesH11(): Promise<string[]> {
+	try {
+		const file = getWalkedEdgesH11File();
+		if (!file.exists) return [];
+		const content = await file.text();
+		return JSON.parse(content) as string[];
+	} catch {
+		return [];
+	}
+}
+
+/**
+ * Persist the dev-mode resolution-11 walked edges array to disk.
+ * Silently ignores write errors.
+ */
+export function saveDevWalkedEdgesH11(edges: string[]): void {
+	try {
+		getDevWalkedEdgesH11File().write(JSON.stringify(edges));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save dev h11 walked edges:', err);
+	}
+}
+
+/**
+ * Load dev-mode resolution-11 walked edges from disk. Returns an empty array
+ * when the file does not yet exist or cannot be parsed.
+ */
+export async function loadDevWalkedEdgesH11(): Promise<string[]> {
+	try {
+		const file = getDevWalkedEdgesH11File();
 		if (!file.exists) return [];
 		const content = await file.text();
 		return JSON.parse(content) as string[];

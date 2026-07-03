@@ -22,6 +22,7 @@ import type { SavedRoute } from './RouteStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
 import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } from './OpenMapTilesSchema';
+import { computeEdgesFromRoutePoints } from './RouteDisplayHelper';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -626,17 +627,18 @@ export function computeActivityData(
  * @param homeHexTile        Optional H3 cell index of the player's home tile.
  *                           When provided, a castle2 billboard is placed at
  *                           the CENTER of that tile after the rebuild.
- * @returns `{ records, walkedEdges }` – fresh state ready to be loaded into
- *          the Redux hex-tile slice via `loadPersistedState` /
- *          `loadWalkedEdgesState`.
+ * @returns `{ records, walkedEdges, walkedEdgesH11 }` – fresh state ready to be
+ *          loaded into the Redux hex-tile slice via `loadPersistedState` /
+ *          `loadWalkedEdgesState` / `loadWalkedEdgesH11State`.
  */
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
 	hexTileFeatureCache: HexTileFeatureCache = {},
 	homeHexTile?: string | null,
-): { records: Record<string, HexTileRecord>; walkedEdges: string[] } {
+): { records: Record<string, HexTileRecord>; walkedEdges: string[]; walkedEdgesH11: string[] } {
 	const records: Record<string, HexTileRecord> = {};
 	const edgeSet = new Set<string>();
+	const edgeSetH11 = new Set<string>();
 
 	for (const activity of activities) {
 		const activityId = activity.id;
@@ -710,6 +712,24 @@ export function rebuildMapFromActivities(
 				const prev = orderedHexTiles[i - 1].hexId;
 				const edge = prev < hexId ? `${prev}:${hexId}` : `${hexId}:${prev}`;
 				edgeSet.add(edge);
+			}
+		}
+
+		// ── Compute h11 walked edges for this activity ────────────────────────
+		// Use GPS route points when available; synthesize them for manual activities.
+		if (isH3Available()) {
+			const hexTilesOrdered = orderedHexTiles.map((e) => e.hexId);
+			const routePoints = activity.routePoints.length > 0
+				? activity.routePoints
+				: synthesizeManualActivityRoutePoints(
+					hexTilesOrdered,
+					activity.startedAt,
+					activity.endedAt - activity.startedAt,
+					activity.distanceKm,
+				);
+			if (routePoints.length > 0) {
+				const h11Edges = computeEdgesFromRoutePoints(routePoints, H3_ROUTE_PATH_RESOLUTION);
+				for (const edge of h11Edges) edgeSetH11.add(edge);
 			}
 		}
 
@@ -883,7 +903,7 @@ export function rebuildMapFromActivities(
 		}
 	}
 
-	return { records, walkedEdges: Array.from(edgeSet) };
+	return { records, walkedEdges: Array.from(edgeSet), walkedEdgesH11: Array.from(edgeSetH11) };
 }
 
 /**

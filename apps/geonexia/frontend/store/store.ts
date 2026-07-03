@@ -11,7 +11,7 @@ import displaySettingsReducer from './displaySettingsSlice';
 import playerInformationReducer from './playerInformationSlice';
 import mapSearchReducer from './mapSearchSlice';
 import replaySettingsReducer from './replaySettingsSlice';
-import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
+import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesH11, saveDevWalkedEdgesH11 } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -53,6 +53,8 @@ let _saveTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedRecords: Record<string, HexTileRecord> | null = null;
 let _walkedEdgesTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedWalkedEdges: string[] | null = null;
+let _walkedEdgesH11Timer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedWalkedEdgesH11: string[] | null = null;
 
 // Auto-persist sport type to disk whenever the selected type changes.
 let _lastSavedSportType: SportType | null = null;
@@ -120,6 +122,22 @@ store.subscribe(() => {
 				saveWalkedEdges(currentEdges);
 			}
 			_walkedEdgesTimer = null;
+		}, 500);
+	}
+
+	const { walkedEdgesH11 } = state.hexTiles;
+	if (walkedEdgesH11 !== _lastSavedWalkedEdgesH11) {
+		_lastSavedWalkedEdgesH11 = walkedEdgesH11;
+		if (_walkedEdgesH11Timer) clearTimeout(_walkedEdgesH11Timer);
+		_walkedEdgesH11Timer = setTimeout(() => {
+			const currentIsDevMode = store.getState().hexTiles.isDevMode;
+			const currentEdgesH11 = store.getState().hexTiles.walkedEdgesH11;
+			if (currentIsDevMode) {
+				saveDevWalkedEdgesH11(currentEdgesH11);
+			} else {
+				saveWalkedEdgesH11(currentEdgesH11);
+			}
+			_walkedEdgesH11Timer = null;
 		}, 500);
 	}
 
