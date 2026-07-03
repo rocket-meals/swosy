@@ -387,7 +387,7 @@ function buildWalkPathGeoJson(
 	const viewportSet = new Set(viewportCells);
 	const features: WalkPathFeature[] = [];
 	const useH11 = (walkedEdgesH11 && walkedEdgesH11.length > 0);
-	const edgesToDraw = useH11 ? walkedEdgesH11! : walkedEdges;
+	const edgesToDraw = useH11 ? walkedEdgesH11 : walkedEdges;
 	// Parent resolution for h11 edges: H3_ROUTE_PATH_RESOLUTION - 1 = 10
 	const parentRes = H3_ROUTE_PATH_RESOLUTION - 1;
 

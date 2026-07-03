@@ -729,7 +729,7 @@ function buildActivityHexGeoJson(
 					try {
 						const pathCells = gridPathCells(lastCell, cell);
 						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
-							for (const c of pathCells) visitedCells.add(c);
+							for (const cell of pathCells) visitedCells.add(cell);
 						}
 					} catch {
 						// Different icosahedron faces; just mark the two endpoints

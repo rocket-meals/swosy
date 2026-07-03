@@ -125,9 +125,9 @@ store.subscribe(() => {
 		}, 500);
 	}
 
-	const { walkedEdgesH11 } = state.hexTiles;
-	if (walkedEdgesH11 !== _lastSavedWalkedEdgesH11) {
-		_lastSavedWalkedEdgesH11 = walkedEdgesH11;
+	const { walkedEdgesH11: currentWalkedEdgesH11 } = state.hexTiles;
+	if (currentWalkedEdgesH11 !== _lastSavedWalkedEdgesH11) {
+		_lastSavedWalkedEdgesH11 = currentWalkedEdgesH11;
 		if (_walkedEdgesH11Timer) clearTimeout(_walkedEdgesH11Timer);
 		_walkedEdgesH11Timer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
