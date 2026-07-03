@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { SafeAreaView, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -37,6 +38,7 @@ import { useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useAppRatingScore from '@/hooks/useAppRatingScore';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -68,6 +70,14 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	useAppForegroundUpdateCheckModal();
 	useNotifications();
+
+	const { checkAndRequestRatingOnFocus } = useAppRatingScore();
+
+	useFocusEffect(
+		useCallback(() => {
+			checkAndRequestRatingOnFocus();
+		}, [checkAndRequestRatingOnFocus])
+	);
 
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 

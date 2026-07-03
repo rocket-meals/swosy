@@ -1,0 +1,179 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus, Platform, StyleSheet, Text, View } from 'react-native';
+import * as StoreReview from 'expo-store-review';
+
+import { getValue, setValue } from '@/constants/AsyncStorageHelper';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { TranslationKeys } from '@/locales/keys';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTheme } from '@/hooks/useTheme';
+import useDebugMode from '@/hooks/useDebugMode';
+
+const ASYNC_STORAGE_KEY_APP_RATING_SCORE = 'appRatingScore';
+const SCORE_THRESHOLD = 100;
+
+const SCORE_APP_START = 5;
+const SCORE_FOODOFFER_DETAILS_OPEN = 10;
+const SCORE_FOODOFFER_DETAILS_TAB_SWITCH = 5;
+
+/**
+ * Hook that manages a persistent "App Rating Score".
+ * Points accumulate through user interactions. When the score reaches the threshold (100),
+ * the app attempts to show the native rating dialog on foodoffer screen focus.
+ *
+ * Point sources:
+ * - +5 on app start (foreground)
+ * - +10 when foodoffer details modal is opened
+ * - +5 when tab is switched in foodoffer details modal
+ *
+ * On foodoffer screen focus with score >= threshold:
+ * - If native rating request is possible: ask and reset score to 0
+ * - If not possible and debug mode: show rating modal
+ * - If cooldown or not possible (and not debug): do nothing
+ */
+const useAppRatingScore = () => {
+	const [score, setScore] = useState(0);
+	const scoreRef = useRef(0);
+	const loadedRef = useRef(false);
+	const debugMode = useDebugMode();
+	const { show } = useMyScrollViewModal();
+	const { translate } = useLanguage();
+	const { theme } = useTheme();
+
+	// Load persisted score on mount
+	useEffect(() => {
+		getValue(ASYNC_STORAGE_KEY_APP_RATING_SCORE)
+			.then((value) => {
+				const loadedScore = typeof value === 'number' ? value : 0;
+				setScore(loadedScore);
+				scoreRef.current = loadedScore;
+				loadedRef.current = true;
+			})
+			.catch(() => {
+				loadedRef.current = true;
+			});
+	}, []);
+
+	const persistScore = useCallback(async (newScore: number) => {
+		scoreRef.current = newScore;
+		setScore(newScore);
+		await setValue(ASYNC_STORAGE_KEY_APP_RATING_SCORE, newScore);
+	}, []);
+
+	const addPoints = useCallback(async (points: number) => {
+		if (!loadedRef.current) return;
+		const newScore = scoreRef.current + points;
+		await persistScore(newScore);
+	}, [persistScore]);
+
+	const resetScore = useCallback(async () => {
+		await persistScore(0);
+	}, [persistScore]);
+
+	// +5 points on app start (foreground)
+	const appStartHandledRef = useRef(false);
+	useEffect(() => {
+		if (!loadedRef.current) return;
+		if (appStartHandledRef.current) return;
+		appStartHandledRef.current = true;
+		addPoints(SCORE_APP_START);
+	}, [score]); // triggers once score is loaded
+
+	// +5 points on app returning to foreground
+	useEffect(() => {
+		const handleAppStateChange = (nextAppState: AppStateStatus) => {
+			if (nextAppState === 'active' && loadedRef.current) {
+				addPoints(SCORE_APP_START);
+			}
+		};
+
+		const subscription = AppState.addEventListener('change', handleAppStateChange);
+		return () => subscription.remove();
+	}, [addPoints]);
+
+	const showDebugRatingModal = useCallback(() => {
+		show({
+			children: (
+				<View style={styles.container}>
+					<Text style={[styles.prompt, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.collectible_event_rate_app_prompt)}
+					</Text>
+					<Text style={[styles.debugInfo, { color: theme.screen.text }]}>
+						{'[Debug] Rating not available natively - showing modal'}
+					</Text>
+					<RateAppSettingsItem debug />
+				</View>
+			),
+		});
+	}, [show, theme.screen.text, translate]);
+
+	/**
+	 * Called when the foodoffer screen gains focus.
+	 * If score >= threshold, attempt to show rating.
+	 */
+	const checkAndRequestRatingOnFocus = useCallback(async () => {
+		if (scoreRef.current < SCORE_THRESHOLD) return;
+
+		if (Platform.OS === 'web') {
+			// On web, native rating not available
+			if (debugMode) {
+				showDebugRatingModal();
+			}
+			return;
+		}
+
+		try {
+			const isAvailable = await StoreReview.isAvailableAsync();
+			if (isAvailable) {
+				await StoreReview.requestReview();
+				await resetScore();
+				return;
+			}
+		} catch (error) {
+			console.log('useAppRatingScore: error requesting review', error);
+		}
+
+		// Not possible to ask natively
+		if (debugMode) {
+			showDebugRatingModal();
+		}
+	}, [debugMode, resetScore, showDebugRatingModal]);
+
+	const addPointsForDetailsOpen = useCallback(() => {
+		addPoints(SCORE_FOODOFFER_DETAILS_OPEN);
+	}, [addPoints]);
+
+	const addPointsForTabSwitch = useCallback(() => {
+		addPoints(SCORE_FOODOFFER_DETAILS_TAB_SWITCH);
+	}, [addPoints]);
+
+	return {
+		score,
+		checkAndRequestRatingOnFocus,
+		addPointsForDetailsOpen,
+		addPointsForTabSwitch,
+	};
+};
+
+const styles = StyleSheet.create({
+	container: {
+		paddingVertical: 24,
+		gap: 12,
+	},
+	prompt: {
+		textAlign: 'center',
+		paddingHorizontal: 24,
+		fontSize: 16,
+		fontFamily: 'Poppins_700Bold',
+	},
+	debugInfo: {
+		textAlign: 'center',
+		paddingHorizontal: 24,
+		fontSize: 12,
+		fontStyle: 'italic',
+		opacity: 0.7,
+	},
+});
+
+export default useAppRatingScore;
