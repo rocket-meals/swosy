@@ -20,10 +20,10 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { computeEdgesFromHexTiles, computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
-import { startRun, markVisited, markEnclosed, addWalkedEdges, addWalkedEdgesH11, loadPersistedState, loadWalkedEdgesState, loadWalkedEdgesH11State, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, addWalkedEdges, addWalkedEdgesRedLine, loadPersistedState, loadWalkedEdgesState, loadWalkedEdgesRedLineState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
@@ -497,12 +497,12 @@ export default function ActivitiesScreen() {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const homeHexTile = store.getState().playerInformation.homeHexTile;
-						const { records, walkedEdges, walkedEdgesH11 } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const { records, walkedEdges, walkedEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
 						const routes = await loadRoutes();
 						applyRouteBenches(records, sorted, routes);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
-						dispatch(loadWalkedEdgesH11State(walkedEdgesH11));
+						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
 						// Fire-and-forget: fetch map features for enclosed-only tiles that
 						// have no cached feature data yet, so the pine tree billboard can be
@@ -601,16 +601,16 @@ export default function ActivitiesScreen() {
 											if (edges.length > 0) {
 												dispatch(addWalkedEdges(edges));
 											}
-											// Also record h11 edges for the finer walk-path line
+											// Also record red-line edges for the finer walk-path line
 											const syntheticPoints = synthesizeManualActivityRoutePoints(
 												hexTilesOrdered,
 												activity.startedAt,
 												activity.endedAt - activity.startedAt,
 												activity.distanceKm,
 											);
-											const edgesH11 = computeEdgesFromRoutePoints(syntheticPoints, H3_ROUTE_PATH_RESOLUTION);
-											if (edgesH11.length > 0) {
-												dispatch(addWalkedEdgesH11(edgesH11));
+											const edgesRedLine = computeEdgesFromRoutePoints(syntheticPoints, RED_LINE_GRID_RESOLUTION);
+											if (edgesRedLine.length > 0) {
+												dispatch(addWalkedEdgesRedLine(edgesRedLine));
 											}
 										}
 										closeManualModal();

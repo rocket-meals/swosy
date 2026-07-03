@@ -175,6 +175,21 @@ export type SavedActivity = {
 	 * Manual activities only have a duration and are assigned to an existing route.
 	 */
 	isManual?: boolean;
+	/**
+	 * Ordered H3 cell transitions at the red-line resolution, stored as
+	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
+	 * Used to draw the red walk-path line at a finer granularity than the h10
+	 * tile centres.  Computed from `routePoints` and cached here.
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	walkedEdgesRedLine?: string[];
+	/**
+	 * H3 resolution used to compute `walkedEdgesRedLine`.
+	 * Stored alongside the edges so consumers do not need to hard-code the
+	 * resolution — the field is the single source of truth.
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	walkedEdgesRedLineResolution?: number;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

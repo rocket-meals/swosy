@@ -30,7 +30,7 @@ import {
 	getSmallTreeAnchorForHexId,
 } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
-import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState, loadWalkedEdgesH11State, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState, loadWalkedEdgesRedLineState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
@@ -52,10 +52,10 @@ import {
 	saveDevWalkedEdges,
 	loadWalkedEdges,
 	loadDevWalkedEdges,
-	saveWalkedEdgesH11,
-	saveDevWalkedEdgesH11,
-	loadWalkedEdgesH11,
-	loadDevWalkedEdgesH11,
+	saveWalkedEdgesRedLine,
+	saveDevWalkedEdgesRedLine,
+	loadWalkedEdgesRedLine,
+	loadDevWalkedEdgesRedLine,
 } from '../../helpers/HexTileStorage';
 import { getCompanyLogoLocalSaved } from '../../config';
 import { loadTTSLog, clearTTSLog, type TTSLogEntry } from '../../helpers/TTSLogStorage';
@@ -326,9 +326,9 @@ export default function SettingsScreen() {
 						deleteAllActivities();
 						dispatch(loadPersistedState({}));
 						dispatch(loadWalkedEdgesState([]));
-						dispatch(loadWalkedEdgesH11State([]));
+						dispatch(loadWalkedEdgesRedLineState([]));
 						saveWalkedEdges([]);
-						saveWalkedEdgesH11([]);
+						saveWalkedEdgesRedLine([]);
 						closeResetModal();
 					}}
 					onCancel={closeResetModal}
@@ -370,21 +370,21 @@ export default function SettingsScreen() {
 	}, [showAdvancedModal]);
 
 	const handleToggleDevMode = useCallback(async () => {
-		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges, walkedEdgesH11: currentEdgesH11 } = store.getState().hexTiles;
+		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges, walkedEdgesRedLine: currentEdgesRedLine } = store.getState().hexTiles;
 		if (currentIsDevMode) {
 			saveDevHexTileState(currentRecords);
 			saveDevWalkedEdges(currentEdges);
-			saveDevWalkedEdgesH11(currentEdgesH11);
-			const [prodRecords, prodEdges, prodEdgesH11] = await Promise.all([loadHexTileState(), loadWalkedEdges(), loadWalkedEdgesH11()]);
+			saveDevWalkedEdgesRedLine(currentEdgesRedLine);
+			const [prodRecords, prodEdges, prodEdgesRedLine] = await Promise.all([loadHexTileState(), loadWalkedEdges(), loadWalkedEdgesRedLine()]);
 			saveDevModeFlag(false);
-			dispatch(setDevMode({ isDevMode: false, records: prodRecords, walkedEdges: prodEdges, walkedEdgesH11: prodEdgesH11 }));
+			dispatch(setDevMode({ isDevMode: false, records: prodRecords, walkedEdges: prodEdges, walkedEdgesRedLine: prodEdgesRedLine }));
 		} else {
 			saveHexTileState(currentRecords);
 			saveWalkedEdges(currentEdges);
-			saveWalkedEdgesH11(currentEdgesH11);
-			const [devRecords, devEdges, devEdgesH11] = await Promise.all([loadDevHexTileState(), loadDevWalkedEdges(), loadDevWalkedEdgesH11()]);
+			saveWalkedEdgesRedLine(currentEdgesRedLine);
+			const [devRecords, devEdges, devEdgesRedLine] = await Promise.all([loadDevHexTileState(), loadDevWalkedEdges(), loadDevWalkedEdgesRedLine()]);
 			saveDevModeFlag(true);
-			dispatch(setDevMode({ isDevMode: true, records: devRecords, walkedEdges: devEdges, walkedEdgesH11: devEdgesH11 }));
+			dispatch(setDevMode({ isDevMode: true, records: devRecords, walkedEdges: devEdges, walkedEdgesRedLine: devEdgesRedLine }));
 		}
 	}, [dispatch]);
 
@@ -547,12 +547,12 @@ export default function SettingsScreen() {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const homeHexTile = store.getState().playerInformation.homeHexTile;
-						const { records, walkedEdges, walkedEdgesH11 } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const { records, walkedEdges, walkedEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
 						const routes = await loadRoutes();
 						applyRouteBenches(records, sorted, routes);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
-						dispatch(loadWalkedEdgesH11State(walkedEdgesH11));
+						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
 						void (async () => {
 							try {

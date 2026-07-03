@@ -38,11 +38,12 @@ export const WORLD_BUILDING_ID = 16;
 export const H3_RESOLUTION_FALLBACK = 10;
 
 /**
- * H3 resolution used for the internal route path (walked edges).  One step
- * finer than the displayed h10 tile resolution, giving a more accurate line
- * when drawing the red walk path on the map.
+ * H3 resolution used for the red walk-path line drawn on the map.  One step
+ * finer than the displayed h10 tile resolution, giving a more accurate line.
+ * This is the single authoritative definition — all red-line edge computations
+ * import this constant rather than hard-coding the number.
  */
-export const H3_ROUTE_PATH_RESOLUTION = 11;
+export const RED_LINE_GRID_RESOLUTION = 11;
 
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
@@ -525,12 +526,12 @@ export function synthesizeManualActivityRoutePoints(
 	const points: RoutePoint[] = [];
 	for (let i = 0; i < hexTilesOrdered.length; i++) {
 		try {
-			// Place each synthetic point at the h11 center-child of the h10 tile so
-			// that computeEdgesFromRoutePoints(..., H3_ROUTE_PATH_RESOLUTION) can
-			// derive a finer walk path for the route's walkedEdgesH11 field.
-			// Falls back to the h10 cell centre if h11 child computation fails.
-			const h11Cell = cellToCenterChild(hexTilesOrdered[i], H3_ROUTE_PATH_RESOLUTION);
-			const [lat, lng] = cellToLatLng(h11Cell || hexTilesOrdered[i]);
+			// Place each synthetic point at the red-line center-child of the h10 tile
+			// so that computeEdgesFromRoutePoints(..., RED_LINE_GRID_RESOLUTION) can
+			// derive a finer walk path for the route's walkedEdgesRedLine field.
+			// Falls back to the h10 cell centre if child computation fails.
+			const redLineCell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION);
+			const [lat, lng] = cellToLatLng(redLineCell || hexTilesOrdered[i]);
 			points.push({
 				lat,
 				lng,
@@ -627,18 +628,18 @@ export function computeActivityData(
  * @param homeHexTile        Optional H3 cell index of the player's home tile.
  *                           When provided, a castle2 billboard is placed at
  *                           the CENTER of that tile after the rebuild.
- * @returns `{ records, walkedEdges, walkedEdgesH11 }` – fresh state ready to be
+ * @returns `{ records, walkedEdges, walkedEdgesRedLine }` – fresh state ready to be
  *          loaded into the Redux hex-tile slice via `loadPersistedState` /
- *          `loadWalkedEdgesState` / `loadWalkedEdgesH11State`.
+ *          `loadWalkedEdgesState` / `loadWalkedEdgesRedLineState`.
  */
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
 	hexTileFeatureCache: HexTileFeatureCache = {},
 	homeHexTile?: string | null,
-): { records: Record<string, HexTileRecord>; walkedEdges: string[]; walkedEdgesH11: string[] } {
+): { records: Record<string, HexTileRecord>; walkedEdges: string[]; walkedEdgesRedLine: string[] } {
 	const records: Record<string, HexTileRecord> = {};
 	const edgeSet = new Set<string>();
-	const edgeSetH11 = new Set<string>();
+	const edgeSetRedLine = new Set<string>();
 
 	for (const activity of activities) {
 		const activityId = activity.id;
@@ -715,7 +716,7 @@ export function rebuildMapFromActivities(
 			}
 		}
 
-		// ── Compute h11 walked edges for this activity ────────────────────────
+		// ── Compute red-line walked edges for this activity ──────────────────
 		// Use GPS route points when available; synthesize them for manual activities.
 		if (isH3Available()) {
 			const hexTilesOrdered = orderedHexTiles.map((e) => e.hexId);
@@ -728,8 +729,8 @@ export function rebuildMapFromActivities(
 					activity.distanceKm,
 				);
 			if (routePoints.length > 0) {
-				const h11Edges = computeEdgesFromRoutePoints(routePoints, H3_ROUTE_PATH_RESOLUTION);
-				for (const edge of h11Edges) edgeSetH11.add(edge);
+				const redLineEdges = computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION);
+				for (const edge of redLineEdges) edgeSetRedLine.add(edge);
 			}
 		}
 
@@ -903,7 +904,7 @@ export function rebuildMapFromActivities(
 		}
 	}
 
-	return { records, walkedEdges: Array.from(edgeSet), walkedEdgesH11: Array.from(edgeSetH11) };
+	return { records, walkedEdges: Array.from(edgeSet), walkedEdgesRedLine: Array.from(edgeSetRedLine) };
 }
 
 /**

@@ -28,7 +28,7 @@ import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
-import { computeActivityData, findEnclosedCellsFromHexTiles, H3_ROUTE_PATH_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import type { AppDispatch, RootState } from '../../store/store';
 import { startRun, markVisited, markEnclosed, addWalkedEdges } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -396,11 +396,11 @@ export default function RouteDetailScreen() {
 		}).catch(() => setRouteActivities([]));
 	}, [id]);
 
-	// Migration: compute walkedEdgesH11 from the first activity's routePoints
+	// Migration: compute walkedEdgesRedLine from the first activity's routePoints
 	// when the field is absent (older saves that pre-date this feature).
 	useEffect(() => {
 		if (!route || !isH3Available()) return;
-		if (route.walkedEdgesH11 !== undefined) return;
+		if (route.walkedEdgesRedLine !== undefined) return;
 		// Find the oldest activity with routePoints to use as the reference path.
 		// routeActivities is sorted newest-first, so iterate backwards.
 		let reference: SavedActivity | undefined;
@@ -412,8 +412,8 @@ export default function RouteDetailScreen() {
 			}
 		}
 		if (!reference) return;
-		const h11Edges = computeEdgesFromRoutePoints(reference.routePoints, H3_ROUTE_PATH_RESOLUTION);
-		const updatedRoute: SavedRoute = { ...route, walkedEdgesH11: h11Edges };
+		const redLineEdges = computeEdgesFromRoutePoints(reference.routePoints, RED_LINE_GRID_RESOLUTION);
+		const updatedRoute: SavedRoute = { ...route, walkedEdgesRedLine: redLineEdges, walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION };
 		try {
 			saveRoute(updatedRoute);
 			setRoute(updatedRoute);
@@ -790,8 +790,9 @@ export default function RouteDetailScreen() {
 			walkedEdges: computeEdgesFromHexTiles(editedHexTiles),
 			// Clear cached enclosed tiles so they are recomputed for the new tile set.
 			enclosedTiles: undefined,
-			// Clear the h11 path so it is recomputed from activities after saving.
-			walkedEdgesH11: undefined,
+			// Clear the red-line path so it is recomputed from activities after saving.
+			walkedEdgesRedLine: undefined,
+			walkedEdgesRedLineResolution: undefined,
 		};
 		try {
 			saveRoute(updatedRoute);

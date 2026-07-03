@@ -11,7 +11,7 @@ import displaySettingsReducer from './displaySettingsSlice';
 import playerInformationReducer from './playerInformationSlice';
 import mapSearchReducer from './mapSearchSlice';
 import replaySettingsReducer from './replaySettingsSlice';
-import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesH11, saveDevWalkedEdgesH11 } from '../helpers/HexTileStorage';
+import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesRedLine, saveDevWalkedEdgesRedLine } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -53,8 +53,8 @@ let _saveTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedRecords: Record<string, HexTileRecord> | null = null;
 let _walkedEdgesTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedWalkedEdges: string[] | null = null;
-let _walkedEdgesH11Timer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedWalkedEdgesH11: string[] | null = null;
+let _walkedEdgesRedLineTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedWalkedEdgesRedLine: string[] | null = null;
 
 // Auto-persist sport type to disk whenever the selected type changes.
 let _lastSavedSportType: SportType | null = null;
@@ -125,19 +125,19 @@ store.subscribe(() => {
 		}, 500);
 	}
 
-	const { walkedEdgesH11: currentWalkedEdgesH11 } = state.hexTiles;
-	if (currentWalkedEdgesH11 !== _lastSavedWalkedEdgesH11) {
-		_lastSavedWalkedEdgesH11 = currentWalkedEdgesH11;
-		if (_walkedEdgesH11Timer) clearTimeout(_walkedEdgesH11Timer);
-		_walkedEdgesH11Timer = setTimeout(() => {
+	const { walkedEdgesRedLine: currentWalkedEdgesRedLine } = state.hexTiles;
+	if (currentWalkedEdgesRedLine !== _lastSavedWalkedEdgesRedLine) {
+		_lastSavedWalkedEdgesRedLine = currentWalkedEdgesRedLine;
+		if (_walkedEdgesRedLineTimer) clearTimeout(_walkedEdgesRedLineTimer);
+		_walkedEdgesRedLineTimer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
-			const currentEdgesH11 = store.getState().hexTiles.walkedEdgesH11;
+			const currentEdgesRedLine = store.getState().hexTiles.walkedEdgesRedLine;
 			if (currentIsDevMode) {
-				saveDevWalkedEdgesH11(currentEdgesH11);
+				saveDevWalkedEdgesRedLine(currentEdgesRedLine);
 			} else {
-				saveWalkedEdgesH11(currentEdgesH11);
+				saveWalkedEdgesRedLine(currentEdgesRedLine);
 			}
-			_walkedEdgesH11Timer = null;
+			_walkedEdgesRedLineTimer = null;
 		}, 500);
 	}
 

@@ -22,7 +22,7 @@ import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechS
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
 import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
 import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWalkedEdgesH11, loadDevWalkedEdgesH11, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesH11, saveDevWalkedEdgesH11, BillboardAnchorPosition } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWalkedEdgesRedLine, loadDevWalkedEdgesRedLine, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesRedLine, saveDevWalkedEdgesRedLine, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -382,10 +382,10 @@ export default function Layout() {
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
-			const [records, walkedEdges, walkedEdgesH11, storedBuildingId, playerInfo] = await Promise.all([
+			const [records, walkedEdges, walkedEdgesRedLine, storedBuildingId, playerInfo] = await Promise.all([
 				isDevMode ? loadDevHexTileState() : loadHexTileState(),
 				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
-				isDevMode ? loadDevWalkedEdgesH11() : loadWalkedEdgesH11(),
+				isDevMode ? loadDevWalkedEdgesRedLine() : loadWalkedEdgesRedLine(),
 				isDevMode ? loadDevWorldBuildingId() : loadWorldBuildingId(),
 				loadPlayerInformation(),
 			]);
@@ -398,21 +398,21 @@ export default function Layout() {
 					if (allActivities.length > 0) {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesH11: rebuiltEdgesH11 } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
+						const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
 						const routes = await loadRoutes();
 						applyRouteBenches(rebuiltRecords, sorted, routes);
 						if (isDevMode) {
 							saveDevHexTileState(rebuiltRecords);
 							saveDevWalkedEdges(rebuiltEdges);
-							saveDevWalkedEdgesH11(rebuiltEdgesH11);
+							saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
 							saveDevWorldBuildingId(WORLD_BUILDING_ID);
 						} else {
 							saveHexTileState(rebuiltRecords);
 							saveWalkedEdges(rebuiltEdges);
-							saveWalkedEdgesH11(rebuiltEdgesH11);
+							saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
 							saveWorldBuildingId(WORLD_BUILDING_ID);
 						}
-						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesH11: rebuiltEdgesH11 }));
+						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
 						// Fire-and-forget: fetch features for enclosed tiles
 						// that are not yet in the feature cache, then apply forest trees.
 						void (async () => {
@@ -467,7 +467,7 @@ export default function Layout() {
 				}
 			}
 
-			store.dispatch(setDevMode({ isDevMode, records, walkedEdges, walkedEdgesH11 }));
+			store.dispatch(setDevMode({ isDevMode, records, walkedEdges, walkedEdgesRedLine }));
 			// Fire-and-forget: apply forest trees to enclosed tiles that are
 			// missing them. This covers cases where a recording ended before the
 			// in-session tree dispatch completed (e.g. app was killed mid-run).

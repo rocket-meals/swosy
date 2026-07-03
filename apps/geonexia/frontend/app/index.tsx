@@ -31,12 +31,12 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gri
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId, H3_ROUTE_PATH_RESOLUTION } from '../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId, RED_LINE_GRID_RESOLUTION } from '../helpers/ActivityMapRebuildHelper';
 import { mergeHexTileFeatureCache, loadHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
-import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
+import { buildRouteDisplayData, computeEdgesFromHexTiles, computeEdgesFromRoutePoints, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, addWalkedEdgesH11, HexTileCustomizationPayload } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, addWalkedEdgesRedLine, HexTileCustomizationPayload } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
@@ -368,37 +368,37 @@ type WalkPathFeatureCollection = {
 /**
  * Build a GeoJSON FeatureCollection of LineString features representing the
  * walk path, using the actual hex-to-hex transitions that were recorded during
- * activities. Prefers the finer h11 edges (`walkedEdgesH11`) when provided and
- * non-empty so that the red walk path line is drawn through h11 cell centres.
+ * activities. Prefers the finer red-line edges (`walkedEdgesRedLine`) when provided
+ * and non-empty so that the red walk path line is drawn through red-line cell centres.
  * Falls back to h10 `walkedEdges`.
  *
- * For h11 edges the viewport filter checks whether the h10 parent of each cell
+ * For red-line edges the viewport filter checks whether the h10 parent of each cell
  * is visible in the current viewport (since the viewport is rendered at h10).
  * For h10 edges the cells are checked directly.
  *
- * Each edge in `walkedEdges`/`walkedEdgesH11` is stored as "cellA:cellB" with
+ * Each edge in `walkedEdges`/`walkedEdgesRedLine` is stored as "cellA:cellB" with
  * the lexicographically smaller index first.
  */
 function buildWalkPathGeoJson(
 	viewportCells: string[],
 	walkedEdges: string[],
-	walkedEdgesH11?: string[],
+	walkedEdgesRedLine?: string[],
 ): WalkPathFeatureCollection {
 	const viewportSet = new Set(viewportCells);
 	const features: WalkPathFeature[] = [];
-	const useH11 = (walkedEdgesH11 && walkedEdgesH11.length > 0);
-	const edgesToDraw = useH11 ? walkedEdgesH11 : walkedEdges;
-	// Parent resolution for h11 edges: H3_ROUTE_PATH_RESOLUTION - 1 = 10
-	const parentRes = H3_ROUTE_PATH_RESOLUTION - 1;
+	const useRedLine = (walkedEdgesRedLine && walkedEdgesRedLine.length > 0);
+	const edgesToDraw = useRedLine ? walkedEdgesRedLine : walkedEdges;
+	// Parent resolution for red-line edges: RED_LINE_GRID_RESOLUTION - 1 = 10
+	const parentRes = RED_LINE_GRID_RESOLUTION - 1;
 
 	for (const edge of edgesToDraw) {
 		const colonIdx = edge.indexOf(':');
 		if (colonIdx === -1) continue;
 		const cellA = edge.slice(0, colonIdx);
 		const cellB = edge.slice(colonIdx + 1);
-		// Only draw if both endpoints (or their h10 parents for h11 edges) are
+		// Only draw if both endpoints (or their h10 parents for red-line edges) are
 		// visible in the current viewport.
-		if (useH11) {
+		if (useRedLine) {
 			try {
 				const parentA = cellToParent(cellA, parentRes);
 				const parentB = cellToParent(cellB, parentRes);
@@ -3327,8 +3327,8 @@ export default function RecordScreen() {
 	const orderedHexTilesRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
-	// The last H3 resolution-11 cell; used to track finer h11 walk-path edges.
-	const lastH11CellRef = useRef<string | null>(null);
+	// The last red-line resolution cell; used to track finer red-line walk-path edges.
+	const lastRedLineCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 	// Joystick speed, configurable from the debug modal
@@ -3423,7 +3423,7 @@ export default function RecordScreen() {
 			debugViewportRef.current.tileCount = geoJson.features.length;
 		}
 		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesH11);
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
 		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		refreshSearchHighlight(viewportCells);
@@ -3805,6 +3805,8 @@ export default function RecordScreen() {
 			visitedTileCount: routeCells.length,
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered: routeCells,
+			walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
+			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
@@ -4291,32 +4293,32 @@ export default function RecordScreen() {
 						lastCellRef.current = cell;
 					}
 
-					// ── H11 walk-path edge tracking ───────────────────────────────────
-					// Track finer h11 cell transitions for the red walk-path line.
+					// ── Red-line walk-path edge tracking ────────────────────────────────
+					// Track finer red-line cell transitions for the red walk-path line.
 					try {
-						const h11Cell = latLngToCell(point.lat, point.lng, H3_ROUTE_PATH_RESOLUTION);
-						if (h11Cell && h11Cell !== lastH11CellRef.current) {
-							if (lastH11CellRef.current) {
-								const newH11Edges: string[] = [];
+						const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
+						if (redLineCell && redLineCell !== lastRedLineCellRef.current) {
+							if (lastRedLineCellRef.current) {
+								const newRedLineEdges: string[] = [];
 								try {
-									const h11PathCells = gridPathCells(lastH11CellRef.current, h11Cell);
-									if (h11PathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-										for (let i = 0; i < h11PathCells.length - 1; i++) {
-											const a = h11PathCells[i];
-											const b = h11PathCells[i + 1];
-											newH11Edges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+									const redLinePathCells = gridPathCells(lastRedLineCellRef.current, redLineCell);
+									if (redLinePathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+										for (let i = 0; i < redLinePathCells.length - 1; i++) {
+											const a = redLinePathCells[i];
+											const b = redLinePathCells[i + 1];
+											newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
 										}
 									}
 								} catch {
-									const a = lastH11CellRef.current;
-									const b = h11Cell;
-									newH11Edges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+									const a = lastRedLineCellRef.current;
+									const b = redLineCell;
+									newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
 								}
-								if (newH11Edges.length > 0) {
-									dispatch(addWalkedEdgesH11(newH11Edges));
+								if (newRedLineEdges.length > 0) {
+									dispatch(addWalkedEdgesRedLine(newRedLineEdges));
 								}
 							}
-							lastH11CellRef.current = h11Cell;
+							lastRedLineCellRef.current = redLineCell;
 						}
 					} catch {
 						// latLngToCell can throw for invalid coordinates; skip silently
@@ -4466,7 +4468,7 @@ export default function RecordScreen() {
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesH11);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 			refreshSearchHighlight(viewportCells);
@@ -4628,7 +4630,7 @@ export default function RecordScreen() {
 			visitedHexIdsRef.current = new Set();
 			orderedHexTilesRef.current = [];
 			lastCellRef.current = null;
-			lastH11CellRef.current = null;
+			lastRedLineCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
 			lastSnapshotSaveRef.current = 0;
@@ -4995,7 +4997,7 @@ export default function RecordScreen() {
 				// ignore
 			}
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesH11);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 			refreshSearchHighlight(viewportCells);
@@ -5016,6 +5018,8 @@ export default function RecordScreen() {
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered,
 			routeId: selectedRouteRef.current?.id ?? undefined,
+			walkedEdgesRedLine: store.getState().hexTiles.walkedEdgesRedLine.slice(),
+			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {

@@ -238,11 +238,11 @@ function getDevWalkedEdgesFile(): File {
 	return new File(Paths.document, 'geonexia-dev-walked-edges.json');
 }
 
-function getWalkedEdgesH11File(): File {
+function getWalkedEdgesRedLineFile(): File {
 	return new File(Paths.document, 'geonexia-walked-edges-h11.json');
 }
 
-function getDevWalkedEdgesH11File(): File {
+function getDevWalkedEdgesRedLineFile(): File {
 	return new File(Paths.document, 'geonexia-dev-walked-edges-h11.json');
 }
 
@@ -357,25 +357,25 @@ export async function loadDevWalkedEdges(): Promise<string[]> {
 }
 
 /**
- * Persist the resolution-11 walked edges array to disk (synchronous write).
+ * Persist the red-line walked edges array to disk (synchronous write).
  * Each edge is stored as "cellA:cellB" with the lexicographically smaller
  * index first. Silently ignores write errors.
  */
-export function saveWalkedEdgesH11(edges: string[]): void {
+export function saveWalkedEdgesRedLine(edges: string[]): void {
 	try {
-		getWalkedEdgesH11File().write(JSON.stringify(edges));
+		getWalkedEdgesRedLineFile().write(JSON.stringify(edges));
 	} catch (err) {
-		console.warn('[HexTileStorage] Failed to save h11 walked edges:', err);
+		console.warn('[HexTileStorage] Failed to save red-line walked edges:', err);
 	}
 }
 
 /**
- * Load resolution-11 walked edges from disk. Returns an empty array when the
+ * Load red-line walked edges from disk. Returns an empty array when the
  * file does not yet exist or cannot be parsed.
  */
-export async function loadWalkedEdgesH11(): Promise<string[]> {
+export async function loadWalkedEdgesRedLine(): Promise<string[]> {
 	try {
-		const file = getWalkedEdgesH11File();
+		const file = getWalkedEdgesRedLineFile();
 		if (!file.exists) return [];
 		const content = await file.text();
 		return JSON.parse(content) as string[];
@@ -385,24 +385,24 @@ export async function loadWalkedEdgesH11(): Promise<string[]> {
 }
 
 /**
- * Persist the dev-mode resolution-11 walked edges array to disk.
+ * Persist the dev-mode red-line walked edges array to disk.
  * Silently ignores write errors.
  */
-export function saveDevWalkedEdgesH11(edges: string[]): void {
+export function saveDevWalkedEdgesRedLine(edges: string[]): void {
 	try {
-		getDevWalkedEdgesH11File().write(JSON.stringify(edges));
+		getDevWalkedEdgesRedLineFile().write(JSON.stringify(edges));
 	} catch (err) {
-		console.warn('[HexTileStorage] Failed to save dev h11 walked edges:', err);
+		console.warn('[HexTileStorage] Failed to save dev red-line walked edges:', err);
 	}
 }
 
 /**
- * Load dev-mode resolution-11 walked edges from disk. Returns an empty array
+ * Load dev-mode red-line walked edges from disk. Returns an empty array
  * when the file does not yet exist or cannot be parsed.
  */
-export async function loadDevWalkedEdgesH11(): Promise<string[]> {
+export async function loadDevWalkedEdgesRedLine(): Promise<string[]> {
 	try {
-		const file = getDevWalkedEdgesH11File();
+		const file = getDevWalkedEdgesRedLineFile();
 		if (!file.exists) return [];
 		const content = await file.text();
 		return JSON.parse(content) as string[];
