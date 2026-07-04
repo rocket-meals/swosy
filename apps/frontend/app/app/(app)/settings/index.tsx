@@ -84,6 +84,7 @@ const Settings = () => {
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal } = useAppRatingScore();
+        const appRatingLastFocusTime = useAppSelector((state) => state.settings.appRatingLastFocusTime);
 
 
         const openFriendsModal = useCallback(() => {
@@ -759,6 +760,13 @@ const Settings = () => {
 						/>
 						<SettingsList
 							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />}
+							label="Foodoffers Letzter Focus"
+							value={appRatingLastFocusTime || '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="star-shooting-outline" size={24} color={theme.screen.icon} />}
 							label="Open App Rating Modal"
 							value=""
@@ -806,7 +814,7 @@ const Settings = () => {
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
-		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal,
+		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingLastFocusTime,
 	]);
 
 	return (

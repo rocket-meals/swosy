@@ -10,6 +10,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
 import {
+	SET_APP_RATING_LAST_FOCUS_TIME,
 	SET_BUSINESS_HOURS,
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
@@ -75,11 +76,19 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const debugMode = useDebugMode();
 	const { checkAndRequestRatingOnFocus } = useAppRatingScore();
 	const { show: showScrollViewModal, close: closeScrollViewModal, debug: modalDebug } = useMyScrollViewModal();
+	const appRatingLastFocusTime = useAppSelector((state) => state.settings.appRatingLastFocusTime);
+
+	// Use a ref so useFocusEffect doesn't re-run when the callback identity changes
+	const checkRatingRef = useRef(checkAndRequestRatingOnFocus);
+	useEffect(() => {
+		checkRatingRef.current = checkAndRequestRatingOnFocus;
+	}, [checkAndRequestRatingOnFocus]);
 
 	useFocusEffect(
 		useCallback(() => {
-			checkAndRequestRatingOnFocus();
-		}, [checkAndRequestRatingOnFocus])
+			dispatch({ type: SET_APP_RATING_LAST_FOCUS_TIME, payload: new Date().toLocaleTimeString() });
+			checkRatingRef.current();
+		}, [dispatch])
 	);
 
 	// Also trigger rating check when modal closes
@@ -88,9 +97,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		const wasOpen = prevModalOpenRef.current;
 		prevModalOpenRef.current = modalDebug.contentSet;
 		if (wasOpen && !modalDebug.contentSet) {
-			checkAndRequestRatingOnFocus();
+			checkRatingRef.current();
 		}
-	}, [modalDebug.contentSet, checkAndRequestRatingOnFocus]);
+	}, [modalDebug.contentSet]);
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
@@ -168,9 +177,14 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			/>
 			<View style={styles.contentWrapper}>
 				{debugMode && (
-					<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
-						{modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen'}
-					</Text>
+					<View>
+						<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
+							{modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen'}
+						</Text>
+						<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
+							{'Letzter Focus: ' + (appRatingLastFocusTime || '-')}
+						</Text>
+					</View>
 				)}
 				{selectedCanteen && (
 					<FoodOffersScrollList
