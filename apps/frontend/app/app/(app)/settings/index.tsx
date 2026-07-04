@@ -51,6 +51,7 @@ import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
+import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
@@ -82,6 +83,8 @@ const Settings = () => {
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
+        const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
+
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -282,6 +285,28 @@ const Settings = () => {
                         ),
                 });
         };
+
+        const openAppRatingScoreSheet = useCallback(() => {
+                openTextInputModal({
+                        title: 'App Rating Score',
+                        placeholder: '0',
+                        initialValue: String(appRatingScore),
+                        saveLabel: translate(TranslationKeys.save),
+                        onSave: (value: string) => {
+                                const parsed = parseInt(value, 10);
+                                if (!isNaN(parsed) && parsed >= 0) {
+                                        setAppRatingScore(parsed);
+                                }
+                        },
+                        checkTextInput: (value: string) => {
+                                const parsed = parseInt(value, 10);
+                                return {
+                                        isValid: !isNaN(parsed) && parsed >= 0,
+                                        value: value.trim(),
+                                };
+                        },
+                });
+        }, [appRatingScore, openTextInputModal, setAppRatingScore, translate]);
 
         const handleSelectServer = useCallback(
                 async (config: CustomerConfig) => {
@@ -721,6 +746,44 @@ const Settings = () => {
 							label={translate(TranslationKeys.simulate_expo_update_available)}
 							isEnabled={simulateExpoUpdateAvailable}
 							onToggle={toggleSimulateExpoUpdate}
+							groupPosition="middle"
+						/>
+						<SettingsListEditable
+							key={String(appRatingScore)}
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="star-outline" size={24} color={theme.screen.icon} />}
+							label="App Rating Score"
+							value={String(appRatingScore)}
+							handleFunction={openAppRatingScoreSheet}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />}
+							label="Foodoffers Letzter Focus"
+							value={appRatingData?.lastFocusTime || '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="history" size={24} color={theme.screen.icon} />}
+							label="Letzte Rating-Anfrage"
+							value={appRatingData?.lastAskedAt ? new Date(appRatingData.lastAskedAt).toLocaleString() : '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="tag-outline" size={24} color={theme.screen.icon} />}
+							label="Letzte Rating App-Version"
+							value={appRatingData?.lastAskedAppVersion || '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="star-shooting-outline" size={24} color={theme.screen.icon} />}
+							label="Open App Rating Modal"
+							value=""
+							handleFunction={showDebugRatingModal}
 							groupPosition="bottom"
 						/>
 					</View>
@@ -764,6 +827,7 @@ const Settings = () => {
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
+		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 	]);
 
 	return (

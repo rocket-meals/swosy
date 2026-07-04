@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { SafeAreaView, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -37,6 +38,8 @@ import { useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useAppRatingScore from '@/hooks/useAppRatingScore';
+import DebugView from '@/components/DebugView';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -69,7 +72,31 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	useAppForegroundUpdateCheckModal();
 	useNotifications();
 
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { checkAndRequestRatingOnFocus, appRatingData, setLastFocusTime } = useAppRatingScore();
+	const { show: showScrollViewModal, close: closeScrollViewModal, debug: modalDebug } = useMyScrollViewModal();
+
+	// Use a ref so useFocusEffect doesn't re-run when the callback identity changes
+	const checkRatingRef = useRef(checkAndRequestRatingOnFocus);
+	useEffect(() => {
+		checkRatingRef.current = checkAndRequestRatingOnFocus;
+	}, [checkAndRequestRatingOnFocus]);
+
+	useFocusEffect(
+		useCallback(() => {
+			setLastFocusTime(new Date().toLocaleTimeString());
+			checkRatingRef.current();
+		}, [setLastFocusTime])
+	);
+
+	// Also trigger rating check when modal closes
+	const prevModalOpenRef = useRef(modalDebug.contentSet);
+	useEffect(() => {
+		const wasOpen = prevModalOpenRef.current;
+		prevModalOpenRef.current = modalDebug.contentSet;
+		if (wasOpen && !modalDebug.contentSet) {
+			checkRatingRef.current();
+		}
+	}, [modalDebug.contentSet]);
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
@@ -146,6 +173,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				openUtilizationModal={openUtilizationModal}
 			/>
 			<View style={styles.contentWrapper}>
+				<DebugView
+					title="Foodoffers Debug"
+					logs={[
+						modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen',
+						'Letzter Focus: ' + (appRatingData?.lastFocusTime || '-'),
+					]}
+				/>
 				{selectedCanteen && (
 					<FoodOffersScrollList
 						canteenId={selectedCanteen.id}
