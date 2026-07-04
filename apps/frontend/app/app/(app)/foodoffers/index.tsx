@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -74,19 +74,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const debugMode = useDebugMode();
 	const { checkAndRequestRatingOnFocus } = useAppRatingScore();
-	const [isFocused, setIsFocused] = useState(false);
+	const { show: showScrollViewModal, close: closeScrollViewModal, debug: modalDebug } = useMyScrollViewModal();
 
 	useFocusEffect(
 		useCallback(() => {
-			setIsFocused(true);
 			checkAndRequestRatingOnFocus();
-			return () => {
-				setIsFocused(false);
-			};
 		}, [checkAndRequestRatingOnFocus])
 	);
-
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
@@ -165,7 +159,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			<View style={styles.contentWrapper}>
 				{debugMode && (
 					<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
-						{isFocused ? 'Screen im Focus' : 'Screen nicht im Focus'}
+						{modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen'}
 					</Text>
 				)}
 				{selectedCanteen && (
