@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
@@ -10,7 +10,6 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
 import {
-	SET_APP_RATING_LAST_FOCUS_TIME,
 	SET_BUSINESS_HOURS,
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
@@ -40,7 +39,7 @@ import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
-import useDebugMode from '@/hooks/useDebugMode';
+import DebugView from '@/components/DebugView';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -73,10 +72,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	useAppForegroundUpdateCheckModal();
 	useNotifications();
 
-	const debugMode = useDebugMode();
-	const { checkAndRequestRatingOnFocus } = useAppRatingScore();
+	const { checkAndRequestRatingOnFocus, appRatingData, setLastFocusTime } = useAppRatingScore();
 	const { show: showScrollViewModal, close: closeScrollViewModal, debug: modalDebug } = useMyScrollViewModal();
-	const appRatingLastFocusTime = useAppSelector((state) => state.settings.appRatingLastFocusTime);
 
 	// Use a ref so useFocusEffect doesn't re-run when the callback identity changes
 	const checkRatingRef = useRef(checkAndRequestRatingOnFocus);
@@ -86,9 +83,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			dispatch({ type: SET_APP_RATING_LAST_FOCUS_TIME, payload: new Date().toLocaleTimeString() });
+			setLastFocusTime(new Date().toLocaleTimeString());
 			checkRatingRef.current();
-		}, [dispatch])
+		}, [setLastFocusTime])
 	);
 
 	// Also trigger rating check when modal closes
@@ -176,16 +173,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				openUtilizationModal={openUtilizationModal}
 			/>
 			<View style={styles.contentWrapper}>
-				{debugMode && (
-					<View>
-						<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
-							{modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen'}
-						</Text>
-						<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
-							{'Letzter Focus: ' + (appRatingLastFocusTime || '-')}
-						</Text>
-					</View>
-				)}
+				<DebugView
+					title="Foodoffers Debug"
+					logs={[
+						modalDebug.contentSet ? 'Modal offen' : 'Kein Modal offen',
+						'Letzter Focus: ' + (appRatingData?.lastFocusTime || '-'),
+					]}
+				/>
 				{selectedCanteen && (
 					<FoodOffersScrollList
 						canteenId={selectedCanteen.id}

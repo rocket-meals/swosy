@@ -83,8 +83,7 @@ const Settings = () => {
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
-        const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal } = useAppRatingScore();
-        const appRatingLastFocusTime = useAppSelector((state) => state.settings.appRatingLastFocusTime);
+        const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
 
 
         const openFriendsModal = useCallback(() => {
@@ -762,7 +761,21 @@ const Settings = () => {
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />}
 							label="Foodoffers Letzter Focus"
-							value={appRatingLastFocusTime || '-'}
+							value={appRatingData?.lastFocusTime || '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="history" size={24} color={theme.screen.icon} />}
+							label="Letzte Rating-Anfrage"
+							value={appRatingData?.lastAskedAt ? new Date(appRatingData.lastAskedAt).toLocaleString() : '-'}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="tag-outline" size={24} color={theme.screen.icon} />}
+							label="Letzte Rating App-Version"
+							value={appRatingData?.lastAskedAppVersion || '-'}
 							groupPosition="middle"
 						/>
 						<SettingsList
@@ -814,7 +827,7 @@ const Settings = () => {
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
-		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingLastFocusTime,
+		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 	]);
 
 	return (

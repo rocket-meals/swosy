@@ -58,7 +58,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const { width: screenWidth } = useWindowDimensions();
 
     const { show: showModal, close: closeModal } = useMyScrollViewModal();
-    const { addPointsForTabSwitch } = useAppRatingScore();
+    const { addPointsForTabSwitch, addPointsForFoodRating5Stars } = useAppRatingScore();
 
     const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
     const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
@@ -209,6 +209,9 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             return;
         }
         const newRating = previousFeedback?.rating === rating ? null : rating;
+        if (newRating === 5) {
+            addPointsForFoodRating5Stars();
+        }
         handleFoodRating({
             foodId: foodDetails?.id,
             profileId: profile?.id,
@@ -218,7 +221,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             previousFeedback,
             dispatch,
         });
-    }, [user, previousFeedback, foodDetails, profile, foodOfferCanteenId, dispatch, openAccountRequiredModal]);
+    }, [user, previousFeedback, foodDetails, profile, foodOfferCanteenId, dispatch, openAccountRequiredModal, addPointsForFoodRating5Stars]);
 
     const updateFoodFeedbackNotification = useCallback(async () => {
         try {
