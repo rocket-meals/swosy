@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 37 | 37 |
-| 🐛 Reliability | 6886 | 13 |
+| 🐛 Reliability | 6890 | 13 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16923 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16927 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -162,7 +162,7 @@
   apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
 
-## 🐛 Reliability (13/6886)
+## 🐛 Reliability (13/6890)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -196,23 +196,23 @@
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/app/(app)/settings/index.tsx:296
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L296
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/frontend/app/app/(app)/settings/index.tsx:297
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L297
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/app/(app)/settings/index.tsx:302
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L302
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/frontend/app/app/(app)/settings/index.tsx:304
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L304
+
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/app/index.tsx:15
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L19
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L20
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:22
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L22
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/EmailInput/EmailInput.tsx:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/EmailInput/EmailInput.tsx#L9
 

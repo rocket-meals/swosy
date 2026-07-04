@@ -1,4 +1,8 @@
 Key,Message,Component,Line
+"AZ8tBMPhRFoArOAafHiv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",296
+"AZ8tBMPhRFoArOAafHiw","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",297
+"AZ8tBMPhRFoArOAafHix","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",302
+"AZ8tBMPhRFoArOAafHiy","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",304
 "AZ8htJeczJPy0PNbx4Ub","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",143
 "AZ8htJeczJPy0PNbx4Uc","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",144
 "AZ8htJeczJPy0PNbx4Ud","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",145
