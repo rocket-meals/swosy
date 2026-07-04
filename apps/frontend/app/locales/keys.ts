@@ -646,6 +646,7 @@ export enum TranslationKeys {
 	onboarding_skip = 'onboarding_skip',
 	onboarding_enable_notifications = 'onboarding_enable_notifications',
 	onboarding_start = 'onboarding_start',
+	onboarding_complete_user_count_prefix = 'onboarding_complete_user_count_prefix',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

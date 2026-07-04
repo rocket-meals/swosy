@@ -6316,5 +6316,15 @@
     "ru": "Поехали!",
     "tr": "Haydi başlayalım!",
     "zh": "开始吧！"
+  },
+  "onboarding_complete_user_count_prefix": {
+    "de": "Schön, dass du dabei bist, wie auch",
+    "en": "Great to have you, just like",
+    "ar": "يسعدنا وجودك، مثل",
+    "es": "Qué bueno tenerte, igual que",
+    "fr": "Ravi de t'avoir, comme",
+    "ru": "Рады видеть тебя, как и",
+    "tr": "Seninle olmak güzel, tıpkı",
+    "zh": "很高兴你加入，就像"
   }
 }

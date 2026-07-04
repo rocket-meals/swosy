@@ -17,6 +17,7 @@ import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
+import { CollectionHelper } from '@/helper/collectionHelper';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences', 'complete'] as const;
 type Step = typeof STEPS[number];
@@ -34,6 +35,7 @@ const OnboardingScreen = () => {
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [userCount, setUserCount] = useState<number | null>(null);
 	const scrollViewRef = useRef<ScrollView>(null);
 
 	const currentStep = STEPS[currentStepIndex];
@@ -92,6 +94,22 @@ const OnboardingScreen = () => {
 		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
 	}, [screenWidth]);
 
+	useEffect(() => {
+		const fetchUserCount = async () => {
+			try {
+				const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
+				const result: any = await usersHelper.aggregateItems({
+					aggregate: { count: '*' },
+				});
+				const count = result?.[0]?.count;
+				setUserCount(typeof count === 'number' ? count : parseInt(count, 10) || null);
+			} catch (error) {
+				console.error('Error fetching user count:', error);
+			}
+		};
+		fetchUserCount();
+	}, []);
+
 	const handleNext = useCallback(() => {
 		if (!isLastStep) {
 			goToStep(currentStepIndex + 1);
@@ -111,6 +129,13 @@ const OnboardingScreen = () => {
 			setTimeout(() => goToStep(canteenStepIndex + 1), 300);
 		}
 	}, [dispatch, goToStep]);
+
+	const handleSelectPriceGroup = useCallback(() => {
+		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
+		if (priceGroupStepIndex < STEPS.length - 1) {
+			setTimeout(() => goToStep(priceGroupStepIndex + 1), 300);
+		}
+	}, [goToStep]);
 
 	const handleStart = useCallback(() => {
 		router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
@@ -217,7 +242,7 @@ const OnboardingScreen = () => {
 					{translate(TranslationKeys.onboarding_price_group_description)}
 				</Text>
 				<View style={styles.priceGroupContainer}>
-					<PriceGroupSettingsList />
+					<PriceGroupSettingsList onSelect={handleSelectPriceGroup} />
 				</View>
 			</ScrollView>
 		</View>
@@ -233,6 +258,18 @@ const OnboardingScreen = () => {
 				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
 					{translate(TranslationKeys.onboarding_complete_description)}
 				</Text>
+				{userCount !== null && (
+					<View style={styles.userCountContainer}>
+						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
+						</Text>
+						<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
+							<Text style={[styles.userCountNumber, { color: contrastColor }]}>
+								{userCount.toLocaleString()}
+							</Text>
+						</View>
+					</View>
+				)}
 				<TouchableOpacity
 					onPress={handleStart}
 					style={[styles.startButton, { backgroundColor: primaryColor }]}
@@ -367,6 +404,22 @@ const styles = StyleSheet.create({
 	},
 	startButtonText: {
 		fontSize: 20,
+		fontFamily: 'Poppins_700Bold',
+	},
+	userCountContainer: {
+		alignItems: 'center',
+		gap: 12,
+		marginTop: 8,
+	},
+	userCountBadge: {
+		borderRadius: 24,
+		paddingHorizontal: 32,
+		paddingVertical: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	userCountNumber: {
+		fontSize: 48,
 		fontFamily: 'Poppins_700Bold',
 	},
 	navigationContainer: {
