@@ -28,7 +28,7 @@ import ActivityAggregateStatsSection from '../../components/ActivityAggregateSta
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad } from '../../helpers/RouteSmootherHelper';
 
@@ -536,6 +536,8 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 			createdAt: Date.now(),
 			sportType: activity.sportType,
 			walkedEdges: computeEdgesFromRoutePoints(activity.routePoints, h3Res),
+			walkedEdgesRedLine: computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION),
+			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 		};
 		try {
 			saveRoute(newRoute);
@@ -697,10 +699,11 @@ const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 /**
  * Derive the sequence of unique H3 cells visited during an activity, including
  * interpolated cells for GPS gaps, and build:
- *  - a hexTileGeoJSON with one polygon per visited cell, colored by its level
- *    from the global Redux store.
+ *  - a hexTileGeoJSON with one polygon per visited cell (at `h3Resolution`, typically h10),
+ *    colored by its level from the global Redux store.
  *  - a hexWalkPathGeoJSON with LineString features for each actual transition
- *    between consecutive cells.
+ *    between consecutive cells at `RED_LINE_GRID_RESOLUTION` for a finer,
+ *    more accurate red walk-path line.
  */
 function buildActivityHexGeoJson(
 	routePoints: RoutePoint[],
@@ -710,39 +713,63 @@ function buildActivityHexGeoJson(
 	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
 	hexWalkPathGeoJson: { type: 'FeatureCollection'; features: object[] };
 } {
+	// h10 tile tracking
 	const visitedCells = new Set<string>();
-	const edges = new Set<string>();
 	let lastCell: string | null = null;
 
+	// red-line walk-path edge tracking
+	const edges = new Set<string>();
+	let lastRedLineCell: string | null = null;
+
 	for (const point of routePoints) {
+		// ── h10 tile display ──────────────────────────────────────────────────
 		try {
 			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
-			if (!cell) continue;
-			if (lastCell && cell !== lastCell) {
-				try {
-					const pathCells = gridPathCells(lastCell, cell);
-					if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
-						for (let i = 0; i < pathCells.length - 1; i++) {
-							const a = pathCells[i];
-							const b = pathCells[i + 1];
-							visitedCells.add(a);
-							visitedCells.add(b);
-							edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+			if (cell) {
+				if (lastCell && cell !== lastCell) {
+					try {
+						const pathCells = gridPathCells(lastCell, cell);
+						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
+							for (const cell of pathCells) visitedCells.add(cell);
 						}
+					} catch {
+						// Different icosahedron faces; just mark the two endpoints
 					}
-				} catch {
-					// Different icosahedron faces – just add direct edge
-					edges.add(lastCell < cell ? `${lastCell}:${cell}` : `${cell}:${lastCell}`);
 				}
+				visitedCells.add(cell);
+				lastCell = cell;
 			}
-			visitedCells.add(cell);
-			lastCell = cell;
+		} catch {
+			// Skip invalid GPS points
+		}
+
+		// ── red-line walk-path edges ───────────────────────────────────────────────
+		try {
+			const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
+			if (redLineCell) {
+				if (lastRedLineCell && redLineCell !== lastRedLineCell) {
+					try {
+						const pathCells = gridPathCells(lastRedLineCell, redLineCell);
+						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
+							for (let i = 0; i < pathCells.length - 1; i++) {
+								const a = pathCells[i];
+								const b = pathCells[i + 1];
+								edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+							}
+						}
+					} catch {
+						// Different icosahedron faces – add direct red-line edge
+						edges.add(lastRedLineCell < redLineCell ? `${lastRedLineCell}:${redLineCell}` : `${redLineCell}:${lastRedLineCell}`);
+					}
+				}
+				lastRedLineCell = redLineCell;
+			}
 		} catch {
 			// Skip invalid GPS points
 		}
 	}
 
-	// Build hex tile polygon features
+	// Build hex tile polygon features (h10)
 	const tileFeatures: object[] = [];
 	for (const cell of visitedCells) {
 		try {
@@ -759,7 +786,7 @@ function buildActivityHexGeoJson(
 		}
 	}
 
-	// Build walk path LineString features
+	// Build walk path LineString features (red-line resolution)
 	const pathFeatures: object[] = [];
 	for (const edge of edges) {
 		const colonIdx = edge.indexOf(':');
@@ -1063,7 +1090,15 @@ export default function ActivityDetailScreen() {
 						// Skip invalid cells
 					}
 				}
-				const edges = computeEdgesFromHexTiles(hexTiles);
+				// Build red-line walk-path edges via synthetic GPS points placed at
+				// red-line center-children, matching the accuracy of real GPS activities.
+				const syntheticPoints = synthesizeManualActivityRoutePoints(
+					hexTiles,
+					activity.startedAt,
+					activity.endedAt - activity.startedAt,
+					activity.distanceKm,
+				);
+				const edges = computeEdgesFromRoutePoints(syntheticPoints, RED_LINE_GRID_RESOLUTION);
 				const pathFeatures: object[] = [];
 				for (const edge of edges) {
 					const colonIdx = edge.indexOf(':');
@@ -1218,18 +1253,13 @@ export default function ActivityDetailScreen() {
 		// marker can still traverse the walked path.
 		let points: typeof activity.routePoints = activity.routePoints;
 		if (points.length < 2 && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 2 && isH3Available()) {
-			const tiles = activity.hexTilesOrdered!;
-			const start = activity.startedAt;
-			const end = activity.endedAt ?? start + (activity.stats.durationSeconds * 1000);
-			const step = tiles.length > 1 ? (end - start) / (tiles.length - 1) : 0;
-			points = tiles.flatMap((cell, i) => {
-				try {
-					const [lat, lng] = cellToLatLng(cell);
-					return [{ lat, lng, altitude: null, speed: null, timestamp: start + i * step }];
-				} catch {
-					return [];
-				}
-			});
+			const durationMs = (activity.endedAt ?? activity.startedAt + activity.stats.durationSeconds * 1000) - activity.startedAt;
+			points = synthesizeManualActivityRoutePoints(
+				activity.hexTilesOrdered!,
+				activity.startedAt,
+				durationMs,
+				activity.stats.distanceKm,
+			);
 		}
 
 		if (points.length < 2) {

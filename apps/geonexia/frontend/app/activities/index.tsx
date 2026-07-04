@@ -20,14 +20,15 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
-import { computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
-import { startRun, markVisited, markEnclosed, addWalkedEdges, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { computeEdgesFromHexTiles, computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
+import { startRun, markVisited, markEnclosed, addWalkedEdges, addWalkedEdgesRedLine, loadPersistedState, loadWalkedEdgesState, loadWalkedEdgesRedLineState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+import { findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -375,7 +376,7 @@ export default function ActivitiesScreen() {
 		}
 	}, [dispatch]);
 
-	const handleImport = useCallback((code: string) => {
+	const handleImport = useCallback(async (code: string) => {
 		let parsed: unknown;
 		try {
 			parsed = JSON.parse(code);
@@ -384,8 +385,27 @@ export default function ActivitiesScreen() {
 			return;
 		}
 
-		// Support both a single activity object and an array of activities.
-		const rawActivities: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+		// Support three formats:
+		//  1. New: { activities: [...], routes: [...] }
+		//  2. Old: [...] (array of activities)
+		//  3. Old: single activity object
+		let rawActivities: unknown[];
+		let exportedRoutes: SavedRoute[] = [];
+		if (
+			typeof parsed === 'object' &&
+			parsed !== null &&
+			!Array.isArray(parsed) &&
+			Array.isArray((parsed as Record<string, unknown>).activities)
+		) {
+			const wrapper = parsed as Record<string, unknown>;
+			rawActivities = wrapper.activities as unknown[];
+			if (Array.isArray(wrapper.routes)) {
+				exportedRoutes = wrapper.routes as SavedRoute[];
+			}
+		} else {
+			rawActivities = Array.isArray(parsed) ? parsed : [parsed];
+		}
+
 		const validActivities: SavedActivity[] = [];
 		for (const item of rawActivities) {
 			const activity = item as SavedActivity;
@@ -399,9 +419,70 @@ export default function ActivitiesScreen() {
 			}
 			validActivities.push(activity);
 		}
+
+		// Build a lookup map for exported route names so new routes inherit the
+		// original name instead of a generated date-based fallback.
+		const exportedRouteMap = new Map(exportedRoutes.map((r) => [r.id, r]));
+
+		// Load existing routes once so we can check for matches without
+		// re-reading from disk for every activity.
+		const existingRoutes = await loadRoutes();
+		let routeIdOffset = 0;
+
 		for (const activity of validActivities) {
-			saveActivity(activity);
-			applyImportedHexTiles(activity);
+			const hexTiles = activity.hexTilesOrdered ?? [];
+			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+			let routeId: string | null | undefined = activity.routeId;
+
+			if (hexTiles.length > 0 && isH3Available()) {
+				const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
+				if (match) {
+					// Link to the existing matching route.
+					routeId = match.route.id;
+					const updatedRoute: SavedRoute = {
+						...match.route,
+						activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
+					};
+					saveRoute(updatedRoute);
+					const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
+					if (idx >= 0) existingRoutes[idx] = updatedRoute;
+				} else {
+					// No matching route on this device — create one from the imported tiles.
+					// Prefer the exported route's name when available.
+					const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
+					const d = new Date(activity.startedAt);
+					const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+					const routePoints =
+						activity.routePoints.length > 0
+							? activity.routePoints
+							: synthesizeManualActivityRoutePoints(
+								hexTiles,
+								activity.startedAt,
+								(activity.endedAt - activity.startedAt),
+								activity.stats.distanceKm,
+							);
+					const newRoute: SavedRoute = {
+						id: String(Date.now() + routeIdOffset++),
+						name,
+						hexTiles,
+						h3Resolution: h3Res,
+						createdAt: activity.startedAt,
+						sportType: activity.sportType,
+						walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
+						walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
+						walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
+						activityIds: [activity.id],
+					};
+					saveRoute(newRoute);
+					existingRoutes.push(newRoute);
+					routeId = newRoute.id;
+				}
+			}
+
+			const activityToSave: SavedActivity =
+				routeId !== activity.routeId ? { ...activity, routeId } : activity;
+			saveActivity(activityToSave);
+			applyImportedHexTiles(activityToSave);
 		}
 		closeImportModal();
 		loadData();
@@ -415,7 +496,21 @@ export default function ActivitiesScreen() {
 			showAlert('Nothing to Export', 'There are no activities to export.');
 			return;
 		}
-		const json = JSON.stringify(allActivities, null, 2);
+		// Collect the routes referenced by the exported activities so the
+		// receiver knows route names and can re-use them on import.
+		const allRoutes = await loadRoutes();
+		const referencedRouteIds = new Set(
+			allActivities.map((a) => a.routeId).filter((id): id is string => typeof id === 'string'),
+		);
+		const exportedRoutes = allRoutes.filter((r) => referencedRouteIds.has(r.id));
+
+		// Ensure every activity carries its id (guard against legacy saves).
+		const exportedActivities = allActivities.map((a, idx) => ({
+			...a,
+			id: a.id ?? `${a.startedAt}-export-${idx}`,
+		}));
+
+		const json = JSON.stringify({ activities: exportedActivities, routes: exportedRoutes }, null, 2);
 		await Clipboard.setStringAsync(json);
 		const count = allActivities.length;
 		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
@@ -497,11 +592,12 @@ export default function ActivitiesScreen() {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const homeHexTile = store.getState().playerInformation.homeHexTile;
-						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const { records, walkedEdges, walkedEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
 						const routes = await loadRoutes();
 						applyRouteBenches(records, sorted, routes);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
+						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
 						// Fire-and-forget: fetch map features for enclosed-only tiles that
 						// have no cached feature data yet, so the pine tree billboard can be
@@ -595,9 +691,16 @@ export default function ActivitiesScreen() {
 												dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
 											}
 											// Record hex-to-hex transitions so walk path spokes are drawn
-											const edges = computeEdgesFromHexTiles(activity.hexTilesOrdered ?? selectedRoute.hexTiles);
+											const hexTilesOrdered = activity.hexTilesOrdered ?? selectedRoute.hexTiles;
+											const edges = computeEdgesFromHexTiles(hexTilesOrdered);
 											if (edges.length > 0) {
 												dispatch(addWalkedEdges(edges));
+											}
+											// Record red-line edges using the activity's already-computed
+											// h11 route points (synthesized in handleSave).
+											const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
+											if (edgesRedLine.length > 0) {
+												dispatch(addWalkedEdgesRedLine(edgesRedLine));
 											}
 										}
 										closeManualModal();
