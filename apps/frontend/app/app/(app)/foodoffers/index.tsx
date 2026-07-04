@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { SafeAreaView, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
@@ -39,6 +39,7 @@ import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
+import useDebugMode from '@/hooks/useDebugMode';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -71,11 +72,17 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	useAppForegroundUpdateCheckModal();
 	useNotifications();
 
+	const debugMode = useDebugMode();
 	const { checkAndRequestRatingOnFocus } = useAppRatingScore();
+	const [isFocused, setIsFocused] = useState(false);
 
 	useFocusEffect(
 		useCallback(() => {
+			setIsFocused(true);
 			checkAndRequestRatingOnFocus();
+			return () => {
+				setIsFocused(false);
+			};
 		}, [checkAndRequestRatingOnFocus])
 	);
 
@@ -156,6 +163,11 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				openUtilizationModal={openUtilizationModal}
 			/>
 			<View style={styles.contentWrapper}>
+				{debugMode && (
+					<Text style={{ textAlign: 'center', padding: 4, color: theme.screen.text, fontSize: 12 }}>
+						{isFocused ? 'Screen im Focus' : 'Screen nicht im Focus'}
+					</Text>
+				)}
 				{selectedCanteen && (
 					<FoodOffersScrollList
 						canteenId={selectedCanteen.id}

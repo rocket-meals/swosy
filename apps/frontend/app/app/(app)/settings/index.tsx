@@ -12,7 +12,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -83,14 +83,8 @@ const Settings = () => {
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
-        const { score: appRatingScore, persistScore: setAppRatingScore, refreshScore: refreshAppRatingScore, showDebugRatingModal } = useAppRatingScore();
+        const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal } = useAppRatingScore();
 
-        // Refresh the app rating score from AsyncStorage when settings screen gains focus
-        useFocusEffect(
-                useCallback(() => {
-                        refreshAppRatingScore().catch(() => {});
-                }, [refreshAppRatingScore])
-        );
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -755,6 +749,7 @@ const Settings = () => {
 							groupPosition="middle"
 						/>
 						<SettingsListEditable
+							key={String(appRatingScore)}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="star-outline" size={24} color={theme.screen.icon} />}
 							label="App Rating Score"
