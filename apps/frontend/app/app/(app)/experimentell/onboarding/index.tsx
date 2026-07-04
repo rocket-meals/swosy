@@ -98,9 +98,9 @@ const OnboardingScreen = () => {
 		const fetchUserCount = async () => {
 			try {
 				const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
-				const result: any = await usersHelper.aggregateItems({
+				const result: { count: string | number }[] = await usersHelper.aggregateItems({
 					aggregate: { count: '*' },
-				});
+				}) as { count: string | number }[];
 				const count = result?.[0]?.count;
 				setUserCount(typeof count === 'number' ? count : parseInt(count, 10) || null);
 			} catch (error) {
