@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-04T12:03:22.639Z",
+  "report_timestamp": "2026-07-04T23:21:00.973Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.6236600306278715,
-          "amountSavedValuesForKeys": 4241,
+          "average": 1.6243305279265494,
+          "amountSavedValuesForKeys": 4246,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
@@ -22,24 +22,24 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 99,
-          "average": 1.639984532095901,
-          "amountSavedValuesForKeys": 4241,
+          "average": 1.6406491499227203,
+          "amountSavedValuesForKeys": 4246,
           "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4453,
-        "detection_time_ms": 96,
+        "ast_generation_time_ms": 4232,
+        "detection_time_ms": 86,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1018-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 126.84,
-          "os_memory_free": 14921318400,
+          "os_uptime": 109.43,
+          "os_memory_free": 14913556480,
           "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "b0381cf2429d3a3f4b9927abb3beb55893fdc84e",
-    "project_commit_hash": "b0381cf2429d3a3f4b9927abb3beb55893fdc84e",
+    "project_version": "d268057868e8b52801e3226e650cf387ceaa65cb",
+    "project_commit_hash": "d268057868e8b52801e3226e650cf387ceaa65cb",
     "project_tag": null,
-    "project_commit_date": "1783166497",
+    "project_commit_date": "1783207161",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 525,
     "number_of_classes_or_interfaces": 1081,
     "number_of_methods": 1411,
-    "number_of_data_fields": 4241,
+    "number_of_data_fields": 4246,
     "number_of_method_parameters": 1576
   },
   "detector": {
@@ -3473,9 +3473,9 @@
             }
           },
           "position": {
-            "startLine": 1815,
+            "startLine": 1835,
             "startColumn": 2,
-            "endLine": 1815,
+            "endLine": 1835,
             "endColumn": 25
           }
         },
@@ -3498,9 +3498,9 @@
             }
           },
           "position": {
-            "startLine": 1816,
+            "startLine": 1836,
             "startColumn": 2,
-            "endLine": 1816,
+            "endLine": 1836,
             "endColumn": 22
           }
         },
@@ -3523,9 +3523,9 @@
             }
           },
           "position": {
-            "startLine": 1817,
+            "startLine": 1837,
             "startColumn": 2,
-            "endLine": 1817,
+            "endLine": 1837,
             "endColumn": 23
           }
         },
@@ -3548,9 +3548,9 @@
             }
           },
           "position": {
-            "startLine": 1818,
+            "startLine": 1838,
             "startColumn": 2,
-            "endLine": 1818,
+            "endLine": 1838,
             "endColumn": 26
           }
         },
@@ -3573,9 +3573,9 @@
             }
           },
           "position": {
-            "startLine": 1819,
+            "startLine": 1839,
             "startColumn": 2,
-            "endLine": 1819,
+            "endLine": 1839,
             "endColumn": 25
           }
         },
@@ -3598,9 +3598,9 @@
             }
           },
           "position": {
-            "startLine": 1820,
+            "startLine": 1840,
             "startColumn": 2,
-            "endLine": 1820,
+            "endLine": 1840,
             "endColumn": 26
           }
         },
@@ -3623,9 +3623,9 @@
             }
           },
           "position": {
-            "startLine": 1821,
+            "startLine": 1841,
             "startColumn": 2,
-            "endLine": 1821,
+            "endLine": 1841,
             "endColumn": 26
           }
         },
@@ -3648,9 +3648,9 @@
             }
           },
           "position": {
-            "startLine": 1822,
+            "startLine": 1842,
             "startColumn": 2,
-            "endLine": 1822,
+            "endLine": 1842,
             "endColumn": 25
           }
         },
@@ -3673,9 +3673,9 @@
             }
           },
           "position": {
-            "startLine": 1823,
+            "startLine": 1843,
             "startColumn": 2,
-            "endLine": 1823,
+            "endLine": 1843,
             "endColumn": 25
           }
         },
@@ -3698,9 +3698,9 @@
             }
           },
           "position": {
-            "startLine": 1824,
+            "startLine": 1844,
             "startColumn": 2,
-            "endLine": 1824,
+            "endLine": 1844,
             "endColumn": 25
           }
         },
@@ -3723,9 +3723,9 @@
             }
           },
           "position": {
-            "startLine": 1825,
+            "startLine": 1845,
             "startColumn": 2,
-            "endLine": 1825,
+            "endLine": 1845,
             "endColumn": 16
           }
         }
@@ -3770,9 +3770,9 @@
             }
           },
           "position": {
-            "startLine": 1816,
+            "startLine": 1836,
             "startColumn": 2,
-            "endLine": 1816,
+            "endLine": 1836,
             "endColumn": 22
           }
         },
@@ -3795,9 +3795,9 @@
             }
           },
           "position": {
-            "startLine": 1817,
+            "startLine": 1837,
             "startColumn": 2,
-            "endLine": 1817,
+            "endLine": 1837,
             "endColumn": 23
           }
         },
@@ -3820,9 +3820,9 @@
             }
           },
           "position": {
-            "startLine": 1818,
+            "startLine": 1838,
             "startColumn": 2,
-            "endLine": 1818,
+            "endLine": 1838,
             "endColumn": 26
           }
         },
@@ -3845,9 +3845,9 @@
             }
           },
           "position": {
-            "startLine": 1819,
+            "startLine": 1839,
             "startColumn": 2,
-            "endLine": 1819,
+            "endLine": 1839,
             "endColumn": 25
           }
         },
@@ -3870,9 +3870,9 @@
             }
           },
           "position": {
-            "startLine": 1820,
+            "startLine": 1840,
             "startColumn": 2,
-            "endLine": 1820,
+            "endLine": 1840,
             "endColumn": 26
           }
         },
@@ -3895,9 +3895,9 @@
             }
           },
           "position": {
-            "startLine": 1821,
+            "startLine": 1841,
             "startColumn": 2,
-            "endLine": 1821,
+            "endLine": 1841,
             "endColumn": 26
           }
         },
@@ -3920,9 +3920,9 @@
             }
           },
           "position": {
-            "startLine": 1822,
+            "startLine": 1842,
             "startColumn": 2,
-            "endLine": 1822,
+            "endLine": 1842,
             "endColumn": 25
           }
         },
@@ -3945,9 +3945,9 @@
             }
           },
           "position": {
-            "startLine": 1823,
+            "startLine": 1843,
             "startColumn": 2,
-            "endLine": 1823,
+            "endLine": 1843,
             "endColumn": 25
           }
         },
@@ -3970,9 +3970,9 @@
             }
           },
           "position": {
-            "startLine": 1824,
+            "startLine": 1844,
             "startColumn": 2,
-            "endLine": 1824,
+            "endLine": 1844,
             "endColumn": 25
           }
         },
@@ -3995,9 +3995,9 @@
             }
           },
           "position": {
-            "startLine": 1825,
+            "startLine": 1845,
             "startColumn": 2,
-            "endLine": 1825,
+            "endLine": 1845,
             "endColumn": 16
           }
         }
@@ -6250,9 +6250,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3ResolutionwalkedEdgesRedLinewalkedEdgesRedLineResolution": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3ResolutionwalkedEdgesRedLinewalkedEdgesRedLineResolution",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
@@ -6339,6 +6339,56 @@
             "startColumn": 2,
             "endLine": 112,
             "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLine": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLine",
+          "name": "walkedEdgesRedLine",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLine",
+            "name": "walkedEdgesRedLine",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 51,
+              "startColumn": 2,
+              "endLine": 51,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 185,
+            "startColumn": 2,
+            "endLine": 185,
+            "endColumn": 32
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLineResolution": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLineResolution",
+          "name": "walkedEdgesRedLineResolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLineResolution",
+            "name": "walkedEdgesRedLineResolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 2,
+              "endLine": 58,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 192,
+            "startColumn": 2,
+            "endLine": 192,
+            "endColumn": 40
           }
         }
       },
@@ -7182,9 +7232,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1816,
+              "startLine": 1836,
               "startColumn": 2,
-              "endLine": 1816,
+              "endLine": 1836,
               "endColumn": 22
             }
           },
@@ -7207,9 +7257,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 1825,
+              "startLine": 1845,
               "startColumn": 2,
-              "endLine": 1825,
+              "endLine": 1845,
               "endColumn": 16
             }
           },
@@ -7232,9 +7282,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1817,
+              "startLine": 1837,
               "startColumn": 2,
-              "endLine": 1817,
+              "endLine": 1837,
               "endColumn": 23
             }
           },
@@ -7257,9 +7307,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1818,
+              "startLine": 1838,
               "startColumn": 2,
-              "endLine": 1818,
+              "endLine": 1838,
               "endColumn": 26
             }
           },
@@ -7282,9 +7332,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1819,
+              "startLine": 1839,
               "startColumn": 2,
-              "endLine": 1819,
+              "endLine": 1839,
               "endColumn": 25
             }
           },
@@ -7307,9 +7357,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1820,
+              "startLine": 1840,
               "startColumn": 2,
-              "endLine": 1820,
+              "endLine": 1840,
               "endColumn": 26
             }
           },
@@ -7332,9 +7382,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1821,
+              "startLine": 1841,
               "startColumn": 2,
-              "endLine": 1821,
+              "endLine": 1841,
               "endColumn": 26
             }
           },
@@ -7357,9 +7407,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1822,
+              "startLine": 1842,
               "startColumn": 2,
-              "endLine": 1822,
+              "endLine": 1842,
               "endColumn": 25
             }
           },
@@ -7382,9 +7432,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1823,
+              "startLine": 1843,
               "startColumn": 2,
-              "endLine": 1823,
+              "endLine": 1843,
               "endColumn": 25
             }
           },
@@ -7407,9 +7457,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1824,
+              "startLine": 1844,
               "startColumn": 2,
-              "endLine": 1824,
+              "endLine": 1844,
               "endColumn": 25
             }
           },
@@ -7726,9 +7776,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1815,
+              "startLine": 1835,
               "startColumn": 2,
-              "endLine": 1815,
+              "endLine": 1835,
               "endColumn": 25
             }
           },
@@ -7751,9 +7801,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1816,
+              "startLine": 1836,
               "startColumn": 2,
-              "endLine": 1816,
+              "endLine": 1836,
               "endColumn": 22
             }
           },
@@ -7776,9 +7826,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1817,
+              "startLine": 1837,
               "startColumn": 2,
-              "endLine": 1817,
+              "endLine": 1837,
               "endColumn": 23
             }
           },
@@ -7801,9 +7851,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1818,
+              "startLine": 1838,
               "startColumn": 2,
-              "endLine": 1818,
+              "endLine": 1838,
               "endColumn": 26
             }
           },
@@ -7826,9 +7876,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1819,
+              "startLine": 1839,
               "startColumn": 2,
-              "endLine": 1819,
+              "endLine": 1839,
               "endColumn": 25
             }
           },
@@ -7851,9 +7901,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1820,
+              "startLine": 1840,
               "startColumn": 2,
-              "endLine": 1820,
+              "endLine": 1840,
               "endColumn": 26
             }
           },
@@ -7876,9 +7926,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1821,
+              "startLine": 1841,
               "startColumn": 2,
-              "endLine": 1821,
+              "endLine": 1841,
               "endColumn": 26
             }
           },
@@ -7901,9 +7951,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1822,
+              "startLine": 1842,
               "startColumn": 2,
-              "endLine": 1822,
+              "endLine": 1842,
               "endColumn": 25
             }
           },
@@ -7926,9 +7976,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1823,
+              "startLine": 1843,
               "startColumn": 2,
-              "endLine": 1823,
+              "endLine": 1843,
               "endColumn": 25
             }
           },
@@ -7951,9 +8001,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1824,
+              "startLine": 1844,
               "startColumn": 2,
-              "endLine": 1824,
+              "endLine": 1844,
               "endColumn": 25
             }
           },
@@ -7976,9 +8026,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 1825,
+              "startLine": 1845,
               "startColumn": 2,
-              "endLine": 1825,
+              "endLine": 1845,
               "endColumn": 16
             }
           },
@@ -8267,9 +8317,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportTypewalkedEdgesRedLinewalkedEdgesRedLineResolution": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportTypewalkedEdgesRedLinewalkedEdgesRedLineResolution",
       "probability": 1,
       "from_file_path": "apps/geonexia/frontend/helpers/RouteStorage.ts",
       "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute",
@@ -8356,6 +8406,56 @@
             "startColumn": 2,
             "endLine": 16,
             "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLine": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLine",
+          "name": "walkedEdgesRedLine",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLine",
+            "name": "walkedEdgesRedLine",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 185,
+              "startColumn": 2,
+              "endLine": 185,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 51,
+            "startColumn": 2,
+            "endLine": 51,
+            "endColumn": 32
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLineResolution": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/walkedEdgesRedLineResolution",
+          "name": "walkedEdgesRedLineResolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/walkedEdgesRedLineResolution",
+            "name": "walkedEdgesRedLineResolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 192,
+              "startColumn": 2,
+              "endLine": 192,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 2,
+            "endLine": 58,
+            "endColumn": 40
           }
         }
       },
