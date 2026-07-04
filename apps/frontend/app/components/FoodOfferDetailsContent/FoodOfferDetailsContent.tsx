@@ -8,7 +8,7 @@ import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
 import Labels from '@/components/Labels';
 import { getImageUrl, getpreviousFeedback } from '@/constants/HelperFunctions';
-import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -209,7 +209,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             return;
         }
         const newRating = previousFeedback?.rating === rating ? null : rating;
-        if (newRating === 5) {
+        if (newRating === RatingHelper.MAX_RATING) {
             addPointsForFoodRating5Stars();
         }
         handleFoodRating({
