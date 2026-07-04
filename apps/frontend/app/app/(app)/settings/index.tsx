@@ -12,7 +12,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -83,7 +83,14 @@ const Settings = () => {
         const { openCampusSortingModal } = useCampusSortingModal();
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
         const { openCanteenVisitsVisibilityModal } = useCanteenVisitsVisibilityModal();
-        const { score: appRatingScore, persistScore: setAppRatingScore } = useAppRatingScore();
+        const { score: appRatingScore, persistScore: setAppRatingScore, refreshScore: refreshAppRatingScore, showDebugRatingModal } = useAppRatingScore();
+
+        // Refresh the app rating score from AsyncStorage when settings screen gains focus
+        useFocusEffect(
+                useCallback(() => {
+                        refreshAppRatingScore();
+                }, [refreshAppRatingScore])
+        );
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -753,6 +760,14 @@ const Settings = () => {
 							label="App Rating Score"
 							value={String(appRatingScore)}
 							handleFunction={openAppRatingScoreSheet}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="star-shooting-outline" size={24} color={theme.screen.icon} />}
+							label="Open App Rating Modal"
+							value=""
+							handleFunction={showDebugRatingModal}
 							groupPosition="bottom"
 						/>
 					</View>
@@ -796,7 +811,7 @@ const Settings = () => {
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
-		appRatingScore, openAppRatingScoreSheet,
+		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal,
 	]);
 
 	return (

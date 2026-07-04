@@ -112,11 +112,26 @@ const useAppRatingScore = () => {
 	}, [show, theme.screen.text, translate]);
 
 	/**
+	 * Re-reads the score from AsyncStorage and updates local state.
+	 * Useful when other hook instances may have changed the score.
+	 */
+	const refreshScore = useCallback(async () => {
+		const value = await getValue(ASYNC_STORAGE_KEY_APP_RATING_SCORE);
+		const freshScore = typeof value === 'number' ? value : 0;
+		scoreRef.current = freshScore;
+		setScore(freshScore);
+		return freshScore;
+	}, []);
+
+	/**
 	 * Called when the foodoffer screen gains focus.
 	 * If score >= threshold, attempt to show rating.
+	 * Always reads from AsyncStorage to get the latest cross-instance score.
 	 */
 	const checkAndRequestRatingOnFocus = useCallback(async () => {
-		if (scoreRef.current < SCORE_THRESHOLD) return;
+		// Read latest score from AsyncStorage (other hook instances may have changed it)
+		const freshScore = await refreshScore();
+		if (freshScore < SCORE_THRESHOLD) return;
 
 		if (Platform.OS === 'web') {
 			// On web, native rating not available
@@ -141,7 +156,7 @@ const useAppRatingScore = () => {
 		if (debugMode) {
 			showDebugRatingModal();
 		}
-	}, [debugMode, resetScore, showDebugRatingModal]);
+	}, [debugMode, refreshScore, resetScore, showDebugRatingModal]);
 
 	const addPointsForDetailsOpen = useCallback(() => {
 		addPoints(SCORE_FOODOFFER_DETAILS_OPEN);
@@ -158,7 +173,9 @@ const useAppRatingScore = () => {
 	return {
 		score,
 		persistScore,
+		refreshScore,
 		checkAndRequestRatingOnFocus,
+		showDebugRatingModal,
 		addPointsForDetailsOpen,
 		addPointsForTabSwitch,
 		addPointsForBalanceRead,
