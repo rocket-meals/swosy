@@ -119,8 +119,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L88
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/activities/index.tsx:184
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L184
+  apps/geonexia/frontend/app/activities/index.tsx:185
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L185
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/geonexia/frontend/app/routes/[id].tsx:171
