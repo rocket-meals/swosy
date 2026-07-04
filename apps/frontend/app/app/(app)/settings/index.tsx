@@ -88,7 +88,7 @@ const Settings = () => {
         // Refresh the app rating score from AsyncStorage when settings screen gains focus
         useFocusEffect(
                 useCallback(() => {
-                        refreshAppRatingScore();
+                        refreshAppRatingScore().catch(() => {});
                 }, [refreshAppRatingScore])
         );
 
