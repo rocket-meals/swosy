@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -81,6 +81,16 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			checkAndRequestRatingOnFocus();
 		}, [checkAndRequestRatingOnFocus])
 	);
+
+	// Also trigger rating check when modal closes
+	const prevModalOpenRef = useRef(modalDebug.contentSet);
+	useEffect(() => {
+		const wasOpen = prevModalOpenRef.current;
+		prevModalOpenRef.current = modalDebug.contentSet;
+		if (wasOpen && !modalDebug.contentSet) {
+			checkAndRequestRatingOnFocus();
+		}
+	}, [modalDebug.contentSet, checkAndRequestRatingOnFocus]);
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();

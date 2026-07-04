@@ -98,17 +98,21 @@ const useAppRatingScore = () => {
 	}, [show, theme.screen.text, translate]);
 
 	/**
-	 * Called when the foodoffer screen gains focus.
+	 * Called when the foodoffer screen gains focus or a modal closes.
 	 * If score >= threshold, attempt to show rating.
+	 * In debug mode, always shows the debug rating modal.
 	 */
 	const checkAndRequestRatingOnFocus = useCallback(async () => {
 		const currentScore = scoreRef.current;
 		if (currentScore < SCORE_THRESHOLD) return;
 
+		if (debugMode) {
+			resetScore();
+			showDebugRatingModal();
+			return;
+		}
+
 		if (Platform.OS === 'web') {
-			if (debugMode) {
-				showDebugRatingModal();
-			}
 			return;
 		}
 
@@ -121,10 +125,6 @@ const useAppRatingScore = () => {
 			}
 		} catch (error) {
 			console.log('useAppRatingScore: error requesting review', error);
-		}
-
-		if (debugMode) {
-			showDebugRatingModal();
 		}
 	}, [debugMode, resetScore, showDebugRatingModal]);
 
