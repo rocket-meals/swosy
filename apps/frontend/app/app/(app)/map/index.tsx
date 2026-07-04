@@ -724,7 +724,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	// Award points when map screen is opened
 	useEffect(() => {
 		addPointsForMapOpen();
-	}, []);
+	}, [addPointsForMapOpen]);
 
 	// ── Game mode (Spiel Modus) state ────────────────────────────────────────────
 	const [vehicleHeading, setVehicleHeading] = useState(0);
