@@ -140,10 +140,10 @@ const OnboardingScreen = () => {
 		setCurrentStepIndex(index);
 		// Lazy-mount the target step (and the one after it for smooth preloading)
 		setMountedSteps((prev) => {
-			const next = new Set(prev);
-			next.add(index);
-			if (index + 1 < STEPS.length) next.add(index + 1);
-			return next;
+			const updatedSteps = new Set(prev);
+			updatedSteps.add(index);
+			if (index + 1 < STEPS.length) updatedSteps.add(index + 1);
+			return updatedSteps;
 		});
 		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
 	}, [screenWidth]);
