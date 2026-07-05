@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
@@ -21,8 +21,9 @@ import { CollectionHelper } from '@/helper/collectionHelper';
 import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 
-const STEPS = ['canteen', 'pricegroup', 'preferences', 'complete'] as const;
+const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
 
 const OnboardingScreen = () => {
 	useSetPageTitle(TranslationKeys.onboarding);
@@ -32,18 +33,26 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement } = useAppSelector((state) => state.authReducer);
+	const { isManagement, profile, user } = useAppSelector((state) => state.authReducer);
+	const selectedCanteen = useSelectedCanteen();
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [userCount, setUserCount] = useState<number | null>(null);
+	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
 	const scrollViewRef = useRef<ScrollView>(null);
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
+
+	const isReturningUser = useMemo(() => {
+		const dateCreated = (user as any)?.date_created;
+		if (!dateCreated) return false;
+		return Date.now() - new Date(dateCreated).getTime() > 24 * 60 * 60 * 1000;
+	}, [(user as any)?.date_created]);
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
@@ -62,6 +71,7 @@ const OnboardingScreen = () => {
 
 	useEffect(() => {
 		const loadCanteens = async () => {
+			setIsLoadingCanteens(true);
 			try {
 				const buildingsData = (await buildingsHelper.fetchBuildings({})) as DatabaseTypes.Buildings[];
 				const buildings = buildingsData || [];
@@ -91,11 +101,35 @@ const OnboardingScreen = () => {
 				dispatch({ type: SET_CANTEENS, payload: updatedCanteens });
 			} catch (error) {
 				console.error('Error loading canteens for onboarding:', error);
+			} finally {
+				setIsLoadingCanteens(false);
 			}
 		};
 
 		loadCanteens();
 	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
+
+	// Auto-select canteen from profile once canteens are loaded
+	useEffect(() => {
+		if (isLoadingCanteens || selectedCanteen || canteens.length === 0) return;
+		const profileCanteenId = profile?.canteen
+			? typeof profile.canteen === 'string'
+				? profile.canteen
+				: (profile.canteen as DatabaseTypes.Canteens)?.id
+			: null;
+		if (!profileCanteenId) return;
+		const canteen = canteens.find((c) => String(c.id) === String(profileCanteenId));
+		if (canteen) {
+			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
+		}
+	}, [profile?.canteen, canteens, selectedCanteen, isLoadingCanteens, dispatch]);
+
+	// Navigate to food offers if a canteen is already selected after loading
+	useEffect(() => {
+		if (!isLoadingCanteens && selectedCanteen) {
+			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+		}
+	}, [selectedCanteen, isLoadingCanteens]);
 
 	const goToStep = useCallback((index: number) => {
 		setCurrentStepIndex(index);
@@ -177,6 +211,41 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const renderWelcomeStep = () => (
+		<View style={[styles.stepContent, { width: screenWidth }]}>
+			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+				<MaterialCommunityIcons
+					name={isReturningUser ? 'hand-wave' : 'check-decagram'}
+					size={80}
+					color={primaryColor}
+				/>
+				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+					{isReturningUser
+						? translate(TranslationKeys.onboarding_welcome_back)
+						: translate(TranslationKeys.onboarding_welcome)}
+				</Text>
+				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+					{isReturningUser
+						? translate(TranslationKeys.onboarding_loading_profile)
+						: translate(TranslationKeys.onboarding_welcome_description)}
+				</Text>
+				{isLoadingCanteens && <ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />}
+				{userCount !== null && (
+					<View style={styles.userCountContainer}>
+						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
+						</Text>
+						<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
+							<Text style={[styles.userCountNumber, { color: contrastColor }]}>
+								{userCount.toLocaleString()}
+							</Text>
+						</View>
+					</View>
+				)}
+			</ScrollView>
+		</View>
+	);
+
 	const renderCanteenStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContentNoHPad}>
@@ -235,42 +304,6 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
-	const renderCompleteStep = () => (
-		<View style={[styles.stepContent, { width: screenWidth }]}>
-			<ScrollView contentContainerStyle={styles.stepScrollContent}>
-				<MaterialCommunityIcons name="check-decagram" size={80} color={primaryColor} />
-				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.onboarding_complete)}
-				</Text>
-				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-					{translate(TranslationKeys.onboarding_complete_description)}
-				</Text>
-				{userCount !== null && (
-					<View style={styles.userCountContainer}>
-						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-							{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
-						</Text>
-						<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
-							<Text style={[styles.userCountNumber, { color: contrastColor }]}>
-								{userCount.toLocaleString()}
-							</Text>
-						</View>
-					</View>
-				)}
-				<TouchableOpacity
-					onPress={handleStart}
-					style={[styles.startButton, { backgroundColor: primaryColor }]}
-					activeOpacity={0.8}
-				>
-					<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
-					<Text style={[styles.startButtonText, { color: contrastColor }]}>
-						{translate(TranslationKeys.onboarding_start)}
-					</Text>
-				</TouchableOpacity>
-			</ScrollView>
-		</View>
-	);
-
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView
@@ -282,10 +315,10 @@ const OnboardingScreen = () => {
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
 			>
+				{renderWelcomeStep()}
 				{renderCanteenStep()}
 				{renderPriceGroupStep()}
 				{renderPreferencesStep()}
-				{renderCompleteStep()}
 			</ScrollView>
 			{renderStepIndicator()}
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
@@ -313,7 +346,16 @@ const OnboardingScreen = () => {
 						<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
 					</TouchableOpacity>
 				) : (
-					<View style={styles.navButtonPrimary} />
+					<TouchableOpacity
+						onPress={handleStart}
+						style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+						activeOpacity={0.8}
+					>
+						<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
+						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+							{translate(TranslationKeys.onboarding_start)}
+						</Text>
+					</TouchableOpacity>
 				)}
 			</View>
 		</SafeAreaView>
@@ -388,19 +430,6 @@ const styles = StyleSheet.create({
 	lottieContainer: {
 		width: 180,
 		height: 180,
-	},
-	startButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 12,
-		paddingHorizontal: 32,
-		paddingVertical: 16,
-		borderRadius: 32,
-		marginTop: 24,
-	},
-	startButtonText: {
-		fontSize: 20,
-		fontFamily: 'Poppins_700Bold',
 	},
 	userCountContainer: {
 		alignItems: 'center',

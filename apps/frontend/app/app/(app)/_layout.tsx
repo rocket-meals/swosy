@@ -692,6 +692,13 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/onboarding/index"
+					options={{
+						headerShown: false,
+						title: translate(TranslationKeys.onboarding),
+					}}
+				/>
+				<Drawer.Screen
 					name="map/index"
 					options={{
 						headerShown: false,
