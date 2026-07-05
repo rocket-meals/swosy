@@ -123,12 +123,15 @@ const OnboardingScreen = () => {
 	}, [isFirstStep, currentStepIndex, goToStep]);
 
 	const handleSelectCanteen = useCallback((canteen: DatabaseTypes.Canteens) => {
-		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		const canteenStepIndex = STEPS.indexOf('canteen');
-		if (canteenStepIndex < STEPS.length - 1) {
-			setTimeout(() => goToStep(canteenStepIndex + 1), 300);
+		if (selectedCanteen && String(selectedCanteen.id) === String(canteen.id)) {
+			if (canteenStepIndex < STEPS.length - 1) {
+				goToStep(canteenStepIndex + 1);
+			}
+		} else {
+			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		}
-	}, [dispatch, goToStep]);
+	}, [dispatch, goToStep, selectedCanteen]);
 
 	const handleSelectPriceGroup = useCallback(() => {
 		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
