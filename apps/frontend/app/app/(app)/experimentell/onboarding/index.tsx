@@ -28,7 +28,7 @@ const OnboardingScreen = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { primaryColor, selectedTheme: mode, serverInfo } = useAppSelector((state) => state.settings);
-	const { canteens, selectedCanteen } = useAppSelector((state) => state.canteenReducer);
+	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
 	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
@@ -123,20 +123,17 @@ const OnboardingScreen = () => {
 	}, [isFirstStep, currentStepIndex, goToStep]);
 
 	const handleSelectCanteen = useCallback((canteen: DatabaseTypes.Canteens) => {
+		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		const canteenStepIndex = STEPS.indexOf('canteen');
-		if (selectedCanteen && String(selectedCanteen.id) === String(canteen.id)) {
-			if (canteenStepIndex < STEPS.length - 1) {
-				goToStep(canteenStepIndex + 1);
-			}
-		} else {
-			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
+		if (canteenStepIndex < STEPS.length - 1) {
+			goToStep(canteenStepIndex + 1);
 		}
-	}, [dispatch, goToStep, selectedCanteen]);
+	}, [dispatch, goToStep]);
 
 	const handleSelectPriceGroup = useCallback(() => {
 		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
 		if (priceGroupStepIndex < STEPS.length - 1) {
-			setTimeout(() => goToStep(priceGroupStepIndex + 1), 300);
+			goToStep(priceGroupStepIndex + 1);
 		}
 	}, [goToStep]);
 
