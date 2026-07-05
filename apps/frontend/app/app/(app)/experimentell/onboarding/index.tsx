@@ -49,10 +49,10 @@ const OnboardingScreen = () => {
 	const isLastStep = currentStepIndex === STEPS.length - 1;
 
 	const isReturningUser = useMemo(() => {
-		const dateCreated = (user as any)?.date_created;
+		const dateCreated = (user as { date_created?: string | null })?.date_created;
 		if (!dateCreated) return false;
 		return Date.now() - new Date(dateCreated).getTime() > 24 * 60 * 60 * 1000;
-	}, [(user as any)?.date_created]);
+	}, [(user as { date_created?: string | null })?.date_created]);
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
@@ -112,11 +112,14 @@ const OnboardingScreen = () => {
 	// Auto-select canteen from profile once canteens are loaded
 	useEffect(() => {
 		if (isLoadingCanteens || selectedCanteen || canteens.length === 0) return;
-		const profileCanteenId = profile?.canteen
-			? typeof profile.canteen === 'string'
-				? profile.canteen
-				: (profile.canteen as DatabaseTypes.Canteens)?.id
-			: null;
+		let profileCanteenId: string | null = null;
+		if (profile?.canteen) {
+			if (typeof profile.canteen === 'string') {
+				profileCanteenId = profile.canteen;
+			} else {
+				profileCanteenId = (profile.canteen as DatabaseTypes.Canteens)?.id ?? null;
+			}
+		}
 		if (!profileCanteenId) return;
 		const canteen = canteens.find((c) => String(c.id) === String(profileCanteenId));
 		if (canteen) {
