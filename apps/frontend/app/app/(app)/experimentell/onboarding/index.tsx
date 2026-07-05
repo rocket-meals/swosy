@@ -41,6 +41,8 @@ const OnboardingScreen = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [userCount, setUserCount] = useState<number | null>(null);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
+	// Track which steps have been mounted for lazy loading
+	const [mountedSteps, setMountedSteps] = useState<Set<number>>(new Set([0]));
 	const scrollViewRef = useRef<ScrollView>(null);
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
@@ -127,15 +129,22 @@ const OnboardingScreen = () => {
 		}
 	}, [profile?.canteen, canteens, selectedCanteen, isLoadingCanteens, dispatch]);
 
-	// Navigate to food offers if a canteen is already selected after loading
+	// Navigate to food offers if a canteen is already selected after loading (only from welcome step)
 	useEffect(() => {
-		if (!isLoadingCanteens && selectedCanteen) {
+		if (!isLoadingCanteens && selectedCanteen && currentStepIndex === 0) {
 			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 		}
-	}, [selectedCanteen, isLoadingCanteens]);
+	}, [selectedCanteen, isLoadingCanteens, currentStepIndex]);
 
 	const goToStep = useCallback((index: number) => {
 		setCurrentStepIndex(index);
+		// Lazy-mount the target step (and the one after it for smooth preloading)
+		setMountedSteps((prev) => {
+			const next = new Set(prev);
+			next.add(index);
+			if (index + 1 < STEPS.length) next.add(index + 1);
+			return next;
+		});
 		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
 	}, [screenWidth]);
 
@@ -318,10 +327,10 @@ const OnboardingScreen = () => {
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
 			>
-				{renderWelcomeStep()}
-				{renderCanteenStep()}
-				{renderPriceGroupStep()}
-				{renderPreferencesStep()}
+				{mountedSteps.has(0) ? renderWelcomeStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+				{mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+				{mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+				{mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
 			</ScrollView>
 			{renderStepIndicator()}
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
