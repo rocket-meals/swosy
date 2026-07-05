@@ -655,4 +655,6 @@ export enum TranslationKeys {
 	food_Plan_Day = 'foodPlanDay',
 	Food_Plan_List = 'FoodPlan:List',
 	debugErrors = 'debugErrors',
+	more_options = 'more_options',
+	further_settings = 'further_settings',
 }

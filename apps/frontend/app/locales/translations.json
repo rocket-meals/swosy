@@ -6346,5 +6346,25 @@
 		"ru": "Подождите, мы загружаем ваш профиль...",
 		"tr": "Bir moment, profiliniz yükleniyor...",
 		"zh": "请稍等，我们正在加载您的个人资料..."
+	},
+	"more_options": {
+		"de": "Weitere Optionen",
+		"en": "More Options",
+		"ar": "المزيد من الخيارات",
+		"es": "Más opciones",
+		"fr": "Plus d'options",
+		"ru": "Дополнительные параметры",
+		"tr": "Daha fazla seçenek",
+		"zh": "更多选项"
+	},
+	"further_settings": {
+		"de": "Weitere Einstellungen",
+		"en": "Further Settings",
+		"ar": "إعدادات إضافية",
+		"es": "Más configuraciones",
+		"fr": "Paramètres supplémentaires",
+		"ru": "Дополнительные настройки",
+		"tr": "Daha fazla ayar",
+		"zh": "更多设置"
 	}
 }
