@@ -35,6 +35,7 @@ jobs:
       frontend: ${{ steps.changes.outputs.frontend }}
       geonexia: ${{ steps.changes.outputs.geonexia }}
       score_tracker: ${{ steps.changes.outputs.score_tracker }}
+      any_changed: ${{ steps.changes.outputs.any_changed }}
     steps:
       - name: "🔄 Checkout PR Head"
         uses: actions/checkout@v4
@@ -57,6 +58,7 @@ jobs:
             echo "frontend=true" >> "$GITHUB_OUTPUT"
             echo "geonexia=true" >> "$GITHUB_OUTPUT"
             echo "score_tracker=true" >> "$GITHUB_OUTPUT"
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
           else
             FRONTEND_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/frontend/' || true)
             GEONEXIA_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/geonexia/' || true)
@@ -65,6 +67,12 @@ jobs:
             [ "$FRONTEND_CHANGED" -gt "0" ] && echo "frontend=true" >> "$GITHUB_OUTPUT" || echo "frontend=false" >> "$GITHUB_OUTPUT"
             [ "$GEONEXIA_CHANGED" -gt "0" ] && echo "geonexia=true" >> "$GITHUB_OUTPUT" || echo "geonexia=false" >> "$GITHUB_OUTPUT"
             [ "$SCORE_TRACKER_CHANGED" -gt "0" ] && echo "score_tracker=true" >> "$GITHUB_OUTPUT" || echo "score_tracker=false" >> "$GITHUB_OUTPUT"
+
+            if [ "$FRONTEND_CHANGED" -gt "0" ] || [ "$GEONEXIA_CHANGED" -gt "0" ] || [ "$SCORE_TRACKER_CHANGED" -gt "0" ]; then
+              echo "any_changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "any_changed=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
   expo-preview-update:
@@ -75,7 +83,7 @@ jobs:
       github.event.action != 'closed'
       && needs.check-repository.outputs.is-upstream == 'true'
       && github.event.pull_request.head.repo.full_name == github.repository
-      && (needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.geonexia == 'true' || needs.detect-changes.outputs.score_tracker == 'true')
+      && (needs.detect-changes.outputs.any_changed == 'true')
     permissions:
       contents: write
       pull-requests: write
@@ -137,9 +145,9 @@ jobs:
             const scoreTrackerChanged = process.env.SCORE_TRACKER_CHANGED === 'true';
 
             const appLines = [
-              frontendChanged    ? '- ✅ Frontend (rocket-meals)' : '- ⏭️ Frontend (rocket-meals) – skipped (no changes)',
-              geonexiaChanged    ? '- ✅ Geonexia'                : '- ⏭️ Geonexia – skipped (no changes)',
-              scoreTrackerChanged? '- ✅ Score Tracker'           : '- ⏭️ Score Tracker – skipped (no changes)',
+              frontendChanged     ? '- ✅ Frontend (rocket-meals)' : '- ⏭️ Frontend (rocket-meals) – skipped (no changes)',
+              geonexiaChanged     ? '- ✅ Geonexia'                : '- ⏭️ Geonexia – skipped (no changes)',
+              scoreTrackerChanged ? '- ✅ Score Tracker'           : '- ⏭️ Score Tracker – skipped (no changes)',
             ];
 
             const body = [
