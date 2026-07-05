@@ -9,7 +9,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import { ComponentIds } from '@/constants/ComponentIds';
-import { excerpt } from '@/constants/HelperFunctions';
 import { isWeb } from '@/constants/Constants';
 import styles from '../styles';
 import { RootDrawerParamList } from '../types';
@@ -78,10 +77,10 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <TouchableOpacity
                         onPress={() => openSheet('canteen')}
                         activeOpacity={0.7}
-                        style={iconPaddingStyle}
+                        style={[iconPaddingStyle, styles.canteenNameButton]}
                     >
-                        <Text style={[styles.heading, { color: theme.header.text }]}>
-                            {excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
+                        <Text style={[styles.heading, { color: theme.header.text }]} numberOfLines={1}>
+                            {String(selectedCanteen?.alias) || 'Food Offers'}
                         </Text>
                     </TouchableOpacity>
                 </View>

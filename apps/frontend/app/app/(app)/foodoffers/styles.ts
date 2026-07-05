@@ -54,6 +54,7 @@ export default StyleSheet.create({
             alignItems: 'center',
     },
 	col1: {
+		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
@@ -147,7 +148,10 @@ export default StyleSheet.create({
                 fontSize: 14,
                 fontFamily: 'Poppins_400Regular',
         },
-    loadingContainer: {
+    canteenNameButton: {
+        flex: 1,
+    },
+
         width: '100%',
         height: 400,
         justifyContent: 'center',
