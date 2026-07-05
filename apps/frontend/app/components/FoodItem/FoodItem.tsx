@@ -33,6 +33,7 @@ import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -95,6 +96,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     
     const { show: showScrollViewModal } = useMyScrollViewModal();
     const { openFoodOfferDetailsModal } = useFoodOfferDetailsModal();
+    const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods & { show_description_icon_on_card?: boolean | null };
@@ -248,7 +250,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [dispatch, showScrollViewModal]
     );
 
-    const handlePriceChange = useCallback(() => router.navigate('/price-group'), []);
+    const handlePriceChange = useCallback(() => openPriceGroupSettingsModal(), [openPriceGroupSettingsModal]);
 
     const foodDescription = useMemo(
       () => {
