@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { useRouter } from 'expo-router';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
