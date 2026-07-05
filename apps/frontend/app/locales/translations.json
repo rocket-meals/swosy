@@ -6366,5 +6366,15 @@
 		"ru": "Дополнительные настройки",
 		"tr": "Daha fazla ayar",
 		"zh": "更多设置"
+	},
+	"options_and_information": {
+		"de": "Weitere Optionen und Information",
+		"en": "More Options and Information",
+		"ar": "مزيد من الخيارات والمعلومات",
+		"es": "Más opciones e información",
+		"fr": "Plus d'options et d'informations",
+		"ru": "Дополнительные параметры и информация",
+		"tr": "Daha fazla seçenek ve bilgi",
+		"zh": "更多选项和信息"
 	}
 }

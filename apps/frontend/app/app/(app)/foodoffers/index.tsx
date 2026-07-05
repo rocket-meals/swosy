@@ -34,6 +34,7 @@ import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollvie
 import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusinessHours';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import { useMyScrollviewModalFoodOffersOptions } from '@/hooks/useMyScrollviewModalFoodOffersOptions';
+import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useNotifications } from './hooks';
@@ -104,6 +105,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
 	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
+	const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 	const router = useRouter();
 
 	const handleOpenUtilization = useCallback(() => {
@@ -112,7 +114,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const { openFoodOffersOptionsModal } = useMyScrollviewModalFoodOffersOptions({
 		onSort: openFoodofferSortingModal,
-		onPriceGroup: () => router.navigate('/price-group'),
+		onPriceGroup: openPriceGroupSettingsModal,
 		onEatingHabits: () => router.navigate('/eating-habits'),
 		onCanteen: openChangeMyCanteenSelectionModal,
 		onCalendar: () => openDatePickerModal({ updateGlobal: true }),

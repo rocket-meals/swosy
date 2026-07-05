@@ -136,8 +136,7 @@ export const useMyScrollviewModalFoodOffersOptions = (params: UseMyScrollviewMod
 
 	const openFoodOffersOptionsModal = useCallback(() => {
 		showScrollViewModal({
-			title: translate(TranslationKeys.more_options),
-			disableHorizontalPadding: true,
+			title: translate(TranslationKeys.options_and_information),
 			children: (
 				<FoodOffersOptionsContent
 					closeSheet={closeScrollViewModal}

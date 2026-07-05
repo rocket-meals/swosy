@@ -818,13 +818,6 @@ export default function Layout() {
 						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits)} key={'Eating Habits'} />,
 					}}
 				/>
-				<Drawer.Screen
-					name="price-group/index"
-					options={{
-						title: 'Price Group',
-						header: () => <CustomStackHeader label={translate(TranslationKeys.price_group)} key={'Price Group'} />,
-					}}
-				/>
 
 				<Drawer.Screen
 					name="form-categories/index"

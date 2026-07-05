@@ -657,4 +657,5 @@ export enum TranslationKeys {
 	debugErrors = 'debugErrors',
 	more_options = 'more_options',
 	further_settings = 'further_settings',
+	options_and_information = 'options_and_information',
 }
