@@ -27,24 +27,24 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L50
 
 - **"npx" can install packages on-demand and run their lifecycle scripts.**
-  .github/workflows/pr-expo-preview.yml:175
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L175
+  .github/workflows/pr-expo-preview.yml:243
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L243
 
 - **Define exact package version to avoid installing unverified releases.**
-  .github/workflows/pr-expo-preview.yml:175
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L175
+  .github/workflows/pr-expo-preview.yml:243
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L243
 
 - **The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
-  .github/workflows/pr-expo-preview.yml:51
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L51
+  .github/workflows/pr-expo-preview.yml:105
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L105
 
 - **The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
-  .github/workflows/pr-expo-preview.yml:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L60
+  .github/workflows/pr-expo-preview.yml:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L115
 
 - **The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
-  .github/workflows/pr-expo-preview.yml:69
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L69
+  .github/workflows/pr-expo-preview.yml:125
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L125
 
 - **A path canonicalized from CLI-controlled data must be validated before use.**
   apps/backend-sync/src/DirectusDatabaseSync.ts:75
