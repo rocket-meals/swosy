@@ -56,6 +56,20 @@
  *   `stickyHeaderComponent` as a sibling View above `BottomSheetScrollView`
  *   instead of using `stickyHeaderIndices`.  Native behaviour is unchanged.
  *
+ * ─── SCROLL FIX 5 (web: flex:1 on container + scroll view) ──────────────────
+ *   After Fix 4, the sticky header was rendered outside the scroll view on web,
+ *   but scrolling was still broken.  Root cause: without `flex: 1` the outer
+ *   container View and the `BottomSheetScrollView` expand to their full content
+ *   height inside the fixed-height BottomSheet, so the browser never creates a
+ *   scroll context.  On native this is intentional (SCROLL FIX 2 — `flex: 1`
+ *   would cause gorhom to disable scroll), but on web the gorhom height-
+ *   calculation issue does not apply.
+ *
+ *   Fix: `MyScrollViewModal` applies `{ flex: 1 }` to both the outer wrapper
+ *   View and the `BottomSheetScrollView`/`BottomSheetFlatList` when
+ *   `Platform.OS === 'web'`.  This constrains the scroll view to the remaining
+ *   height inside the sheet, restoring scroll on web for all modals.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView

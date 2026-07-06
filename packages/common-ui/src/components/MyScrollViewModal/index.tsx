@@ -76,6 +76,14 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	// NOTE FOR INSIDERS: Every scroll-related change in this modal stack must be
 	// documented here (and in MyAvatarEditor's header comment) so future maintainers
 	// understand the full history of attempted fixes.
+	//
+	// SCROLL FIX (web): On web the gorhom height-calculation issue above does NOT
+	// apply (web uses a regular CSS-based scroll container).  But without flex:1 on the
+	// outer View and the BottomSheetScrollView, the scroll view expands to its full
+	// content height inside the fixed-height BottomSheet and never needs to scroll.
+	// We therefore apply flex:1 on web only so that the scroll view is height-
+	// constrained to the remaining space inside the sheet and scrolling is possible.
+	const webFlex = Platform.OS === 'web' ? { flex: 1 } : {};
 	if (useFlatList && renderItem && keyExtractor) {
 		const flatListHeader = (
 			<>
@@ -85,8 +93,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 			</>
 		);
 		return (
-			<View style={containerStyle}>
+			<View style={[containerStyle, webFlex]}>
 				<BottomSheetFlatList
+					style={webFlex}
 					data={data}
 					keyExtractor={keyExtractor}
 					renderItem={renderItem}
@@ -132,9 +141,10 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	scrollParts.push(<View key="__footer">{footerComponent}</View>);
 
 	return (
-		<View style={containerStyle}>
+		<View style={[containerStyle, webFlex]}>
 			{renderStickyOutside && <View>{stickyHeaderComponent}</View>}
 			<BottomSheetScrollView
+				style={webFlex}
 				contentContainerStyle={contentStyle}
 				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 				keyboardShouldPersistTaps={keyboardShouldPersistTaps}
