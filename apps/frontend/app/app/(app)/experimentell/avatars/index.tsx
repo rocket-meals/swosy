@@ -13,9 +13,9 @@ import {
 	AvatarSize,
 	SettingsList,
 	SettingsListGroupTitle,
+	SettingsListSelectOption,
 	useAvatarEditorModal,
 	AvatarConfig,
-	AvatarPropKey,
 } from 'repo-depkit-common-ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -24,6 +24,11 @@ import { UserHelper } from '@/helper/UserHelper';
 
 const profileHelper = new ProfileHelper();
 const AVATAR_BACKGROUND_COLOR = '#ffffff';
+
+const ALL_AVATAR_STYLES = Object.values(AvatarStyle).map((style) => ({
+	id: style,
+	label: style,
+}));
 
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
@@ -35,6 +40,8 @@ const AvatarsScreen = () => {
 	const debugMode = useDebugMode();
 	const { openAvatarEditor } = useAvatarEditorModal();
 	const isRegisteredUser = UserHelper.isRegisteredUser(user);
+
+	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.MICAH);
 
 	const parseProfileAvatar = (profileAvatar: unknown): AvatarConfig | null => {
 		if (!profileAvatar) return null;
@@ -57,10 +64,7 @@ const AvatarsScreen = () => {
 		title: translate(TranslationKeys.avatars),
 		accentColor: primaryColor,
 		debugMode,
-		allowedStyles: [AvatarStyle.OPEN_PEEPS],
-		hiddenProps: {
-			[AvatarPropKey.OpenPeeps.SCALE]: '100',
-		},
+		allowedStyles: [selectedStyle],
 	};
 
 	const handleOpenEditor = () => {
@@ -109,6 +113,19 @@ const AvatarsScreen = () => {
 						</View>
 					)}
 				</View>
+
+				{debugMode && (
+					<>
+						<SettingsListGroupTitle title="Avatar Style" />
+						<SettingsListSelectOption
+							options={ALL_AVATAR_STYLES}
+							selectedOption={selectedStyle}
+							onSelect={(option) => setSelectedStyle(option.id)}
+							iconBgColor={primaryColor}
+							selectionColor={primaryColor}
+						/>
+					</>
+				)}
 
 				<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
 				{avatarConfig && (
