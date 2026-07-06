@@ -48,6 +48,22 @@ export const PRESET_COLORS = [
 	'#92400e', // Brown
 ];
 
+/**
+ * Restricted hair color palette for the Micah avatar style.
+ * Contains the first 8 natural hair colors from HAIR_COLORS plus light gray.
+ */
+export const MICAH_HAIR_COLORS = [
+	'#000000', // Black
+	'#2c1b18', // Dark Brown
+	'#4a312c', // Brown
+	'#724133', // Light Brown
+	'#a55728', // Auburn
+	'#b55239', // Red-Brown
+	'#d6b370', // Blonde
+	'#e8d9b4', // Light Blonde
+	'#d0cfc5', // Light Gray
+];
+
 /** Natural and fashion hair color palette */
 export const HAIR_COLORS = [
 	// Natural

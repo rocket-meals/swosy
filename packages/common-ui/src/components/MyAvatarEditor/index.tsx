@@ -88,7 +88,7 @@ import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import SettingsListLeftRight, { type SettingsListLeftRightItem } from '../SettingsListLeftRight/SettingsListLeftRight';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
+import { HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
@@ -419,7 +419,7 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 		if (schemaDefaults.length > 0) {
 			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
 		} else {
-			const presetColors = getPresetColorsForKey(key);
+			const presetColors = getPresetColorsForKey(key, style);
 			if (presetColors.length > 0) {
 				defaults[key] = [stripHashPrefix(presetColors[0])];
 			}
@@ -505,8 +505,14 @@ function getSchemaDefaultColors(style: AvatarStyle, key: string): string[] {
 
 /**
  * Returns the predefined color palette appropriate for a given color property key.
+ * Optionally pass the current avatar style for style-specific palettes.
  */
-function getPresetColorsForKey(key: string): string[] {
+function getPresetColorsForKey(key: string, style?: AvatarStyle): string[] {
+	if (style === AvatarStyle.MICAH) {
+		if (key === 'hairColor' || key === 'eyebrowsColor' || key === 'facialHairColor') {
+			return MICAH_HAIR_COLORS;
+		}
+	}
 	const lower = key.toLowerCase();
 	if (lower.includes('skin') || lower === 'basecolor') return SKIN_COLORS;
 	if (lower.includes('hair')) return HAIR_COLORS;
@@ -644,7 +650,12 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
 				const borderColor = myContrastColor(color, theme, isDark);
 				const colorCircle = (
-					<View style={[styles.colorSwatch, { backgroundColor: color, borderColor }]} />
+					<View
+						style={[
+							styles.colorSwatchLarge,
+							{ backgroundColor: color, borderColor },
+						]}
+					/>
 				);
 				const extraRightContent = debugMode ? (
 					<View style={styles.colorSwatchRow}>
@@ -977,7 +988,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			}
 		}
 		for (const key of newColorKeys) {
-			const presetColors = getPresetColorsForKey(key);
+			// Skip hidden prop keys – they are always pinned to a fixed value
+			if (hiddenPropKeys.has(key)) continue;
+			const presetColors = getPresetColorsForKey(key, config.style);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
 			randomOptions[key] = [stripHashPrefix(randomColor)];
 		}
@@ -994,6 +1007,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const key of preserveKeys) {
 			if (config.options?.[key] !== undefined) {
 				randomOptions[key] = config.options[key]!;
+			}
+		}
+		// Preserve hidden prop values so they are never lost during randomize,
+		// even in debug mode where applyHiddenProps is skipped.
+		if (hiddenProps) {
+			for (const [key, value] of Object.entries(hiddenProps)) {
+				if (value !== undefined) {
+					randomOptions[key] = [value];
+				}
 			}
 		}
 		handleChange({ ...config, options: randomOptions });
@@ -1052,7 +1074,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	};
 
 	const handleOpenColorPicker = (key: string) => {
-		const presetColors = getPresetColorsForKey(key);
+		const presetColors = getPresetColorsForKey(key, config.style);
 		const rawVal = config.options?.[key];
 		const storedHex = Array.isArray(rawVal) ? rawVal[0] ?? null : null;
 		let displayHex = storedHex;
@@ -1097,7 +1119,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			return effectiveAllowedStyles.map((style) => ({ id: style, label: style }));
 		}
 		if (colorKeys.includes(cat)) {
-			return getPresetColorsForKey(cat).map((color) => {
+			return getPresetColorsForKey(cat, config.style).map((color) => {
 				const hex = stripHashPrefix(color);
 				return { id: hex, label: '' };
 			});
@@ -1639,7 +1661,7 @@ function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConf
 			}
 		}
 		for (const key of colorKeys) {
-			const presetColors = getPresetColorsForKey(key);
+			const presetColors = getPresetColorsForKey(key, style);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
 			randomOptions[key] = [stripHashPrefix(randomColor)];
 		}
@@ -2104,6 +2126,12 @@ const styles = StyleSheet.create({
 		width: 22,
 		height: 22,
 		borderRadius: 11,
+		borderWidth: 1.5,
+	},
+	colorSwatchLarge: {
+		width: PREVIEW_AVATAR_SIZE,
+		height: PREVIEW_AVATAR_SIZE,
+		borderRadius: PREVIEW_AVATAR_SIZE / 2,
 		borderWidth: 1.5,
 	},
 	colorSwatchRow: {

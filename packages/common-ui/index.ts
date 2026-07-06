@@ -105,5 +105,5 @@ export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
 export { useAvatarEditorModal, AvatarPropKey } from './src/components/MyAvatarEditor';
 export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps } from './src/components/MyAvatarEditor';
 
-export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
+export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
 export type { MyColorPickerProps } from './src/components/MyColorPicker';
