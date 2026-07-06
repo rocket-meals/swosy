@@ -117,6 +117,11 @@ export namespace AvatarPropKey {
 		FLIP = 'flip',
 		CLIP = 'clip',
 	}
+	export enum Micah {
+		EYES_COLOR = 'eyesColor',
+		EYE_SHADOW_COLOR = 'eyeShadowColor',
+		GLASSES_COLOR = 'glassesColor',
+	}
 }
 
 type ConfigListener = (config: AvatarConfig) => void;
@@ -610,6 +615,7 @@ type ColorPickerModalContentProps = {
 	colorKey: string;
 	rounded?: boolean;
 	backgroundColor?: string;
+	debugMode?: boolean;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
@@ -621,7 +627,9 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	colorKey,
 	rounded,
 	backgroundColor,
+	debugMode,
 }) => {
+	const { theme, isDark } = useTheme();
 	return (
 		<>
 			{colors.map((color, index) => {
@@ -634,6 +642,16 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 								? 'bottom'
 								: 'middle';
 				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
+				const borderColor = myContrastColor(color, theme, isDark);
+				const colorCircle = (
+					<View style={[styles.colorSwatch, { backgroundColor: color, borderColor }]} />
+				);
+				const extraRightContent = debugMode ? (
+					<View style={styles.colorSwatchRow}>
+						{colorCircle}
+						<Text style={[styles.hexLabel, { color: theme.screen.text }]}>{color}</Text>
+					</View>
+				) : colorCircle;
 				return (
 					<SettingsListSelectOptionSingle
 						key={color}
@@ -656,6 +674,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 						groupPosition={groupPosition}
 						showSeparator={index !== colors.length - 1}
 						onPress={() => onSelectAndClose(color)}
+						extraRightContent={extraRightContent}
 					/>
 				);
 			})}
@@ -1056,6 +1075,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					colorKey={key}
 					rounded={rounded}
 					backgroundColor={backgroundColor}
+					debugMode={debugMode}
 					onSelectAndClose={(color) => {
 						handleOptionChange(key, stripHashPrefix(color));
 						closeCategoryModal();
@@ -2004,11 +2024,20 @@ export const useAvatarEditorModal = () => {
 			const size = AvatarSize.LARGE;
 
 			const initialMode: Mode = currentAvatar != null ? 'editor' : 'quickstart';
-			const initialConfig: AvatarConfig = currentAvatar ?? {
+			let initialConfig: AvatarConfig = currentAvatar ?? {
 				style: defaultStyle,
 				size,
 				options: getDefaultOptionsForStyle(defaultStyle),
 			};
+
+			// Apply hidden props to the initial config so forced values are enforced from the start.
+			if (!options?.debugMode && options?.hiddenProps && Object.keys(options.hiddenProps).length > 0) {
+				const newOptions = { ...(initialConfig.options ?? {}) };
+				for (const [key, value] of Object.entries(options.hiddenProps)) {
+					newOptions[key] = [value];
+				}
+				initialConfig = { ...initialConfig, options: newOptions };
+			}
 
 			configRef.current = { ...initialConfig };
 			observableRef.current = new ConfigObservable({ ...initialConfig });
@@ -2076,6 +2105,15 @@ const styles = StyleSheet.create({
 		height: 22,
 		borderRadius: 11,
 		borderWidth: 1.5,
+	},
+	colorSwatchRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
+	hexLabel: {
+		fontSize: 11,
+		fontFamily: 'monospace',
 	},
 	previewAvatarWrapper: {
 		marginRight: 10,

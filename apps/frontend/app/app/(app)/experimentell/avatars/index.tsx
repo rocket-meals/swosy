@@ -11,6 +11,7 @@ import {
 	MyAvatar,
 	AvatarStyle,
 	AvatarSize,
+	AvatarPropKey,
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListSelectOption,
@@ -65,6 +66,11 @@ const AvatarsScreen = () => {
 		accentColor: primaryColor,
 		debugMode,
 		allowedStyles: [selectedStyle],
+		hiddenProps: selectedStyle === AvatarStyle.MICAH ? {
+			[AvatarPropKey.Micah.EYES_COLOR]: '000000',
+			[AvatarPropKey.Micah.EYE_SHADOW_COLOR]: 'ffffff',
+			[AvatarPropKey.Micah.GLASSES_COLOR]: '000000',
+		} : undefined,
 	};
 
 	const handleOpenEditor = () => {

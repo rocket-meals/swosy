@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsList from '../SettingsList';
@@ -14,6 +15,8 @@ export type SettingsListSelectOptionSingleProps = Pick<
 	isSelected: boolean;
 	groupPosition?: SettingsListProps['groupPosition'];
 	nativeID?: string;
+	/** Optional content rendered to the left of the radio button. */
+	extraRightContent?: React.ReactNode;
 };
 
 const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSingleProps> = ({
@@ -27,9 +30,18 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 	showSeparator = true,
 	noIconIndent = false,
 	nativeID,
+	extraRightContent,
 }) => {
 	const { theme } = useTheme();
 	const resolvedSelectionColor = selectionColor ?? iconBgColor;
+
+	const radioButton = (
+		<MaterialCommunityIcons
+			name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
+			size={24}
+			color={isSelected ? resolvedSelectionColor : theme.screen.icon}
+		/>
+	);
 
 	return (
 		<SettingsList
@@ -40,16 +52,26 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 			showSeparator={showSeparator}
 			noIconIndent={noIconIndent}
 			nativeID={nativeID}
-			rightIcon={
-				<MaterialCommunityIcons
-					name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-					size={24}
-					color={isSelected ? resolvedSelectionColor : theme.screen.icon}
-				/>
+			rightElement={
+				extraRightContent ? (
+					<View style={styles.rightRow}>
+						{extraRightContent}
+						{radioButton}
+					</View>
+				) : undefined
 			}
+			rightIcon={!extraRightContent ? radioButton : undefined}
 			handleFunction={onPress}
 		/>
 	);
 };
 
 export default SettingsListSelectOptionSingle;
+
+const styles = StyleSheet.create({
+	rightRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+});
