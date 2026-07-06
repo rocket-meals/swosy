@@ -116,7 +116,7 @@ const AvatarsScreen = () => {
 
 				{debugMode && (
 					<>
-						<SettingsListGroupTitle title="Avatar Style" />
+						<SettingsListGroupTitle title={translate(TranslationKeys.avatar_style)} />
 						<SettingsListSelectOption
 							options={ALL_AVATAR_STYLES}
 							selectedOption={selectedStyle}
