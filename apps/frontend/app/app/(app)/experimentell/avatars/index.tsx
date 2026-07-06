@@ -25,6 +25,14 @@ import { UserHelper } from '@/helper/UserHelper';
 
 const profileHelper = new ProfileHelper();
 const AVATAR_BACKGROUND_COLOR = '#ffffff';
+const COLOR_BLACK = '000000';
+const COLOR_WHITE = 'ffffff';
+
+const MICAH_HIDDEN_PROPS = {
+	[AvatarPropKey.Micah.EYES_COLOR]: COLOR_BLACK,
+	[AvatarPropKey.Micah.EYE_SHADOW_COLOR]: COLOR_WHITE,
+	[AvatarPropKey.Micah.GLASSES_COLOR]: COLOR_BLACK,
+};
 
 const ALL_AVATAR_STYLES = Object.values(AvatarStyle).map((style) => ({
 	id: style,
@@ -66,11 +74,7 @@ const AvatarsScreen = () => {
 		accentColor: primaryColor,
 		debugMode,
 		allowedStyles: [selectedStyle],
-		hiddenProps: selectedStyle === AvatarStyle.MICAH ? {
-			[AvatarPropKey.Micah.EYES_COLOR]: '000000',
-			[AvatarPropKey.Micah.EYE_SHADOW_COLOR]: 'ffffff',
-			[AvatarPropKey.Micah.GLASSES_COLOR]: '000000',
-		} : undefined,
+		hiddenProps: selectedStyle === AvatarStyle.MICAH ? MICAH_HIDDEN_PROPS : undefined,
 	};
 
 	const handleOpenEditor = () => {

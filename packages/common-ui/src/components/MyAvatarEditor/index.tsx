@@ -2031,7 +2031,7 @@ export const useAvatarEditorModal = () => {
 			};
 
 			// Apply hidden props to the initial config so forced values are enforced from the start.
-			if (!options?.debugMode && options?.hiddenProps && Object.keys(options.hiddenProps).length > 0) {
+			if (!options?.debugMode && options?.hiddenProps) {
 				const newOptions = { ...(initialConfig.options ?? {}) };
 				for (const [key, value] of Object.entries(options.hiddenProps)) {
 					newOptions[key] = [value];
