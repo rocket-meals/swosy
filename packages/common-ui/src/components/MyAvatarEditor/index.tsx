@@ -990,9 +990,29 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const key of newColorKeys) {
 			// Skip hidden prop keys – they are always pinned to a fixed value
 			if (hiddenPropKeys.has(key)) continue;
+			// For Micah, eyebrowsColor and facialHairColor are derived from hairColor below
+			if (config.style === AvatarStyle.MICAH && (key === 'eyebrowsColor' || key === 'facialHairColor')) continue;
 			const presetColors = getPresetColorsForKey(key, config.style);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
 			randomOptions[key] = [stripHashPrefix(randomColor)];
+		}
+		// For Micah: coordinate eyebrowsColor (= hairColor) and facialHairColor (one step lighter)
+		if (config.style === AvatarStyle.MICAH) {
+			const hairColorValue = randomOptions['hairColor']?.[0] as string | undefined;
+			if (hairColorValue !== undefined) {
+				if (!hiddenPropKeys.has('eyebrowsColor')) {
+					randomOptions['eyebrowsColor'] = [hairColorValue];
+				}
+				if (!hiddenPropKeys.has('facialHairColor')) {
+					const hairIndex = MICAH_HAIR_COLORS.findIndex(
+						(c) => stripHashPrefix(c) === hairColorValue,
+					);
+					const lighterIndex = hairIndex !== -1
+						? Math.min(hairIndex + 1, MICAH_HAIR_COLORS.length - 1)
+						: 0;
+					randomOptions['facialHairColor'] = [stripHashPrefix(MICAH_HAIR_COLORS[lighterIndex])];
+				}
+			}
 		}
 		// Preserve boolean flags (flip, clip) and numeric options (scale, translateX, translateY, rotate)
 		// so that user-set positioning/orientation is not lost on randomize.
@@ -1606,11 +1626,191 @@ const OPEN_PEEPS_PRESETS: AvatarPreset[] = [
 ];
 
 /**
+ * Predefined avatar presets for the MICAH style.
+ * All color values are sourced from the shared palette constants – no raw hex strings.
+ * Use `stripHashPrefix(PALETTE_CONSTANT[index])` to convert a '#'-prefixed palette entry
+ * to the un-prefixed format expected by avatar config options.
+ */
+const MICAH_PRESETS: AvatarPreset[] = [
+	{
+		name: 'Turban Scruff',
+		hair: ['turban'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['scruff'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[7])],          // ae5d29 – Medium
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		facialHairColor: [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[15])],       // 047857 – Emerald
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+	{
+		name: 'Pixie Cyan',
+		hair: ['pixie'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[5])],          // e0a96d – Golden Tan
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[19])],       // f43f5e – Rose
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[4])],        // 4b5563 – Slate Gray
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+	{
+		name: 'Full Hair Laugh',
+		hair: ['full'],
+		ears: ['detached'],
+		eyebrows: ['eyelashesUp'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['laughing'],
+		nose: ['pointed'],
+		shirt: ['open'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
+		earringColor:    [stripHashPrefix(PRESET_COLORS[31])],       // ec4899 – Pink
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[7])],        // 3b82f6 – Blue
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+	{
+		name: 'Danny Phantom',
+		hair: ['dannyPhantom'],
+		ears: ['detached'],
+		eyebrows: ['eyelashesUp'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		glasses: ['round'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[2])],          // fddbb4 – Very Light
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[17])],       // ef4444 – Red
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+	},
+	{
+		name: 'Mr Clean',
+		hair: ['mrClean'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['open'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[8])],          // 694d3d – Medium Dark
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+	{
+		name: 'Fonze',
+		hair: ['fonze'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[1])],          // ffe0bd – Porcelain
+		earringColor:    [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[3])],        // 525252 – Dark Gray
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+	{
+		name: 'Pixie Amber',
+		hair: ['pixie'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		glasses: ['round'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		hairColor:       [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[26])],       // f59e0b – Amber Gold
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+	},
+	{
+		name: 'Scruff Surprised',
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['scruff'],
+		glasses: ['square'],
+		mouth: ['surprised'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[2])],          // fddbb4 – Very Light
+		earringColor:    [stripHashPrefix(PRESET_COLORS[9])],        // 1e3a8a – Navy
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		facialHairColor: [stripHashPrefix(MICAH_HAIR_COLORS[8])],    // d0cfc5 – Light Gray
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[6])],        // bfdbfe – Light Blue
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+	},
+];
+
+/**
  * Map of avatar styles to their predefined presets.
  * Styles without presets will use random avatars for quick-start selection.
  */
 const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
 	[AvatarStyle.OPEN_PEEPS]: OPEN_PEEPS_PRESETS,
+	[AvatarStyle.MICAH]: MICAH_PRESETS,
 };
 
 /**
