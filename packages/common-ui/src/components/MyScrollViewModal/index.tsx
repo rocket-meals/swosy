@@ -101,6 +101,16 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 		);
 	}
 
+	// On web, stickyHeaderIndices breaks scrolling in BottomSheetScrollView (the
+	// sticky element interferes with the web scroll-height calculation, causing the
+	// scroll container to believe there is nothing to scroll).  The web layout engine
+	// (CSS flexbox / fixed height) correctly constrains the scroll view even when the
+	// sticky header is a *sibling* View outside the scroll view — unlike native where
+	// a sibling view confuses gorhom's height calculation (see SCROLL FIX 1).
+	// Solution: on web render stickyHeaderComponent outside the scroll view; on native
+	// keep the stickyHeaderIndices approach (SCROLL FIX 3).
+	const renderStickyOutside = Platform.OS === 'web' && !!stickyHeaderComponent;
+
 	// Build the children array for BottomSheetScrollView so that stickyHeaderIndices
 	// can reference the correct index.  stickyHeaderComponent is placed INSIDE the
 	// scroll view (not as a sibling) so gorhom accounts for its height when computing
@@ -111,7 +121,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	if (titleElement) {
 		scrollParts.push(titleElement);
 	}
-	if (stickyHeaderComponent) {
+	if (stickyHeaderComponent && !renderStickyOutside) {
 		computedStickyIndices.push(scrollParts.length);
 		scrollParts.push(<View key="__sticky">{stickyHeaderComponent}</View>);
 	}
@@ -123,6 +133,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
 	return (
 		<View style={containerStyle}>
+			{renderStickyOutside && <View>{stickyHeaderComponent}</View>}
 			<BottomSheetScrollView
 				contentContainerStyle={contentStyle}
 				showsVerticalScrollIndicator={showsVerticalScrollIndicator}

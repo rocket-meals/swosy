@@ -44,6 +44,18 @@
  *
  *   Fix: changed `ListHeaderComponent` → `stickyHeaderComponent` in `showAvatarEditor`.
  *
+ * ─── SCROLL FIX 4 (web: render stickyHeaderComponent outside scroll view) ──────
+ *   On web, passing `stickyHeaderIndices` to `BottomSheetScrollView` breaks
+ *   scrolling entirely: the sticky element interferes with the web scroll-height
+ *   calculation, causing the scroll container to think there is nothing to scroll.
+ *   On web the CSS layout engine correctly constrains the scroll view height even
+ *   when the sticky header is a sibling View *outside* the scroll view — the
+ *   gorhom native height-calculation issue (Fix 1) does not apply on web.
+ *
+ *   Fix: `MyScrollViewModal` detects `Platform.OS === 'web'` and renders
+ *   `stickyHeaderComponent` as a sibling View above `BottomSheetScrollView`
+ *   instead of using `stickyHeaderIndices`.  Native behaviour is unchanged.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
