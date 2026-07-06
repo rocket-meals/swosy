@@ -1004,6 +1004,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					randomOptions['eyebrowsColor'] = [hairColorValue];
 				}
 				if (!hiddenPropKeys.has('facialHairColor')) {
+					// MICAH_HAIR_COLORS is ordered dark→light (index 0=Black … index 8=Light Gray),
+					// so index + 1 yields one step lighter.
 					const hairIndex = MICAH_HAIR_COLORS.findIndex(
 						(c) => stripHashPrefix(c) === hairColorValue,
 					);
@@ -1649,9 +1651,9 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[15])],       // 047857 – Emerald
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 	{
 		name: 'Pixie Cyan',
@@ -1664,15 +1666,15 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		nose: ['pointed'],
 		shirt: ['crew'],
 		baseColor:       [stripHashPrefix(SKIN_COLORS[5])],          // e0a96d – Golden Tan
-		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		hairColor:       [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
 		mouthColor:      [stripHashPrefix(PRESET_COLORS[19])],       // f43f5e – Rose
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[4])],        // 4b5563 – Slate Gray
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 	{
 		name: 'Full Hair Laugh',
@@ -1687,13 +1689,13 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
 		earringColor:    [stripHashPrefix(PRESET_COLORS[31])],       // ec4899 – Pink
 		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
 		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[7])],        // 3b82f6 – Blue
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 	{
 		name: 'Danny Phantom',
@@ -1707,14 +1709,14 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		nose: ['pointed'],
 		shirt: ['collared'],
 		baseColor:       [stripHashPrefix(SKIN_COLORS[2])],          // fddbb4 – Very Light
-		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		hairColor:       [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
 		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[17])],       // ef4444 – Red
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
 	},
 	{
@@ -1728,15 +1730,15 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		nose: ['pointed'],
 		shirt: ['open'],
 		baseColor:       [stripHashPrefix(SKIN_COLORS[8])],          // 694d3d – Medium Dark
-		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 	{
 		name: 'Fonze',
@@ -1751,13 +1753,13 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		baseColor:       [stripHashPrefix(SKIN_COLORS[1])],          // ffe0bd – Porcelain
 		earringColor:    [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
 		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
-		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[3])],        // 525252 – Dark Gray
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 	{
 		name: 'Pixie Amber',
@@ -1771,14 +1773,14 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		nose: ['pointed'],
 		shirt: ['crew'],
 		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
-		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
-		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		hairColor:       [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
 		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[26])],       // f59e0b – Amber Gold
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
 		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
 	},
 	{
@@ -1796,11 +1798,11 @@ const MICAH_PRESETS: AvatarPreset[] = [
 		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
 		facialHairColor: [stripHashPrefix(MICAH_HAIR_COLORS[8])],    // d0cfc5 – Light Gray
 		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
-		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 		shirtColor:      [stripHashPrefix(PRESET_COLORS[6])],        // bfdbfe – Light Blue
-		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
-		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff
-		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
 	},
 ];
 

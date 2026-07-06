@@ -58,6 +58,8 @@ export const PRESET_COLORS = [
 /**
  * Restricted hair color palette for the Micah avatar style.
  * Contains the first 8 natural hair colors from HAIR_COLORS plus light gray.
+ * Ordered from darkest (index 0) to lightest (index 8) so that incrementing
+ * the index gives a lighter shade, and decrementing gives a darker shade.
  */
 export const MICAH_HAIR_COLORS = [
 	'#000000', // Black
