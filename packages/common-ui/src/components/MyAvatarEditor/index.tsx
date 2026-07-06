@@ -270,7 +270,7 @@ const CATEGORY_LABEL_MAP: Record<string, string> = {
  * Uses the translate function if provided, otherwise falls back to CATEGORY_LABEL_MAP or raw key.
  */
 const getCategoryLabel = (key: string, translate?: (k: string) => string): string => {
-	if (translate) return translate('avatar_cat_' + key);
+	if (translate) return translate(`avatar_cat_${key}`);
 	return CATEGORY_LABEL_MAP[key] ?? key;
 };
 
