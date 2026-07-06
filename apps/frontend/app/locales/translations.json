@@ -3577,6 +3577,706 @@
 		"tr": "Avatar Boyutu",
 		"zh": "头像大小"
 	},
+	"avatar_section_category": {
+		"de": "Kategorie",
+		"en": "Category",
+		"ar": "الفئة",
+		"es": "Categoría",
+		"fr": "Catégorie",
+		"ru": "Категория",
+		"tr": "Kategori",
+		"zh": "类别"
+	},
+	"avatar_section_actions": {
+		"de": "Aktionen",
+		"en": "Actions",
+		"ar": "الإجراءات",
+		"es": "Acciones",
+		"fr": "Actions",
+		"ru": "Действия",
+		"tr": "Eylemler",
+		"zh": "操作"
+	},
+	"avatar_section_debug": {
+		"de": "Debug",
+		"en": "Debug",
+		"ar": "تصحيح",
+		"es": "Debug",
+		"fr": "Debug",
+		"ru": "Отладка",
+		"tr": "Hata Ayıklama",
+		"zh": "调试"
+	},
+	"avatar_section_quickstart": {
+		"de": "Schnellstart",
+		"en": "Quick Start",
+		"ar": "بداية سريعة",
+		"es": "Inicio Rápido",
+		"fr": "Démarrage Rapide",
+		"ru": "Быстрый Старт",
+		"tr": "Hızlı Başlangıç",
+		"zh": "快速开始"
+	},
+	"avatar_apply": {
+		"de": "Übernehmen",
+		"en": "Apply",
+		"ar": "تطبيق",
+		"es": "Aplicar",
+		"fr": "Appliquer",
+		"ru": "Применить",
+		"tr": "Uygula",
+		"zh": "应用"
+	},
+	"avatar_randomize": {
+		"de": "Zufällig",
+		"en": "Randomize",
+		"ar": "عشوائي",
+		"es": "Aleatorio",
+		"fr": "Aléatoire",
+		"ru": "Случайно",
+		"tr": "Rastgele",
+		"zh": "随机"
+	},
+	"avatar_copy_config": {
+		"de": "Konfiguration kopieren",
+		"en": "Copy Config",
+		"ar": "نسخ الإعدادات",
+		"es": "Copiar Configuración",
+		"fr": "Copier la Config",
+		"ru": "Копировать конфигурацию",
+		"tr": "Yapılandırmayı Kopyala",
+		"zh": "复制配置"
+	},
+	"avatar_customize": {
+		"de": "Anpassen",
+		"en": "Customize",
+		"ar": "تخصيص",
+		"es": "Personalizar",
+		"fr": "Personnaliser",
+		"ru": "Настроить",
+		"tr": "Özelleştir",
+		"zh": "自定义"
+	},
+	"avatar_cat_Style": {
+		"de": "Stil",
+		"en": "Style",
+		"ar": "النمط",
+		"es": "Estilo",
+		"fr": "Style",
+		"ru": "Стиль",
+		"tr": "Stil",
+		"zh": "风格"
+	},
+	"avatar_cat_skinColor": {
+		"de": "Hautfarbe",
+		"en": "Skin Color",
+		"ar": "لون البشرة",
+		"es": "Color de piel",
+		"fr": "Couleur de peau",
+		"ru": "Цвет кожи",
+		"tr": "Ten Rengi",
+		"zh": "肤色"
+	},
+	"avatar_cat_baseColor": {
+		"de": "Grundfarbe",
+		"en": "Base Color",
+		"ar": "اللون الأساسي",
+		"es": "Color base",
+		"fr": "Couleur de base",
+		"ru": "Основной цвет",
+		"tr": "Temel Renk",
+		"zh": "基础色"
+	},
+	"avatar_cat_hair": {
+		"de": "Haare",
+		"en": "Hair",
+		"ar": "الشعر",
+		"es": "Cabello",
+		"fr": "Cheveux",
+		"ru": "Волосы",
+		"tr": "Saç",
+		"zh": "头发"
+	},
+	"avatar_cat_hairColor": {
+		"de": "Haarfarbe",
+		"en": "Hair Color",
+		"ar": "لون الشعر",
+		"es": "Color de cabello",
+		"fr": "Couleur des cheveux",
+		"ru": "Цвет волос",
+		"tr": "Saç Rengi",
+		"zh": "发色"
+	},
+	"avatar_cat_frontHair": {
+		"de": "Stirnhaar",
+		"en": "Front Hair",
+		"ar": "شعر أمامي",
+		"es": "Cabello frontal",
+		"fr": "Cheveux avant",
+		"ru": "Передние волосы",
+		"tr": "Ön Saç",
+		"zh": "前发"
+	},
+	"avatar_cat_rearHair": {
+		"de": "Rückhaar",
+		"en": "Rear Hair",
+		"ar": "شعر خلفي",
+		"es": "Cabello trasero",
+		"fr": "Cheveux arrière",
+		"ru": "Задние волосы",
+		"tr": "Arka Saç",
+		"zh": "后发"
+	},
+	"avatar_cat_sideburn": {
+		"de": "Koteletten",
+		"en": "Sideburn",
+		"ar": "شارب جانبي",
+		"es": "Patillas",
+		"fr": "Favoris",
+		"ru": "Бакенбарды",
+		"tr": "Favori",
+		"zh": "鬓角"
+	},
+	"avatar_cat_face": {
+		"de": "Gesicht",
+		"en": "Face",
+		"ar": "الوجه",
+		"es": "Rostro",
+		"fr": "Visage",
+		"ru": "Лицо",
+		"tr": "Yüz",
+		"zh": "脸型"
+	},
+	"avatar_cat_head": {
+		"de": "Kopf",
+		"en": "Head",
+		"ar": "الرأس",
+		"es": "Cabeza",
+		"fr": "Tête",
+		"ru": "Голова",
+		"tr": "Kafa",
+		"zh": "头部"
+	},
+	"avatar_cat_eyebrows": {
+		"de": "Augenbrauen",
+		"en": "Eyebrows",
+		"ar": "الحواجب",
+		"es": "Cejas",
+		"fr": "Sourcils",
+		"ru": "Брови",
+		"tr": "Kaşlar",
+		"zh": "眉毛"
+	},
+	"avatar_cat_eyebrowsColor": {
+		"de": "Augenbrauenfarbe",
+		"en": "Eyebrow Color",
+		"ar": "لون الحاجب",
+		"es": "Color de cejas",
+		"fr": "Couleur des sourcils",
+		"ru": "Цвет бровей",
+		"tr": "Kaş Rengi",
+		"zh": "眉色"
+	},
+	"avatar_cat_brows": {
+		"de": "Brauen",
+		"en": "Brows",
+		"ar": "الحواجب",
+		"es": "Cejas",
+		"fr": "Sourcils",
+		"ru": "Брови",
+		"tr": "Kaşlar",
+		"zh": "眉毛"
+	},
+	"avatar_cat_eyes": {
+		"de": "Augen",
+		"en": "Eyes",
+		"ar": "العيون",
+		"es": "Ojos",
+		"fr": "Yeux",
+		"ru": "Глаза",
+		"tr": "Gözler",
+		"zh": "眼睛"
+	},
+	"avatar_cat_eyesColor": {
+		"de": "Augenfarbe",
+		"en": "Eye Color",
+		"ar": "لون العين",
+		"es": "Color de ojos",
+		"fr": "Couleur des yeux",
+		"ru": "Цвет глаз",
+		"tr": "Göz Rengi",
+		"zh": "眼色"
+	},
+	"avatar_cat_eyeShadowColor": {
+		"de": "Lidschatten",
+		"en": "Eye Shadow",
+		"ar": "ظل العين",
+		"es": "Sombra de ojos",
+		"fr": "Ombre à paupières",
+		"ru": "Тени для век",
+		"tr": "Göz Farı",
+		"zh": "眼影"
+	},
+	"avatar_cat_nose": {
+		"de": "Nase",
+		"en": "Nose",
+		"ar": "الأنف",
+		"es": "Nariz",
+		"fr": "Nez",
+		"ru": "Нос",
+		"tr": "Burun",
+		"zh": "鼻子"
+	},
+	"avatar_cat_noseColor": {
+		"de": "Nasenfarbe",
+		"en": "Nose Color",
+		"ar": "لون الأنف",
+		"es": "Color de nariz",
+		"fr": "Couleur du nez",
+		"ru": "Цвет носа",
+		"tr": "Burun Rengi",
+		"zh": "鼻色"
+	},
+	"avatar_cat_mouth": {
+		"de": "Mund",
+		"en": "Mouth",
+		"ar": "الفم",
+		"es": "Boca",
+		"fr": "Bouche",
+		"ru": "Рот",
+		"tr": "Ağız",
+		"zh": "嘴巴"
+	},
+	"avatar_cat_mouthColor": {
+		"de": "Mundfarbe",
+		"en": "Mouth Color",
+		"ar": "لون الفم",
+		"es": "Color de boca",
+		"fr": "Couleur de la bouche",
+		"ru": "Цвет рта",
+		"tr": "Ağız Rengi",
+		"zh": "嘴色"
+	},
+	"avatar_cat_lips": {
+		"de": "Lippen",
+		"en": "Lips",
+		"ar": "الشفاه",
+		"es": "Labios",
+		"fr": "Lèvres",
+		"ru": "Губы",
+		"tr": "Dudaklar",
+		"zh": "嘴唇"
+	},
+	"avatar_cat_beard": {
+		"de": "Bart",
+		"en": "Beard",
+		"ar": "اللحية",
+		"es": "Barba",
+		"fr": "Barbe",
+		"ru": "Борода",
+		"tr": "Sakal",
+		"zh": "胡须"
+	},
+	"avatar_cat_facialHair": {
+		"de": "Gesichtsbehaarung",
+		"en": "Facial Hair",
+		"ar": "شعر الوجه",
+		"es": "Vello facial",
+		"fr": "Pilosité faciale",
+		"ru": "Растительность на лице",
+		"tr": "Yüz Tüyleri",
+		"zh": "面部毛发"
+	},
+	"avatar_cat_facialHairColor": {
+		"de": "Bartfarbe",
+		"en": "Facial Hair Color",
+		"ar": "لون شعر الوجه",
+		"es": "Color del vello facial",
+		"fr": "Couleur de la barbe",
+		"ru": "Цвет растительности на лице",
+		"tr": "Yüz Tüyü Rengi",
+		"zh": "面部毛发颜色"
+	},
+	"avatar_cat_mustache": {
+		"de": "Schnurrbart",
+		"en": "Mustache",
+		"ar": "الشارب",
+		"es": "Bigote",
+		"fr": "Moustache",
+		"ru": "Усы",
+		"tr": "Bıyık",
+		"zh": "胡子"
+	},
+	"avatar_cat_ear": {
+		"de": "Ohr",
+		"en": "Ear",
+		"ar": "الأذن",
+		"es": "Oreja",
+		"fr": "Oreille",
+		"ru": "Ухо",
+		"tr": "Kulak",
+		"zh": "耳朵"
+	},
+	"avatar_cat_ears": {
+		"de": "Ohren",
+		"en": "Ears",
+		"ar": "الأذنان",
+		"es": "Orejas",
+		"fr": "Oreilles",
+		"ru": "Уши",
+		"tr": "Kulaklar",
+		"zh": "耳朵"
+	},
+	"avatar_cat_earrings": {
+		"de": "Ohrringe",
+		"en": "Earrings",
+		"ar": "أقراط",
+		"es": "Pendientes",
+		"fr": "Boucles d'oreilles",
+		"ru": "Серьги",
+		"tr": "Küpeler",
+		"zh": "耳环"
+	},
+	"avatar_cat_earringsColor": {
+		"de": "Ohrringfarbe",
+		"en": "Earring Color",
+		"ar": "لون الأقراط",
+		"es": "Color de pendientes",
+		"fr": "Couleur des boucles",
+		"ru": "Цвет серёг",
+		"tr": "Küpe Rengi",
+		"zh": "耳环颜色"
+	},
+	"avatar_cat_earringColor": {
+		"de": "Ohrringfarbe",
+		"en": "Earring Color",
+		"ar": "لون القرط",
+		"es": "Color de pendiente",
+		"fr": "Couleur de la boucle",
+		"ru": "Цвет серьги",
+		"tr": "Küpe Rengi",
+		"zh": "耳环颜色"
+	},
+	"avatar_cat_glasses": {
+		"de": "Brille",
+		"en": "Glasses",
+		"ar": "النظارات",
+		"es": "Gafas",
+		"fr": "Lunettes",
+		"ru": "Очки",
+		"tr": "Gözlük",
+		"zh": "眼镜"
+	},
+	"avatar_cat_glassesColor": {
+		"de": "Brillenfarbe",
+		"en": "Glasses Color",
+		"ar": "لون النظارات",
+		"es": "Color de gafas",
+		"fr": "Couleur des lunettes",
+		"ru": "Цвет очков",
+		"tr": "Gözlük Rengi",
+		"zh": "眼镜颜色"
+	},
+	"avatar_cat_accessories": {
+		"de": "Accessoires",
+		"en": "Accessories",
+		"ar": "إكسسوارات",
+		"es": "Accesorios",
+		"fr": "Accessoires",
+		"ru": "Аксессуары",
+		"tr": "Aksesuarlar",
+		"zh": "配饰"
+	},
+	"avatar_cat_accessoriesColor": {
+		"de": "Accessoirefarbe",
+		"en": "Accessory Color",
+		"ar": "لون الإكسسوار",
+		"es": "Color de accesorio",
+		"fr": "Couleur d'accessoire",
+		"ru": "Цвет аксессуара",
+		"tr": "Aksesuar Rengi",
+		"zh": "配饰颜色"
+	},
+	"avatar_cat_features": {
+		"de": "Merkmale",
+		"en": "Features",
+		"ar": "ملامح",
+		"es": "Características",
+		"fr": "Caractéristiques",
+		"ru": "Особенности",
+		"tr": "Özellikler",
+		"zh": "特征"
+	},
+	"avatar_cat_hairAccessoriesColor": {
+		"de": "Haaraccessoirefarbe",
+		"en": "Hair Accessory Color",
+		"ar": "لون إكسسوار الشعر",
+		"es": "Color de accesorio de cabello",
+		"fr": "Couleur d'accessoire cheveux",
+		"ru": "Цвет аксессуара для волос",
+		"tr": "Saç Aksesuarı Rengi",
+		"zh": "发饰颜色"
+	},
+	"avatar_cat_frecklesColor": {
+		"de": "Sommersprossen",
+		"en": "Freckles",
+		"ar": "النمش",
+		"es": "Pecas",
+		"fr": "Taches de rousseur",
+		"ru": "Веснушки",
+		"tr": "Çiller",
+		"zh": "雀斑"
+	},
+	"avatar_cat_cheek": {
+		"de": "Wangen",
+		"en": "Cheeks",
+		"ar": "الخدود",
+		"es": "Mejillas",
+		"fr": "Joues",
+		"ru": "Щёки",
+		"tr": "Yanaklar",
+		"zh": "脸颊"
+	},
+	"avatar_cat_clothing": {
+		"de": "Kleidung",
+		"en": "Clothing",
+		"ar": "الملابس",
+		"es": "Ropa",
+		"fr": "Vêtements",
+		"ru": "Одежда",
+		"tr": "Giysi",
+		"zh": "服装"
+	},
+	"avatar_cat_clothesColor": {
+		"de": "Kleidungsfarbe",
+		"en": "Clothes Color",
+		"ar": "لون الملابس",
+		"es": "Color de ropa",
+		"fr": "Couleur des vêtements",
+		"ru": "Цвет одежды",
+		"tr": "Giysi Rengi",
+		"zh": "服装颜色"
+	},
+	"avatar_cat_clothingColor": {
+		"de": "Kleidungsfarbe",
+		"en": "Clothing Color",
+		"ar": "لون الملابس",
+		"es": "Color de ropa",
+		"fr": "Couleur des vêtements",
+		"ru": "Цвет одежды",
+		"tr": "Giysi Rengi",
+		"zh": "服装颜色"
+	},
+	"avatar_cat_clothingGraphic": {
+		"de": "Kleidungsgrafik",
+		"en": "Clothing Graphic",
+		"ar": "رسومات الملابس",
+		"es": "Gráfico de ropa",
+		"fr": "Graphique vêtements",
+		"ru": "Графика одежды",
+		"tr": "Giysi Grafiği",
+		"zh": "服装图案"
+	},
+	"avatar_cat_clothes": {
+		"de": "Kleidung",
+		"en": "Clothes",
+		"ar": "الملابس",
+		"es": "Ropa",
+		"fr": "Vêtements",
+		"ru": "Одежда",
+		"tr": "Kıyafetler",
+		"zh": "衣物"
+	},
+	"avatar_cat_body": {
+		"de": "Körper",
+		"en": "Body",
+		"ar": "الجسم",
+		"es": "Cuerpo",
+		"fr": "Corps",
+		"ru": "Тело",
+		"tr": "Vücut",
+		"zh": "身体"
+	},
+	"avatar_cat_bodyColor": {
+		"de": "Körperfarbe",
+		"en": "Body Color",
+		"ar": "لون الجسم",
+		"es": "Color del cuerpo",
+		"fr": "Couleur du corps",
+		"ru": "Цвет тела",
+		"tr": "Vücut Rengi",
+		"zh": "身体颜色"
+	},
+	"avatar_cat_bodyIcon": {
+		"de": "Körpersymbol",
+		"en": "Body Icon",
+		"ar": "أيقونة الجسم",
+		"es": "Icono del cuerpo",
+		"fr": "Icône du corps",
+		"ru": "Иконка тела",
+		"tr": "Vücut Simgesi",
+		"zh": "身体图标"
+	},
+	"avatar_cat_shirt": {
+		"de": "Hemd",
+		"en": "Shirt",
+		"ar": "القميص",
+		"es": "Camisa",
+		"fr": "Chemise",
+		"ru": "Рубашка",
+		"tr": "Gömlek",
+		"zh": "衬衫"
+	},
+	"avatar_cat_shirtColor": {
+		"de": "Hemdfarbe",
+		"en": "Shirt Color",
+		"ar": "لون القميص",
+		"es": "Color de camisa",
+		"fr": "Couleur de la chemise",
+		"ru": "Цвет рубашки",
+		"tr": "Gömlek Rengi",
+		"zh": "衬衫颜色"
+	},
+	"avatar_cat_top": {
+		"de": "Kopfbedeckung",
+		"en": "Top",
+		"ar": "القبعة",
+		"es": "Parte superior",
+		"fr": "Couvre-chef",
+		"ru": "Верхний элемент",
+		"tr": "Üst Giysi",
+		"zh": "头部配件"
+	},
+	"avatar_cat_topColor": {
+		"de": "Kopfbedeckungsfarbe",
+		"en": "Top Color",
+		"ar": "لون القبعة",
+		"es": "Color de parte superior",
+		"fr": "Couleur du couvre-chef",
+		"ru": "Цвет верхнего элемента",
+		"tr": "Üst Rengi",
+		"zh": "头部配件颜色"
+	},
+	"avatar_cat_hat": {
+		"de": "Hut",
+		"en": "Hat",
+		"ar": "القبعة",
+		"es": "Sombrero",
+		"fr": "Chapeau",
+		"ru": "Шляпа",
+		"tr": "Şapka",
+		"zh": "帽子"
+	},
+	"avatar_cat_hatColor": {
+		"de": "Hutfarbe",
+		"en": "Hat Color",
+		"ar": "لون القبعة",
+		"es": "Color del sombrero",
+		"fr": "Couleur du chapeau",
+		"ru": "Цвет шляпы",
+		"tr": "Şapka Rengi",
+		"zh": "帽子颜色"
+	},
+	"avatar_cat_hairAccessories": {
+		"de": "Haaraccessoires",
+		"en": "Hair Accessories",
+		"ar": "إكسسوارات الشعر",
+		"es": "Accesorios de cabello",
+		"fr": "Accessoires cheveux",
+		"ru": "Аксессуары для волос",
+		"tr": "Saç Aksesuarları",
+		"zh": "发饰"
+	},
+	"avatar_cat_mask": {
+		"de": "Maske",
+		"en": "Mask",
+		"ar": "القناع",
+		"es": "Máscara",
+		"fr": "Masque",
+		"ru": "Маска",
+		"tr": "Maske",
+		"zh": "面具"
+	},
+	"avatar_cat_headContrastColor": {
+		"de": "Kopfkontrast",
+		"en": "Head Contrast",
+		"ar": "تباين الرأس",
+		"es": "Contraste de cabeza",
+		"fr": "Contraste de tête",
+		"ru": "Контраст головы",
+		"tr": "Kafa Kontrastı",
+		"zh": "头部对比色"
+	},
+	"avatar_cat_sides": {
+		"de": "Seiten",
+		"en": "Sides",
+		"ar": "الجوانب",
+		"es": "Lados",
+		"fr": "Côtés",
+		"ru": "Стороны",
+		"tr": "Yanlar",
+		"zh": "侧面"
+	},
+	"avatar_cat_texture": {
+		"de": "Textur",
+		"en": "Texture",
+		"ar": "الملمس",
+		"es": "Textura",
+		"fr": "Texture",
+		"ru": "Текстура",
+		"tr": "Doku",
+		"zh": "纹理"
+	},
+	"avatar_cat_shapeColor": {
+		"de": "Formfarbe",
+		"en": "Shape Color",
+		"ar": "لون الشكل",
+		"es": "Color de forma",
+		"fr": "Couleur de la forme",
+		"ru": "Цвет формы",
+		"tr": "Şekil Rengi",
+		"zh": "形状颜色"
+	},
+	"avatar_cat_backgroundColor": {
+		"de": "Hintergrundfarbe",
+		"en": "Background Color",
+		"ar": "لون الخلفية",
+		"es": "Color de fondo",
+		"fr": "Couleur de fond",
+		"ru": "Цвет фона",
+		"tr": "Arka Plan Rengi",
+		"zh": "背景颜色"
+	},
+	"avatar_cat_gesture": {
+		"de": "Geste",
+		"en": "Gesture",
+		"ar": "إيماءة",
+		"es": "Gesto",
+		"fr": "Geste",
+		"ru": "Жест",
+		"tr": "Hareket",
+		"zh": "手势"
+	},
+	"avatar_cat_mood": {
+		"de": "Stimmung",
+		"en": "Mood",
+		"ar": "المزاج",
+		"es": "Estado de ánimo",
+		"fr": "Humeur",
+		"ru": "Настроение",
+		"tr": "Ruh Hali",
+		"zh": "心情"
+	},
+	"avatar_cat_style": {
+		"de": "Stil",
+		"en": "Style",
+		"ar": "النمط",
+		"es": "Estilo",
+		"fr": "Style",
+		"ru": "Стиль",
+		"tr": "Stil",
+		"zh": "风格"
+	},
 	"chats": {
 		"de": "Chats",
 		"en": "Chats",

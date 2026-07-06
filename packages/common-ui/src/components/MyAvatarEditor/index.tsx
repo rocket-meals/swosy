@@ -197,6 +197,84 @@ function getDefaultAvatarConfig(): AvatarConfig {
 const BUILTIN_CATEGORY_STYLE = 'Style';
 
 /**
+ * Maps avatar attribute category keys to human-readable English labels.
+ * Used as a fallback when no translate function is provided.
+ */
+const CATEGORY_LABEL_MAP: Record<string, string> = {
+	[BUILTIN_CATEGORY_STYLE]: 'Style',
+	skinColor: 'Skin Color',
+	baseColor: 'Base Color',
+	hair: 'Hair',
+	hairColor: 'Hair Color',
+	frontHair: 'Front Hair',
+	rearHair: 'Rear Hair',
+	sideburn: 'Sideburn',
+	face: 'Face',
+	head: 'Head',
+	eyebrows: 'Eyebrows',
+	eyebrowsColor: 'Eyebrow Color',
+	brows: 'Brows',
+	eyes: 'Eyes',
+	eyesColor: 'Eye Color',
+	eyeShadowColor: 'Eye Shadow',
+	nose: 'Nose',
+	noseColor: 'Nose Color',
+	mouth: 'Mouth',
+	mouthColor: 'Mouth Color',
+	lips: 'Lips',
+	beard: 'Beard',
+	facialHair: 'Facial Hair',
+	facialHairColor: 'Facial Hair Color',
+	mustache: 'Mustache',
+	ear: 'Ear',
+	ears: 'Ears',
+	earrings: 'Earrings',
+	earringsColor: 'Earring Color',
+	earringColor: 'Earring Color',
+	glasses: 'Glasses',
+	glassesColor: 'Glasses Color',
+	accessories: 'Accessories',
+	accessoriesColor: 'Accessory Color',
+	features: 'Features',
+	hairAccessoriesColor: 'Hair Accessory Color',
+	frecklesColor: 'Freckles',
+	cheek: 'Cheeks',
+	clothing: 'Clothing',
+	clothesColor: 'Clothes Color',
+	clothingColor: 'Clothing Color',
+	clothingGraphic: 'Clothing Graphic',
+	clothes: 'Clothes',
+	body: 'Body',
+	bodyColor: 'Body Color',
+	bodyIcon: 'Body Icon',
+	shirt: 'Shirt',
+	shirtColor: 'Shirt Color',
+	top: 'Top',
+	topColor: 'Top Color',
+	hat: 'Hat',
+	hatColor: 'Hat Color',
+	hairAccessories: 'Hair Accessories',
+	mask: 'Mask',
+	headContrastColor: 'Head Contrast',
+	sides: 'Sides',
+	texture: 'Texture',
+	shapeColor: 'Shape Color',
+	backgroundColor: 'Background Color',
+	gesture: 'Gesture',
+	mood: 'Mood',
+	style: 'Style',
+};
+
+/**
+ * Returns a translated label for a category key.
+ * Uses the translate function if provided, otherwise falls back to CATEGORY_LABEL_MAP or raw key.
+ */
+const getCategoryLabel = (key: string, translate?: (k: string) => string): string => {
+	if (translate) return translate('avatar_cat_' + key);
+	return CATEGORY_LABEL_MAP[key] ?? key;
+};
+
+/**
  * Maps avatar attribute category keys to MaterialCommunityIcons icon names.
  * Used to display a recognisable icon on the left side of each settings-list row.
  */
@@ -548,6 +626,8 @@ type AvatarEditorModalContentProps = {
 	rounded?: boolean;
 	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
 	backgroundColor?: string;
+	/** Translation function for localising section headers, buttons, and category labels. */
+	translate?: (key: string) => string;
 };
 
 type AvatarStickyHeaderProps = {
@@ -899,6 +979,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	hiddenProps,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
@@ -1205,7 +1286,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			{showApplyButton && onApply && (
 				<>
 					<SettingsList
-						title="Apply"
+						title={translate ? translate('avatar_apply') : 'Apply'}
 						onPress={onApply}
 						leftIcon={<MaterialCommunityIcons name="check-circle" size={20} />}
 						iconBgColor={accentColor}
@@ -1214,7 +1295,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				</>
 			)}
 
-			<SettingsListGroupTitle title="Category" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_category') : 'Category'} />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
 					allCategories.length === 1
@@ -1234,7 +1315,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				return (
 					<SettingsListLeftRight
 						key={cat}
-						label={cat}
+						label={getCategoryLabel(cat, translate)}
 						options={getCategoryOptions(cat)}
 						selectedOption={getCategorySelectedOption(cat)}
 						onSelect={(item) => handleCategorySelect(cat, item)}
@@ -1257,9 +1338,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				);
 			})}
 
-			<SettingsListGroupTitle title="Actions" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
-				title="Randomize"
+				title={translate ? translate('avatar_randomize') : 'Randomize'}
 				onPress={handleRandomize}
 				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} />}
 				iconBgColor={accentColor}
@@ -1268,9 +1349,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			{debugMode && (
 				<View style={styles.debugSection}>
-					<SettingsListGroupTitle title="Debug" />
+					<SettingsListGroupTitle title={translate ? translate('avatar_section_debug') : 'Debug'} />
 					<SettingsList
-						title="Copy Config"
+						title={translate ? translate('avatar_copy_config') : 'Copy Config'}
 						onPress={handleCopyConfig}
 						leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
 						iconBgColor={accentColor}
@@ -1895,6 +1976,7 @@ type PresetSelectionModalContentProps = {
 	onCustomize: () => void;
 	rounded?: boolean;
 	backgroundColor?: string;
+	translate?: (key: string) => string;
 };
 
 const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = ({
@@ -1905,6 +1987,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	onCustomize,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const { theme } = useTheme();
 
@@ -1914,7 +1997,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 
 	return (
 		<View style={styles.content}>
-			<SettingsListGroupTitle title="Quick Start" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_quickstart') : 'Quick Start'} />
 			<View style={styles.presetGrid}>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
@@ -1932,9 +2015,9 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				))}
 			</View>
 
-			<SettingsListGroupTitle title="Actions" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
-				title="Customize"
+				title={translate ? translate('avatar_customize') : 'Customize'}
 				onPress={onCustomize}
 				leftIcon={<MaterialCommunityIcons name="tune-variant" size={20} />}
 				iconBgColor={accentColor}
@@ -1962,6 +2045,8 @@ export type UseAvatarEditorModalOptions = {
 	rounded?: boolean;
 	/** Forwarded to all avatar previews inside the editor. Background colour shown behind each avatar. */
 	backgroundColor?: string;
+	/** Translation function for localising section headers, buttons, and category labels inside the editor. */
+	translate?: (key: string) => string;
 };
 
 export type OpenAvatarEditorProps = {
@@ -1983,6 +2068,7 @@ type AvatarEditorUnifiedContentProps = {
 	hiddenProps?: Record<string, string>;
 	rounded?: boolean;
 	backgroundColor?: string;
+	translate?: (key: string) => string;
 };
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
@@ -1997,6 +2083,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	hiddenProps,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -2022,6 +2109,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				accentColor={accentColor}
 				rounded={rounded}
 				backgroundColor={backgroundColor}
+				translate={translate}
 				onSelectPreset={switchToEditor}
 				onCustomize={() =>
 					switchToEditor({
@@ -2047,6 +2135,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			hiddenProps={hiddenProps}
 			rounded={rounded}
 			backgroundColor={backgroundColor}
+			translate={translate}
 		/>
 	);
 };
@@ -2096,6 +2185,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});
@@ -2147,6 +2237,7 @@ export const useAvatarEditorModal = () => {
 							hiddenProps={options?.hiddenProps}
 							rounded={options?.rounded}
 							backgroundColor={options?.backgroundColor}
+							translate={options?.translate}
 						/>
 					),
 				});
@@ -2170,6 +2261,7 @@ export const useAvatarEditorModal = () => {
 						accentColor={options?.accentColor}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 						onSelectPreset={openEditorWithConfig}
 						onCustomize={openCustomizeFromScratch}
 					/>
@@ -2228,6 +2320,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});
@@ -2297,6 +2390,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});

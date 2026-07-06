@@ -75,6 +75,7 @@ const AvatarsScreen = () => {
 		debugMode,
 		allowedStyles: [selectedStyle],
 		hiddenProps: selectedStyle === AvatarStyle.MICAH ? MICAH_HIDDEN_PROPS : undefined,
+		translate,
 	};
 
 	const handleOpenEditor = () => {
