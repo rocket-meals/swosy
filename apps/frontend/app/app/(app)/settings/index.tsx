@@ -553,7 +553,7 @@ const Settings = () => {
 											backgroundColor={AVATAR_BACKGROUND}
 										/>
 									) : (
-										<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: theme.screen.icon + '22', alignItems: 'center', justifyContent: 'center' }}>
+										<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 											<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
 										</View>
 									)
