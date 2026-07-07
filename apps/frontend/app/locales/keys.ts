@@ -382,6 +382,7 @@ export enum TranslationKeys {
         modal_text_input_empty = 'modal_text_input_empty',
         vertical_image_scroll = 'vertical_image_scroll',
         canteen_visits = 'canteen_visits',
+        avatar = 'avatar',
         avatars = 'avatars',
         avatar_style = 'avatar_style',
         avatar_seed = 'avatar_seed',
@@ -395,6 +396,8 @@ export enum TranslationKeys {
         avatar_randomize = 'avatar_randomize',
         avatar_copy_config = 'avatar_copy_config',
         avatar_customize = 'avatar_customize',
+        avatar_customize_hint = 'avatar_customize_hint',
+        avatar_quickstart_pick_hint = 'avatar_quickstart_pick_hint',
         avatar_profile_picture = 'avatar_profile_picture',
         avatar_create_new = 'avatar_create_new',
         // Avatar editor category labels

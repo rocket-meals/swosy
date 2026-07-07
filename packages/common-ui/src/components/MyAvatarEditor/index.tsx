@@ -1998,6 +1998,9 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	return (
 		<View style={styles.content}>
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_quickstart') : 'Quick Start'} />
+			<Text style={[styles.quickstartHint, { color: theme.screen.placeholder }]}>
+				{translate ? translate('avatar_quickstart_pick_hint') : 'Choose a basis to start'}
+			</Text>
 			<View style={styles.presetGrid}>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
@@ -2018,6 +2021,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
 				title={translate ? translate('avatar_customize') : 'Customize'}
+				value={translate ? translate('avatar_customize_hint') : 'Customize avatar completely from scratch'}
 				onPress={onCustomize}
 				leftIcon={<MaterialCommunityIcons name="tune-variant" size={20} />}
 				iconBgColor={accentColor}
@@ -2441,6 +2445,11 @@ const styles = StyleSheet.create({
 	},
 	previewAvatarWrapper: {
 		marginRight: 10,
+	},
+	quickstartHint: {
+		fontSize: 13,
+		paddingHorizontal: 16,
+		paddingBottom: 4,
 	},
 	presetGrid: {
 		flexDirection: 'row',

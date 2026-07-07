@@ -54,7 +54,7 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
@@ -548,19 +548,19 @@ const Settings = () => {
 									settingsAvatarConfig ? (
 										<MyAvatar
 											config={settingsAvatarConfig}
-											size={AvatarSize.SMALL}
+											size={64}
 											rounded={true}
 											backgroundColor={AVATAR_BACKGROUND}
 										/>
 									) : (
-										<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+										<View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 											<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
 										</View>
 									)
 								}
-								label={translate(TranslationKeys.avatar_profile_picture)}
+								value={translate(TranslationKeys.avatar)}
 								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-								handleFunction={openAvatarActionsModal}
+								handleFunction={settingsAvatarConfig ? openAvatarActionsModal : () => openAvatarEditor(true)}
 								groupPosition="top"
 							/>
 						)}
@@ -740,19 +740,23 @@ const Settings = () => {
 
 		// === Account Actions (Logout / Delete) ===
 		rows.push({
-			key: 'section-account-actions',
+			key: 'section-account-logout',
 			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.account)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
-						{isRegisteredUser ? (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
-						) : null}
-					</View>
+				<View style={groupStyle}>
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="single" />
 				</View>
 			),
 		});
+		if (isRegisteredUser) {
+			rows.push({
+				key: 'section-account-delete',
+				element: (
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="single" />
+					</View>
+				),
+			});
+		}
 
 		// === Footer ===
 		rows.push({
@@ -897,7 +901,7 @@ const Settings = () => {
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
-		settingsAvatarConfig, openAvatarActionsModal,
+		settingsAvatarConfig, openAvatarActionsModal, openAvatarEditor,
 	]);
 
 	return (

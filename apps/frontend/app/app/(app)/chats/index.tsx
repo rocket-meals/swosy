@@ -15,7 +15,7 @@ import { MARK_ALL_CHATS_AS_READ, MARK_ALL_CHATS_AS_UNREAD } from '@/redux/Types/
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import styles from './styles';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
-import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
+import { MyAvatar } from 'repo-depkit-common-ui';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { UserHelper } from '@/helper/UserHelper';
@@ -216,19 +216,19 @@ const ChatsScreen = () => {
                                                         ownAvatarConfig ? (
                                                                 <MyAvatar
                                                                         config={ownAvatarConfig}
-                                                                        size={AvatarSize.SMALL}
+                                                                        size={64}
                                                                         rounded={true}
                                                                         backgroundColor={AVATAR_BACKGROUND}
                                                                 />
                                                         ) : (
-                                                                <View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
                                                                         <MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
                                                                 </View>
                                                         )
                                                 }
-                                                label={translate(TranslationKeys.avatar_profile_picture)}
+                                                value={translate(TranslationKeys.avatar)}
                                                 rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-                                                handleFunction={openAvatarActionsModal}
+                                                handleFunction={ownAvatarConfig ? openAvatarActionsModal : () => openAvatarEditor(true)}
                                                 groupPosition="single"
                                         />
                                 </View>

@@ -3537,6 +3537,16 @@
     "tr": "Yemekhane Ziyaretleri",
     "zh": "食堂访问"
   },
+  "avatar": {
+    "de": "Avatar",
+    "en": "Avatar",
+    "ar": "الصورة الرمزية",
+    "es": "Avatar",
+    "fr": "Avatar",
+    "ru": "Аватар",
+    "tr": "Avatar",
+    "zh": "头像"
+  },
   "avatars": {
     "de": "Avatare",
     "en": "Avatars",
@@ -7096,5 +7106,25 @@
     "ru": "Создать новый",
     "tr": "Yeni oluştur",
     "zh": "新建"
+  },
+  "avatar_quickstart_pick_hint": {
+    "de": "Wähle eine Grundlage zum Starten",
+    "en": "Choose a basis to start",
+    "ar": "اختر أساساً للبدء",
+    "es": "Elige una base para empezar",
+    "fr": "Choisissez une base pour commencer",
+    "ru": "Выберите основу для начала",
+    "tr": "Başlamak için bir temel seçin",
+    "zh": "选择一个起始基础"
+  },
+  "avatar_customize_hint": {
+    "de": "Avatar komplett von Grund auf anpassen",
+    "en": "Customize avatar completely from scratch",
+    "ar": "تخصيص الصورة الرمزية بالكامل من الصفر",
+    "es": "Personalizar el avatar completamente desde cero",
+    "fr": "Personnaliser l'avatar entièrement depuis le début",
+    "ru": "Настройте аватар полностью с нуля",
+    "tr": "Avatarı sıfırdan tamamen özelleştirin",
+    "zh": "从头开始完全自定义头像"
   }
 }

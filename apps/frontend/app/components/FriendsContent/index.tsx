@@ -733,8 +733,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 							<MaterialCommunityIcons name="account-group" size={24} color="white" />
 						)
 					}
-					label={displayLabel}
-					value={showStatus ? translateFriendshipStatus(friendship.friendship_status) : undefined}
+					label={showStatus ? translateFriendshipStatus(friendship.friendship_status) : undefined}
+					value={displayLabel}
 					groupPosition={groupPosition}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={() => openFriendshipDetail(friendship)}
@@ -762,19 +762,19 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 						ownAvatarConfig ? (
 							<MyAvatar
 								config={ownAvatarConfig}
-								size={AvatarSize.SMALL}
+								size={64}
 								rounded={true}
 								backgroundColor={AVATAR_BACKGROUND}
 							/>
 						) : (
-							<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+							<View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 								<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
 							</View>
 						)
 					}
-					label={translate(TranslationKeys.avatar_profile_picture)}
+					value={translate(TranslationKeys.avatar)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-					handleFunction={openAvatarActionsModal}
+					handleFunction={ownAvatarConfig ? openAvatarActionsModal : () => openAvatarEditor(true)}
 					groupPosition="top"
 				/>
 				<SettingsList
