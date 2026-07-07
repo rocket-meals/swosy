@@ -395,6 +395,8 @@ export enum TranslationKeys {
         avatar_randomize = 'avatar_randomize',
         avatar_copy_config = 'avatar_copy_config',
         avatar_customize = 'avatar_customize',
+        avatar_profile_picture = 'avatar_profile_picture',
+        avatar_create_new = 'avatar_create_new',
         // Avatar editor category labels
         avatar_cat_Style = 'avatar_cat_Style',
         avatar_cat_skinColor = 'avatar_cat_skinColor',

@@ -54,9 +54,10 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -87,6 +88,51 @@ const Settings = () => {
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
         const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 
+        const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor, deleteAvatar: deleteSettingsAvatar } = useAvatarProfileEditor();
+
+        const openAvatarActionsModal = useCallback(() => {
+                showScrollViewModal({
+                        title: translate(TranslationKeys.avatars),
+                        children: (
+                                <View style={{ paddingVertical: 8 }}>
+                                        {settingsAvatarConfig && (
+                                                <>
+                                                        <SettingsList
+                                                                title={translate(TranslationKeys.edit)}
+                                                                onPress={() => {
+                                                                        closeScrollViewModal();
+                                                                        openAvatarEditor(false);
+                                                                }}
+                                                                leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
+                                                                groupPosition="top"
+                                                                showSeparator={true}
+                                                        />
+                                                        <SettingsList
+                                                                title={translate(TranslationKeys.delete)}
+                                                                onPress={() => {
+                                                                        closeScrollViewModal();
+                                                                        void deleteSettingsAvatar();
+                                                                }}
+                                                                leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+                                                                iconBgColor="#F44336"
+                                                                groupPosition="middle"
+                                                                showSeparator={true}
+                                                        />
+                                                </>
+                                        )}
+                                        <SettingsList
+                                                title={translate(TranslationKeys.avatar_create_new)}
+                                                onPress={() => {
+                                                        closeScrollViewModal();
+                                                        openAvatarEditor(true);
+                                                }}
+                                                leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
+                                                groupPosition={settingsAvatarConfig ? 'bottom' : 'single'}
+                                        />
+                                </View>
+                        ),
+                });
+        }, [showScrollViewModal, closeScrollViewModal, translate, settingsAvatarConfig, openAvatarEditor, deleteSettingsAvatar]);
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -496,7 +542,29 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
+						{isRegisteredUser && (
+							<SettingsList
+								leftIconComponent={
+									settingsAvatarConfig ? (
+										<MyAvatar
+											config={settingsAvatarConfig}
+											size={AvatarSize.SMALL}
+											rounded={true}
+											backgroundColor={AVATAR_BACKGROUND}
+										/>
+									) : (
+										<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: theme.screen.icon + '22', alignItems: 'center', justifyContent: 'center' }}>
+											<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
+										</View>
+									)
+								}
+								label={translate(TranslationKeys.avatar_profile_picture)}
+								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+								handleFunction={openAvatarActionsModal}
+								groupPosition="top"
+							/>
+						)}
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition={isRegisteredUser ? 'middle' : 'top'} />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="middle" nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						<SettingsListEditable
 							iconBgColor={primaryColor}
@@ -829,6 +897,7 @@ const Settings = () => {
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
+		settingsAvatarConfig, openAvatarActionsModal,
 	]);
 
 	return (

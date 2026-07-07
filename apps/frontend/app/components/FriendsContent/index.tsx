@@ -20,6 +20,8 @@ import ProjectButton from '@/components/ProjectButton';
 import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
+import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
 
 const isWeb = Platform.OS === 'web';
 
@@ -424,6 +426,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { friendships } = useAppSelector((state) => state.friendships);
 
+	const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor, deleteAvatar: deleteOwnAvatar } = useAvatarProfileEditor();
+
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
 	const [refreshing, setRefreshing] = useState(false);
 
@@ -436,6 +440,11 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const getProfileNicknameFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string | null => {
 		if (!field || typeof field === 'string') return null;
 		return (field as DatabaseTypes.Profiles)?.nickname ?? null;
+	}, []);
+
+	const getProfileAvatarFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined) => {
+		if (!field || typeof field === 'string') return null;
+		return parseProfileAvatar((field as DatabaseTypes.Profiles)?.avatar);
 	}, []);
 
 	const pendingFriendships = useMemo(
@@ -531,6 +540,50 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		openScanModal(true);
 	}, [openScanModal]);
 
+	const openAvatarActionsModal = useCallback(() => {
+		showScrollViewModal({
+			title: translate(TranslationKeys.avatars),
+			children: (
+				<View style={{ paddingVertical: 8 }}>
+					{ownAvatarConfig && (
+						<>
+							<SettingsList
+								title={translate(TranslationKeys.edit)}
+								onPress={() => {
+									closeScrollViewModal();
+									openAvatarEditor(false);
+								}}
+								leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
+								groupPosition="top"
+								showSeparator={true}
+							/>
+							<SettingsList
+								title={translate(TranslationKeys.delete)}
+								onPress={() => {
+									closeScrollViewModal();
+									void deleteOwnAvatar();
+								}}
+								leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+								iconBgColor="#F44336"
+								groupPosition="middle"
+								showSeparator={true}
+							/>
+						</>
+					)}
+					<SettingsList
+						title={translate(TranslationKeys.avatar_create_new)}
+						onPress={() => {
+							closeScrollViewModal();
+							openAvatarEditor(true);
+						}}
+						leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
+						groupPosition={ownAvatarConfig ? 'bottom' : 'single'}
+					/>
+				</View>
+			),
+		});
+	}, [showScrollViewModal, closeScrollViewModal, translate, ownAvatarConfig, openAvatarEditor, deleteOwnAvatar]);
+
 	const formatDate = useCallback((dateStr: string | null | undefined): string => {
 		if (!dateStr) return '-';
 		try {
@@ -546,6 +599,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 		const receiverId = getProfileIdFromField(friendship.receiver_profiles_id);
 		const isRequester = requesterId === profile?.id;
 		const otherProfileId = isRequester ? receiverId : requesterId;
+		const otherProfileField = isRequester ? friendship.receiver_profiles_id : friendship.requester_profiles_id;
+		const otherAvatar = getProfileAvatarFromField(otherProfileField);
 		const isPending = friendship.friendship_status === 'pending';
 
 		const handleDelete = async () => {
@@ -584,6 +639,16 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			title: translate(TranslationKeys.friendships_details),
 			children: (
 				<View style={{ gap: 16 }}>
+					{otherAvatar && (
+						<View style={{ alignItems: 'center', paddingVertical: 8 }}>
+							<MyAvatar
+								config={otherAvatar}
+								size={AvatarSize.LARGE}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						</View>
+					)}
 					<View>
 						<SettingsList
 							label={translate(TranslationKeys.friendships_friend_profile_id)}
@@ -617,7 +682,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				</View>
 			),
 		});
-	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, showToast, translate, getProfileIdFromField, formatDate, theme.screen.icon]);
+	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, showToast, translate, getProfileIdFromField, getProfileAvatarFromField, formatDate, theme.screen.icon]);
 
 	const friendshipStatusColor = (status: string | null | undefined) => {
 		switch (status) {
@@ -643,6 +708,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			const otherProfileField = isRequester ? friendship.receiver_profiles_id : friendship.requester_profiles_id;
 			const otherNickname = getProfileNicknameFromField(otherProfileField);
 			const otherProfileId = getProfileIdFromField(otherProfileField);
+			const otherAvatar = getProfileAvatarFromField(otherProfileField);
 			const displayLabel = otherNickname || otherProfileId;
 			const statusColor = friendshipStatusColor(friendship.friendship_status);
 			const totalItems = items.length;
@@ -651,8 +717,22 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			return (
 				<SettingsList
 					key={friendship.id}
-					iconBgColor={statusColor}
-					leftIcon={<MaterialCommunityIcons name="account-group" size={24} color="white" />}
+					iconBgColor={otherAvatar ? undefined : statusColor}
+					leftIconComponent={
+						otherAvatar ? (
+							<MyAvatar
+								config={otherAvatar}
+								size={AvatarSize.SMALL}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						) : undefined
+					}
+					leftIcon={
+						otherAvatar ? undefined : (
+							<MaterialCommunityIcons name="account-group" size={24} color="white" />
+						)
+					}
 					label={displayLabel}
 					value={showStatus ? translateFriendshipStatus(friendship.friendship_status) : undefined}
 					groupPosition={groupPosition}
@@ -678,11 +758,31 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 
 				{/* Profile Info */}
 				<SettingsList
+					leftIconComponent={
+						ownAvatarConfig ? (
+							<MyAvatar
+								config={ownAvatarConfig}
+								size={AvatarSize.SMALL}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						) : (
+							<View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+								<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
+							</View>
+						)
+					}
+					label={translate(TranslationKeys.avatar_profile_picture)}
+					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+					handleFunction={openAvatarActionsModal}
+					groupPosition="top"
+				/>
+				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
 					label={translate(TranslationKeys.friendships_profile_id)}
 					value={profile?.id ?? '-'}
-					groupPosition="top"
+					groupPosition="middle"
 				/>
 				<SettingsListNickname
 					groupPosition="bottom"

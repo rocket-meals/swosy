@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -15,6 +15,10 @@ import { MARK_ALL_CHATS_AS_READ, MARK_ALL_CHATS_AS_UNREAD } from '@/redux/Types/
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import styles from './styles';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
+import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { UserHelper } from '@/helper/UserHelper';
 
 const ChatsScreen = () => {
         useSetPageTitle(TranslationKeys.chats);
@@ -24,6 +28,55 @@ const ChatsScreen = () => {
 
         const { chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+        const { user } = useAppSelector((state) => state.authReducer);
+        const isRegisteredUser = UserHelper.isRegisteredUser(user);
+
+        const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor, deleteAvatar: deleteOwnAvatar } = useAvatarProfileEditor();
+        const { show: showModal, close: closeModal } = useMyScrollViewModal();
+
+        const openAvatarActionsModal = useCallback(() => {
+                showModal({
+                        title: translate(TranslationKeys.avatars),
+                        children: (
+                                <View style={{ paddingVertical: 8 }}>
+                                        {ownAvatarConfig && (
+                                                <>
+                                                        <SettingsList
+                                                                title={translate(TranslationKeys.edit)}
+                                                                onPress={() => {
+                                                                        closeModal();
+                                                                        openAvatarEditor(false);
+                                                                }}
+                                                                leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
+                                                                groupPosition="top"
+                                                                showSeparator={true}
+                                                        />
+                                                        <SettingsList
+                                                                title={translate(TranslationKeys.delete)}
+                                                                onPress={() => {
+                                                                        closeModal();
+                                                                        void deleteOwnAvatar();
+                                                                }}
+                                                                leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+                                                                iconBgColor="#F44336"
+                                                                groupPosition="middle"
+                                                                showSeparator={true}
+                                                        />
+                                                </>
+                                        )}
+                                        <SettingsList
+                                                title={translate(TranslationKeys.avatar_create_new)}
+                                                onPress={() => {
+                                                        closeModal();
+                                                        openAvatarEditor(true);
+                                                }}
+                                                leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
+                                                groupPosition={ownAvatarConfig ? 'bottom' : 'single'}
+                                        />
+                                </View>
+                        ),
+                });
+        }, [showModal, closeModal, translate, ownAvatarConfig, openAvatarEditor, deleteOwnAvatar]);
 
         const sortedChats = useMemo(() => {
                 return [...chats].sort((a, b) => {
@@ -156,6 +209,30 @@ const ChatsScreen = () => {
 
         return (
                 <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+                        {isRegisteredUser && (
+                                <View style={styles.avatarSection}>
+                                        <SettingsList
+                                                leftIconComponent={
+                                                        ownAvatarConfig ? (
+                                                                <MyAvatar
+                                                                        config={ownAvatarConfig}
+                                                                        size={AvatarSize.SMALL}
+                                                                        rounded={true}
+                                                                        backgroundColor={AVATAR_BACKGROUND}
+                                                                />
+                                                        ) : (
+                                                                <View style={{ width: AvatarSize.SMALL, height: AvatarSize.SMALL, borderRadius: AvatarSize.SMALL / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
+                                                                </View>
+                                                        )
+                                                }
+                                                label={translate(TranslationKeys.avatar_profile_picture)}
+                                                rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+                                                handleFunction={openAvatarActionsModal}
+                                                groupPosition="single"
+                                        />
+                                </View>
+                        )}
                         <FlatList
                                 data={sortedChats}
                                 keyExtractor={item => item.id}
