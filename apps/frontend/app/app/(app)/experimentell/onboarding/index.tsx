@@ -33,14 +33,22 @@ const AVATARS_TOTAL = AVATARS_PER_ROW * 2;
 // Each slot swaps in 1 second intervals; fade is fast
 const AVATAR_FADE_DURATION = 200;
 const AVATAR_SLOT_INTERVAL = 1000;
+// Padding inside the welcome step's ScrollView contentContainerStyle – used to break the
+// carousel out to the full screen edge via negative margin.
+const STEP_CONTENT_PADDING = 20;
 // User count: animate up to this placeholder while real count loads
 const COUNT_PLACEHOLDER_TARGET = 999;
 const COUNT_INCREMENT_INTERVAL = 40; // ms between ticks
+const COUNT_STEP_MIN = 20;
+const COUNT_STEP_MAX = 100;
+// How long (ms) the "ready" overlay is visible before navigating to food offers
+const READY_OVERLAY_DISPLAY_DURATION = 1400;
 const profileHelper = new ProfileHelper();
 
-// Precomputed quickstart configs – size matches AVATAR_CAROUSEL_SIZE to avoid layout jump
+// Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
+// carousel renders with an explicit size={AVATAR_CAROUSEL_SIZE} prop so there is no layout jump.
 const QUICKSTART_AVATAR_CONFIGS: AvatarConfig[] = MICAH_PRESETS.map(
-	(p) => presetToConfig(p, AvatarStyle.MICAH, AVATAR_CAROUSEL_SIZE as AvatarSize),
+	(p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL),
 );
 
 const OnboardingScreen = () => {
@@ -210,11 +218,15 @@ const OnboardingScreen = () => {
 				duration: AVATAR_FADE_DURATION,
 				useNativeDriver: true,
 			}).start(() => {
-				setSlotAvatars(prev => {
-					const next = [...prev];
-					next[slot] = pool[poolIdx];
-					return next;
-				});
+				if (pool.length > 0 && poolIdx < pool.length) {
+					setSlotAvatars(prev => {
+						const next = [...prev];
+						if (slot < next.length) {
+							next[slot] = pool[poolIdx];
+						}
+						return next;
+					});
+				}
 				nextPoolIndexRef.current += 1;
 				nextSlotRef.current += 1;
 				Animated.timing(slotOpacities[slot], {
@@ -235,7 +247,7 @@ const OnboardingScreen = () => {
 		if (userCount !== null) return; // real data arrived, stop placeholder
 		let current = 0;
 		const interval = setInterval(() => {
-			const step = Math.floor(Math.random() * 80) + 20;
+			const step = Math.floor(Math.random() * COUNT_STEP_MAX) + COUNT_STEP_MIN;
 			current = Math.min(current + step, COUNT_PLACEHOLDER_TARGET);
 			setPlaceholderCount(current);
 			if (current >= COUNT_PLACEHOLDER_TARGET) clearInterval(interval);
@@ -307,7 +319,7 @@ const OnboardingScreen = () => {
 		}).start(() => {
 			setTimeout(() => {
 				router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
-			}, 1400);
+			}, READY_OVERLAY_DISPLAY_DURATION);
 		});
 	}, [readyOpacity]);
 
@@ -322,10 +334,15 @@ const OnboardingScreen = () => {
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
 	// Format the user count display:
-	// While loading → placeholder with leading zeros (e.g. 00.999 style)
+	// While loading → fixed "00.XXX" format (consistent across all locales)
+	// After load → locale-aware format
 	const formattedCount = useMemo(() => {
-		const n = userCount !== null ? userCount : placeholderCount;
-		return n.toLocaleString(undefined, { minimumIntegerDigits: 5 });
+		if (userCount !== null) {
+			return userCount.toLocaleString();
+		}
+		// Consistent "00.XXX" format for the placeholder (0-padded to 5 chars)
+		const padded = String(placeholderCount).padStart(5, '0');
+		return `${padded.slice(0, 2)}.${padded.slice(2)}`;
 	}, [userCount, placeholderCount]);
 
 	const renderStepIndicator = () => (
@@ -352,7 +369,7 @@ const OnboardingScreen = () => {
 		// Avatar cell width: divide screen evenly across the row
 		const cellWidth = screenWidth / AVATARS_PER_ROW;
 		return (
-			<View style={[styles.avatarCarouselContainer, { width: screenWidth, marginHorizontal: -20 }]}>
+			<View style={[styles.avatarCarouselContainer, { width: screenWidth, marginHorizontal: -STEP_CONTENT_PADDING }]}>
 				<View style={styles.avatarCarouselRow}>
 					{row1.map((cfg, i) => (
 						<Animated.View
