@@ -22,22 +22,25 @@ import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { AvatarConfig, AvatarSize, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig } from 'repo-depkit-common-ui';
+import { AvatarConfig, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig, AvatarSize } from 'repo-depkit-common-ui';
 import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
 const AVATAR_CAROUSEL_SIZE = 44;
 const AVATARS_PER_ROW = 4;
-const AVATARS_PER_BATCH = AVATARS_PER_ROW * 2;
-const AVATAR_DISPLAY_DURATION = 5000;
-const AVATAR_FADE_DURATION = 400;
-const AVATAR_STAGGER_DELAY = 80;
+const AVATARS_TOTAL = AVATARS_PER_ROW * 2;
+// Each slot swaps in 1 second intervals; fade is fast
+const AVATAR_FADE_DURATION = 200;
+const AVATAR_SLOT_INTERVAL = 1000;
+// User count: animate up to this placeholder while real count loads
+const COUNT_PLACEHOLDER_TARGET = 999;
+const COUNT_INCREMENT_INTERVAL = 40; // ms between ticks
 const profileHelper = new ProfileHelper();
 
-// Precomputed from static constants, no need to recompute inside the component
+// Precomputed quickstart configs – size matches AVATAR_CAROUSEL_SIZE to avoid layout jump
 const QUICKSTART_AVATAR_CONFIGS: AvatarConfig[] = MICAH_PRESETS.map(
-	(p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL),
+	(p) => presetToConfig(p, AvatarStyle.MICAH, AVATAR_CAROUSEL_SIZE as AvatarSize),
 );
 
 const OnboardingScreen = () => {
@@ -55,6 +58,7 @@ const OnboardingScreen = () => {
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [userCount, setUserCount] = useState<number | null>(null);
+	const [placeholderCount, setPlaceholderCount] = useState(0);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
 	// Track which steps have been mounted for lazy loading
 	const [mountedSteps, setMountedSteps] = useState<Set<number>>(new Set([0]));
@@ -62,13 +66,22 @@ const OnboardingScreen = () => {
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
 
-	// Avatar carousel state
-	const [avatarPool, setAvatarPool] = useState<AvatarConfig[]>(QUICKSTART_AVATAR_CONFIGS);
-	const [carouselBatchIndex, setCarouselBatchIndex] = useState(0);
-	// Per-slot animated opacity values for staggered fading
-	const avatarOpacities = useRef(
-		Array.from({ length: AVATARS_PER_BATCH }, () => new Animated.Value(1))
+	// Transition overlay state ("Du bist nun startklar")
+	const [showReadyOverlay, setShowReadyOverlay] = useState(false);
+	const readyOpacity = useRef(new Animated.Value(0)).current;
+
+	// ── Avatar carousel ──────────────────────────────────────────────────────
+	// Each slot has its own avatar and opacity – slots swap one at a time
+	const [slotAvatars, setSlotAvatars] = useState<AvatarConfig[]>(
+		() => QUICKSTART_AVATAR_CONFIGS.slice(0, AVATARS_TOTAL)
+	);
+	const slotOpacities = useRef(
+		Array.from({ length: AVATARS_TOTAL }, () => new Animated.Value(1))
 	).current;
+	// Pool ref – updated when server data arrives; safe to read in animation callbacks
+	const avatarPoolRef = useRef<AvatarConfig[]>(QUICKSTART_AVATAR_CONFIGS);
+	const nextPoolIndexRef = useRef(AVATARS_TOTAL);
+	const nextSlotRef = useRef(0);
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
@@ -174,8 +187,8 @@ const OnboardingScreen = () => {
 					if (cfg) configs.push(cfg);
 				}
 				if (configs.length > 0) {
-					setAvatarPool(configs);
-					setCarouselBatchIndex(0);
+					avatarPoolRef.current = configs;
+					nextPoolIndexRef.current = AVATARS_TOTAL;
 				}
 			} catch (error) {
 				console.error('[Onboarding] Failed to load profile avatars:', error);
@@ -184,50 +197,51 @@ const OnboardingScreen = () => {
 		loadProfileAvatars();
 	}, []);
 
-	// Avatar carousel: staggered fade out → switch batch → staggered fade in
+	// Avatar carousel: one slot swaps at a time, every AVATAR_SLOT_INTERVAL ms
 	useEffect(() => {
 		let timer: ReturnType<typeof setTimeout>;
-		const scheduleNext = () => {
-			timer = setTimeout(() => {
-				Animated.stagger(
-					AVATAR_STAGGER_DELAY,
-					avatarOpacities.map((opacity) =>
-						Animated.timing(opacity, {
-							toValue: 0,
-							duration: AVATAR_FADE_DURATION,
-							useNativeDriver: true,
-						})
-					)
-				).start(() => {
-					setCarouselBatchIndex((prev) => prev + 1);
-					Animated.stagger(
-						AVATAR_STAGGER_DELAY,
-						avatarOpacities.map((opacity) =>
-							Animated.timing(opacity, {
-								toValue: 1,
-								duration: AVATAR_FADE_DURATION,
-								useNativeDriver: true,
-							})
-						)
-					).start(() => scheduleNext());
-				});
-			}, AVATAR_DISPLAY_DURATION);
-		};
-		scheduleNext();
-		return () => clearTimeout(timer);
-	}, [avatarOpacities]);
+		const swapNext = () => {
+			const slot = nextSlotRef.current % AVATARS_TOTAL;
+			const pool = avatarPoolRef.current;
+			const poolIdx = nextPoolIndexRef.current % pool.length;
 
-	const goToStep = useCallback((index: number) => {
-		setCurrentStepIndex(index);
-		// Lazy-mount the target step (and the one after it for smooth preloading)
-		setMountedSteps((prev) => {
-			const updatedSteps = new Set(prev);
-			updatedSteps.add(index);
-			if (index + 1 < STEPS.length) updatedSteps.add(index + 1);
-			return updatedSteps;
-		});
-		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
-	}, [screenWidth]);
+			Animated.timing(slotOpacities[slot], {
+				toValue: 0,
+				duration: AVATAR_FADE_DURATION,
+				useNativeDriver: true,
+			}).start(() => {
+				setSlotAvatars(prev => {
+					const next = [...prev];
+					next[slot] = pool[poolIdx];
+					return next;
+				});
+				nextPoolIndexRef.current += 1;
+				nextSlotRef.current += 1;
+				Animated.timing(slotOpacities[slot], {
+					toValue: 1,
+					duration: AVATAR_FADE_DURATION,
+					useNativeDriver: true,
+				}).start(() => {
+					timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
+				});
+			});
+		};
+		timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
+		return () => clearTimeout(timer);
+	}, [slotOpacities]);
+
+	// User count: animate placeholder counter while real count is loading
+	useEffect(() => {
+		if (userCount !== null) return; // real data arrived, stop placeholder
+		let current = 0;
+		const interval = setInterval(() => {
+			const step = Math.floor(Math.random() * 80) + 20;
+			current = Math.min(current + step, COUNT_PLACEHOLDER_TARGET);
+			setPlaceholderCount(current);
+			if (current >= COUNT_PLACEHOLDER_TARGET) clearInterval(interval);
+		}, COUNT_INCREMENT_INTERVAL);
+		return () => clearInterval(interval);
+	}, [userCount]);
 
 	useEffect(() => {
 		const fetchUserCount = async () => {
@@ -244,6 +258,18 @@ const OnboardingScreen = () => {
 		};
 		fetchUserCount();
 	}, []);
+
+	const goToStep = useCallback((index: number) => {
+		setCurrentStepIndex(index);
+		// Lazy-mount the target step (and the one after it for smooth preloading)
+		setMountedSteps((prev) => {
+			const updatedSteps = new Set(prev);
+			updatedSteps.add(index);
+			if (index + 1 < STEPS.length) updatedSteps.add(index + 1);
+			return updatedSteps;
+		});
+		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
+	}, [screenWidth]);
 
 	const handleNext = useCallback(() => {
 		if (!isLastStep) {
@@ -273,8 +299,17 @@ const OnboardingScreen = () => {
 	}, [goToStep]);
 
 	const handleStart = useCallback(() => {
-		router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
-	}, []);
+		setShowReadyOverlay(true);
+		Animated.timing(readyOpacity, {
+			toValue: 1,
+			duration: 350,
+			useNativeDriver: true,
+		}).start(() => {
+			setTimeout(() => {
+				router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+			}, 1400);
+		});
+	}, [readyOpacity]);
 
 	const handleScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
 		const offsetX = event.nativeEvent.contentOffset.x;
@@ -285,6 +320,13 @@ const OnboardingScreen = () => {
 	}, [screenWidth, currentStepIndex]);
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
+
+	// Format the user count display:
+	// While loading → placeholder with leading zeros (e.g. 00.999 style)
+	const formattedCount = useMemo(() => {
+		const n = userCount !== null ? userCount : placeholderCount;
+		return n.toLocaleString(undefined, { minimumIntegerDigits: 5 });
+	}, [userCount, placeholderCount]);
 
 	const renderStepIndicator = () => (
 		<View style={styles.stepIndicatorContainer}>
@@ -305,23 +347,22 @@ const OnboardingScreen = () => {
 	);
 
 	const renderAvatarCarousel = () => {
-		const poolSize = avatarPool.length;
-		if (poolSize === 0) return null;
-		const batchStart = (carouselBatchIndex * AVATARS_PER_BATCH) % poolSize;
-		const batch: AvatarConfig[] = [];
-		for (let i = 0; i < AVATARS_PER_BATCH; i++) {
-			batch.push(avatarPool[(batchStart + i) % poolSize]);
-		}
-		const row1 = batch.slice(0, AVATARS_PER_ROW);
-		const row2 = batch.slice(AVATARS_PER_ROW, AVATARS_PER_BATCH);
+		const row1 = slotAvatars.slice(0, AVATARS_PER_ROW);
+		const row2 = slotAvatars.slice(AVATARS_PER_ROW, AVATARS_TOTAL);
+		// Avatar cell width: divide screen evenly across the row
+		const cellWidth = screenWidth / AVATARS_PER_ROW;
 		return (
-			<View style={styles.avatarCarouselContainer}>
+			<View style={[styles.avatarCarouselContainer, { width: screenWidth, marginHorizontal: -20 }]}>
 				<View style={styles.avatarCarouselRow}>
 					{row1.map((cfg, i) => (
-						<Animated.View key={`r1-${i}`} style={{ opacity: avatarOpacities[i] }}>
+						<Animated.View
+							key={`r1-${i}`}
+							style={[styles.avatarCarouselCell, { width: cellWidth, opacity: slotOpacities[i] }]}
+						>
 							<MyAvatar
-								config={cfg}
+								style={cfg.style}
 								size={AVATAR_CAROUSEL_SIZE}
+								options={cfg.options}
 								rounded={true}
 								backgroundColor={AVATAR_BACKGROUND}
 							/>
@@ -330,10 +371,14 @@ const OnboardingScreen = () => {
 				</View>
 				<View style={styles.avatarCarouselRow}>
 					{row2.map((cfg, i) => (
-						<Animated.View key={`r2-${i}`} style={{ opacity: avatarOpacities[AVATARS_PER_ROW + i] }}>
+						<Animated.View
+							key={`r2-${i}`}
+							style={[styles.avatarCarouselCell, { width: cellWidth, opacity: slotOpacities[AVATARS_PER_ROW + i] }]}
+						>
 							<MyAvatar
-								config={cfg}
+								style={cfg.style}
 								size={AVATAR_CAROUSEL_SIZE}
+								options={cfg.options}
 								rounded={true}
 								backgroundColor={AVATAR_BACKGROUND}
 							/>
@@ -363,18 +408,16 @@ const OnboardingScreen = () => {
 						: translate(TranslationKeys.onboarding_welcome_description)}
 				</Text>
 				{isLoadingCanteens && <ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />}
-				{userCount !== null && (
-					<View style={styles.userCountContainer}>
-						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-							{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
+				<View style={styles.userCountContainer}>
+					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
+					</Text>
+					<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
+						<Text style={[styles.userCountNumber, { color: contrastColor }]}>
+							{formattedCount}
 						</Text>
-						<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
-							<Text style={[styles.userCountNumber, { color: contrastColor }]}>
-								{userCount.toLocaleString()}
-							</Text>
-						</View>
 					</View>
-				)}
+				</View>
 				{renderAvatarCarousel()}
 			</ScrollView>
 		</View>
@@ -507,6 +550,14 @@ const OnboardingScreen = () => {
 					</>
 				)}
 			</View>
+			{showReadyOverlay && (
+				<Animated.View style={[styles.readyOverlay, { opacity: readyOpacity, backgroundColor: primaryColor }]}>
+					<MaterialCommunityIcons name="rocket-launch" size={80} color={contrastColor} />
+					<Text style={[styles.readyTitle, { color: contrastColor }]}>
+						{translate(TranslationKeys.onboarding_ready)}
+					</Text>
+				</Animated.View>
+			)}
 		</SafeAreaView>
 	);
 };
@@ -621,16 +672,35 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 	},
 	avatarCarouselContainer: {
-		width: '100%',
 		gap: 8,
 		marginTop: 16,
-		alignItems: 'center',
+		overflow: 'hidden',
 	},
 	avatarCarouselRow: {
 		flexDirection: 'row',
-		gap: 8,
+	},
+	avatarCarouselCell: {
+		alignItems: 'center',
 		justifyContent: 'center',
+		paddingVertical: 4,
+	},
+	readyOverlay: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 24,
+	},
+	readyTitle: {
+		fontSize: 28,
+		fontFamily: 'Poppins_700Bold',
+		textAlign: 'center',
+		paddingHorizontal: 24,
 	},
 });
 
 export default OnboardingScreen;
+

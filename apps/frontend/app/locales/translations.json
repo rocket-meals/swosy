@@ -7146,5 +7146,15 @@
     "ru": "Внешний вид",
     "tr": "Görünüm",
     "zh": "外观"
+  },
+  "onboarding_ready": {
+    "de": "Du bist nun startklar!",
+    "en": "You are all set!",
+    "ar": "أنت جاهز تمامًا!",
+    "es": "¡Estás listo para empezar!",
+    "fr": "Tu es prêt à démarrer !",
+    "ru": "Ты готов к старту!",
+    "tr": "Artık hazırsın!",
+    "zh": "你已准备好出发！"
   }
 }
