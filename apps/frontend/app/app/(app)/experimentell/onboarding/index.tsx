@@ -211,23 +211,23 @@ const OnboardingScreen = () => {
 		const swapNext = () => {
 			const slot = nextSlotRef.current % AVATARS_TOTAL;
 			const pool = avatarPoolRef.current;
-			const poolIdx = nextPoolIndexRef.current % pool.length;
 
 			Animated.timing(slotOpacities[slot], {
 				toValue: 0,
 				duration: AVATAR_FADE_DURATION,
 				useNativeDriver: true,
 			}).start(() => {
-				if (pool.length > 0 && poolIdx < pool.length) {
+				// pool.length > 0 guard protects the modulo; poolIdx < pool.length is
+				// always true by construction so no separate check is needed.
+				if (pool.length > 0) {
+					const poolIdx = nextPoolIndexRef.current % pool.length;
 					setSlotAvatars(prev => {
 						const next = [...prev];
-						if (slot < next.length) {
-							next[slot] = pool[poolIdx];
-						}
+						next[slot] = pool[poolIdx];
 						return next;
 					});
+					nextPoolIndexRef.current += 1;
 				}
-				nextPoolIndexRef.current += 1;
 				nextSlotRef.current += 1;
 				Animated.timing(slotOpacities[slot], {
 					toValue: 1,
@@ -368,39 +368,32 @@ const OnboardingScreen = () => {
 		const row2 = slotAvatars.slice(AVATARS_PER_ROW, AVATARS_TOTAL);
 		// Avatar cell width: divide screen evenly across the row
 		const cellWidth = screenWidth / AVATARS_PER_ROW;
+
+		// renderSlot renders a single avatar cell with its per-slot opacity
+		const renderSlot = (cfg: AvatarConfig, slotIndex: number, keyPrefix: string) => (
+			<Animated.View
+				key={`${keyPrefix}-${slotIndex}`}
+				style={[styles.avatarCarouselCell, { width: cellWidth, opacity: slotOpacities[slotIndex] }]}
+			>
+				<MyAvatar
+					style={cfg.style}
+					size={AVATAR_CAROUSEL_SIZE}
+					options={cfg.options}
+					rounded={true}
+					backgroundColor={AVATAR_BACKGROUND}
+				/>
+			</Animated.View>
+		);
+
 		return (
+			// Negative marginHorizontal breaks the carousel out of the parent's STEP_CONTENT_PADDING
+			// so it occupies the full screen width.
 			<View style={[styles.avatarCarouselContainer, { width: screenWidth, marginHorizontal: -STEP_CONTENT_PADDING }]}>
 				<View style={styles.avatarCarouselRow}>
-					{row1.map((cfg, i) => (
-						<Animated.View
-							key={`r1-${i}`}
-							style={[styles.avatarCarouselCell, { width: cellWidth, opacity: slotOpacities[i] }]}
-						>
-							<MyAvatar
-								style={cfg.style}
-								size={AVATAR_CAROUSEL_SIZE}
-								options={cfg.options}
-								rounded={true}
-								backgroundColor={AVATAR_BACKGROUND}
-							/>
-						</Animated.View>
-					))}
+					{row1.map((cfg, i) => renderSlot(cfg, i, 'r1'))}
 				</View>
 				<View style={styles.avatarCarouselRow}>
-					{row2.map((cfg, i) => (
-						<Animated.View
-							key={`r2-${i}`}
-							style={[styles.avatarCarouselCell, { width: cellWidth, opacity: slotOpacities[AVATARS_PER_ROW + i] }]}
-						>
-							<MyAvatar
-								style={cfg.style}
-								size={AVATAR_CAROUSEL_SIZE}
-								options={cfg.options}
-								rounded={true}
-								backgroundColor={AVATAR_BACKGROUND}
-							/>
-						</Animated.View>
-					))}
+					{row2.map((cfg, i) => renderSlot(cfg, AVATARS_PER_ROW + i, 'r2'))}
 				</View>
 			</View>
 		);
