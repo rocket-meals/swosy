@@ -3793,6 +3793,22 @@
     "permissions": null,
     "validation": null,
     "fields": [
+      "id",
+      "nickname",
+      "date_updated",
+      "date_created",
+      "avatar"
+    ],
+    "action": "read",
+    "collection": "profiles",
+    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
+    "_syncId": "1ab111e9-c7fb-4adb-9408-e8402942bf17"
+  },
+  {
+    "presets": null,
+    "permissions": null,
+    "validation": null,
+    "fields": [
       "*"
     ],
     "action": "read",
