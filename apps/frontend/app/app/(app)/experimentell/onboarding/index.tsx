@@ -56,6 +56,7 @@ const COUNT_FAST_TICK_MS = 30;           // tick rate for fast phase (approachin
 const COUNT_SLOW_TICK_MS = 100;          // tick rate for slow phase (last 5 units)
 const COUNT_SLOW_THRESHOLD = 5;          // last N units use slow phase
 const COUNT_REFRESH_INTERVAL_MS = 5000; // re-fetch count every 5 seconds
+const COUNT_BADGE_WIDTH = '70%' as const;
 const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
@@ -596,7 +597,7 @@ const OnboardingScreen = () => {
 					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
 						{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
 					</Text>
-					<View style={[styles.userCountBadge, { backgroundColor: primaryColor, width: '70%' }]}>
+					<View style={[styles.userCountBadge, { backgroundColor: primaryColor, width: COUNT_BADGE_WIDTH }]}>
 						<Text style={[styles.userCountNumber, { color: contrastColor }]}>
 							{showVieleAndere ? translate(TranslationKeys.onboarding_many_others) : formattedCount}
 						</Text>
