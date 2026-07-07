@@ -31,7 +31,8 @@ const AVATAR_CAROUSEL_SIZE = 44;
 const AVATARS_PER_ROW = 4;
 const AVATARS_PER_BATCH = AVATARS_PER_ROW * 2;
 const AVATAR_DISPLAY_DURATION = 5000;
-const AVATAR_FADE_DURATION = 500;
+const AVATAR_FADE_DURATION = 400;
+const AVATAR_STAGGER_DELAY = 80;
 const profileHelper = new ProfileHelper();
 
 // Precomputed from static constants, no need to recompute inside the component
@@ -47,7 +48,7 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement, profile, user } = useAppSelector((state) => state.authReducer);
+	const { isManagement, profile } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
@@ -61,22 +62,28 @@ const OnboardingScreen = () => {
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
 
-	// Returning user: canteen already set, show simple continue button
-	const [showDirectContinue, setShowDirectContinue] = useState(false);
-
 	// Avatar carousel state
 	const [avatarPool, setAvatarPool] = useState<AvatarConfig[]>(QUICKSTART_AVATAR_CONFIGS);
 	const [carouselBatchIndex, setCarouselBatchIndex] = useState(0);
-	const carouselOpacity = useRef(new Animated.Value(1)).current;
+	// Per-slot animated opacity values for staggered fading
+	const avatarOpacities = useRef(
+		Array.from({ length: AVATARS_PER_BATCH }, () => new Animated.Value(1))
+	).current;
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
 
-	const isReturningUser = useMemo(() => {
-		const dateCreated = (user as { date_created?: string | null })?.date_created;
-		if (!dateCreated) return false;
-		return Date.now() - new Date(dateCreated).getTime() > 24 * 60 * 60 * 1000;
-	}, [(user as { date_created?: string | null })?.date_created]);
+	// User has a complete profile when id, canteen, and price_group are all set
+	const hasCompleteProfile = useMemo(() => {
+		if (!profile?.id) return false;
+		return !!profile?.canteen && !!profile?.price_group;
+	}, [profile?.id, profile?.canteen, profile?.price_group]);
+
+	// "Returning user" means the profile is fully configured
+	const isReturningUser = hasCompleteProfile;
+
+	// Direct continue is only shown when profile is fully configured (canteen + price_group from server)
+	const showDirectContinue = !isLoadingCanteens && hasCompleteProfile;
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
@@ -151,13 +158,6 @@ const OnboardingScreen = () => {
 		}
 	}, [profile?.canteen, canteens, selectedCanteen, isLoadingCanteens, dispatch]);
 
-	// Show direct continue button when canteen is already set (returning user with existing setup)
-	useEffect(() => {
-		if (!isLoadingCanteens && selectedCanteen && currentStepIndex === 0) {
-			setShowDirectContinue(true);
-		}
-	}, [selectedCanteen, isLoadingCanteens, currentStepIndex]);
-
 	// Load profiles with avatar field for the carousel
 	useEffect(() => {
 		const loadProfileAvatars = async () => {
@@ -184,28 +184,38 @@ const OnboardingScreen = () => {
 		loadProfileAvatars();
 	}, []);
 
-	// Avatar carousel: fade out → switch batch → fade in, then pause for AVATAR_DISPLAY_DURATION
+	// Avatar carousel: staggered fade out → switch batch → staggered fade in
 	useEffect(() => {
 		let timer: ReturnType<typeof setTimeout>;
 		const scheduleNext = () => {
 			timer = setTimeout(() => {
-				Animated.timing(carouselOpacity, {
-					toValue: 0,
-					duration: AVATAR_FADE_DURATION,
-					useNativeDriver: true,
-				}).start(() => {
+				Animated.stagger(
+					AVATAR_STAGGER_DELAY,
+					avatarOpacities.map((opacity) =>
+						Animated.timing(opacity, {
+							toValue: 0,
+							duration: AVATAR_FADE_DURATION,
+							useNativeDriver: true,
+						})
+					)
+				).start(() => {
 					setCarouselBatchIndex((prev) => prev + 1);
-					Animated.timing(carouselOpacity, {
-						toValue: 1,
-						duration: AVATAR_FADE_DURATION,
-						useNativeDriver: true,
-					}).start(() => scheduleNext());
+					Animated.stagger(
+						AVATAR_STAGGER_DELAY,
+						avatarOpacities.map((opacity) =>
+							Animated.timing(opacity, {
+								toValue: 1,
+								duration: AVATAR_FADE_DURATION,
+								useNativeDriver: true,
+							})
+						)
+					).start(() => scheduleNext());
 				});
 			}, AVATAR_DISPLAY_DURATION);
 		};
 		scheduleNext();
 		return () => clearTimeout(timer);
-	}, [carouselOpacity]);
+	}, [avatarOpacities]);
 
 	const goToStep = useCallback((index: number) => {
 		setCurrentStepIndex(index);
@@ -305,30 +315,32 @@ const OnboardingScreen = () => {
 		const row1 = batch.slice(0, AVATARS_PER_ROW);
 		const row2 = batch.slice(AVATARS_PER_ROW, AVATARS_PER_BATCH);
 		return (
-			<Animated.View style={[styles.avatarCarouselContainer, { opacity: carouselOpacity }]}>
+			<View style={styles.avatarCarouselContainer}>
 				<View style={styles.avatarCarouselRow}>
 					{row1.map((cfg, i) => (
-						<MyAvatar
-							key={`r1-${i}`}
-							config={cfg}
-							size={AVATAR_CAROUSEL_SIZE}
-							rounded={true}
-							backgroundColor={AVATAR_BACKGROUND}
-						/>
+						<Animated.View key={`r1-${i}`} style={{ opacity: avatarOpacities[i] }}>
+							<MyAvatar
+								config={cfg}
+								size={AVATAR_CAROUSEL_SIZE}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						</Animated.View>
 					))}
 				</View>
 				<View style={styles.avatarCarouselRow}>
 					{row2.map((cfg, i) => (
-						<MyAvatar
-							key={`r2-${i}`}
-							config={cfg}
-							size={AVATAR_CAROUSEL_SIZE}
-							rounded={true}
-							backgroundColor={AVATAR_BACKGROUND}
-						/>
+						<Animated.View key={`r2-${i}`} style={{ opacity: avatarOpacities[AVATARS_PER_ROW + i] }}>
+							<MyAvatar
+								config={cfg}
+								size={AVATAR_CAROUSEL_SIZE}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						</Animated.View>
 					))}
 				</View>
-			</Animated.View>
+			</View>
 		);
 	};
 
