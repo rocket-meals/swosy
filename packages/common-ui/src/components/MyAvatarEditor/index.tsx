@@ -1959,39 +1959,45 @@ export function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: A
  * Generates 12 random avatar configs for a given style.
  * These are ephemeral preview avatars that may change on each generation.
  */
-function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
-	const configs: AvatarConfig[] = [];
+/**
+ * Generates a single random AvatarConfig for the given style and size.
+ * Exported so callers (e.g. onboarding carousel) can produce fresh random
+ * avatars without importing the full editor.
+ */
+export function generateRandomAvatarConfig(style: AvatarStyle, size: AvatarSize): AvatarConfig {
 	const componentOptions = getStyleComponentOptions(style);
 	const colorKeys = getStyleColorKeys(style);
 	const probabilityKeys = getStyleProbabilityKeys(style);
+	const randomOptions: Record<string, string[]> = {};
 
+	for (const [key, values] of Object.entries(componentOptions)) {
+		const realValues = values.filter((v) => v !== NONE_OPTION);
+		if (realValues.length === 0) continue;
+		if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
+			continue;
+		}
+		if (probabilityKeys[key]) {
+			const allValues = [NONE_OPTION, ...realValues];
+			const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+			if (randomValue !== NONE_OPTION) {
+				randomOptions[key] = [randomValue];
+			}
+		} else {
+			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+		}
+	}
+	for (const key of colorKeys) {
+		const presetColors = getPresetColorsForKey(key, style);
+		const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+		randomOptions[key] = [stripHashPrefix(randomColor)];
+	}
+	return { style, size, options: randomOptions };
+}
+
+function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
+	const configs: AvatarConfig[] = [];
 	for (let i = 0; i < 12; i++) {
-		const randomOptions: Record<string, string[]> = {};
-		for (const [key, values] of Object.entries(componentOptions)) {
-			const realValues = values.filter((v) => v !== NONE_OPTION);
-			if (realValues.length === 0) continue;
-			// For openPeeps, mask is always none (key absent = renderer sets probability=0)
-			if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
-				continue;
-			}
-			// For optional components, include "none" as a possible random selection
-			if (probabilityKeys[key]) {
-				const allValues = [NONE_OPTION, ...realValues];
-				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
-				if (randomValue !== NONE_OPTION) {
-					randomOptions[key] = [randomValue];
-				}
-				// Probability not stored – renderer derives it from key presence.
-			} else {
-				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
-			}
-		}
-		for (const key of colorKeys) {
-			const presetColors = getPresetColorsForKey(key, style);
-			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
-			randomOptions[key] = [stripHashPrefix(randomColor)];
-		}
-		configs.push({ style, size, options: randomOptions });
+		configs.push(generateRandomAvatarConfig(style, size));
 	}
 	return configs;
 }

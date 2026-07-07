@@ -102,7 +102,7 @@ export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
 export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
 
-export { useAvatarEditorModal, AvatarPropKey, MICAH_PRESETS, presetToConfig } from './src/components/MyAvatarEditor';
+export { useAvatarEditorModal, AvatarPropKey, MICAH_PRESETS, presetToConfig, generateRandomAvatarConfig } from './src/components/MyAvatarEditor';
 export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps, AvatarPreset } from './src/components/MyAvatarEditor';
 
 export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';

@@ -729,6 +729,7 @@ export enum TranslationKeys {
 	onboarding_welcome_back = 'onboarding_welcome_back',
 	onboarding_loading_profile = 'onboarding_loading_profile',
 	onboarding_ready = 'onboarding_ready',
+	onboarding_many_others = 'onboarding_many_others',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

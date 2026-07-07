@@ -22,12 +22,13 @@ import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { AvatarConfig, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig, AvatarSize } from 'repo-depkit-common-ui';
+import { AvatarConfig, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig, AvatarSize, generateRandomAvatarConfig } from 'repo-depkit-common-ui';
 import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
-const AVATAR_CAROUSEL_SIZE = 44;
+// Avatar size: 80% bigger than original 44px
+const AVATAR_CAROUSEL_SIZE = 80;
 const AVATARS_PER_ROW = 4;
 const AVATARS_TOTAL = AVATARS_PER_ROW * 2;
 // Each slot swaps in 1 second intervals; fade is fast
@@ -36,13 +37,17 @@ const AVATAR_SLOT_INTERVAL = 1000;
 // Padding inside the welcome step's ScrollView contentContainerStyle – used to break the
 // carousel out to the full screen edge via negative margin.
 const STEP_CONTENT_PADDING = 20;
-// User count: animate up to this placeholder while real count loads
+// User count animation constants
 const COUNT_PLACEHOLDER_TARGET = 999;
-const COUNT_INCREMENT_INTERVAL = 40; // ms between ticks
-const COUNT_STEP_MIN = 20;
-const COUNT_STEP_MAX = 100;
-// How long (ms) the "ready" overlay is visible before navigating to food offers
-const READY_OVERLAY_DISPLAY_DURATION = 1400;
+const COUNT_INITIAL_TICK_MS = 30;        // tick rate for 0→999 phase
+const COUNT_INITIAL_STEP = 10;           // 10/tick * 100 ticks * 30ms ≈ 3s
+const COUNT_FALLBACK_DELAY_MS = 3000;    // show "viele andere" after 3s without server response
+const COUNT_FAST_TICK_MS = 50;           // tick rate for fast phase (approaching server count)
+const COUNT_SLOW_TICK_MS = 200;          // tick rate for slow phase (last 10 units)
+const COUNT_SLOW_THRESHOLD = 10;         // last N units use slow phase
+const COUNT_REFRESH_INTERVAL_MS = 5000; // re-fetch count every 5 seconds
+// How long (ms) the "ready" overlay stays visible between fade-in and fade-out
+const READY_OVERLAY_HOLD_DURATION = 1000;
 const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
@@ -65,14 +70,21 @@ const OnboardingScreen = () => {
 
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const [userCount, setUserCount] = useState<number | null>(null);
-	const [placeholderCount, setPlaceholderCount] = useState(0);
+	// User count display state
+	const [displayCount, setDisplayCount] = useState(0);
+	const [showVieleAndere, setShowVieleAndere] = useState(false);
 	const [isLoadingCanteens, setIsLoadingCanteens] = useState(true);
 	// Track which steps have been mounted for lazy loading
 	const [mountedSteps, setMountedSteps] = useState<Set<number>>(new Set([0]));
 	const scrollViewRef = useRef<ScrollView>(null);
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
+
+	// Count animation refs
+	const displayCountRef = useRef(0); // kept in sync with displayCount for animation callbacks
+	const serverRespondedRef = useRef(false);
+	const countAnimTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// Transition overlay state ("Du bist nun startklar")
 	const [showReadyOverlay, setShowReadyOverlay] = useState(false);
@@ -206,28 +218,29 @@ const OnboardingScreen = () => {
 	}, []);
 
 	// Avatar carousel: one slot swaps at a time, every AVATAR_SLOT_INTERVAL ms
+	// When the pool is exhausted (all server avatars shown), generate fresh random configs.
 	useEffect(() => {
 		let timer: ReturnType<typeof setTimeout>;
 		const swapNext = () => {
 			const slot = nextSlotRef.current % AVATARS_TOTAL;
 			const pool = avatarPoolRef.current;
+			const poolIdx = nextPoolIndexRef.current;
 
 			Animated.timing(slotOpacities[slot], {
 				toValue: 0,
 				duration: AVATAR_FADE_DURATION,
 				useNativeDriver: true,
 			}).start(() => {
-				// pool.length > 0 guard protects the modulo; poolIdx < pool.length is
-				// always true by construction so no separate check is needed.
-				if (pool.length > 0) {
-					const poolIdx = nextPoolIndexRef.current % pool.length;
-					setSlotAvatars(prev => {
-						const next = [...prev];
-						next[slot] = pool[poolIdx];
-						return next;
-					});
-					nextPoolIndexRef.current += 1;
-				}
+				// If we have remaining pool items, use them; otherwise generate a new random avatar.
+				const nextConfig = poolIdx < pool.length
+					? pool[poolIdx]
+					: generateRandomAvatarConfig(AvatarStyle.MICAH, AvatarSize.SMALL);
+				setSlotAvatars(prev => {
+					const next = [...prev];
+					next[slot] = nextConfig;
+					return next;
+				});
+				nextPoolIndexRef.current += 1;
 				nextSlotRef.current += 1;
 				Animated.timing(slotOpacities[slot], {
 					toValue: 1,
@@ -242,34 +255,89 @@ const OnboardingScreen = () => {
 		return () => clearTimeout(timer);
 	}, [slotOpacities]);
 
-	// User count: animate placeholder counter while real count is loading
-	useEffect(() => {
-		if (userCount !== null) return; // real data arrived, stop placeholder
-		let current = 0;
-		const interval = setInterval(() => {
-			const step = Math.floor(Math.random() * COUNT_STEP_MAX) + COUNT_STEP_MIN;
-			current = Math.min(current + step, COUNT_PLACEHOLDER_TARGET);
-			setPlaceholderCount(current);
-			if (current >= COUNT_PLACEHOLDER_TARGET) clearInterval(interval);
-		}, COUNT_INCREMENT_INTERVAL);
-		return () => clearInterval(interval);
-	}, [userCount]);
-
-	useEffect(() => {
-		const fetchUserCount = async () => {
-			try {
-				const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
-				const result: { count: string | number }[] = await usersHelper.aggregateItems({
-					aggregate: { count: '*' },
-				}) as { count: string | number }[];
-				const count = result?.[0]?.count;
-				setUserCount(typeof count === 'number' ? count : parseInt(count, 10) || null);
-			} catch (error) {
-				console.error('Error fetching user count:', error);
+	// ── User count animation ──────────────────────────────────────────────────
+	// Smoothly animates to a new target value: fast approach, slow last 10 units.
+	const animateToTarget = useCallback((target: number) => {
+		if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
+		setShowVieleAndere(false);
+		const tick = () => {
+			const current = displayCountRef.current;
+			const distance = target - current;
+			if (distance <= 0) return;
+			let step: number;
+			let delay: number;
+			if (distance > COUNT_SLOW_THRESHOLD) {
+				// Fast phase: close the gap in ~10 ticks
+				step = Math.max(1, Math.ceil(distance / 10));
+				delay = COUNT_FAST_TICK_MS;
+			} else {
+				// Slow phase: one unit every COUNT_SLOW_TICK_MS for last 10
+				step = 1;
+				delay = COUNT_SLOW_TICK_MS;
+			}
+			const next = Math.min(current + step, target);
+			displayCountRef.current = next;
+			setDisplayCount(next);
+			if (next < target) {
+				countAnimTimerRef.current = setTimeout(tick, delay);
 			}
 		};
-		fetchUserCount();
+		tick();
 	}, []);
+
+	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback
+	useEffect(() => {
+		const tick = () => {
+			if (serverRespondedRef.current) return; // server arrived, hand off to animateToTarget
+			const next = Math.min(displayCountRef.current + COUNT_INITIAL_STEP, COUNT_PLACEHOLDER_TARGET);
+			displayCountRef.current = next;
+			setDisplayCount(next);
+			if (next < COUNT_PLACEHOLDER_TARGET) {
+				countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
+			}
+		};
+		countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
+
+		// If no server response after COUNT_FALLBACK_DELAY_MS, show "viele andere"
+		fallbackTimerRef.current = setTimeout(() => {
+			if (!serverRespondedRef.current) {
+				if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
+				setShowVieleAndere(true);
+			}
+		}, COUNT_FALLBACK_DELAY_MS);
+
+		return () => {
+			if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
+			if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+		};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // run once on mount
+
+	// Fetch user count from server; on success animate to actual value; refresh every 5 seconds
+	const fetchUserCount = useCallback(async () => {
+		try {
+			const usersHelper = new CollectionHelper<DatabaseTypes.DirectusUsers>('directus_users');
+			const result: { count: string | number }[] = await usersHelper.aggregateItems({
+				aggregate: { count: '*' },
+			}) as { count: string | number }[];
+			const rawCount = result?.[0]?.count;
+			const count = typeof rawCount === 'number' ? rawCount : parseInt(rawCount as string, 10);
+			if (!Number.isNaN(count) && count > 0) {
+				serverRespondedRef.current = true;
+				if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+				animateToTarget(count);
+			}
+		} catch (error) {
+			console.error('Error fetching user count:', error);
+			// On error: keep current display value unchanged
+		}
+	}, [animateToTarget]);
+
+	useEffect(() => {
+		fetchUserCount();
+		const interval = setInterval(fetchUserCount, COUNT_REFRESH_INTERVAL_MS);
+		return () => clearInterval(interval);
+	}, [fetchUserCount]);
 
 	const goToStep = useCallback((index: number) => {
 		setCurrentStepIndex(index);
@@ -312,14 +380,21 @@ const OnboardingScreen = () => {
 
 	const handleStart = useCallback(() => {
 		setShowReadyOverlay(true);
+		// Fade in → hold → fade out → navigate for a smooth transition
 		Animated.timing(readyOpacity, {
 			toValue: 1,
-			duration: 350,
+			duration: 400,
 			useNativeDriver: true,
 		}).start(() => {
 			setTimeout(() => {
-				router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
-			}, READY_OVERLAY_DISPLAY_DURATION);
+				Animated.timing(readyOpacity, {
+					toValue: 0,
+					duration: 500,
+					useNativeDriver: true,
+				}).start(() => {
+					router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+				});
+			}, READY_OVERLAY_HOLD_DURATION);
 		});
 	}, [readyOpacity]);
 
@@ -333,17 +408,8 @@ const OnboardingScreen = () => {
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
-	// Format the user count display:
-	// While loading → fixed "00.XXX" format (consistent across all locales)
-	// After load → locale-aware format
-	const formattedCount = useMemo(() => {
-		if (userCount !== null) {
-			return userCount.toLocaleString();
-		}
-		// Consistent "00.XXX" format for the placeholder (0-padded to 5 chars)
-		const padded = String(placeholderCount).padStart(5, '0');
-		return `${padded.slice(0, 2)}.${padded.slice(2)}`;
-	}, [userCount, placeholderCount]);
+	// Format the animated display count locale-aware
+	const formattedCount = useMemo(() => displayCount.toLocaleString(), [displayCount]);
 
 	const renderStepIndicator = () => (
 		<View style={styles.stepIndicatorContainer}>
@@ -424,7 +490,7 @@ const OnboardingScreen = () => {
 					</Text>
 					<View style={[styles.userCountBadge, { backgroundColor: primaryColor }]}>
 						<Text style={[styles.userCountNumber, { color: contrastColor }]}>
-							{formattedCount}
+							{showVieleAndere ? translate(TranslationKeys.onboarding_many_others) : formattedCount}
 						</Text>
 					</View>
 				</View>

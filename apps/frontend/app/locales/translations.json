@@ -7156,5 +7156,15 @@
     "ru": "Ты готов к старту!",
     "tr": "Artık hazırsın!",
     "zh": "你已准备好出发！"
+  },
+  "onboarding_many_others": {
+    "de": "viele andere",
+    "en": "many others",
+    "ar": "كثيرون غيرك",
+    "es": "muchos otros",
+    "fr": "bien d'autres",
+    "ru": "многие другие",
+    "tr": "pek çok diğeri",
+    "zh": "许多其他人"
   }
 }
