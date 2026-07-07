@@ -21,7 +21,7 @@ import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
 import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
-import { useAvatarProfileEditor, AVATAR_BACKGROUND, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
 
 const isWeb = Platform.OS === 'web';
 
@@ -762,12 +762,12 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 						ownAvatarConfig ? (
 							<MyAvatar
 								config={ownAvatarConfig}
-								size={64}
+								size={AVATAR_SETTINGS_ROW_SIZE}
 								rounded={true}
 								backgroundColor={AVATAR_BACKGROUND}
 							/>
 						) : (
-							<View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+							<View style={{ width: AVATAR_SETTINGS_ROW_SIZE, height: AVATAR_SETTINGS_ROW_SIZE, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 								<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
 							</View>
 						)

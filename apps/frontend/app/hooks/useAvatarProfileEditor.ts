@@ -21,6 +21,7 @@ const MICAH_HIDDEN_PROPS = {
 };
 
 export const AVATAR_BACKGROUND = AVATAR_BACKGROUND_COLOR;
+export const AVATAR_SETTINGS_ROW_SIZE = 64;
 
 export function parseProfileAvatar(profileAvatar: unknown): AvatarConfig | null {
 	if (!profileAvatar) return null;

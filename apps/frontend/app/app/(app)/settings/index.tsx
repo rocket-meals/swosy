@@ -57,7 +57,7 @@ import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depk
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
-import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -548,12 +548,12 @@ const Settings = () => {
 									settingsAvatarConfig ? (
 										<MyAvatar
 											config={settingsAvatarConfig}
-											size={64}
+											size={AVATAR_SETTINGS_ROW_SIZE}
 											rounded={true}
 											backgroundColor={AVATAR_BACKGROUND}
 										/>
 									) : (
-										<View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+										<View style={{ width: AVATAR_SETTINGS_ROW_SIZE, height: AVATAR_SETTINGS_ROW_SIZE, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 											<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
 										</View>
 									)
