@@ -285,7 +285,8 @@ const OnboardingScreen = () => {
 		tick();
 	}, []);
 
-	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback
+	// Initial count animation: 0 → 999 over ~3 seconds, then "viele andere" fallback.
+	// Deps are all refs (never change identity) so the empty array is intentional.
 	useEffect(() => {
 		const tick = () => {
 			if (serverRespondedRef.current) return; // server arrived, hand off to animateToTarget
@@ -296,7 +297,8 @@ const OnboardingScreen = () => {
 				countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
 			}
 		};
-		countAnimTimerRef.current = setTimeout(tick, COUNT_INITIAL_TICK_MS);
+		// Start immediately so the first increment is visible without delay
+		tick();
 
 		// If no server response after COUNT_FALLBACK_DELAY_MS, show "viele andere"
 		fallbackTimerRef.current = setTimeout(() => {
@@ -310,8 +312,8 @@ const OnboardingScreen = () => {
 			if (countAnimTimerRef.current) clearTimeout(countAnimTimerRef.current);
 			if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []); // run once on mount
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // deps are all stable refs – intentional empty array
 
 	// Fetch user count from server; on success animate to actual value; refresh every 5 seconds
 	const fetchUserCount = useCallback(async () => {
@@ -322,7 +324,7 @@ const OnboardingScreen = () => {
 			}) as { count: string | number }[];
 			const rawCount = result?.[0]?.count;
 			const count = typeof rawCount === 'number' ? rawCount : parseInt(rawCount as string, 10);
-			if (!Number.isNaN(count) && count > 0) {
+			if (Number.isFinite(count) && !Number.isNaN(count) && count > 0) {
 				serverRespondedRef.current = true;
 				if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
 				animateToTarget(count);
