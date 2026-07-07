@@ -34,6 +34,11 @@ const AVATAR_DISPLAY_DURATION = 5000;
 const AVATAR_FADE_DURATION = 500;
 const profileHelper = new ProfileHelper();
 
+// Precomputed from static constants, no need to recompute inside the component
+const QUICKSTART_AVATAR_CONFIGS: AvatarConfig[] = MICAH_PRESETS.map(
+	(p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL),
+);
+
 const OnboardingScreen = () => {
 	useSetPageTitle(TranslationKeys.onboarding);
 	const { theme } = useTheme();
@@ -60,10 +65,7 @@ const OnboardingScreen = () => {
 	const [showDirectContinue, setShowDirectContinue] = useState(false);
 
 	// Avatar carousel state
-	const quickstartAvatarConfigs = useMemo<AvatarConfig[]>(() =>
-		MICAH_PRESETS.map((p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL)),
-	[]);
-	const [avatarPool, setAvatarPool] = useState<AvatarConfig[]>(quickstartAvatarConfigs);
+	const [avatarPool, setAvatarPool] = useState<AvatarConfig[]>(QUICKSTART_AVATAR_CONFIGS);
 	const [carouselBatchIndex, setCarouselBatchIndex] = useState(0);
 	const carouselOpacity = useRef(new Animated.Value(1)).current;
 
@@ -175,31 +177,34 @@ const OnboardingScreen = () => {
 					setAvatarPool(configs);
 					setCarouselBatchIndex(0);
 				}
-			} catch {
-				// Keep using quickstart avatars on error
+			} catch (error) {
+				console.error('[Onboarding] Failed to load profile avatars:', error);
 			}
 		};
 		loadProfileAvatars();
 	}, []);
 
-	// Avatar carousel: fade out → switch batch → fade in every AVATAR_DISPLAY_DURATION ms
+	// Avatar carousel: fade out → switch batch → fade in, then pause for AVATAR_DISPLAY_DURATION
 	useEffect(() => {
-		const cycleAvatars = () => {
-			Animated.timing(carouselOpacity, {
-				toValue: 0,
-				duration: AVATAR_FADE_DURATION,
-				useNativeDriver: true,
-			}).start(() => {
-				setCarouselBatchIndex((prev) => prev + 1);
+		let timer: ReturnType<typeof setTimeout>;
+		const scheduleNext = () => {
+			timer = setTimeout(() => {
 				Animated.timing(carouselOpacity, {
-					toValue: 1,
+					toValue: 0,
 					duration: AVATAR_FADE_DURATION,
 					useNativeDriver: true,
-				}).start();
-			});
+				}).start(() => {
+					setCarouselBatchIndex((prev) => prev + 1);
+					Animated.timing(carouselOpacity, {
+						toValue: 1,
+						duration: AVATAR_FADE_DURATION,
+						useNativeDriver: true,
+					}).start(() => scheduleNext());
+				});
+			}, AVATAR_DISPLAY_DURATION);
 		};
-		const timer = setInterval(cycleAvatars, AVATAR_DISPLAY_DURATION + AVATAR_FADE_DURATION * 2);
-		return () => clearInterval(timer);
+		scheduleNext();
+		return () => clearTimeout(timer);
 	}, [carouselOpacity]);
 
 	const goToStep = useCallback((index: number) => {
