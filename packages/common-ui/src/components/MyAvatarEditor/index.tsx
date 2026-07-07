@@ -1022,6 +1022,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		onChange?.();
 	};
 
+	const handleResetToInitial = () => {
+		const withHidden = applyHiddenProps(initialConfig);
+		setConfig(withHidden);
+		configRef.current = withHidden;
+		configObservable.set(withHidden);
+		// Do NOT call onChange here – this is a reset, not a user modification.
+		onReset?.();
+	};
+
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
 	const componentKeys = useMemo(() => Object.keys(componentOptions), [componentOptions]);
 	const colorKeys = useMemo(() => getStyleColorKeys(config.style), [config.style]);
@@ -1581,10 +1590,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				{onReset && (
 					<SettingsList
 						title={translate ? translate('avatar_reset_changes') : 'Reset changes'}
-						onPress={() => {
-							handleChange(initialConfig);
-							onReset();
-						}}
+						onPress={handleResetToInitial}
 						leftIcon={<MaterialCommunityIcons name="refresh" size={20} />}
 						iconBgColor={accentColor}
 						groupPosition="single"
@@ -2162,7 +2168,6 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				translate={translate}
 				onSelectPreset={switchToEditor}
 				onCustomize={() => {
-					onChange?.();
 					switchToEditor({
 						style: defaultStyle,
 						size,

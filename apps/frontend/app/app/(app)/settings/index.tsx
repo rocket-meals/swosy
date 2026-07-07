@@ -605,8 +605,8 @@ const Settings = () => {
 							onOsmConsentChange={(value) => dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value })}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
-							label="Karten Material"
-							modalTitle="🗺️ Karten Material"
+							label="Kartenmaterial"
+							modalTitle="🗺️ Kartenmaterial"
 							groupPosition="single"
 							nativeID={ComponentIds.SETTINGS_MAP_VARIANTS}
 						/>
