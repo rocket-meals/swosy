@@ -426,7 +426,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { friendships } = useAppSelector((state) => state.friendships);
 
-	const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor, deleteAvatar: deleteOwnAvatar } = useAvatarProfileEditor();
+	const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
 	const [refreshing, setRefreshing] = useState(false);
@@ -539,50 +539,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const handleManualAdd = useCallback(() => {
 		openScanModal(true);
 	}, [openScanModal]);
-
-	const openAvatarActionsModal = useCallback(() => {
-		showScrollViewModal({
-			title: translate(TranslationKeys.avatars),
-			children: (
-				<View style={{ paddingVertical: 8 }}>
-					{ownAvatarConfig && (
-						<>
-							<SettingsList
-								title={translate(TranslationKeys.edit)}
-								onPress={() => {
-									closeScrollViewModal();
-									openAvatarEditor(false);
-								}}
-								leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
-								groupPosition="top"
-								showSeparator={true}
-							/>
-							<SettingsList
-								title={translate(TranslationKeys.delete)}
-								onPress={() => {
-									closeScrollViewModal();
-									void deleteOwnAvatar();
-								}}
-								leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
-								iconBgColor="#F44336"
-								groupPosition="middle"
-								showSeparator={true}
-							/>
-						</>
-					)}
-					<SettingsList
-						title={translate(TranslationKeys.avatar_create_new)}
-						onPress={() => {
-							closeScrollViewModal();
-							openAvatarEditor(true);
-						}}
-						leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
-						groupPosition={ownAvatarConfig ? 'bottom' : 'single'}
-					/>
-				</View>
-			),
-		});
-	}, [showScrollViewModal, closeScrollViewModal, translate, ownAvatarConfig, openAvatarEditor, deleteOwnAvatar]);
 
 	const formatDate = useCallback((dateStr: string | null | undefined): string => {
 		if (!dateStr) return '-';
@@ -774,7 +730,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					}
 					value={translate(TranslationKeys.avatar)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-					handleFunction={ownAvatarConfig ? openAvatarActionsModal : () => openAvatarEditor(true)}
+					handleFunction={() => openAvatarEditor(false)}
 					groupPosition="top"
 				/>
 				<SettingsList

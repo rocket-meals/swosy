@@ -83,6 +83,10 @@ export function useAvatarProfileEditor() {
 					setAvatarConfig(config);
 					await saveAvatarToProfile(config);
 				},
+				onDelete: async () => {
+					setAvatarConfig(null);
+					await saveAvatarToProfile(null);
+				},
 				options: editorOptions,
 			});
 		},

@@ -19,7 +19,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -88,51 +88,7 @@ const Settings = () => {
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
         const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 
-        const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor, deleteAvatar: deleteSettingsAvatar } = useAvatarProfileEditor();
-
-        const openAvatarActionsModal = useCallback(() => {
-                showScrollViewModal({
-                        title: translate(TranslationKeys.avatars),
-                        children: (
-                                <View style={{ paddingVertical: 8 }}>
-                                        {settingsAvatarConfig && (
-                                                <>
-                                                        <SettingsList
-                                                                title={translate(TranslationKeys.edit)}
-                                                                onPress={() => {
-                                                                        closeScrollViewModal();
-                                                                        openAvatarEditor(false);
-                                                                }}
-                                                                leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
-                                                                groupPosition="top"
-                                                                showSeparator={true}
-                                                        />
-                                                        <SettingsList
-                                                                title={translate(TranslationKeys.delete)}
-                                                                onPress={() => {
-                                                                        closeScrollViewModal();
-                                                                        void deleteSettingsAvatar();
-                                                                }}
-                                                                leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
-                                                                iconBgColor="#F44336"
-                                                                groupPosition="middle"
-                                                                showSeparator={true}
-                                                        />
-                                                </>
-                                        )}
-                                        <SettingsList
-                                                title={translate(TranslationKeys.avatar_create_new)}
-                                                onPress={() => {
-                                                        closeScrollViewModal();
-                                                        openAvatarEditor(true);
-                                                }}
-                                                leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
-                                                groupPosition={settingsAvatarConfig ? 'bottom' : 'single'}
-                                        />
-                                </View>
-                        ),
-                });
-        }, [showScrollViewModal, closeScrollViewModal, translate, settingsAvatarConfig, openAvatarEditor, deleteSettingsAvatar]);
+        const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -144,6 +100,7 @@ const Settings = () => {
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
+        const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
@@ -560,12 +517,11 @@ const Settings = () => {
 								}
 								value={translate(TranslationKeys.avatar)}
 								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-								handleFunction={settingsAvatarConfig ? openAvatarActionsModal : () => openAvatarEditor(true)}
+								handleFunction={() => openAvatarEditor(false)}
 								groupPosition="top"
 							/>
 						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition={isRegisteredUser ? 'middle' : 'top'} />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="middle" nativeID={ComponentIds.SETTINGS_LANGUAGE} />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={isRegisteredUser ? 'middle' : 'top'} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
@@ -645,6 +601,8 @@ const Settings = () => {
 						<SettingsListMyMapThemeSelection
 							selectedMapStyleKey={osmVectorMapStyleKey}
 							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
+							osmConsent={osmConsent}
+							onOsmConsentChange={(value) => dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value })}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
 							label="Karten Material"
@@ -857,8 +815,9 @@ const Settings = () => {
 							label="Open App Rating Modal"
 							value=""
 							handleFunction={showDebugRatingModal}
-							groupPosition="bottom"
+							groupPosition="middle"
 						/>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
 				</DebugView>
 			),
@@ -898,10 +857,10 @@ const Settings = () => {
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
-		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey, osmConsent,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
-		settingsAvatarConfig, openAvatarActionsModal, openAvatarEditor,
+		settingsAvatarConfig, openAvatarEditor,
 	]);
 
 	return (

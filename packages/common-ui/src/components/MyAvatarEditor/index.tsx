@@ -617,6 +617,12 @@ type AvatarEditorModalContentProps = {
 	showApplyButton?: boolean;
 	/** Called when the user presses "Apply". */
 	onApply?: () => void;
+	/** Called whenever the user makes any change in the editor. Used to track dirty state. */
+	onChange?: () => void;
+	/** Called when the user presses "Reset changes". After resetting, config is restored to initialConfig. */
+	onReset?: () => void;
+	/** Called when the user presses "Delete". */
+	onDelete?: () => void;
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
@@ -976,6 +982,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	allowedStyles,
 	showApplyButton,
 	onApply,
+	onChange,
+	onReset,
+	onDelete,
 	hiddenProps,
 	rounded,
 	backgroundColor,
@@ -1010,6 +1019,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		setConfig(withHidden);
 		configRef.current = withHidden;
 		configObservable.set(withHidden);
+		onChange?.();
 	};
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
@@ -1557,14 +1567,41 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								);
 							})}
 					</>
-					<DebugJsonInput
+				<DebugJsonInput
 						config={config}
 						onApply={handleChange}
 						accentColor={accentColor}
 						theme={theme}
 					/>
 				</View>
-			)}
+				)}
+				{(onReset || onDelete) && (
+					<View style={{ height: 16 }} />
+				)}
+				{onReset && (
+					<SettingsList
+						title={translate ? translate('avatar_reset_changes') : 'Reset changes'}
+						onPress={() => {
+							handleChange(initialConfig);
+							onReset();
+						}}
+						leftIcon={<MaterialCommunityIcons name="refresh" size={20} />}
+						iconBgColor={accentColor}
+						groupPosition="single"
+					/>
+				)}
+				{onDelete && (
+					<>
+						{onReset && <View style={{ height: 8 }} />}
+						<SettingsList
+							title={translate ? translate('delete') : 'Delete'}
+							onPress={onDelete}
+							leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+							iconBgColor="#ef4444"
+							groupPosition="single"
+						/>
+					</>
+				)}
 		</View>
 	);
 };
@@ -2057,6 +2094,8 @@ export type OpenAvatarEditorProps = {
 	/** If provided, the editor opens directly in edit mode. If null/undefined, the QuickStart preset picker is shown first. */
 	currentAvatar?: AvatarConfig | null;
 	onDone: (config: AvatarConfig) => void;
+	/** Called when the user confirms deletion. The modal is closed automatically. */
+	onDelete?: () => void;
 	options?: UseAvatarEditorModalOptions;
 };
 
@@ -2065,6 +2104,9 @@ type AvatarEditorUnifiedContentProps = {
 	configObservable: ConfigObservable;
 	configRef: React.MutableRefObject<AvatarConfig>;
 	onApply: () => void;
+	onChange?: () => void;
+	onReset?: () => void;
+	onDelete?: () => void;
 	allowedStyles: AvatarStyle[];
 	size: AvatarSize;
 	accentColor?: string;
@@ -2080,6 +2122,9 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	configObservable,
 	configRef,
 	onApply,
+	onChange,
+	onReset,
+	onDelete,
 	allowedStyles,
 	size,
 	accentColor,
@@ -2100,8 +2145,9 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			configRef.current = { ...config };
 			configObservable.set({ ...config });
 			modeObservable.set('editor');
+			onChange?.();
 		},
-		[configRef, configObservable, modeObservable],
+		[configRef, configObservable, modeObservable, onChange],
 	);
 
 	if (mode === 'quickstart') {
@@ -2115,13 +2161,14 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				backgroundColor={backgroundColor}
 				translate={translate}
 				onSelectPreset={switchToEditor}
-				onCustomize={() =>
+				onCustomize={() => {
+					onChange?.();
 					switchToEditor({
 						style: defaultStyle,
 						size,
 						options: getDefaultOptionsForStyle(defaultStyle),
-					})
-				}
+					});
+				}}
 			/>
 		);
 	}
@@ -2134,8 +2181,11 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			configRef={configRef}
 			debugMode={debugMode}
 			allowedStyles={allowedStyles}
-			showApplyButton={true}
+			showApplyButton={false}
 			onApply={onApply}
+			onChange={onChange}
+			onReset={onReset}
+			onDelete={onDelete}
 			hiddenProps={hiddenProps}
 			rounded={rounded}
 			backgroundColor={backgroundColor}
@@ -2336,10 +2386,11 @@ export const useAvatarEditorModal = () => {
 	 * Unified single-modal flow: opens QuickStart if currentAvatar is null/undefined,
 	 * or jumps directly to the editor if currentAvatar is provided.
 	 * The sticky header is only rendered in editor mode.
-	 * onDone is called when the user presses Apply or closes the modal.
+	 * onDone is called only when the user has made at least one change (dirty flag).
+	 * onDelete is called when the user presses the Delete button inside the editor.
 	 */
 	const openAvatarEditor = useCallback(
-		({ currentAvatar, onDone, options }: OpenAvatarEditorProps) => {
+		({ currentAvatar, onDone, onDelete, options }: OpenAvatarEditorProps) => {
 			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
 			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
 			const size = AvatarSize.LARGE;
@@ -2364,10 +2415,15 @@ export const useAvatarEditorModal = () => {
 			observableRef.current = new ConfigObservable({ ...initialConfig });
 			const modeObservable = new ModeObservable(initialMode);
 
+			// Dirty tracking: only save when the user has actually made a change.
+			const isDirtyRef = { current: false };
+
 			show({
 				title: options?.title ?? 'Avatar Editor',
 				onClose: () => {
-					onDone(configRef.current);
+					if (isDirtyRef.current) {
+						onDone(configRef.current);
+					}
 				},
 				stickyHeaderComponent: (
 					<AvatarStickyHeaderConditional
@@ -2384,9 +2440,13 @@ export const useAvatarEditorModal = () => {
 						configObservable={observableRef.current}
 						configRef={configRef}
 						onApply={() => {
+							isDirtyRef.current = true;
 							onDone(configRef.current);
 							close();
 						}}
+						onChange={() => { isDirtyRef.current = true; }}
+						onReset={() => { isDirtyRef.current = false; }}
+						onDelete={onDelete ? () => { isDirtyRef.current = false; onDelete(); close(); } : undefined}
 						allowedStyles={allowedStyles}
 						size={size}
 						accentColor={options?.accentColor}
