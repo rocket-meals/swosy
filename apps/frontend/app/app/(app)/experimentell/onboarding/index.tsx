@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { router } from 'expo-router';
@@ -22,8 +22,17 @@ import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
+import { AvatarConfig, AvatarSize, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig } from 'repo-depkit-common-ui';
+import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
+const AVATAR_CAROUSEL_SIZE = 44;
+const AVATARS_PER_ROW = 4;
+const AVATARS_PER_BATCH = AVATARS_PER_ROW * 2;
+const AVATAR_DISPLAY_DURATION = 5000;
+const AVATAR_FADE_DURATION = 500;
+const profileHelper = new ProfileHelper();
 
 const OnboardingScreen = () => {
 	useSetPageTitle(TranslationKeys.onboarding);
@@ -46,6 +55,17 @@ const OnboardingScreen = () => {
 	const scrollViewRef = useRef<ScrollView>(null);
 	const priceAnimRef = useRef<LottieView>(null);
 	const [priceAnimationJson, setPriceAnimationJson] = useState<any>(null);
+
+	// Returning user: canteen already set, show simple continue button
+	const [showDirectContinue, setShowDirectContinue] = useState(false);
+
+	// Avatar carousel state
+	const quickstartAvatarConfigs = useMemo<AvatarConfig[]>(() =>
+		MICAH_PRESETS.map((p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL)),
+	[]);
+	const [avatarPool, setAvatarPool] = useState<AvatarConfig[]>(quickstartAvatarConfigs);
+	const [carouselBatchIndex, setCarouselBatchIndex] = useState(0);
+	const carouselOpacity = useRef(new Animated.Value(1)).current;
 
 	const isFirstStep = currentStepIndex === 0;
 	const isLastStep = currentStepIndex === STEPS.length - 1;
@@ -129,12 +149,58 @@ const OnboardingScreen = () => {
 		}
 	}, [profile?.canteen, canteens, selectedCanteen, isLoadingCanteens, dispatch]);
 
-	// Navigate to food offers if a canteen is already selected after loading (only from welcome step)
+	// Show direct continue button when canteen is already set (returning user with existing setup)
 	useEffect(() => {
 		if (!isLoadingCanteens && selectedCanteen && currentStepIndex === 0) {
-			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+			setShowDirectContinue(true);
 		}
 	}, [selectedCanteen, isLoadingCanteens, currentStepIndex]);
+
+	// Load profiles with avatar field for the carousel
+	useEffect(() => {
+		const loadProfileAvatars = async () => {
+			try {
+				const profiles = await profileHelper.readItems({
+					filter: { avatar: { _nnull: true } },
+					sort: ['-date_updated'],
+					limit: 100,
+					fields: ['avatar'],
+				});
+				const configs: AvatarConfig[] = [];
+				for (const p of profiles) {
+					const cfg = parseProfileAvatar((p as any).avatar);
+					if (cfg) configs.push(cfg);
+				}
+				if (configs.length > 0) {
+					setAvatarPool(configs);
+					setCarouselBatchIndex(0);
+				}
+			} catch {
+				// Keep using quickstart avatars on error
+			}
+		};
+		loadProfileAvatars();
+	}, []);
+
+	// Avatar carousel: fade out → switch batch → fade in every AVATAR_DISPLAY_DURATION ms
+	useEffect(() => {
+		const cycleAvatars = () => {
+			Animated.timing(carouselOpacity, {
+				toValue: 0,
+				duration: AVATAR_FADE_DURATION,
+				useNativeDriver: true,
+			}).start(() => {
+				setCarouselBatchIndex((prev) => prev + 1);
+				Animated.timing(carouselOpacity, {
+					toValue: 1,
+					duration: AVATAR_FADE_DURATION,
+					useNativeDriver: true,
+				}).start();
+			});
+		};
+		const timer = setInterval(cycleAvatars, AVATAR_DISPLAY_DURATION + AVATAR_FADE_DURATION * 2);
+		return () => clearInterval(timer);
+	}, [carouselOpacity]);
 
 	const goToStep = useCallback((index: number) => {
 		setCurrentStepIndex(index);
@@ -223,6 +289,44 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const renderAvatarCarousel = () => {
+		const poolSize = avatarPool.length;
+		if (poolSize === 0) return null;
+		const batchStart = (carouselBatchIndex * AVATARS_PER_BATCH) % poolSize;
+		const batch: AvatarConfig[] = [];
+		for (let i = 0; i < AVATARS_PER_BATCH; i++) {
+			batch.push(avatarPool[(batchStart + i) % poolSize]);
+		}
+		const row1 = batch.slice(0, AVATARS_PER_ROW);
+		const row2 = batch.slice(AVATARS_PER_ROW, AVATARS_PER_BATCH);
+		return (
+			<Animated.View style={[styles.avatarCarouselContainer, { opacity: carouselOpacity }]}>
+				<View style={styles.avatarCarouselRow}>
+					{row1.map((cfg, i) => (
+						<MyAvatar
+							key={`r1-${i}`}
+							config={cfg}
+							size={AVATAR_CAROUSEL_SIZE}
+							rounded={true}
+							backgroundColor={AVATAR_BACKGROUND}
+						/>
+					))}
+				</View>
+				<View style={styles.avatarCarouselRow}>
+					{row2.map((cfg, i) => (
+						<MyAvatar
+							key={`r2-${i}`}
+							config={cfg}
+							size={AVATAR_CAROUSEL_SIZE}
+							rounded={true}
+							backgroundColor={AVATAR_BACKGROUND}
+						/>
+					))}
+				</View>
+			</Animated.View>
+		);
+	};
+
 	const renderWelcomeStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
 			<ScrollView contentContainerStyle={styles.stepScrollContent}>
@@ -254,6 +358,7 @@ const OnboardingScreen = () => {
 						</View>
 					</View>
 				)}
+				{renderAvatarCarousel()}
 			</ScrollView>
 		</View>
 	);
@@ -305,7 +410,6 @@ const OnboardingScreen = () => {
 				</Text>
 				{priceAnimationJson && (
 					<View style={styles.lottieContainer}>
-						{/* @ts-expect-error LottieView type issue */}
 						<LottieView ref={priceAnimRef} source={priceAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay loop={false} />
 					</View>
 				)}
@@ -326,31 +430,20 @@ const OnboardingScreen = () => {
 				onMomentumScrollEnd={handleScrollEnd}
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
+				scrollEnabled={!showDirectContinue}
 			>
 				{mountedSteps.has(0) ? renderWelcomeStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
+				{!showDirectContinue && (mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!showDirectContinue && (mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!showDirectContinue && (mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
 			</ScrollView>
-			{renderStepIndicator()}
+			{!showDirectContinue && renderStepIndicator()}
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
-				{!isFirstStep ? (
+				{showDirectContinue ? (
 					<TouchableOpacity
-						onPress={handleBack}
-						style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
-					>
-						<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
-						<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
-							{translate(TranslationKeys.onboarding_back)}
-						</Text>
-					</TouchableOpacity>
-				) : (
-					<View style={styles.navButtonPrimary} />
-				)}
-				{!isLastStep ? (
-					<TouchableOpacity
-						onPress={handleNext}
-						style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+						onPress={handleStart}
+						style={[styles.navButtonPrimary, styles.navButtonCentered, { backgroundColor: primaryColor }]}
+						activeOpacity={0.8}
 					>
 						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
 							{translate(TranslationKeys.onboarding_next)}
@@ -358,16 +451,43 @@ const OnboardingScreen = () => {
 						<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
 					</TouchableOpacity>
 				) : (
-					<TouchableOpacity
-						onPress={handleStart}
-						style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
-						activeOpacity={0.8}
-					>
-						<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
-						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
-							{translate(TranslationKeys.onboarding_start)}
-						</Text>
-					</TouchableOpacity>
+					<>
+						{!isFirstStep ? (
+							<TouchableOpacity
+								onPress={handleBack}
+								style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
+							>
+								<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
+								<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
+									{translate(TranslationKeys.onboarding_back)}
+								</Text>
+							</TouchableOpacity>
+						) : (
+							<View style={styles.navButtonPrimary} />
+						)}
+						{!isLastStep ? (
+							<TouchableOpacity
+								onPress={handleNext}
+								style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+							>
+								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+									{translate(TranslationKeys.onboarding_next)}
+								</Text>
+								<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
+							</TouchableOpacity>
+						) : (
+							<TouchableOpacity
+								onPress={handleStart}
+								style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+								activeOpacity={0.8}
+							>
+								<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
+								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+									{translate(TranslationKeys.onboarding_start)}
+								</Text>
+							</TouchableOpacity>
+						)}
+					</>
 				)}
 			</View>
 		</SafeAreaView>
@@ -479,6 +599,20 @@ const styles = StyleSheet.create({
 	navButtonPrimaryText: {
 		fontSize: 16,
 		fontFamily: 'Poppins_700Bold',
+	},
+	navButtonCentered: {
+		alignSelf: 'center',
+	},
+	avatarCarouselContainer: {
+		width: '100%',
+		gap: 8,
+		marginTop: 16,
+		alignItems: 'center',
+	},
+	avatarCarouselRow: {
+		flexDirection: 'row',
+		gap: 8,
+		justifyContent: 'center',
 	},
 });
 

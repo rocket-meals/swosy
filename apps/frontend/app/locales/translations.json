@@ -7136,5 +7136,15 @@
     "ru": "Сбросить изменения",
     "tr": "Değişiklikleri sıfırla",
     "zh": "重置更改"
+  },
+  "avatar_appearance": {
+    "de": "Erscheinungsbild",
+    "en": "Appearance",
+    "ar": "المظهر",
+    "es": "Apariencia",
+    "fr": "Apparence",
+    "ru": "Внешний вид",
+    "tr": "Görünüm",
+    "zh": "外观"
   }
 }

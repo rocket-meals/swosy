@@ -1757,7 +1757,7 @@ const OPEN_PEEPS_PRESETS: AvatarPreset[] = [
  * Use `stripHashPrefix(PALETTE_CONSTANT[index])` to convert a '#'-prefixed palette entry
  * to the un-prefixed format expected by avatar config options.
  */
-const MICAH_PRESETS: AvatarPreset[] = [
+export const MICAH_PRESETS: AvatarPreset[] = [
 	{
 		name: 'Turban Scruff',
 		hair: ['turban'],
@@ -1942,7 +1942,7 @@ const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
 /**
  * Converts a preset into a full AvatarConfig for a given style.
  */
-function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
+export function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
 	const options: Record<string, string[]> = {};
 	for (const [key, value] of Object.entries(preset)) {
 		if (key === 'name') continue;

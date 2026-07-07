@@ -505,31 +505,31 @@ const Settings = () => {
 									settingsAvatarConfig ? (
 										<MyAvatar
 											config={settingsAvatarConfig}
-											size={AVATAR_SETTINGS_ROW_SIZE}
+											size={AVATAR_SETTINGS_ROW_SIZE / 2}
 											rounded={true}
 											backgroundColor={AVATAR_BACKGROUND}
 										/>
 									) : (
-										<View style={{ width: AVATAR_SETTINGS_ROW_SIZE, height: AVATAR_SETTINGS_ROW_SIZE, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
-											<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
+										<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+											<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 										</View>
 									)
 								}
-								value={translate(TranslationKeys.avatar)}
+								value={translate(TranslationKeys.avatar_appearance)}
 								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
 								handleFunction={() => openAvatarEditor(false)}
 								groupPosition="top"
 							/>
 						)}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={isRegisteredUser ? 'middle' : 'top'} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition={showFriendsInSettings ? 'middle' : 'bottom'}
+							groupPosition={isRegisteredUser ? 'middle' : 'top'}
 						/>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={showFriendsInSettings ? 'middle' : 'bottom'} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						{showFriendsInSettings && (
 							<SettingsList
 								iconBgColor={primaryColor}

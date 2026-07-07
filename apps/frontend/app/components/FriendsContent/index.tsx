@@ -718,17 +718,17 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 						ownAvatarConfig ? (
 							<MyAvatar
 								config={ownAvatarConfig}
-								size={AVATAR_SETTINGS_ROW_SIZE}
+								size={AVATAR_SETTINGS_ROW_SIZE / 2}
 								rounded={true}
 								backgroundColor={AVATAR_BACKGROUND}
 							/>
 						) : (
-							<View style={{ width: AVATAR_SETTINGS_ROW_SIZE, height: AVATAR_SETTINGS_ROW_SIZE, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 2, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
-								<MaterialCommunityIcons name="account-outline" size={28} color={theme.screen.icon} />
+							<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+								<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 							</View>
 						)
 					}
-					value={translate(TranslationKeys.avatar)}
+					value={translate(TranslationKeys.avatar_appearance)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
 					handleFunction={() => openAvatarEditor(false)}
 					groupPosition="top"
