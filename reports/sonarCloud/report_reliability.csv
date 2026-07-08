@@ -1,9 +1,9 @@
 Key,Message,Component,Line
 "AZ9BYk_U993SQF2ql_XC","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",354
-"AZ8tBMPhRFoArOAafHiv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",301
-"AZ8tBMPhRFoArOAafHiw","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",302
-"AZ8tBMPhRFoArOAafHix","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",307
-"AZ8tBMPhRFoArOAafHiy","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",309
+"AZ8tBMPhRFoArOAafHiv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",302
+"AZ8tBMPhRFoArOAafHiw","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",303
+"AZ8tBMPhRFoArOAafHix","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",308
+"AZ8tBMPhRFoArOAafHiy","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",310
 "AZ8htJeczJPy0PNbx4Ub","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",144
 "AZ8htJeczJPy0PNbx4Uc","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",145
 "AZ8htJeczJPy0PNbx4Ud","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",146
