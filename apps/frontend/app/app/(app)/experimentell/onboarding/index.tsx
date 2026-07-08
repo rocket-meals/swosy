@@ -600,42 +600,53 @@ const OnboardingScreen = () => {
 
 	const renderWelcomeStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
+			{/*
+			  Top (icon/title/description) and bottom (counter + avatars) are two separate groups
+			  spaced with justifyContent: 'space-between'. That way the avatar carousel always sits
+			  at the bottom of the step, regardless of how tall the top text block is (it differs
+			  between new vs. returning users, and while the "loading profile" text is shown) –
+			  the avatars and counter no longer jump up/down as that text changes.
+			*/}
 			<ScrollView contentContainerStyle={styles.stepScrollContent}>
-				<MaterialCommunityIcons
-					name={isReturningUser ? 'hand-wave' : 'check-decagram'}
-					size={80}
-					color={primaryColor}
-				/>
-				<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
-					{isReturningUser
-						? translate(TranslationKeys.onboarding_welcome_back)
-						: translate(TranslationKeys.onboarding_welcome)}
-				</Text>
-				{isReturningUser ? (
-					isLoadingCanteens && (
-						<>
-							<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-								{translate(TranslationKeys.onboarding_loading_profile)}
-							</Text>
-							<ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />
-						</>
-					)
-				) : (
-					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-						{translate(TranslationKeys.onboarding_welcome_description)}
+				<View style={styles.welcomeTopSection}>
+					<MaterialCommunityIcons
+						name={isReturningUser ? 'hand-wave' : 'check-decagram'}
+						size={80}
+						color={primaryColor}
+					/>
+					<Text style={[styles.stepTitle, { color: theme.screen.text }]}>
+						{isReturningUser
+							? translate(TranslationKeys.onboarding_welcome_back)
+							: translate(TranslationKeys.onboarding_welcome)}
 					</Text>
-				)}
-				<View style={styles.userCountContainer}>
-					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-						{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
-					</Text>
-					<View style={[styles.userCountBadge, { backgroundColor: primaryColor, width: COUNT_BADGE_WIDTH }]}>
-						<Text style={[styles.userCountNumber, { color: contrastColor }]}>
-							{showVieleAndere ? translate(TranslationKeys.onboarding_many_others) : formattedCount}
+					{isReturningUser ? (
+						isLoadingCanteens && (
+							<>
+								<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+									{translate(TranslationKeys.onboarding_loading_profile)}
+								</Text>
+								<ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />
+							</>
+						)
+					) : (
+						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_welcome_description)}
 						</Text>
-					</View>
+					)}
 				</View>
-				{renderAvatarCarousel()}
+				<View style={styles.welcomeBottomSection}>
+					<View style={styles.userCountContainer}>
+						<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
+						</Text>
+						<View style={[styles.userCountBadge, { backgroundColor: primaryColor, width: COUNT_BADGE_WIDTH }]}>
+							<Text style={[styles.userCountNumber, { color: contrastColor }]}>
+								{showVieleAndere ? translate(TranslationKeys.onboarding_many_others) : formattedCount}
+							</Text>
+						</View>
+					</View>
+					{renderAvatarCarousel()}
+				</View>
 			</ScrollView>
 		</View>
 	);
@@ -777,24 +788,34 @@ const OnboardingScreen = () => {
 								<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
 							</>
 						) : (
-							<ActivityIndicator size="small" color={contrastColor} />
+							<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+								{translate(TranslationKeys.onboarding_loading_profile_button)}
+							</Text>
 						)}
+					</TouchableOpacity>
+				) : isFirstStep ? (
+					// No back button on the first step, so let the next button take the full
+					// width instead of a small button next to an invisible spacer.
+					<TouchableOpacity
+						onPress={handleNext}
+						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor }]}
+					>
+						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+							{translate(TranslationKeys.onboarding_next)}
+						</Text>
+						<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
 					</TouchableOpacity>
 				) : (
 					<>
-						{!isFirstStep ? (
-							<TouchableOpacity
-								onPress={handleBack}
-								style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
-							>
-								<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
-								<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
-									{translate(TranslationKeys.onboarding_back)}
-								</Text>
-							</TouchableOpacity>
-						) : (
-							<View style={styles.navButtonPrimary} />
-						)}
+						<TouchableOpacity
+							onPress={handleBack}
+							style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
+						>
+							<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
+							<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
+								{translate(TranslationKeys.onboarding_back)}
+							</Text>
+						</TouchableOpacity>
 						{!isLastStep ? (
 							<TouchableOpacity
 								onPress={handleNext}
@@ -860,8 +881,22 @@ const styles = StyleSheet.create({
 	stepScrollContent: {
 		flexGrow: 1,
 		alignItems: 'center',
-		gap: 16,
+		// space-between pins welcomeBottomSection (counter + avatars) to the bottom of the step
+		// no matter how tall welcomeTopSection's text is; gap is the minimum spacing fallback
+		// for when content overflows and the ScrollView actually scrolls.
+		justifyContent: 'space-between',
+		gap: 24,
 		padding: 20,
+	},
+	welcomeTopSection: {
+		width: '100%',
+		alignItems: 'center',
+		gap: 16,
+	},
+	welcomeBottomSection: {
+		width: '100%',
+		alignItems: 'center',
+		gap: 16,
 	},
 	stepScrollContentNoHPad: {
 		flexGrow: 1,
