@@ -1,16 +1,13 @@
 Key,Message,Component,Line
 "AZ8iJFvkG-TLEebDhPXY","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",185
 "AZ8iJFtVG-TLEebDhPXX","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",171
-"AZ8DZ-N7bzaBxP-NaEw5","""npx"" can install packages on-demand and run their lifecycle scripts.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",243
-"AZ8DZ-N7bzaBxP-NaEw6","Define exact package version to avoid installing unverified releases.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",243
+"AZ8DZ-N7bzaBxP-NaEw5","""npx"" can install packages on-demand and run their lifecycle scripts.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",246
+"AZ8DZ-N7bzaBxP-NaEw6","Define exact package version to avoid installing unverified releases.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",246
 "AZ7u4579I9TVtwnJRYAg","""npx"" can install packages on-demand and run their lifecycle scripts.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",51
 "AZ7eOnvncO69wzd-WGS2","Use full commit SHA hash for this dependency.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",44
 "AZ7csa66YHFvwFUOeLO7","Avoid executing downloaded artifacts directly without verification.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",50
 "AZ7csa66YHFvwFUOeLO8","Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",50
 "AZ7csaZ9YHFvwFUOeLO5","Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",88
-"AZ4SXhKMc3BCtiyuTnk0","The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",105
-"AZ4SXhKMc3BCtiyuTnk1","The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",115
-"AZ4SXhKMc3BCtiyuTnk2","The expression github.event.pull_request.title can be set by an external actor to a specially crafted value, enabling script injection. Change this workflow to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",125
 "AZ3e3DHX2LzBVNKAZMLC","Review this potentially hard-coded password.","rocket-meals_rocket-meals:apps/backend-sync/src/SyncDatabaseSchema.ts",45
 "AZ2OkI8VCaLxEFHreIRT","Ensure that tainted data is validated before being used to construct a client-side request URL.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",117
 "AZ2OkI8VCaLxEFHreIRS","Ensure that tainted data is validated before being used to construct a client-side request URL.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",132
