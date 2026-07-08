@@ -151,14 +151,16 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 	try {
 		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
 			params: {
-				fields: '*, markings.*,feedbacks.*,food.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
+				fields: '*, markings.*,food.*,food.feedbacks.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
 				limit: -1,
 				deep: {
-					feedbacks: {
-						_filter: {
-							comment: { _nnull: true },
+					food: {
+						feedbacks: {
+							_filter: {
+								comment: { _nnull: true },
+							},
+							_sort: '-date_updated',
 						},
-						_sort: '-date_updated',
 					},
 				},
 			},

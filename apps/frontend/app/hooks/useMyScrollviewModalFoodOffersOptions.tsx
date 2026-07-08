@@ -1,14 +1,13 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { AntDesign, Ionicons, MaterialIcons, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList/SettingsList';
-import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import { useAppSelector } from '@/redux/hooks';
-import { useDispatch, shallowEqual } from 'react-redux';
-import { SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD } from '@/redux/Types/types';
+import { shallowEqual } from 'react-redux';
+import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 
 interface FoodOffersOptionsContentProps {
 	closeSheet: () => void;
@@ -26,11 +25,22 @@ const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 	},
-	booleanToggleContainer: {
-		width: '100%',
-		marginTop: 16,
-	},
 });
+
+type NavigationOption = {
+	key: string;
+	kind: 'navigation';
+	title: string;
+	icon: React.ReactNode;
+	onPress: () => void;
+};
+
+type BooleanToggleOption = {
+	key: string;
+	kind: 'boolean';
+};
+
+type OptionItem = NavigationOption | BooleanToggleOption;
 
 const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	closeSheet,
@@ -44,48 +54,47 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	onSettings,
 }) => {
 	const { translate } = useLanguage();
-	const dispatch = useDispatch();
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
-	const foodoffersShowAverageRatingOnCard = useAppSelector((state) => state.settings.foodoffersShowAverageRatingOnCard);
-	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 
-	const effectiveShowAverageOnCard = foodoffersShowAverageRatingOnCard !== null
-		? foodoffersShowAverageRatingOnCard
-		: (appSettings?.foods_ratings_average_display_on_card ?? false);
-
-	const options = [
+	const options: OptionItem[] = [
 		{
 			key: 'canteen',
+			kind: 'navigation',
 			title: translate(TranslationKeys.canteen),
 			icon: <MaterialIcons name="restaurant-menu" size={20} />,
 			onPress: () => { onCanteen(); },
 		},
 		{
 			key: 'calendar',
+			kind: 'navigation',
 			title: translate(TranslationKeys.date),
 			icon: <MaterialIcons name="calendar-month" size={20} />,
 			onPress: () => { onCalendar(); },
 		},
 		{
 			key: 'sort',
+			kind: 'navigation',
 			title: translate(TranslationKeys.sort),
 			icon: <MaterialIcons name="sort" size={20} />,
 			onPress: () => { onSort(); },
 		},
 		{
 			key: 'priceGroup',
+			kind: 'navigation',
 			title: translate(TranslationKeys.price_group),
 			icon: <FontAwesome6 name="euro-sign" size={20} />,
 			onPress: () => { closeSheet(); onPriceGroup(); },
 		},
 		{
 			key: 'eatingHabits',
+			kind: 'navigation',
 			title: translate(TranslationKeys.eating_habits),
 			icon: <Ionicons name="bag-add" size={20} />,
 			onPress: () => { closeSheet(); onEatingHabits(); },
 		},
 		{
 			key: 'businessHours',
+			kind: 'navigation',
 			title: translate(TranslationKeys.businesshours),
 			icon: <MaterialCommunityIcons name="clock-time-eight" size={20} />,
 			onPress: () => { onBusinessHours(); },
@@ -95,14 +104,23 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	if (onUtilization && appSettings?.utilization_display_enabled) {
 		options.push({
 			key: 'utilization',
+			kind: 'navigation',
 			title: `${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`,
 			icon: <FontAwesome6 name="people-group" size={20} />,
 			onPress: () => { onUtilization(); },
 		});
 	}
 
+	if (appSettings?.foods_ratings_average_display === true) {
+		options.push({
+			key: 'showAverageRatingOnCard',
+			kind: 'boolean',
+		});
+	}
+
 	options.push({
 		key: 'settings',
+		kind: 'navigation',
 		title: translate(TranslationKeys.further_settings),
 		icon: <MaterialCommunityIcons name="cog-outline" size={20} />,
 		onPress: () => { closeSheet(); onSettings(); },
@@ -110,36 +128,37 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 
 	return (
 		<View style={styles.container}>
-			{options.map((option, index) => (
-				<SettingsList
-					key={option.key}
-					title={option.title}
-					leftIcon={option.icon}
-					onPress={option.onPress}
-					groupPosition={
-						options.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === options.length - 1
-									? 'bottom'
-									: 'middle'
-					}
-					showSeparator={index !== options.length - 1}
-				/>
-			))}
-			{appSettings?.foods_ratings_average_display === true && (
-				<View style={styles.booleanToggleContainer}>
-					<SettingsListBoolean
-						iconBgColor={primaryColor}
-						leftIcon={<AntDesign name="star" size={20} />}
-						label={translate(TranslationKeys.show_average_rating_on_card)}
-						isEnabled={effectiveShowAverageOnCard}
-						onToggle={() => dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !effectiveShowAverageOnCard })}
-						groupPosition="single"
+			{options.map((option, index) => {
+				const groupPosition =
+					options.length === 1
+						? 'single'
+						: index === 0
+							? 'top'
+							: index === options.length - 1
+								? 'bottom'
+								: 'middle';
+				const showSeparator = index !== options.length - 1;
+
+				if (option.kind === 'boolean') {
+					return (
+						<FoodoffersAverageRatingToggle
+							key={option.key}
+							groupPosition={groupPosition}
+						/>
+					);
+				}
+
+				return (
+					<SettingsList
+						key={option.key}
+						title={option.title}
+						leftIcon={option.icon}
+						onPress={option.onPress}
+						groupPosition={groupPosition}
+						showSeparator={showSeparator}
 					/>
-				</View>
-			)}
+				);
+			})}
 		</View>
 	);
 };

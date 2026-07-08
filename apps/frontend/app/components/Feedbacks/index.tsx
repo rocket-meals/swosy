@@ -43,6 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
+	const [adminFeedbacks, setAdminFeedbacks] = useState<any[]>([]);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
@@ -64,6 +65,21 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			setCommentType(appSettings?.foods_feedbacks_comments_type);
 		}
 	}, [appSettings?.foods_feedbacks_comments_type]);
+
+	useEffect(() => {
+		if (!isManagement || !foodId) return;
+		foodFeedbackHelper.fetchAllFoodFeedbacks({
+			filter: {
+				_and: [
+					{ food: { _eq: foodId } },
+					{ comment: { _nnull: true } },
+				],
+			},
+			sort: ['-date_updated'],
+		}).then((result) => {
+			setAdminFeedbacks(Array.isArray(result) ? result : []);
+		}).catch(() => {});
+	}, [isManagement, foodId, foodFeedbackHelper]);
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
@@ -149,9 +165,13 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
     const showRatingsAverage = appSettings?.foods_ratings_average_display;
 
 	const otherComments = useMemo(() => {
-        return foodDetails?.feedbacks?.filter((feedback: any) => feedback.profile !== profile?.id && feedback.comment)
-            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime()) || [];
-    }, [foodDetails?.feedbacks, profile?.id]);
+        const feedbackSource = (isManagement && adminFeedbacks.length > 0)
+            ? adminFeedbacks
+            : (foodDetails?.feedbacks ?? []);
+        return feedbackSource
+            .filter((feedback: any) => feedback.profile !== profile?.id && feedback.comment)
+            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime());
+    }, [isManagement, adminFeedbacks, foodDetails?.feedbacks, profile?.id]);
 
 	const commentTypeIncludesRead = commentType === 'read' || commentType === 'readAndWrite';
 	const showOtherCommentsForAdmin = isManagement === true && otherComments.length > 0 && !commentTypeIncludesRead;
