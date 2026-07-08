@@ -46,8 +46,12 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
-	const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
+	const foodoffersShowAverageRatingOnCard = useAppSelector((state) => state.settings.foodoffersShowAverageRatingOnCard);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+
+	const effectiveShowAverageOnCard = foodoffersShowAverageRatingOnCard !== null
+		? foodoffersShowAverageRatingOnCard
+		: (appSettings?.foods_ratings_average_display_on_card ?? false);
 
 	const options = [
 		{
@@ -130,11 +134,8 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 						iconBgColor={primaryColor}
 						leftIcon={<AntDesign name="star" size={20} />}
 						label={translate(TranslationKeys.show_average_rating_on_card)}
-						isEnabled={foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false)}
-						onToggle={() => {
-							const current = foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false);
-							dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !current });
-						}}
+						isEnabled={effectiveShowAverageOnCard}
+						onToggle={() => dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !effectiveShowAverageOnCard })}
 						groupPosition="single"
 					/>
 				</View>

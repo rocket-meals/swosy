@@ -502,7 +502,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const userFromStore = useAppSelector((state) => state.authReducer.user);
     const isManagementFromStore = useAppSelector((state) => state.authReducer.isManagement);
     const markingsFromStore = useAppSelector(selectMarkings);
-    const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
+    const foodoffersShowAverageRatingOnCard = useAppSelector((state) => state.settings.foodoffersShowAverageRatingOnCard);
 
     const language = props.language ?? languageFromStore;
     const pirateLanguage = props.pirateLanguage ?? pirateLanguageFromStore;

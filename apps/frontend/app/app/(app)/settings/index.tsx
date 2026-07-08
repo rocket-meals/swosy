@@ -102,7 +102,10 @@ const Settings = () => {
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
-        const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
+        const foodoffersShowAverageRatingOnCard = useAppSelector((state) => state.settings.foodoffersShowAverageRatingOnCard);
+        const effectiveShowAverageOnCard = foodoffersShowAverageRatingOnCard !== null
+                ? foodoffersShowAverageRatingOnCard
+                : (appSettings?.foods_ratings_average_display_on_card ?? false);
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
                 () => friendships.filter((f) => f.friendship_status === 'accepted').length,
@@ -564,11 +567,8 @@ const Settings = () => {
 								iconBgColor={foods_area_color}
 								leftIcon={<AntDesign name="star" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.show_average_rating_on_card)}
-								isEnabled={foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false)}
-								onToggle={() => {
-									const current = foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false);
-									dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !current });
-								}}
+								isEnabled={effectiveShowAverageOnCard}
+								onToggle={() => dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !effectiveShowAverageOnCard })}
 								groupPosition="middle"
 							/>
 						)}
@@ -875,7 +875,7 @@ const Settings = () => {
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
-		foodoffersShowAverageRatingOnCard, appSettings?.foods_ratings_average_display, appSettings?.foods_ratings_average_display_on_card,
+		foodoffersShowAverageRatingOnCard, effectiveShowAverageOnCard, appSettings?.foods_ratings_average_display, appSettings?.foods_ratings_average_display_on_card,
 	]);
 
 	return (
