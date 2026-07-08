@@ -10,7 +10,7 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {TranslationHelper} from '../helpers/TranslationHelper';
-import {CollectionNames, DatabaseTypes, DateHelper} from 'repo-depkit-common';
+import {CollectionNames, DatabaseTypes, DateHelper, DirectusItemStatus} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
 import {DictMarkingsExclusions, MarkingFilterHelper} from '../helpers/MarkingFilterHelper';
@@ -644,7 +644,7 @@ export class ParseSchedule {
     let createJSON = {
       alias: marking_external_identifier,
       external_identifier: marking_external_identifier,
-      status: 'draft',
+      status: DirectusItemStatus.DRAFT,
     };
     return this.context.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
   }
@@ -920,7 +920,7 @@ export class ParseSchedule {
           food: null,
           foodoffer_components: [],
           is_component: true,
-          status: 'published',
+          status: DirectusItemStatus.PUBLISHED,
           markings: {
             create: componentMarkingsCreate,
             update: [],
@@ -1081,7 +1081,7 @@ export class ParseSchedule {
       const food = dictFoodsFound[food_id];
       const foodFound = !!food;
 
-      const foodIsArchived = foodFound && food?.status === 'archived';
+      const foodIsArchived = foodFound && food?.status === DirectusItemStatus.ARCHIVED;
 
       if (canteenFound && foodFound && !foodIsArchived) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
@@ -1164,7 +1164,7 @@ export class ParseSchedule {
         let adaptedMarkingJSON: Partial<DatabaseTypes.Markings> = {
           ...markingJSONCopy,
           short_code: markingJSONCopy.external_identifier, // Set short_code to external_identifier
-          status: 'draft', // New markings start as draft; admin must publish them
+          status: DirectusItemStatus.DRAFT, // New markings start as draft; admin must publish them
         };
 
         let marking_id = await itemService.createOne(adaptedMarkingJSON);

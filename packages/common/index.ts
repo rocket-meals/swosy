@@ -23,3 +23,4 @@ export * from './src/FriendshipStatus';
 export * from './src/AppFeedbackSourceIdentifier';
 export * from './src/CustomerAppStoreIds';
 export * from './src/AppleAppStoreConfig';
+export * from './src/DirectusItemStatus';

@@ -1,4 +1,5 @@
 import axios from '@/interceptor';
+import { DirectusItemStatus } from 'repo-depkit-common';
 
 const TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
@@ -23,6 +24,17 @@ const fetchWithRetry = async (url: string, config: any) => {
 		}
 	}
 	throw lastError;
+};
+
+/**
+ * Filters out foodoffers where the associated food has status 'archived'.
+ * This ensures that even if archived-food foodoffers exist on the server,
+ * they are not displayed in the frontend.
+ */
+const filterNonArchivedFoodOffers = (foodoffers: any[]): any[] => {
+	return foodoffers.filter(
+		(foodoffer) => foodoffer?.food?.status !== DirectusItemStatus.ARCHIVED
+	);
 };
 
 export const fetchFoodOffers = async () => {
@@ -84,7 +96,11 @@ export const fetchFoodOffersByCanteen = async (canteenId: string, selected: stri
 				},
 			},
 		});
-		return response.data;
+		const result = response.data;
+		if (Array.isArray(result?.data)) {
+			return { ...result, data: filterNonArchivedFoodOffers(result.data) };
+		}
+		return result;
 	} catch (error) {
 		console.error('fetchFoodOffersByCanteen error:', error);
 		throw new Error('Error fetching Food Offers');
@@ -141,7 +157,11 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 			},
 		});
 
-		return response.data;
+		const result = response.data;
+		if (Array.isArray(result?.data)) {
+			return { ...result, data: filterNonArchivedFoodOffers(result.data) };
+		}
+		return result;
 	} catch (error) {
 		throw new Error('Error fetching Food Offers');
 	}
