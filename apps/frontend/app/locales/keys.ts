@@ -740,4 +740,5 @@ export enum TranslationKeys {
 	more_options = 'more_options',
 	further_settings = 'further_settings',
 	options_and_information = 'options_and_information',
+	show_average_rating_on_card = 'show_average_rating_on_card',
 }

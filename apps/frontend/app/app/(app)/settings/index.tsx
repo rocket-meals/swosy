@@ -19,7 +19,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -102,6 +102,7 @@ const Settings = () => {
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
+        const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
                 () => friendships.filter((f) => f.friendship_status === 'accepted').length,
@@ -558,6 +559,19 @@ const Settings = () => {
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" nativeID={ComponentIds.SETTINGS_EATING_HABITS} />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+						{appSettings?.foods_ratings_average_display === true && (
+							<SettingsListBoolean
+								iconBgColor={foods_area_color}
+								leftIcon={<AntDesign name="star" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.show_average_rating_on_card)}
+								isEnabled={foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false)}
+								onToggle={() => {
+									const current = foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false);
+									dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !current });
+								}}
+								groupPosition="middle"
+							/>
+						)}
 						{showFriendsInSettings && (
 							<SettingsList
 								iconBgColor={foods_area_color}
@@ -861,6 +875,7 @@ const Settings = () => {
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
+		foodoffersShowAverageRatingOnCard, appSettings?.foods_ratings_average_display, appSettings?.foods_ratings_average_display_on_card,
 	]);
 
 	return (

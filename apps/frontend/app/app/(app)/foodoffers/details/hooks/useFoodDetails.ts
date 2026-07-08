@@ -29,13 +29,14 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
             if (id) {
                 const foodData = await fetchFoodOffersDetailsById(id.toString());
                 if (foodData && foodData.data) {
-                    const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+                    const { food, attribute_values, foodoffer_category, feedbacks } = foodData?.data ?? {};
 
                     const translation = food?.translations?.find(
                         (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
                     );
                     setFoodDetails({
                         ...food,
+                        feedbacks,
                         foodoffer_category,
                         name: translation ? translateDynamic(translation.name) : null,
                     });

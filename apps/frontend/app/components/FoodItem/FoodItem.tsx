@@ -502,12 +502,17 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const userFromStore = useAppSelector((state) => state.authReducer.user);
     const isManagementFromStore = useAppSelector((state) => state.authReducer.isManagement);
     const markingsFromStore = useAppSelector(selectMarkings);
+    const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
 
     const language = props.language ?? languageFromStore;
     const pirateLanguage = props.pirateLanguage ?? pirateLanguageFromStore;
     const funLanguageMode = props.funLanguageMode ?? funLanguageModeFromStore;
     const serverInfo = props.serverInfo ?? serverInfoFromStore;
-    const appSettings = props.appSettings ?? appSettingsFromStore;
+    const baseAppSettings = props.appSettings ?? appSettingsFromStore;
+    const appSettings = useMemo(() => {
+        if (foodoffersShowAverageRatingOnCard === null) return baseAppSettings;
+        return { ...baseAppSettings, foods_ratings_average_display_on_card: foodoffersShowAverageRatingOnCard };
+    }, [baseAppSettings, foodoffersShowAverageRatingOnCard]);
     const primaryColor = props.primaryColor ?? primaryColorFromStore;
     
     const { theme } = useTheme();

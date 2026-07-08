@@ -1,12 +1,14 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import { useAppSelector } from '@/redux/hooks';
-import { shallowEqual } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
+import { SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD } from '@/redux/Types/types';
 
 interface FoodOffersOptionsContentProps {
 	closeSheet: () => void;
@@ -24,6 +26,10 @@ const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 	},
+	booleanToggleContainer: {
+		width: '100%',
+		marginTop: 16,
+	},
 });
 
 const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
@@ -38,7 +44,10 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	onSettings,
 }) => {
 	const { translate } = useLanguage();
+	const dispatch = useDispatch();
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
+	const foodoffersShowAverageRatingOnCard = useAppSelector((state) => (state.settings as any).foodoffersShowAverageRatingOnCard as boolean | null);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 
 	const options = [
 		{
@@ -115,6 +124,21 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 					showSeparator={index !== options.length - 1}
 				/>
 			))}
+			{appSettings?.foods_ratings_average_display === true && (
+				<View style={styles.booleanToggleContainer}>
+					<SettingsListBoolean
+						iconBgColor={primaryColor}
+						leftIcon={<AntDesign name="star" size={20} />}
+						label={translate(TranslationKeys.show_average_rating_on_card)}
+						isEnabled={foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false)}
+						onToggle={() => {
+							const current = foodoffersShowAverageRatingOnCard !== null ? foodoffersShowAverageRatingOnCard : (appSettings?.foods_ratings_average_display_on_card ?? false);
+							dispatch({ type: SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD, payload: !current });
+						}}
+						groupPosition="single"
+					/>
+				</View>
+			)}
 		</View>
 	);
 };
