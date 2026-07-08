@@ -139,7 +139,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [likedMarkings.length, currentRating]
     );
 
-    const showAverageOnCard = !!(appSettings?.foods_ratings_average_display && appSettings?.foods_ratings_average_display_on_card);
+    const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
 
     const averageRatingDisplay = useMemo(() => {
       if (!showAverageOnCard) return null;

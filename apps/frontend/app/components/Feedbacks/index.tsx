@@ -154,8 +154,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
     }, [foodDetails?.feedbacks, profile?.id]);
 
 	const commentTypeIncludesRead = commentType === 'read' || commentType === 'readAndWrite';
-	const showOtherCommentsForAdmin = !!(isManagement && otherComments?.length > 0 && !commentTypeIncludesRead);
-	const showAdminNotice = !!(isManagement && !commentTypeIncludesRead);
+	const showOtherCommentsForAdmin = isManagement === true && otherComments.length > 0 && !commentTypeIncludesRead;
 
 	return (
 		<View style={styles.container}>
@@ -308,11 +307,9 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 					>
 						{translate(TranslationKeys.others_comments)}
 					</Text>
-					{showAdminNotice && (
-						<Text style={[styles.adminNoticeText, { color: foods_area_color }]}>
-							{translate(TranslationKeys.admin_only_comments_notice)}
-						</Text>
-					)}
+					<Text style={[styles.adminNoticeText, { color: foods_area_color }]}>
+						{translate(TranslationKeys.admin_only_comments_notice)}
+					</Text>
 					{otherComments.map(feedback => (
 						<View key={feedback.id} style={styles.comment}>
 							<Text
