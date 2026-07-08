@@ -74,7 +74,7 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement, profile, user } = useAppSelector((state) => state.authReducer);
+	const { isManagement, profile, user, profileLoading } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const seperatedMarkingsValue = useSeperatedMarkingsForFood();
@@ -131,11 +131,28 @@ const OnboardingScreen = () => {
 		return !!profile?.canteen && !!profile?.price_group;
 	}, [profile?.id, profile?.canteen, profile?.price_group]);
 
-	// "Returning user" means the profile is fully configured
+	// "Returning user" means the profile is fully configured. Note that `profile` may come from
+	// redux-persist (a previous session's data) before the fresh server fetch (triggered in the
+	// parent layout, tracked via `profileLoading`) has resolved – so this can briefly be wrong
+	// in either direction until profileLoading flips to false.
 	const isReturningUser = hasCompleteProfile;
 
-	// Direct continue is only shown when profile is fully configured (canteen + price_group from server)
-	const showDirectContinue = !isLoadingCanteens && hasCompleteProfile;
+	// Anonymous/guest sessions never have a server profile to wait for, so their onboarding
+	// status is known immediately.
+	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+
+	// True once we have a definitive answer for whether this user needs the full onboarding or
+	// not: either they're anonymous (nothing to fetch), or the server profile fetch has resolved.
+	const knowsOnboardingStatus = isAnonymousUser || !profileLoading;
+
+	// Only commit to the direct-continue layout (hidden step dots, single centered button,
+	// scroll locked to the welcome step) once knowsOnboardingStatus is true – otherwise a
+	// stale/optimistic isReturningUser could hide the multi-step UI before we're sure.
+	const lockedToDirectContinue = knowsOnboardingStatus && isReturningUser;
+
+	// Direct continue can only actually navigate once canteens have loaded (selectedCanteen
+	// needs to be resolved first). Used to gate the action, not the layout.
+	const showDirectContinue = !isLoadingCanteens && lockedToDirectContinue;
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
@@ -541,7 +558,7 @@ const OnboardingScreen = () => {
 	}, []);
 
 	const renderStepIndicator = () => (
-		<View style={styles.stepIndicatorContainer}>
+		<>
 			{STEPS.map((_, index) => (
 				<TouchableOpacity
 					key={index}
@@ -555,7 +572,7 @@ const OnboardingScreen = () => {
 					]}
 				/>
 			))}
-		</View>
+		</>
 	);
 
 	const renderAvatarCarousel = () => {
@@ -596,7 +613,14 @@ const OnboardingScreen = () => {
 
 	const renderWelcomeStep = () => (
 		<View style={[styles.stepContent, { width: screenWidth }]}>
-			<ScrollView contentContainerStyle={styles.stepScrollContent}>
+			{/*
+			  The icon/title/description live in their own flex:1 ScrollView, so however tall that
+			  text block is (it differs between new vs. returning users, and while the "loading
+			  profile" text is shown), it only scrolls internally instead of pushing anything else
+			  around. welcomeBottomSection is a plain sibling below it, sized to its own content and
+			  always in the same place – the counter and avatars never jump.
+			*/}
+			<ScrollView style={styles.welcomeTopScroll} contentContainerStyle={styles.welcomeTopScrollContent}>
 				<MaterialCommunityIcons
 					name={isReturningUser ? 'hand-wave' : 'check-decagram'}
 					size={80}
@@ -621,6 +645,8 @@ const OnboardingScreen = () => {
 						{translate(TranslationKeys.onboarding_welcome_description)}
 					</Text>
 				)}
+			</ScrollView>
+			<View style={styles.welcomeBottomSection}>
 				<View style={styles.userCountContainer}>
 					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
 						{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
@@ -632,7 +658,7 @@ const OnboardingScreen = () => {
 					</View>
 				</View>
 				{renderAvatarCarousel()}
-			</ScrollView>
+			</View>
 		</View>
 	);
 
@@ -736,20 +762,60 @@ const OnboardingScreen = () => {
 				onMomentumScrollEnd={handleScrollEnd}
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
-				scrollEnabled={!showDirectContinue}
+				scrollEnabled={!lockedToDirectContinue}
 			>
 				{mountedSteps.has(0) ? renderWelcomeStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{!showDirectContinue && (mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
-				{!showDirectContinue && (mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
-				{!showDirectContinue && (mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!lockedToDirectContinue && (mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!lockedToDirectContinue && (mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!lockedToDirectContinue && (mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
 			</ScrollView>
-			{!showDirectContinue && renderStepIndicator()}
+			{/*
+			  Always mounted so the reserved space stays stable (no layout jump). It's only made
+			  invisible once we're sure this user is taking the direct-continue path; it stays
+			  visible for as long as that isn't certain yet (including while the profile is
+			  still loading), and for anyone who does need the full onboarding.
+			*/}
+			<View
+				style={[styles.stepIndicatorContainer, { opacity: lockedToDirectContinue ? 0 : 1 }]}
+				pointerEvents={lockedToDirectContinue ? 'none' : 'auto'}
+			>
+				{renderStepIndicator()}
+			</View>
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
-				{showDirectContinue ? (
+				{isFirstStep && !knowsOnboardingStatus ? (
+					// We don't yet know whether this is a returning user (profile still loading) or
+					// a new one – hide the button rather than let an impatient tap on a bad
+					// connection skip past a step that might turn out to matter.
+					<View style={[styles.navButtonPrimary, styles.navButtonFullWidth]} />
+				) : lockedToDirectContinue ? (
+					// Rendered immediately (not gated on isLoadingCanteens) so the button never
+					// jumps from the split back/next layout into this centered one. While canteens
+					// are still loading, the button stays in place and just shows a spinner.
 					<TouchableOpacity
 						onPress={handleStart}
-						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor }]}
+						disabled={!showDirectContinue}
+						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor, opacity: showDirectContinue ? 1 : 0.6 }]}
 						activeOpacity={0.8}
+					>
+						{showDirectContinue ? (
+							<>
+								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+									{translate(TranslationKeys.onboarding_next)}
+								</Text>
+								<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
+							</>
+						) : (
+							<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+								{translate(TranslationKeys.onboarding_loading_profile_button)}
+							</Text>
+						)}
+					</TouchableOpacity>
+				) : isFirstStep ? (
+					// No back button on the first step, so let the next button take the full
+					// width instead of a small button next to an invisible spacer.
+					<TouchableOpacity
+						onPress={handleNext}
+						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor }]}
 					>
 						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
 							{translate(TranslationKeys.onboarding_next)}
@@ -758,19 +824,15 @@ const OnboardingScreen = () => {
 					</TouchableOpacity>
 				) : (
 					<>
-						{!isFirstStep ? (
-							<TouchableOpacity
-								onPress={handleBack}
-								style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
-							>
-								<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
-								<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
-									{translate(TranslationKeys.onboarding_back)}
-								</Text>
-							</TouchableOpacity>
-						) : (
-							<View style={styles.navButtonPrimary} />
-						)}
+						<TouchableOpacity
+							onPress={handleBack}
+							style={[styles.navButtonPrimary, { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.screen.iconBg }]}
+						>
+							<MaterialCommunityIcons name="chevron-left" size={24} color={theme.screen.text} />
+							<Text style={[styles.navButtonPrimaryText, { color: theme.screen.text }]}>
+								{translate(TranslationKeys.onboarding_back)}
+							</Text>
+						</TouchableOpacity>
 						{!isLastStep ? (
 							<TouchableOpacity
 								onPress={handleNext}
@@ -833,11 +895,26 @@ const styles = StyleSheet.create({
 	stepContent: {
 		flex: 1,
 	},
-	stepScrollContent: {
+	// flex:1 makes this ScrollView claim exactly the space left over after welcomeBottomSection,
+	// so its content (icon/title/description, which varies in length) scrolls internally instead
+	// of ever changing welcomeBottomSection's position.
+	welcomeTopScroll: {
+		flex: 1,
+	},
+	welcomeTopScrollContent: {
 		flexGrow: 1,
 		alignItems: 'center',
+		justifyContent: 'center',
 		gap: 16,
-		padding: 20,
+		paddingHorizontal: 20,
+		paddingTop: 20,
+	},
+	welcomeBottomSection: {
+		width: '100%',
+		alignItems: 'center',
+		gap: 16,
+		paddingHorizontal: 20,
+		paddingBottom: 20,
 	},
 	stepScrollContentNoHPad: {
 		flexGrow: 1,
