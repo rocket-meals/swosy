@@ -131,10 +131,14 @@ const OnboardingScreen = () => {
 		return !!profile?.canteen && !!profile?.price_group;
 	}, [profile?.id, profile?.canteen, profile?.price_group]);
 
-	// "Returning user" means the profile is fully configured
+	// "Returning user" means the profile is fully configured. This is known synchronously from
+	// redux (no need to wait for canteens to load), so it drives the layout (step dots, nav
+	// button shape) from the very first render – avoids the flicker/layout-jump that happened
+	// when the layout depended on isLoadingCanteens instead.
 	const isReturningUser = hasCompleteProfile;
 
-	// Direct continue is only shown when profile is fully configured (canteen + price_group from server)
+	// Direct continue can only actually navigate once canteens have loaded (selectedCanteen
+	// needs to be resolved first). Used to gate the action, not the layout.
 	const showDirectContinue = !isLoadingCanteens && hasCompleteProfile;
 
 	const canteenHelper = useMemo(() => new CanteenHelper(), []);
@@ -541,7 +545,7 @@ const OnboardingScreen = () => {
 	}, []);
 
 	const renderStepIndicator = () => (
-		<View style={styles.stepIndicatorContainer}>
+		<>
 			{STEPS.map((_, index) => (
 				<TouchableOpacity
 					key={index}
@@ -555,7 +559,7 @@ const OnboardingScreen = () => {
 					]}
 				/>
 			))}
-		</View>
+		</>
 	);
 
 	const renderAvatarCarousel = () => {
@@ -736,25 +740,45 @@ const OnboardingScreen = () => {
 				onMomentumScrollEnd={handleScrollEnd}
 				scrollEventThrottle={16}
 				style={styles.horizontalScroll}
-				scrollEnabled={!showDirectContinue}
+				scrollEnabled={!isReturningUser}
 			>
 				{mountedSteps.has(0) ? renderWelcomeStep() : <View style={[styles.stepContent, { width: screenWidth }]} />}
-				{!showDirectContinue && (mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
-				{!showDirectContinue && (mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
-				{!showDirectContinue && (mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!isReturningUser && (mountedSteps.has(1) ? renderCanteenStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!isReturningUser && (mountedSteps.has(2) ? renderPriceGroupStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
+				{!isReturningUser && (mountedSteps.has(3) ? renderPreferencesStep() : <View style={[styles.stepContent, { width: screenWidth }]} />)}
 			</ScrollView>
-			{!showDirectContinue && renderStepIndicator()}
+			{/*
+			  Always mounted so the reserved space stays stable (no layout jump). It's only made
+			  visible once we know the user has to go through the full onboarding; returning users
+			  never see it since they take the direct-continue path.
+			*/}
+			<View
+				style={[styles.stepIndicatorContainer, { opacity: isReturningUser ? 0 : 1 }]}
+				pointerEvents={isReturningUser ? 'none' : 'auto'}
+			>
+				{renderStepIndicator()}
+			</View>
 			<View style={[styles.navigationContainer, { borderTopColor: theme.screen.iconBg }]}>
-				{showDirectContinue ? (
+				{isReturningUser ? (
+					// Rendered immediately (not gated on isLoadingCanteens) so the button never
+					// jumps from the split back/next layout into this centered one. While canteens
+					// are still loading, the button stays in place and just shows a spinner.
 					<TouchableOpacity
 						onPress={handleStart}
-						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor }]}
+						disabled={!showDirectContinue}
+						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor, opacity: showDirectContinue ? 1 : 0.6 }]}
 						activeOpacity={0.8}
 					>
-						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
-							{translate(TranslationKeys.onboarding_next)}
-						</Text>
-						<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
+						{showDirectContinue ? (
+							<>
+								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+									{translate(TranslationKeys.onboarding_next)}
+								</Text>
+								<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
+							</>
+						) : (
+							<ActivityIndicator size="small" color={contrastColor} />
+						)}
 					</TouchableOpacity>
 				) : (
 					<>
