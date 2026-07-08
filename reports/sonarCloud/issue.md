@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 34 | 34 |
 | 🐛 Reliability | 6891 | 16 |
-| 🔧 Maintainability | 9658 | 0 |
+| 🔧 Maintainability | 9652 | 0 |
 
-**Total issues:** 16583 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16577 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -181,8 +181,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:354
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L354
+  apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:159
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L159
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
