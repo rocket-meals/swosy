@@ -606,12 +606,20 @@ const OnboardingScreen = () => {
 						? translate(TranslationKeys.onboarding_welcome_back)
 						: translate(TranslationKeys.onboarding_welcome)}
 				</Text>
-				<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
-					{isReturningUser
-						? translate(TranslationKeys.onboarding_loading_profile)
-						: translate(TranslationKeys.onboarding_welcome_description)}
-				</Text>
-				{isLoadingCanteens && <ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />}
+				{isReturningUser ? (
+					isLoadingCanteens && (
+						<>
+							<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+								{translate(TranslationKeys.onboarding_loading_profile)}
+							</Text>
+							<ActivityIndicator size="large" color={primaryColor} style={{ marginTop: 8 }} />
+						</>
+					)
+				) : (
+					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.onboarding_welcome_description)}
+					</Text>
+				)}
 				<View style={styles.userCountContainer}>
 					<Text style={[styles.stepDescription, { color: theme.screen.text }]}>
 						{translate(TranslationKeys.onboarding_complete_user_count_prefix)}
@@ -739,7 +747,7 @@ const OnboardingScreen = () => {
 				{showDirectContinue ? (
 					<TouchableOpacity
 						onPress={handleStart}
-						style={[styles.navButtonPrimary, styles.navButtonCentered, { backgroundColor: primaryColor }]}
+						style={[styles.navButtonPrimary, styles.navButtonFullWidth, { backgroundColor: primaryColor }]}
 						activeOpacity={0.8}
 					>
 						<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
@@ -937,8 +945,9 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_700Bold',
 	},
-	navButtonCentered: {
-		alignSelf: 'center',
+	navButtonFullWidth: {
+		width: '100%',
+		justifyContent: 'center',
 	},
 	avatarCarouselContainer: {
 		gap: 8,
