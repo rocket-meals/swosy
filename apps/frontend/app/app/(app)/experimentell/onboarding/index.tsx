@@ -190,7 +190,9 @@ const OnboardingScreen = () => {
 		loadCanteens();
 	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
 
-	// Auto-select canteen from profile once canteens are loaded; fall back to first canteen
+	// Auto-select canteen from profile once canteens are loaded. Deliberately no fallback to
+	// the first canteen: selectedCanteen doubles as "the user has completed canteen setup" in
+	// (app)/index.tsx's skip check, so it must only ever reflect an actual choice.
 	useEffect(() => {
 		if (isLoadingCanteens || selectedCanteen || canteens.length === 0) return;
 		let profileCanteenId: string | null = null;
@@ -201,9 +203,8 @@ const OnboardingScreen = () => {
 				profileCanteenId = (profile.canteen as DatabaseTypes.Canteens)?.id ?? null;
 			}
 		}
-		const canteen = profileCanteenId
-			? canteens.find((c) => String(c.id) === String(profileCanteenId))
-			: canteens[0];
+		if (!profileCanteenId) return;
+		const canteen = canteens.find((c) => String(c.id) === String(profileCanteenId));
 		if (canteen) {
 			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		}
@@ -379,11 +380,32 @@ const OnboardingScreen = () => {
 		scrollViewRef.current?.scrollTo({ x: index * screenWidth, animated: true });
 	}, [screenWidth]);
 
+	const handleStart = useCallback(() => {
+		setShowReadyOverlay(true);
+		// Fade in, then navigate immediately while the overlay is fully opaque.
+		// This prevents a flash of the underlying content during navigation.
+		Animated.timing(readyOpacity, {
+			toValue: 1,
+			duration: 400,
+			useNativeDriver: true,
+		}).start(() => {
+			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
+		});
+	}, [readyOpacity]);
+
 	const handleNext = useCallback(() => {
+		// The profile can become complete while the user is still on the welcome step: after a
+		// fresh login the server profile (with canteen + price_group) arrives async, and by then
+		// (app)/index.tsx's skip check has already routed here. In that case "weiter" takes the
+		// user straight to food offers instead of through steps that are already configured.
+		if (isFirstStep && hasCompleteProfile) {
+			handleStart();
+			return;
+		}
 		if (!isLastStep) {
 			goToStep(currentStepIndex + 1);
 		}
-	}, [isLastStep, currentStepIndex, goToStep]);
+	}, [isFirstStep, hasCompleteProfile, handleStart, isLastStep, currentStepIndex, goToStep]);
 
 	const handleBack = useCallback(() => {
 		if (!isFirstStep) {
@@ -423,19 +445,6 @@ const OnboardingScreen = () => {
 			goToStep(priceGroupStepIndex + 1);
 		}
 	}, [goToStep]);
-
-	const handleStart = useCallback(() => {
-		setShowReadyOverlay(true);
-		// Fade in, then navigate immediately while the overlay is fully opaque.
-		// This prevents a flash of the underlying content during navigation.
-		Animated.timing(readyOpacity, {
-			toValue: 1,
-			duration: 400,
-			useNativeDriver: true,
-		}).start(() => {
-			router.replace(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
-		});
-	}, [readyOpacity]);
 
 	const handleScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
 		const offsetX = event.nativeEvent.contentOffset.x;
