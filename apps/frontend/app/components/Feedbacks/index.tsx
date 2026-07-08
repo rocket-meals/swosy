@@ -43,7 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
-	const [adminFeedbacks, setAdminFeedbacks] = useState<any[]>([]);
+	const [adminFeedbacks, setAdminFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
@@ -78,7 +78,9 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			sort: ['-date_updated'],
 		}).then((result) => {
 			setAdminFeedbacks(Array.isArray(result) ? result : []);
-		}).catch(() => {});
+		}).catch((error) => {
+			console.error('Error fetching admin feedbacks:', error);
+		});
 	}, [isManagement, foodId, foodFeedbackHelper]);
 
 	const submitCommentFeedback = async (string: string | null) => {
