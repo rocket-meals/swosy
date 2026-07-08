@@ -719,7 +719,7 @@ const OnboardingScreen = () => {
 						<LottieView ref={priceAnimRef} source={priceAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay loop={false} />
 					</View>
 				)}
-				<View style={[styles.priceGroupContainer, { paddingHorizontal: 16 }]}>
+				<View style={styles.priceGroupContainer}>
 					<PriceGroupSettingsList onSelect={handleSelectPriceGroup} />
 				</View>
 			</ScrollView>
@@ -904,6 +904,7 @@ const styles = StyleSheet.create({
 	priceGroupContainer: {
 		width: '100%',
 		marginTop: 8,
+		paddingHorizontal: 16,
 	},
 	lottieContainer: {
 		width: 180,
