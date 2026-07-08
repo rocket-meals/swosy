@@ -1081,11 +1081,15 @@ export class ParseSchedule {
       const food = dictFoodsFound[food_id];
       const foodFound = !!food;
 
-      if (canteenFound && foodFound) {
+      const foodIsArchived = foodFound && food?.status === 'archived';
+
+      if (canteenFound && foodFound && !foodIsArchived) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
         const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
         let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash);
         foodoffersToCreate.push(foodOfferToCreate);
+      } else if (foodIsArchived) {
+        await this.context.logger.appendLog('Skip Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - food has status archived - food_id: ' + food_id);
       } else {
         await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - foodFound: ' + foodFound + ' - food_id: ' + food_id);
       }

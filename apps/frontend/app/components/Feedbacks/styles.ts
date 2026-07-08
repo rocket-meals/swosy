@@ -29,6 +29,7 @@ type FeedbacksStyles = {
     inputWide: TextStyle;
     inputFull: TextStyle;
     inputWeb: TextStyle;
+    adminNoticeText: TextStyle;
 };
 
 export default StyleSheet.create<FeedbacksStyles>({
@@ -171,5 +172,11 @@ export default StyleSheet.create<FeedbacksStyles>({
 	inputWeb: {
 		// @ts-ignore
 		outlineStyle: 'none',
+	},
+	adminNoticeText: {
+		fontSize: 13,
+		fontFamily: 'Poppins_400Regular',
+		fontStyle: 'italic',
+		marginBottom: 8,
 	},
 });

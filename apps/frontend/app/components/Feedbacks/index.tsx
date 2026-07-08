@@ -26,7 +26,7 @@ const loadingState = {
 	deleteLoading: false,
 };
 
-const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
+const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, isManagement }) => {
 	const toast = useToast();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -152,6 +152,10 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
         return foodDetails?.feedbacks?.filter((feedback: any) => feedback.profile !== profile?.id && feedback.comment)
             .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime()) || [];
     }, [foodDetails?.feedbacks, profile?.id]);
+
+	const commentTypeIncludesRead = commentType === 'read' || commentType === 'readAndWrite';
+	const showOtherCommentsForAdmin = !!(isManagement && otherComments?.length > 0 && !commentTypeIncludesRead);
+	const showAdminNotice = !!(isManagement && !commentTypeIncludesRead);
 
 	return (
 		<View style={styles.container}>
@@ -293,6 +297,45 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 					)}
 				</>
 			)}
+			{showOtherCommentsForAdmin && (
+				<View style={styles.commentsContainer}>
+					<Text
+						style={[
+							styles.heading,
+							styles.subHeading,
+							{ color: theme.screen.text }
+						]}
+					>
+						{translate(TranslationKeys.others_comments)}
+					</Text>
+					{showAdminNotice && (
+						<Text style={[styles.adminNoticeText, { color: foods_area_color }]}>
+							{translate(TranslationKeys.admin_only_comments_notice)}
+						</Text>
+					)}
+					{otherComments.map(feedback => (
+						<View key={feedback.id} style={styles.comment}>
+							<Text
+								style={[
+									styles.commentText,
+									{ color: theme.screen.text }
+								]}
+							>
+								{feedback.comment}
+							</Text>
+							<Text
+								style={[
+									styles.commentDate,
+									{ color: theme.screen.text }
+								]}
+							>
+								{DateHelper.formatOfferDateToReadable(feedback.date_updated, true, true)}
+							</Text>
+							<View style={styles.divider} />
+						</View>
+					))}
+				</View>
+			)}
 
 		</View>
 	);
@@ -302,6 +345,7 @@ export default memo(Feedbacks, (prevProps, nextProps) => {
     return (
         prevProps.offerId === nextProps.offerId &&
         prevProps.canteenId === nextProps.canteenId &&
+        prevProps.isManagement === nextProps.isManagement &&
         prevProps.foodDetails?.id === nextProps.foodDetails?.id &&
         prevProps.foodDetails?.rating_average === nextProps.foodDetails?.rating_average &&
         prevProps.foodDetails?.rating_amount === nextProps.foodDetails?.rating_amount &&

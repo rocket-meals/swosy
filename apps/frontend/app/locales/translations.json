@@ -7166,5 +7166,15 @@
     "ru": "многие другие",
     "tr": "pek çok diğeri",
     "zh": "许多其他人"
+  },
+  "admin_only_comments_notice": {
+    "de": "Diese Kommentare sind nur für Administratoren sichtbar",
+    "en": "These comments are only visible to administrators",
+    "ar": "هذه التعليقات مرئية فقط للمشرفين",
+    "es": "Estos comentarios solo son visibles para los administradores",
+    "fr": "Ces commentaires ne sont visibles que par les administrateurs",
+    "ru": "Эти комментарии видны только администраторам",
+    "tr": "Bu yorumlar yalnızca yöneticiler tarafından görülebilir",
+    "zh": "这些评论只对管理员可见"
   }
 }
