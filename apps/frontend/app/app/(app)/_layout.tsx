@@ -51,6 +51,8 @@ import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { loadChatReadStatus } from '@/helper/chatReadStatus';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
+import { UserHelper } from '@/helper/UserHelper';
 
 export default function Layout() {
 	const { theme } = useTheme();
@@ -89,7 +91,7 @@ export default function Layout() {
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
-	const { canteens } = useAppSelector((state) => state.canteenReducer);
+	const { canteens, selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	useEffect(() => {
@@ -166,6 +168,37 @@ export default function Layout() {
 		}
 	};
 
+	// Syncs locally stored canteen and price_group to the online profile when the server profile
+	// is missing those fields (e.g. user configured the app before having a server profile).
+	const syncProfileDefaults = async (fetchedProfile: DatabaseTypes.Profiles) => {
+		if (!UserHelper.isRegisteredUser(user)) return;
+		const updates: Record<string, any> = {};
+
+		// Transfer locally persisted canteen to the online profile
+		const persistedCanteenId: string | null =
+			persistedCanteen?.id != null ? String(persistedCanteen.id) : null;
+		if (!fetchedProfile.canteen && persistedCanteenId) {
+			updates.canteen = persistedCanteenId;
+		}
+
+		// Default price_group to Student if not set on the server
+		if (!fetchedProfile.price_group) {
+			updates.price_group = PriceGroupKey.student;
+		}
+
+		if (Object.keys(updates).length === 0) return;
+
+		try {
+			const updatedPayload = { ...fetchedProfile, ...updates };
+			const result = (await profileHelper.updateProfile(updatedPayload)) as DatabaseTypes.Profiles;
+			if (result) {
+				dispatch({ type: UPDATE_PROFILE, payload: result });
+			}
+		} catch (error) {
+			console.error('Error syncing profile defaults:', error);
+		}
+	};
+
 	const fetchProfile = async () => {
 		try {
 			const profile = (await profileHelper.fetchProfileById(user?.profile, {})) as DatabaseTypes.Profiles;
@@ -176,6 +209,8 @@ export default function Layout() {
 				dispatch({ type: UPDATE_PROFILE, payload: profile });
 				fetchChats();
 				fetchFriendships(profile?.id);
+				// Sync defaults: transfer locally stored values to the online profile if missing
+				syncProfileDefaults(profile);
 			}
 		} catch (error) {
 			console.error('Error fetching profiles:', error);

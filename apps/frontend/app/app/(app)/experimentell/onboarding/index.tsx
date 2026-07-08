@@ -239,16 +239,19 @@ const OnboardingScreen = () => {
 	}, []);
 
 	// Avatar carousel: one slot swaps at a time, every AVATAR_SLOT_INTERVAL ms.
-	// Only starts once server avatars are available. No random generation –
-	// when the pool is exhausted it wraps back to the start.
+	// Only starts once server avatars are available. Stops when all server avatars
+	// have been shown (wraps around only if the pool is larger than AVATARS_TOTAL).
 	useEffect(() => {
 		if (!hasServerAvatars) return;
 		let timer: ReturnType<typeof setTimeout>;
 		const swapNext = () => {
-			const slot = nextSlotRef.current % AVATARS_TOTAL;
 			const pool = avatarPoolRef.current;
 			if (pool.length === 0) return;
-			const poolIdx = nextPoolIndexRef.current % pool.length;
+			// Stop fading once all server avatars have been shown
+			if (nextPoolIndexRef.current >= pool.length) return;
+
+			const slot = nextSlotRef.current % AVATARS_TOTAL;
+			const poolIdx = nextPoolIndexRef.current;
 
 			Animated.timing(slotOpacities[slot], {
 				toValue: 0,
@@ -267,7 +270,10 @@ const OnboardingScreen = () => {
 					duration: AVATAR_FADE_DURATION,
 					useNativeDriver: true,
 				}).start(() => {
-					timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
+					// Only schedule next swap if there are more server avatars to show
+					if (nextPoolIndexRef.current < avatarPoolRef.current.length) {
+						timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
+					}
 				});
 			});
 		};
@@ -385,13 +391,25 @@ const OnboardingScreen = () => {
 		}
 	}, [isFirstStep, currentStepIndex, goToStep]);
 
-	const handleSelectCanteen = useCallback((canteen: DatabaseTypes.Canteens) => {
+	const handleSelectCanteen = useCallback(async (canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		const canteenStepIndex = STEPS.indexOf('canteen');
 		if (canteenStepIndex < STEPS.length - 1) {
 			goToStep(canteenStepIndex + 1);
 		}
-	}, [dispatch, goToStep]);
+		// Persist the selected canteen to the online profile for registered users
+		if (profile?.id) {
+			try {
+				const updatedPayload = { ...profile, canteen: canteen.id };
+				const result = (await profileHelper.updateProfile(updatedPayload)) as DatabaseTypes.Profiles;
+				if (result) {
+					dispatch({ type: UPDATE_PROFILE, payload: result });
+				}
+			} catch (error) {
+				console.error('Error saving canteen to profile:', error);
+			}
+		}
+	}, [dispatch, goToStep, profile]);
 
 	const handleSelectPriceGroup = useCallback(() => {
 		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
