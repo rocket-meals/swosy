@@ -175,10 +175,10 @@ export default function Layout() {
 		const updates: Record<string, any> = {};
 
 		// Transfer locally persisted canteen to the online profile
-		const persistedCanteenId: string | null =
+		const persistedCanteenIdStr: string | null =
 			persistedCanteen?.id != null ? String(persistedCanteen.id) : null;
-		if (!fetchedProfile.canteen && persistedCanteenId) {
-			updates.canteen = persistedCanteenId;
+		if (!fetchedProfile.canteen && persistedCanteenIdStr) {
+			updates.canteen = persistedCanteenIdStr;
 		}
 
 		// Default price_group to Student if not set on the server

@@ -35,6 +35,7 @@ import useSeperatedMarkingsForFood from '@/hooks/useSeperatedMarkingsForFood';
 import useCustomerConfigSeperateMarkingsForFood from '@/hooks/useCustomerConfigSeperateMarkingsForFood';
 import ProjectButton from '@/components/ProjectButton';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
+import { UserHelper } from '@/helper/UserHelper';
 
 const STEPS = ['welcome', 'canteen', 'pricegroup', 'preferences'] as const;
 // Avatar size: 80% bigger than original 44px
@@ -73,7 +74,7 @@ const OnboardingScreen = () => {
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const { markings } = useAppSelector((state) => state.food);
-	const { isManagement, profile } = useAppSelector((state) => state.authReducer);
+	const { isManagement, profile, user } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const seperatedMarkingsValue = useSeperatedMarkingsForFood();
@@ -398,7 +399,7 @@ const OnboardingScreen = () => {
 			goToStep(canteenStepIndex + 1);
 		}
 		// Persist the selected canteen to the online profile for registered users
-		if (profile?.id) {
+		if (UserHelper.isRegisteredUser(user) && profile?.id) {
 			try {
 				const updatedPayload = { ...profile, canteen: canteen.id };
 				const result = (await profileHelper.updateProfile(updatedPayload)) as DatabaseTypes.Profiles;
@@ -409,7 +410,7 @@ const OnboardingScreen = () => {
 				console.error('Error saving canteen to profile:', error);
 			}
 		}
-	}, [dispatch, goToStep, profile]);
+	}, [dispatch, goToStep, user, profile, profileHelper]);
 
 	const handleSelectPriceGroup = useCallback(() => {
 		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
