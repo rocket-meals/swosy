@@ -19,7 +19,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -54,9 +54,10 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -87,6 +88,7 @@ const Settings = () => {
         const { score: appRatingScore, setScore: setAppRatingScore, showDebugRatingModal, appRatingData } = useAppRatingScore();
         const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 
+        const { avatarConfig: settingsAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
         const openFriendsModal = useCallback(() => {
                 showScrollViewModal({
@@ -98,6 +100,7 @@ const Settings = () => {
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
+        const osmConsent = useAppSelector((state) => ((state.settings as any).osmVectorMapConsent ?? false) as boolean);
         const canteenVisitsVisibility = useAppSelector((state) => (state.settings as any).canteenVisits?.visibility ?? 'all') as 'all' | 'friends_only' | 'off';
         const { friendships } = useAppSelector((state) => state.friendships);
         const acceptedFriendsCount = useMemo(
@@ -496,16 +499,37 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="middle" nativeID={ComponentIds.SETTINGS_LANGUAGE} />
+						{isRegisteredUser && (
+							<SettingsList
+								leftIconComponent={
+									settingsAvatarConfig ? (
+										<MyAvatar
+											config={settingsAvatarConfig}
+											size={AVATAR_SETTINGS_ROW_SIZE / 2}
+											rounded={true}
+											backgroundColor={AVATAR_BACKGROUND}
+										/>
+									) : (
+										<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+											<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
+										</View>
+									)
+								}
+								value={translate(TranslationKeys.avatar_appearance)}
+								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+								handleFunction={() => openAvatarEditor(false)}
+								groupPosition="top"
+							/>
+						)}
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition={showFriendsInSettings ? 'middle' : 'bottom'}
+							groupPosition={isRegisteredUser ? 'middle' : 'top'}
 						/>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={showFriendsInSettings ? 'middle' : 'bottom'} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						{showFriendsInSettings && (
 							<SettingsList
 								iconBgColor={primaryColor}
@@ -577,10 +601,12 @@ const Settings = () => {
 						<SettingsListMyMapThemeSelection
 							selectedMapStyleKey={osmVectorMapStyleKey}
 							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
+							osmConsent={osmConsent}
+							onOsmConsentChange={(value) => dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value })}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
-							label="Karten Material"
-							modalTitle="🗺️ Karten Material"
+							label="Kartenmaterial"
+							modalTitle="🗺️ Kartenmaterial"
 							groupPosition="single"
 							nativeID={ComponentIds.SETTINGS_MAP_VARIANTS}
 						/>
@@ -672,19 +698,23 @@ const Settings = () => {
 
 		// === Account Actions (Logout / Delete) ===
 		rows.push({
-			key: 'section-account-actions',
+			key: 'section-account-logout',
 			element: (
-				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.account)}</SettingsGroupTitle>
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
-						{isRegisteredUser ? (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
-						) : null}
-					</View>
+				<View style={groupStyle}>
+					<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="single" />
 				</View>
 			),
 		});
+		if (isRegisteredUser) {
+			rows.push({
+				key: 'section-account-delete',
+				element: (
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="single" />
+					</View>
+				),
+			});
+		}
 
 		// === Footer ===
 		rows.push({
@@ -709,7 +739,6 @@ const Settings = () => {
 						/>
 					</View>
 					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo, customerConfig)}</Text>
-					<Text style={{ color: theme.screen.text, fontSize: 12, opacity: 0.5, marginTop: 2 }}>rocket meals</Text>
 				</TouchableOpacity>
 			),
 		});
@@ -786,8 +815,9 @@ const Settings = () => {
 							label="Open App Rating Modal"
 							value=""
 							handleFunction={showDebugRatingModal}
-							groupPosition="bottom"
+							groupPosition="middle"
 						/>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
 				</DebugView>
 			),
@@ -827,9 +857,10 @@ const Settings = () => {
 		openCollectibleSettingsModal, termsAndPrivacyConsentAcceptedDate, isManagement, dispatch,
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
-		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey,
+		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey, osmConsent,
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
+		settingsAvatarConfig, openAvatarEditor,
 	]);
 
 	return (

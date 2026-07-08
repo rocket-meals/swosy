@@ -53,4 +53,9 @@ export default StyleSheet.create({
                 borderRadius: 6,
                 borderWidth: 2,
         },
+        avatarSection: {
+                paddingHorizontal: 20,
+                paddingTop: 12,
+                paddingBottom: 4,
+        },
 });

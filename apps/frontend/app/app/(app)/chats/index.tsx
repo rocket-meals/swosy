@@ -15,6 +15,10 @@ import { MARK_ALL_CHATS_AS_READ, MARK_ALL_CHATS_AS_UNREAD } from '@/redux/Types/
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import styles from './styles';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
+import { MyAvatar } from 'repo-depkit-common-ui';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
+import { UserHelper } from '@/helper/UserHelper';
+import SettingsListNickname from '@/components/SettingsListNickname/SettingsListNickname';
 
 const ChatsScreen = () => {
         useSetPageTitle(TranslationKeys.chats);
@@ -24,6 +28,10 @@ const ChatsScreen = () => {
 
         const { chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+        const { user } = useAppSelector((state) => state.authReducer);
+        const isRegisteredUser = UserHelper.isRegisteredUser(user);
+
+        const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
         const sortedChats = useMemo(() => {
                 return [...chats].sort((a, b) => {
@@ -156,6 +164,34 @@ const ChatsScreen = () => {
 
         return (
                 <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+                        {isRegisteredUser && (
+                                <View style={styles.avatarSection}>
+                                        <SettingsList
+                                                leftIconComponent={
+                                                        ownAvatarConfig ? (
+                                                                <MyAvatar
+                                                                        config={ownAvatarConfig}
+                                                                        size={AVATAR_SETTINGS_ROW_SIZE / 2}
+                                                                        rounded={true}
+                                                                        backgroundColor={AVATAR_BACKGROUND}
+                                                                />
+                                                        ) : (
+                                                                <View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
+                                                                </View>
+                                                        )
+                                                }
+                                                value={translate(TranslationKeys.avatar_appearance)}
+                                                rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+                                                handleFunction={() => openAvatarEditor(false)}
+                                                groupPosition="top"
+                                        />
+                                        <SettingsListNickname
+                                                groupPosition="bottom"
+                                                iconBgColor={primaryColor}
+                                        />
+                                </View>
+                        )}
                         <FlatList
                                 data={sortedChats}
                                 keyExtractor={item => item.id}

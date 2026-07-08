@@ -44,6 +44,32 @@
  *
  *   Fix: changed `ListHeaderComponent` → `stickyHeaderComponent` in `showAvatarEditor`.
  *
+ * ─── SCROLL FIX 4 (web: render stickyHeaderComponent outside scroll view) ──────
+ *   On web, passing `stickyHeaderIndices` to `BottomSheetScrollView` breaks
+ *   scrolling entirely: the sticky element interferes with the web scroll-height
+ *   calculation, causing the scroll container to think there is nothing to scroll.
+ *   On web the CSS layout engine correctly constrains the scroll view height even
+ *   when the sticky header is a sibling View *outside* the scroll view — the
+ *   gorhom native height-calculation issue (Fix 1) does not apply on web.
+ *
+ *   Fix: `MyScrollViewModal` detects `Platform.OS === 'web'` and renders
+ *   `stickyHeaderComponent` as a sibling View above `BottomSheetScrollView`
+ *   instead of using `stickyHeaderIndices`.  Native behaviour is unchanged.
+ *
+ * ─── SCROLL FIX 5 (web: flex:1 on container + scroll view) ──────────────────
+ *   After Fix 4, the sticky header was rendered outside the scroll view on web,
+ *   but scrolling was still broken.  Root cause: without `flex: 1` the outer
+ *   container View and the `BottomSheetScrollView` expand to their full content
+ *   height inside the fixed-height BottomSheet, so the browser never creates a
+ *   scroll context.  On native this is intentional (SCROLL FIX 2 — `flex: 1`
+ *   would cause gorhom to disable scroll), but on web the gorhom height-
+ *   calculation issue does not apply.
+ *
+ *   Fix: `MyScrollViewModal` applies `{ flex: 1 }` to both the outer wrapper
+ *   View and the `BottomSheetScrollView`/`BottomSheetFlatList` when
+ *   `Platform.OS === 'web'`.  This constrains the scroll view to the remaining
+ *   height inside the sheet, restoring scroll on web for all modals.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
@@ -62,7 +88,7 @@ import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import SettingsListLeftRight, { type SettingsListLeftRightItem } from '../SettingsListLeftRight/SettingsListLeftRight';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
+import { HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
@@ -90,6 +116,11 @@ export namespace AvatarPropKey {
 		ROTATE = 'rotate',
 		FLIP = 'flip',
 		CLIP = 'clip',
+	}
+	export enum Micah {
+		EYES_COLOR = 'eyesColor',
+		EYE_SHADOW_COLOR = 'eyeShadowColor',
+		GLASSES_COLOR = 'glassesColor',
 	}
 }
 
@@ -164,6 +195,84 @@ function getDefaultAvatarConfig(): AvatarConfig {
 
 /** Built-in category keys (always available regardless of style). */
 const BUILTIN_CATEGORY_STYLE = 'Style';
+
+/**
+ * Maps avatar attribute category keys to human-readable English labels.
+ * Used as a fallback when no translate function is provided.
+ */
+const CATEGORY_LABEL_MAP: Record<string, string> = {
+	[BUILTIN_CATEGORY_STYLE]: 'Style',
+	skinColor: 'Skin Color',
+	baseColor: 'Base Color',
+	hair: 'Hair',
+	hairColor: 'Hair Color',
+	frontHair: 'Front Hair',
+	rearHair: 'Rear Hair',
+	sideburn: 'Sideburn',
+	face: 'Face',
+	head: 'Head',
+	eyebrows: 'Eyebrows',
+	eyebrowsColor: 'Eyebrow Color',
+	brows: 'Brows',
+	eyes: 'Eyes',
+	eyesColor: 'Eye Color',
+	eyeShadowColor: 'Eye Shadow',
+	nose: 'Nose',
+	noseColor: 'Nose Color',
+	mouth: 'Mouth',
+	mouthColor: 'Mouth Color',
+	lips: 'Lips',
+	beard: 'Beard',
+	facialHair: 'Facial Hair',
+	facialHairColor: 'Facial Hair Color',
+	mustache: 'Mustache',
+	ear: 'Ear',
+	ears: 'Ears',
+	earrings: 'Earrings',
+	earringsColor: 'Earring Color',
+	earringColor: 'Earring Color',
+	glasses: 'Glasses',
+	glassesColor: 'Glasses Color',
+	accessories: 'Accessories',
+	accessoriesColor: 'Accessory Color',
+	features: 'Features',
+	hairAccessoriesColor: 'Hair Accessory Color',
+	frecklesColor: 'Freckles',
+	cheek: 'Cheeks',
+	clothing: 'Clothing',
+	clothesColor: 'Clothes Color',
+	clothingColor: 'Clothing Color',
+	clothingGraphic: 'Clothing Graphic',
+	clothes: 'Clothes',
+	body: 'Body',
+	bodyColor: 'Body Color',
+	bodyIcon: 'Body Icon',
+	shirt: 'Shirt',
+	shirtColor: 'Shirt Color',
+	top: 'Top',
+	topColor: 'Top Color',
+	hat: 'Hat',
+	hatColor: 'Hat Color',
+	hairAccessories: 'Hair Accessories',
+	mask: 'Mask',
+	headContrastColor: 'Head Contrast',
+	sides: 'Sides',
+	texture: 'Texture',
+	shapeColor: 'Shape Color',
+	backgroundColor: 'Background Color',
+	gesture: 'Gesture',
+	mood: 'Mood',
+	style: 'Style',
+};
+
+/**
+ * Returns a translated label for a category key.
+ * Uses the translate function if provided, otherwise falls back to CATEGORY_LABEL_MAP or raw key.
+ */
+const getCategoryLabel = (key: string, translate?: (k: string) => string): string => {
+	if (translate) return translate(`avatar_cat_${key}`);
+	return CATEGORY_LABEL_MAP[key] ?? key;
+};
 
 /**
  * Maps avatar attribute category keys to MaterialCommunityIcons icon names.
@@ -388,7 +497,7 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 		if (schemaDefaults.length > 0) {
 			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
 		} else {
-			const presetColors = getPresetColorsForKey(key);
+			const presetColors = getPresetColorsForKey(key, style);
 			if (presetColors.length > 0) {
 				defaults[key] = [stripHashPrefix(presetColors[0])];
 			}
@@ -474,8 +583,14 @@ function getSchemaDefaultColors(style: AvatarStyle, key: string): string[] {
 
 /**
  * Returns the predefined color palette appropriate for a given color property key.
+ * Optionally pass the current avatar style for style-specific palettes.
  */
-function getPresetColorsForKey(key: string): string[] {
+function getPresetColorsForKey(key: string, style?: AvatarStyle): string[] {
+	if (style === AvatarStyle.MICAH) {
+		if (key === 'hairColor' || key === 'eyebrowsColor' || key === 'facialHairColor') {
+			return MICAH_HAIR_COLORS;
+		}
+	}
 	const lower = key.toLowerCase();
 	if (lower.includes('skin') || lower === 'basecolor') return SKIN_COLORS;
 	if (lower.includes('hair')) return HAIR_COLORS;
@@ -502,6 +617,12 @@ type AvatarEditorModalContentProps = {
 	showApplyButton?: boolean;
 	/** Called when the user presses "Apply". */
 	onApply?: () => void;
+	/** Called whenever the user makes any change in the editor. Used to track dirty state. */
+	onChange?: () => void;
+	/** Called when the user presses "Reset changes". After resetting, config is restored to initialConfig. */
+	onReset?: () => void;
+	/** Called when the user presses "Delete". */
+	onDelete?: () => void;
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
@@ -511,6 +632,8 @@ type AvatarEditorModalContentProps = {
 	rounded?: boolean;
 	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
 	backgroundColor?: string;
+	/** Translation function for localising section headers, buttons, and category labels. */
+	translate?: (key: string) => string;
 };
 
 type AvatarStickyHeaderProps = {
@@ -584,6 +707,7 @@ type ColorPickerModalContentProps = {
 	colorKey: string;
 	rounded?: boolean;
 	backgroundColor?: string;
+	debugMode?: boolean;
 };
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
@@ -595,7 +719,9 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	colorKey,
 	rounded,
 	backgroundColor,
+	debugMode,
 }) => {
+	const { theme, isDark } = useTheme();
 	return (
 		<>
 			{colors.map((color, index) => {
@@ -608,6 +734,21 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 								? 'bottom'
 								: 'middle';
 				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
+				const borderColor = myContrastColor(color, theme, isDark);
+				const colorCircle = (
+					<View
+						style={[
+							styles.colorSwatchLarge,
+							{ backgroundColor: color, borderColor },
+						]}
+					/>
+				);
+				const extraRightContent = debugMode ? (
+					<View style={styles.colorSwatchRow}>
+						{colorCircle}
+						<Text style={[styles.hexLabel, { color: theme.screen.text }]}>{color}</Text>
+					</View>
+				) : colorCircle;
 				return (
 					<SettingsListSelectOptionSingle
 						key={color}
@@ -630,6 +771,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 						groupPosition={groupPosition}
 						showSeparator={index !== colors.length - 1}
 						onPress={() => onSelectAndClose(color)}
+						extraRightContent={extraRightContent}
 					/>
 				);
 			})}
@@ -840,9 +982,13 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	allowedStyles,
 	showApplyButton,
 	onApply,
+	onChange,
+	onReset,
+	onDelete,
 	hiddenProps,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const [config, setConfig] = useState<AvatarConfig>(configRef.current);
 	const { show: showCategoryModal, close: closeCategoryModal } = useMyScrollViewModal();
@@ -873,6 +1019,16 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		setConfig(withHidden);
 		configRef.current = withHidden;
 		configObservable.set(withHidden);
+		onChange?.();
+	};
+
+	const handleResetToInitial = () => {
+		const withHidden = applyHiddenProps(initialConfig);
+		setConfig(withHidden);
+		configRef.current = withHidden;
+		configObservable.set(withHidden);
+		// Do NOT call onChange here – this is a reset, not a user modification.
+		onReset?.();
 	};
 
 	const componentOptions = useMemo(() => getStyleComponentOptions(config.style), [config.style]);
@@ -932,9 +1088,33 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			}
 		}
 		for (const key of newColorKeys) {
-			const presetColors = getPresetColorsForKey(key);
+			// Skip hidden prop keys – they are always pinned to a fixed value
+			if (hiddenPropKeys.has(key)) continue;
+			// For Micah, eyebrowsColor and facialHairColor are derived from hairColor below
+			if (config.style === AvatarStyle.MICAH && (key === 'eyebrowsColor' || key === 'facialHairColor')) continue;
+			const presetColors = getPresetColorsForKey(key, config.style);
 			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
 			randomOptions[key] = [stripHashPrefix(randomColor)];
+		}
+		// For Micah: coordinate eyebrowsColor (= hairColor) and facialHairColor (one step lighter)
+		if (config.style === AvatarStyle.MICAH) {
+			const hairColorValue = randomOptions['hairColor']?.[0] as string | undefined;
+			if (hairColorValue !== undefined) {
+				if (!hiddenPropKeys.has('eyebrowsColor')) {
+					randomOptions['eyebrowsColor'] = [hairColorValue];
+				}
+				if (!hiddenPropKeys.has('facialHairColor')) {
+					// MICAH_HAIR_COLORS is ordered dark→light (index 0=Black … index 8=Light Gray),
+					// so index + 1 yields one step lighter.
+					const hairIndex = MICAH_HAIR_COLORS.findIndex(
+						(c) => stripHashPrefix(c) === hairColorValue,
+					);
+					const lighterIndex = hairIndex !== -1
+						? Math.min(hairIndex + 1, MICAH_HAIR_COLORS.length - 1)
+						: 0;
+					randomOptions['facialHairColor'] = [stripHashPrefix(MICAH_HAIR_COLORS[lighterIndex])];
+				}
+			}
 		}
 		// Preserve boolean flags (flip, clip) and numeric options (scale, translateX, translateY, rotate)
 		// so that user-set positioning/orientation is not lost on randomize.
@@ -949,6 +1129,15 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		for (const key of preserveKeys) {
 			if (config.options?.[key] !== undefined) {
 				randomOptions[key] = config.options[key]!;
+			}
+		}
+		// Preserve hidden prop values so they are never lost during randomize,
+		// even in debug mode where applyHiddenProps is skipped.
+		if (hiddenProps) {
+			for (const [key, value] of Object.entries(hiddenProps)) {
+				if (value !== undefined) {
+					randomOptions[key] = [value];
+				}
 			}
 		}
 		handleChange({ ...config, options: randomOptions });
@@ -1007,7 +1196,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	};
 
 	const handleOpenColorPicker = (key: string) => {
-		const presetColors = getPresetColorsForKey(key);
+		const presetColors = getPresetColorsForKey(key, config.style);
 		const rawVal = config.options?.[key];
 		const storedHex = Array.isArray(rawVal) ? rawVal[0] ?? null : null;
 		let displayHex = storedHex;
@@ -1030,6 +1219,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					colorKey={key}
 					rounded={rounded}
 					backgroundColor={backgroundColor}
+					debugMode={debugMode}
 					onSelectAndClose={(color) => {
 						handleOptionChange(key, stripHashPrefix(color));
 						closeCategoryModal();
@@ -1051,7 +1241,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			return effectiveAllowedStyles.map((style) => ({ id: style, label: style }));
 		}
 		if (colorKeys.includes(cat)) {
-			return getPresetColorsForKey(cat).map((color) => {
+			return getPresetColorsForKey(cat, config.style).map((color) => {
 				const hex = stripHashPrefix(color);
 				return { id: hex, label: '' };
 			});
@@ -1115,7 +1305,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			{showApplyButton && onApply && (
 				<>
 					<SettingsList
-						title="Apply"
+						title={translate ? translate('avatar_apply') : 'Apply'}
 						onPress={onApply}
 						leftIcon={<MaterialCommunityIcons name="check-circle" size={20} />}
 						iconBgColor={accentColor}
@@ -1124,7 +1314,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				</>
 			)}
 
-			<SettingsListGroupTitle title="Category" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_category') : 'Category'} />
 			{allCategories.map((cat, index) => {
 				const groupPosition =
 					allCategories.length === 1
@@ -1144,7 +1334,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				return (
 					<SettingsListLeftRight
 						key={cat}
-						label={cat}
+						label={getCategoryLabel(cat, translate)}
 						options={getCategoryOptions(cat)}
 						selectedOption={getCategorySelectedOption(cat)}
 						onSelect={(item) => handleCategorySelect(cat, item)}
@@ -1167,9 +1357,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 				);
 			})}
 
-			<SettingsListGroupTitle title="Actions" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
-				title="Randomize"
+				title={translate ? translate('avatar_randomize') : 'Randomize'}
 				onPress={handleRandomize}
 				leftIcon={<MaterialCommunityIcons name="dice-multiple" size={20} />}
 				iconBgColor={accentColor}
@@ -1178,9 +1368,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			{debugMode && (
 				<View style={styles.debugSection}>
-					<SettingsListGroupTitle title="Debug" />
+					<SettingsListGroupTitle title={translate ? translate('avatar_section_debug') : 'Debug'} />
 					<SettingsList
-						title="Copy Config"
+						title={translate ? translate('avatar_copy_config') : 'Copy Config'}
 						onPress={handleCopyConfig}
 						leftIcon={<MaterialCommunityIcons name="content-copy" size={20} />}
 						iconBgColor={accentColor}
@@ -1386,14 +1576,38 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 								);
 							})}
 					</>
-					<DebugJsonInput
+				<DebugJsonInput
 						config={config}
 						onApply={handleChange}
 						accentColor={accentColor}
 						theme={theme}
 					/>
 				</View>
-			)}
+				)}
+				{(onReset || onDelete) && (
+					<View style={{ height: 16 }} />
+				)}
+				{onReset && (
+					<SettingsList
+						title={translate ? translate('avatar_reset_changes') : 'Reset changes'}
+						onPress={handleResetToInitial}
+						leftIcon={<MaterialCommunityIcons name="refresh" size={20} />}
+						iconBgColor={accentColor}
+						groupPosition="single"
+					/>
+				)}
+				{onDelete && (
+					<>
+						{onReset && <View style={{ height: 8 }} />}
+						<SettingsList
+							title={translate ? translate('delete') : 'Delete'}
+							onPress={onDelete}
+							leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+							iconBgColor="#ef4444"
+							groupPosition="single"
+						/>
+					</>
+				)}
 		</View>
 	);
 };
@@ -1538,17 +1752,197 @@ const OPEN_PEEPS_PRESETS: AvatarPreset[] = [
 ];
 
 /**
+ * Predefined avatar presets for the MICAH style.
+ * All color values are sourced from the shared palette constants – no raw hex strings.
+ * Use `stripHashPrefix(PALETTE_CONSTANT[index])` to convert a '#'-prefixed palette entry
+ * to the un-prefixed format expected by avatar config options.
+ */
+export const MICAH_PRESETS: AvatarPreset[] = [
+	{
+		name: 'Turban Scruff',
+		hair: ['turban'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['scruff'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[7])],          // ae5d29 – Medium
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		facialHairColor: [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[15])],       // 047857 – Emerald
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+	{
+		name: 'Pixie Cyan',
+		hair: ['pixie'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[5])],          // e0a96d – Golden Tan
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(PRESET_COLORS[34])],       // 06b6d4 – Cyan
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[19])],       // f43f5e – Rose
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[4])],        // 4b5563 – Slate Gray
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+	{
+		name: 'Full Hair Laugh',
+		hair: ['full'],
+		ears: ['detached'],
+		eyebrows: ['eyelashesUp'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['laughing'],
+		nose: ['pointed'],
+		shirt: ['open'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
+		earringColor:    [stripHashPrefix(PRESET_COLORS[31])],       // ec4899 – Pink
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[2])],    // 4a312c – Brown
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[7])],        // 3b82f6 – Blue
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+	{
+		name: 'Danny Phantom',
+		hair: ['dannyPhantom'],
+		ears: ['detached'],
+		eyebrows: ['eyelashesUp'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		glasses: ['round'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[2])],          // fddbb4 – Very Light
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[17])],       // ef4444 – Red
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+	},
+	{
+		name: 'Mr Clean',
+		hair: ['mrClean'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['open'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[8])],          // 694d3d – Medium Dark
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+	{
+		name: 'Fonze',
+		hair: ['fonze'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[1])],          // ffe0bd – Porcelain
+		earringColor:    [stripHashPrefix(PRESET_COLORS[10])],       // 1e293b – Dark Slate
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[3])],        // 525252 – Dark Gray
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+	{
+		name: 'Pixie Amber',
+		hair: ['pixie'],
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['none'],
+		glasses: ['round'],
+		mouth: ['smile'],
+		nose: ['pointed'],
+		shirt: ['crew'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[3])],          // ffdbac – Warm Light
+		earringColor:    [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		eyebrowsColor:   [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
+		facialHairColor: [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		hairColor:       [stripHashPrefix(PRESET_COLORS[38])],       // 78350f – Dark Amber
+		mouthColor:      [stripHashPrefix(PRESET_COLORS[18])],       // b91c1c – Dark Red
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[26])],       // f59e0b – Amber Gold
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(PRESET_COLORS[11])],       // 1f2937 – Charcoal
+	},
+	{
+		name: 'Scruff Surprised',
+		ears: ['detached'],
+		eyebrows: ['up'],
+		eyes: ['eyes'],
+		facialHair: ['scruff'],
+		glasses: ['square'],
+		mouth: ['surprised'],
+		nose: ['pointed'],
+		shirt: ['collared'],
+		baseColor:       [stripHashPrefix(SKIN_COLORS[2])],          // fddbb4 – Very Light
+		earringColor:    [stripHashPrefix(PRESET_COLORS[9])],        // 1e3a8a – Navy
+		eyebrowsColor:   [stripHashPrefix(MICAH_HAIR_COLORS[1])],    // 2c1b18 – Dark Brown
+		facialHairColor: [stripHashPrefix(MICAH_HAIR_COLORS[8])],    // d0cfc5 – Light Gray
+		hairColor:       [stripHashPrefix(MICAH_HAIR_COLORS[3])],    // 724133 – Light Brown
+		mouthColor:      [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		shirtColor:      [stripHashPrefix(PRESET_COLORS[6])],        // bfdbfe – Light Blue
+		eyesColor:       [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+		eyeShadowColor:  [stripHashPrefix(SKIN_COLORS[0])],          // ffffff – White
+		glassesColor:    [stripHashPrefix(MICAH_HAIR_COLORS[0])],    // 000000 – Black
+	},
+];
+
+/**
  * Map of avatar styles to their predefined presets.
  * Styles without presets will use random avatars for quick-start selection.
  */
 const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
 	[AvatarStyle.OPEN_PEEPS]: OPEN_PEEPS_PRESETS,
+	[AvatarStyle.MICAH]: MICAH_PRESETS,
 };
 
 /**
  * Converts a preset into a full AvatarConfig for a given style.
  */
-function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
+export function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSize): AvatarConfig {
 	const options: Record<string, string[]> = {};
 	for (const [key, value] of Object.entries(preset)) {
 		if (key === 'name') continue;
@@ -1565,39 +1959,45 @@ function presetToConfig(preset: AvatarPreset, style: AvatarStyle, size: AvatarSi
  * Generates 12 random avatar configs for a given style.
  * These are ephemeral preview avatars that may change on each generation.
  */
-function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
-	const configs: AvatarConfig[] = [];
+/**
+ * Generates a single random AvatarConfig for the given style and size.
+ * Exported so callers (e.g. onboarding carousel) can produce fresh random
+ * avatars without importing the full editor.
+ */
+export function generateRandomAvatarConfig(style: AvatarStyle, size: AvatarSize): AvatarConfig {
 	const componentOptions = getStyleComponentOptions(style);
 	const colorKeys = getStyleColorKeys(style);
 	const probabilityKeys = getStyleProbabilityKeys(style);
+	const randomOptions: Record<string, string[]> = {};
 
+	for (const [key, values] of Object.entries(componentOptions)) {
+		const realValues = values.filter((v) => v !== NONE_OPTION);
+		if (realValues.length === 0) continue;
+		if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
+			continue;
+		}
+		if (probabilityKeys[key]) {
+			const allValues = [NONE_OPTION, ...realValues];
+			const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+			if (randomValue !== NONE_OPTION) {
+				randomOptions[key] = [randomValue];
+			}
+		} else {
+			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+		}
+	}
+	for (const key of colorKeys) {
+		const presetColors = getPresetColorsForKey(key, style);
+		const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+		randomOptions[key] = [stripHashPrefix(randomColor)];
+	}
+	return { style, size, options: randomOptions };
+}
+
+function generateRandomPresets(style: AvatarStyle, size: AvatarSize): AvatarConfig[] {
+	const configs: AvatarConfig[] = [];
 	for (let i = 0; i < 12; i++) {
-		const randomOptions: Record<string, string[]> = {};
-		for (const [key, values] of Object.entries(componentOptions)) {
-			const realValues = values.filter((v) => v !== NONE_OPTION);
-			if (realValues.length === 0) continue;
-			// For openPeeps, mask is always none (key absent = renderer sets probability=0)
-			if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
-				continue;
-			}
-			// For optional components, include "none" as a possible random selection
-			if (probabilityKeys[key]) {
-				const allValues = [NONE_OPTION, ...realValues];
-				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
-				if (randomValue !== NONE_OPTION) {
-					randomOptions[key] = [randomValue];
-				}
-				// Probability not stored – renderer derives it from key presence.
-			} else {
-				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
-			}
-		}
-		for (const key of colorKeys) {
-			const presetColors = getPresetColorsForKey(key);
-			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
-			randomOptions[key] = [stripHashPrefix(randomColor)];
-		}
-		configs.push({ style, size, options: randomOptions });
+		configs.push(generateRandomAvatarConfig(style, size));
 	}
 	return configs;
 }
@@ -1625,6 +2025,7 @@ type PresetSelectionModalContentProps = {
 	onCustomize: () => void;
 	rounded?: boolean;
 	backgroundColor?: string;
+	translate?: (key: string) => string;
 };
 
 const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = ({
@@ -1635,6 +2036,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	onCustomize,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const { theme } = useTheme();
 
@@ -1644,7 +2046,10 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 
 	return (
 		<View style={styles.content}>
-			<SettingsListGroupTitle title="Quick Start" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_quickstart') : 'Quick Start'} />
+			<Text style={[styles.quickstartHint, { color: theme.screen.placeholder }]}>
+				{translate ? translate('avatar_quickstart_pick_hint') : 'Choose a basis to start'}
+			</Text>
 			<View style={styles.presetGrid}>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
@@ -1662,9 +2067,10 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				))}
 			</View>
 
-			<SettingsListGroupTitle title="Actions" />
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
-				title="Customize"
+				title={translate ? translate('avatar_customize') : 'Customize'}
+				value={translate ? translate('avatar_customize_hint') : 'Customize avatar completely from scratch'}
 				onPress={onCustomize}
 				leftIcon={<MaterialCommunityIcons name="tune-variant" size={20} />}
 				iconBgColor={accentColor}
@@ -1692,12 +2098,16 @@ export type UseAvatarEditorModalOptions = {
 	rounded?: boolean;
 	/** Forwarded to all avatar previews inside the editor. Background colour shown behind each avatar. */
 	backgroundColor?: string;
+	/** Translation function for localising section headers, buttons, and category labels inside the editor. */
+	translate?: (key: string) => string;
 };
 
 export type OpenAvatarEditorProps = {
 	/** If provided, the editor opens directly in edit mode. If null/undefined, the QuickStart preset picker is shown first. */
 	currentAvatar?: AvatarConfig | null;
 	onDone: (config: AvatarConfig) => void;
+	/** Called when the user confirms deletion. The modal is closed automatically. */
+	onDelete?: () => void;
 	options?: UseAvatarEditorModalOptions;
 };
 
@@ -1706,6 +2116,9 @@ type AvatarEditorUnifiedContentProps = {
 	configObservable: ConfigObservable;
 	configRef: React.MutableRefObject<AvatarConfig>;
 	onApply: () => void;
+	onChange?: () => void;
+	onReset?: () => void;
+	onDelete?: () => void;
 	allowedStyles: AvatarStyle[];
 	size: AvatarSize;
 	accentColor?: string;
@@ -1713,6 +2126,7 @@ type AvatarEditorUnifiedContentProps = {
 	hiddenProps?: Record<string, string>;
 	rounded?: boolean;
 	backgroundColor?: string;
+	translate?: (key: string) => string;
 };
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
@@ -1720,6 +2134,9 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	configObservable,
 	configRef,
 	onApply,
+	onChange,
+	onReset,
+	onDelete,
 	allowedStyles,
 	size,
 	accentColor,
@@ -1727,6 +2144,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	hiddenProps,
 	rounded,
 	backgroundColor,
+	translate,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -1739,8 +2157,9 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			configRef.current = { ...config };
 			configObservable.set({ ...config });
 			modeObservable.set('editor');
+			onChange?.();
 		},
-		[configRef, configObservable, modeObservable],
+		[configRef, configObservable, modeObservable, onChange],
 	);
 
 	if (mode === 'quickstart') {
@@ -1752,14 +2171,15 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				accentColor={accentColor}
 				rounded={rounded}
 				backgroundColor={backgroundColor}
+				translate={translate}
 				onSelectPreset={switchToEditor}
-				onCustomize={() =>
+				onCustomize={() => {
 					switchToEditor({
 						style: defaultStyle,
 						size,
 						options: getDefaultOptionsForStyle(defaultStyle),
-					})
-				}
+					});
+				}}
 			/>
 		);
 	}
@@ -1772,11 +2192,15 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 			configRef={configRef}
 			debugMode={debugMode}
 			allowedStyles={allowedStyles}
-			showApplyButton={true}
+			showApplyButton={false}
 			onApply={onApply}
+			onChange={onChange}
+			onReset={onReset}
+			onDelete={onDelete}
 			hiddenProps={hiddenProps}
 			rounded={rounded}
 			backgroundColor={backgroundColor}
+			translate={translate}
 		/>
 	);
 };
@@ -1826,6 +2250,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});
@@ -1877,6 +2302,7 @@ export const useAvatarEditorModal = () => {
 							hiddenProps={options?.hiddenProps}
 							rounded={options?.rounded}
 							backgroundColor={options?.backgroundColor}
+							translate={options?.translate}
 						/>
 					),
 				});
@@ -1900,6 +2326,7 @@ export const useAvatarEditorModal = () => {
 						accentColor={options?.accentColor}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 						onSelectPreset={openEditorWithConfig}
 						onCustomize={openCustomizeFromScratch}
 					/>
@@ -1958,6 +2385,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});
@@ -1969,29 +2397,44 @@ export const useAvatarEditorModal = () => {
 	 * Unified single-modal flow: opens QuickStart if currentAvatar is null/undefined,
 	 * or jumps directly to the editor if currentAvatar is provided.
 	 * The sticky header is only rendered in editor mode.
-	 * onDone is called when the user presses Apply or closes the modal.
+	 * onDone is called only when the user has made at least one change (dirty flag).
+	 * onDelete is called when the user presses the Delete button inside the editor.
 	 */
 	const openAvatarEditor = useCallback(
-		({ currentAvatar, onDone, options }: OpenAvatarEditorProps) => {
+		({ currentAvatar, onDone, onDelete, options }: OpenAvatarEditorProps) => {
 			const allowedStyles = options?.allowedStyles ?? Object.values(AvatarStyle);
 			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
 			const size = AvatarSize.LARGE;
 
 			const initialMode: Mode = currentAvatar != null ? 'editor' : 'quickstart';
-			const initialConfig: AvatarConfig = currentAvatar ?? {
+			let initialConfig: AvatarConfig = currentAvatar ?? {
 				style: defaultStyle,
 				size,
 				options: getDefaultOptionsForStyle(defaultStyle),
 			};
 
+			// Apply hidden props to the initial config so forced values are enforced from the start.
+			if (!options?.debugMode && options?.hiddenProps) {
+				const newOptions = { ...(initialConfig.options ?? {}) };
+				for (const [key, value] of Object.entries(options.hiddenProps)) {
+					newOptions[key] = [value];
+				}
+				initialConfig = { ...initialConfig, options: newOptions };
+			}
+
 			configRef.current = { ...initialConfig };
 			observableRef.current = new ConfigObservable({ ...initialConfig });
 			const modeObservable = new ModeObservable(initialMode);
 
+			// Dirty tracking: only save when the user has actually made a change.
+			const isDirtyRef = { current: false };
+
 			show({
 				title: options?.title ?? 'Avatar Editor',
 				onClose: () => {
-					onDone(configRef.current);
+					if (isDirtyRef.current) {
+						onDone(configRef.current);
+					}
 				},
 				stickyHeaderComponent: (
 					<AvatarStickyHeaderConditional
@@ -2008,9 +2451,13 @@ export const useAvatarEditorModal = () => {
 						configObservable={observableRef.current}
 						configRef={configRef}
 						onApply={() => {
+							isDirtyRef.current = true;
 							onDone(configRef.current);
 							close();
 						}}
+						onChange={() => { isDirtyRef.current = true; }}
+						onReset={() => { isDirtyRef.current = false; }}
+						onDelete={onDelete ? () => { isDirtyRef.current = false; onDelete(); close(); } : undefined}
 						allowedStyles={allowedStyles}
 						size={size}
 						accentColor={options?.accentColor}
@@ -2018,6 +2465,7 @@ export const useAvatarEditorModal = () => {
 						hiddenProps={options?.hiddenProps}
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
+						translate={options?.translate}
 					/>
 				),
 			});
@@ -2051,8 +2499,28 @@ const styles = StyleSheet.create({
 		borderRadius: 11,
 		borderWidth: 1.5,
 	},
+	colorSwatchLarge: {
+		width: PREVIEW_AVATAR_SIZE,
+		height: PREVIEW_AVATAR_SIZE,
+		borderRadius: PREVIEW_AVATAR_SIZE / 2,
+		borderWidth: 1.5,
+	},
+	colorSwatchRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
+	hexLabel: {
+		fontSize: 11,
+		fontFamily: 'monospace',
+	},
 	previewAvatarWrapper: {
 		marginRight: 10,
+	},
+	quickstartHint: {
+		fontSize: 13,
+		paddingHorizontal: 16,
+		paddingBottom: 4,
 	},
 	presetGrid: {
 		flexDirection: 'row',

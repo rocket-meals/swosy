@@ -5,7 +5,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
-import { useDispatch } from 'react-redux';
 import useDebugMode from '@/hooks/useDebugMode';
 import {
 	MyAvatar,
@@ -13,81 +12,76 @@ import {
 	AvatarSize,
 	SettingsList,
 	SettingsListGroupTitle,
-	useAvatarEditorModal,
-	AvatarConfig,
-	AvatarPropKey,
+	SettingsListSelectOption,
 } from 'repo-depkit-common-ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { UPDATE_PROFILE } from '@/redux/Types/types';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 import { UserHelper } from '@/helper/UserHelper';
 
-const profileHelper = new ProfileHelper();
-const AVATAR_BACKGROUND_COLOR = '#ffffff';
+const ALL_AVATAR_STYLES = Object.values(AvatarStyle).map((style) => ({
+	id: style,
+	label: style,
+}));
 
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const { user, profile } = useAppSelector((state) => state.authReducer);
-	const dispatch = useDispatch();
+	const { user } = useAppSelector((state) => state.authReducer);
 	const debugMode = useDebugMode();
-	const { openAvatarEditor } = useAvatarEditorModal();
 	const isRegisteredUser = UserHelper.isRegisteredUser(user);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
-	const parseProfileAvatar = (profileAvatar: unknown): AvatarConfig | null => {
-		if (!profileAvatar) return null;
-		if (typeof profileAvatar === 'object') return profileAvatar as AvatarConfig;
-		if (typeof profileAvatar === 'string') {
-			try {
-				return JSON.parse(profileAvatar) as AvatarConfig;
-			} catch {
-				return null;
-			}
-		}
-		return null;
-	};
+	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.MICAH);
 
-	const [avatarConfig, setAvatarConfig] = useState<AvatarConfig | null>(() =>
-		parseProfileAvatar(profile?.avatar),
-	);
+	const { avatarConfig, openEditor, deleteAvatar } = useAvatarProfileEditor();
 
-	const editorOptions = {
-		title: translate(TranslationKeys.avatars),
-		accentColor: primaryColor,
-		debugMode,
-		allowedStyles: [AvatarStyle.OPEN_PEEPS],
-		hiddenProps: {
-			[AvatarPropKey.OpenPeeps.SCALE]: '100',
-		},
-	};
-
-	const handleOpenEditor = () => {
-		openAvatarEditor({
-			currentAvatar: avatarConfig,
-			onDone: (config) => setAvatarConfig(config),
-			options: editorOptions,
+	const openActionsModal = () => {
+		showModal({
+			title: translate(TranslationKeys.avatars),
+			children: (
+				<View style={styles.modalContent}>
+					{avatarConfig && (
+						<>
+							<SettingsList
+								title={translate(TranslationKeys.edit)}
+								onPress={() => {
+									closeModal();
+									openEditor(false);
+								}}
+								leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
+								iconBgColor={primaryColor}
+								groupPosition="top"
+								showSeparator={true}
+							/>
+							<SettingsList
+								title={translate(TranslationKeys.delete)}
+								onPress={() => {
+									closeModal();
+									void deleteAvatar();
+								}}
+								leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
+								iconBgColor="#F44336"
+								groupPosition="middle"
+								showSeparator={true}
+							/>
+						</>
+					)}
+					<SettingsList
+						title={translate(TranslationKeys.avatar_create_new)}
+						onPress={() => {
+							closeModal();
+							openEditor(true);
+						}}
+						leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
+						iconBgColor={primaryColor}
+						groupPosition={avatarConfig ? 'bottom' : 'single'}
+					/>
+				</View>
+			),
 		});
-	};
-
-	const handleDelete = () => {
-		setAvatarConfig(null);
-	};
-
-	const handleSave = async () => {
-		if (!isRegisteredUser || !profile?.id) return;
-		try {
-			const result = await profileHelper.updateProfile({
-				...profile,
-				avatar: avatarConfig,
-			});
-			if (result) {
-				dispatch({ type: UPDATE_PROFILE, payload: result });
-			}
-		} catch (error) {
-			console.error('[AvatarsScreen] Failed to save avatar:', error);
-		}
 	};
 
 	return (
@@ -101,7 +95,7 @@ const AvatarsScreen = () => {
 						<MyAvatar
 							config={avatarConfig}
 							rounded={true}
-							backgroundColor={AVATAR_BACKGROUND_COLOR}
+							backgroundColor={AVATAR_BACKGROUND}
 						/>
 					) : (
 						<View style={[styles.placeholderAvatar, { borderColor: theme.screen.text + '33' }]}>
@@ -110,42 +104,38 @@ const AvatarsScreen = () => {
 					)}
 				</View>
 
-				<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
-				{avatarConfig && (
+				{debugMode && (
 					<>
-						<SettingsList
-							title="Save"
-							onPress={handleSave}
-							leftIcon={<MaterialCommunityIcons name="content-save" size={20} />}
+						<SettingsListGroupTitle title={translate(TranslationKeys.avatar_style)} />
+						<SettingsListSelectOption
+							options={ALL_AVATAR_STYLES}
+							selectedOption={selectedStyle}
+							onSelect={(option) => setSelectedStyle(option.id)}
 							iconBgColor={primaryColor}
-							groupPosition="top"
-							showSeparator={true}
-						/>
-						<SettingsList
-							title="Edit"
-							onPress={handleOpenEditor}
-							leftIcon={<MaterialCommunityIcons name="pencil" size={20} />}
-							iconBgColor={primaryColor}
-							groupPosition="middle"
-							showSeparator={true}
-						/>
-						<SettingsList
-							title="Delete"
-							onPress={handleDelete}
-							leftIcon={<MaterialCommunityIcons name="delete" size={20} />}
-							iconBgColor={primaryColor}
-							groupPosition="middle"
-							showSeparator={true}
+							selectionColor={primaryColor}
 						/>
 					</>
 				)}
-				<SettingsList
-					title="Create New"
-					onPress={handleOpenEditor}
-					leftIcon={<MaterialCommunityIcons name="plus-circle" size={20} />}
-					iconBgColor={primaryColor}
-					groupPosition={avatarConfig ? 'bottom' : 'single'}
-				/>
+
+				{isRegisteredUser && (
+					<>
+						<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
+						<SettingsList
+							title={avatarConfig ? translate(TranslationKeys.edit) : translate(TranslationKeys.avatar_create_new)}
+							onPress={openActionsModal}
+							leftIcon={
+								avatarConfig ? (
+									<MaterialCommunityIcons name="pencil" size={20} />
+								) : (
+									<MaterialCommunityIcons name="plus-circle" size={20} />
+								)
+							}
+							iconBgColor={primaryColor}
+							groupPosition="single"
+							rightElement={<MaterialCommunityIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+						/>
+					</>
+				)}
 			</View>
 		</ScrollView>
 	);
@@ -170,6 +160,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	modalContent: {
+		paddingVertical: 8,
+	},
 });
 
 export default AvatarsScreen;
+

@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { MapStyleKey, MAP_STYLE_DEFINITIONS } from '../MyMap/MyMapHelper';
 import MyMap from '../MyMap';
 import SettingsList from '../SettingsList';
@@ -26,6 +26,157 @@ export type SettingsListMyMapThemeSelectionProps = {
 	leftIcon?: React.ReactNode;
 	iconBgColor?: string;
 	nativeID?: string;
+	/** Whether the user has consented to OSM map data loading. Defaults to true (no gate). */
+	osmConsent?: boolean;
+	/** Called when the user grants OSM consent inside the selection modal. */
+	onOsmConsentChange?: (value: boolean) => void;
+};
+
+type OsmConsentGateProps = {
+	onConsent: () => void;
+};
+
+const OsmConsentGate: React.FC<OsmConsentGateProps> = ({ onConsent }) => {
+	const { theme } = useTheme();
+	return (
+		<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
+			<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
+			<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
+				Kartenanzeige mit OpenStreetMap
+			</Text>
+			<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
+				Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
+			</Text>
+			<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
+				Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
+			</Text>
+			<SettingsList
+				title="Kartendaten laden (Zustimmen)"
+				leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onConsent}
+				groupPosition="single"
+			/>
+		</View>
+	);
+};
+
+type MapThemeGridProps = {
+	selectedMapStyleKey: MapStyleKey;
+	onMapStyleKeyChange: (key: MapStyleKey) => void;
+	accentColor: string;
+	mapPreviewCenter: { lat: number; lng: number };
+	mapPreviewZoom: number;
+	closeModal: () => void;
+};
+
+const MapThemeGrid: React.FC<MapThemeGridProps> = ({
+	selectedMapStyleKey,
+	onMapStyleKeyChange,
+	accentColor,
+	mapPreviewCenter,
+	mapPreviewZoom,
+	closeModal,
+}) => {
+	const { theme } = useTheme();
+	return (
+		<View style={styles.mapThemeGrid}>
+			{(Object.values(MapStyleKey) as MapStyleKey[]).map((key) => {
+				const def = MAP_STYLE_DEFINITIONS[key];
+				const isSelected = selectedMapStyleKey === key;
+				return (
+					<CardWithText
+						key={key}
+						containerStyle={[
+							styles.mapThemeCard,
+							{ backgroundColor: theme?.card?.background },
+							isSelected
+								? [styles.mapThemeCardSelected, { borderColor: accentColor }]
+								: styles.mapThemeCardUnselected,
+						]}
+						onPress={() => {
+							onMapStyleKeyChange(key);
+							closeModal();
+						}}
+						imageChildren={
+							<View style={styles.mapPreviewWrapper} pointerEvents="none">
+								<MyMap
+									mapStyleKey={key}
+									centerAtUserLocationIfNoInitialPosition={false}
+									initialCenter={mapPreviewCenter}
+									initialZoom={mapPreviewZoom}
+									hideLegalInfo={true}
+									onMessage={_noop}
+								/>
+							</View>
+						}
+						bottomContent={
+							<View style={styles.mapThemeCardLabel}>
+								{isSelected ? (
+									<Ionicons
+										name="checkmark-circle"
+										size={16}
+										color={accentColor}
+										style={styles.mapThemeCheckIcon}
+									/>
+								) : null}
+								<Text
+									style={[styles.mapThemeCardText, { color: theme.screen.text }]}
+									numberOfLines={1}
+								>
+									{def.label}
+								</Text>
+							</View>
+						}
+					/>
+				);
+			})}
+		</View>
+	);
+};
+
+type MapThemeSelectionModalContentProps = {
+	initialHasConsent: boolean;
+	selectedMapStyleKey: MapStyleKey;
+	onMapStyleKeyChange: (key: MapStyleKey) => void;
+	onOsmConsentChange?: (value: boolean) => void;
+	accentColor: string;
+	mapPreviewCenter: { lat: number; lng: number };
+	mapPreviewZoom: number;
+	closeModal: () => void;
+};
+
+const MapThemeSelectionModalContent: React.FC<MapThemeSelectionModalContentProps> = ({
+	initialHasConsent,
+	selectedMapStyleKey,
+	onMapStyleKeyChange,
+	onOsmConsentChange,
+	accentColor,
+	mapPreviewCenter,
+	mapPreviewZoom,
+	closeModal,
+}) => {
+	const [hasConsent, setHasConsent] = useState(initialHasConsent);
+
+	const handleConsent = () => {
+		setHasConsent(true);
+		onOsmConsentChange?.(true);
+	};
+
+	if (!hasConsent) {
+		return <OsmConsentGate onConsent={handleConsent} />;
+	}
+
+	return (
+		<MapThemeGrid
+			selectedMapStyleKey={selectedMapStyleKey}
+			onMapStyleKeyChange={onMapStyleKeyChange}
+			accentColor={accentColor}
+			mapPreviewCenter={mapPreviewCenter}
+			mapPreviewZoom={mapPreviewZoom}
+			closeModal={closeModal}
+		/>
+	);
 };
 
 const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionProps> = ({
@@ -40,70 +191,29 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	leftIcon,
 	iconBgColor,
 	nativeID,
+	osmConsent = true,
+	onOsmConsentChange,
 }) => {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
-	const { theme } = useTheme();
 
 	const handleOpenSelection = useCallback(() => {
 		showModal({
 			title: modalTitle,
 			disableHorizontalPadding: true,
 			children: (
-				<View style={styles.mapThemeGrid}>
-					{(Object.values(MapStyleKey) as MapStyleKey[]).map((key) => {
-						const def = MAP_STYLE_DEFINITIONS[key];
-						const isSelected = selectedMapStyleKey === key;
-						return (
-							<CardWithText
-								key={key}
-								containerStyle={[
-									styles.mapThemeCard,
-									{ backgroundColor: theme?.card?.background },
-									isSelected
-										? [styles.mapThemeCardSelected, { borderColor: accentColor }]
-										: styles.mapThemeCardUnselected,
-								]}
-								onPress={() => {
-									onMapStyleKeyChange(key);
-									closeModal();
-								}}
-								imageChildren={
-									<View style={styles.mapPreviewWrapper} pointerEvents="none">
-										<MyMap
-											mapStyleKey={key}
-											centerAtUserLocationIfNoInitialPosition={false}
-											initialCenter={mapPreviewCenter}
-											initialZoom={mapPreviewZoom}
-											hideLegalInfo={true}
-											onMessage={_noop}
-										/>
-									</View>
-								}
-								bottomContent={
-									<View style={styles.mapThemeCardLabel}>
-										{isSelected ? (
-											<Ionicons
-												name="checkmark-circle"
-												size={16}
-												color={accentColor}
-												style={styles.mapThemeCheckIcon}
-											/>
-										) : null}
-										<Text
-											style={[styles.mapThemeCardText, { color: theme.screen.text }]}
-											numberOfLines={1}
-										>
-											{def.label}
-										</Text>
-									</View>
-								}
-							/>
-						);
-					})}
-				</View>
+				<MapThemeSelectionModalContent
+					initialHasConsent={osmConsent}
+					selectedMapStyleKey={selectedMapStyleKey}
+					onMapStyleKeyChange={onMapStyleKeyChange}
+					onOsmConsentChange={onOsmConsentChange}
+					accentColor={accentColor}
+					mapPreviewCenter={mapPreviewCenter}
+					mapPreviewZoom={mapPreviewZoom}
+					closeModal={closeModal}
+				/>
 			),
 		});
-	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, theme, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle]);
+	}, [showModal, closeModal, selectedMapStyleKey, onMapStyleKeyChange, accentColor, mapPreviewCenter, mapPreviewZoom, modalTitle, osmConsent, onOsmConsentChange]);
 
 	return (
 		<SettingsList

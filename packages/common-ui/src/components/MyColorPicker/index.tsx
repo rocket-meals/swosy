@@ -9,20 +9,25 @@ export const PRESET_COLORS = [
 	'#e5e5e5', // Light Gray
 	'#a3a3a3', // Gray
 	'#525252', // Dark Gray
+	'#4b5563', // Slate Gray
 	'#000000', // Black
 	// Blues
 	'#bfdbfe', // Light Blue
 	'#3b82f6', // Blue
 	'#1d4ed8', // Dark Blue
 	'#1e3a8a', // Navy
+	'#1e293b', // Dark Slate
+	'#1f2937', // Charcoal
 	// Greens
 	'#bbf7d0', // Light Green
 	'#22c55e', // Green
 	'#15803d', // Dark Green
+	'#047857', // Emerald
 	// Reds
 	'#fecaca', // Light Red
 	'#ef4444', // Red
 	'#b91c1c', // Dark Red
+	'#f43f5e', // Rose
 	// Oranges
 	'#fed7aa', // Light Orange
 	'#f97316', // Orange
@@ -31,6 +36,7 @@ export const PRESET_COLORS = [
 	'#fef08a', // Light Yellow
 	'#facc15', // Yellow
 	'#ca8a04', // Amber
+	'#f59e0b', // Amber Gold
 	// Purples
 	'#e9d5ff', // Light Purple
 	'#a855f7', // Purple
@@ -46,6 +52,25 @@ export const PRESET_COLORS = [
 	// Earth Tones
 	'#d4a574', // Tan
 	'#92400e', // Brown
+	'#78350f', // Dark Amber
+];
+
+/**
+ * Restricted hair color palette for the Micah avatar style.
+ * Contains the first 8 natural hair colors from HAIR_COLORS plus light gray.
+ * Ordered from darkest (index 0) to lightest (index 8) so that incrementing
+ * the index gives a lighter shade, and decrementing gives a darker shade.
+ */
+export const MICAH_HAIR_COLORS = [
+	'#000000', // Black
+	'#2c1b18', // Dark Brown
+	'#4a312c', // Brown
+	'#724133', // Light Brown
+	'#a55728', // Auburn
+	'#b55239', // Red-Brown
+	'#d6b370', // Blonde
+	'#e8d9b4', // Light Blonde
+	'#d0cfc5', // Light Gray
 ];
 
 /** Natural and fashion hair color palette */
@@ -78,7 +103,9 @@ export const SKIN_COLORS = [
 	'#ffffff', // White
 	'#ffe0bd', // Porcelain
 	'#fddbb4', // Very Light
+	'#ffdbac', // Warm Light
 	'#edb98a', // Light
+	'#e0a96d', // Golden Tan
 	'#d08b5b', // Medium Light
 	'#ae5d29', // Medium
 	'#694d3d', // Medium Dark

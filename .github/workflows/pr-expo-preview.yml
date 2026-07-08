@@ -102,31 +102,34 @@ jobs:
         if: needs.detect-changes.outputs.frontend == 'true'
         run: |
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
-            --message "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" \
+            --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
             --platform all --non-interactive
         working-directory: ./apps/frontend/app
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: "🌍 EAS Update – Geonexia"
         if: needs.detect-changes.outputs.geonexia == 'true'
         run: |
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
-            --message "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" \
+            --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
             --platform all --non-interactive
         working-directory: ./apps/geonexia/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: "🎯 EAS Update – Score Tracker"
         if: needs.detect-changes.outputs.score_tracker == 'true'
         run: |
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
-            --message "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" \
+            --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
             --platform all --non-interactive
         working-directory: ./apps/score-tracker/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: "💬 Comment on PR"
         uses: actions/github-script@v7
