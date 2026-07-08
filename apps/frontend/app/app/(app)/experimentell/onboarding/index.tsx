@@ -192,7 +192,7 @@ const OnboardingScreen = () => {
 		loadCanteens();
 	}, [isManagement, canteenHelper, buildingsHelper, dispatch]);
 
-	// Auto-select canteen from profile once canteens are loaded
+	// Auto-select canteen from profile once canteens are loaded; fall back to first canteen
 	useEffect(() => {
 		if (isLoadingCanteens || selectedCanteen || canteens.length === 0) return;
 		let profileCanteenId: string | null = null;
@@ -203,8 +203,9 @@ const OnboardingScreen = () => {
 				profileCanteenId = (profile.canteen as DatabaseTypes.Canteens)?.id ?? null;
 			}
 		}
-		if (!profileCanteenId) return;
-		const canteen = canteens.find((c) => String(c.id) === String(profileCanteenId));
+		const canteen = profileCanteenId
+			? canteens.find((c) => String(c.id) === String(profileCanteenId))
+			: canteens[0];
 		if (canteen) {
 			dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
 		}
@@ -718,7 +719,7 @@ const OnboardingScreen = () => {
 						<LottieView ref={priceAnimRef} source={priceAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay loop={false} />
 					</View>
 				)}
-				<View style={styles.priceGroupContainer}>
+				<View style={[styles.priceGroupContainer, { paddingHorizontal: 16 }]}>
 					<PriceGroupSettingsList onSelect={handleSelectPriceGroup} />
 				</View>
 			</ScrollView>
