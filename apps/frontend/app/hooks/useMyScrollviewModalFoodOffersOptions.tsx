@@ -7,6 +7,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import { useAppSelector } from '@/redux/hooks';
 import { shallowEqual } from 'react-redux';
+import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 
 interface FoodOffersOptionsContentProps {
 	closeSheet: () => void;
@@ -26,6 +27,21 @@ const styles = StyleSheet.create({
 	},
 });
 
+type NavigationOption = {
+	key: string;
+	kind: 'navigation';
+	title: string;
+	icon: React.ReactNode;
+	onPress: () => void;
+};
+
+type BooleanToggleOption = {
+	key: string;
+	kind: 'boolean';
+};
+
+type OptionItem = NavigationOption | BooleanToggleOption;
+
 const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	closeSheet,
 	onSort,
@@ -40,39 +56,45 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	const { translate } = useLanguage();
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 
-	const options = [
+	const options: OptionItem[] = [
 		{
 			key: 'canteen',
+			kind: 'navigation',
 			title: translate(TranslationKeys.canteen),
 			icon: <MaterialIcons name="restaurant-menu" size={20} />,
 			onPress: () => { onCanteen(); },
 		},
 		{
 			key: 'calendar',
+			kind: 'navigation',
 			title: translate(TranslationKeys.date),
 			icon: <MaterialIcons name="calendar-month" size={20} />,
 			onPress: () => { onCalendar(); },
 		},
 		{
 			key: 'sort',
+			kind: 'navigation',
 			title: translate(TranslationKeys.sort),
 			icon: <MaterialIcons name="sort" size={20} />,
 			onPress: () => { onSort(); },
 		},
 		{
 			key: 'priceGroup',
+			kind: 'navigation',
 			title: translate(TranslationKeys.price_group),
 			icon: <FontAwesome6 name="euro-sign" size={20} />,
 			onPress: () => { closeSheet(); onPriceGroup(); },
 		},
 		{
 			key: 'eatingHabits',
+			kind: 'navigation',
 			title: translate(TranslationKeys.eating_habits),
 			icon: <Ionicons name="bag-add" size={20} />,
 			onPress: () => { closeSheet(); onEatingHabits(); },
 		},
 		{
 			key: 'businessHours',
+			kind: 'navigation',
 			title: translate(TranslationKeys.businesshours),
 			icon: <MaterialCommunityIcons name="clock-time-eight" size={20} />,
 			onPress: () => { onBusinessHours(); },
@@ -82,14 +104,23 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	if (onUtilization && appSettings?.utilization_display_enabled) {
 		options.push({
 			key: 'utilization',
+			kind: 'navigation',
 			title: `${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`,
 			icon: <FontAwesome6 name="people-group" size={20} />,
 			onPress: () => { onUtilization(); },
 		});
 	}
 
+	if (appSettings?.foods_ratings_average_display === true) {
+		options.push({
+			key: 'showAverageRatingOnCard',
+			kind: 'boolean',
+		});
+	}
+
 	options.push({
 		key: 'settings',
+		kind: 'navigation',
 		title: translate(TranslationKeys.further_settings),
 		icon: <MaterialCommunityIcons name="cog-outline" size={20} />,
 		onPress: () => { closeSheet(); onSettings(); },
@@ -97,24 +128,37 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 
 	return (
 		<View style={styles.container}>
-			{options.map((option, index) => (
-				<SettingsList
-					key={option.key}
-					title={option.title}
-					leftIcon={option.icon}
-					onPress={option.onPress}
-					groupPosition={
-						options.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === options.length - 1
-									? 'bottom'
-									: 'middle'
-					}
-					showSeparator={index !== options.length - 1}
-				/>
-			))}
+			{options.map((option, index) => {
+				const groupPosition =
+					options.length === 1
+						? 'single'
+						: index === 0
+							? 'top'
+							: index === options.length - 1
+								? 'bottom'
+								: 'middle';
+				const showSeparator = index !== options.length - 1;
+
+				if (option.kind === 'boolean') {
+					return (
+						<FoodoffersAverageRatingToggle
+							key={option.key}
+							groupPosition={groupPosition}
+						/>
+					);
+				}
+
+				return (
+					<SettingsList
+						key={option.key}
+						title={option.title}
+						leftIcon={option.icon}
+						onPress={option.onPress}
+						groupPosition={groupPosition}
+						showSeparator={showSeparator}
+					/>
+				);
+			})}
 		</View>
 	);
 };

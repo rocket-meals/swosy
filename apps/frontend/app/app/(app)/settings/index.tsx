@@ -58,6 +58,7 @@ import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-dep
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
+import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -558,6 +559,13 @@ const Settings = () => {
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" nativeID={ComponentIds.SETTINGS_EATING_HABITS} />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+						{appSettings?.foods_ratings_average_display === true && (
+							<FoodoffersAverageRatingToggle
+								groupPosition="middle"
+								iconBgColor={foods_area_color}
+								iconSize={24}
+							/>
+						)}
 						{showFriendsInSettings && (
 							<SettingsList
 								iconBgColor={foods_area_color}
@@ -861,6 +869,7 @@ const Settings = () => {
 		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
+		appSettings?.foods_ratings_average_display,
 	]);
 
 	return (

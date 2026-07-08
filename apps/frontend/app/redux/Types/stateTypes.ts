@@ -72,6 +72,7 @@ export type SettingsState = {
         mapOrganisationFilter: Record<string, boolean>;
         mapClusterPixelRadius: number;
         foodoffersShowSeparatedMarkingsBreakdown: boolean | null;
+        foodoffersShowAverageRatingOnCard: boolean | null;
 }
 
 export type FoodState = {

@@ -108,6 +108,7 @@ export type AppSettings = {
   foods_placeholder_image_thumb_hash?: string | null;
   foods_ratings_amount_display?: boolean | null;
   foods_ratings_average_display?: boolean | null;
+  foods_ratings_average_display_on_card?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
   friends_enabled?: boolean | null;

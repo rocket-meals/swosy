@@ -58,6 +58,7 @@ export enum TranslationKeys {
 	dataAccess = 'dataAccess',
 	your_comment = 'your_comment',
 	others_comments = 'others_comments',
+	admin_only_comments_notice = 'admin_only_comments_notice',
 	comments = 'comments',
 	save_comment = 'save_comment',
 	write_a_comment = 'write_a_comment',
@@ -739,4 +740,5 @@ export enum TranslationKeys {
 	more_options = 'more_options',
 	further_settings = 'further_settings',
 	options_and_information = 'options_and_information',
+	show_average_rating_on_card = 'show_average_rating_on_card',
 }

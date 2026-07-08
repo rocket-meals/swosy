@@ -6,7 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { FoodItemProps } from './types';
-import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
+import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
 import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
@@ -138,6 +138,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
         likedMarkings.length > 0,
       [likedMarkings.length, currentRating]
     );
+
+    const showAverageOnCard = appSettings?.foods_ratings_average_display === true && appSettings?.foods_ratings_average_display_on_card === true;
+
+    const averageRatingDisplay = useMemo(() => {
+      if (!showAverageOnCard) return null;
+      const avg = foodItem?.rating_average ?? foodItem?.rating_average_legacy;
+      if (typeof avg !== 'number' || Number.isNaN(avg)) return null;
+      return numToOneDecimal(avg);
+    }, [showAverageOnCard, foodItem?.rating_average, foodItem?.rating_average_legacy]);
 
     const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
     const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
@@ -346,6 +355,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                     <TouchableOpacity
                       style={[
                         styles.favContainer,
+                        averageRatingDisplay !== null && styles.favContainerOval,
                         !user?.id && accountRequiredStyles.wrapper,
                         !user?.id && { borderWidth: 2, borderColor: foods_area_color },
                       ]}
@@ -354,6 +364,9 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         : () => updateRating(RatingHelper.isMaxRating(currentRating) ? null : RatingHelper.MAX_RATING)
                       }
                     >
+                      {averageRatingDisplay !== null && (
+                        <Text style={styles.favContainerAverageText}>{averageRatingDisplay}</Text>
+                      )}
                       {RatingHelper.isMaxRating(currentRating) ? (
                         <AntDesign name="star" size={20} color={foods_area_color} />
                       ) : (
@@ -489,12 +502,17 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const userFromStore = useAppSelector((state) => state.authReducer.user);
     const isManagementFromStore = useAppSelector((state) => state.authReducer.isManagement);
     const markingsFromStore = useAppSelector(selectMarkings);
+    const foodoffersShowAverageRatingOnCard = useAppSelector((state) => state.settings.foodoffersShowAverageRatingOnCard);
 
     const language = props.language ?? languageFromStore;
     const pirateLanguage = props.pirateLanguage ?? pirateLanguageFromStore;
     const funLanguageMode = props.funLanguageMode ?? funLanguageModeFromStore;
     const serverInfo = props.serverInfo ?? serverInfoFromStore;
-    const appSettings = props.appSettings ?? appSettingsFromStore;
+    const baseAppSettings = props.appSettings ?? appSettingsFromStore;
+    const appSettings = useMemo(() => {
+        if (foodoffersShowAverageRatingOnCard === null) return baseAppSettings;
+        return { ...baseAppSettings, foods_ratings_average_display_on_card: foodoffersShowAverageRatingOnCard };
+    }, [baseAppSettings, foodoffersShowAverageRatingOnCard]);
     const primaryColor = props.primaryColor ?? primaryColorFromStore;
     
     const { theme } = useTheme();

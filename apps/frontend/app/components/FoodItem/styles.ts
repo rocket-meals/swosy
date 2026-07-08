@@ -38,6 +38,17 @@ export default StyleSheet.create({
                 justifyContent: 'center',
                 alignItems: 'center',
         },
+        favContainerOval: {
+                width: 'auto',
+                paddingHorizontal: 10,
+                flexDirection: 'row',
+                gap: 4,
+        },
+        favContainerAverageText: {
+                color: 'white',
+                fontSize: 13,
+                fontFamily: 'Poppins_700Bold',
+        },
         favContainerWarn: {
                 width: 35,
                 height: 35,

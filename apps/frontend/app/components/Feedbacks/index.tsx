@@ -26,7 +26,7 @@ const loadingState = {
 	deleteLoading: false,
 };
 
-const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
+const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, isManagement }) => {
 	const toast = useToast();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -43,6 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
+	const [adminFeedbacks, setAdminFeedbacks] = useState<DatabaseTypes.FoodsFeedbacks[]>([]);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
@@ -64,6 +65,23 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			setCommentType(appSettings?.foods_feedbacks_comments_type);
 		}
 	}, [appSettings?.foods_feedbacks_comments_type]);
+
+	useEffect(() => {
+		if (!isManagement || !foodId) return;
+		foodFeedbackHelper.fetchAllFoodFeedbacks({
+			filter: {
+				_and: [
+					{ food: { _eq: foodId } },
+					{ comment: { _nnull: true } },
+				],
+			},
+			sort: ['-date_updated'],
+		}).then((result) => {
+			setAdminFeedbacks(Array.isArray(result) ? result : []);
+		}).catch((error) => {
+			console.error('Error fetching admin feedbacks:', error);
+		});
+	}, [isManagement, foodId, foodFeedbackHelper]);
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
@@ -149,9 +167,16 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
     const showRatingsAverage = appSettings?.foods_ratings_average_display;
 
 	const otherComments = useMemo(() => {
-        return foodDetails?.feedbacks?.filter((feedback: any) => feedback.profile !== profile?.id && feedback.comment)
-            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime()) || [];
-    }, [foodDetails?.feedbacks, profile?.id]);
+        const feedbackSource = (isManagement && adminFeedbacks.length > 0)
+            ? adminFeedbacks
+            : (foodDetails?.feedbacks ?? []);
+        return feedbackSource
+            .filter((feedback: any) => feedback.profile !== profile?.id && feedback.comment)
+            .sort((a: any, b: any) => new Date(b.date_updated).getTime() - new Date(a.date_updated).getTime());
+    }, [isManagement, adminFeedbacks, foodDetails?.feedbacks, profile?.id]);
+
+	const commentTypeIncludesRead = commentType === 'read' || commentType === 'readAndWrite';
+	const showOtherCommentsForAdmin = isManagement === true && otherComments.length > 0 && !commentTypeIncludesRead;
 
 	return (
 		<View style={styles.container}>
@@ -293,6 +318,43 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 					)}
 				</>
 			)}
+			{showOtherCommentsForAdmin && (
+				<View style={styles.commentsContainer}>
+					<Text
+						style={[
+							styles.heading,
+							styles.subHeading,
+							{ color: theme.screen.text }
+						]}
+					>
+						{translate(TranslationKeys.others_comments)}
+					</Text>
+					<Text style={[styles.adminNoticeText, { color: foods_area_color }]}>
+						{translate(TranslationKeys.admin_only_comments_notice)}
+					</Text>
+					{otherComments.map(feedback => (
+						<View key={feedback.id} style={styles.comment}>
+							<Text
+								style={[
+									styles.commentText,
+									{ color: theme.screen.text }
+								]}
+							>
+								{feedback.comment}
+							</Text>
+							<Text
+								style={[
+									styles.commentDate,
+									{ color: theme.screen.text }
+								]}
+							>
+								{DateHelper.formatOfferDateToReadable(feedback.date_updated, true, true)}
+							</Text>
+							<View style={styles.divider} />
+						</View>
+					))}
+				</View>
+			)}
 
 		</View>
 	);
@@ -302,6 +364,7 @@ export default memo(Feedbacks, (prevProps, nextProps) => {
     return (
         prevProps.offerId === nextProps.offerId &&
         prevProps.canteenId === nextProps.canteenId &&
+        prevProps.isManagement === nextProps.isManagement &&
         prevProps.foodDetails?.id === nextProps.foodDetails?.id &&
         prevProps.foodDetails?.rating_average === nextProps.foodDetails?.rating_average &&
         prevProps.foodDetails?.rating_amount === nextProps.foodDetails?.rating_amount &&

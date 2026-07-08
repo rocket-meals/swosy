@@ -1,4 +1,5 @@
 import axios from '@/interceptor';
+import { DatabaseTypes, DirectusItemStatus } from 'repo-depkit-common';
 
 const TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
@@ -23,6 +24,28 @@ const fetchWithRetry = async (url: string, config: any) => {
 		}
 	}
 	throw lastError;
+};
+
+/**
+ * Filters out foodoffers where the associated food has status 'archived'.
+ * This ensures that even if archived-food foodoffers exist on the server,
+ * they are not displayed in the frontend.
+ */
+const filterNonArchivedFoodOffers = (foodoffers: DatabaseTypes.Foodoffers[]): DatabaseTypes.Foodoffers[] => {
+	return foodoffers.filter(
+		(foodoffer) => (foodoffer.food as DatabaseTypes.Foods | null | undefined)?.status !== DirectusItemStatus.ARCHIVED
+	);
+};
+
+/**
+ * Applies the archived-food filter to a Directus list response object.
+ * Returns the response unchanged if it does not contain a `data` array.
+ */
+const applyArchivedFoodFilter = (responseData: { data?: DatabaseTypes.Foodoffers[] } | null): typeof responseData => {
+	if (responseData && Array.isArray(responseData.data)) {
+		return { ...responseData, data: filterNonArchivedFoodOffers(responseData.data) };
+	}
+	return responseData;
 };
 
 export const fetchFoodOffers = async () => {
@@ -84,7 +107,7 @@ export const fetchFoodOffersByCanteen = async (canteenId: string, selected: stri
 				},
 			},
 		});
-		return response.data;
+		return applyArchivedFoodFilter(response.data);
 	} catch (error) {
 		console.error('fetchFoodOffersByCanteen error:', error);
 		throw new Error('Error fetching Food Offers');
@@ -141,7 +164,7 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 			},
 		});
 
-		return response.data;
+		return applyArchivedFoodFilter(response.data);
 	} catch (error) {
 		throw new Error('Error fetching Food Offers');
 	}
@@ -151,14 +174,16 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 	try {
 		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
 			params: {
-				fields: '*, markings.*,feedbacks.*,food.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
+				fields: '*, markings.*,food.*,food.feedbacks.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
 				limit: -1,
 				deep: {
-					feedbacks: {
-						_filter: {
-							comment: { _nnull: true },
+					food: {
+						feedbacks: {
+							_filter: {
+								comment: { _nnull: true },
+							},
+							_sort: '-date_updated',
 						},
-						_sort: '-date_updated',
 					},
 				},
 			},

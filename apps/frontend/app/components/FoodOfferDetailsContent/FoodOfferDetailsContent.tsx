@@ -63,6 +63,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
     const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
     const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
+    const isManagement = useAppSelector((state) => state.authReducer.isManagement);
 
     const primaryColor = useAppSelector((state) => state.settings.primaryColor);
     const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
@@ -169,8 +170,9 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             foodDetails={foodDetails}
             offerId={offerId ? offerId.toString() : undefined}
             canteenId={foodOfferCanteenId}
+            isManagement={isManagement}
         />
-    ), [foodDetails, offerId, foodOfferCanteenId]);
+    ), [foodDetails, offerId, foodOfferCanteenId, isManagement]);
 
     const DetailsContent = useMemo(() => (
         <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />
