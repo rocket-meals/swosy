@@ -1,5 +1,5 @@
 import axios from '@/interceptor';
-import { DirectusItemStatus } from 'repo-depkit-common';
+import { DatabaseTypes, DirectusItemStatus } from 'repo-depkit-common';
 
 const TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
@@ -31,10 +31,21 @@ const fetchWithRetry = async (url: string, config: any) => {
  * This ensures that even if archived-food foodoffers exist on the server,
  * they are not displayed in the frontend.
  */
-const filterNonArchivedFoodOffers = (foodoffers: any[]): any[] => {
+const filterNonArchivedFoodOffers = (foodoffers: DatabaseTypes.Foodoffers[]): DatabaseTypes.Foodoffers[] => {
 	return foodoffers.filter(
-		(foodoffer) => foodoffer?.food?.status !== DirectusItemStatus.ARCHIVED
+		(foodoffer) => (foodoffer.food as DatabaseTypes.Foods | null | undefined)?.status !== DirectusItemStatus.ARCHIVED
 	);
+};
+
+/**
+ * Applies the archived-food filter to a Directus list response object.
+ * Returns the response unchanged if it does not contain a `data` array.
+ */
+const applyArchivedFoodFilter = (responseData: { data?: DatabaseTypes.Foodoffers[] } | null): typeof responseData => {
+	if (responseData && Array.isArray(responseData.data)) {
+		return { ...responseData, data: filterNonArchivedFoodOffers(responseData.data) };
+	}
+	return responseData;
 };
 
 export const fetchFoodOffers = async () => {
@@ -96,11 +107,7 @@ export const fetchFoodOffersByCanteen = async (canteenId: string, selected: stri
 				},
 			},
 		});
-		const result = response.data;
-		if (Array.isArray(result?.data)) {
-			return { ...result, data: filterNonArchivedFoodOffers(result.data) };
-		}
-		return result;
+		return applyArchivedFoodFilter(response.data);
 	} catch (error) {
 		console.error('fetchFoodOffersByCanteen error:', error);
 		throw new Error('Error fetching Food Offers');
@@ -157,11 +164,7 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 			},
 		});
 
-		const result = response.data;
-		if (Array.isArray(result?.data)) {
-			return { ...result, data: filterNonArchivedFoodOffers(result.data) };
-		}
-		return result;
+		return applyArchivedFoodFilter(response.data);
 	} catch (error) {
 		throw new Error('Error fetching Food Offers');
 	}
