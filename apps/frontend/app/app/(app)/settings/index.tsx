@@ -9,7 +9,7 @@ import { horizontalScreenPadding, isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
-import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
+import { useUpdateCheckModal } from '@/hooks/useUpdateCheckModal';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { router } from 'expo-router';
@@ -74,7 +74,7 @@ const Settings = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { openAccountRequiredModal } = useAccountRequiredModal();
-        const { manualCheck } = useExpoUpdateChecker();
+        const { openUpdateCheckModal } = useUpdateCheckModal();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
@@ -383,7 +383,7 @@ const Settings = () => {
         }, [collectibleRandomPosition, dispatch]);
 
         const handleCheckForUpdates = () => {
-                manualCheck();
+                openUpdateCheckModal();
         };
 
         const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
@@ -502,35 +502,35 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						{isRegisteredUser && (
-							<SettingsList
-								leftIconComponent={
-									settingsAvatarConfig ? (
-										<MyAvatar
-											config={settingsAvatarConfig}
-											size={AVATAR_SETTINGS_ROW_SIZE / 2}
-											rounded={true}
-											backgroundColor={AVATAR_BACKGROUND}
-										/>
-									) : (
-										<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
-											<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
-										</View>
-									)
-								}
-								value={translate(TranslationKeys.avatar_appearance)}
-								rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-								handleFunction={() => openAvatarEditor(false)}
-								groupPosition="top"
-							/>
-						)}
+						<SettingsList
+							leftIconComponent={
+								settingsAvatarConfig ? (
+									<MyAvatar
+										config={settingsAvatarConfig}
+										size={AVATAR_SETTINGS_ROW_SIZE / 2}
+										rounded={true}
+										backgroundColor={AVATAR_BACKGROUND}
+									/>
+								) : (
+									<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
+										<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
+									</View>
+								)
+							}
+							value={translate(TranslationKeys.avatar_appearance)}
+							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
+							handleFunction={() => openAvatarEditor(false)}
+							isAccountRequired={!isRegisteredUser}
+							onAccountRequired={openAccountRequiredModal}
+							groupPosition="top"
+						/>
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition={isRegisteredUser ? 'middle' : 'top'}
+							groupPosition="middle"
 						/>
 						{showFriendsInSettings && (
 							<SettingsList
