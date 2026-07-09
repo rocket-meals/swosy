@@ -5,7 +5,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 
-export interface SettingsListLikeDislikeFastProps {
+/** Core like/dislike state shared between the "fast" (this file) and full-featured
+ * (apps/frontend/app SettingsListLikeDislike) implementations. */
+export interface LikeDislikeCoreProps {
 	like: boolean | null | undefined;
 	onPressLike: () => void;
 	onPressDislike: () => void;
@@ -13,6 +15,9 @@ export interface SettingsListLikeDislikeFastProps {
 	dislikeLoading?: boolean;
 	likeCount?: number;
 	dislikeCount?: number;
+}
+
+export interface SettingsListLikeDislikeFastProps extends LikeDislikeCoreProps {
 	primaryColor?: string;
 }
 

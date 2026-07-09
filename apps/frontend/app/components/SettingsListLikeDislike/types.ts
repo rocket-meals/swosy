@@ -1,11 +1,6 @@
-export interface SettingsListLikeDislikeProps {
-	like: boolean | null | undefined;
-	onPressLike: () => void;
-	onPressDislike: () => void;
+import type { LikeDislikeCoreProps } from 'repo-depkit-common-ui';
+
+export interface SettingsListLikeDislikeProps extends LikeDislikeCoreProps {
 	likeTooltipText?: string;
 	dislikeTooltipText?: string;
-	likeLoading?: boolean;
-	dislikeLoading?: boolean;
-	likeCount?: number;
-	dislikeCount?: number;
 }

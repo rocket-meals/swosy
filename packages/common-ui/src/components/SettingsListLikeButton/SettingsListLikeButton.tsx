@@ -4,12 +4,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
+import type { LikeDislikeCoreProps } from '../SettingsListLikeDislikeFast';
 
-export interface SettingsListLikeButtonProps {
+export interface SettingsListLikeButtonProps extends Pick<LikeDislikeCoreProps, 'onPressLike' | 'likeLoading' | 'likeCount'> {
 	liked?: boolean | null;
-	onPressLike: () => void;
-	likeLoading?: boolean;
-	likeCount?: number;
 	primaryColor?: string;
 }
 

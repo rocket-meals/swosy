@@ -20,6 +20,7 @@ export { CommonUiComponentIds } from './src/constants/ComponentIds';
 // Components
 export { default as SettingsList } from './src/components/SettingsList';
 export type { SettingsListProps, SettingsListItemBaseProps } from './src/components/SettingsList';
+export type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps, TextInputAppearanceProps } from './src/components/SettingsList/formFieldTypes';
 
 export { default as SettingsListBoolean } from './src/components/SettingsListBoolean';
 export type { SettingsListBooleanProps } from './src/components/SettingsListBoolean';
@@ -37,7 +38,7 @@ export { default as SettingsListSelectOption } from './src/components/SettingsLi
 export type { SettingsListSelectOptionProps, SettingsListSelectOptionItem } from './src/components/SettingsListSelectOption';
 
 export { default as SettingsListLikeDislikeFast } from './src/components/SettingsListLikeDislikeFast';
-export type { SettingsListLikeDislikeFastProps } from './src/components/SettingsListLikeDislikeFast';
+export type { SettingsListLikeDislikeFastProps, LikeDislikeCoreProps } from './src/components/SettingsListLikeDislikeFast';
 
 export { default as SettingsListLikeButton } from './src/components/SettingsListLikeButton';
 export type { SettingsListLikeButtonProps } from './src/components/SettingsListLikeButton';
@@ -100,7 +101,7 @@ export type { SettingsListMyMapThemeSelectionProps } from './src/components/Sett
 
 export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
-export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
+export type { MyAvatarProps, AvatarConfig, AvatarAppearanceProps } from './src/components/MyAvatar';
 
 export { useAvatarEditorModal, AvatarPropKey, MICAH_PRESETS, presetToConfig, generateRandomAvatarConfig } from './src/components/MyAvatarEditor';
 export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps, AvatarPreset } from './src/components/MyAvatarEditor';

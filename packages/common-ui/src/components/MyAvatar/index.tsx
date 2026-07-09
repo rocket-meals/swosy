@@ -56,17 +56,21 @@ export type AvatarConfig = {
 	options?: Record<string, string[] | boolean | number>;
 };
 
-export type MyAvatarProps = {
+/** Avatar preview appearance shared with the avatar-editor picker modals (see MyAvatarEditor). */
+export type AvatarAppearanceProps = {
+	/** When true (default), uses the avatar size as the border radius to produce a circle. */
+	rounded?: boolean;
+	/** Background color rendered behind the avatar. */
+	backgroundColor?: string;
+};
+
+export type MyAvatarProps = AvatarAppearanceProps & {
 	/** When provided, all avatar parameters are taken from this config object. */
 	config?: AvatarConfig;
 	style?: AvatarStyle;
 	size?: AvatarSize | number;
 	/** Explicit border radius. Ignored when `rounded` is true. */
 	borderRadius?: number;
-	/** When true (default), uses the avatar size as the border radius to produce a circle. */
-	rounded?: boolean;
-	/** Background color rendered behind the avatar. */
-	backgroundColor?: string;
 	/** Additional DiceBear options (e.g. eyes, mouth, hair, nose, etc.) */
 	options?: Record<string, string[] | boolean | number>;
 };

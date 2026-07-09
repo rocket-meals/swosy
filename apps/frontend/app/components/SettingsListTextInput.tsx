@@ -15,6 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { RootState } from '@/redux/reducer';
 import type { SettingsListProps } from '@/components/SettingsList/types';
+import type { TextInputAppearanceProps } from 'repo-depkit-common-ui';
 import { TranslationKeys } from '@/locales/keys';
 
 export type CheckTextInputResult = {
@@ -24,12 +25,7 @@ export type CheckTextInputResult = {
 
 export type CheckTextInput = (value: string) => CheckTextInputResult;
 
-export type TextInputBaseProps = {
-	placeholder: string;
-	keyboardType?: KeyboardTypeOptions;
-	inputStyle?: object;
-	autoFocus?: boolean;
-};
+export type TextInputBaseProps = TextInputAppearanceProps;
 
 export interface TextInputSharedProps extends TextInputBaseProps {
 	saveLabel: string;

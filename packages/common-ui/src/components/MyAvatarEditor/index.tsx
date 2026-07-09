@@ -81,7 +81,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, getStyleProbabilityKeys } from '../MyAvatar';
+import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
@@ -609,11 +609,7 @@ const PREVIEW_AVATAR_SIZE = 100;
  * Avatar preview appearance, forwarded unchanged from the top-level editor/MyAvatar caller
  * down through nearly every sub-component in this file (sticky header, pickers, presets, ...).
  */
-type AvatarPreviewAppearanceProps = {
-	/** Forwarded from the caller's MyAvatar: when true (default), previews are circles. */
-	rounded?: boolean;
-	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
-	backgroundColor?: string;
+type AvatarPreviewAppearanceProps = AvatarAppearanceProps & {
 	accentColor?: string;
 };
 
