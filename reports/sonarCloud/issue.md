@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 14 | 14 |
 | 🐛 Reliability | 92 | 36 |
-| 🔧 Maintainability | 1915 | 0 |
+| 🔧 Maintainability | 1916 | 0 |
 
-**Total issues:** 2021 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2022 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -109,20 +109,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:302
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L302
+  apps/frontend/app/app/(app)/settings/index.tsx:304
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L304
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:303
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L303
+  apps/frontend/app/app/(app)/settings/index.tsx:305
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L305
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:308
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L308
-
-- **Prefer `Number.isNaN` over `isNaN`.**
   apps/frontend/app/app/(app)/settings/index.tsx:310
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L310
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/frontend/app/app/(app)/settings/index.tsx:312
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L312
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/app/index.tsx:15
