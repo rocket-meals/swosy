@@ -62,12 +62,28 @@ function parseEnvFile(content) {
   return envDict;
 }
 
+// Validates a Directus server URL before it is used to build any outbound request, since it
+// can come from free-text operator input (see configureDirectusServerUrl's "Custom Value").
+// This is the single trust boundary all fetch() calls in this file rely on.
+const assertValidDirectusUrl = urlString => {
+  let parsed;
+  try {
+    parsed = new URL(urlString);
+  } catch {
+    throw new Error(`Invalid Directus server URL: "${urlString}"`);
+  }
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    throw new Error(`Directus server URL must use http(s): "${urlString}"`);
+  }
+  return parsed.toString().replace(/\/$/, '');
+};
+
 const parsedEnvFile = parseEnvFile(envFile);
 const MYHOST = parsedEnvFile.MYHOST;
 const DOMAIN_PATH = parsedEnvFile.ROCKET_MEALS_PATH;
 const BACKEND_PATH = parsedEnvFile.ROCKET_MEALS_BACKEND_PATH;
 
-let directus_url = `https://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`;
+let directus_url = assertValidDirectusUrl(`https://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`);
 let admin_email = parsedEnvFile.ADMIN_EMAIL;
 let admin_password = parsedEnvFile.ADMIN_PASSWORD;
 
@@ -130,7 +146,7 @@ const configureDirectusServerUrl = async () => {
     selectedValue = customValue;
   }
 
-  directus_url = selectedValue;
+  directus_url = assertValidDirectusUrl(selectedValue);
   console.log(`Directus server URL set to: ${directus_url}`);
 };
 
@@ -229,15 +245,18 @@ const enableRequiredSettings = async headers => {
   // Enable required modules
   for (const moduleIndex in modules) {
     const module = modules[moduleIndex];
+    // module.id comes from the Directus API response; strip control/newline characters
+    // before logging so it can't be used to forge fake log lines (log injection).
+    const safeModuleId = String(module.id).replace(/[\r\n\t\x00-\x1f]/g, '');
     if (requiredModules.includes(module.id)) {
       if (!module.enabled) {
-        console.log(` -  Enabling ${module.id}`);
+        console.log(` -  Enabling ${safeModuleId}`);
         modules[moduleIndex].enabled = true;
       } else {
-        console.log(` -  ${module.id} already enabled`);
+        console.log(` -  ${safeModuleId} already enabled`);
       }
     } else {
-      console.log(` -  ${module.id} not required`);
+      console.log(` -  ${safeModuleId} not required`);
     }
   }
 
@@ -259,21 +278,18 @@ const enableRequiredSettings = async headers => {
   console.log(' -  Enabled required settings');
 };
 
-const getDirectusSyncParams = () => {
-  // Properly escape the password for shell command
-  const preserverIds = 'dashboards,operations,panels,policies,roles,translations';
-  const preserveOption = '--preserve-ids ' + preserverIds;
-  return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + admin_password + '" --dump-path ' + dumpPath + ' ' + preserveOption;
+const getDirectusSyncArgs = () => {
+  const preserveIds = 'dashboards,operations,panels,policies,roles,translations';
+  return ['--directus-url', directus_url, '--directus-email', admin_email, '--directus-password', admin_password, '--dump-path', dumpPath, '--preserve-ids', preserveIds];
 };
 
-const execWithOutput = async command => {
-  // Split the command into arguments for spawn
-  const [cmd, ...args] = command.split(' ');
+// Executes a command as an argument vector (no shell) so that CLI-controlled values
+// (URL, email, password, paths) can never be interpreted as shell syntax.
+const execWithOutput = async (cmd, args) => {
   console.log(' -  Pushing schema changes');
 
   const child = spawn(cmd, args, {
     env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
-    shell: true,
     stdio: ['inherit', 'pipe', 'pipe'],
   });
 
@@ -302,9 +318,8 @@ const execWithOutput = async command => {
   return output;
 };
 
-const execDirectusSync = async params => {
-  let command = 'npx directus-sync@' + DirectusSyncVersion + ' ' + params;
-  let output = await execWithOutput(command);
+const execDirectusSync = async args => {
+  const output = await execWithOutput('npx', ['directus-sync@' + DirectusSyncVersion, ...args]);
   const lines = output.split('\n');
   for (const line of lines) {
     if (line.includes('✅  Done!')) {
@@ -318,9 +333,8 @@ const execDirectusSync = async params => {
 
 const execDirectusSyncMethod = async (method, logText) => {
   console.log(' - Directus Sync: ' + logText);
-  const directus_sync_params = getDirectusSyncParams();
-  const params = method + ' ' + directus_sync_params;
-  let success = await execDirectusSync(params);
+  const args = [method, ...getDirectusSyncArgs()];
+  let success = await execDirectusSync(args);
   if (success) {
     console.log(' -  Success: ' + logText);
   } else {

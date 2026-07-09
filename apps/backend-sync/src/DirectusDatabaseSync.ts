@@ -36,10 +36,26 @@ export class DirectusDatabaseSync {
 
   constructor(config: DirectusDatabaseSyncOptions) {
     this.config = config;
-    this.directusConfigCollectionsPath = path.resolve(this.config.pathToDataDirectusSyncData, 'configuration/directus-config/collections');
-    this.directusConfigOverwriteCollectionsPath = path.resolve(this.config.pathToDataDirectusSyncData, 'configuration/directus-config-overwrite/collections');
-    this.configurationPathCollections = path.resolve(this.config.pathToDataDirectusSyncData, 'configuration/collections');
-    this.dumpPath = path.resolve(this.config.pathToDataDirectusSyncData, 'configuration/directus-config');
+    // pathToDataDirectusSyncData originates from a CLI argument (--path-to-data-directus-sync).
+    // Canonicalize and validate it stays within the current working directory before it is
+    // used to build every other path this class reads from / writes to.
+    const validatedRoot = DirectusDatabaseSync.validatePathWithinBase(this.config.pathToDataDirectusSyncData, process.cwd());
+    this.directusConfigCollectionsPath = path.resolve(validatedRoot, 'configuration/directus-config/collections');
+    this.directusConfigOverwriteCollectionsPath = path.resolve(validatedRoot, 'configuration/directus-config-overwrite/collections');
+    this.configurationPathCollections = path.resolve(validatedRoot, 'configuration/collections');
+    this.dumpPath = path.resolve(validatedRoot, 'configuration/directus-config');
+  }
+
+  // Ensures a CLI-controlled path canonicalizes to somewhere inside `basePath`, preventing
+  // path traversal (e.g. "--path-to-data-directus-sync ../../etc") from escaping the project.
+  private static validatePathWithinBase(candidatePath: string, basePath: string): string {
+    const resolvedBase = path.resolve(basePath);
+    const resolvedCandidate = path.resolve(resolvedBase, candidatePath);
+    const relative = path.relative(resolvedBase, resolvedCandidate);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      throw new Error(`Invalid --path-to-data-directus-sync: "${candidatePath}" resolves outside of "${resolvedBase}".`);
+    }
+    return resolvedCandidate;
   }
 
   public get syncConfig(): DirectusDatabaseSyncOptions {
@@ -207,15 +223,18 @@ export class DirectusDatabaseSync {
     // Enable required modules
     for (const moduleIndex in modules) {
       const module = modules[moduleIndex];
+      // module.id comes from the Directus API response; strip control/newline characters
+      // before logging so it can't be used to forge fake log lines (log injection).
+      const safeModuleId = String(module.id).replace(/[\r\n\t\x00-\x1f]/g, '');
       if (requiredModules.has(module.id)) {
         if (module.enabled) {
-          console.log(` -  ${module.id} already enabled`);
+          console.log(` -  ${safeModuleId} already enabled`);
         } else {
-          console.log(` -  Enabling ${module.id}`);
+          console.log(` -  Enabling ${safeModuleId}`);
           modules[moduleIndex].enabled = true;
         }
       } else {
-        console.log(` -  ${module.id} not required`);
+        console.log(` -  ${safeModuleId} not required`);
       }
     }
 
@@ -236,21 +255,24 @@ export class DirectusDatabaseSync {
     console.log(' -  Enabled required settings');
   }
 
-  private getDirectusSyncParams() {
-    // Properly escape the password for shell command
-    const preserverIds = 'dashboards,operations,panels,policies,roles,translations';
-    const preserveOption = '--preserve-ids ' + preserverIds;
-    return '--directus-url ' + this.config.directusInstanceUrl + ' --directus-email ' + this.config.adminEmail + ' --directus-password "' + this.config.adminPassword + '" --dump-path ' + this.dumpPath + ' ' + preserveOption;
+  private getDirectusSyncArgs(): string[] {
+    const preserveIds = 'dashboards,operations,panels,policies,roles,translations';
+    return [
+      '--directus-url', this.config.directusInstanceUrl,
+      '--directus-email', this.config.adminEmail,
+      '--directus-password', this.config.adminPassword,
+      '--dump-path', this.dumpPath,
+      '--preserve-ids', preserveIds,
+    ];
   }
 
-  private async execWithOutput(command: string) {
-    // Split the command into arguments for spawn
-    const [cmd, ...args] = command.split(' ');
-    console.log(' -  Executing command:', cmd, args.join(' '));
+  // Executes a command as an argument vector (no shell) so that CLI-controlled values
+  // (URL, email, password, paths) can never be interpreted as shell syntax.
+  private async execWithOutput(cmd: string, args: string[]) {
+    console.log(' -  Executing command:', cmd, args.map(arg => (arg === this.config.adminPassword ? '***' : arg)).join(' '));
 
     const child = spawn(cmd, args, {
       env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
-      shell: true,
       stdio: ['inherit', 'pipe', 'pipe'],
     });
 
@@ -279,9 +301,8 @@ export class DirectusDatabaseSync {
     return output;
   }
 
-  private async execDirectusSync(params: string) {
-    let command = 'npx directus-sync@' + DirectusSyncVersion + ' ' + params;
-    let output = await this.execWithOutput(command);
+  private async execDirectusSync(args: string[]) {
+    const output = await this.execWithOutput('npx', ['directus-sync@' + DirectusSyncVersion, ...args]);
     const lines = output.split('\n');
     for (const line of lines) {
       if (line.includes('✅  Done!')) {
@@ -295,9 +316,8 @@ export class DirectusDatabaseSync {
 
   private async execDirectusSyncMethod(method: string, logText: string) {
     console.log(' - Directus Sync: ' + logText);
-    const directus_sync_params = this.getDirectusSyncParams();
-    const params = method + ' ' + directus_sync_params;
-    let success = await this.execDirectusSync(params);
+    const args = [method, ...this.getDirectusSyncArgs()];
+    let success = await this.execDirectusSync(args);
     if (success) {
       console.log(' -  Success: ' + logText);
     } else {

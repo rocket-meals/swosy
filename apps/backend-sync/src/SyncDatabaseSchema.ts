@@ -41,10 +41,12 @@ type ResolvedSyncConfig = {
 };
 
 async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<ResolvedSyncConfig> {
-  const TEST_SERVER_ADMIN_EMAIL = "admin@example.com"
-  const TEST_SERVER_ADMIN_PASSWORD = "The!UniversalRocketMealsPassword";
-  let adminEmail: string | undefined = options.adminEmail || process.env.ADMIN_EMAIL || TEST_SERVER_ADMIN_EMAIL
-  let adminPassword: string | undefined = options.adminPassword || process.env.ADMIN_PASSWORD || TEST_SERVER_ADMIN_PASSWORD
+  // Non-production placeholder credentials for the local Docker Compose test system only.
+  // Mirrors the public default in .env.template; never used against a real/production instance.
+  const LOCAL_TEST_SERVER_ADMIN_EMAIL = "admin@example.com"
+  const LOCAL_TEST_SERVER_ADMIN_PASSWORD = "The!UniversalRocketMealsPassword";
+  let adminEmail: string | undefined = options.adminEmail || process.env.ADMIN_EMAIL || LOCAL_TEST_SERVER_ADMIN_EMAIL
+  let adminPassword: string | undefined = options.adminPassword || process.env.ADMIN_PASSWORD || LOCAL_TEST_SERVER_ADMIN_PASSWORD
   let directusInstanceUrl = options.directusUrl;
   let pathToDataDirectusSync = options.pathToDataDirectusSync;
   let pathToTargetTypesFile: string | undefined;

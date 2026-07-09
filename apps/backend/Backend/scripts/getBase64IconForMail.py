@@ -2,6 +2,7 @@
 # Therefore we convert the font to a base64 string and include it directly in the html template.
 
 import os
+import sys
 import json
 import base64
 import argparse
@@ -125,6 +126,11 @@ if __name__ == "__main__":
     node_modules_path = args.node_modules
     if not node_modules_path:
         node_modules_path = find_node_modules_directory()
+
+    if node_modules_path:
+        # Canonicalize the CLI-controlled path (resolves "..", symlinks) before it is used
+        # to build any file path that gets opened below.
+        node_modules_path = os.path.realpath(node_modules_path)
 
     if not node_modules_path or not os.path.isdir(node_modules_path):
         print("Error: node_modules directory not found. Please specify it with --node_modules <path>.")

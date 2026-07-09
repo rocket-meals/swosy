@@ -41,13 +41,18 @@ jobs:
           done
 
       - name: "🌐 Install Chrome"
-        uses: browser-actions/setup-chrome@v2
+        uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
         with:
           chrome-version: stable
 
       - name: "🎭 Install Maestro CLI"
         run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          # Download to a file first (instead of piping straight into bash) so the installer
+          # can be sanity-checked before it is executed, and pin the transport to TLS.
+          curl -fsSL --proto '=https' --tlsv1.2 -o /tmp/maestro-install.sh "https://get.maestro.mobile.dev"
+          [ -s /tmp/maestro-install.sh ] || { echo "Downloaded Maestro installer is empty"; exit 1; }
+          head -n1 /tmp/maestro-install.sh | grep -q '^#!' || { echo "Downloaded Maestro installer does not look like a shell script"; exit 1; }
+          bash /tmp/maestro-install.sh
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: "📝 Generate Maestro YAML from TypeScript tests"
