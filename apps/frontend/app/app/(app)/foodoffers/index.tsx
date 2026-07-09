@@ -26,7 +26,6 @@ import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
 import usePopupEventModal from '@/hooks/usePopupEventModal';
-import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
@@ -70,7 +69,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	useFoodOffersDefaultDate();
 	const kioskMode = useKioskMode();
 	const { hasUnreadChats } = useChatUnreadStatus();
-	const { openUtilizationModal } = useUtilizationModal();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	useAppForegroundUpdateCheckModal();
@@ -108,10 +106,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { openPriceGroupSettingsModal } = useMyScrollviewModalPriceGroupSettings();
 	const router = useRouter();
 
-	const handleOpenUtilization = useCallback(() => {
-		openUtilizationModal(selectedDate, selectedCanteen);
-	}, [openUtilizationModal, selectedDate, selectedCanteen]);
-
 	const { openFoodOffersOptionsModal } = useMyScrollviewModalFoodOffersOptions({
 		onSort: openFoodofferSortingModal,
 		onPriceGroup: openPriceGroupSettingsModal,
@@ -119,7 +113,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		onCanteen: openChangeMyCanteenSelectionModal,
 		onCalendar: () => openDatePickerModal({ updateGlobal: true }),
 		onBusinessHours: openBusinessHoursModal,
-		onUtilization: handleOpenUtilization,
 		onSettings: () => router.navigate('/settings'),
 	});
 
