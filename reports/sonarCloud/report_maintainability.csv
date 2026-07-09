@@ -759,7 +759,7 @@ Key,Message,Component,Line
 "AZ0TplKaufp2jxPAhS1q","Remove this useless assignment to variable ""primaryColor"".","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownInput.tsx",36
 "AZ5JdOxPjvp1UF7n1YmM","Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",416
 "AZ0TplBCufp2jxPAhSzm","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",106
-"AZ0TpknDufp2jxPAhSuO","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",330
+"AZ0TpknDufp2jxPAhSuO","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",347
 "AZ0Tpk2Eufp2jxPAhSwu","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",395
 "AZ0Tpk2Eufp2jxPAhSw0","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",682
 "AZ0Tpk2Eufp2jxPAhSw5","Remove this useless assignment to variable ""prefix"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",826
@@ -955,7 +955,7 @@ Key,Message,Component,Line
 "AZ0TplOTufp2jxPAhS2A","Remove this useless assignment to variable ""theme"".","rocket-meals_rocket-meals:apps/frontend/app/components/UI/IconButton.tsx",11
 "AZ0TplGSufp2jxPAhS0j","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",280
 "AZ0TplGSufp2jxPAhS0k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",280
-"AZ0TpknDufp2jxPAhSuN","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",153
+"AZ0TpknDufp2jxPAhSuN","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",166
 "AZ0TplHYufp2jxPAhS1M","Remove this useless assignment to variable ""cardWidth"".","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",100
 "AZowOBJzl8CDMcNN1djl","Remove this useless assignment to variable ""appSettings"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageUpload/ImageUpload.tsx",21
 "AZowOBEll8CDMcNN1djj","Remove this unused import of 'isWeb'.","rocket-meals_rocket-meals:apps/frontend/app/components/SingleLineInput/SingleLineInput.tsx",7
