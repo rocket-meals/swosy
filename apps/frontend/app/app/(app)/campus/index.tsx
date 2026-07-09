@@ -10,7 +10,7 @@ import { CampusSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpened
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import BuildingItem from '@/components/BuildingItem/BuildingItem';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -91,6 +91,19 @@ const Index: React.FC = () => {
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 	const { buildingsFavoriteIds } = useBuildingFavorites();
+
+	// Sorting by favorites should not jump around live while the user is toggling
+	// hearts on this screen - it should only be re-evaluated the next time the
+	// screen is opened (i.e. gains focus again) or the user pulls to refresh,
+	// using a frozen snapshot.
+	const buildingsFavoriteIdsRef = useRef(buildingsFavoriteIds);
+	buildingsFavoriteIdsRef.current = buildingsFavoriteIds;
+	const [favoriteIdsSortSnapshot, setFavoriteIdsSortSnapshot] = useState<string[]>(buildingsFavoriteIds);
+	useFocusEffect(
+		useCallback(() => {
+			setFavoriteIdsSortSnapshot(buildingsFavoriteIdsRef.current);
+		}, [])
+	);
 
 	// Handlers
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
@@ -266,13 +279,16 @@ const Index: React.FC = () => {
 	// Favorited buildings always come first for INTELLIGENT sorting, on top of the
 	// last-opened boost above (applied last so it wins: favorites are pulled to the
 	// very front while preserving whatever order the previous steps produced).
+	// Uses the frozen favoriteIdsSortSnapshot (updated on screen focus) rather than
+	// the live buildingsFavoriteIds, so toggling a heart doesn't reorder the list
+	// while the user is still looking at it.
 	const sortedWithFavorites = useMemo(() => {
-		if (campusesSortBy !== CampusSortOption.INTELLIGENT || !buildingsFavoriteIds || buildingsFavoriteIds.length === 0) return sortedWithLastOpened;
-		const favoriteSet = new Set(buildingsFavoriteIds);
+		if (campusesSortBy !== CampusSortOption.INTELLIGENT || !favoriteIdsSortSnapshot || favoriteIdsSortSnapshot.length === 0) return sortedWithLastOpened;
+		const favoriteSet = new Set(favoriteIdsSortSnapshot);
 		const favoriteItems = sortedWithLastOpened.filter(c => c.id && favoriteSet.has(c.id));
 		const otherItems = sortedWithLastOpened.filter(c => !(c.id && favoriteSet.has(c.id)));
 		return [...favoriteItems, ...otherItems];
-	}, [sortedWithLastOpened, buildingsFavoriteIds, campusesSortBy]);
+	}, [sortedWithLastOpened, favoriteIdsSortSnapshot, campusesSortBy]);
 
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
 		const src = sortedWithFavorites;
@@ -283,6 +299,7 @@ const Index: React.FC = () => {
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
+		setFavoriteIdsSortSnapshot(buildingsFavoriteIdsRef.current);
 		fetchAllCampuses(selectedBuilding ?? null).finally(() => setRefreshing(false));
 	}, [fetchAllCampuses, selectedBuilding]);
 
