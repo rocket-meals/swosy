@@ -539,7 +539,9 @@ const Settings = () => {
 								label={translate(TranslationKeys.friendships)}
 								value={String(acceptedFriendsCount)}
 								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={isRegisteredUser ? openFriendsModal : openAccountRequiredModal}
+								handleFunction={openFriendsModal}
+								isAccountRequired={!isRegisteredUser}
+								onAccountRequired={openAccountRequiredModal}
 								groupPosition="middle"
 							/>
 						)}

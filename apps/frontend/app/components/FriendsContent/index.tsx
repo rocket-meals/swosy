@@ -746,7 +746,9 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					}
 					value={translate(TranslationKeys.avatar_appearance)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-					handleFunction={isAnonymousUser ? openAccountRequiredModal : () => openAvatarEditor(false)}
+					handleFunction={() => openAvatarEditor(false)}
+					isAccountRequired={isAnonymousUser}
+					onAccountRequired={openAccountRequiredModal}
 					groupPosition="top"
 				/>
 				<SettingsList
@@ -768,6 +770,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					label={translate(TranslationKeys.friendships_generate_qr)}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={handleGenerateQR}
+					isAccountRequired={isAnonymousUser}
+					onAccountRequired={openAccountRequiredModal}
 					groupPosition="top"
 				/>
 				<SettingsList
@@ -776,6 +780,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					label={translate(TranslationKeys.friendships_scan_qr)}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={handleScanQR}
+					isAccountRequired={isAnonymousUser}
+					onAccountRequired={openAccountRequiredModal}
 					groupPosition="middle"
 				/>
 				<SettingsList
@@ -784,6 +790,8 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					label={translate(TranslationKeys.friendships_add_manual)}
 					rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
 					handleFunction={handleManualAdd}
+					isAccountRequired={isAnonymousUser}
+					onAccountRequired={openAccountRequiredModal}
 					groupPosition="bottom"
 				/>
 
