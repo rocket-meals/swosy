@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 34 | 34 |
-| 🐛 Reliability | 6891 | 16 |
-| 🔧 Maintainability | 9657 | 0 |
+| 🔒 Security | 14 | 14 |
+| 🐛 Reliability | 92 | 36 |
+| 🔧 Maintainability | 1915 | 0 |
 
-**Total issues:** 16582 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2021 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (34/34)
+## 🔒 Security (14/14)
 
 - **Use full commit SHA hash for this dependency.**
   .github/workflows/frontend-maestro.yml:44
@@ -34,123 +34,43 @@
   .github/workflows/pr-expo-preview.yml:246
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L246
 
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:75
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L75
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:103
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L103
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:315
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L315
-
-- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted OS commands before using them.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:251
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L251
+- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:272
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L272
 
 - **Review this potentially hard-coded password.**
-  apps/backend-sync/src/SyncDatabaseSchema.ts:45
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L45
+  apps/backend-sync/src/SyncDatabaseSchema.ts:47
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L47
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/backend/Backend/scripts/getBase64IconForMail.py:45
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/scripts/getBase64IconForMail.py#L45
+  apps/backend/Backend/scripts/getBase64IconForMail.py:46
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/scripts/getBase64IconForMail.py#L46
 
-- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted OS commands before using them.**
-  apps/backend/sync/importSchema.js:274
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L274
-
-- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
-  apps/backend/sync/importSchema.js:465
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L465
-
-- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
-  apps/backend/sync/importSchema.js:499
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L499
-
-- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
-  apps/backend/sync/importSchema.js:548
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L548
-
-- **Change this code to not log user-controlled data.**
-  apps/backend/sync/importSchema.js:234
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L234
-
-- **Change this code to not log user-controlled data.**
-  apps/backend/sync/importSchema.js:237
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L237
-
-- **Change this code to not log user-controlled data.**
-  apps/backend/sync/importSchema.js:240
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L240
-
-- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
-  apps/backend/sync/importSchema.js:212
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L212
-
-- **LLMs running this code with faulty CLI arguments can cause SSRFs. Refactor this code to validate strings before using them in network requests.**
-  apps/backend/sync/importSchema.js:245
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L245
+- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
+  apps/backend/sync/importSchema.js:291
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L291
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py:53
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py#L53
-
-- **"npx" can install packages on-demand and run their lifecycle scripts.**
-  apps/frontend/run-maestro-web-test.sh:51
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L51
-
-- **Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.**
-  apps/frontend/run-maestro-web-test.sh:88
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L88
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/activities/index.tsx:185
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L185
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/geonexia/frontend/app/routes/[id].tsx:171
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L171
-
-- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L117
-
-- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:132
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L132
-
-- **Ensure that tainted data is validated before being used to construct a client-side request URL.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:147
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L147
+  apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py:54
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py#L54
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py:29
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py#L29
+  apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py#L30
 
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/screenshotGenerator/src/helpers.ts:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L9
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/screenshotGenerator/src/helpers.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L23
 
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/screenshotGenerator/src/helpers.ts:72
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L72
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/screenshotGenerator/src/helpers.ts:87
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L87
 
 - **A path canonicalized from CLI-controlled data must be validated before use.**
   apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:25
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L25
 
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:332
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L332
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts:333
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts#L333
-
-## 🐛 Reliability (16/6891)
+## 🐛 Reliability (36/92)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -215,4 +135,84 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:20
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L20
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:22
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L22
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/frontend/app/components/EmailInput/EmailInput.tsx:9
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/EmailInput/EmailInput.tsx#L9
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/frontend/app/constants/MarkdownPatterns.ts:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
+
+- **React Hook "usePlatformHelper" is called in function "handleNativeLogin" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
+  apps/frontend/app/helper/authHelper.ts:38
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L38
+
+- **React Hook "usePlatformHelper" is called in function "getIsLandScape" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
+  apps/frontend/app/helper/DeviceHelper.ts:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L115
+
+- **React Hook "usePlatformHelper" is called in function "getDeviceInformationWithoutPushToken" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
+  apps/frontend/app/helper/DeviceHelper.ts:144
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L144
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/frontend/app/helper/FoodOffersCacheHelper.ts:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L15
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/frontend/app/helper/FoodOffersCacheHelper.ts:101
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L101
+
+- **React Hook "usePlatformHelper" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.**
+  apps/frontend/app/helper/NotificationHelper.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L82
+
+- **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
+  apps/frontend/app/helper/SystemActionHelper.ts:6
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:92
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L92
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L117
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:94
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L94
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L119
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:161
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L161
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:168
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L168
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L143
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:151
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L151
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
+
+- **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/activities/[id].tsx:1436
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1436
 
