@@ -2,6 +2,7 @@ import * as Speech from 'expo-speech';
 import { setAudioModeAsync } from 'expo-audio';
 import type { SpeechRate } from '../store/speechSettingsSlice';
 import { enqueueAnnouncement } from './AudioQueueHelper';
+import type { AnnouncementToggles } from './AnnouncementToggles';
 
 // ─── Speech rate mapping ──────────────────────────────────────────────────────
 
@@ -189,16 +190,7 @@ function formatSpeedForSpeech(speedKmh: number): string {
 /**
  * Content toggles used by {@link buildPeriodicAnnouncement}.
  */
-export interface PeriodicAnnouncementContent {
-	announceDistance: boolean;
-	announcePace: boolean;
-	announceDuration: boolean;
-	announceSpeed: boolean;
-	announceCalories: boolean;
-	announceHeartRate: boolean;
-	announcePaceAvg: boolean;
-	announceSpeedAvg: boolean;
-}
+export type PeriodicAnnouncementContent = AnnouncementToggles;
 
 /**
  * Format pace (min/km) as a localised speech string fragment.

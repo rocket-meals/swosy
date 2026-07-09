@@ -13,6 +13,7 @@ import { useSettingsContext } from '../../context/SettingsContext';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
+import type { ModalSheetBaseProps, AffixProps } from '../SettingsList/formFieldTypes';
 import { borderRadiusContainer } from '../../constants/ui';
 
 export interface SettingsListNumberInputProps extends Omit<SettingsListProps, 'onPress' | 'handleFunction'> {
@@ -36,22 +37,18 @@ export interface SettingsListNumberInputProps extends Omit<SettingsListProps, 'o
 	disableLabel?: string;
 }
 
-type ModalSheetProps = {
-	initialValue: number;
-	placeholder: string;
-	saveLabel: string;
-	onSave: (value: number) => void;
-	min?: number;
-	max?: number;
-	step?: number;
-	suffix?: string;
-	prefix?: string;
-	allowDecimal?: boolean;
-	primaryColor: string;
-	allowDisable?: boolean;
-	onDisable?: () => void;
-	disableLabel?: string;
-};
+type ModalSheetProps = ModalSheetBaseProps<number> &
+	AffixProps & {
+		placeholder: string;
+		onSave: (value: number) => void;
+		min?: number;
+		max?: number;
+		step?: number;
+		allowDecimal?: boolean;
+		allowDisable?: boolean;
+		onDisable?: () => void;
+		disableLabel?: string;
+	};
 
 function clamp(value: number, min?: number, max?: number): number {
 	if (min != null && value < min) return min;

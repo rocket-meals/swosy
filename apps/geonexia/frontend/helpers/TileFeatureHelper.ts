@@ -202,11 +202,19 @@ export async function preloadMapStyle(styleUrl: string = DEFAULT_STYLE_URL): Pro
 
 /**
  * Lat/lng axis-aligned bounding box.
+ *
+ * Canonical shape shared by {@link AreaFeatureQueryParams} and
+ * {@link TileFeatureQueryParams} (both intersect this type instead of
+ * redeclaring the same four fields).
  */
 export type LatLngBounds = {
+	/** Southern boundary latitude. */
 	minLat: number;
+	/** Western boundary longitude. */
 	minLng: number;
+	/** Northern boundary latitude. */
 	maxLat: number;
+	/** Eastern boundary longitude. */
 	maxLng: number;
 };
 
@@ -424,15 +432,7 @@ export function calculateOptimalZoom(
 
 // ─── Main public API ────────────────────────────────────────────────────────
 
-export type TileFeatureQueryParams = {
-	/** Southern boundary latitude. */
-	minLat: number;
-	/** Western boundary longitude. */
-	minLng: number;
-	/** Northern boundary latitude. */
-	maxLat: number;
-	/** Eastern boundary longitude. */
-	maxLng: number;
+export type TileFeatureQueryParams = LatLngBounds & {
 	/** Zoom level (typically 14 for street-level detail). */
 	zoom: number;
 	/** Optional style URL override (default: OpenFreeMap Liberty). */
@@ -532,15 +532,7 @@ export async function queryTileFeaturesForHexCell(
 
 // ─── Area-based convenience API (auto-zoom) ─────────────────────────────────
 
-export type AreaFeatureQueryParams = {
-	/** Southern boundary latitude. */
-	minLat: number;
-	/** Western boundary longitude. */
-	minLng: number;
-	/** Northern boundary latitude. */
-	maxLat: number;
-	/** Eastern boundary longitude. */
-	maxLng: number;
+export type AreaFeatureQueryParams = LatLngBounds & {
 	/** Optional style URL override (default: OpenFreeMap Liberty). */
 	styleUrl?: string;
 	/** Optional filter for features with `name === null`. */

@@ -303,9 +303,20 @@ function truncateMarkdown(md: string, charLimit: number): string {
   return truncated + truncationNote;
 }
 
+// Canonicalizes a CLI-controlled path and validates it resolves inside the repo root,
+// so writing the generated markdown can never escape onto an unexpected filesystem location.
+function resolveWithinRepoRoot(candidatePath: string): string {
+  const resolved = path.resolve(candidatePath);
+  const relative = path.relative(repoRoot, resolved);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error(`Path "${candidatePath}" resolves outside of the repository root "${repoRoot}".`);
+  }
+  return resolved;
+}
+
 async function main() {
-  const inputDir = path.resolve(argv['input-dir']);
-  const outputPath = path.resolve(argv['output']);
+  const inputDir = resolveWithinRepoRoot(argv['input-dir']);
+  const outputPath = resolveWithinRepoRoot(argv['output']);
   const maxIssues: number = argv['max-issues'];
   const repoUrl: string = argv['repo-url'];
   const branch: string = argv['branch'];

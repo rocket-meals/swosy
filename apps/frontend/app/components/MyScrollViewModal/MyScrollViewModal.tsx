@@ -3,24 +3,14 @@ import { Platform, View, Text, useWindowDimensions } from 'react-native';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { ScrollViewModalContentProps } from 'repo-depkit-common-ui';
 
-export interface MyScrollViewModalProps {
-  title?: string;
+export interface MyScrollViewModalProps extends ScrollViewModalContentProps {
   closeSheet?: () => void;
-  backgroundColor?: string;
-  children?: ReactNode;
   // For FlatList mode
-  useFlatList?: boolean;
-  data?: any[];
   renderItem?: (info: { item: any; index: number }) => ReactNode;
   keyExtractor?: (item: any, index: number) => string;
-  ListHeaderComponent?: ReactNode;
-  ListFooterComponent?: ReactNode;
-  // Optional additional props
-  showsVerticalScrollIndicator?: boolean;
-  keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
   onClose?: () => void;
-  disableHorizontalPadding?: boolean;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({

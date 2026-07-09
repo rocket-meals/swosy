@@ -95,40 +95,12 @@ export type ActivityReference = {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
- * Persistent record for a single H3 hex tile, tracking visit and enclosure history.
- *
- * `level` is a computed 0–10 score that drives the map colour gradient:
- *   0  = unvisited / never enclosed  → transparent
- *   1  = lightest green (e.g. enclosed once)
- *   10 = darkest green  (e.g. visited 5+ times)
- *
- * Formula: level = min(10, visitCount * 2 + enclosedCount)
+ * Customization fields describing which terrain tile image, billboard(s), and
+ * texture-adaption sprites are configured for a hex tile.
+ * Shared between the persistent `HexTileRecord` and the `HexTileCustomizationPayload`
+ * accepted by `applyMapCustomizations` (see `store/hexTileSlice.ts`).
  */
-export type HexTileRecord = {
-	/** H3 cell index (e.g. "89283082813ffff") */
-	h3Index: string;
-	/** Unix timestamp (ms) of the last time the user passed through this tile */
-	lastVisitedAt: number | null;
-	/** Unix timestamp (ms) of the last time this tile was enclosed by a run loop */
-	lastEnclosedAt: number | null;
-	/** Total number of runs where the user visited this tile */
-	visitCount: number;
-	/** Total number of times this tile was enclosed by a completed run loop */
-	enclosedCount: number;
-	/**
-	 * Number of distinct activities that visited (walked on or enclosed) at
-	 * least one immediately neighbouring tile (ring-1 H3 disk neighbours,
-	 * excluding the tile itself).
-	 * Computed during the world-rebuild phase; not updated in real-time.
-	 */
-	avenueCount: number;
-	/** Colour level 0–10, recomputed after each update */
-	level: number;
-	/**
-	 * Whether the user has physically walked on this tile (i.e. GPS tracked).
-	 * Tiles that are only enclosed (but not walked on) remain false.
-	 */
-	walkedOn: boolean;
+export type HexTileCustomizationFields = {
 	/**
 	 * Key of the selected terrain tile image (e.g. "Grass/grass_01").
 	 * Null or undefined means no custom tile image.
@@ -170,6 +142,43 @@ export type HexTileRecord = {
 	 * fill and the Hex Objects in the render stack.
 	 */
 	billboardsTexture?: Record<string, string | null>;
+};
+
+/**
+ * Persistent record for a single H3 hex tile, tracking visit and enclosure history.
+ *
+ * `level` is a computed 0–10 score that drives the map colour gradient:
+ *   0  = unvisited / never enclosed  → transparent
+ *   1  = lightest green (e.g. enclosed once)
+ *   10 = darkest green  (e.g. visited 5+ times)
+ *
+ * Formula: level = min(10, visitCount * 2 + enclosedCount)
+ */
+export type HexTileRecord = {
+	/** H3 cell index (e.g. "89283082813ffff") */
+	h3Index: string;
+	/** Unix timestamp (ms) of the last time the user passed through this tile */
+	lastVisitedAt: number | null;
+	/** Unix timestamp (ms) of the last time this tile was enclosed by a run loop */
+	lastEnclosedAt: number | null;
+	/** Total number of runs where the user visited this tile */
+	visitCount: number;
+	/** Total number of times this tile was enclosed by a completed run loop */
+	enclosedCount: number;
+	/**
+	 * Number of distinct activities that visited (walked on or enclosed) at
+	 * least one immediately neighbouring tile (ring-1 H3 disk neighbours,
+	 * excluding the tile itself).
+	 * Computed during the world-rebuild phase; not updated in real-time.
+	 */
+	avenueCount: number;
+	/** Colour level 0–10, recomputed after each update */
+	level: number;
+	/**
+	 * Whether the user has physically walked on this tile (i.e. GPS tracked).
+	 * Tiles that are only enclosed (but not walked on) remain false.
+	 */
+	walkedOn: boolean;
 	/**
 	 * Back-references to the activities that contributed to this tile's
 	 * visit/enclosure counts.  There is at most one entry per activity.
@@ -193,7 +202,7 @@ export type HexTileRecord = {
 	 * Populated automatically during map rebuild.
 	 */
 	parentChildIndex?: number | null;
-};
+} & HexTileCustomizationFields;
 
 // ─── Level computation ────────────────────────────────────────────────────────
 

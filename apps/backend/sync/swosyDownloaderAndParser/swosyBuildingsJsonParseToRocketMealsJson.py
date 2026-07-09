@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 def parse_swosy_to_rocket_meals(swosy_data):
@@ -65,4 +66,5 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 script.py path_to_swosy_json")
     else:
-        main(sys.argv[1])
+        # Canonicalize the CLI-controlled path (resolves "..", symlinks) before it is opened.
+        main(os.path.realpath(sys.argv[1]))

@@ -7,19 +7,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsList, useTheme } from 'repo-depkit-common-ui';
 
 import { TERRAIN_ASSETS, TerrainAssetEntry } from '../../assets/terrainAssets';
+import { SettingsListSelectablePressableItemProps } from '../SettingsListSharedProps';
 
-type Props = {
+type Props = SettingsListSelectablePressableItemProps & {
 	/** Tile image key (e.g. "Grass/grass"), or null if nothing selected. */
 	tileImageKey: string | null;
-	/** Label shown as the row title. */
-	title?: string;
-	/** Called when the row is pressed (e.g. to open a selection modal). */
-	onPress?: () => void;
-	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-	/** When true, renders a filled radio button on the right side. */
-	isSelected?: boolean;
-	/** Color used for the radio button when isSelected is true. */
-	selectionColor?: string;
 };
 
 const THUMB_SIZE = 32;

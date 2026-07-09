@@ -8,8 +8,9 @@ import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
+import type { FormFieldStatusProps, AffixProps } from 'repo-depkit-common-ui';
 
-export interface DropdownSheetProps {
+export interface DropdownSheetProps extends FormFieldStatusProps, AffixProps {
   closeSheet: () => void;
   options: string[];
   allowCustomValues: boolean;
@@ -17,10 +18,6 @@ export interface DropdownSheetProps {
   onSelectOption: (val: string) => void;
   onSelectCustom: (val: string) => void; // will pass current custom text
   onDeselect: () => void;
-  isDisabled?: boolean;
-  prefix?: string | null;
-  suffix?: string | null;
-  error?: string;
 }
 
 const ensureStringArray = (options: string[]): string[] => {

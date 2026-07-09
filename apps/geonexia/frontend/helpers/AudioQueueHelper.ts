@@ -1,13 +1,10 @@
 import * as Speech from 'expo-speech';
-import { appendTTSLogEntry } from './TTSLogStorage';
+import { appendTTSLogEntry, SpokenTextFields } from './TTSLogStorage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface QueueItem {
-	text: string;
-	languageCode: string;
+interface QueueItem extends SpokenTextFields {
 	options?: Omit<Speech.SpeechOptions, 'language' | 'onDone' | 'onError' | 'onStopped'>;
-	source: string;
 }
 
 // ─── Module-level queue state ─────────────────────────────────────────────────

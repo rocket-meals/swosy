@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
+import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
@@ -168,7 +169,7 @@ function ManualActivityContent({
 		}
 
 		const activity: SavedActivity = {
-			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
+			id: `${startedAt}-${generateRandomIdSuffix()}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
 			routePoints,

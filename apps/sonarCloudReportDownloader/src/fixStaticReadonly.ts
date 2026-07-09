@@ -36,7 +36,15 @@ for (const line of lines) {
   const componentPath = match[1];
   const lineNumber = Number.parseInt(match[2], 10);
   const fileRelPath = componentPath.split(':')[1];
-  const filePath = path.join(rootDir, fileRelPath);
+  const filePath = path.resolve(rootDir, fileRelPath);
+
+  // The CSV report is external, downloaded input; validate the path it points at stays
+  // inside rootDir before this script reads/overwrites it.
+  const relativeToRoot = path.relative(rootDir, filePath);
+  if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
+    console.warn(`Skipping path outside root directory: ${filePath}`);
+    continue;
+  }
 
   if (!fs.existsSync(filePath)) {
     console.warn(`File not found: ${filePath}`);

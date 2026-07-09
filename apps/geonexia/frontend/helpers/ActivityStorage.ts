@@ -1,5 +1,5 @@
 import { Directory, File, Paths } from 'expo-file-system';
-import { SportType } from '../store/sportTypeSlice';
+import type { RedLineRouteFields, RecordingSessionFields } from './ActivityRouteSharedTypes';
 
 // ─── Weather & Rating types ───────────────────────────────────────────────────
 
@@ -44,6 +44,20 @@ export type ComputedHexTileEntry = {
 };
 
 /**
+ * Min/max/average speed observed over some span of GPS points.
+ * Shared by `ComputedActivityData` and `RunStats`, which both track the same
+ * three speed metrics for an activity.
+ */
+export type SpeedStats = {
+	/** Maximum speed in km/h observed during the activity */
+	maxSpeedKmh: number;
+	/** Minimum speed in km/h observed during the activity */
+	minSpeedKmh: number;
+	/** Average speed in km/h during the activity */
+	avgSpeedKmh: number;
+};
+
+/**
  * Pre-computed data derived from an activity's raw GPS points.
  * Stored alongside the activity to avoid re-processing the full point array.
  *
@@ -51,13 +65,7 @@ export type ComputedHexTileEntry = {
  *  1. Immediately after a recording is stopped.
  *  2. Whenever the map is rebuilt from activity history.
  */
-export type ComputedActivityData = {
-	/** Maximum speed in km/h observed during the activity */
-	maxSpeedKmh: number;
-	/** Minimum speed in km/h observed during the activity */
-	minSpeedKmh: number;
-	/** Average speed in km/h during the activity */
-	avgSpeedKmh: number;
+export type ComputedActivityData = SpeedStats & {
 	/**
 	 * Ordered sequence of hex tiles visited during the activity, each paired
 	 * with the average GPS speed recorded while inside that tile.
@@ -85,13 +93,10 @@ export type RoutePoint = {
 	interpolated?: boolean;
 };
 
-export type RunStats = {
+export type RunStats = SpeedStats & {
 	distanceKm: number;
 	durationSeconds: number;
 	paceMinPerKm: number;
-	maxSpeedKmh: number;
-	minSpeedKmh: number;
-	avgSpeedKmh: number;
 	medianSpeedKmh: number;
 	kcal: number;
 	steps: number;
@@ -100,97 +105,62 @@ export type RunStats = {
 	fluidNeedsMl: number;
 };
 
-export type SavedActivity = {
-	id: string;
-	startedAt: number;
-	endedAt: number;
-	routePoints: RoutePoint[];
-	stats: RunStats;
-	/** Sport type recorded for this activity. Optional for backward-compat with older saves. */
-	sportType?: SportType;
-	/** H3 resolution used during recording. Optional for backward-compat with older saves. */
-	h3Resolution?: number;
-	/** Number of hex tiles visited (walked on) during the activity. Optional for backward-compat. */
-	visitedTileCount?: number;
-	/** Number of hex tiles enclosed by the activity route. Optional for backward-compat. */
-	enclosedTileCount?: number;
-	/**
-	 * Ordered sequence of H3 hex tile indices visited during the activity.
-	 * This is a coarser representation of the route (not the raw GPS data).
-	 * Each tile appears only once, in the order it was first entered.
-	 * Optional for backward-compat with older saves.
-	 */
-	hexTilesOrdered?: string[];
-	/**
-	 * H3 cell indices that were enclosed by the completed route loop but were
-	 * not physically walked on during the activity.
-	 * Optional for backward-compat with older saves.
-	 */
-	enclosedHexTiles?: string[];
-	/**
-	 * @deprecated Use `enclosedHexTiles` instead.
-	 * Kept for reading activities saved by older app versions.
-	 */
-	hexTilesEnclosed?: string[];
-	/**
-	 * ID of the saved route this activity was matched or assigned to.
-	 * - `undefined` (field absent): the user has not yet been asked to assign a route.
-	 * - `null`: the user explicitly chose not to assign any route.
-	 * - `string`: the ID of the assigned `SavedRoute`.
-	 */
-	routeId?: string | null;
-	/**
-	 * Device battery level at the start of the activity (0–1, where 1 = 100%).
-	 * Optional for backward-compat with older saves.
-	 */
-	batteryLevelStart?: number | null;
-	/**
-	 * Device battery level at the end of the activity (0–1, where 1 = 100%).
-	 * Optional for backward-compat with older saves.
-	 */
-	batteryLevelEnd?: number | null;
-	/**
-	 * Pre-computed data derived from the raw GPS points and the route geometry.
-	 * Generated when the activity is saved and when the map is rebuilt.
-	 * Optional for backward-compat with older saves.
-	 */
-	computed?: ComputedActivityData;
-	/**
-	 * Weather temperature in °C at the time of the activity.
-	 * Optional – user can set this manually after the activity.
-	 */
-	weatherTemperature?: number | null;
-	/**
-	 * Weather condition type during the activity.
-	 * Optional – user can set this manually after the activity.
-	 */
-	weatherType?: WeatherType | null;
-	/**
-	 * User rating of the activity (1–5 stars).
-	 * Optional – user can rate the activity afterwards.
-	 */
-	rating?: ActivityRating | null;
-	/**
-	 * Whether this activity was created manually (duration-only, no GPS data).
-	 * Manual activities only have a duration and are assigned to an existing route.
-	 */
-	isManual?: boolean;
-	/**
-	 * Ordered H3 cell transitions at the red-line resolution, stored as
-	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
-	 * Used to draw the red walk-path line at a finer granularity than the h10
-	 * tile centres.  Computed from `routePoints` and cached here.
-	 * Optional for backward-compat with older saves that lack this field.
-	 */
-	walkedEdgesRedLine?: string[];
-	/**
-	 * H3 resolution used to compute `walkedEdgesRedLine`.
-	 * Stored alongside the edges so consumers do not need to hard-code the
-	 * resolution — the field is the single source of truth.
-	 * Optional for backward-compat with older saves that lack this field.
-	 */
-	walkedEdgesRedLineResolution?: number;
-};
+export type SavedActivity = RedLineRouteFields &
+	RecordingSessionFields & {
+		endedAt: number;
+		stats: RunStats;
+		/** Number of hex tiles visited (walked on) during the activity. Optional for backward-compat. */
+		visitedTileCount?: number;
+		/** Number of hex tiles enclosed by the activity route. Optional for backward-compat. */
+		enclosedTileCount?: number;
+		/**
+		 * H3 cell indices that were enclosed by the completed route loop but were
+		 * not physically walked on during the activity.
+		 * Optional for backward-compat with older saves.
+		 */
+		enclosedHexTiles?: string[];
+		/**
+		 * @deprecated Use `enclosedHexTiles` instead.
+		 * Kept for reading activities saved by older app versions.
+		 */
+		hexTilesEnclosed?: string[];
+		/**
+		 * Device battery level at the start of the activity (0–1, where 1 = 100%).
+		 * Optional for backward-compat with older saves.
+		 */
+		batteryLevelStart?: number | null;
+		/**
+		 * Device battery level at the end of the activity (0–1, where 1 = 100%).
+		 * Optional for backward-compat with older saves.
+		 */
+		batteryLevelEnd?: number | null;
+		/**
+		 * Pre-computed data derived from the raw GPS points and the route geometry.
+		 * Generated when the activity is saved and when the map is rebuilt.
+		 * Optional for backward-compat with older saves.
+		 */
+		computed?: ComputedActivityData;
+		/**
+		 * Weather temperature in °C at the time of the activity.
+		 * Optional – user can set this manually after the activity.
+		 */
+		weatherTemperature?: number | null;
+		/**
+		 * Weather condition type during the activity.
+		 * Optional – user can set this manually after the activity.
+		 */
+		weatherType?: WeatherType | null;
+		/**
+		 * User rating of the activity (1–5 stars).
+		 * Optional – user can rate the activity afterwards.
+		 */
+		rating?: ActivityRating | null;
+		/**
+		 * Whether this activity was created manually (duration-only, no GPS data).
+		 * Manual activities only have a duration and are assigned to an existing route.
+		 */
+		isManual?: boolean;
+	};
 
 // ─── Storage directories and files ───────────────────────────────────────────
 

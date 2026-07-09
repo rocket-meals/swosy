@@ -18,6 +18,7 @@ import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
+import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
 import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, applyRouteBenches, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
@@ -182,7 +183,7 @@ function ManualActivityDurationContent({
 		}
 
 		const activity: SavedActivity = {
-			id: `${startedAt}-${Math.random().toString(36).substring(2, 9)}`,
+			id: `${startedAt}-${generateRandomIdSuffix()}`,
 			startedAt,
 			endedAt: startedAt + totalSeconds * 1000,
 			routePoints,

@@ -1,16 +1,14 @@
 import { chromium } from 'playwright';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { DirectusConnectionOptions } from './DirectusConnectionOptions';
 
 const EMAIL_INPUT_SELECTOR = 'input[type="email"], input[name="email"], #email';
 const PASSWORD_INPUT_SELECTOR = 'input[type="password"], input[name="password"], #password';
 const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"], [type="submit"], button:has-text("Sign In"), button:has-text("Login"), button:has-text("Anmelden")';
 const DOWNLOAD_BUTTON_SELECTOR = 'button:has-text("Download"), a:has-text("Download"), [data-test="download"], .download-button';
 
-export interface DirectusTypeDownloaderOptions {
-  directusInstanceUrl: string;
-  adminEmail: string;
-  adminPassword: string;
+export interface DirectusTypeDownloaderOptions extends DirectusConnectionOptions {
   targetTypesFilePath: string;
 }
 

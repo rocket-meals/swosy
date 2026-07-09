@@ -20,6 +20,7 @@ export { CommonUiComponentIds } from './src/constants/ComponentIds';
 // Components
 export { default as SettingsList } from './src/components/SettingsList';
 export type { SettingsListProps, SettingsListItemBaseProps } from './src/components/SettingsList';
+export type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps, TextInputAppearanceProps } from './src/components/SettingsList/formFieldTypes';
 
 export { default as SettingsListBoolean } from './src/components/SettingsListBoolean';
 export type { SettingsListBooleanProps } from './src/components/SettingsListBoolean';
@@ -37,7 +38,7 @@ export { default as SettingsListSelectOption } from './src/components/SettingsLi
 export type { SettingsListSelectOptionProps, SettingsListSelectOptionItem } from './src/components/SettingsListSelectOption';
 
 export { default as SettingsListLikeDislikeFast } from './src/components/SettingsListLikeDislikeFast';
-export type { SettingsListLikeDislikeFastProps } from './src/components/SettingsListLikeDislikeFast';
+export type { SettingsListLikeDislikeFastProps, LikeDislikeCoreProps } from './src/components/SettingsListLikeDislikeFast';
 
 export { default as SettingsListLikeButton } from './src/components/SettingsListLikeButton';
 export type { SettingsListLikeButtonProps } from './src/components/SettingsListLikeButton';
@@ -58,10 +59,10 @@ export { default as SettingsListNumberInput } from './src/components/SettingsLis
 export type { SettingsListNumberInputProps } from './src/components/SettingsListNumberInput';
 
 export { default as AppDrawer } from './src/components/AppDrawer';
-export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
+export type { AppDrawerProps, DrawerItem, DrawerItemBaseFields } from './src/components/AppDrawer';
 
 export { default as MyMap } from './src/components/MyMap';
-export type { MyMapHandle, MyMapProps } from './src/components/MyMap';
+export type { MyMapHandle, MyMapProps, MyMapCoreProps } from './src/components/MyMap';
 export { MapColorKey, MapStyleKey, MAP_STYLE_DEFINITIONS, LIBERTY_STYLE_URL, getMapStyleDefinitions } from './src/components/MyMap/MyMapHelper';
 export type { MapColorMap, MapStyleDefinition } from './src/components/MyMap/MyMapHelper';
 
@@ -76,7 +77,7 @@ export { default as BaseBottomSheet } from './src/components/BaseBottomSheet';
 export type { BaseBottomSheetProps } from './src/components/BaseBottomSheet';
 
 export { default as MyScrollViewModal } from './src/components/MyScrollViewModal';
-export type { MyScrollViewModalProps } from './src/components/MyScrollViewModal';
+export type { MyScrollViewModalProps, ScrollViewModalContentProps } from './src/components/MyScrollViewModal';
 
 export { ModalProvider, ModalContextProvider, ModalRenderer, useModalContext } from './src/components/GlobalModal/ModalProvider';
 export { useModal } from './src/components/GlobalModal/useModal';
@@ -100,7 +101,7 @@ export type { SettingsListMyMapThemeSelectionProps } from './src/components/Sett
 
 export { default as MyAvatar, STYLE_MAP } from './src/components/MyAvatar';
 export { AvatarStyle, AvatarSize } from './src/components/MyAvatar';
-export type { MyAvatarProps, AvatarConfig } from './src/components/MyAvatar';
+export type { MyAvatarProps, AvatarConfig, AvatarAppearanceProps } from './src/components/MyAvatar';
 
 export { useAvatarEditorModal, AvatarPropKey, MICAH_PRESETS, presetToConfig, generateRandomAvatarConfig } from './src/components/MyAvatarEditor';
 export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps, AvatarPreset } from './src/components/MyAvatarEditor';

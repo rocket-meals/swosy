@@ -1,5 +1,11 @@
 import { PropsWithChildren } from 'react';
 
+export type SettingsListSelectableItemBase<T> = {
+	id: T;
+	label: string;
+	icon?: React.ReactNode;
+};
+
 export type SettingsListItemBaseProps = {
 	leftIcon?: React.ReactNode;
 	iconBgColor?: string;

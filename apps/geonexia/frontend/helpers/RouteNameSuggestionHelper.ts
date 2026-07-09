@@ -18,9 +18,12 @@ import { translateClass, translateSubclass } from '../hooks/useTranslation';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-/** Single map-feature record as returned by the map's queryRenderedFeatures. */
-export type MapFeatureInfo = {
-	layerId: string | null;
+/**
+ * OpenMapTiles classification fields shared by every map-feature record,
+ * regardless of whether it represents a single raw feature ({@link MapFeatureInfo})
+ * or an aggregated area-info entry ({@link AreaInfoEntry}).
+ */
+export type MapFeatureClassificationFields = {
 	name: string | null;
 	class: string | null;
 	subclass: string | null;
@@ -34,22 +37,17 @@ export type MapFeatureInfo = {
 	count: number;
 };
 
+/** Single map-feature record as returned by the map's queryRenderedFeatures. */
+export type MapFeatureInfo = MapFeatureClassificationFields & {
+	layerId: string | null;
+};
+
 /**
  * Aggregated entry inside an area-info dictionary.
  * The key of the dict is `layerId + '::' + (name ?? '')`.
  */
-export type AreaInfoEntry = {
+export type AreaInfoEntry = MapFeatureClassificationFields & {
 	layerId: string;
-	name: string | null;
-	count: number;
-	class: string | null;
-	subclass: string | null;
-	highway: string | null;
-	waterway: string | null;
-	building: string | null;
-	natural: string | null;
-	landuse: string | null;
-	amenity: string | null;
 };
 
 /** Dict keyed by `layerId::name` holding aggregated feature counts. */

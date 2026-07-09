@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import json
+import os
 import sys
 
 def parse_kml(file_path):
@@ -34,8 +35,10 @@ if __name__ == "__main__":
         print("Usage: python script.py <input_kml_file> <output_json_file>")
         sys.exit(1)
 
-    input_kml_file = sys.argv[1]
-    output_json_file = sys.argv[2]
+    # Canonicalize the CLI-controlled paths (resolves "..", symlinks) before they are used
+    # to read/write files below.
+    input_kml_file = os.path.realpath(sys.argv[1])
+    output_json_file = os.path.realpath(sys.argv[2])
 
     parsed_data = parse_kml(input_kml_file)
     write_json(parsed_data, output_json_file)

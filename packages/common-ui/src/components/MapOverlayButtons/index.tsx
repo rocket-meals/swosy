@@ -4,11 +4,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import type { MyMapHandle } from '../MyMap/MyMapHelper';
 
-export interface MapNorthButtonProps {
+/** Shared appearance/target-map props for the small circular map overlay buttons in this file. */
+export interface MapOverlayButtonBaseProps {
 	mapRef: React.RefObject<MyMapHandle | null>;
 	backgroundColor?: string;
 	iconColor?: string;
 }
+
+export type MapNorthButtonProps = MapOverlayButtonBaseProps;
 
 export function MapNorthButton({ mapRef, backgroundColor = '#ffffff', iconColor = '#555555' }: MapNorthButtonProps) {
 	const handlePress = useCallback(() => {
@@ -22,10 +25,7 @@ export function MapNorthButton({ mapRef, backgroundColor = '#ffffff', iconColor 
 	);
 }
 
-export interface MapLocationButtonProps {
-	mapRef: React.RefObject<MyMapHandle | null>;
-	backgroundColor?: string;
-	iconColor?: string;
+export interface MapLocationButtonProps extends MapOverlayButtonBaseProps {
 	activeColor?: string;
 	onLocationFound?: (location: { lat: number; lng: number }) => void;
 	/**

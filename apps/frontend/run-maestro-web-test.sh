@@ -48,7 +48,9 @@ echo ""
 # 1. Start Expo web dev server in the background (output suppressed)
 # ---------------------------------------------------------------------------
 echo "Starting Expo web dev server..."
-(cd "$SCRIPT_DIR/app" && BROWSER=none npx expo start --web --non-interactive) > /dev/null 2>&1 &
+# Use the pinned "expo" dependency already installed in node_modules, instead of "npx expo"
+# which can fetch and run an on-demand, unpinned package version.
+(cd "$SCRIPT_DIR/app" && BROWSER=none yarn expo start --web --non-interactive) > /dev/null 2>&1 &
 WEB_PID=$!
 
 # Stop the dev server (and any child processes) when the script exits
@@ -85,7 +87,14 @@ echo ""
 # ---------------------------------------------------------------------------
 if ! command -v maestro &> /dev/null; then
     echo "Maestro CLI not found – installing..."
-    curl -fsSL "https://get.maestro.mobile.dev" | bash
+    # Download to a file first (instead of piping straight into bash) so the installer can be
+    # sanity-checked before it is executed, and pin the transport to TLS.
+    MAESTRO_INSTALLER="$(mktemp)"
+    curl -fsSL --proto '=https' --tlsv1.2 -o "$MAESTRO_INSTALLER" "https://get.maestro.mobile.dev"
+    [ -s "$MAESTRO_INSTALLER" ] || { echo "ERROR: Downloaded Maestro installer is empty."; exit 1; }
+    head -n1 "$MAESTRO_INSTALLER" | grep -q '^#!' || { echo "ERROR: Downloaded Maestro installer does not look like a shell script."; exit 1; }
+    bash "$MAESTRO_INSTALLER"
+    rm -f "$MAESTRO_INSTALLER"
     export PATH="$HOME/.maestro/bin:$PATH"
 fi
 

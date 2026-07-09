@@ -1,12 +1,26 @@
 import { promises as fs } from 'fs';
+import path from 'path';
 import sharp from 'sharp';
 import { Browser } from 'puppeteer';
 import { Device } from './devices';
 import { StringHelper } from 'repo-depkit-common';
 
+// screenshotDir comes from a CLI flag / env var (SCREENSHOT_DIR). Canonicalize it and refuse
+// to operate on the filesystem root or its immediate children, so a misconfigured value can
+// never turn deleteAllScreenshots()'s recursive rm into a catastrophic delete.
+function canonicalizeAndGuardDirPath(dirPath: string): string {
+  const resolved = path.resolve(dirPath);
+  const segments = resolved.split(path.sep).filter(Boolean);
+  if (segments.length < 2) {
+    throw new Error(`Refusing to operate on suspiciously shallow path: "${resolved}"`);
+  }
+  return resolved;
+}
+
 export async function createDirIfNotExists(dirOrFilePath: string) {
   const dirPath = dirOrFilePath.endsWith('/') ? dirOrFilePath : dirOrFilePath.substring(0, dirOrFilePath.lastIndexOf('/'));
-  await fs.mkdir(dirPath, { recursive: true }).catch(console.error);
+  const safeDirPath = canonicalizeAndGuardDirPath(dirPath);
+  await fs.mkdir(safeDirPath, { recursive: true }).catch(console.error);
 }
 
 export async function createScreenshotUncompressed(url: string, device: Device, fileName: string, darkMode: boolean, browser: Browser) {
@@ -68,8 +82,9 @@ export function printEstimatedTime(startDate: Date, currentScreenshot: number, t
 
 export async function deleteAllScreenshots(dir: string) {
   try {
-    console.log(`Deleted all screenshots in folder: ${dir}`);
-    await fs.rm(dir, { recursive: true, force: true });
+    const safeDir = canonicalizeAndGuardDirPath(dir);
+    console.log(`Deleted all screenshots in folder: ${safeDir}`);
+    await fs.rm(safeDir, { recursive: true, force: true });
   } catch (error) {
     console.error('Error deleting screenshots:', error);
   }

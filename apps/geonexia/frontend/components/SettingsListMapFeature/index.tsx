@@ -4,13 +4,11 @@ import { SettingsList } from 'repo-depkit-common-ui';
 
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { translateLayerId, translateClass, translateSubclass } from '../../hooks/useTranslation';
+import { SettingsListPressableItemProps } from '../SettingsListSharedProps';
 
-type Props = {
+type Props = SettingsListPressableItemProps & {
 	feature: MapFeatureInfo;
 	count: number;
-	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-	showSeparator?: boolean;
-	onPress?: () => void;
 	iconBackgroundColor?: string;
 };
 

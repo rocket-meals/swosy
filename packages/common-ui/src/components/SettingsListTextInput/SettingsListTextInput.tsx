@@ -18,6 +18,7 @@ import { useSettingsContext } from '../../context/SettingsContext';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
+import type { ModalSheetBaseProps, TextInputAppearanceProps } from '../SettingsList/formFieldTypes';
 import { borderRadiusContainer } from '../../constants/ui';
 import SettingsListSelectOption from '../SettingsListSelectOption';
 
@@ -58,23 +59,17 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 }
 
-type ModalSheetProps = {
-	initialValue: string;
-	placeholder: string;
-	saveLabel: string;
-	onSave: (value: string) => void;
-	multiline?: boolean;
-	keyboardType?: KeyboardTypeOptions;
-	numberOfLines?: number;
-	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
-	inputStyle?: object;
-	autoFocus?: boolean;
-	checkTextInput?: CheckTextInput;
-	allowSubmitWhenDisabled?: boolean;
-	primaryColor: string;
-	suggestions?: SettingsListTextInputSuggestion[];
-	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
-};
+type ModalSheetProps = ModalSheetBaseProps<string> &
+	TextInputAppearanceProps & {
+		onSave: (value: string) => void;
+		multiline?: boolean;
+		numberOfLines?: number;
+		textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
+		checkTextInput?: CheckTextInput;
+		allowSubmitWhenDisabled?: boolean;
+		suggestions?: SettingsListTextInputSuggestion[];
+		renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
+	};
 
 const ModalSheet: React.FC<ModalSheetProps> = ({
 	initialValue,

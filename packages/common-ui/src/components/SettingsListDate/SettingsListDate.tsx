@@ -6,24 +6,22 @@ import { useSettingsContext } from '../../context/SettingsContext';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListEditable from '../SettingsListEditable/SettingsListEditable';
 import type { SettingsListProps } from '../SettingsList/types';
+import type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps } from '../SettingsList/formFieldTypes';
 import type { PropsWithChildren } from 'react';
 import { borderRadiusContainer } from '../../constants/ui';
 
-type SettingsListDatePropsOwn = {
-	id: string;
-	value: string;
-	onChange: (id: string, value: string, custom_type?: string) => void;
-	onError: (id: string, error: string) => void;
-	error?: string;
-	custom_type?: string;
-	isDisabled?: boolean;
-	label?: string;
-	placeholder?: string;
-	editable?: boolean;
-	prefix?: string;
-	suffix?: string;
-	saveLabel?: string;
-};
+type SettingsListDatePropsOwn = FormFieldStatusProps &
+	AffixProps & {
+		id: string;
+		value: string;
+		onChange: (id: string, value: string, custom_type?: string) => void;
+		onError: (id: string, error: string) => void;
+		custom_type?: string;
+		label?: string;
+		placeholder?: string;
+		editable?: boolean;
+		saveLabel?: string;
+	};
 
 export type SettingsListDateProps = PropsWithChildren<
 	Omit<
@@ -45,11 +43,8 @@ function formatDateParts(day: string, month: string, year: string): string {
 	return `${day}.${month}.${year}`;
 }
 
-type DatePickerSheetProps = {
-	initialValue: string;
+type DatePickerSheetProps = ModalSheetBaseProps<string> & {
 	onConfirm: (value: string) => void;
-	primaryColor: string;
-	saveLabel: string;
 };
 
 const DatePickerSheet: React.FC<DatePickerSheetProps> = ({

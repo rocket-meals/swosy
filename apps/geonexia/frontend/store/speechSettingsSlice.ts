@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { AnnouncementToggles } from '../helpers/AnnouncementToggles';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -39,20 +40,9 @@ export type SpeechSettingsState = {
 	/** Vibrate at the specified distance interval */
 	vibrationAtDistance: boolean;
 
-	// ─── Announcement content toggles ─────────────────────────────────────────
-	announceDistance: boolean;
-	announcePace: boolean;
-	announceDuration: boolean;
-	announceSpeed: boolean;
-	announceCalories: boolean;
-	announceHeartRate: boolean;
-	/** Announce average pace (min/km) in periodic updates */
-	announcePaceAvg: boolean;
-	/** Announce average speed (km/h, derived from avg pace) in periodic updates */
-	announceSpeedAvg: boolean;
 	/** Announce when the app moves to the background during a recording */
 	announceAppInBackground: boolean;
-};
+} & AnnouncementToggles;
 
 export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	enabled: true,

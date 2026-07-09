@@ -81,7 +81,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, getStyleProbabilityKeys } from '../MyAvatar';
+import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
@@ -605,42 +605,50 @@ function stripHashPrefix(color: string): string {
 /** Size used for avatar previews inside selection modals. */
 const PREVIEW_AVATAR_SIZE = 100;
 
-type AvatarEditorModalContentProps = {
-	initialConfig: AvatarConfig;
+/**
+ * Avatar preview appearance, forwarded unchanged from the top-level editor/MyAvatar caller
+ * down through nearly every sub-component in this file (sticky header, pickers, presets, ...).
+ */
+type AvatarPreviewAppearanceProps = AvatarAppearanceProps & {
 	accentColor?: string;
-	configObservable: ConfigObservable;
-	configRef: React.MutableRefObject<AvatarConfig>;
+};
+
+/**
+ * Editor-wide behaviour/config, forwarded unchanged from the top-level editor options down into
+ * the content components that need it.
+ */
+type AvatarEditorBehaviorProps = {
 	debugMode?: boolean;
-	/** Allowed avatar styles. If only one is provided, the style selector is hidden. */
-	allowedStyles?: AvatarStyle[];
-	/** Show an "Apply" button at the top to accept changes and close. */
-	showApplyButton?: boolean;
-	/** Called when the user presses "Apply". */
-	onApply?: () => void;
-	/** Called whenever the user makes any change in the editor. Used to track dirty state. */
-	onChange?: () => void;
-	/** Called when the user presses "Reset changes". After resetting, config is restored to initialConfig. */
-	onReset?: () => void;
-	/** Called when the user presses "Delete". */
-	onDelete?: () => void;
 	/**
 	 * Props that are always injected into the avatar config with a fixed value
 	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
 	 */
 	hiddenProps?: Record<string, string>;
-	/** Forwarded from the caller's MyAvatar: when true (default), previews are circles. */
-	rounded?: boolean;
-	/** Forwarded from the caller's MyAvatar: background colour shown behind previews. */
-	backgroundColor?: string;
 	/** Translation function for localising section headers, buttons, and category labels. */
 	translate?: (key: string) => string;
 };
 
-type AvatarStickyHeaderProps = {
+type AvatarEditorModalContentProps = AvatarPreviewAppearanceProps &
+	AvatarEditorBehaviorProps & {
+		initialConfig: AvatarConfig;
+		configObservable: ConfigObservable;
+		configRef: React.MutableRefObject<AvatarConfig>;
+		/** Allowed avatar styles. If only one is provided, the style selector is hidden. */
+		allowedStyles?: AvatarStyle[];
+		/** Show an "Apply" button at the top to accept changes and close. */
+		showApplyButton?: boolean;
+		/** Called when the user presses "Apply". */
+		onApply?: () => void;
+		/** Called whenever the user makes any change in the editor. Used to track dirty state. */
+		onChange?: () => void;
+		/** Called when the user presses "Reset changes". After resetting, config is restored to initialConfig. */
+		onReset?: () => void;
+		/** Called when the user presses "Delete". */
+		onDelete?: () => void;
+	};
+
+type AvatarStickyHeaderProps = AvatarPreviewAppearanceProps & {
 	configObservable: ConfigObservable;
-	accentColor?: string;
-	rounded?: boolean;
-	backgroundColor?: string;
 };
 
 const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservable, accentColor, rounded, backgroundColor }) => {
@@ -672,12 +680,9 @@ const AvatarStickyHeader: React.FC<AvatarStickyHeaderProps> = ({ configObservabl
 	);
 };
 
-type AvatarStickyHeaderConditionalProps = {
+type AvatarStickyHeaderConditionalProps = AvatarPreviewAppearanceProps & {
 	modeObservable: ModeObservable;
 	configObservable: ConfigObservable;
-	accentColor?: string;
-	rounded?: boolean;
-	backgroundColor?: string;
 };
 
 const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps> = ({
@@ -698,17 +703,14 @@ const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps
 	return <AvatarStickyHeader configObservable={configObservable} accentColor={accentColor} rounded={rounded} backgroundColor={backgroundColor} />;
 };
 
-type ColorPickerModalContentProps = {
-	colors: string[];
-	initialSelectedColor: string | null;
-	onSelectAndClose: (color: string) => void;
-	accentColor?: string;
-	config: AvatarConfig;
-	colorKey: string;
-	rounded?: boolean;
-	backgroundColor?: string;
-	debugMode?: boolean;
-};
+type ColorPickerModalContentProps = AvatarPreviewAppearanceProps &
+	Pick<AvatarEditorBehaviorProps, 'debugMode'> & {
+		colors: string[];
+		initialSelectedColor: string | null;
+		onSelectAndClose: (color: string) => void;
+		config: AvatarConfig;
+		colorKey: string;
+	};
 
 const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	colors,
@@ -779,13 +781,10 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	);
 };
 
-type StylePickerModalContentProps = {
+type StylePickerModalContentProps = AvatarPreviewAppearanceProps & {
 	currentStyle: AvatarStyle;
 	onSelectAndClose: (style: AvatarStyle) => void;
-	accentColor?: string;
 	allowedStyles?: AvatarStyle[];
-	rounded?: boolean;
-	backgroundColor?: string;
 };
 
 const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
@@ -836,15 +835,12 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	);
 };
 
-type ComponentPickerModalContentProps = {
+type ComponentPickerModalContentProps = AvatarPreviewAppearanceProps & {
 	categoryKey: string;
 	values: string[];
 	currentValue: string | null;
 	config: AvatarConfig;
 	onSelectAndClose: (value: string) => void;
-	accentColor?: string;
-	rounded?: boolean;
-	backgroundColor?: string;
 };
 
 const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = ({
@@ -2017,16 +2013,13 @@ function getPresetsForStyle(style: AvatarStyle, size: AvatarSize): AvatarConfig[
 /** Size used for preset grid avatars. */
 const PRESET_AVATAR_SIZE = 72;
 
-type PresetSelectionModalContentProps = {
-	allowedStyles: AvatarStyle[];
-	size: AvatarSize;
-	accentColor?: string;
-	onSelectPreset: (config: AvatarConfig) => void;
-	onCustomize: () => void;
-	rounded?: boolean;
-	backgroundColor?: string;
-	translate?: (key: string) => string;
-};
+type PresetSelectionModalContentProps = AvatarPreviewAppearanceProps &
+	Pick<AvatarEditorBehaviorProps, 'translate'> & {
+		allowedStyles: AvatarStyle[];
+		size: AvatarSize;
+		onSelectPreset: (config: AvatarConfig) => void;
+		onCustomize: () => void;
+	};
 
 const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = ({
 	allowedStyles,
@@ -2080,27 +2073,14 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	);
 };
 
-export type UseAvatarEditorModalOptions = {
-	title?: string;
-	accentColor?: string;
-	debugMode?: boolean;
-	/** Restrict which avatar styles are available. If only one style is provided, the style selector is hidden. */
-	allowedStyles?: AvatarStyle[];
-	/** If true, show a delete button (for optional avatar). */
-	allowDelete?: boolean;
-	/**
-	 * Props that are always injected into the avatar config with a fixed value
-	 * and are hidden from the editor UI. Use values from the `AvatarPropKey` namespace.
-	 * @example `{ [AvatarPropKey.OpenPeeps.SCALE]: '100' }` hides the scale and pins it to 100.
-	 */
-	hiddenProps?: Record<string, string>;
-	/** Forwarded to all avatar previews inside the editor. When true (default), avatars are rendered as circles. */
-	rounded?: boolean;
-	/** Forwarded to all avatar previews inside the editor. Background colour shown behind each avatar. */
-	backgroundColor?: string;
-	/** Translation function for localising section headers, buttons, and category labels inside the editor. */
-	translate?: (key: string) => string;
-};
+export type UseAvatarEditorModalOptions = AvatarPreviewAppearanceProps &
+	AvatarEditorBehaviorProps & {
+		title?: string;
+		/** Restrict which avatar styles are available. If only one style is provided, the style selector is hidden. */
+		allowedStyles?: AvatarStyle[];
+		/** If true, show a delete button (for optional avatar). */
+		allowDelete?: boolean;
+	};
 
 export type OpenAvatarEditorProps = {
 	/** If provided, the editor opens directly in edit mode. If null/undefined, the QuickStart preset picker is shown first. */
@@ -2111,23 +2091,18 @@ export type OpenAvatarEditorProps = {
 	options?: UseAvatarEditorModalOptions;
 };
 
-type AvatarEditorUnifiedContentProps = {
-	modeObservable: ModeObservable;
-	configObservable: ConfigObservable;
-	configRef: React.MutableRefObject<AvatarConfig>;
-	onApply: () => void;
-	onChange?: () => void;
-	onReset?: () => void;
-	onDelete?: () => void;
-	allowedStyles: AvatarStyle[];
-	size: AvatarSize;
-	accentColor?: string;
-	debugMode?: boolean;
-	hiddenProps?: Record<string, string>;
-	rounded?: boolean;
-	backgroundColor?: string;
-	translate?: (key: string) => string;
-};
+type AvatarEditorUnifiedContentProps = AvatarPreviewAppearanceProps &
+	AvatarEditorBehaviorProps & {
+		modeObservable: ModeObservable;
+		configObservable: ConfigObservable;
+		configRef: React.MutableRefObject<AvatarConfig>;
+		onApply: () => void;
+		onChange?: () => void;
+		onReset?: () => void;
+		onDelete?: () => void;
+		allowedStyles: AvatarStyle[];
+		size: AvatarSize;
+	};
 
 const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	modeObservable,

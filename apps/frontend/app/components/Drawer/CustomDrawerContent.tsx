@@ -24,7 +24,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
-import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
+import { AppDrawer, DrawerItem, DrawerItemBaseFields } from 'repo-depkit-common-ui';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 export const iconLibraries: Record<string, any> = {
@@ -43,17 +43,13 @@ export const iconLibraries: Record<string, any> = {
 	Zocial,
 };
 
-interface MenuItemProps {
-        label: string;
+interface MenuItemProps extends DrawerItemBaseFields {
         iconName: string;
         iconLibName: React.ComponentType<IconProps<any>>;
         activeKey: string;
         route?: string;
         action?: () => void;
         position: number;
-        hasUnread?: boolean;
-        activeColor?: string;
-        nativeID?: string;
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
