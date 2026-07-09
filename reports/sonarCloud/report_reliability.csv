@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ9IrY5GlMp6Y7T5BdN4","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",21
 "AZ9GQrKcPG3QTBW6lktP","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",94
 "AZ9FBk0MX48zp4WbbkMi","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",353
 "AZ8tBMPhRFoArOAafHiv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",304
@@ -34,8 +35,8 @@ Key,Message,Component,Line
 "AZ3_Bx_oxBiyTwy6NSQE","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1450
 "AZ3_Bx_oxBiyTwy6NSQM","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1542
 "AZ35__9bcUa8YvF8RrkO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1543
-"AZ7v17RYhkdGLBATgzLz","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",19
-"AZ7v17RYhkdGLBATgzL0","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",20
+"AZ7v17RYhkdGLBATgzLz","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",20
+"AZ7v17RYhkdGLBATgzL0","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",22
 "AZ2xyckhWySueEBavmdA","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",92
 "AZ2xyckhWySueEBavmc_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts",117
 "AZ2V4Kjcj7vGheiRHJU2","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",74
@@ -86,7 +87,7 @@ Key,Message,Component,Line
 "AZ7v169dhkdGLBATgzLx","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",15
 "AZ7v18fJhkdGLBATgzMG","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/src/EmailHelper.ts",2
 "AZ7v16SEhkdGLBATgzLr","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts",40
-"AZ7v17RYhkdGLBATgzL1","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",22
+"AZ7v17RYhkdGLBATgzL1","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",24
 "AZ7v17wJhkdGLBATgzL2","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/constants/MarkdownPatterns.ts",16
 "AZ7v16sMhkdGLBATgzLv","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",26
 "AZ7v16sMhkdGLBATgzLw","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",107

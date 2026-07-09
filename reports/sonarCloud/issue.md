@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 14 | 14 |
-| 🐛 Reliability | 92 | 36 |
-| 🔧 Maintainability | 1918 | 0 |
+| 🐛 Reliability | 93 | 36 |
+| 🔧 Maintainability | 1923 | 0 |
 
-**Total issues:** 2024 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2030 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -70,7 +70,7 @@
   apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:25
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L25
 
-## 🐛 Reliability (36/92)
+## 🐛 Reliability (36/93)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -129,8 +129,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L19
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:21
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L21
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:20
@@ -139,6 +139,10 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:22
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L22
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L24
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/EmailInput/EmailInput.tsx:9
@@ -211,8 +215,4 @@
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
-
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:1436
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1436
 
