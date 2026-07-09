@@ -751,6 +751,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@axe-core/puppeteer@npm:^4.10.1":
+  version: 4.12.1
+  resolution: "@axe-core/puppeteer@npm:4.12.1"
+  dependencies:
+    axe-core: "npm:~4.12.1"
+  peerDependencies:
+    puppeteer: ">=1.10.0"
+  checksum: 10c0/27ef967658c45fc5cb2ed396d3cf5d12e1303fb96e946ce683d4bfd7552108ed07b1da54f29ea678fda5aa503a02456a81e2306eaae3967c97c887ea8b9bc750
+  languageName: node
+  linkType: hard
+
 "@azure-rest/core-client@npm:^2.3.3":
   version: 2.5.1
   resolution: "@azure-rest/core-client@npm:2.5.1"
@@ -11231,6 +11242,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"accessibilitytester@workspace:apps/accessibilityTester":
+  version: 0.0.0-use.local
+  resolution: "accessibilitytester@workspace:apps/accessibilityTester"
+  dependencies:
+    "@axe-core/puppeteer": "npm:^4.10.1"
+    "@types/node": "npm:^22.5.0"
+    axe-core: "npm:^4.10.2"
+    puppeteer: "npm:^23.1.1"
+    repo-depkit-common: "workspace:*"
+    tsx: "npm:^4.7.0"
+    typescript: "npm:^5.5.4"
+    yargs: "npm:^17.7.2"
+  languageName: unknown
+  linkType: soft
+
 "acorn-globals@npm:^7.0.0":
   version: 7.0.1
   resolution: "acorn-globals@npm:7.0.1"
@@ -11796,6 +11822,13 @@ __metadata:
   version: 1.1.2
   resolution: "aws-ssl-profiles@npm:1.1.2"
   checksum: 10c0/e5f59a4146fe3b88ad2a84f814886c788557b80b744c8cbcb1cbf8cf5ba19cc006a7a12e88819adc614ecda9233993f8f1d1f3b612cbc2f297196df9e8f4f66e
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:^4.10.2, axe-core@npm:~4.12.1":
+  version: 4.12.1
+  resolution: "axe-core@npm:4.12.1"
+  checksum: 10c0/03438bd98cef38ad57554feea0d8de21705001db2655c27e0c33ff55e16dd7d6f49c28fb420dc93f7532e68ff363c0953056a5836e6f47068f193eb1765c7db7
   languageName: node
   linkType: hard
 
