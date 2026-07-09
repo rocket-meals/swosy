@@ -195,12 +195,17 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 };
 
 /* ────────────── Shared Pending Friendship Content ────────────────────── */
-type PendingFriendshipContentProps = {
-	friendship: DatabaseTypes.Friendships;
+/** Shared with QRGenerateModalContentProps below: both open a friendship modal
+ * that needs the helper to call back into, an accepted-callback, and a way to close itself. */
+type FriendshipModalActionsProps = {
 	friendshipsHelper: FriendshipsHelper;
 	onAccepted: (friendship: DatabaseTypes.Friendships) => void;
-	onDeleted: () => void;
 	closeModal: () => void;
+};
+
+type PendingFriendshipContentProps = FriendshipModalActionsProps & {
+	friendship: DatabaseTypes.Friendships;
+	onDeleted: () => void;
 };
 
 const PendingFriendshipContent: React.FC<PendingFriendshipContentProps> = ({ friendship, friendshipsHelper, onAccepted, onDeleted, closeModal }) => {
@@ -309,13 +314,10 @@ const PendingFriendshipContent: React.FC<PendingFriendshipContentProps> = ({ fri
 /* ───────────────────── QR Generate Modal Content ──────────────────────── */
 type QRGenPhase = 'generating' | 'success' | 'error';
 
-type QRGenerateModalContentProps = {
+type QRGenerateModalContentProps = FriendshipModalActionsProps & {
 	profileId: string;
-	friendshipsHelper: FriendshipsHelper;
 	onCreated: (friendship: DatabaseTypes.Friendships) => void;
-	onAccepted: (friendship: DatabaseTypes.Friendships) => void;
 	onDeleted: (friendshipId: string) => void;
-	closeModal: () => void;
 };
 
 const QRGenerateModalContent: React.FC<QRGenerateModalContentProps> = ({ profileId, friendshipsHelper, onCreated, onAccepted, onDeleted, closeModal }) => {

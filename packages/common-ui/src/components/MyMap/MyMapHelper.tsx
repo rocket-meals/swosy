@@ -87,11 +87,19 @@ export interface MyMapHandle {
 	sendToMap: (data: object) => void;
 }
 
-export interface MyMapProps {
+/**
+ * Core initial-view/loading props shared with the frontend app's own local MyMap
+ * implementation (apps/frontend/app/components/MyMap) - a separate, simpler map component
+ * that happens to expose an overlapping subset of these same props.
+ */
+export interface MyMapCoreProps {
 	initialCenter?: { lat: number; lng: number };
-	initialZoom?: number;
 	initialPitch?: number;
 	loadingText?: string;
+}
+
+export interface MyMapProps extends MyMapCoreProps {
+	initialZoom?: number;
 	/**
 	 * Optional React node rendered as an overlay on top of the map while it is loading.
 	 * It is automatically faded out and removed once the map signals it is ready
