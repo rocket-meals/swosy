@@ -22,6 +22,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
 import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
+import { UserHelper } from '@/helper/UserHelper';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const isWeb = Platform.OS === 'web';
 
@@ -424,9 +426,13 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const showToast = useToast();
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
-	const { profile } = useAppSelector((state) => state.authReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { friendships } = useAppSelector((state) => state.friendships);
+	// Anonymous sessions have no server profile, so none of the friendship actions can work -
+	// they get the account-required modal instead (same pattern as rating in the food details).
+	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 
 	const { avatarConfig: ownAvatarConfig, openEditor: openAvatarEditor } = useAvatarProfileEditor();
 
@@ -486,6 +492,10 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	}, [reloadFriendships]);
 
 	const handleGenerateQR = useCallback(() => {
+		if (isAnonymousUser) {
+			openAccountRequiredModal();
+			return;
+		}
 		if (!profile?.id) return;
 		showScrollViewModal({
 			title: translate(TranslationKeys.friendships_generate_qr),
@@ -506,9 +516,13 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				/>
 			),
 		});
-	}, [profile?.id, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, translate]);
+	}, [profile?.id, isAnonymousUser, openAccountRequiredModal, friendshipsHelper, dispatch, showScrollViewModal, closeScrollViewModal, translate]);
 
 	const openScanModal = useCallback((noCamera: boolean) => {
+		if (isAnonymousUser) {
+			openAccountRequiredModal();
+			return;
+		}
 		showScrollViewModal({
 			title: noCamera ? translate(TranslationKeys.friendships_add_manual) : translate(TranslationKeys.friendships_scan_qr),
 			children: (
@@ -532,7 +546,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				/>
 			),
 		});
-	}, [profile?.id, friendshipsHelper, friendships, dispatch, showScrollViewModal, closeScrollViewModal, translate, showToast, getProfileIdFromField, isAlreadyFriendsWith]);
+	}, [profile?.id, isAnonymousUser, openAccountRequiredModal, friendshipsHelper, friendships, dispatch, showScrollViewModal, closeScrollViewModal, translate, showToast, getProfileIdFromField, isAlreadyFriendsWith]);
 
 	const handleScanQR = useCallback(() => {
 		openScanModal(false);
@@ -732,7 +746,7 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					}
 					value={translate(TranslationKeys.avatar_appearance)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
-					handleFunction={() => openAvatarEditor(false)}
+					handleFunction={isAnonymousUser ? openAccountRequiredModal : () => openAvatarEditor(false)}
 					groupPosition="top"
 				/>
 				<SettingsList

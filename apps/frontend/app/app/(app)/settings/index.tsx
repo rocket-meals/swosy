@@ -39,6 +39,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import useToast from '@/hooks/useToast';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
@@ -72,6 +73,7 @@ const Settings = () => {
         const isOpeningNestedCollectibleModal = useRef(false);
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
+        const { openAccountRequiredModal } = useAccountRequiredModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
@@ -493,12 +495,12 @@ const Settings = () => {
 		const sectionStyle = { gap: 10 } as const;
 		const groupStyle = { gap: 0 } as const;
 
-		// === Account & Personalization ===
+		// === Personalization ===
 		rows.push({
 			key: 'section-account',
 			element: (
 				<View style={sectionStyle}>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
 						{isRegisteredUser && (
 							<SettingsList
@@ -530,7 +532,6 @@ const Settings = () => {
 							handleFunction={openNicknameSheet}
 							groupPosition={isRegisteredUser ? 'middle' : 'top'}
 						/>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition={showFriendsInSettings ? 'middle' : 'bottom'} nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 						{showFriendsInSettings && (
 							<SettingsList
 								iconBgColor={primaryColor}
@@ -538,10 +539,11 @@ const Settings = () => {
 								label={translate(TranslationKeys.friendships)}
 								value={String(acceptedFriendsCount)}
 								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-								handleFunction={openFriendsModal}
-								groupPosition="bottom"
+								handleFunction={isRegisteredUser ? openFriendsModal : openAccountRequiredModal}
+								groupPosition="middle"
 							/>
 						)}
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" nativeID={ComponentIds.SETTINGS_LANGUAGE} />
 					</View>
 				</View>
 			),
@@ -704,25 +706,21 @@ const Settings = () => {
 			),
 		});
 
-		// === Account Actions (Logout / Delete) ===
+		// === Account (Login/Logout, Delete) ===
 		rows.push({
-			key: 'section-account-logout',
+			key: 'section-account-actions',
 			element: (
-				<View style={groupStyle}>
-					<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="single" />
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_account)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition={isRegisteredUser ? 'top' : 'single'} />
+						{isRegisteredUser && (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="bottom" />
+						)}
+					</View>
 				</View>
 			),
 		});
-		if (isRegisteredUser) {
-			rows.push({
-				key: 'section-account-delete',
-				element: (
-					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="single" />
-					</View>
-				),
-			});
-		}
 
 		// === Footer ===
 		rows.push({
@@ -866,7 +864,7 @@ const Settings = () => {
 		serverInfo, selectedCustomerDisplayName, foodOffersNextDayThreshold, useWebpForAssets,
 		debugMode, simulateExpoUpdateAvailable, openServerSheet, openFoodOffersTimeSheet,
 		toggleWebpForAssets, toggleDebugMode, toggleSimulateExpoUpdate, osmVectorMapStyleKey, osmConsent,
-		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal,
+		acceptedFriendsCount, showFriendsInSettings, canteenVisitsVisibilityLabel, openCanteenVisitsVisibilityModal, openFriendsModal, openAccountRequiredModal,
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
