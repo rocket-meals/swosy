@@ -5877,6 +5877,26 @@
     "tr": "Hesap ve kişiselleştirme",
     "zh": "账户和个性化"
   },
+  "group_personalization": {
+    "de": "Personalisierung",
+    "en": "Personalization",
+    "ar": "التخصيص",
+    "es": "Personalización",
+    "fr": "Personnalisation",
+    "ru": "Персонализация",
+    "tr": "Kişiselleştirme",
+    "zh": "个性化"
+  },
+  "group_account": {
+    "de": "Konto",
+    "en": "Account",
+    "ar": "الحساب",
+    "es": "Cuenta",
+    "fr": "Compte",
+    "ru": "Аккаунт",
+    "tr": "Hesap",
+    "zh": "账户"
+  },
   "group_canteen_usage": {
     "de": "Mensa & Nutzung",
     "en": "Canteen & Usage",

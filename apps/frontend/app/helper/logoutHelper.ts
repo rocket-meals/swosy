@@ -9,6 +9,7 @@ import {
 	CLEAR_COLLECTIBLE_EVENTS,
 	CLEAR_DEVELOPER_MODE,
 	CLEAR_FOODS,
+	CLEAR_FRIENDSHIPS,
 	CLEAR_MANAGEMENT,
 	CLEAR_NEWS,
 	CLEAR_POPUP_EVENTS_HASH,
@@ -43,6 +44,7 @@ export const performLogout = async (
                 dispatch({ type: CLEAR_NEWS });
                 dispatch({ type: CLEAR_COLLECTIBLE_EVENTS });
                 dispatch({ type: CLEAR_PROFILE });
+                dispatch({ type: CLEAR_FRIENDSHIPS });
                 dispatch({ type: CLEAR_CHATS });
                 await clearChatReadStatus();
                 dispatch({ type: CLEAR_SETTINGS });

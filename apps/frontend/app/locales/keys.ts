@@ -625,6 +625,8 @@ export enum TranslationKeys {
 	Nov = 'Nov',
 	Dec = 'Dec',
 	group_account_personalization = 'group_account_personalization',
+	group_personalization = 'group_personalization',
+	group_account = 'group_account',
 	group_canteen_usage = 'group_canteen_usage',
 	group_app_settings = 'group_app_settings',
 	pull_down_to_close = 'pull_down_to_close',
