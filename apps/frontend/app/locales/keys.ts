@@ -528,6 +528,8 @@ export enum TranslationKeys {
 	update_available = 'update_available',
 	update_available_message = 'update_available_message',
 	no_updates_available = 'no_updates_available',
+	update_current_version = 'update_current_version',
+	update_not_available_on_platform = 'update_not_available_on_platform',
 	updates = 'updates',
 	send = 'send',
 	button_disabled = 'button_disabled',

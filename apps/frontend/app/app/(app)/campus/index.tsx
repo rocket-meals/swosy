@@ -28,6 +28,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import useLastOpenedBuildings from '@/hooks/useLastOpenedBuildings';
+import useBuildingFavorites from '@/hooks/useBuildingFavorites';
 
 import { RootDrawerParamList } from './types';
 import CampusHeader from './components/CampusHeader';
@@ -89,6 +90,7 @@ const Index: React.FC = () => {
 	const { openCampusSortingModal } = useCampusSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
+	const { buildingsFavoriteIds } = useBuildingFavorites();
 
 	// Handlers
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
@@ -261,12 +263,23 @@ const Index: React.FC = () => {
 		return [...lastOpenedItems, ...otherItems];
 	}, [sortedCampuses, buildingsLastOpenedIds, campusesSortBy]);
 
+	// Favorited buildings always come first for INTELLIGENT sorting, on top of the
+	// last-opened boost above (applied last so it wins: favorites are pulled to the
+	// very front while preserving whatever order the previous steps produced).
+	const sortedWithFavorites = useMemo(() => {
+		if (campusesSortBy !== CampusSortOption.INTELLIGENT || !buildingsFavoriteIds || buildingsFavoriteIds.length === 0) return sortedWithLastOpened;
+		const favoriteSet = new Set(buildingsFavoriteIds);
+		const favoriteItems = sortedWithLastOpened.filter(c => c.id && favoriteSet.has(c.id));
+		const otherItems = sortedWithLastOpened.filter(c => !(c.id && favoriteSet.has(c.id)));
+		return [...favoriteItems, ...otherItems];
+	}, [sortedWithLastOpened, buildingsFavoriteIds, campusesSortBy]);
+
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
-		const src = sortedWithLastOpened;
+		const src = sortedWithFavorites;
 		if (!query || query.trim() === '') return src;
 		const q = query.toLowerCase().trim();
 		return src.filter(campus => (campus?.alias ?? '').toLowerCase().includes(q));
-	}, [sortedWithLastOpened, query]);
+	}, [sortedWithFavorites, query]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);

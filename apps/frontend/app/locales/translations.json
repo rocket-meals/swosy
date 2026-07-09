@@ -5857,6 +5857,26 @@
     "tr": "Uygulama güncel",
     "zh": "应用已是最新版本"
   },
+  "update_current_version": {
+    "de": "Aktuellste Version",
+    "en": "Latest version",
+    "ar": "أحدث إصدار",
+    "es": "Última versión",
+    "fr": "Dernière version",
+    "ru": "Последняя версия",
+    "tr": "En güncel sürüm",
+    "zh": "最新版本"
+  },
+  "update_not_available_on_platform": {
+    "de": "Updates sind auf dieser Plattform nicht verfügbar",
+    "en": "Updates are not available on this platform",
+    "ar": "التحديثات غير متوفرة على هذه المنصة",
+    "es": "Las actualizaciones no están disponibles en esta plataforma",
+    "fr": "Les mises à jour ne sont pas disponibles sur cette plateforme",
+    "ru": "Обновления недоступны на этой платформе",
+    "tr": "Güncellemeler bu platformda kullanılamıyor",
+    "zh": "此平台不支持更新"
+  },
   "updates": {
     "de": "Updates",
     "en": "Updates",
