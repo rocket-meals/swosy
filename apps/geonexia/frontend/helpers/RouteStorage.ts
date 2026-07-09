@@ -1,19 +1,22 @@
 import { Directory, File, Paths } from 'expo-file-system';
-import { SportType } from '../store/sportTypeSlice';
+import type { RedLineRouteFields } from './ActivityRouteSharedTypes';
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
-export type SavedRoute = {
-	id: string;
+export type SavedRoute = RedLineRouteFields & {
 	name: string;
 	/** Ordered sequence of H3 hex tile indices representing the route. */
 	hexTiles: string[];
-	/** H3 resolution used when recording the route. */
+	/** H3 resolution used when recording the route. Always set for routes (unlike `SavedActivity`). */
 	h3Resolution: number;
 	/** Unix timestamp (ms) when the route was first created. */
 	createdAt: number;
-	/** Sport type associated with the route (optional). */
-	sportType?: SportType;
+	/**
+	 * IDs of activities that have been assigned to this route.
+	 * Maintained as the reverse side of `SavedActivity.routeId`.
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	activityIds?: string[];
 	/**
 	 * Actual hex-to-hex transitions that occurred along the route, stored as
 	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
@@ -21,12 +24,6 @@ export type SavedRoute = {
 	 * Optional for backward-compat with older saves that lack this field.
 	 */
 	walkedEdges?: string[];
-	/**
-	 * IDs of activities that have been assigned to this route.
-	 * Maintained as the reverse side of `SavedActivity.routeId`.
-	 * Optional for backward-compat with older saves that lack this field.
-	 */
-	activityIds?: string[];
 	/**
 	 * H3 cell indices of the tiles enclosed by the route loop.
 	 * Computed once on the route detail screen and cached here to avoid
@@ -36,26 +33,6 @@ export type SavedRoute = {
 	 * Optional for backward-compat with older saves that lack this field.
 	 */
 	enclosedTiles?: string[];
-	/**
-	 * Ordered H3 cell transitions at the red-line resolution (finer than the
-	 * displayed h10 hex tiles), stored as "cellA:cellB" strings where cellA is
-	 * lexicographically smaller than cellB.  Used to draw the red walk path
-	 * line at a finer granularity than the h10 tile centres.
-	 *
-	 * Computed from the first activity's `routePoints` and cached here.
-	 * `undefined` means not yet computed (older saves before this field was
-	 * introduced, or the route's tile set was manually edited).  In that case
-	 * the display falls back to `walkedEdges` (h10).
-	 * Optional for backward-compat with older saves that lack this field.
-	 */
-	walkedEdgesRedLine?: string[];
-	/**
-	 * H3 resolution used to compute `walkedEdgesRedLine`.
-	 * Stored alongside the edges so consumers do not need to hard-code the
-	 * resolution — the field is the single source of truth.
-	 * Optional for backward-compat with older saves that lack this field.
-	 */
-	walkedEdgesRedLineResolution?: number;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

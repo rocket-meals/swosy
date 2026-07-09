@@ -4,18 +4,16 @@ import { SettingsList } from 'repo-depkit-common-ui';
 
 import { SavedRoute } from '../../helpers/RouteStorage';
 import { computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
+import { SettingsListPressableItemProps } from '../SettingsListSharedProps';
 
 const PRIMARY_COLOR = '#2563eb';
 const ICON_COLOR = '#ffffff';
 const CHEVRON_COLOR = '#9ca3af';
 
-type Props = {
+type Props = SettingsListPressableItemProps & {
 	route: SavedRoute;
 	/** Overrides the activity count derived from route.activityIds when provided. */
 	activityCount?: number;
-	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-	showSeparator?: boolean;
-	onPress?: () => void;
 };
 
 const SettingsListRoute: React.FC<Props> = ({ route, activityCount, groupPosition, showSeparator, onPress }) => {

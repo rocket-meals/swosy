@@ -58,7 +58,7 @@ export { default as SettingsListNumberInput } from './src/components/SettingsLis
 export type { SettingsListNumberInputProps } from './src/components/SettingsListNumberInput';
 
 export { default as AppDrawer } from './src/components/AppDrawer';
-export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
+export type { AppDrawerProps, DrawerItem, DrawerItemBaseFields } from './src/components/AppDrawer';
 
 export { default as MyMap } from './src/components/MyMap';
 export type { MyMapHandle, MyMapProps } from './src/components/MyMap';
@@ -76,7 +76,7 @@ export { default as BaseBottomSheet } from './src/components/BaseBottomSheet';
 export type { BaseBottomSheetProps } from './src/components/BaseBottomSheet';
 
 export { default as MyScrollViewModal } from './src/components/MyScrollViewModal';
-export type { MyScrollViewModalProps } from './src/components/MyScrollViewModal';
+export type { MyScrollViewModalProps, ScrollViewModalContentProps } from './src/components/MyScrollViewModal';
 
 export { ModalProvider, ModalContextProvider, ModalRenderer, useModalContext } from './src/components/GlobalModal/ModalProvider';
 export { useModal } from './src/components/GlobalModal/useModal';

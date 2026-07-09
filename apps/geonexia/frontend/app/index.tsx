@@ -29,6 +29,8 @@ import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, isPentagon, getPentagons } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
+import type { MapFeatureInfo } from '../helpers/RouteNameSuggestionHelper';
+import type { ViewportBounds } from '../helpers/ViewportBounds';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId, RED_LINE_GRID_RESOLUTION } from '../helpers/ActivityMapRebuildHelper';
@@ -207,8 +209,6 @@ const BILLBOARD_ANCHOR_COLORS = [
 	{ id: BillboardAnchorPosition.MIDDLE_300_DEGREE, hex: '#000000', label: 'Middle 300°' },
 	{ id: BillboardAnchorPosition.MIDDLE_330_DEGREE, hex: '#64748b', label: 'Middle 330°' },
 ] as const;
-
-type ViewportBounds = { north: number; south: number; east: number; west: number };
 
 type H3GeoJsonFeature = {
 	type: 'Feature';
@@ -1830,20 +1830,6 @@ const hexPickerStyles = StyleSheet.create({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-
-type MapFeatureInfo = {
-	layerId: string | null;
-	name: string | null;
-	class: string | null;
-	subclass: string | null;
-	highway: string | null;
-	waterway: string | null;
-	building: string | null;
-	natural: string | null;
-	landuse: string | null;
-	amenity: string | null;
-	count: number;
-};
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();

@@ -29,6 +29,7 @@ import {
 	gridDisk,
 	gridDistance,
 } from '../../../helpers/H3Helper';
+import type { ViewportBounds } from '../../../helpers/ViewportBounds';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -98,8 +99,6 @@ const BOAT_TRANSFORM_SCRIPT = `
 const SEAPHARA_INJECT_SCRIPT = HEX_TILE_SCRIPT + '\n' + BOAT_TRANSFORM_SCRIPT;
 
 // ─── H3 grid GeoJSON builder (resolution 4) ───────────────────────────────────
-
-type ViewportBounds = { north: number; south: number; east: number; west: number };
 
 function buildSeapharaH3GeoJson(bounds: ViewportBounds) {
 	if (!isH3Available()) return { type: 'FeatureCollection', features: [] };

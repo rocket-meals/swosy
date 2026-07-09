@@ -1,5 +1,5 @@
 import { File, Paths } from 'expo-file-system';
-import type { RoutePoint } from './ActivityStorage';
+import type { RecordingSessionFields } from './ActivityRouteSharedTypes';
 import type { SportType } from '../store/sportTypeSlice';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -7,24 +7,23 @@ import type { SportType } from '../store/sportTypeSlice';
 /**
  * Snapshot of an in-progress recording session, periodically persisted to disk
  * so that the recording can be recovered after an unexpected app crash.
+ *
+ * Unlike `SavedActivity`, a snapshot is always written fresh while recording
+ * is active, so `sportType`, `h3Resolution` and `hexTilesOrdered` are
+ * narrowed back to required here (they are optional on
+ * `RecordingSessionFields` for `SavedActivity`'s backward-compat needs).
  */
-export type InterruptedRecordingSnapshot = {
-	/** Unix timestamp (ms) when the recording was started */
-	startedAt: number;
+export type InterruptedRecordingSnapshot = RecordingSessionFields & {
 	/** Accumulated seconds before the most recent segment start */
 	accumulatedSeconds: number;
 	/** Unix timestamp (ms) of the current segment start */
 	segmentStart: number;
-	/** All GPS route points collected so far */
-	routePoints: RoutePoint[];
 	/** Ordered sequence of H3 hex tile indices visited so far */
 	hexTilesOrdered: string[];
 	/** The H3 resolution used during recording */
 	h3Resolution: number;
 	/** The sport type selected for this recording */
 	sportType: SportType;
-	/** ID of the pre-selected route (if any) */
-	routeId?: string | null;
 	/** Timestamp when this snapshot was written */
 	savedAt: number;
 };

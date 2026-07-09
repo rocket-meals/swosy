@@ -19,6 +19,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import type { SettingsListItemBaseProps } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
@@ -55,9 +56,13 @@ const SAMPLE_STATS = {
 
 // ─── PaceMinSecModal ──────────────────────────────────────────────────────────
 
-interface PaceMinSecModalProps {
+/** Pace value shared between the pace input row and the modal it opens. */
+interface PaceValue {
 	minutes: number;
 	seconds: number;
+}
+
+interface PaceMinSecModalProps extends PaceValue {
 	onSave: (minutes: number, seconds: number) => void;
 	primaryColor: string;
 	saveLabel?: string;
@@ -189,13 +194,9 @@ function PaceMinSecModal({
 
 // ─── PaceMinSecInput ──────────────────────────────────────────────────────────
 
-interface PaceMinSecInputProps {
-	iconBgColor?: string;
-	leftIcon?: React.ReactNode;
+interface PaceMinSecInputProps extends PaceValue, Pick<SettingsListItemBaseProps, 'iconBgColor' | 'leftIcon'> {
 	label: string;
 	modalTitle?: string;
-	minutes: number;
-	seconds: number;
 	onSave: (minutes: number, seconds: number) => void;
 	disabled?: boolean;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';

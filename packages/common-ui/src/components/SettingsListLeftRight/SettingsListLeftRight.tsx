@@ -6,13 +6,9 @@ import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { lightTheme } from '../../themes';
 import SettingsList from '../SettingsList';
-import type { SettingsListItemBaseProps, SettingsListProps } from '../SettingsList/types';
+import type { SettingsListItemBaseProps, SettingsListProps, SettingsListSelectableItemBase } from '../SettingsList/types';
 
-export type SettingsListLeftRightItem<T> = {
-	id: T;
-	label: string;
-	icon?: React.ReactNode;
-};
+export type SettingsListLeftRightItem<T> = SettingsListSelectableItemBase<T>;
 
 export type SettingsListLeftRightProps<T extends string | number> = Pick<
 	SettingsListItemBaseProps,

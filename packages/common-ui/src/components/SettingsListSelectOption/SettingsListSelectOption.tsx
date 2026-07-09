@@ -1,10 +1,8 @@
 import React from 'react';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
+import type { SettingsListSelectableItemBase } from '../SettingsList/types';
 
-export type SettingsListSelectOptionItem<T> = {
-	id: T;
-	label: string;
-	icon?: React.ReactNode;
+export type SettingsListSelectOptionItem<T> = SettingsListSelectableItemBase<T> & {
 	nativeID?: string;
 };
 

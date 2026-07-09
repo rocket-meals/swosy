@@ -7,6 +7,7 @@ import FormData from 'form-data';
 
 import { createRequire } from 'node:module';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
+import { DirectusConnectionOptions } from './DirectusConnectionOptions';
 
 const require = createRequire(import.meta.url);
 
@@ -15,10 +16,7 @@ const { version } = require(pkgPath);
 
 console.log('Directus Sync Version:', version);
 
-export interface DirectusDatabaseSyncOptions {
-  directusInstanceUrl: string;
-  adminEmail: string;
-  adminPassword: string;
+export interface DirectusDatabaseSyncOptions extends DirectusConnectionOptions {
   pathToDataDirectusSyncData: string;
 }
 

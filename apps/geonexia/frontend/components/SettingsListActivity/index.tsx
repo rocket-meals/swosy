@@ -4,6 +4,7 @@ import { SettingsList } from 'repo-depkit-common-ui';
 
 import { SavedActivity } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
+import { SettingsListPressableItemProps } from '../SettingsListSharedProps';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -20,11 +21,8 @@ function formatDistance(km: number): string {
 	return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`;
 }
 
-type Props = {
+type Props = SettingsListPressableItemProps & {
 	activity: SavedActivity;
-	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-	showSeparator?: boolean;
-	onPress?: () => void;
 };
 
 const SettingsListActivity: React.FC<Props> = ({ activity, groupPosition, showSeparator, onPress }) => {

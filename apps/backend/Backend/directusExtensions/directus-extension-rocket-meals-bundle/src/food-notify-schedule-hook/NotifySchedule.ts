@@ -5,6 +5,13 @@ import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { PushNotificationHelper } from '../helpers/PushNotificationHelper';
 import { DevicesServiceHelper } from '../helpers/DevicesServiceHelper';
 
+interface FoodOfferNotificationParams {
+  expoPushToken: string;
+  foodOffer: DatabaseTypes.Foodoffers;
+  foodWithTranslations: DatabaseTypes.Foods;
+  language: string;
+}
+
 export class NotifySchedule {
   private readonly context: WorkflowRunContext;
 
@@ -90,7 +97,7 @@ export class NotifySchedule {
     for (let expoPushToken of expoPushTokens) {
       let devices = expoPushTokensDict[expoPushToken] as DatabaseTypes.Devices[];
       await this.context.logger.appendLog('--- Notify devices: ' + devices.length + ' about food: ' + food_id);
-      await this.sendNotificationToExpoPushToken(expoPushToken, foodOffer, foodWithTranslations, language, { aboutMealsInDays, date, devices, devicesService });
+      await this.sendNotificationToExpoPushToken({ expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date, devices, devicesService });
     }
 
     for (let device of profileDevices) {
@@ -131,20 +138,16 @@ export class NotifySchedule {
   }
 
   private async sendNotificationToExpoPushToken(
-    expoPushToken: string,
-    foodOffer: DatabaseTypes.Foodoffers,
-    foodWithTranslations: DatabaseTypes.Foods,
-    language: string,
-    params: {
+    params: FoodOfferNotificationParams & {
       aboutMealsInDays: number;
       date: Date;
       devices: DatabaseTypes.Devices[];
       devicesService: DevicesServiceHelper;
     }
   ): Promise<void> {
-    const { aboutMealsInDays, date, devices, devicesService } = params;
+    const { expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date, devices, devicesService } = params;
     try {
-      await this.notifyExpoPushTokenAboutFoodOffer(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
+      await this.notifyExpoPushTokenAboutFoodOffer({ expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date });
     } catch (err: any) {
       await this.context.logger.appendLog('--- Error while creating push notification: ' + err.toString());
       const message = err?.message;
@@ -161,7 +164,13 @@ export class NotifySchedule {
     }
   }
 
-  async notifyExpoPushTokenAboutFoodOffer(expoPushToken: string, foodOffer: DatabaseTypes.Foodoffers, foodWithTranslations: DatabaseTypes.Foods, language: string, aboutMealsInDays: number, date: Date) {
+  async notifyExpoPushTokenAboutFoodOffer(
+    params: FoodOfferNotificationParams & {
+      aboutMealsInDays: number;
+      date: Date;
+    }
+  ) {
+    const { expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date } = params;
     // Create a new push_notification entry in the database
     let pushNotificationService = this.context.myDatabaseHelper.getPushNotificationsHelper();
     /**

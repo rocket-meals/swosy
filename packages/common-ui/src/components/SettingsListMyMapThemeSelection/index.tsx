@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import { MapStyleKey, MAP_STYLE_DEFINITIONS } from '../MyMap/MyMapHelper';
 import MyMap from '../MyMap';
 import SettingsList from '../SettingsList';
+import type { SettingsListItemBaseProps } from '../SettingsList/types';
 import CardWithText from '../CardWithText';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import { useTheme } from '../../context/ThemeContext';
@@ -14,23 +15,25 @@ const DEFAULT_ACCENT_COLOR = '#0891b2';
 
 const _noop = () => {};
 
-export type SettingsListMyMapThemeSelectionProps = {
+/** Map style selection + preview state, shared between the settings-list trigger and its modal content. */
+type MapThemeSelectionState = {
 	selectedMapStyleKey: MapStyleKey;
 	onMapStyleKeyChange: (key: MapStyleKey) => void;
 	accentColor?: string;
-	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 	mapPreviewCenter?: { lat: number; lng: number };
 	mapPreviewZoom?: number;
-	label?: string;
-	modalTitle?: string;
-	leftIcon?: React.ReactNode;
-	iconBgColor?: string;
-	nativeID?: string;
-	/** Whether the user has consented to OSM map data loading. Defaults to true (no gate). */
-	osmConsent?: boolean;
-	/** Called when the user grants OSM consent inside the selection modal. */
-	onOsmConsentChange?: (value: boolean) => void;
 };
+
+export type SettingsListMyMapThemeSelectionProps = MapThemeSelectionState &
+	Pick<SettingsListItemBaseProps, 'leftIcon' | 'iconBgColor' | 'label'> & {
+		groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+		modalTitle?: string;
+		nativeID?: string;
+		/** Whether the user has consented to OSM map data loading. Defaults to true (no gate). */
+		osmConsent?: boolean;
+		/** Called when the user grants OSM consent inside the selection modal. */
+		onOsmConsentChange?: (value: boolean) => void;
+	};
 
 type OsmConsentGateProps = {
 	onConsent: () => void;
@@ -61,9 +64,7 @@ const OsmConsentGate: React.FC<OsmConsentGateProps> = ({ onConsent }) => {
 	);
 };
 
-type MapThemeGridProps = {
-	selectedMapStyleKey: MapStyleKey;
-	onMapStyleKeyChange: (key: MapStyleKey) => void;
+type MapThemeGridProps = MapThemeSelectionState & {
 	accentColor: string;
 	mapPreviewCenter: { lat: number; lng: number };
 	mapPreviewZoom: number;
@@ -135,15 +136,9 @@ const MapThemeGrid: React.FC<MapThemeGridProps> = ({
 	);
 };
 
-type MapThemeSelectionModalContentProps = {
+type MapThemeSelectionModalContentProps = MapThemeGridProps & {
 	initialHasConsent: boolean;
-	selectedMapStyleKey: MapStyleKey;
-	onMapStyleKeyChange: (key: MapStyleKey) => void;
 	onOsmConsentChange?: (value: boolean) => void;
-	accentColor: string;
-	mapPreviewCenter: { lat: number; lng: number };
-	mapPreviewZoom: number;
-	closeModal: () => void;
 };
 
 const MapThemeSelectionModalContent: React.FC<MapThemeSelectionModalContentProps> = ({

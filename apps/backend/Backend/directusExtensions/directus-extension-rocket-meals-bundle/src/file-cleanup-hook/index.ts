@@ -35,6 +35,11 @@ type SchemaRelationScanParams = {
   dict: FileReferenceDict;
 };
 
+interface FileCleanupWorkflowContext {
+  context: WorkflowRunContext;
+  filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>;
+}
+
 export class FileCleanupWorkflow extends SingleWorkflowRun {
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE = -1;
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_30_DAYS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -173,11 +178,12 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async syncNoLongerUnreferencedFiles(
-    context: WorkflowRunContext,
-    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
-    dict: FileReferenceDict,
-    fieldName: string
+    params: FileCleanupWorkflowContext & {
+      dict: FileReferenceDict;
+      fieldName: string;
+    }
   ): Promise<void> {
+    const { context, filesHelper, dict, fieldName } = params;
     const filesPreviouslyUnreferenced = await filesHelper.readByQuery({
       filter: { _and: [{ [fieldName]: { _eq: true } }] },
       limit: -1,
@@ -196,11 +202,12 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async collectFileSizeStats(
-    context: WorkflowRunContext,
-    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
-    dict: FileReferenceDict,
-    diskSpaceDict: FileDiskSpaceDict
+    params: FileCleanupWorkflowContext & {
+      dict: FileReferenceDict;
+      diskSpaceDict: FileDiskSpaceDict;
+    }
   ): Promise<string[]> {
+    const { context, filesHelper, dict, diskSpaceDict } = params;
     const unreferencedFiles: string[] = [];
     for (const fileId in dict) {
       const file = await filesHelper.readOne(fileId);
@@ -241,12 +248,13 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async processUnreferencedFiles(
-    context: WorkflowRunContext,
-    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
-    unreferencedFiles: string[],
-    diskSpaceDict: FileDiskSpaceDict,
-    fieldName: string
+    params: FileCleanupWorkflowContext & {
+      unreferencedFiles: string[];
+      diskSpaceDict: FileDiskSpaceDict;
+      fieldName: string;
+    }
   ): Promise<void> {
+    const { context, filesHelper, unreferencedFiles, diskSpaceDict, fieldName } = params;
     for (const fileId of unreferencedFiles) {
       const fileSizeAsNumber = diskSpaceDict[fileId] || 0;
       this.statistics.filesUnreferencedDiskSpace += fileSizeAsNumber;
@@ -294,15 +302,15 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
     const hasDirectusFilesFieldIsUnreferenced = this.checkHasUnreferencedField(schema, directusFiles_fieldname_is_unreferenced);
     if (hasDirectusFilesFieldIsUnreferenced) {
-      await this.syncNoLongerUnreferencedFiles(context, filesHelper, dictFileIdsUsedInDatabase, directusFiles_fieldname_is_unreferenced);
+      await this.syncNoLongerUnreferencedFiles({ context, filesHelper, dict: dictFileIdsUsedInDatabase, fieldName: directusFiles_fieldname_is_unreferenced });
     } else {
       await context.logger.appendLog(`The directus_files collection does not have the field "${directusFiles_fieldname_is_unreferenced}". Otherwise, we would have updated the field, to mark the files that are no longer orphaned.`);
     }
 
-    const unreferencedFiles = await this.collectFileSizeStats(context, filesHelper, dictFileIdsUsedInDatabase, dictFileIdsDiskSpace);
+    const unreferencedFiles = await this.collectFileSizeStats({ context, filesHelper, dict: dictFileIdsUsedInDatabase, diskSpaceDict: dictFileIdsDiskSpace });
     this.statistics.filesUnreferencedAmount = unreferencedFiles.length;
 
-    await this.processUnreferencedFiles(context, filesHelper, unreferencedFiles, dictFileIdsDiskSpace, directusFiles_fieldname_is_unreferenced);
+    await this.processUnreferencedFiles({ context, filesHelper, unreferencedFiles, diskSpaceDict: dictFileIdsDiskSpace, fieldName: directusFiles_fieldname_is_unreferenced });
     await this.logSummary(context);
 
     return context.logger.getFinalLogWithStateAndParams({

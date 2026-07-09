@@ -1,13 +1,16 @@
 import { ImageSourcePropType } from 'react-native';
 
-export interface DrawerItem {
-	key: string;
+export interface DrawerItemBaseFields {
 	label: string;
-	renderIcon: (isActive: boolean, color: string) => React.ReactNode;
-	onPress: () => void;
 	hasUnread?: boolean;
 	activeColor?: string;
 	nativeID?: string;
+}
+
+export interface DrawerItem extends DrawerItemBaseFields {
+	key: string;
+	renderIcon: (isActive: boolean, color: string) => React.ReactNode;
+	onPress: () => void;
 }
 
 export interface AppDrawerProps {
