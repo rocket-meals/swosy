@@ -17,7 +17,6 @@ interface FoodOffersOptionsContentProps {
 	onCanteen: () => void;
 	onCalendar: () => void;
 	onBusinessHours: () => void;
-	onUtilization: (() => void) | null;
 	onSettings: () => void;
 }
 
@@ -50,7 +49,6 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	onCanteen,
 	onCalendar,
 	onBusinessHours,
-	onUtilization,
 	onSettings,
 }) => {
 	const { translate } = useLanguage();
@@ -100,16 +98,6 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 			onPress: () => { onBusinessHours(); },
 		},
 	];
-
-	if (onUtilization && appSettings?.utilization_display_enabled) {
-		options.push({
-			key: 'utilization',
-			kind: 'navigation',
-			title: `${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`,
-			icon: <FontAwesome6 name="people-group" size={20} />,
-			onPress: () => { onUtilization(); },
-		});
-	}
 
 	if (appSettings?.foods_ratings_average_display === true) {
 		options.push({
@@ -170,7 +158,6 @@ interface UseMyScrollviewModalFoodOffersOptionsParams {
 	onCanteen: () => void;
 	onCalendar: () => void;
 	onBusinessHours: () => void;
-	onUtilization: (() => void) | null;
 	onSettings: () => void;
 }
 
@@ -190,12 +177,11 @@ export const useMyScrollviewModalFoodOffersOptions = (params: UseMyScrollviewMod
 					onCanteen={params.onCanteen}
 					onCalendar={params.onCalendar}
 					onBusinessHours={params.onBusinessHours}
-					onUtilization={params.onUtilization}
 					onSettings={params.onSettings}
 				/>
 			),
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate, params.onSort, params.onPriceGroup, params.onEatingHabits, params.onCanteen, params.onCalendar, params.onBusinessHours, params.onUtilization, params.onSettings]);
+	}, [closeScrollViewModal, showScrollViewModal, translate, params.onSort, params.onPriceGroup, params.onEatingHabits, params.onCanteen, params.onCalendar, params.onBusinessHours, params.onSettings]);
 
 	return { openFoodOffersOptionsModal };
 };
