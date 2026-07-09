@@ -32,6 +32,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	italic = false,
 	titleNumberOfLines = 0,
 	isAccountRequired = false,
+	accountRequiredGroupPosition,
 	onAccountRequired,
 	nativeID,
 }) => {
@@ -120,8 +121,9 @@ const SettingsList: React.FC<SettingsListProps> = ({
 
 	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} /> : null;
 
+	const accountRequiredPosition = accountRequiredGroupPosition ?? groupPosition;
 	const accountRequiredBorderStyle: ViewStyle =
-		groupPosition === 'middle' || groupPosition === 'bottom'
+		accountRequiredPosition === 'middle' || accountRequiredPosition === 'bottom'
 			? { borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }
 			: { borderWidth: 2 };
 

@@ -72,6 +72,15 @@ type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	 */
 	isAccountRequired?: boolean;
 	/**
+	 * Group position used for the account-required dashed border. Defaults to
+	 * `groupPosition`, where 'middle'/'bottom' rows skip the top border line on
+	 * the assumption that the row above is part of the same locked block and
+	 * already draws it. A locked row whose neighbours are NOT account-required
+	 * (e.g. a single locked row in the middle of a normal group) should pass
+	 * 'single' so its outline is fully closed.
+	 */
+	accountRequiredGroupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+	/**
 	 * The primary/accent color used as the default icon background. Falls
 	 * back to the theme's primary color when omitted.
 	 */

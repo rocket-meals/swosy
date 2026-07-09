@@ -541,6 +541,7 @@ const Settings = () => {
 								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 								handleFunction={openFriendsModal}
 								isAccountRequired={!isRegisteredUser}
+								accountRequiredGroupPosition="single"
 								onAccountRequired={openAccountRequiredModal}
 								groupPosition="middle"
 							/>
