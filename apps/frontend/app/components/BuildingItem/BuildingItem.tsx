@@ -17,6 +17,11 @@ import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import IconButton from '../UI/IconButton';
 import { CardLayoutProps } from '@/components/shared/cardLayoutProps';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useBuildingFavorites from '@/hooks/useBuildingFavorites';
+
+// Positive/favorite border color - matches the "liked" food offer card border (#00B050)
+// used elsewhere in the app for a consistent good/positive accent.
+const FAVORITE_BORDER_COLOR = '#00B050';
 
 
 export interface BuildingItemPropsOptimized extends CardLayoutProps {
@@ -52,6 +57,8 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { show: showScrollViewModal } = useMyScrollViewModal();
+	const { isBuildingFavorite, toggleBuildingFavorite } = useBuildingFavorites();
+	const isFavorite = isBuildingFavorite(campus?.id ?? '');
 
 	const defaultImage = useMemo(() => getImageUrl(projectLogo ?? ''), [projectLogo]);
 	const campus_area_color = campusAreaColor ? campusAreaColor : primaryColor;
@@ -72,6 +79,11 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 			),
 		});
 	}, [showScrollViewModal, translate, theme.screen.text]);
+
+	const handleToggleFavorite = useCallback(() => {
+		if (!campus?.id) return;
+		toggleBuildingFavorite(campus.id);
+	}, [campus?.id, toggleBuildingFavorite]);
 
 	const handleOpenNavigation = useCallback(() => {
 		const coordinates = campus?.coordinates?.coordinates;
@@ -111,6 +123,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 				width: '100%',
 				backgroundColor: theme.card.background,
 				flex: 1,
+				...(isFavorite ? { borderWidth: 3, borderColor: FAVORITE_BORDER_COLOR } : {}),
 			}}
 			imageContainerStyle={{
 				height: cardSize,
@@ -157,6 +170,16 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 							<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
 						</IconButton>
 					)}
+
+					<View style={styles.favoriteButtonContainer}>
+						<TouchableOpacity style={styles.favoriteButton} onPress={handleToggleFavorite}>
+							{isFavorite ? (
+								<MaterialCommunityIcons name="heart" size={20} color={campus_area_color} />
+							) : (
+								<MaterialCommunityIcons name="heart-outline" size={20} color="white" />
+							)}
+						</TouchableOpacity>
+					</View>
 
 					<View style={styles.imageActionContainer}>
 						{isManagement ? (
@@ -273,10 +296,23 @@ const styles = StyleSheet.create({
 	navigationButton: {
 		position: 'absolute',
 		top: 10,
-		right: 10,
+		left: 10,
 		width: 36,
 		height: 36,
 		borderRadius: 18,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	favoriteButtonContainer: {
+		position: 'absolute',
+		top: 10,
+		right: 10,
+	},
+	favoriteButton: {
+		width: 35,
+		height: 35,
+		borderRadius: 50,
+		backgroundColor: 'rgba(0,0,0,0.45)',
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
