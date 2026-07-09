@@ -10,11 +10,23 @@ import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { StringHelper } from 'repo-depkit-common';
+import { UriScheme } from '@/constants/UriScheme';
+import { resolveLocationHref } from '@/helper/MarkdownLinkHelper';
 
 export interface MyMarkdownProps {
 	content: string;
 	textColor?: string;
 }
+
+// CommonMark link destinations can't contain a raw, unescaped space, so a
+// `[text](geo:52.1, 8.0)`-style link (space after the comma) silently fails to
+// parse as a link and falls through as literal text. Location links are the
+// only ones content authors realistically write with a space in the
+// coordinates, so strip whitespace from just those destinations before parsing.
+const LOCATION_LINK_DESTINATION_PATTERN = new RegExp(`\\((${UriScheme.GEO}|${UriScheme.MAPS}|latlon:)([^)]*)\\)`, 'gi');
+
+export const sanitizeLocationLinkWhitespace = (sourceContent: string) =>
+	sourceContent.replace(LOCATION_LINK_DESTINATION_PATTERN, (_match, scheme, coordinates) => `(${scheme}${coordinates.replace(/\s+/g, '')})`);
 
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
@@ -45,6 +57,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	if (option_find_linebreaks) {
 		sourceContent = replaceLinebreaks(sourceContent);
 	}
+	sourceContent = sanitizeLocationLinkWhitespace(sourceContent);
 
 	const result = md.render(sourceContent);
 	const source = { html: result || '' };
@@ -88,8 +101,12 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 			const { data } = props.tnode;
 			const text = data || props.children[0]?.data;
 
+			const hrefLower = href?.toLowerCase() ?? '';
+			const isLatLonLink = hrefLower.startsWith('latlon:');
+			const isLocationLink = isLatLonLink || hrefLower.startsWith(UriScheme.GEO) || hrefLower.startsWith(UriScheme.MAPS);
+
 			let finalHref = href;
-			if (href?.toLowerCase().startsWith('latlon:')) {
+			if (isLatLonLink) {
 				const coordinateString = href.slice('latlon:'.length);
 				const [latitudeRaw, longitudeRaw] = coordinateString.split(',');
 
@@ -99,6 +116,9 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				if (!Number.isNaN(latitude) && !Number.isNaN(longitude)) {
 					finalHref = CommonSystemActionHelper.getGoogleMapsUrl(latitude, longitude);
 				}
+			} else if (isLocationLink) {
+				const { resolvedHref } = resolveLocationHref(href);
+				finalHref = resolvedHref ?? href;
 			}
 
 			const handlePress = () => {
@@ -113,7 +133,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				iconLeft = <FontAwesome6 name="phone" size={20} color={contrastColor} />;
 			} else if (finalHref?.startsWith('mailto:')) {
 				iconLeft = <MaterialCommunityIcons name="email" size={24} color={contrastColor} />;
-			} else if (href?.toLowerCase().startsWith('latlon:')) {
+			} else if (isLocationLink) {
 				iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
 			}
 

@@ -369,6 +369,7 @@ export enum TranslationKeys {
 	markdown_example_line_breaks = 'markdown_example_line_breaks',
 	markdown_example_list = 'markdown_example_list',
 	markdown_example_links = 'markdown_example_links',
+	markdown_example_geo = 'markdown_example_geo',
 	tap_to_edit = 'tap_to_edit',
 	haptics_test = 'haptics_test',
 	haptics_test_description = 'haptics_test_description',

@@ -9,6 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import MyMarkdown from '@/components/MyMarkdown';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 
 type MarkdownExample = {
 	id: string;
@@ -40,9 +41,16 @@ const MarkdownTestScreen = () => {
 				title: translate(TranslationKeys.markdown_example_links),
 				content: '[Webseite](https://www.swosy.de)\\n\\n[Mail](mailto:test@swosy.de)\\n\\n[Telefon](tel:+49123456789)',
 			},
+			{
+				id: 'geo',
+				title: translate(TranslationKeys.markdown_example_geo),
+				content: '[Route anzeigen](geo:52.27158519499881, 8.04527493587901)',
+			},
 		],
 		[translate]
 	);
+
+	const geoMarkdownContent = '[Route anzeigen](geo:52.27158519499881, 8.04527493587901)';
 
 	const openEditor = () => {
 		openTextInputModal({
@@ -77,6 +85,13 @@ const MarkdownTestScreen = () => {
 						<MyMarkdown content={example.content} textColor={theme.screen.text} />
 					</View>
 				))}
+
+				{/* Building/campus/housing description text uses CustomMarkdown (not MyMarkdown) -
+				    keep a geo: example here too so both renderers stay covered. */}
+				<View style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
+					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{`${translate(TranslationKeys.markdown_example_geo)} (CustomMarkdown)`}</Text>
+					<CustomMarkdown content={geoMarkdownContent} backgroundColor={theme.screen.iconBg} />
+				</View>
 			</View>
 		</ScrollView>
 	);
