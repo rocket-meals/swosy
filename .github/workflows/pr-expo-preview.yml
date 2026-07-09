@@ -243,9 +243,7 @@ jobs:
 
       - name: "🔨 Build & Deploy Web Preview"
         run: |
-          # Use the pinned "expo" dependency already installed by the setup step, instead of
-          # "npx expo" which can fetch and run an on-demand, unpinned package version.
-          yarn expo export -p web
+          npx expo export -p web
           yarn run copy-assets
           yarn gh-pages --nojekyll -d dist --dest "pr-${{ github.event.pull_request.number }}"
         working-directory: ./apps/frontend/app
