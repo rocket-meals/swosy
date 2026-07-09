@@ -94,7 +94,8 @@ const Index: React.FC = () => {
 
 	// Sorting by favorites should not jump around live while the user is toggling
 	// hearts on this screen - it should only be re-evaluated the next time the
-	// screen is opened (i.e. gains focus again), using a frozen snapshot.
+	// screen is opened (i.e. gains focus again) or the user pulls to refresh,
+	// using a frozen snapshot.
 	const buildingsFavoriteIdsRef = useRef(buildingsFavoriteIds);
 	buildingsFavoriteIdsRef.current = buildingsFavoriteIds;
 	const [favoriteIdsSortSnapshot, setFavoriteIdsSortSnapshot] = useState<string[]>(buildingsFavoriteIds);
@@ -298,6 +299,7 @@ const Index: React.FC = () => {
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
+		setFavoriteIdsSortSnapshot(buildingsFavoriteIdsRef.current);
 		fetchAllCampuses(selectedBuilding ?? null).finally(() => setRefreshing(false));
 	}, [fetchAllCampuses, selectedBuilding]);
 
