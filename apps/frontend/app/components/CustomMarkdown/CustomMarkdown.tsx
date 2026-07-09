@@ -8,6 +8,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
 import { StringHelper } from 'repo-depkit-common';
+import { resolveLocationHref } from '@/helper/MarkdownLinkHelper';
 
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
@@ -17,6 +18,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 		// Regex patterns for different content types
 		const contentPatterns = {
 			email: /\[([^\]]+)]\((mailto:[^\)]+)\)/,
+			location: /\[([^\]]+)]\(((?:geo|maps):[^\)]+)\)/i,
 			link: /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/,
 			image: /!\[([^\]]*)]\(([^)]+)\)/,
 			heading: /^#{1,3}\s*(.*)$/,
@@ -128,6 +130,18 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 							type: 'email',
 							displayText: match?.[1],
 							email: match?.[2],
+							indent: indentLength,
+						});
+						continue;
+					}
+
+					if (contentPatterns.location.test(trimmedForMatch)) {
+						flushTextContent();
+						const match = trimmedForMatch.match(contentPatterns.location);
+						stack[stack.length - 1].items.push({
+							type: 'location',
+							displayText: match?.[1],
+							url: match?.[2],
 							indent: indentLength,
 						});
 						continue;
@@ -274,6 +288,15 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 								<RedirectButton type="link" label={item.displayText} onClick={() => Linking.openURL(item.url)} backgroundColor={backgroundColor || ''} color={contrastColor} />
 							</View>
 						);
+
+					case 'location': {
+						const { resolvedHref } = resolveLocationHref(item.url);
+						return (
+							<View key={`location-${level}-${index}`} style={{ marginLeft: calculateMarginLeft(level, item.indent || 0), marginBottom: 10 }}>
+								<RedirectButton type="location" label={item.displayText} onClick={() => resolvedHref && Linking.openURL(resolvedHref)} backgroundColor={backgroundColor || ''} color={contrastColor} />
+							</View>
+						);
+					}
 
 					case 'image':
 						return <ImageContent key={`image-${level}-${index}`} url={item.url} altText={item.altText} level={level} indent={item.indent || 0} />;

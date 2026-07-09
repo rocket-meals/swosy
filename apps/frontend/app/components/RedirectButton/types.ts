@@ -1,5 +1,5 @@
 export interface RedirectButtonProps {
-	type: 'email' | 'link';
+	type: 'email' | 'link' | 'location';
 	label: string;
 	backgroundColor?: string;
 	color?: string;

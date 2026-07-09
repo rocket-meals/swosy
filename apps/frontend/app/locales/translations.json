@@ -6167,6 +6167,16 @@
     "tr": "Örnek: bağlantılar",
     "zh": "示例：链接"
   },
+  "markdown_example_geo": {
+    "de": "Beispiel: Standort (geo:)",
+    "en": "Example: location (geo:)",
+    "ar": "Example: location (geo:)",
+    "es": "Ejemplo: ubicación (geo:)",
+    "fr": "Exemple : localisation (geo:)",
+    "ru": "Пример: местоположение (geo:)",
+    "tr": "Örnek: konum (geo:)",
+    "zh": "示例：位置（geo:）"
+  },
   "tap_to_edit": {
     "de": "Tippen zum Bearbeiten",
     "en": "Tap to edit",
