@@ -12,7 +12,9 @@ export function computeFoodOffersHash(offers: DatabaseTypes.Foodoffers[]): strin
     if (!offers || offers.length === 0) return 'empty';
     // Use ids + result_hash (or date_updated fallback) to create a lightweight fingerprint
     const parts = offers.map(o => `${o.id}:${o.result_hash || o.date_updated || ''}`);
-    parts.sort();
+    // Deterministic UTF-16 code unit comparison - fingerprint parts are technical IDs,
+    // so the order must not depend on the runtime locale.
+    parts.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
     return parts.join('|');
 }
 
@@ -98,7 +100,8 @@ export async function cacheFoodOffers(
         const dates = tracker[canteenId] || [];
         if (!dates.includes(date)) {
             dates.push(date);
-            dates.sort();
+            // ISO date strings - deterministic code unit comparison sorts them chronologically
+            dates.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
             tracker[canteenId] = dates;
         }
         await setTracker(tracker);

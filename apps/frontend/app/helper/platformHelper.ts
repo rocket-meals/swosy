@@ -1,7 +1,9 @@
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
-const usePlatformHelper = () => {
+// Plain helper factory (uses no React state): call this from non-component code
+// like helpers/classes. Components should keep using the usePlatformHelper hook.
+export const getPlatformHelper = () => {
 	const isWeb = () => Platform.OS === 'web';
 
 	const isIOS = () => Platform.OS === 'ios';
@@ -52,5 +54,7 @@ const usePlatformHelper = () => {
 		getAndroidPreferredBrowserPackageOption,
 	};
 };
+
+const usePlatformHelper = () => getPlatformHelper();
 
 export default usePlatformHelper;

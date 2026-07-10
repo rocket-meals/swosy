@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
-import usePlatformHelper from '@/helper/platformHelper';
+import { getPlatformHelper } from '@/helper/platformHelper';
 import { getDeviceInformationWithoutPushToken } from './DeviceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 // import {useSynchedDevices} from "@/states/SynchedDevices";
@@ -79,7 +79,7 @@ export class NotificationHelper {
 	}
 
 	static isDeviceNotificationPermissionUndetermined(notificationObj: NotificationObjType) {
-		const { isIOS, isAndroid } = usePlatformHelper();
+		const { isIOS, isAndroid } = getPlatformHelper();
 		if (isIOS()) {
 			return notificationObj?.permission?.ios?.status === 0;
 		} else if (isAndroid()) {
