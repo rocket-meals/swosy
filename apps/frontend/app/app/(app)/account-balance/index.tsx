@@ -49,9 +49,18 @@ export interface AccountBalanceScreenProps {
 	 * opens this screen in a modal and wants the scan to start immediately.
 	 */
 	autoStartNfc?: boolean;
+	/**
+	 * Set when this screen is rendered inside an already-open modal (e.g. the
+	 * foodoffers quick-access bottom sheet, see useAccountBalanceModal). The NFC
+	 * instruction then replaces this screen's entire content in place until the
+	 * read finished, instead of opening a second modal stacked on top of the
+	 * first one. When false/absent (standalone drawer route), the instruction
+	 * opens its own modal as before.
+	 */
+	isInModal?: boolean;
 }
 
-const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNfc = false }) => {
+const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNfc = false, isInModal = false }) => {
 	useSetPageTitle(TranslationKeys.accountbalance);
 	const toast = useToast();
 	const { theme } = useTheme();
@@ -68,12 +77,13 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const [animationJson, setAmimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
-        // The NFC "hold your card" instruction is rendered as a local RN Modal
-        // instead of via the global modal stack: the account-balance screen can
-        // itself be shown on that stack (foodoffers quick-access), and a global
-        // close() from hideInstruction would pop - and thus close - the balance
-        // modal whenever no instruction popup was actually shown (iOS uses the
-        // system NFC sheet, cancelled reads, ...).
+        // The NFC "hold your card" instruction is deliberately NOT pushed onto the
+        // global modal stack: a global close() from hideInstruction would pop - and
+        // thus close - the balance modal whenever no instruction popup was actually
+        // shown (iOS uses the system NFC sheet, cancelled reads, ...). Instead, when
+        // this screen already lives inside a modal (isInModal) the instruction
+        // replaces the screen's own content in place, and only on the standalone
+        // drawer route does it open a local RN Modal.
         const [isInstructionVisible, setIsInstructionVisible] = useState(false);
         const { addPointsForBalanceRead } = useAppRatingScore();
 
@@ -308,6 +318,50 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 		}
 	}, [autoPlay, animationJson]);
 
+	const instructionContent = (
+		<>
+			<View style={styles.sheetHeader}>
+				<Text style={{ ...styles.sheetHeading, fontSize: 18, color: theme.screen.text }}>NFC</Text>
+				<TouchableOpacity
+					style={{ ...styles.sheetcloseButton, position: 'absolute', right: 10, backgroundColor: theme.screen.iconBg }}
+					onPress={hideInstruction}
+					accessibilityRole="button"
+				>
+					<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+				</TouchableOpacity>
+			</View>
+			<View style={styles.sheetView}>
+				<Text
+					style={{
+						...styles.nfcInstructionRead,
+						color: theme.screen.text,
+					}}
+				>
+					{translate(TranslationKeys.nfcInstructionRead)}
+				</Text>
+				<View style={styles.nfcAnimationContainer}>
+					<LottieView
+						source={require('@/assets/gifs/nfc.json')}
+						resizeMode="contain"
+						style={styles.nfcAnimation}
+						autoPlay
+						loop
+					/>
+				</View>
+			</View>
+		</>
+	);
+
+	// Inside an already-open modal: replace the whole balance content with the
+	// instruction until the read finished, instead of stacking a second modal.
+	if (isInModal && isInstructionVisible) {
+		return (
+			<View style={{ backgroundColor: theme.screen.background, paddingBottom: 40 }}>
+				{instructionContent}
+			</View>
+		);
+	}
+
 	return (
 		<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }} contentContainerStyle={{ alignItems: 'center' }}>
 			<View style={styles.imageContainer}>{renderLottie}</View>
@@ -412,46 +466,20 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 				</DebugView>
 			</View>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
-                        <Modal
-                                visible={isInstructionVisible}
-                                transparent
-                                animationType="fade"
-                                onRequestClose={hideInstruction}
-                        >
-                                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-                                        <View style={{ ...styles.sheetBackground, backgroundColor: theme.screen.background, paddingBottom: 40 }}>
-                                                <View style={styles.sheetHeader}>
-                                                        <Text style={{ ...styles.sheetHeading, fontSize: 18, color: theme.screen.text }}>NFC</Text>
-                                                        <TouchableOpacity
-                                                                style={{ ...styles.sheetcloseButton, position: 'absolute', right: 10, backgroundColor: theme.screen.iconBg }}
-                                                                onPress={hideInstruction}
-                                                                accessibilityRole="button"
-                                                        >
-                                                                <MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-                                                        </TouchableOpacity>
-                                                </View>
-                                                <View style={styles.sheetView}>
-                                                        <Text
-                                                                style={{
-                                                                        ...styles.nfcInstructionRead,
-                                                                        color: theme.screen.text,
-                                                                }}
-                                                        >
-                                                                {translate(TranslationKeys.nfcInstructionRead)}
-                                                        </Text>
-                                                        <View style={styles.nfcAnimationContainer}>
-                                                                <LottieView
-                                                                        source={require('@/assets/gifs/nfc.json')}
-                                                                        resizeMode="contain"
-                                                                        style={styles.nfcAnimation}
-                                                                        autoPlay
-                                                                        loop
-                                                                />
-                                                        </View>
+                        {!isInModal && (
+                                <Modal
+                                        visible={isInstructionVisible}
+                                        transparent
+                                        animationType="fade"
+                                        onRequestClose={hideInstruction}
+                                >
+                                        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                                                <View style={{ ...styles.sheetBackground, backgroundColor: theme.screen.background, paddingBottom: 40 }}>
+                                                        {instructionContent}
                                                 </View>
                                         </View>
-                                </View>
-                        </Modal>
+                                </Modal>
+                        )}
                 </ScrollView>
         );
 };

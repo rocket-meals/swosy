@@ -12,7 +12,7 @@ const useAccountBalanceModal = () => {
 		(autoStartNfc: boolean = false) => {
 			show({
 				title: translate(TranslationKeys.accountbalance),
-				children: <AccountBalanceScreen autoStartNfc={autoStartNfc} />,
+				children: <AccountBalanceScreen autoStartNfc={autoStartNfc} isInModal={true} />,
 				disableHorizontalPadding: true,
 			});
 		},
