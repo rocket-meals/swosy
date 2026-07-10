@@ -55,10 +55,10 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection /*, MyAvatar */ } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
-import { useAvatarProfileEditor, /* AVATAR_BACKGROUND, */ AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
 import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -504,19 +504,18 @@ const Settings = () => {
 					<View style={groupStyle}>
 						<SettingsList
 							leftIconComponent={
-								// Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
-								// settingsAvatarConfig ? (
-								// 	<MyAvatar
-								// 		config={settingsAvatarConfig}
-								// 		size={AVATAR_SETTINGS_ROW_SIZE / 2}
-								// 		rounded={true}
-								// 		backgroundColor={AVATAR_BACKGROUND}
-								// 	/>
-								// ) : (
+								settingsAvatarConfig ? (
+									<MyAvatar
+										config={settingsAvatarConfig}
+										size={AVATAR_SETTINGS_ROW_SIZE / 2}
+										rounded={true}
+										backgroundColor={AVATAR_BACKGROUND}
+									/>
+								) : (
 									<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 										<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 									</View>
-								// )
+								)
 							}
 							value={translate(TranslationKeys.avatar_appearance)}
 							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}

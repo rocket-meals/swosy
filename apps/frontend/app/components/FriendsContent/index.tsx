@@ -20,8 +20,8 @@ import ProjectButton from '@/components/ProjectButton';
 import DebugView from '@/components/DebugView';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Clipboard from 'expo-clipboard';
-// import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
-import { useAvatarProfileEditor, /* AVATAR_BACKGROUND, */ AVATAR_SETTINGS_ROW_SIZE, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
+import { MyAvatar, AvatarSize } from 'repo-depkit-common-ui';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE, parseProfileAvatar } from '@/hooks/useAvatarProfileEditor';
 import { UserHelper } from '@/helper/UserHelper';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
@@ -611,7 +611,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			title: translate(TranslationKeys.friendships_details),
 			children: (
 				<View style={{ gap: 16 }}>
-					{/* Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
 					{otherAvatar && (
 						<View style={{ alignItems: 'center', paddingVertical: 8 }}>
 							<MyAvatar
@@ -622,7 +621,6 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 							/>
 						</View>
 					)}
-					*/}
 					<View>
 						<SettingsList
 							label={translate(TranslationKeys.friendships_friend_profile_id)}
@@ -691,24 +689,21 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			return (
 				<SettingsList
 					key={friendship.id}
-					// Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
-					// iconBgColor={otherAvatar ? undefined : statusColor}
-					iconBgColor={statusColor}
+					iconBgColor={otherAvatar ? undefined : statusColor}
 					leftIconComponent={
-						// otherAvatar ? (
-						// 	<MyAvatar
-						// 		config={otherAvatar}
-						// 		size={AvatarSize.SMALL}
-						// 		rounded={true}
-						// 		backgroundColor={AVATAR_BACKGROUND}
-						// 	/>
-						// ) : undefined
-						undefined
+						otherAvatar ? (
+							<MyAvatar
+								config={otherAvatar}
+								size={AvatarSize.SMALL}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						) : undefined
 					}
 					leftIcon={
-						// otherAvatar ? undefined : (
+						otherAvatar ? undefined : (
 							<MaterialCommunityIcons name="account-group" size={24} color="white" />
-						// )
+						)
 					}
 					label={showStatus ? translateFriendshipStatus(friendship.friendship_status) : undefined}
 					value={displayLabel}
@@ -736,19 +731,18 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				{/* Profile Info */}
 				<SettingsList
 					leftIconComponent={
-						// Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
-						// ownAvatarConfig ? (
-						// 	<MyAvatar
-						// 		config={ownAvatarConfig}
-						// 		size={AVATAR_SETTINGS_ROW_SIZE / 2}
-						// 		rounded={true}
-						// 		backgroundColor={AVATAR_BACKGROUND}
-						// 	/>
-						// ) : (
+						ownAvatarConfig ? (
+							<MyAvatar
+								config={ownAvatarConfig}
+								size={AVATAR_SETTINGS_ROW_SIZE / 2}
+								rounded={true}
+								backgroundColor={AVATAR_BACKGROUND}
+							/>
+						) : (
 							<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 								<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 							</View>
-						// )
+						)
 					}
 					value={translate(TranslationKeys.avatar_appearance)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
