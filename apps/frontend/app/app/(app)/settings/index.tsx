@@ -502,21 +502,21 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
+						{/* Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
 						<SettingsList
 							leftIconComponent={
-								// Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
-								// settingsAvatarConfig ? (
-								// 	<MyAvatar
-								// 		config={settingsAvatarConfig}
-								// 		size={AVATAR_SETTINGS_ROW_SIZE / 2}
-								// 		rounded={true}
-								// 		backgroundColor={AVATAR_BACKGROUND}
-								// 	/>
-								// ) : (
+								settingsAvatarConfig ? (
+									<MyAvatar
+										config={settingsAvatarConfig}
+										size={AVATAR_SETTINGS_ROW_SIZE / 2}
+										rounded={true}
+										backgroundColor={AVATAR_BACKGROUND}
+									/>
+								) : (
 									<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 										<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 									</View>
-								// )
+								)
 							}
 							value={translate(TranslationKeys.avatar_appearance)}
 							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
@@ -525,13 +525,14 @@ const Settings = () => {
 							onAccountRequired={openAccountRequiredModal}
 							groupPosition="top"
 						/>
+						*/}
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition="middle"
+							groupPosition="top"
 						/>
 						{showFriendsInSettings && (
 							<SettingsList
