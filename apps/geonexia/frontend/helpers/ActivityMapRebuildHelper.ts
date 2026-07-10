@@ -471,9 +471,11 @@ function computeParentInfo(
 		}
 
 		const allChildren = cellToChildren(parentH3Index, res);
+		// H3 index strings - deterministic code unit comparison keeps child numbering
+		// identical across devices regardless of locale.
 		const nonCenterChildren = allChildren
 			.filter((c) => c !== centerChild)
-			.sort();
+			.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 		const idx = nonCenterChildren.indexOf(h3Index);
 		// idx is 0–5 for the non-center children → add 1 to reserve 0 for center
 		const parentChildIndex = idx >= 0 ? idx + 1 : -1;

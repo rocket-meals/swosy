@@ -41,13 +41,22 @@ jobs:
           done
 
       - name: "🌐 Install Chrome"
-        uses: browser-actions/setup-chrome@v2
+        uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2
         with:
           chrome-version: stable
 
       - name: "🎭 Install Maestro CLI"
         run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          # Pinned Maestro release, downloaded over enforced HTTPS and verified
+          # against its published SHA-256 checksum before anything is executed.
+          MAESTRO_VERSION="cli-2.6.1"
+          MAESTRO_SHA256="3440825f514f537c6a96bcf5de995780c2a4a7f83a43208fdc95d4f1fecfad3b"
+          curl -fsSL --proto '=https' --tlsv1.2 -o /tmp/maestro.zip "https://github.com/mobile-dev-inc/Maestro/releases/download/${MAESTRO_VERSION}/maestro.zip"
+          echo "${MAESTRO_SHA256}  /tmp/maestro.zip" | sha256sum --check --strict
+          unzip -q /tmp/maestro.zip -d "$HOME/.maestro-install"
+          mkdir -p "$HOME/.maestro"
+          cp -r "$HOME/.maestro-install/maestro/"* "$HOME/.maestro/"
+          chmod +x "$HOME/.maestro/bin/maestro"
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: "📝 Generate Maestro YAML from TypeScript tests"

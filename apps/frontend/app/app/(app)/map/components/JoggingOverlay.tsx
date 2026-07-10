@@ -5,24 +5,18 @@ import { MaterialIcons } from '@expo/vector-icons';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
+import type { GpsRoutePoint, SpeedStats } from 'repo-depkit-common';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type RoutePoint = {
-	lat: number;
-	lng: number;
-	altitude: number | null;
-	speed: number | null; // m/s from GPS, may be null or negative
-	timestamp: number;
-};
+// Point/speed shapes are shared with geonexia's activity recording via
+// repo-depkit-common so the two features can't drift apart.
+type RoutePoint = GpsRoutePoint;
 
-type RunStats = {
+type RunStats = SpeedStats & {
 	distanceKm: number;
 	durationSeconds: number;
 	paceMinPerKm: number;
-	maxSpeedKmh: number;
-	minSpeedKmh: number;
-	avgSpeedKmh: number;
 	kcal: number;
 	steps: number;
 	elevationGainM: number;

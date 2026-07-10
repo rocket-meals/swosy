@@ -1871,7 +1871,9 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		if (res <= 0) return null;
 		const parentIndex = cellToParent(h3Index, res - 1);
 		if (!parentIndex) return null;
-		const siblings = cellToChildren(parentIndex, res).sort();
+		// H3 index strings - deterministic code unit comparison keeps child numbering
+		// identical across devices regardless of locale.
+		const siblings = cellToChildren(parentIndex, res).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 		const childNumber = siblings.indexOf(h3Index);
 		return {
 			parentIndex,
@@ -2839,7 +2841,7 @@ export default function RecordScreen() {
 		Object.entries(state.hexTiles.records)
 			.filter(([, r]) => r.tileImage || r.billboard || r.billboards || r.billboardsTexture)
 			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}|${JSON.stringify(r.billboardsTexture ?? {})}`)
-			.sort()
+			.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
 			.join('\n'),
 	);
 

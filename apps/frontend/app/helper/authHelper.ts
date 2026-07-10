@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import usePlatformHelper from './platformHelper';
+import { getPlatformHelper } from './platformHelper';
 
 const preferInkognitoMode = true;
 
@@ -35,7 +35,7 @@ export const handleWebLogin = async (loginUrl: string, redirectUrl: string, code
 };
 
 export const handleNativeLogin = async (loginUrl: string, redirectUrl: string, codeVerifier: string, getToken: (codeVerifier: string, code: string) => void) => {
-	const { getAndroidPreferredBrowserPackageOption } = usePlatformHelper();
+	const { getAndroidPreferredBrowserPackageOption } = getPlatformHelper();
 	const isAndroid = Platform.OS === 'android';
 	let result = null;
 

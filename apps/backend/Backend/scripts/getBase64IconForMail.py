@@ -12,6 +12,24 @@ from io import BytesIO
 # Delimiter to parse icon family and icon name
 IconParseDelimiter = ':'
 
+# CLI-controlled paths must stay inside the repository (or the current working
+# directory when not running inside a git checkout) before they are accessed.
+def require_inside_base_dir(path_value):
+    base_dir = os.getcwd()
+    current = base_dir
+    while True:
+        if os.path.isdir(os.path.join(current, '.git')):
+            base_dir = current
+            break
+        parent = os.path.dirname(current)
+        if parent == current:
+            break
+        current = parent
+    resolved = os.path.realpath(path_value)
+    if resolved != base_dir and not resolved.startswith(base_dir + os.sep):
+        raise ValueError(f"Refusing to access path outside '{base_dir}': '{resolved}'")
+    return resolved
+
 # Function to dynamically load available icon families based on glyphmap filenames
 def load_available_icon_families(glyphmaps_path, fonts_path):
     available_families = {}
@@ -128,9 +146,10 @@ if __name__ == "__main__":
         node_modules_path = find_node_modules_directory()
 
     if node_modules_path:
-        # Canonicalize the CLI-controlled path (resolves "..", symlinks) before it is used
-        # to build any file path that gets opened below.
-        node_modules_path = os.path.realpath(node_modules_path)
+        # Canonicalize the CLI-controlled path (resolves "..", symlinks) and validate that
+        # it stays inside the repository before it is used to build any file path that
+        # gets opened below.
+        node_modules_path = require_inside_base_dir(node_modules_path)
 
     if not node_modules_path or not os.path.isdir(node_modules_path):
         print("Error: node_modules directory not found. Please specify it with --node_modules <path>.")

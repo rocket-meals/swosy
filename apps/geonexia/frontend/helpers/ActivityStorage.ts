@@ -1,5 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import type { RedLineRouteFields, RecordingSessionFields } from './ActivityRouteSharedTypes';
+import type { GpsRoutePoint, SpeedStats as CommonSpeedStats } from 'repo-depkit-common';
 
 // ─── Weather & Rating types ───────────────────────────────────────────────────
 
@@ -46,16 +47,10 @@ export type ComputedHexTileEntry = {
 /**
  * Min/max/average speed observed over some span of GPS points.
  * Shared by `ComputedActivityData` and `RunStats`, which both track the same
- * three speed metrics for an activity.
+ * three speed metrics for an activity. The shape lives in repo-depkit-common
+ * because the rocket-meals jogging overlay tracks the same metrics.
  */
-export type SpeedStats = {
-	/** Maximum speed in km/h observed during the activity */
-	maxSpeedKmh: number;
-	/** Minimum speed in km/h observed during the activity */
-	minSpeedKmh: number;
-	/** Average speed in km/h during the activity */
-	avgSpeedKmh: number;
-};
+export type SpeedStats = CommonSpeedStats;
 
 /**
  * Pre-computed data derived from an activity's raw GPS points.
@@ -79,12 +74,9 @@ export type ComputedActivityData = SpeedStats & {
 	enclosedHexTiles: string[];
 };
 
-export type RoutePoint = {
-	lat: number;
-	lng: number;
-	altitude: number | null;
-	speed: number | null;
-	timestamp: number;
+// The base point shape lives in repo-depkit-common because the rocket-meals
+// jogging overlay records the same GPS track points.
+export type RoutePoint = GpsRoutePoint & {
 	/**
 	 * True when this point was synthetically generated to fill a gap in the
 	 * recorded GPS track (e.g. after a crash recovery), rather than being

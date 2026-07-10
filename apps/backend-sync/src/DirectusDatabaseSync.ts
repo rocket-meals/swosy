@@ -253,13 +253,23 @@ export class DirectusDatabaseSync {
     console.log(' -  Enabled required settings');
   }
 
+  // Validates a CLI-controlled value against an anchored allowlist pattern before it is
+  // passed to an OS command, so faulty or malicious CLI arguments cannot smuggle in
+  // unexpected content (see SonarCloud S8705).
+  private static requireSafeCliValue(name: string, value: string, pattern: RegExp): string {
+    if (!pattern.test(value)) {
+      throw new Error(`Refusing to pass unsafe value for "${name}" to the directus-sync CLI`);
+    }
+    return value;
+  }
+
   private getDirectusSyncArgs(): string[] {
     const preserveIds = 'dashboards,operations,panels,policies,roles,translations';
     return [
-      '--directus-url', this.config.directusInstanceUrl,
-      '--directus-email', this.config.adminEmail,
-      '--directus-password', this.config.adminPassword,
-      '--dump-path', this.dumpPath,
+      '--directus-url', DirectusDatabaseSync.requireSafeCliValue('directus-url', this.config.directusInstanceUrl, /^https?:\/\/[\w.-]+(?::\d+)?(?:\/[\w./-]*)?$/),
+      '--directus-email', DirectusDatabaseSync.requireSafeCliValue('directus-email', this.config.adminEmail, /^[^\s@]+@[^\s@]+$/),
+      '--directus-password', DirectusDatabaseSync.requireSafeCliValue('directus-password', this.config.adminPassword, /^[\x20-\x7e]+$/),
+      '--dump-path', DirectusDatabaseSync.requireSafeCliValue('dump-path', this.dumpPath, /^[\w./ -]+$/),
       '--preserve-ids', preserveIds,
     ];
   }

@@ -1,9 +1,9 @@
 import { Linking } from 'react-native';
 // import {LocationType} from '@/helper/geo/LocationType';
-import usePlatformHelper from '@/helper/platformHelper';
+import { getPlatformHelper } from '@/helper/platformHelper';
 import * as IntentLauncher from 'expo-intent-launcher';
 
-const { isAndroid, isIOS } = usePlatformHelper();
+const { isAndroid, isIOS } = getPlatformHelper();
 
 const isAndroidDevice = isAndroid();
 const isIOSDevice = isIOS();

@@ -36,7 +36,7 @@ function getTranslationNullReason(languageCode: string): string {
   if (!DEEPL_SUPPORTED_TARGET_PREFIXES.has(prefix)) {
     return (
       'DeepL does not support the language prefix "' + prefix + '" (from "' + languageCode + '"). ' +
-      'Supported prefixes: ' + [...DEEPL_SUPPORTED_TARGET_PREFIXES].sort().join(', ') + '.'
+      'Supported prefixes: ' + [...DEEPL_SUPPORTED_TARGET_PREFIXES].sort((a, b) => a.localeCompare(b)).join(', ') + '.'
     );
   }
   return (

@@ -3273,6 +3273,16 @@
     "tr": "App Download Selection",
     "zh": "App Download Selection"
   },
+  "app_banner_open": {
+    "de": "Öffnen",
+    "en": "Open",
+    "ar": "فتح",
+    "es": "Abrir",
+    "fr": "Ouvrir",
+    "ru": "Открыть",
+    "tr": "Aç",
+    "zh": "打开"
+  },
   "react_native_qrcode_svg": {
     "de": "React Native QRCode SVG",
     "en": "React Native QRCode SVG",

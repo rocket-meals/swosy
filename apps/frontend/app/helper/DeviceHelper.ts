@@ -3,7 +3,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DatabaseTypes } from 'repo-depkit-common';
 import * as DeviceInfo from 'expo-device';
 import { DeviceType } from 'expo-device';
-import usePlatformHelper from '@/helper/platformHelper';
+import { getPlatformHelper } from '@/helper/platformHelper';
 
 /**
  * Defines the breakpoints for responsive design.
@@ -112,7 +112,7 @@ export function useInsets(): EdgeInsets {
 }
 
 export function getIsLandScape(): boolean {
-	const { isWeb } = usePlatformHelper();
+	const { isWeb } = getPlatformHelper();
 	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	let isLandscape = windowWidth > windowHeight;
@@ -141,7 +141,7 @@ export function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
 
 export function getDeviceInformationWithoutPushToken(): Partial<DatabaseTypes.Devices> {
 	// Promise<DeviceInformationType>
-	const { getPlatformDisplayName, isIOS, isAndroid, isWeb } = usePlatformHelper();
+	const { getPlatformDisplayName, isIOS, isAndroid, isWeb } = getPlatformHelper();
 	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	const windowScale = Dimensions.get('screen').scale;

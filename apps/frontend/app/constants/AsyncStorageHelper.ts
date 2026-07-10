@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// ⚠️ Adding a new key here that stores user-specific data? Go add its removal
+// to helper/logoutHelper.ts too (see the reminder comment on performLogout) -
+// otherwise it silently survives a logout on shared/kiosk devices.
+
 /**
  * Save a value to AsyncStorage.
  *
