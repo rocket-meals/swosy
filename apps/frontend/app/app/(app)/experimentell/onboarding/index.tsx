@@ -393,20 +393,6 @@ const OnboardingScreen = () => {
 		});
 	}, [readyOpacity]);
 
-	const handleNext = useCallback(() => {
-		// The profile can become complete while the user is still on the welcome step: after a
-		// fresh login the server profile (with canteen + price_group) arrives async, and by then
-		// (app)/index.tsx's skip check has already routed here. In that case "weiter" takes the
-		// user straight to food offers instead of through steps that are already configured.
-		if (isFirstStep && hasCompleteProfile) {
-			handleStart();
-			return;
-		}
-		if (!isLastStep) {
-			goToStep(currentStepIndex + 1);
-		}
-	}, [isFirstStep, hasCompleteProfile, handleStart, isLastStep, currentStepIndex, goToStep]);
-
 	const handleBack = useCallback(() => {
 		if (!isFirstStep) {
 			goToStep(currentStepIndex - 1);
@@ -438,6 +424,26 @@ const OnboardingScreen = () => {
 			}
 		}
 	}, [dispatch, goToStep, user, profile, profileHelper]);
+
+	const handleNext = useCallback(() => {
+		// The profile can become complete while the user is still on the welcome step: after a
+		// fresh login the server profile (with canteen + price_group) arrives async, and by then
+		// (app)/index.tsx's skip check has already routed here. In that case "weiter" takes the
+		// user straight to food offers instead of through steps that are already configured.
+		if (isFirstStep && hasCompleteProfile) {
+			handleStart();
+			return;
+		}
+		// On the canteen step, "weiter" without an explicit pick defaults to the first
+		// available canteen instead of silently skipping selection.
+		if (currentStepIndex === STEPS.indexOf('canteen') && !selectedCanteen && canteens.length > 0) {
+			handleSelectCanteen(canteens[0]);
+			return;
+		}
+		if (!isLastStep) {
+			goToStep(currentStepIndex + 1);
+		}
+	}, [isFirstStep, hasCompleteProfile, handleStart, isLastStep, currentStepIndex, goToStep, selectedCanteen, canteens, handleSelectCanteen]);
 
 	const handleSelectPriceGroup = useCallback(() => {
 		const priceGroupStepIndex = STEPS.indexOf('pricegroup');
