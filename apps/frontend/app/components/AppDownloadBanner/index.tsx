@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
@@ -11,8 +11,7 @@ import { getAppIconInsideExpoLocalSaved, getCustomerConfig } from '@/config';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
-
-const DISMISSED_STORAGE_KEY = 'appDownloadBannerDismissed';
+import { dismissAppDownloadBanner, isAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
 
 type MobileWebPlatform = 'ios' | 'android' | null;
 
@@ -22,14 +21,6 @@ const getMobileWebPlatform = (): MobileWebPlatform => {
 	if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios';
 	if (/Android/i.test(userAgent)) return 'android';
 	return null;
-};
-
-const isDismissedInSession = (): boolean => {
-	try {
-		return typeof sessionStorage !== 'undefined' && sessionStorage.getItem(DISMISSED_STORAGE_KEY) === 'true';
-	} catch {
-		return false;
-	}
 };
 
 /**
@@ -43,7 +34,21 @@ const AppDownloadBanner: React.FC = () => {
 	const { translate } = useLanguage();
 	const kioskMode = useKioskMode();
 	const { appSettings, serverInfo, primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
-	const [dismissed, setDismissed] = useState<boolean>(() => isDismissedInSession());
+	const loggedIn = useAppSelector(state => state.authReducer.loggedIn);
+	const [dismissed, setDismissed] = useState<boolean>(() => isAppDownloadBannerDismissed());
+
+	// The banner is mounted once in the root layout and stays mounted across
+	// navigation, so a logout (which clears the sessionStorage flag in
+	// logoutHelper.ts) wouldn't otherwise be reflected until a full page
+	// reload. Re-read the (now cleared) dismissed flag whenever the user logs
+	// out, so the banner can reappear immediately for the next visitor.
+	const wasLoggedInRef = useRef(loggedIn);
+	useEffect(() => {
+		if (wasLoggedInRef.current && !loggedIn) {
+			setDismissed(isAppDownloadBannerDismissed());
+		}
+		wasLoggedInRef.current = loggedIn;
+	}, [loggedIn]);
 
 	const mobilePlatform = useMemo(() => getMobileWebPlatform(), []);
 
@@ -62,11 +67,7 @@ const AppDownloadBanner: React.FC = () => {
 
 	const handleDismiss = useCallback(() => {
 		setDismissed(true);
-		try {
-			sessionStorage.setItem(DISMISSED_STORAGE_KEY, 'true');
-		} catch {
-			// sessionStorage unavailable (e.g. blocked) - banner stays dismissed for this render only
-		}
+		dismissAppDownloadBanner();
 	}, []);
 
 	const handleOpenStore = useCallback(() => {

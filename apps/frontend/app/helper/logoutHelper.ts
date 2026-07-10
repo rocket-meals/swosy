@@ -22,8 +22,18 @@ import {
 } from '@/redux/Types/types';
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
+import { clearAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
+// ⚠️ Reminder: this function is the single place that resets app state on logout.
+// If you add a new persisted storage key - a redux slice backed by redux-persist,
+// a raw AsyncStorage/sessionStorage key, anything under constants/AsyncStorageHelper.ts -
+// come back here and clear it too, unless it's intentionally meant to survive a
+// logout (e.g. language/theme/server selection). It's easy to add a new CLEAR_*
+// action or a dedicated clearXStorage() helper (see clearChatReadStatus() and
+// clearAppDownloadBannerDismissed() below for the two established patterns) and
+// forget to wire it in here - the data then silently leaks into the next user's
+// session on a shared/kiosk device.
 export const performLogout = async (
 	dispatch: Dispatch,
 	router: any
@@ -47,6 +57,7 @@ export const performLogout = async (
                 dispatch({ type: CLEAR_FRIENDSHIPS });
                 dispatch({ type: CLEAR_CHATS });
                 await clearChatReadStatus();
+                clearAppDownloadBannerDismissed();
                 dispatch({ type: CLEAR_SETTINGS });
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
 		await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
