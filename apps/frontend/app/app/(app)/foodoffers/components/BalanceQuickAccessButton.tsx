@@ -1,5 +1,6 @@
-import React from 'react';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useCallback, useState } from 'react';
+import { Octicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -9,6 +10,7 @@ import { AppComponentIds } from '@/constants/ComponentIds';
 import { TranslationKeys } from '@/locales/keys';
 import IconButton from '@/components/UI/IconButton';
 import useAccountBalanceModal from '@/hooks/useAccountBalanceModal';
+import useMyCardReader from '@/app/(app)/account-balance/MyCardReader';
 
 interface BalanceQuickAccessButtonProps {
 	style?: any;
@@ -17,17 +19,54 @@ interface BalanceQuickAccessButtonProps {
 /**
  * Quick-access button for the foodoffers header: opens the account-balance
  * screen in a modal with the NFC scan already running. Only makes sense on
- * native (NFC isn't available on web) and only when the balance feature is
- * enabled for this server, so both checks live here and the component simply
- * renders nothing otherwise - callers don't need to duplicate the condition.
+ * native (NFC isn't available on web), only when the balance feature is
+ * enabled for this server, and only when a card can actually be read (same
+ * isNfcSupported/isNfcEnabled check the account-balance screen itself uses to
+ * decide whether to show its "read card" button) - all three checks live here
+ * so the component simply renders nothing otherwise and callers don't need to
+ * duplicate any of this.
  */
 const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ style }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { appSettings } = useAppSelector(state => state.settings);
 	const { openAccountBalanceModal } = useAccountBalanceModal();
+	const myCardReader = useMyCardReader();
+	const [isNfcSupported, setIsNfcSupported] = useState(false);
+	const [isNfcEnabled, setIsNfcEnabled] = useState(false);
 
-	if (isWeb || !appSettings?.balance_enabled) {
+	const balanceFeatureActive = !isWeb && !!appSettings?.balance_enabled;
+
+	useFocusEffect(
+		useCallback(() => {
+			if (!balanceFeatureActive) return;
+
+			let isCurrent = true;
+			const checkNfcStatus = async () => {
+				try {
+					const nfcAvailable = await myCardReader.isNfcSupported();
+					if (isCurrent) setIsNfcSupported(nfcAvailable.result);
+
+					const nfcEnabled = await myCardReader.isNfcEnabled();
+					if (isCurrent) setIsNfcEnabled(nfcEnabled.result);
+				} catch (error) {
+					console.error('Error checking NFC status:', error);
+				}
+			};
+
+			checkNfcStatus();
+			return () => {
+				isCurrent = false;
+			};
+			// myCardReader is intentionally omitted: useMyCardReader() returns a new
+			// instance every render (same as account-balance/index.tsx), so including
+			// it here would re-trigger this effect (and the NFC check) on every
+			// render once setIsNfcSupported/setIsNfcEnabled cause a re-render.
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [balanceFeatureActive])
+	);
+
+	if (!balanceFeatureActive || !isNfcSupported || !isNfcEnabled) {
 		return null;
 	}
 
@@ -41,7 +80,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 					style={style}
 					nativeID={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
 				>
-					<MaterialCommunityIcons name="credit-card-wireless-outline" size={24} color={theme.header.text} />
+					<Octicons name="credit-card" size={24} color={theme.header.text} />
 				</IconButton>
 			)}
 		>
