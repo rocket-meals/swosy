@@ -1,4 +1,8 @@
 Key,Message,Component,Line
+"AZ9LJjfRJ76BOezZrqfI","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",60
+"AZ9LJjfRJ76BOezZrqfG","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",66
+"AZ9LJjfRJ76BOezZrqfF","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",188
+"AZ9LJjfRJ76BOezZrqfH","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",229
 "AZ9GQrWnPG3QTBW6lktX","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",272
 "AZ9GQrWIPG3QTBW6lktV","Review this potentially hard-coded password.","rocket-meals_rocket-meals:apps/backend-sync/src/SyncDatabaseSchema.ts",47
 "AZ9GQqf9PG3QTBW6lktO","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",291

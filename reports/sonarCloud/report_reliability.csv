@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ9LJjfRJ76BOezZrqes","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",84
+"AZ9LJjfRJ76BOezZrqeu","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",84
 "AZ9IrY5GlMp6Y7T5BdN4","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",21
 "AZ9GQrKcPG3QTBW6lktP","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",94
 "AZ9FBk0MX48zp4WbbkMi","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",353

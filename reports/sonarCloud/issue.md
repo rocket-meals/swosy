@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 14 | 14 |
-| 🐛 Reliability | 93 | 36 |
-| 🔧 Maintainability | 1923 | 0 |
+| 🔒 Security | 18 | 18 |
+| 🐛 Reliability | 95 | 32 |
+| 🔧 Maintainability | 1951 | 0 |
 
-**Total issues:** 2030 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2064 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (14/14)
+## 🔒 Security (18/18)
 
 - **Use full commit SHA hash for this dependency.**
   .github/workflows/frontend-maestro.yml:44
@@ -33,6 +33,22 @@
 - **Define exact package version to avoid installing unverified releases.**
   .github/workflows/pr-expo-preview.yml:246
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L246
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/accessibilityTester/src/report.ts:60
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L60
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/accessibilityTester/src/report.ts:66
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L66
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/accessibilityTester/src/report.ts:188
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L188
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/accessibilityTester/src/report.ts:229
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L229
 
 - **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
   apps/backend-sync/src/DirectusDatabaseSync.ts:272
@@ -70,7 +86,15 @@
   apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:25
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L25
 
-## 🐛 Reliability (36/93)
+## 🐛 Reliability (32/95)
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/accessibilityTester/src/report.ts:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L84
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/accessibilityTester/src/report.ts:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L84
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -191,28 +215,4 @@
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/frontend/run-maestro-web-test.sh:94
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L94
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:119
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L119
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:161
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L161
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:168
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L168
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:143
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L143
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:151
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L151
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/run-maestro-web-test.sh:76
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
