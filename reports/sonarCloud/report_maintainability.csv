@@ -2,7 +2,7 @@ Key,Message,Component,Line
 "AZ9NG4u0Op4xyrz3ZhM5","Remove this unused import of 'AVATAR_SETTINGS_ROW_SIZE'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",61
 "AZ9NG4_9Op4xyrz3ZhM6","Remove this unused import of 'AVATAR_SETTINGS_ROW_SIZE'.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",24
 "AZ9NG4_9Op4xyrz3ZhM7","Remove this useless assignment to variable ""openAvatarEditor"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",437
-"AZ9NAeOXn8KnpP6NUAxZ","Remove this useless assignment to variable ""renderAvatarCarousel"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",574
+"AZ9NAeOXn8KnpP6NUAxZ","Remove this useless assignment to variable ""renderAvatarCarousel"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",580
 "AZ9NAe28n8KnpP6NUAxa","Remove this useless assignment to variable ""ownAvatarConfig"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",437
 "AZ9NAe28n8KnpP6NUAxb","Remove this useless assignment to variable ""otherAvatar"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",575
 "AZ9NAe28n8KnpP6NUAxc","Remove this useless assignment to variable ""otherAvatar"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",685
@@ -65,9 +65,9 @@ Key,Message,Component,Line
 "AZ9FBk0MX48zp4WbbkMg","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",262
 "AZ9FBk0MX48zp4WbbkMh","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",273
 "AZ9FBk0MX48zp4WbbkMi","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",353
-"AZ9FBk0MX48zp4WbbkMj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",488
-"AZ9FBk0MX48zp4WbbkMk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",504
-"AZ9FBk0MX48zp4WbbkMl","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",534
+"AZ9FBk0MX48zp4WbbkMj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",494
+"AZ9FBk0MX48zp4WbbkMk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",510
+"AZ9FBk0MX48zp4WbbkMl","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",540
 "AZ9BYlLN993SQF2ql_XH","Remove this useless assignment to variable ""canteens"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",94
 "AZ9BYlDm993SQF2ql_XG","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/avatars/index.tsx",63
 "AZ9BYlmS993SQF2ql_XI","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",442
