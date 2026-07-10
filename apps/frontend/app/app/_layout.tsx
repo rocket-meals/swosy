@@ -94,6 +94,23 @@ export default function Layout() {
 		Poppins_900Black_Italic,
 	});
 
+        // On iOS Safari the browser chrome (address bar / bottom toolbar) takes its
+        // color from the theme-color meta tag; without it those areas stay white and
+        // the page looks less like an app. Keep the tag and the document background
+        // in sync with the active app theme.
+        useEffect(() => {
+                if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+                let meta = document.querySelector('meta[name="theme-color"]:not([media])') as HTMLMetaElement | null;
+                if (!meta) {
+                        meta = document.createElement('meta');
+                        meta.setAttribute('name', 'theme-color');
+                        document.head.appendChild(meta);
+                }
+                meta.setAttribute('content', theme.header.background);
+                document.documentElement.style.backgroundColor = theme.screen.background;
+                document.body.style.backgroundColor = theme.screen.background;
+        }, [theme]);
+
         useEffect(() => {
                 const setServerUrl = async () => {
                         const customerConfigs = getCustomerConfigsDict();

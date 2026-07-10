@@ -125,7 +125,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						style={styles.checkbox}
 						name={isChecked ? 'checkbox-marked' : 'checkbox-blank-outline'}
 						size={30}
-						color={isChecked ? '#000000' : theme.login.text}
+						color={theme.login.text}
 					/>
 					<Text
 						style={{

@@ -40,7 +40,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 					<LottieView ref={animationRef} source={updatedAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={false} loop={false} />
 				</View>
 				<Text style={{ ...styles.attentionSheetHeading, color: theme.sheet.text }} nativeID={ComponentIds.LOGIN_ATTENTION_TITLE}>{translate(TranslationKeys.attention)}</Text>
-				<View style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}>
+				<View style={{ ...styles.attentionContent, width: '100%' }}>
 					<Text style={{ ...styles.attentionBody, color: theme.sheet.text }}>{translate(TranslationKeys.without_account_limitations)}</Text>
 					<View style={{ ...styles.attentionActions, width: isWeb ? '60%' : '100%' }}>
 						<TouchableOpacity
