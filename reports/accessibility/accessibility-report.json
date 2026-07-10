@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09T21:56:16.259Z",
+  "generatedAt": "2026-07-10T05:56:39.610Z",
   "baseUrl": "http://localhost:8081",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -14,11 +14,11 @@
     "height": 900
   },
   "totals": {
-    "critical": 114,
-    "serious": 14,
+    "critical": 0,
+    "serious": 10,
     "moderate": 71,
     "minor": 0,
-    "violations": 199,
+    "violations": 81,
     "screensWithErrors": 0
   },
   "screens": [
@@ -26,44 +26,6 @@
       "screen": "login",
       "url": "http://localhost:8081/login?kioskMode=true",
       "violations": [
-        {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "input",
-              "html": "<input aria-checked=\"false\" class=\"r-WebkitAppearance-n1uzsy r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "landmark-one-main",
           "impact": "moderate",
@@ -113,132 +75,13 @@
           ]
         }
       ],
-      "passCount": 21,
+      "passCount": 24,
       "incompleteCount": 1
     },
     {
       "screen": "foodoffers",
       "url": "http://localhost:8081/foodoffers?kioskMode=true",
       "violations": [
-        {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 21,
-          "nodes": [
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(1) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(2) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(3) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .r-gap-580adz.r-left-1n430bm.r-justifyContent-1h0z5md > .r-transitionProperty-1i6wzkk.r-cursor-1loqt21.r-touchAction-1otgn73 > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://www.studente...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(5) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(6) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(1) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(2) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(3) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .r-gap-580adz.r-left-1n430bm.r-justifyContent-1h0z5md > .r-transitionProperty-1i6wzkk.r-cursor-1loqt21.r-touchAction-1otgn73 > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://www.studente...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(5) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(6) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(1) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(2) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(3) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(4) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .r-gap-580adz.r-left-1n430bm.r-justifyContent-1h0z5md > .r-transitionProperty-1i6wzkk.r-cursor-1loqt21.r-touchAction-1otgn73 > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://www.studente...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(5) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-paddingInline-1e084wi.r-paddingBlock-ytbthy.css-view-g5y9jx > .r-alignItems-1oszu61.r-marginTop-1s2bzr4.r-flexWrap-1w6e6rj > .css-view-g5y9jx:nth-child(6) > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-width-13qz1uu.r-overflow-1udh08x > .r-position-bnwqim.r-overflow-1udh08x.css-view-g5y9jx > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -269,30 +112,6 @@
       "url": "http://localhost:8081/eating-habits?kioskMode=true",
       "violations": [
         {
-          "id": "aria-required-attr",
-          "impact": "critical",
-          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
-          "help": "Required ARIA attributes must be provided",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-attr?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 2,
-          "nodes": [
-            {
-              "target": ".r-borderRadius-1ylenci",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx r-borderRadius-1ylenci r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-pointerEvents-633pao\" style=\"background-color: rgb(26, 26, 26);\"></div>",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            },
-            {
-              "target": "#\\32 ",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx\" id=\"2\" style=\"overflow: hidden; user-select: none; touch-action: none; padding-bottom: 110.68px; height: 782.68px;\">",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -314,7 +133,7 @@
           ]
         }
       ],
-      "passCount": 26,
+      "passCount": 17,
       "incompleteCount": 2
     },
     {
@@ -351,164 +170,6 @@
       "url": "http://localhost:8081/campus?kioskMode=true",
       "violations": [
         {
-          "id": "aria-required-attr",
-          "impact": "critical",
-          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
-          "help": "Required ARIA attributes must be provided",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-attr?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 2,
-          "nodes": [
-            {
-              "target": ".r-borderRadius-1ylenci",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx r-borderRadius-1ylenci r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-pointerEvents-633pao\" style=\"background-color: rgb(26, 26, 26);\"></div>",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            },
-            {
-              "target": "#\\32 ",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx\" id=\"2\" style=\"overflow: hidden; user-select: none; touch-action: none;\">",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            }
-          ]
-        },
-        {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 24,
-          "nodes": [
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(5) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(6) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(7) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(8) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(9) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(10) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(11) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://swosy.rocket...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(12) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(13) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(14) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(15) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(16) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(17) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(18) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(19) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(20) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(21) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(22) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(23) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(24) > .css-view-g5y9jx > .r-borderRadius-1q9bdsx.r-overflow-1udh08x.r-transitionProperty-1i6wzkk > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .r-position-bnwqim.r-overflow-1udh08x.r-width-13qz1uu > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -530,7 +191,7 @@
           ]
         }
       ],
-      "passCount": 29,
+      "passCount": 21,
       "incompleteCount": 2
     },
     {
@@ -552,7 +213,7 @@
             {
               "target": ".r-textAlign-q4m81j",
               "html": "<div dir=\"auto\" class=\"css-text-146c3p1 r-textAlign-q4m81j\" style=\"font-size: 16px; color: rgb(255, 255, 255);\">Failed to load apartments</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.69 (foreground color: #d5d5d5, background color: #d50909, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.63 (foreground color: #ffffff, background color: #ff3333, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
             }
           ]
         },
@@ -644,44 +305,6 @@
       "url": "http://localhost:8081/settings?kioskMode=true",
       "violations": [
         {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -703,37 +326,13 @@
           ]
         }
       ],
-      "passCount": 23,
+      "passCount": 29,
       "incompleteCount": 2
     },
     {
       "screen": "price-group",
       "url": "http://localhost:8081/price-group?kioskMode=true",
       "violations": [
-        {
-          "id": "color-contrast",
-          "impact": "serious",
-          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2aa",
-            "wcag143"
-          ],
-          "nodeCount": 2,
-          "nodes": [
-            {
-              "target": ".css-text-146c3p1[dir=\"auto\"]:nth-child(1)",
-              "html": "<div dir=\"auto\" class=\"css-text-146c3p1\">This screen doesn't exist.</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.54 (foreground color: #000000, background color: #2e2e2e, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-            },
-            {
-              "target": "span",
-              "html": "<span class=\"css-textHasAncestor-1jxf684\">Go to home screen!</span>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.54 (foreground color: #000000, background color: #2e2e2e, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-            }
-          ]
-        },
         {
           "id": "document-title",
           "impact": "serious",
@@ -802,7 +401,7 @@
           ]
         }
       ],
-      "passCount": 12,
+      "passCount": 13,
       "incompleteCount": 1
     },
     {
@@ -926,80 +525,6 @@
       "url": "http://localhost:8081/statistics?kioskMode=true",
       "violations": [
         {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 12,
-          "nodes": [
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(5) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(1) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(6) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(5) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-width-a1w0r5.css-view-g5y9jx:nth-child(2) > .r-WebkitOverflowScrolling-150rngu.r-flexDirection-eqz5dr.r-flexGrow-16y2uox > .css-view-g5y9jx > .css-view-g5y9jx:nth-child(6) > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -1016,56 +541,13 @@
           ]
         }
       ],
-      "passCount": 15,
+      "passCount": 16,
       "incompleteCount": 1
     },
     {
       "screen": "labels",
       "url": "http://localhost:8081/labels?kioskMode=true",
       "violations": [
-        {
-          "id": "aria-required-attr",
-          "impact": "critical",
-          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
-          "help": "Required ARIA attributes must be provided",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-attr?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 2,
-          "nodes": [
-            {
-              "target": ".r-borderRadius-1ylenci",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx r-borderRadius-1ylenci r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-pointerEvents-633pao\" style=\"background-color: rgb(26, 26, 26);\"></div>",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            },
-            {
-              "target": "#\\32 ",
-              "html": "<div aria-label=\"Bottom Sheet\" role=\"slider\" class=\"css-view-g5y9jx\" id=\"2\" style=\"overflow: hidden; user-select: none; touch-action: none; padding-bottom: 112.361px; height: 832.361px;\">",
-              "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
-            }
-          ]
-        },
-        {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"/assets/?unstable_pa...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -1083,7 +565,7 @@
           ]
         }
       ],
-      "passCount": 24,
+      "passCount": 14,
       "incompleteCount": 1
     },
     {
@@ -1313,25 +795,6 @@
       "url": "http://localhost:8081/form-categories?kioskMode=true",
       "violations": [
         {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -1353,7 +816,7 @@
           ]
         }
       ],
-      "passCount": 23,
+      "passCount": 29,
       "incompleteCount": 2
     },
     {
@@ -1462,30 +925,6 @@
       "url": "http://localhost:8081/leaflet-map?kioskMode=true",
       "violations": [
         {
-          "id": "color-contrast",
-          "impact": "serious",
-          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2aa",
-            "wcag143"
-          ],
-          "nodeCount": 2,
-          "nodes": [
-            {
-              "target": ".css-text-146c3p1[dir=\"auto\"]:nth-child(1)",
-              "html": "<div dir=\"auto\" class=\"css-text-146c3p1\">This screen doesn't exist.</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.54 (foreground color: #000000, background color: #2e2e2e, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-            },
-            {
-              "target": "span",
-              "html": "<span class=\"css-textHasAncestor-1jxf684\">Go to home screen!</span>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.54 (foreground color: #000000, background color: #2e2e2e, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-            }
-          ]
-        },
-        {
           "id": "document-title",
           "impact": "serious",
           "description": "Ensure each HTML document contains a non-empty <title> element",
@@ -1553,7 +992,7 @@
           ]
         }
       ],
-      "passCount": 12,
+      "passCount": 13,
       "incompleteCount": 1
     },
     {
@@ -1638,150 +1077,6 @@
       "url": "http://localhost:8081/vertical-image-scroll?kioskMode=true",
       "violations": [
         {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 26,
-          "nodes": [
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(1) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(2) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(3) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(4) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(4) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(4) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(4) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(5) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(5) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(5) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(5) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(6) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(6) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(6) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(3) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(6) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(4) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(7) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(1) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".css-view-g5y9jx:nth-child(7) > .r-flexDirection-18u37iz.css-view-g5y9jx > .css-view-g5y9jx:nth-child(2) > .css-view-g5y9jx[data-expoimage=\"true\"] > div > img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"https://test.rocket-...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -1803,7 +1098,7 @@
           ]
         }
       ],
-      "passCount": 18,
+      "passCount": 17,
       "incompleteCount": 2
     },
     {
@@ -1854,25 +1149,6 @@
       "url": "http://localhost:8081/bigScreen?kioskMode=true",
       "violations": [
         {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"/assets/?unstable_pa...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -1903,53 +1179,19 @@
           "nodes": [
             {
               "target": ".r-WebkitOverflowScrolling-150rngu",
-              "html": "<div class=\"css-view-g5y9jx r-WebkitOverflowScrolling-150rngu r-flexDirection-eqz5dr r-flexGrow-16y2uox r-flexShrink-1wbh5a2 r-overflowX-11yh6sk r-overflowY-1rnoaur r-transform-agouwx\" style=\"flex: 1 1 0%; background-color: rgb(26, 26, 26);\">",
+              "html": "<div class=\"css-view-g5y9jx r-WebkitOverflowScrolling-150rngu r-flexDirection-eqz5dr r-flexGrow-16y2uox r-flexShrink-1wbh5a2 r-overflowX-11yh6sk r-overflowY-1rnoaur r-transform-agouwx\" style=\"flex: 1 1 0%; background-color: rgb(255, 255, 255);\">",
               "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
             }
           ]
         }
       ],
-      "passCount": 15,
+      "passCount": 14,
       "incompleteCount": 0
     },
     {
       "screen": "foodPlanDay",
       "url": "http://localhost:8081/foodPlanDay?kioskMode=true",
       "violations": [
-        {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 4,
-          "nodes": [
-            {
-              "target": ".r-transitionProperty-1i6wzkk.r-touchAction-1otgn73.r-paddingBlock-ytbthy:nth-child(5) > .r-marginInlineStart-wizibn.r-minHeight-1ii58gl.r-minWidth-25kp3t > .r-cursor-1loqt21.r-userSelect-lrvibr.css-view-g5y9jx > input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\" checked=\"\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-transitionProperty-1i6wzkk.r-touchAction-1otgn73.r-paddingBlock-ytbthy:nth-child(7) > .r-marginInlineStart-wizibn.r-minHeight-1ii58gl.r-minWidth-25kp3t > .r-cursor-1loqt21.r-userSelect-lrvibr.css-view-g5y9jx > input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\" checked=\"\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-transitionProperty-1i6wzkk.r-touchAction-1otgn73.r-paddingBlock-ytbthy:nth-child(13) > .r-marginInlineStart-wizibn.r-minHeight-1ii58gl.r-minWidth-25kp3t > .r-cursor-1loqt21.r-userSelect-lrvibr.css-view-g5y9jx > input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\" checked=\"\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-transitionProperty-1i6wzkk.r-touchAction-1otgn73.r-paddingBlock-ytbthy:nth-child(17) > .r-marginInlineStart-wizibn.r-minHeight-1ii58gl.r-minWidth-25kp3t > .r-cursor-1loqt21.r-userSelect-lrvibr.css-view-g5y9jx > input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\" checked=\"\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -1967,87 +1209,13 @@
           ]
         }
       ],
-      "passCount": 19,
+      "passCount": 25,
       "incompleteCount": 1
     },
     {
       "screen": "foodPlanList",
       "url": "http://localhost:8081/foodPlanList?kioskMode=true",
       "violations": [
-        {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 12,
-          "nodes": [
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(1) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(2) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(3) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(4) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(5) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(6) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(7) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(8) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(9) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(10) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(11) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            },
-            {
-              "target": ".r-paddingInline-1ubuhtd.r-width-13qz1uu.r-gap-uaa2di:nth-child(12) > input",
-              "html": "<input maxlength=\"2\" autocapitalize=\"sentences\" autocomplete=\"on\" autocorrect=\"on\" dir=\"auto\" inputmode=\"numeric\" rows=\"1\" spellcheck=\"true\" virtualkeyboardpolic...=\"auto\" class=\"css-textinput-11aywt...\" value=\"\" style=\"width: 50px; height:...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -2065,32 +1233,13 @@
           ]
         }
       ],
-      "passCount": 21,
+      "passCount": 22,
       "incompleteCount": 1
     },
     {
       "screen": "foodPlanWeek",
       "url": "http://localhost:8081/foodPlanWeek?kioskMode=true",
       "violations": [
-        {
-          "id": "label",
-          "impact": "critical",
-          "description": "Ensure every form element has a label",
-          "help": "Form elements must have labels",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag412"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "input",
-              "html": "<input role=\"switch\" class=\"r-appearance-30o5oe r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7\" type=\"checkbox\" checked=\"\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element has no placeholder attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -2108,32 +1257,13 @@
           ]
         }
       ],
-      "passCount": 24,
+      "passCount": 25,
       "incompleteCount": 1
     },
     {
       "screen": "list-day-screen",
       "url": "http://localhost:8081/list-day-screen?kioskMode=true",
       "violations": [
-        {
-          "id": "image-alt",
-          "impact": "critical",
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
-          "help": "Images must have alternative text",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2a",
-            "wcag111"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": "img[fetchpriority=\"auto\"]",
-              "html": "<img fetchpriority=\"auto\" src=\"/assets/?unstable_pa...\" style=\"object-position: lef...\">",
-              "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
-            }
-          ]
-        },
         {
           "id": "region",
           "impact": "moderate",
@@ -2151,7 +1281,7 @@
           ]
         }
       ],
-      "passCount": 15,
+      "passCount": 14,
       "incompleteCount": 1
     },
     {

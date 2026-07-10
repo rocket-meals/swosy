@@ -50,11 +50,17 @@ export interface CardWithTextProps extends TouchableOpacityProps {
 	 */
 	aspectRatio?: number | boolean;
 	/**
-	 * Optional custom image renderer. Receives the image source and computed style.
+	 * Optional custom image renderer. Receives the image source, computed style
+	 * and the accessibility label for the image (if provided).
 	 * Use this to render with a caching image component (e.g. expo-image).
 	 * When omitted, the default React Native Image is used.
 	 */
-	renderImage?: (source: ImageSourcePropType, style: StyleProp<ImageStyle>) => React.ReactNode;
+	renderImage?: (source: ImageSourcePropType, style: StyleProp<ImageStyle>, imageAccessibilityLabel?: string) => React.ReactNode;
+	/**
+	 * Accessible description of the card image (e.g. the food or building name).
+	 * Forwarded to the image so screen readers get an alt text on web.
+	 */
+	imageAccessibilityLabel?: string;
 }
 
 const CardWithText: React.FC<CardWithTextProps> = ({
@@ -71,6 +77,7 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 	knownCardWidth,
 	aspectRatio = 1,
 	renderImage,
+	imageAccessibilityLabel,
 	...rest
 }) => {
 	const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
@@ -115,8 +122,8 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 				<View style={[{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, ...resolvedImageContainerStyle]}>
 					{imageSource ? (
 						renderImage
-							? renderImage(imageSource, [styles.image, imageStyle])
-							: <Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" />
+							? renderImage(imageSource, [styles.image, imageStyle], imageAccessibilityLabel)
+							: <Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" accessible={!!imageAccessibilityLabel} accessibilityLabel={imageAccessibilityLabel} />
 					) : null}
 					{imageChildren}
 				</View>

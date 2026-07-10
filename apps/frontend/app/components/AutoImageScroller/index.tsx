@@ -67,7 +67,8 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({ images, numColumn
 		const offset = (columnIndex % 3) * (size / 3);
 		return (
 			<View style={{ transform: [{ translateY: offset }] }}>
-				<Image source={{ uri: item }} style={[styles.image, { width: size, height: size }]} contentFit="cover" />
+				{/* expo-image only maps accessibilityLabel (not alt) to the img alt attribute on web */}
+				<Image source={{ uri: item }} style={[styles.image, { width: size, height: size }]} contentFit="cover" alt="" accessibilityLabel="" />
 			</View>
 		);
 	};

@@ -3,13 +3,14 @@ import { ImageSourcePropType, ImageStyle, StyleProp } from 'react-native';
 import { CardWithText as BaseCardWithText, CardWithTextProps } from 'repo-depkit-common-ui';
 import MyImage from '@/components/MyImage';
 
-function defaultRenderImage(source: ImageSourcePropType, style: StyleProp<ImageStyle>): React.ReactNode {
+function defaultRenderImage(source: ImageSourcePropType, style: StyleProp<ImageStyle>, imageAccessibilityLabel?: string): React.ReactNode {
 	if (typeof source === 'object' && source !== null && !Array.isArray(source) && 'uri' in source) {
 		return (
 			<MyImage
 				remote_image_url={(source as { uri?: string }).uri}
 				style={style}
 				contentFit="cover"
+				accessibilityLabel={imageAccessibilityLabel}
 			/>
 		);
 	}
@@ -18,6 +19,7 @@ function defaultRenderImage(source: ImageSourcePropType, style: StyleProp<ImageS
 			defaultImage={source}
 			style={style}
 			contentFit="cover"
+			accessibilityLabel={imageAccessibilityLabel}
 		/>
 	);
 }

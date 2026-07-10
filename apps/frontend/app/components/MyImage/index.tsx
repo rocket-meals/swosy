@@ -97,7 +97,7 @@ const MyImage: React.FC<MyImageProps> = ({
         }
 
         // Map resizeMode to contentFit if present in props (compatibility)
-        const { resizeMode, ...rest } = props as any;
+        const { resizeMode, alt, accessibilityLabel, ...rest } = props as any;
         let contentFit = props.contentFit;
         if (resizeMode && !contentFit) {
              if (resizeMode === 'cover') contentFit = 'cover';
@@ -106,7 +106,14 @@ const MyImage: React.FC<MyImageProps> = ({
              else if (resizeMode === 'center') contentFit = 'none';
         }
 
-        return <Image source={source} contentFit={contentFit} {...rest} />;
+        // Images without a provided description get an empty alt, which marks them
+        // as decorative for assistive technology instead of leaving the alt missing
+        // entirely (a critical axe-core "image-alt" violation on web). Note that
+        // expo-image's web renderer only turns accessibilityLabel (not the alt
+        // prop) into the img alt attribute, so the label must always be a string.
+        const resolvedAlt = accessibilityLabel ?? alt ?? '';
+
+        return <Image source={source} contentFit={contentFit} alt={resolvedAlt} accessibilityLabel={resolvedAlt} {...rest} />;
 };
 
 export default React.memo(MyImage);

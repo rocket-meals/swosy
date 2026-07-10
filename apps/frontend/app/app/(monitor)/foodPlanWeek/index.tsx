@@ -90,6 +90,7 @@ const Index = () => {
 								false: theme.screen.icon,
 								true: foods_area_color,
 							}}
+							accessibilityLabel="Allergene Anzeigen"
 						/>
 					</View>
 				</View>

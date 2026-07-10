@@ -119,6 +119,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 			aspectRatio={false}
 			onPress={() => handleNavigation(campus?.id)}
 			imageSource={imageSource}
+			imageAccessibilityLabel={campus?.alias ?? undefined}
 			containerStyle={{
 				width: '100%',
 				backgroundColor: theme.card.background,
