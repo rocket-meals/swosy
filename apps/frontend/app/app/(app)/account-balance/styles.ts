@@ -105,6 +105,13 @@ export default StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 	},
+	nfcInstructionChipPosition: {
+		fontSize: 13,
+		fontFamily: 'Poppins_400Regular',
+		textAlign: 'center',
+		paddingHorizontal: 24,
+		opacity: 0.8,
+	},
 	sheetView: {
 		width: '100%',
 		alignItems: 'center',

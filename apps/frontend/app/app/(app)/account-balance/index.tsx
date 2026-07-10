@@ -448,6 +448,14 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                                                                         loop
                                                                 />
                                                         </View>
+                                                        <Text
+                                                                style={{
+                                                                        ...styles.nfcInstructionChipPosition,
+                                                                        color: theme.screen.text,
+                                                                }}
+                                                        >
+                                                                {translate(TranslationKeys.nfcInstructionChipPosition)}
+                                                        </Text>
                                                 </View>
                                         </View>
                                 </View>

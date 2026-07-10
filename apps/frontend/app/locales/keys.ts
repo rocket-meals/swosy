@@ -116,6 +116,7 @@ export enum TranslationKeys {
         nfcNotEnabled = 'nfcNotEnabled',
         pleaseEnableNFC = 'pleaseEnableNFC',
         nfcInstructionRead = 'nfcInstructionRead',
+        nfcInstructionChipPosition = 'nfcInstructionChipPosition',
         showNfcInstruction = 'showNfcInstruction',
         new = 'new',
 	attention = 'attention',

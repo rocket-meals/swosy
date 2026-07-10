@@ -1189,6 +1189,16 @@
     "tr": "Kartı okumak için cihazınızı karta tutun.",
     "zh": "将设备靠近卡片以读取。"
   },
+  "nfcInstructionChipPosition": {
+    "de": "Falls die Karte nicht sofort erkannt wird, probiere verschiedene Stellen an deinem Gerät aus – der NFC-Chip sitzt bei jedem Gerät an einer anderen Position. Bei den meisten Android-Geräten befindet sich die NFC-Antenne auf der Rückseite im oberen Bereich, meist in der Nähe der Kamera.",
+    "en": "If the card isn't recognized right away, try holding it against different spots on your device – the NFC chip is positioned differently on every device. On most Android phones, the NFC antenna is on the back, usually near the top around the camera.",
+    "ar": "إذا لم تتم قراءة البطاقة على الفور، جرّب تقريبها من أماكن مختلفة من جهازك - يقع شريحة NFC في مكان مختلف في كل جهاز. في معظم هواتف أندرويد، توجد هوائي NFC في الجزء الخلفي، عادةً بالقرب من الكاميرا.",
+    "es": "Si la tarjeta no se reconoce de inmediato, prueba a colocarla en distintos puntos del dispositivo: el chip NFC está ubicado en un lugar diferente en cada dispositivo. En la mayoría de los teléfonos Android, la antena NFC se encuentra en la parte trasera, normalmente cerca de la cámara.",
+    "fr": "Si la carte n'est pas reconnue immédiatement, essayez de la placer à différents endroits de votre appareil : la puce NFC est positionnée différemment selon les appareils. Sur la plupart des téléphones Android, l'antenne NFC se trouve au dos, généralement près de l'appareil photo.",
+    "ru": "Если карта не считывается сразу, попробуйте приложить её к разным местам устройства — NFC-чип расположен по-разному на каждом устройстве. На большинстве Android-телефонов NFC-антенна находится на задней панели, обычно рядом с камерой.",
+    "tr": "Kart hemen okunmazsa cihazınızın farklı bölgelerine tutmayı deneyin – NFC çipi her cihazda farklı bir yerde bulunur. Çoğu Android telefonda NFC anteni arka yüzde, genellikle kamera çevresinde bulunur.",
+    "zh": "如果没有立即读取到卡片,请尝试将卡片贴近设备的不同位置——不同设备的 NFC 芯片位置各不相同。大多数安卓手机的 NFC 天线位于背面,通常靠近摄像头附近。"
+  },
   "showNfcInstruction": {
     "de": "NFC-Anleitung anzeigen",
     "en": "Show NFC instruction",
