@@ -276,6 +276,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         setIsActive(true);
                         return () => {
                                 setIsActive(false);
+                                closeInstructionRef.current();
 			};
 		}, [])
 	);
@@ -321,12 +322,6 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         animationRef?.current?.play(); // Reset animation to ensure it starts fresh
                 }
         }, [animationJson, autoPlay]);
-
-        useEffect(() => {
-                if (!isActive) {
-                        closeInstructionRef.current();
-                }
-        }, [isActive]);
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
