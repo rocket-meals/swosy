@@ -82,9 +82,9 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 			console.log('Answer');
 			console.log(newAnswer);
 			await callBack(newAnswer);
+		} finally {
+			// also hide on error/cancel so the instruction popup never gets stuck
 			hideInstruction();
-		} catch (e: any) {
-			throw e;
 		}
 	}
 }

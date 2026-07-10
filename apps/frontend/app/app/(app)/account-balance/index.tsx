@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import LottieView from 'lottie-react-native';
-import { Dimensions, Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Linking, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import styles from './styles';
@@ -29,7 +29,6 @@ import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DebugView from '@/components/DebugView';
 import ProjectButton from '@/components/ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -69,8 +68,13 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const [animationJson, setAmimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
-        const { show: showModal, close: closeModal } = useMyScrollViewModal();
-        const closeInstructionRef = useRef(closeModal);
+        // The NFC "hold your card" instruction is rendered as a local RN Modal
+        // instead of via the global modal stack: the account-balance screen can
+        // itself be shown on that stack (foodoffers quick-access), and a global
+        // close() from hideInstruction would pop - and thus close - the balance
+        // modal whenever no instruction popup was actually shown (iOS uses the
+        // system NFC sheet, cancelled reads, ...).
+        const [isInstructionVisible, setIsInstructionVisible] = useState(false);
         const { addPointsForBalanceRead } = useAppRatingScore();
 
         const debugLogMessages = useMemo(
@@ -192,43 +196,11 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 
         const showInstruction = useCallback(() => {
                 if (!isActive) return;
-
-                showModal(
-                        {
-                                title: 'NFC',
-                                showsVerticalScrollIndicator: false,
-                                children: (
-                                        <View style={styles.sheetView}>
-                                                <Text
-                                                        style={{
-                                                                ...styles.nfcInstructionRead,
-                                                                color: theme.screen.text,
-                                                        }}
-                                                >
-                                                        {translate(TranslationKeys.nfcInstructionRead)}
-                                                </Text>
-                                                <View style={styles.nfcAnimationContainer}>
-                                                        <LottieView
-                                                                source={require('@/assets/gifs/nfc.json')}
-                                                                resizeMode="contain"
-                                                                style={styles.nfcAnimation}
-                                                                autoPlay
-                                                                loop
-                                                        />
-                                                </View>
-                                        </View>
-                                ),
-                        },
-                        {}
-                );
-        }, [isActive, showModal, theme.screen.text, translate]);
-
-        useEffect(() => {
-                closeInstructionRef.current = closeModal;
-        }, [closeModal]);
+                setIsInstructionVisible(true);
+        }, [isActive]);
 
         const hideInstruction = useCallback(() => {
-                closeInstructionRef.current();
+                setIsInstructionVisible(false);
         }, []);
 
 	const onReadNfcPress = async () => {
@@ -322,19 +294,11 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                 }
         }, [animationJson, autoPlay]);
 
-        // Closes a lingering NFC instruction popup when the screen genuinely
-        // loses focus (isActive flips to false while still mounted). Skips the
-        // very first run: isActive starts as false before the focus effect above
-        // sets it to true, so without this guard the popup-close would fire
-        // (and close the whole modal) on initial mount instead of on real blur.
-        const skipInitialInactiveCloseRef = useRef(true);
+        // Hide a lingering NFC instruction popup when the screen loses focus.
+        // Harmless on mount since the popup starts hidden.
         useEffect(() => {
-                if (skipInitialInactiveCloseRef.current) {
-                        skipInitialInactiveCloseRef.current = false;
-                        return;
-                }
                 if (!isActive) {
-                        closeInstructionRef.current();
+                        setIsInstructionVisible(false);
                 }
         }, [isActive]);
 
@@ -448,6 +412,46 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 				</DebugView>
 			</View>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
+                        <Modal
+                                visible={isInstructionVisible}
+                                transparent
+                                animationType="fade"
+                                onRequestClose={hideInstruction}
+                        >
+                                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                                        <View style={{ ...styles.sheetBackground, backgroundColor: theme.screen.background, paddingBottom: 40 }}>
+                                                <View style={styles.sheetHeader}>
+                                                        <Text style={{ ...styles.sheetHeading, fontSize: 18, color: theme.screen.text }}>NFC</Text>
+                                                        <TouchableOpacity
+                                                                style={{ ...styles.sheetcloseButton, position: 'absolute', right: 10, backgroundColor: theme.screen.iconBg }}
+                                                                onPress={hideInstruction}
+                                                                accessibilityRole="button"
+                                                        >
+                                                                <MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+                                                        </TouchableOpacity>
+                                                </View>
+                                                <View style={styles.sheetView}>
+                                                        <Text
+                                                                style={{
+                                                                        ...styles.nfcInstructionRead,
+                                                                        color: theme.screen.text,
+                                                                }}
+                                                        >
+                                                                {translate(TranslationKeys.nfcInstructionRead)}
+                                                        </Text>
+                                                        <View style={styles.nfcAnimationContainer}>
+                                                                <LottieView
+                                                                        source={require('@/assets/gifs/nfc.json')}
+                                                                        resizeMode="contain"
+                                                                        style={styles.nfcAnimation}
+                                                                        autoPlay
+                                                                        loop
+                                                                />
+                                                        </View>
+                                                </View>
+                                        </View>
+                                </View>
+                        </Modal>
                 </ScrollView>
         );
 };
