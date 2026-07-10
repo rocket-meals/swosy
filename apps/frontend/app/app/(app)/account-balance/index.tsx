@@ -318,17 +318,14 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 		}
 	}, [autoPlay, animationJson]);
 
+	// No close button here: dismissal is handled by the surrounding context (the
+	// outer MyScrollViewModal's own close when in-modal, the system back gesture
+	// via onRequestClose on the drawer route) and the instruction hides itself
+	// automatically once the read finished or was cancelled.
 	const instructionContent = (
 		<>
 			<View style={styles.sheetHeader}>
 				<Text style={{ ...styles.sheetHeading, fontSize: 18, color: theme.screen.text }}>NFC</Text>
-				<TouchableOpacity
-					style={{ ...styles.sheetcloseButton, position: 'absolute', right: 10, backgroundColor: theme.screen.iconBg }}
-					onPress={hideInstruction}
-					accessibilityRole="button"
-				>
-					<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-				</TouchableOpacity>
 			</View>
 			<View style={styles.sheetView}>
 				<Text
