@@ -6,7 +6,7 @@ Key,Message,Component,Line
 "AZ9NAe28n8KnpP6NUAxa","Remove this useless assignment to variable ""ownAvatarConfig"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",437
 "AZ9NAe28n8KnpP6NUAxb","Remove this useless assignment to variable ""otherAvatar"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",575
 "AZ9NAe28n8KnpP6NUAxc","Remove this useless assignment to variable ""otherAvatar"".","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",685
-"AZ9MXJnpTGeptNLGMpnJ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/BalanceQuickAccessButton.tsx",76
+"AZ9MXJnpTGeptNLGMpnJ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/BalanceQuickAccessButton.tsx",82
 "AZ9LvIuJjgFVDsF01yGT","'fs' imported multiple times.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",1
 "AZ9LvIuJjgFVDsF01yGU","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",2
 "AZ9LvIuJjgFVDsF01yGV","'fs' imported multiple times.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",2
