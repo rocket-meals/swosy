@@ -19,23 +19,29 @@ interface BalanceQuickAccessButtonProps {
 /**
  * Quick-access button for the foodoffers header: opens the account-balance
  * screen in a modal with the NFC scan already running. Only makes sense on
- * native (NFC isn't available on web), only when the balance feature is
- * enabled for this server, and only when a card can actually be read (same
- * isNfcSupported/isNfcEnabled check the account-balance screen itself uses to
- * decide whether to show its "read card" button) - all three checks live here
- * so the component simply renders nothing otherwise and callers don't need to
- * duplicate any of this.
+ * native (NFC isn't available on web) and only when the balance feature is
+ * enabled for this server. Otherwise it also requires a card to actually be
+ * readable (same isNfcSupported/isNfcEnabled check the account-balance screen
+ * itself uses to decide whether to show its "read card" button) - unless
+ * we're in dev mode, where the button stays visible even without real NFC
+ * (e.g. in Expo Go) so the modal's "Simulate X€" debug actions remain
+ * reachable to exercise the flow without physical hardware.
  */
 const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ style }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { appSettings } = useAppSelector(state => state.settings);
+	const { isDevMode } = useAppSelector(state => state.authReducer);
 	const { openAccountBalanceModal } = useAccountBalanceModal();
 	const myCardReader = useMyCardReader();
 	const [isNfcSupported, setIsNfcSupported] = useState(false);
 	const [isNfcEnabled, setIsNfcEnabled] = useState(false);
 
 	const balanceFeatureActive = !isWeb && !!appSettings?.balance_enabled;
+	// In dev mode, show the button even without real NFC support (e.g. Expo
+	// Go) so the account-balance modal's "Simulate X€" debug actions can be
+	// reached to exercise the read/instruction flow without physical NFC.
+	const nfcReady = isDevMode || (isNfcSupported && isNfcEnabled);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -66,7 +72,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 		}, [balanceFeatureActive])
 	);
 
-	if (!balanceFeatureActive || !isNfcSupported || !isNfcEnabled) {
+	if (!balanceFeatureActive || !nfcReady) {
 		return null;
 	}
 
@@ -76,7 +82,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 			trigger={triggerProps => (
 				<IconButton
 					{...triggerProps}
-					onPress={() => openAccountBalanceModal(true)}
+					onPress={() => openAccountBalanceModal(isNfcSupported && isNfcEnabled)}
 					style={style}
 					nativeID={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
 				>
