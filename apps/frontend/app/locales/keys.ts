@@ -329,6 +329,7 @@ export enum TranslationKeys {
         rate_later = 'rate_later',
         app_download = 'app_download',
         app_download_selection = 'app_download_selection',
+        app_banner_open = 'app_banner_open',
         react_native_qrcode_svg = 'react_native_qrcode_svg',
         friendships = 'friendships',
         friendships_add_friend = 'friendships_add_friend',

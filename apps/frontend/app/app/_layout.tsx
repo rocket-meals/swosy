@@ -40,6 +40,7 @@ import {config} from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import {ModalContextProvider, ModalRenderer} from '@/components/GlobalModal/ModalProvider';
+import AppDownloadBanner from '@/components/AppDownloadBanner';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfig, getCustomerConfigsDict, getCustomerEnumForConfig } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
@@ -181,6 +182,7 @@ export default function Layout() {
 													<ExpoUpdateChecker>
 														<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
 															<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
+																<AppDownloadBanner />
 																<Slot />
 															</SafeAreaView>
 														</KeyboardAvoidingView>
