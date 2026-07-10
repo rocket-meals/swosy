@@ -130,6 +130,25 @@ export function getStyleProbabilityKeys(style: AvatarStyle): Record<string, stri
 	return result;
 }
 
+// Every DiceBear-generated avatar (all styles) wraps its artwork in a <mask> that's a no-op:
+// `<mask id="viewboxMask"><rect x="0" y="0" width="W" height="H" rx="0" ry="0" fill="#fff" /></mask>`
+// where W/H exactly match the SVG's own viewBox. That rect covers the full viewport, so it clips
+// nothing beyond what the SVG's own viewBox/viewport already clips - it's a redundant safety net.
+// react-native-svg's Android renderer has long-standing bugs with <mask> (content inside a masked
+// <g> frequently renders partially or not at all - see e.g. software-mansion/react-native-svg
+// issues #2202, #1097, #1953), which is what caused avatars to render with pieces (typically the
+// top portion, e.g. hair) missing/cut off on Android while rendering fine on web/iOS. Stripping
+// this specific no-op mask removes that Android rendering bug without any visual change on
+// platforms where <mask> works, since the SVG viewport clips the same area anyway. Only matches
+// the exact no-op pattern above, so any *other*, visually meaningful <mask> a style might use for
+// real shading/shaping (e.g. bottts, notionists, personas) is left untouched.
+function stripRedundantViewboxMask(svg: string): string {
+	return svg.replace(
+		/<mask id="([^"]+)"><rect width="[\d.]+" height="[\d.]+" rx="0" ry="0" x="0" y="0" fill="#fff" \/><\/mask><g mask="url\(#\1\)">/,
+		'<g>'
+	);
+}
+
 const MyAvatar: React.FC<MyAvatarProps> = ({
 	config,
 	style: styleProp = AvatarStyle.LORELEI,
@@ -185,21 +204,17 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 				renderOptions[probKey] = ['0'];
 			}
 		}
-		return createAvatar(avatarStyle, {
+		const rawSvg = createAvatar(avatarStyle, {
 			size,
-			// DiceBear reuses the same static id (e.g. "viewboxMask") for the <mask>/<clipPath> that
-			// clips every avatar to its canvas. On web this collision is harmless because duplicate
-			// ids always point at geometrically identical defs, and each SvgXml on iOS resolves
-			// `url(#...)` against its own instance. react-native-svg's Android renderer keeps a
-			// shared defs/mask registry across all mounted <Svg> instances though, so when multiple
-			// MyAvatar components are on screen at once (chat/friends lists, settings + editor
-			// previews, onboarding carousel, ...) the ids collide there and avatars end up partially
-			// clipped/cut off. `randomizeIds` makes every rendered SVG's internal ids unique, which
-			// avoids the collision. See https://github.com/software-mansion/react-native-svg issues
-			// about mask/clipPath id collisions across multiple Svg instances on Android.
+			// A handful of styles (bottts, notionists, personas, ...) embed extra gradient/mask
+			// defs whose ids are otherwise identical across every avatar of that style+options.
+			// Randomizing them avoids collisions when multiple MyAvatar instances are mounted at
+			// once (chat/friends lists, settings + editor previews, onboarding carousel, ...).
 			randomizeIds: true,
 			...renderOptions,
 		}).toString();
+
+		return stripRedundantViewboxMask(rawSvg);
 	}, [style, size, options]);
 
 	return (
