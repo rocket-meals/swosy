@@ -5,9 +5,15 @@ on:
     types: [opened, synchronize, reopened]
   pull_request_target:
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to redeploy just the web preview for (skips the EAS mobile update)"
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: true
 
 jobs:
@@ -198,21 +204,48 @@ jobs:
             }
 
   web-preview-deploy:
-    name: "🌐 Web Preview Deploy (PR #${{ github.event.pull_request.number }})"
+    name: "🌐 Web Preview Deploy (PR #${{ github.event.pull_request.number || inputs.pr_number }})"
     runs-on: ubuntu-latest
     needs: check-repository
     if: >-
-      github.event.action != 'closed'
-      && needs.check-repository.outputs.is-upstream == 'true'
-      && github.event.pull_request.head.repo.full_name == github.repository
+      needs.check-repository.outputs.is-upstream == 'true'
+      && (
+        github.event_name == 'workflow_dispatch'
+        || (
+          github.event.action != 'closed'
+          && github.event.pull_request.head.repo.full_name == github.repository
+        )
+      )
     permissions:
       contents: write
       pull-requests: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
     steps:
+      # workflow_dispatch carries no pull_request context, so the fork check the
+      # pull_request trigger gets for free (head.repo.full_name == github.repository)
+      # has to be re-verified via the API before anything is checked out - this job
+      # runs with EXPO_TOKEN/GITHUB_TOKEN and deploys to public GitHub Pages, so a
+      # manually-dispatched run must never build a fork's code.
+      - name: "🔒 Verify PR head repository (manual dispatch only)"
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          HEAD_REPO=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}" --jq '.head.repo.full_name')
+          echo "PR #${PR_NUMBER} head repository: ${HEAD_REPO}"
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::Refusing to build PR #${PR_NUMBER} - its head branch is on a fork (${HEAD_REPO}), not ${{ github.repository }}."
+            exit 1
+          fi
+
       - name: "🔄 Checkout PR Head"
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          # workflow_dispatch has no pull_request.head.ref, but any PR's head
+          # commit can be checked out directly via the refs/pull/<n>/head ref
+          # (the step above already confirmed this PR's head lives in this repo).
+          ref: ${{ github.event.pull_request.head.ref || format('refs/pull/{0}/head', inputs.pr_number) }}
 
       - name: "🧰 Setup Node.js, Yarn & Dependencies"
         uses: ./.github/actions/setup-and-install
@@ -245,19 +278,20 @@ jobs:
         run: |
           yarn expo export -p web
           yarn run copy-assets
-          yarn gh-pages --nojekyll -d dist --dest "pr-${{ github.event.pull_request.number }}"
+          yarn gh-pages --nojekyll -d dist --dest "pr-${PR_NUMBER}"
         working-directory: ./apps/frontend/app
         env:
-          EXPO_PUBLIC_BASE_URL_SUFFIX: /pr-${{ github.event.pull_request.number }}
+          EXPO_PUBLIC_BASE_URL_SUFFIX: /pr-${{ env.PR_NUMBER }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "💬 Comment on PR"
         uses: actions/github-script@v7
         env:
           WEB_BASE_PATH: ${{ env.WEB_BASE_PATH }}
+          PR_NUMBER: ${{ env.PR_NUMBER }}
         with:
           script: |
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = Number(process.env.PR_NUMBER);
             const marker = '<!-- web-preview-comment -->';
             const baseUrlPath = process.env.WEB_BASE_PATH;
             const url = `https://rocket-meals.de/${baseUrlPath}/pr-${prNumber}/`;
