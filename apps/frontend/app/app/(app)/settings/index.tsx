@@ -55,10 +55,10 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection /*, MyAvatar */ } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
-import { useAvatarProfileEditor, /* AVATAR_BACKGROUND, */ AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
+import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
 import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingToggle';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -502,7 +502,6 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_personalization)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						{/* Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
 						<SettingsList
 							leftIconComponent={
 								settingsAvatarConfig ? (
@@ -525,14 +524,13 @@ const Settings = () => {
 							onAccountRequired={openAccountRequiredModal}
 							groupPosition="top"
 						/>
-						*/}
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={openNicknameSheet}
-							groupPosition="top"
+							groupPosition="middle"
 						/>
 						{showFriendsInSettings && (
 							<SettingsList

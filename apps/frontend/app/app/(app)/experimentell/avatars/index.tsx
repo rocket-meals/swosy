@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -10,6 +10,7 @@ import {
 	MyAvatar,
 	AvatarStyle,
 	AvatarSize,
+	AvatarConfig,
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListSelectOption,
@@ -17,21 +18,28 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
-import { UserHelper } from '@/helper/UserHelper';
 
 const ALL_AVATAR_STYLES = Object.values(AvatarStyle).map((style) => ({
 	id: style,
 	label: style,
 }));
 
+// Debug-only default config used for the size-comparison row below when the user has no avatar yet.
+const DEBUG_SIZE_PREVIEW_CONFIG: AvatarConfig = {
+	style: AvatarStyle.MICAH,
+	size: AvatarSize.LARGE,
+};
+
+// Different render sizes to compare on the same screen. Useful for spotting size-dependent
+// rendering bugs (e.g. clipping that only shows up at certain pixel sizes on some Android devices).
+const DEBUG_PREVIEW_SIZES = [24, AvatarSize.SMALL, AvatarSize.MEDIUM, AvatarSize.LARGE, AvatarSize.XLARGE];
+
 const AvatarsScreen = () => {
 	useSetPageTitle(TranslationKeys.avatars);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const { user } = useAppSelector((state) => state.authReducer);
 	const debugMode = useDebugMode();
-	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.MICAH);
@@ -117,25 +125,54 @@ const AvatarsScreen = () => {
 					</>
 				)}
 
-				{isRegisteredUser && (
-					<>
-						<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
-						<SettingsList
-							title={avatarConfig ? translate(TranslationKeys.edit) : translate(TranslationKeys.avatar_create_new)}
-							onPress={openActionsModal}
-							leftIcon={
-								avatarConfig ? (
-									<MaterialCommunityIcons name="pencil" size={20} />
-								) : (
-									<MaterialCommunityIcons name="plus-circle" size={20} />
-								)
-							}
-							iconBgColor={primaryColor}
-							groupPosition="single"
-							rightElement={<MaterialCommunityIcons name="chevron-right" size={20} color={theme.screen.icon} />}
-						/>
-					</>
-				)}
+				{/*
+					Always shown here (unlike the production Settings/Friends screens, where the
+					avatar editor entry point is currently commented out because of the Android
+					rendering bug), so the editor stays reachable for testing regardless of
+					registration status. Saving still no-ops without a logged-in profile.
+				*/}
+				<SettingsListGroupTitle title={translate(TranslationKeys.avatars)} />
+				<SettingsList
+					title={avatarConfig ? translate(TranslationKeys.edit) : translate(TranslationKeys.avatar_create_new)}
+					onPress={openActionsModal}
+					leftIcon={
+						avatarConfig ? (
+							<MaterialCommunityIcons name="pencil" size={20} />
+						) : (
+							<MaterialCommunityIcons name="plus-circle" size={20} />
+						)
+					}
+					iconBgColor={primaryColor}
+					groupPosition="single"
+					rightElement={<MaterialCommunityIcons name="chevron-right" size={20} color={theme.screen.icon} />}
+				/>
+
+				{/*
+					Debug row: the same avatar rendered at several sizes side by side. Added to help
+					diagnose a bug where avatars render partially cut off on some Android devices
+					(e.g. Galaxy S25) but not on web/iOS - useful for checking whether the clipping
+					is specific to certain render sizes.
+				*/}
+				<SettingsListGroupTitle title={`${translate(TranslationKeys.avatars)} - Size Debug`} />
+				<View style={styles.sizeDebugRow}>
+					{DEBUG_PREVIEW_SIZES.map((size) => {
+						// MyAvatar prioritizes `config.size` over the `size` prop, so pass style/options
+						// separately here instead of `config` to force each preview to its own size.
+						const previewConfig = avatarConfig ?? DEBUG_SIZE_PREVIEW_CONFIG;
+						return (
+							<View key={size} style={styles.sizeDebugItem}>
+								<MyAvatar
+									style={previewConfig.style}
+									options={previewConfig.options}
+									size={size}
+									rounded={true}
+									backgroundColor={AVATAR_BACKGROUND}
+								/>
+								<Text style={{ color: theme.screen.text }}>{size}px</Text>
+							</View>
+						);
+					})}
+				</View>
 			</View>
 		</ScrollView>
 	);
@@ -162,6 +199,18 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		paddingVertical: 8,
+	},
+	sizeDebugRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'flex-end',
+		justifyContent: 'center',
+		gap: 16,
+		paddingVertical: 16,
+	},
+	sizeDebugItem: {
+		alignItems: 'center',
+		gap: 4,
 	},
 });
 
