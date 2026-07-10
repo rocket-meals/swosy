@@ -42,7 +42,17 @@ enum BalanceStateLowerBound {
 	CONFUSED = -0.01,
 }
 
-const AccountBalanceScreen = () => {
+export interface AccountBalanceScreenProps {
+	/**
+	 * When true, automatically triggers the NFC read (as if the user pressed
+	 * the "read card" button) as soon as the screen is focused/active and NFC
+	 * is supported+enabled. Used by the foodoffers quick-access button, which
+	 * opens this screen in a modal and wants the scan to start immediately.
+	 */
+	autoStartNfc?: boolean;
+}
+
+const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNfc = false }) => {
 	useSetPageTitle(TranslationKeys.accountbalance);
 	const toast = useToast();
 	const { theme } = useTheme();
@@ -225,6 +235,30 @@ const AccountBalanceScreen = () => {
 		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translate(TranslationKeys.nfcInstructionRead));
 	};
 
+	const handleReadNfcPress = useCallback(async () => {
+		try {
+			await onReadNfcPress();
+		} catch (e: any) {
+			toast(`${JSON.stringify(e)}`, 'error');
+			console.error('Error', JSON.stringify(e));
+			addDebugError(e, 'NFC Card Read');
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [myCardReader, callBack, showInstruction, hideInstruction, translate, toast, addDebugError]);
+
+	// Auto-start the NFC scan (as if the read-card button was pressed) once the
+	// screen is active and NFC is confirmed supported+enabled - used when this
+	// screen is opened from the foodoffers quick-access button. Guarded to fire
+	// only once per mount so it doesn't re-trigger after the read completes and
+	// the focus/NFC-status effects above re-run.
+	const hasAutoStartedNfcRef = useRef(false);
+	useEffect(() => {
+		if (!autoStartNfc || hasAutoStartedNfcRef.current) return;
+		if (isWeb || !isActive || !isNfcSupported || !isNfcEnabled) return;
+		hasAutoStartedNfcRef.current = true;
+		handleReadNfcPress();
+	}, [autoStartNfc, isActive, isNfcSupported, isNfcEnabled, handleReadNfcPress]);
+
 	useEffect(() => {
 		const onChange = ({ window }: { window: any }) => {
 			setWindowWidth(window.width);
@@ -312,15 +346,7 @@ const AccountBalanceScreen = () => {
 			{!isWeb && isNfcEnabled && isNfcSupported && (
 				<ProjectButton
 					style={{ width: '80%' }}
-					onPress={async () => {
-						try {
-							await onReadNfcPress();
-						} catch (e: any) {
-							toast(`${JSON.stringify(e)}`, 'error');
-							console.error('Error', JSON.stringify(e));
-							addDebugError(e, 'NFC Card Read');
-						}
-					}}
+					onPress={handleReadNfcPress}
 					text={translate(TranslationKeys.nfcReadCard)}
 					iconLeft={<MaterialCommunityIcons name="credit-card-wireless-outline" size={24} color={contrastColor} />}
 				/>

@@ -13,6 +13,7 @@ import { isWeb } from '@/constants/Constants';
 import styles from '../styles';
 import { RootDrawerParamList } from '../types';
 import { DatabaseTypes } from 'repo-depkit-common';
+import BalanceQuickAccessButton from './BalanceQuickAccessButton';
 
 interface FoodOffersHeaderProps {
     drawerPosition: 'left' | 'right';
@@ -86,6 +87,8 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                 </View>
 
                 <View style={[styles.col2, drawerPosition === 'right' && styles.rowReverse]}>
+                    <BalanceQuickAccessButton style={iconPaddingStyle} />
+
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (

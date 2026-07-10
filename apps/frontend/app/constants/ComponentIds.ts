@@ -79,6 +79,9 @@ export enum AppComponentIds {
 	EATING_HABITS_MARKINGS = 'eating-habits-markings',
 	EATING_HABITS_ALLERGENE = 'eating-habits-allergene',
 
+	// Food offers
+	FOODOFFERS_BALANCE_QUICK_ACCESS = 'foodoffers-balance-quick-access',
+
 	// Housing
 	HOUSING_SEARCH = 'housing-search',
 
