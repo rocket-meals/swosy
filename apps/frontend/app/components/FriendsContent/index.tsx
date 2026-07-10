@@ -734,21 +734,21 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 				)}
 
 				{/* Profile Info */}
-				{/* Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
 				<SettingsList
 					leftIconComponent={
-						ownAvatarConfig ? (
-							<MyAvatar
-								config={ownAvatarConfig}
-								size={AVATAR_SETTINGS_ROW_SIZE / 2}
-								rounded={true}
-								backgroundColor={AVATAR_BACKGROUND}
-							/>
-						) : (
+						// Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed.
+						// ownAvatarConfig ? (
+						// 	<MyAvatar
+						// 		config={ownAvatarConfig}
+						// 		size={AVATAR_SETTINGS_ROW_SIZE / 2}
+						// 		rounded={true}
+						// 		backgroundColor={AVATAR_BACKGROUND}
+						// 	/>
+						// ) : (
 							<View style={{ width: AVATAR_SETTINGS_ROW_SIZE / 2, height: AVATAR_SETTINGS_ROW_SIZE / 2, borderRadius: AVATAR_SETTINGS_ROW_SIZE / 4, backgroundColor: primaryColor + '22', alignItems: 'center', justifyContent: 'center' }}>
 								<MaterialCommunityIcons name="account-outline" size={20} color={theme.screen.icon} />
 							</View>
-						)
+						// )
 					}
 					value={translate(TranslationKeys.avatar_appearance)}
 					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />}
@@ -757,13 +757,12 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 					onAccountRequired={openAccountRequiredModal}
 					groupPosition="top"
 				/>
-				*/}
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="identifier" size={24} color={theme.screen.icon} />}
 					label={translate(TranslationKeys.friendships_profile_id)}
 					value={profile?.id ?? '-'}
-					groupPosition="top"
+					groupPosition="middle"
 				/>
 				<SettingsListNickname
 					groupPosition="bottom"
