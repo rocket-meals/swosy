@@ -3,6 +3,24 @@ import json
 import os
 import sys
 
+# CLI-controlled paths must stay inside the repository (or the current working
+# directory when not running inside a git checkout) before they are accessed.
+def require_inside_base_dir(path_value):
+    base_dir = os.getcwd()
+    current = base_dir
+    while True:
+        if os.path.isdir(os.path.join(current, '.git')):
+            base_dir = current
+            break
+        parent = os.path.dirname(current)
+        if parent == current:
+            break
+        current = parent
+    resolved = os.path.realpath(path_value)
+    if resolved != base_dir and not resolved.startswith(base_dir + os.sep):
+        raise ValueError(f"Refusing to access path outside '{base_dir}': '{resolved}'")
+    return resolved
+
 def parse_kml(file_path):
     tree = ET.parse(file_path)
     root = tree.getroot()
@@ -35,10 +53,10 @@ if __name__ == "__main__":
         print("Usage: python script.py <input_kml_file> <output_json_file>")
         sys.exit(1)
 
-    # Canonicalize the CLI-controlled paths (resolves "..", symlinks) before they are used
-    # to read/write files below.
-    input_kml_file = os.path.realpath(sys.argv[1])
-    output_json_file = os.path.realpath(sys.argv[2])
+    # Canonicalize the CLI-controlled paths (resolves "..", symlinks) and validate that
+    # they stay inside the repository before they are used to read/write files below.
+    input_kml_file = require_inside_base_dir(sys.argv[1])
+    output_json_file = require_inside_base_dir(sys.argv[2])
 
     parsed_data = parse_kml(input_kml_file)
     write_json(parsed_data, output_json_file)

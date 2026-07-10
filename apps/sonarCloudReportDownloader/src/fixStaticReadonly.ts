@@ -19,8 +19,16 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .alias('h', 'help').argv as any;
 
-const csvPath = path.resolve(argv.csv);
 const rootDir = path.resolve(argv.root);
+const csvPath = path.resolve(argv.csv);
+
+// The CSV path is CLI-controlled; require it to stay inside the project root
+// before reading it, so a faulty argument can't point the script at arbitrary files.
+const csvRelativeToRoot = path.relative(rootDir, csvPath);
+if (csvRelativeToRoot.startsWith('..') || path.isAbsolute(csvRelativeToRoot)) {
+  console.error(`Refusing to read CSV outside the project root: ${csvPath}`);
+  process.exit(1);
+}
 
 const csvContent = fs.readFileSync(csvPath, 'utf-8');
 const lines = csvContent.split(/\r?\n/).slice(1); // skip header

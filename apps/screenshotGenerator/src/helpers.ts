@@ -1,15 +1,34 @@
 import { promises as fs } from 'fs';
+import { existsSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import { Browser } from 'puppeteer';
 import { Device } from './devices';
 import { StringHelper } from 'repo-depkit-common';
 
-// screenshotDir comes from a CLI flag / env var (SCREENSHOT_DIR). Canonicalize it and refuse
-// to operate on the filesystem root or its immediate children, so a misconfigured value can
-// never turn deleteAllScreenshots()'s recursive rm into a catastrophic delete.
+// All screenshot output must stay inside the working tree: the repository root when the
+// tool runs inside a checkout (found by walking up to the nearest .git), otherwise the
+// current working directory.
+function findAllowedBaseDir(): string {
+  let current = process.cwd();
+  while (true) {
+    if (existsSync(path.join(current, '.git'))) return current;
+    const parent = path.dirname(current);
+    if (parent === current) return process.cwd();
+    current = parent;
+  }
+}
+
+const ALLOWED_BASE_DIR = findAllowedBaseDir();
+
+// screenshotDir comes from a CLI flag / env var (SCREENSHOT_DIR). Canonicalize it and
+// require it to stay inside the repository/current working directory, so a misconfigured
+// value can never turn deleteAllScreenshots()'s recursive rm into a catastrophic delete.
 function canonicalizeAndGuardDirPath(dirPath: string): string {
   const resolved = path.resolve(dirPath);
+  if (resolved !== ALLOWED_BASE_DIR && !resolved.startsWith(ALLOWED_BASE_DIR + path.sep)) {
+    throw new Error(`Refusing to operate on path outside "${ALLOWED_BASE_DIR}": "${resolved}"`);
+  }
   const segments = resolved.split(path.sep).filter(Boolean);
   if (segments.length < 2) {
     throw new Error(`Refusing to operate on suspiciously shallow path: "${resolved}"`);

@@ -278,9 +278,25 @@ const enableRequiredSettings = async headers => {
   console.log(' -  Enabled required settings');
 };
 
+// Validates a CLI-controlled value against an anchored allowlist pattern before it is
+// passed to an OS command, so faulty or malicious CLI arguments cannot smuggle in
+// unexpected content (see SonarCloud S8705).
+const requireSafeCliValue = (name, value, pattern) => {
+  if (!pattern.test(value)) {
+    throw new Error(`Refusing to pass unsafe value for "${name}" to the directus-sync CLI`);
+  }
+  return value;
+};
+
 const getDirectusSyncArgs = () => {
   const preserveIds = 'dashboards,operations,panels,policies,roles,translations';
-  return ['--directus-url', directus_url, '--directus-email', admin_email, '--directus-password', admin_password, '--dump-path', dumpPath, '--preserve-ids', preserveIds];
+  return [
+    '--directus-url', requireSafeCliValue('directus-url', directus_url, /^https?:\/\/[\w.-]+(?::\d+)?(?:\/[\w./-]*)?$/),
+    '--directus-email', requireSafeCliValue('directus-email', admin_email, /^[^\s@]+@[^\s@]+$/),
+    '--directus-password', requireSafeCliValue('directus-password', admin_password, /^[\x20-\x7e]+$/),
+    '--dump-path', requireSafeCliValue('dump-path', dumpPath, /^[\w./ -]+$/),
+    '--preserve-ids', preserveIds,
+  ];
 };
 
 // Executes a command as an argument vector (no shell) so that CLI-controlled values

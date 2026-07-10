@@ -1,5 +1,29 @@
 import { promises as fs } from 'fs';
+import { existsSync } from 'fs';
 import path from 'path';
+
+// Report output must stay inside the working tree: the repository root when the tool
+// runs inside a checkout (found by walking up to the nearest .git), otherwise the
+// current working directory. The reportDir CLI flag is untrusted input.
+function findAllowedBaseDir(): string {
+  let current = process.cwd();
+  while (true) {
+    if (existsSync(path.join(current, '.git'))) return current;
+    const parent = path.dirname(current);
+    if (parent === current) return process.cwd();
+    current = parent;
+  }
+}
+
+const ALLOWED_BASE_DIR = findAllowedBaseDir();
+
+function resolveGuardedPath(...segments: string[]): string {
+  const resolved = path.resolve(...segments);
+  if (resolved !== ALLOWED_BASE_DIR && !resolved.startsWith(ALLOWED_BASE_DIR + path.sep)) {
+    throw new Error(`Refusing to write outside "${ALLOWED_BASE_DIR}": "${resolved}"`);
+  }
+  return resolved;
+}
 
 export type ImpactLevel = 'critical' | 'serious' | 'moderate' | 'minor';
 
@@ -57,12 +81,12 @@ export function countViolationsByImpact(screens: ScreenResult[]): Record<ImpactL
 }
 
 async function ensureDir(dirPath: string) {
-  await fs.mkdir(dirPath, { recursive: true });
+  await fs.mkdir(resolveGuardedPath(dirPath), { recursive: true });
 }
 
 export async function writeJsonReport(report: AccessibilityReport, reportDir: string) {
   await ensureDir(reportDir);
-  const filePath = path.join(reportDir, 'accessibility-report.json');
+  const filePath = resolveGuardedPath(reportDir, 'accessibility-report.json');
   await fs.writeFile(filePath, JSON.stringify(report, null, 2) + '\n', 'utf-8');
   console.log(`JSON report written: ${filePath}`);
 }
@@ -184,7 +208,7 @@ export function generateMarkdownReport(report: AccessibilityReport): string {
 
 export async function writeMarkdownReport(report: AccessibilityReport, reportDir: string) {
   await ensureDir(reportDir);
-  const filePath = path.join(reportDir, 'accessibility-report.md');
+  const filePath = resolveGuardedPath(reportDir, 'accessibility-report.md');
   await fs.writeFile(filePath, generateMarkdownReport(report), 'utf-8');
   console.log(`Markdown report written: ${filePath}`);
 }
@@ -223,9 +247,9 @@ export function generateBadgeSvg(report: AccessibilityReport): string {
 }
 
 export async function writeBadge(report: AccessibilityReport, reportDir: string) {
-  const badgeDir = path.join(reportDir, 'badges');
+  const badgeDir = resolveGuardedPath(reportDir, 'badges');
   await ensureDir(badgeDir);
-  const filePath = path.join(badgeDir, 'accessibility.svg');
+  const filePath = resolveGuardedPath(badgeDir, 'accessibility.svg');
   await fs.writeFile(filePath, generateBadgeSvg(report), 'utf-8');
   console.log(`Badge written: ${filePath}`);
 }

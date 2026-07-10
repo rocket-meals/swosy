@@ -2,6 +2,7 @@ import {DirectusDatabaseSync} from './DirectusDatabaseSync';
 import {DockerDirectusHelper} from './DockerDirectusHelper';
 import {ServerHelper} from 'repo-depkit-common';
 import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import * as dotenv from 'dotenv';
 import {DockerContainerManager} from './DockerContainerManager';
 import {findEnvFile, findProjectRootFile} from "./EnvFileFinder";
@@ -40,13 +41,27 @@ type ResolvedSyncConfig = {
   syncOperation: SyncOperation;
 };
 
+/**
+ * Reads the public placeholder credentials for the local Docker Compose test
+ * system from the repository's .env.template, so no credential literal lives
+ * in the source code. Never used against a real/production instance.
+ */
+async function loadLocalTestServerDefaults(): Promise<{ adminEmail?: string; adminPassword?: string }> {
+  const projectRootPath = await findProjectRootFile();
+  if (!projectRootPath) return {};
+  const templatePath = path.join(path.dirname(projectRootPath), '.env.template');
+  try {
+    const parsed = dotenv.parse(await fs.readFile(templatePath, 'utf-8'));
+    return { adminEmail: parsed.ADMIN_EMAIL, adminPassword: parsed.ADMIN_PASSWORD };
+  } catch {
+    return {};
+  }
+}
+
 async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<ResolvedSyncConfig> {
-  // Non-production placeholder credentials for the local Docker Compose test system only.
-  // Mirrors the public default in .env.template; never used against a real/production instance.
-  const LOCAL_TEST_SERVER_ADMIN_EMAIL = "admin@example.com"
-  const LOCAL_TEST_SERVER_ADMIN_PASSWORD = "The!UniversalRocketMealsPassword";
-  let adminEmail: string | undefined = options.adminEmail || process.env.ADMIN_EMAIL || LOCAL_TEST_SERVER_ADMIN_EMAIL
-  let adminPassword: string | undefined = options.adminPassword || process.env.ADMIN_PASSWORD || LOCAL_TEST_SERVER_ADMIN_PASSWORD
+  const localTestServerDefaults = await loadLocalTestServerDefaults();
+  let adminEmail: string | undefined = options.adminEmail || process.env.ADMIN_EMAIL || localTestServerDefaults.adminEmail
+  let adminPassword: string | undefined = options.adminPassword || process.env.ADMIN_PASSWORD || localTestServerDefaults.adminPassword
   let directusInstanceUrl = options.directusUrl;
   let pathToDataDirectusSync = options.pathToDataDirectusSync;
   let pathToTargetTypesFile: string | undefined;
