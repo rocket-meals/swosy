@@ -1,0 +1,76 @@
+name: "♿ Accessibility Audit"
+
+on:
+  workflow_dispatch: # Allow manual triggering
+  schedule:
+    - cron: '0 3 * * 1' # Every Monday at 03:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  accessibility-audit:
+    name: "♿ Run axe-core audit on all screens"
+    # Only run on the main repository, not on forks (forks lack secrets and
+    # should not have report commits pushed by this workflow)
+    if: github.repository == 'rocket-meals/rocket-meals'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: "🏗️ Export Expo Web (dev build)"
+        run: yarn export:web:dev
+        working-directory: apps/frontend/app
+
+      - name: "🌐 Serve exported web app"
+        run: |
+          mkdir -p /tmp/webroot/rocket-meals
+          cp -r apps/frontend/app/dist/* /tmp/webroot/rocket-meals/
+          python3 -m http.server 8081 --directory /tmp/webroot &
+          echo "Web server started on port 8081"
+          # Wait until the server is ready
+          for i in {1..15}; do
+            if curl -sf http://localhost:8081/rocket-meals/ > /dev/null; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i)"
+            sleep 2
+          done
+
+      - name: "♿ Run accessibility audit"
+        run: yarn start --baseUrl http://localhost:8081/rocket-meals --reportDir "$GITHUB_WORKSPACE/reports/accessibility"
+        working-directory: apps/accessibilityTester
+
+      - name: "📤 Upload reports as workflow artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports
+          path: reports/accessibility/
+
+      - name: "💾 Commit reports"
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add -f reports/accessibility/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update accessibility reports [skip ci]"
+            git pull --rebase origin ${{ github.ref_name }}
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
