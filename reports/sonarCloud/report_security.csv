@@ -1,19 +1,4 @@
 Key,Message,Component,Line
-"AZ9LJjfRJ76BOezZrqfI","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",60
-"AZ9LJjfRJ76BOezZrqfG","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",66
-"AZ9LJjfRJ76BOezZrqfF","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",188
-"AZ9LJjfRJ76BOezZrqfH","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",229
-"AZ9GQrWnPG3QTBW6lktX","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",272
-"AZ9GQrWIPG3QTBW6lktV","Review this potentially hard-coded password.","rocket-meals_rocket-meals:apps/backend-sync/src/SyncDatabaseSchema.ts",47
-"AZ9GQqf9PG3QTBW6lktO","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",291
-"AZ9GQrUSPG3QTBW6lktU","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/screenshotGenerator/src/helpers.ts",23
-"AZ9GQrUSPG3QTBW6lktT","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/screenshotGenerator/src/helpers.ts",87
-"AZ8DZ-N7bzaBxP-NaEw5","""npx"" can install packages on-demand and run their lifecycle scripts.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",246
-"AZ8DZ-N7bzaBxP-NaEw6","Define exact package version to avoid installing unverified releases.","rocket-meals_rocket-meals:.github/workflows/pr-expo-preview.yml",246
-"AZ7eOnvncO69wzd-WGS2","Use full commit SHA hash for this dependency.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",44
-"AZ7csa66YHFvwFUOeLO7","Avoid executing downloaded artifacts directly without verification.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",50
-"AZ7csa66YHFvwFUOeLO8","Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.","rocket-meals_rocket-meals:.github/workflows/frontend-maestro.yml",50
-"AZ7SzefhMiqnvvdaMpzt","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",25
-"AZ7WwYh6jzQQg0b0dKE9","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:apps/backend/Backend/scripts/getBase64IconForMail.py",46
-"AZ7WwYmsjzQQg0b0dKE-","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py",54
-"AZ7WwZmgjzQQg0b0dKE_","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py",30
+"AZ9GQqf9PG3QTBW6lktO","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",307
+"AZ7SzefhMiqnvvdaMpzt","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",33
+"AZ7WwYh6jzQQg0b0dKE9","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:apps/backend/Backend/scripts/getBase64IconForMail.py",64

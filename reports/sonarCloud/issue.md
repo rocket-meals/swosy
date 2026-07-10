@@ -4,97 +4,37 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 18 | 18 |
-| 🐛 Reliability | 95 | 32 |
-| 🔧 Maintainability | 1951 | 0 |
+| 🔒 Security | 3 | 3 |
+| 🐛 Reliability | 84 | 47 |
+| 🔧 Maintainability | 1961 | 0 |
 
-**Total issues:** 2064 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2048 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (18/18)
+## 🔒 Security (3/3)
 
-- **Use full commit SHA hash for this dependency.**
-  .github/workflows/frontend-maestro.yml:44
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L44
-
-- **Avoid executing downloaded artifacts directly without verification.**
-  .github/workflows/frontend-maestro.yml:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L50
-
-- **Not enforcing HTTPS here might allow for redirections to insecure websites. Make sure it is safe here.**
-  .github/workflows/frontend-maestro.yml:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/frontend-maestro.yml#L50
-
-- **"npx" can install packages on-demand and run their lifecycle scripts.**
-  .github/workflows/pr-expo-preview.yml:246
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L246
-
-- **Define exact package version to avoid installing unverified releases.**
-  .github/workflows/pr-expo-preview.yml:246
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/pr-expo-preview.yml#L246
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/accessibilityTester/src/report.ts:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L60
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/accessibilityTester/src/report.ts:66
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L66
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/accessibilityTester/src/report.ts:188
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L188
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/accessibilityTester/src/report.ts:229
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L229
+- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
+  apps/backend/Backend/scripts/getBase64IconForMail.py:64
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/scripts/getBase64IconForMail.py#L64
 
 - **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:272
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L272
-
-- **Review this potentially hard-coded password.**
-  apps/backend-sync/src/SyncDatabaseSchema.ts:47
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L47
-
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/backend/Backend/scripts/getBase64IconForMail.py:46
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/scripts/getBase64IconForMail.py#L46
-
-- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
-  apps/backend/sync/importSchema.js:291
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L291
-
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py:54
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/swosyDownloaderAndParser/swosyBuildingsJsonParseToRocketMealsJson.py#L54
-
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/googleMyMapKmlHelper/parseKmlToJsonBuildings.py#L30
+  apps/backend/sync/importSchema.js:307
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L307
 
 - **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/screenshotGenerator/src/helpers.ts:23
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L23
+  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:33
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L33
 
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/screenshotGenerator/src/helpers.ts:87
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/screenshotGenerator/src/helpers.ts#L87
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:25
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L25
-
-## 🐛 Reliability (32/95)
+## 🐛 Reliability (47/84)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L84
+  apps/accessibilityTester/src/report.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L84
+  apps/accessibilityTester/src/report.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -112,10 +52,6 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:511
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L511
 
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:39
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L39
-
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/app/(app)/course-timetable/index.tsx:26
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L26
@@ -129,8 +65,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L353
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
+  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:134
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L134
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/frontend/app/app/(app)/settings/index.tsx:304
@@ -176,34 +112,6 @@
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
 
-- **React Hook "usePlatformHelper" is called in function "handleNativeLogin" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
-  apps/frontend/app/helper/authHelper.ts:38
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L38
-
-- **React Hook "usePlatformHelper" is called in function "getIsLandScape" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
-  apps/frontend/app/helper/DeviceHelper.ts:115
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L115
-
-- **React Hook "usePlatformHelper" is called in function "getDeviceInformationWithoutPushToken" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".**
-  apps/frontend/app/helper/DeviceHelper.ts:144
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DeviceHelper.ts#L144
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/frontend/app/helper/FoodOffersCacheHelper.ts:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L15
-
-- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/frontend/app/helper/FoodOffersCacheHelper.ts:101
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/FoodOffersCacheHelper.ts#L101
-
-- **React Hook "usePlatformHelper" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/helper/NotificationHelper.ts:82
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/NotificationHelper.ts#L82
-
-- **React Hook "usePlatformHelper" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/helper/SystemActionHelper.ts:6
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
-
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:92
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L92
@@ -215,4 +123,96 @@
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/frontend/run-maestro-web-test.sh:94
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L94
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L119
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:161
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L161
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:168
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L168
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L143
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:151
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L151
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/run-maestro-web-test.sh:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
+
+- **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/activities/[id].tsx:1436
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1436
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/app/activities/[id].tsx:1437
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1437
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/app/activities/[id].tsx:187
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L187
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:145
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L145
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:146
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L146
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:147
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L147
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:216
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:216
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/activities/index.tsx:216
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/billboard-config/index.tsx:68
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L68
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/app/billboard-config/index.tsx:114
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/app/billboard-config/index.tsx:487
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L487
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/billboard-config/index.tsx:495
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L495
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/billboard-config/index.tsx:496
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L496
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L108
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:518
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L518
 
