@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
-import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetBackgroundProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
@@ -44,6 +44,15 @@ const backdropStyles = StyleSheet.create({
 	},
 });
 
+// Mirrors @gorhom/bottom-sheet's default background style, minus its hardcoded
+// (and on web invalid) accessibilityRole="adjustable".
+const backgroundStyles = StyleSheet.create({
+	background: {
+		backgroundColor: 'white',
+		borderRadius: 15,
+	},
+});
+
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
 	onClose?: () => void;
 	headerBackgroundColor?: string;
@@ -70,8 +79,19 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 		[onClose, onChange],
 	);
 
+	// On web, @gorhom/bottom-sheet defaults to accessibilityRole "adjustable",
+	// which becomes role="slider" without the required aria-valuenow (a critical
+	// axe-core violation). The sheet isn't slider-adjustable here anyway (the
+	// drag handle is hidden), so drop the role/label on web. Passing null (not
+	// undefined) prevents the library's defaults from kicking back in. The
+	// library's default background component hardcodes the same broken role, so
+	// it's replaced with a plain view (same default style: rounded corners, the
+	// backgroundStyle prop still applies on top).
+	const webAccessibilityOverrides = Platform.OS === 'web' ? { accessibilityRole: null as any, accessibilityLabel: null as any } : {};
+	const renderBackground = useCallback((backgroundProps: BottomSheetBackgroundProps) => <View pointerEvents={backgroundProps.pointerEvents} style={[backgroundStyles.background, backgroundProps.style]} />, []);
+
 	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...props}>
+		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundComponent={Platform.OS === 'web' ? renderBackground : undefined} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...webAccessibilityOverrides} {...props}>
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />

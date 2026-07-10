@@ -155,6 +155,7 @@ export enum TranslationKeys {
 	unknown = 'unknown',
 	animation = 'animation',
 	allergene = 'allergene',
+	show_allergens = 'show_allergens',
 	clear_markings_selection = 'clear_markings_selection',
 	foodoffers_show_separated_markings_breakdown = 'foodoffers_show_separated_markings_breakdown',
 	foodoffers_show_separated_markings_breakdown_option_enabled = 'foodoffers_show_separated_markings_breakdown_option_enabled',

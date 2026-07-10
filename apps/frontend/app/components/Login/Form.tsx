@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Checkbox from 'expo-checkbox';
 import { useTheme } from '@/hooks/useTheme';
 import { UrlHelper } from '@/constants/UrlHelper';
 import { styles } from './styles';
@@ -111,15 +110,22 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 					}}
 					style={styles.section}
 					nativeID={ComponentIds.LOGIN_ACCEPT_PRIVACY}
+					accessibilityRole="checkbox"
+					accessibilityState={{ checked: isChecked }}
+					// react-native-web does not reliably map accessibilityState.checked to
+					// aria-checked here, but role="checkbox" requires it (axe aria-required-attr)
+					aria-checked={isChecked}
+					accessibilityLabel={translate(TranslationKeys.i_accept_privacy_policy_and_terms_of_service)}
 				>
-					<Checkbox
+					{/* Icon-based checkbox instead of expo-checkbox: its web implementation
+					    renders a native <input> that can't receive an accessible label
+					    (critical axe-core "label" violation). The TouchableOpacity above
+					    carries the checkbox role/state/label instead. */}
+					<MaterialCommunityIcons
 						style={styles.checkbox}
-						value={isChecked}
-						onValueChange={(val) => {
-							setChecked(val);
-							if (val) setAgbError(false);
-						}}
-						color={isChecked ? '#000000' : undefined}
+						name={isChecked ? 'checkbox-marked' : 'checkbox-blank-outline'}
+						size={30}
+						color={theme.login.text}
 					/>
 					<Text
 						style={{

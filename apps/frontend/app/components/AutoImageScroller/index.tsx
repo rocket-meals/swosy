@@ -3,8 +3,14 @@ import { Dimensions, FlatList, View } from 'react-native';
 import { Image } from 'expo-image';
 import styles from './styles';
 
+export interface AutoScrollerImage {
+	uri: string;
+	/** Accessible description of the image (e.g. the food name), used as alt text on web. */
+	alt: string;
+}
+
 interface AutoImageScrollerProps {
-	images: string[];
+	images: AutoScrollerImage[];
 	numColumns: number;
 	size: number;
 	speedPercent: number; // percent of screen height per second
@@ -12,7 +18,7 @@ interface AutoImageScrollerProps {
 }
 
 const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({ images, numColumns, size, speedPercent, loadMore }) => {
-	const flatListRef = useRef<FlatList<string>>(null);
+	const flatListRef = useRef<FlatList<AutoScrollerImage>>(null);
 	const scrollOffset = useRef(0);
 	const screenHeight = Dimensions.get('window').height;
 	const frameRef = useRef<number | null>(null);
@@ -62,12 +68,13 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({ images, numColumn
 		};
 	}, [images, numColumns, size, speedPercent, screenHeight]);
 
-	const renderItem = ({ item, index }: { item: string; index: number }) => {
+	const renderItem = ({ item, index }: { item: AutoScrollerImage; index: number }) => {
 		const columnIndex = index % numColumns;
 		const offset = (columnIndex % 3) * (size / 3);
 		return (
 			<View style={{ transform: [{ translateY: offset }] }}>
-				<Image source={{ uri: item }} style={[styles.image, { width: size, height: size }]} contentFit="cover" />
+				{/* expo-image only maps accessibilityLabel (not alt) to the img alt attribute on web */}
+				<Image source={{ uri: item.uri }} style={[styles.image, { width: size, height: size }]} contentFit="cover" alt={item.alt} accessibilityLabel={item.alt} />
 			</View>
 		);
 	};

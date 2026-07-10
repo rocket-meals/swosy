@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
-import AutoImageScroller from '@/components/AutoImageScroller';
+import AutoImageScroller, { AutoScrollerImage } from '@/components/AutoImageScroller';
 import styles from './styles';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { loadMostLikedOrDislikedFoods } from '@/helper/FoodHelper';
@@ -29,15 +29,17 @@ const VerticalScrollTopFood: React.FC = () => {
 
 	const size = amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, numColumns);
 
-	const [images, setImages] = useState<string[]>([]);
+	const [images, setImages] = useState<AutoScrollerImage[]>([]);
 	const offset = useRef(0);
 
 	const fetchImages = async () => {
 		if (offset.current >= MAX_ITEMS) return;
 		const result = await loadMostLikedOrDislikedFoods(Math.min(PAGE_SIZE, MAX_ITEMS - offset.current), offset.current, undefined, true);
-		const urls = (result ?? []).map((food: any) => getImageUrl(String((food as any).image))).filter(Boolean) as string[];
-		setImages(prev => [...prev, ...urls]);
-		offset.current += urls.length;
+		const items = (result ?? [])
+			.map((food: any) => ({ uri: getImageUrl(String(food.image)), alt: String(food.alias ?? '') }))
+			.filter((item): item is AutoScrollerImage => Boolean(item.uri));
+		setImages(prev => [...prev, ...items]);
+		offset.current += items.length;
 	};
 
 	useEffect(() => {

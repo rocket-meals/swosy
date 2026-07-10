@@ -1,0 +1,23 @@
+{
+  "name": "accessibilitytester",
+  "version": "1.0.0",
+  "description": "Automated accessibility (a11y) audits for all app screens using axe-core, generating reports into the repository reports folder",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "local": "yarn run start -- --baseUrl http://localhost:8081"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@axe-core/puppeteer": "^4.10.1",
+    "axe-core": "^4.10.2",
+    "puppeteer": "^23.1.1",
+    "repo-depkit-common": "workspace:*",
+    "yargs": "^17.7.2"
+  }
+}

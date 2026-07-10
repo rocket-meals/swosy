@@ -79,7 +79,7 @@ const Index = () => {
 					}}
 				>
 					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>Allergene Anzeigen</Text>
+						<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.show_allergens)}</Text>
 					</View>
 					<View style={styles.col2}>
 						<Switch
@@ -90,6 +90,7 @@ const Index = () => {
 								false: theme.screen.icon,
 								true: foods_area_color,
 							}}
+							accessibilityLabel={translate(TranslationKeys.show_allergens)}
 						/>
 					</View>
 				</View>

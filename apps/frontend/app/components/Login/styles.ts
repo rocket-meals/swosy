@@ -200,7 +200,7 @@ export const styles = StyleSheet.create({
 	attentionBody: {
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
-		marginVertical: 20,
+		marginVertical: 8,
 		textAlign: 'center',
 	},
 	attentionActions: {
@@ -252,7 +252,7 @@ export const styles = StyleSheet.create({
 	attentionSheetHeading: {
 		fontSize: 32,
 		fontFamily: 'Poppins_700Bold',
-		marginTop: 20,
+		marginTop: 4,
 	},
 	sheetSubHeading: {
 		fontSize: 16,

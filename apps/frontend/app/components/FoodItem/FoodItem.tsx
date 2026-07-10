@@ -325,6 +325,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               imageSource={{
                 uri: imageUri as string,
               }}
+              imageAccessibilityLabel={foodName}
               containerStyle={[
                 containerStyle,
                 cardWidth ? { width: '100%' } : { flex: 1 },

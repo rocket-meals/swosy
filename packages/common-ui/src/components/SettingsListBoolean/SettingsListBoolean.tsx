@@ -51,6 +51,7 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
 					thumbColor={theme.screen.icon}
 					ios_backgroundColor={theme.screen.iconBg}
 					disabled={isDisabled}
+					accessibilityLabel={props.title ?? props.label}
 				/>
 			}
 			handleFunction={isDisabled ? undefined : onToggle}

@@ -1589,6 +1589,16 @@
     "tr": "Alerjenler",
     "zh": "过敏原"
   },
+  "show_allergens": {
+    "de": "Allergene anzeigen",
+    "en": "Show allergens",
+    "ar": "إظهار مسببات الحساسية",
+    "es": "Mostrar alérgenos",
+    "fr": "Afficher les allergènes",
+    "ru": "Показать аллергены",
+    "tr": "Alerjenleri göster",
+    "zh": "显示过敏原"
+  },
   "clear_markings_selection": {
     "de": "Allergen-Auswahl zurücksetzen",
     "en": "Clear allergen selection",

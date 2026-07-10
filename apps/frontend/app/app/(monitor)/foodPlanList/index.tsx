@@ -131,6 +131,7 @@ const Index = () => {
 							currentValue = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
 						}}
 						keyboardType="number-pad"
+						accessibilityLabel={intervalLabel}
 					/>
 					<View
 						style={[
@@ -285,6 +286,7 @@ const Index = () => {
 												onChangeText={text => handleSortChange(attribute.id, text)}
 												keyboardType="numeric"
 												maxLength={2}
+												accessibilityLabel={`${translate(TranslationKeys.sort)}: ${attribute?.alias ?? ''}`}
 												style={{
 													...styles.sortField,
 													color: theme.screen.text,

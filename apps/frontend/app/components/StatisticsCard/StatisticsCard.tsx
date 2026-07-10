@@ -45,6 +45,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 					remote_image_url={food?.image_remote_url}
 					directus_asset_id={food?.image}
 					defaultImageUrl={defaultImage}
+					accessibilityLabel={food?.alias ?? ''}
 				/>
 				<TouchableOpacity
 					style={styles.uploadImage}
