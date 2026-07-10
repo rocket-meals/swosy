@@ -15,9 +15,15 @@ import { ComponentIds } from '@/constants/ComponentIds';
 
 interface CanteenSelectionProps {
 	onSelectCanteen: (canteen: DatabaseTypes.Canteens) => void;
+	/**
+	 * Canteen to show highlighted as if selected while no real selection exists yet
+	 * (e.g. onboarding highlights the canteen that "weiter" will default to).
+	 * Ignored once selectedCanteen is actually set.
+	 */
+	highlightFallbackCanteenId?: string;
 }
 
-const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) => {
+const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen, highlightFallbackCanteenId }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
@@ -67,7 +73,9 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 			}}
 		>
 			{canteens.map((canteen, index: number) => {
-				const isSelected = selectedCanteen && String(selectedCanteen.id) === String(canteen.id);
+				const isSelected = selectedCanteen
+					? String(selectedCanteen.id) === String(canteen.id)
+					: highlightFallbackCanteenId !== undefined && String(highlightFallbackCanteenId) === String(canteen.id);
 				const imageUrl = canteen?.image_url || canteensData[index]?.image;
 				return (
 					<View

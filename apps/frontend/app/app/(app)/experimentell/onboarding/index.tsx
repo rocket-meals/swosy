@@ -679,7 +679,7 @@ const OnboardingScreen = () => {
 						</Text>
 					</View>
 				) : (
-					<CanteenSelection onSelectCanteen={handleSelectCanteen} />
+					<CanteenSelection onSelectCanteen={handleSelectCanteen} highlightFallbackCanteenId={canteens[0]?.id} />
 				)}
 			</ScrollView>
 		</View>
