@@ -276,7 +276,6 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         setIsActive(true);
                         return () => {
                                 setIsActive(false);
-                                closeInstructionRef.current();
 			};
 		}, [])
 	);
@@ -322,6 +321,22 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         animationRef?.current?.play(); // Reset animation to ensure it starts fresh
                 }
         }, [animationJson, autoPlay]);
+
+        // Closes a lingering NFC instruction popup when the screen genuinely
+        // loses focus (isActive flips to false while still mounted). Skips the
+        // very first run: isActive starts as false before the focus effect above
+        // sets it to true, so without this guard the popup-close would fire
+        // (and close the whole modal) on initial mount instead of on real blur.
+        const skipInitialInactiveCloseRef = useRef(true);
+        useEffect(() => {
+                if (skipInitialInactiveCloseRef.current) {
+                        skipInitialInactiveCloseRef.current = false;
+                        return;
+                }
+                if (!isActive) {
+                        closeInstructionRef.current();
+                }
+        }, [isActive]);
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
