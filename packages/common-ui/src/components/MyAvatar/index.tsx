@@ -187,6 +187,17 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		}
 		return createAvatar(avatarStyle, {
 			size,
+			// DiceBear reuses the same static id (e.g. "viewboxMask") for the <mask>/<clipPath> that
+			// clips every avatar to its canvas. On web this collision is harmless because duplicate
+			// ids always point at geometrically identical defs, and each SvgXml on iOS resolves
+			// `url(#...)` against its own instance. react-native-svg's Android renderer keeps a
+			// shared defs/mask registry across all mounted <Svg> instances though, so when multiple
+			// MyAvatar components are on screen at once (chat/friends lists, settings + editor
+			// previews, onboarding carousel, ...) the ids collide there and avatars end up partially
+			// clipped/cut off. `randomizeIds` makes every rendered SVG's internal ids unique, which
+			// avoids the collision. See https://github.com/software-mansion/react-native-svg issues
+			// about mask/clipPath id collisions across multiple Svg instances on Android.
+			randomizeIds: true,
 			...renderOptions,
 		}).toString();
 	}, [style, size, options]);
