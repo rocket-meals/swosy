@@ -653,7 +653,8 @@ const OnboardingScreen = () => {
 						</Text>
 					</View>
 				</View>
-				{renderAvatarCarousel()}
+				{/* Temporarily disabled: MyAvatar renders incorrectly on Android. Restore once fixed. */}
+				{/* {renderAvatarCarousel()} */}
 			</View>
 		</View>
 	);
