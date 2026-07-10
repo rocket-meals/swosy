@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, AppState, AppStateStatus, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
-import useDebugMode from '@/hooks/useDebugMode';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePlatformHelper from '@/helper/platformHelper';
@@ -13,7 +12,6 @@ import { SET_SIMULATE_EXPO_UPDATE_AVAILABLE } from '@/redux/Types/types';
 
 const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
-        const debugMode = useDebugMode();
         const { isSmartPhone } = usePlatformHelper();
         const { show, close } = useMyScrollViewModal();
         const { theme } = useTheme();
@@ -31,7 +29,12 @@ const useAppForegroundUpdateCheckModal = () => {
                         },
                         { force }: { force?: boolean } = {}
                 ) => {
-                        if (!debugMode && !force) return;
+                        // Only show the intermediate check/status modal (searching, blocked, no update
+                        // found, ...) when the user has explicitly turned on "simulate update available"
+                        // in debug settings. It used to be gated on debug mode itself, which meant it
+                        // popped up on every single app foreground while debug mode was on. Forced
+                        // modals (e.g. a real update being found) always show regardless.
+                        if (!simulateExpoUpdateAvailable && !force) return;
 
                         const { title, message, loading, primaryAction, allowClose } = options;
 
@@ -81,7 +84,7 @@ const useAppForegroundUpdateCheckModal = () => {
                                 ),
                         });
                 },
-                [close, debugMode, show, theme.screen.background, theme.screen.text, theme.sheet.text]
+                [close, simulateExpoUpdateAvailable, show, theme.screen.background, theme.screen.text, theme.sheet.text]
         );
 
         const handleDownloadUpdate = useCallback(async () => {
