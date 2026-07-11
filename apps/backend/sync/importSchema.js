@@ -304,6 +304,18 @@ const getDirectusSyncArgs = () => {
 const execWithOutput = async (cmd, args) => {
   console.log(' -  Pushing schema changes');
 
+  // Re-validate immediately before the OS command runs: cmd/args are built from
+  // CLI-controlled values several calls away (getDirectusSyncArgs), so guard the
+  // exact values reaching spawn() here too, right at the sink.
+  if (!/^[\w.-]+$/.test(cmd)) {
+    throw new Error(`Refusing to run unsafe command: "${cmd}"`);
+  }
+  for (const arg of args) {
+    if (typeof arg !== 'string' || /[\r\n\0]/.test(arg)) {
+      throw new Error('Refusing to pass unsafe argument to child process');
+    }
+  }
+
   const child = spawn(cmd, args, {
     env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
     stdio: ['inherit', 'pipe', 'pipe'],

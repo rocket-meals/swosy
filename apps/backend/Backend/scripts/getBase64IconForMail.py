@@ -61,6 +61,10 @@ def find_node_modules_directory(max_levels_up=10):
 
 # Function to load the glyph map from the JSON file
 def load_glyph_map(glyph_map_path):
+    # Re-validate immediately before the file is opened: glyph_map_path is derived
+    # from CLI-controlled input (--node_modules, icon family), so canonicalize and
+    # confirm it still resolves inside the repository right at this access point.
+    glyph_map_path = require_inside_base_dir(glyph_map_path)
     with open(glyph_map_path, "r") as file:
         glyph_map = json.load(file)
     return glyph_map
