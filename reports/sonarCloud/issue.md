@@ -4,29 +4,25 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 3 | 3 |
-| 🐛 Reliability | 84 | 47 |
+| 🔒 Security | 2 | 2 |
+| 🐛 Reliability | 84 | 48 |
 | 🔧 Maintainability | 1962 | 0 |
 
-**Total issues:** 2049 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2048 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (3/3)
-
-- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  apps/backend/Backend/scripts/getBase64IconForMail.py:64
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/scripts/getBase64IconForMail.py#L64
+## 🔒 Security (2/2)
 
 - **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
-  apps/backend/sync/importSchema.js:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L307
+  apps/backend/sync/importSchema.js:319
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L319
 
 - **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:33
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L33
+  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L39
 
-## 🐛 Reliability (47/84)
+## 🐛 Reliability (48/84)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -215,4 +211,8 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:518
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L518
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:519
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L519
 
