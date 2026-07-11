@@ -19,11 +19,17 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .alias('h', 'help').argv as any;
 
-const rootDir = path.resolve(argv.root);
-const csvPath = path.resolve(argv.csv);
+const rootDir = fs.realpathSync(path.resolve(argv.root));
 
-// The CSV path is CLI-controlled; require it to stay inside the project root
-// before reading it, so a faulty argument can't point the script at arbitrary files.
+const resolvedCsvPath = path.resolve(argv.csv);
+if (!fs.existsSync(resolvedCsvPath)) {
+  console.error(`CSV file not found: ${resolvedCsvPath}`);
+  process.exit(1);
+}
+// The CSV path is CLI-controlled; canonicalize it (resolving symlinks, "..", etc.)
+// and require it to stay inside the project root before reading it, so a faulty
+// argument can't point the script at arbitrary files.
+const csvPath = fs.realpathSync(resolvedCsvPath);
 const csvRelativeToRoot = path.relative(rootDir, csvPath);
 if (csvRelativeToRoot.startsWith('..') || path.isAbsolute(csvRelativeToRoot)) {
   console.error(`Refusing to read CSV outside the project root: ${csvPath}`);
@@ -44,18 +50,19 @@ for (const line of lines) {
   const componentPath = match[1];
   const lineNumber = Number.parseInt(match[2], 10);
   const fileRelPath = componentPath.split(':')[1];
-  const filePath = path.resolve(rootDir, fileRelPath);
+  const resolvedFilePath = path.resolve(rootDir, fileRelPath);
 
-  // The CSV report is external, downloaded input; validate the path it points at stays
-  // inside rootDir before this script reads/overwrites it.
-  const relativeToRoot = path.relative(rootDir, filePath);
-  if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
-    console.warn(`Skipping path outside root directory: ${filePath}`);
+  if (!fs.existsSync(resolvedFilePath)) {
+    console.warn(`File not found: ${resolvedFilePath}`);
     continue;
   }
 
-  if (!fs.existsSync(filePath)) {
-    console.warn(`File not found: ${filePath}`);
+  // The CSV report is external, downloaded input; canonicalize the path it points at
+  // and validate it stays inside rootDir before this script reads/overwrites it.
+  const filePath = fs.realpathSync(resolvedFilePath);
+  const relativeToRoot = path.relative(rootDir, filePath);
+  if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
+    console.warn(`Skipping path outside root directory: ${filePath}`);
     continue;
   }
 
