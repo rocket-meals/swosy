@@ -244,6 +244,16 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         },
                         children: (
                                 <View style={styles.sheetView}>
+                                        {/* Previous balance (snapshot from before this read), so the user
+                                            still sees their old value while scanning - especially when the
+                                            foodoffers quick-access opens balance with auto-started NFC and
+                                            Android jumps straight to this instruction. Only shown when a
+                                            previous balance actually exists. */}
+                                        {profile?.credit_balance !== null && profile?.credit_balance !== undefined && (
+                                                <Text style={{ ...styles.nfcInstructionRead, color: theme.screen.text, marginBottom: 8 }}>
+                                                        {`${translate(TranslationKeys.nfcInstructionOldBalance)}: ${showFormatedPrice(formatPrice(profile.credit_balance))}`}
+                                                </Text>
+                                        )}
                                         <Text
                                                 style={{
                                                         ...styles.nfcInstructionRead,
@@ -294,7 +304,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
                         ),
                 });
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [isActive, showInstructionModal, debugMode, theme.screen.text, theme.screen.iconBg, translate]);
+        }, [isActive, showInstructionModal, debugMode, profile?.credit_balance, theme.screen.text, theme.screen.iconBg, translate]);
 
 	const onReadNfcPress = async () => {
 		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translate(TranslationKeys.nfcInstructionRead));
