@@ -5,14 +5,14 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 84 | 50 |
-| 🔧 Maintainability | 1962 | 0 |
+| 🐛 Reliability | 32 | 32 |
+| 🔧 Maintainability | 1910 | 18 |
 
-**Total issues:** 2046 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1942 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (50/84)
+## 🐛 Reliability (32/32)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -46,30 +46,6 @@
   apps/frontend/app/app/(app)/course-timetable/index.tsx:107
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx:353
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx#L353
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:134
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L134
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:304
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L304
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:305
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L305
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:310
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L310
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/frontend/app/app/(app)/settings/index.tsx:312
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/settings/index.tsx#L312
-
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/app/index.tsx:15
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
@@ -97,14 +73,6 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:92
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L92
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/CanteenVisits/CanteenVisits.ts#L117
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/frontend/run-maestro-web-test.sh:94
@@ -134,46 +102,6 @@
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:1436
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1436
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:1437
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L1437
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:187
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L187
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:145
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L145
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:146
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L146
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:147
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L147
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:216
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:216
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/activities/index.tsx:216
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L216
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L68
-
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:114
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
@@ -181,14 +109,6 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:487
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L487
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:495
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L495
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:496
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L496
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:108
@@ -198,19 +118,101 @@
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:518
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L518
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L64
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:519
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L519
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:113
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L113
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:363
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L363
 
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:1190
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1190
+- **Do not use an object literal as default for parameter `content`.**
+  apps/geonexia/frontend/helpers/TTSHelper.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/src/EmailHelper.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EmailHelper.ts#L2
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/src/NumberHelper.ts:38
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
+
+## 🔧 Maintainability (18/1910)
+
+- **Prefer `node:path` over `path`.**
+  apps/accessibilityTester/src/index.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L1
+
+- **'fs' imported multiple times.**
+  apps/accessibilityTester/src/report.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
+
+- **Prefer `node:fs` over `fs`.**
+  apps/accessibilityTester/src/report.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+
+- **'fs' imported multiple times.**
+  apps/accessibilityTester/src/report.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+
+- **Prefer `node:fs` over `fs`.**
+  apps/accessibilityTester/src/report.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
+
+- **Prefer `node:path` over `path`.**
+  apps/accessibilityTester/src/report.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L3
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/accessibilityTester/src/report.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
+
+- **`String.raw` should be used to avoid escaping `\`.**
+  apps/accessibilityTester/src/report.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/accessibilityTester/src/report.ts:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
+
+- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
+  apps/accessibilityTester/src/report.ts:111
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L111
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:114
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L114
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L115
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:116
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L116
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L117
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:118
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L118
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L119
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:120
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L120
+
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:123
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L123
 
