@@ -1,3 +1,1 @@
 Key,Message,Component,Line
-"AZ9GQqf9PG3QTBW6lktO","LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",326
-"AZ7SzefhMiqnvvdaMpzt","A path canonicalized from CLI-controlled data must be validated before use.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",52

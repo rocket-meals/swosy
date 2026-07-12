@@ -4,25 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 84 | 48 |
+| 🔒 Security | 0 | 0 |
+| 🐛 Reliability | 84 | 50 |
 | 🔧 Maintainability | 1962 | 0 |
 
-**Total issues:** 2048 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2046 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (2/2)
-
-- **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
-  apps/backend/sync/importSchema.js:326
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L326
-
-- **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:52
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L52
-
-## 🐛 Reliability (48/84)
+## 🐛 Reliability (50/84)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -215,4 +205,12 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:519
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L519
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/app/index.tsx:113
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L113
+
+- **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/index.tsx:1190
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1190
 
