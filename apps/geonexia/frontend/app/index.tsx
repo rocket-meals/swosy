@@ -59,7 +59,7 @@ import useGeonexiaAlert from '../hooks/useGeonexiaAlert';
 function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
 	const colonIdx = billboard.indexOf(':');
 	if (colonIdx < 0 || billboard.slice(0, colonIdx) !== 'objects') return null;
-	const idx = parseInt(billboard.slice(colonIdx + 1), 10);
+	const idx = Number.parseInt(billboard.slice(colonIdx + 1), 10);
 	const sprite = OBJECT_SPRITES[idx];
 	if (!sprite) return null;
 	return { sprite, idx };
@@ -110,7 +110,7 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
  */
 function getAnchorAngleDeg(anchorPosition: string): number {
 	const match = anchorPosition.match(/_(\d+)$/);
-	return match ? (240 - parseInt(match[1], 10) + 360) % 360 : 0;
+	return match ? (240 - Number.parseInt(match[1], 10) + 360) % 360 : 0;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -783,7 +783,7 @@ function computeOrderedMeasureRouteCells(
 }
 
 function formatEstimatedDuration(totalMinutes: number): string {
-	if (totalMinutes <= 0 || !isFinite(totalMinutes)) return '--:--';
+	if (totalMinutes <= 0 || !Number.isFinite(totalMinutes)) return '--:--';
 	const h = Math.floor(totalMinutes / 60);
 	const m = Math.floor(totalMinutes % 60);
 	const s = Math.round((totalMinutes % 1) * 60);
@@ -933,7 +933,7 @@ function formatDuration(totalSeconds: number): string {
 }
 
 function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
+	if (minPerKm <= 0 || !Number.isFinite(minPerKm)) return '--:--';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')}`;
@@ -1187,7 +1187,7 @@ function DebugInfoContent({
 			<SettingsListNumberInput
 				label="Joystick Speed (km/h)"
 				value={speedText}
-				initialValue={parseFloat(speedText) || initialSpeed}
+				initialValue={Number.parseFloat(speedText) || initialSpeed}
 				min={0.1}
 				max={DEBUG_MOVE_SPEED_MAX_KMH}
 				allowDecimal

@@ -89,7 +89,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 				},
 			});
 			const count = result?.[0]?.count;
-			return typeof count === 'number' ? count : parseInt(count, 10) || 0;
+			return typeof count === 'number' ? count : Number.parseInt(count, 10) || 0;
 		} catch (error) {
 			console.error('Error fetching canteen visit count:', error);
 			return 0;
@@ -114,7 +114,7 @@ export class CanteenVisitsHelper extends CollectionHelper<DatabaseTypes.CanteenV
 				},
 			});
 			const count = result?.[0]?.count;
-			return typeof count === 'number' ? count : parseInt(count, 10) || 0;
+			return typeof count === 'number' ? count : Number.parseInt(count, 10) || 0;
 		} catch (error) {
 			console.error('Error fetching friend canteen visit count:', error);
 			return 0;

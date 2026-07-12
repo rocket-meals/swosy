@@ -131,7 +131,7 @@ function formatDuration(totalSeconds: number): string {
 }
 
 function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
+	if (minPerKm <= 0 || !Number.isFinite(minPerKm)) return '--:--';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')} min/km`;

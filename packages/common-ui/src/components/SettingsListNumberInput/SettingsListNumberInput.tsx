@@ -80,11 +80,11 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 	}, [initialValue]);
 
 	const numericValue = useMemo(() => {
-		const parsed = allowDecimal ? parseFloat(textValue) : parseInt(textValue, 10);
-		return isNaN(parsed) ? initialValue : parsed;
+		const parsed = allowDecimal ? Number.parseFloat(textValue) : Number.parseInt(textValue, 10);
+		return Number.isNaN(parsed) ? initialValue : parsed;
 	}, [textValue, allowDecimal, initialValue]);
 
-	const isValid = !isNaN(numericValue) && (min == null || numericValue >= min) && (max == null || numericValue <= max);
+	const isValid = !Number.isNaN(numericValue) && (min == null || numericValue >= min) && (max == null || numericValue <= max);
 	const hasChanges = numericValue !== initialValue;
 	const disableSave = !isValid || !hasChanges;
 

@@ -184,7 +184,7 @@ function formatDistance(km: number): string {
 }
 
 function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:-- min/km';
+	if (minPerKm <= 0 || !Number.isFinite(minPerKm)) return '--:-- min/km';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')} min/km`;
@@ -1433,8 +1433,8 @@ export default function ActivityDetailScreen() {
 	const handleWeatherTemperatureChange = useCallback((value: string) => {
 		if (!activity) return;
 		const trimmed = value.trim();
-		const numVal = trimmed === '' ? null : parseFloat(trimmed);
-		if (trimmed !== '' && (numVal === null || isNaN(numVal))) return;
+		const numVal = trimmed === '' ? null : Number.parseFloat(trimmed);
+		if (trimmed !== '' && (numVal === null || Number.isNaN(numVal))) return;
 		const updated: SavedActivity = { ...activity, weatherTemperature: numVal };
 		saveActivity(updated);
 		setActivity(updated);

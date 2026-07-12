@@ -1383,7 +1383,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							showSeparator={true}
 							initialValue={(() => {
 								const tx = config.options?.translateX;
-								if (Array.isArray(tx)) return parseInt(tx[0] ?? '0', 10);
+								if (Array.isArray(tx)) return Number.parseInt(tx[0] ?? '0', 10);
 								return config.style === AvatarStyle.OPEN_PEEPS ? -6 : 0;
 							})()}
 							value={(() => {
@@ -1416,7 +1416,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							showSeparator={true}
 							initialValue={(() => {
 								const ty = config.options?.translateY;
-								return Array.isArray(ty) ? parseInt(ty[0] ?? '0', 10) : 0;
+								return Array.isArray(ty) ? Number.parseInt(ty[0] ?? '0', 10) : 0;
 							})()}
 							value={(() => {
 								const ty = config.options?.translateY;
@@ -1447,7 +1447,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							showSeparator={true}
 							initialValue={(() => {
 								const rot = config.options?.rotate;
-								return Array.isArray(rot) ? parseInt(rot[0] ?? '0', 10) : 0;
+								return Array.isArray(rot) ? Number.parseInt(rot[0] ?? '0', 10) : 0;
 							})()}
 							value={(() => {
 								const rot = config.options?.rotate;
@@ -1539,8 +1539,8 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											showSeparator={index !== arr.length - 1}
 											initialValue={
 												scaleArr !== null
-													? parseInt(scaleArr[0] ?? String(value), 10)
-													: parseInt(value, 10)
+													? Number.parseInt(scaleArr[0] ?? String(value), 10)
+													: Number.parseInt(value, 10)
 											}
 											value={
 												scaleArr !== null

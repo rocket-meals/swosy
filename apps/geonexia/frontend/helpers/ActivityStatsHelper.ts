@@ -21,7 +21,7 @@ export function formatSpeed(kmh: number): string {
 }
 
 export function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:-- /km';
+	if (minPerKm <= 0 || !Number.isFinite(minPerKm)) return '--:-- /km';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')} /km`;

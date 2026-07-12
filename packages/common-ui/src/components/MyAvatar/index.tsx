@@ -185,7 +185,7 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 			const rawTX = renderOptions['translateX'];
 			let txNum = 0;
 			if (Array.isArray(rawTX) && rawTX.length > 0) {
-				txNum = parseInt(rawTX[0], 10) || 0;
+				txNum = Number.parseInt(rawTX[0], 10) || 0;
 			} else if (typeof rawTX === 'number') {
 				txNum = rawTX;
 			}

@@ -131,9 +131,9 @@ function ManualActivityContent({
 	};
 
 	const handleSave = () => {
-		const h = parseInt(hours, 10) || 0;
-		const m = parseInt(minutes, 10) || 0;
-		const s = parseInt(seconds, 10) || 0;
+		const h = Number.parseInt(hours, 10) || 0;
+		const m = Number.parseInt(minutes, 10) || 0;
+		const s = Number.parseInt(seconds, 10) || 0;
 		const totalSeconds = h * 3600 + m * 60 + s;
 		if (totalSeconds <= 0) return;
 
@@ -199,7 +199,7 @@ function ManualActivityContent({
 		onSave(activity);
 	};
 
-	const totalSeconds = (parseInt(hours, 10) || 0) * 3600 + (parseInt(minutes, 10) || 0) * 60 + (parseInt(seconds, 10) || 0);
+	const totalSeconds = (Number.parseInt(hours, 10) || 0) * 3600 + (Number.parseInt(minutes, 10) || 0) * 60 + (Number.parseInt(seconds, 10) || 0);
 
 	return (
 		<View style={{ paddingTop: 4, gap: 12 }}>

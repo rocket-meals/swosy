@@ -72,3 +72,9 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
   - For literal (non-regex) replacements: `StringHelper.replaceAllLiteralWithOptions({ str, find, replace })`
   - For regex-based replacements: `StringHelper.replaceAllWithOptions({ str, find, replace, flags? })`
 - **Exception**: `.replace()` with a regex callback function (e.g. `text.replace(/pattern/g, word => ...)`) is acceptable when the replacement logic cannot be expressed as a simple string substitution.
+
+## Number parsing and NaN/Infinity checks
+
+- **Never use the bare globals `parseInt`, `parseFloat`, `isNaN`, `isFinite`.** Use the `Number` namespace equivalents instead: `Number.parseInt`, `Number.parseFloat`, `Number.isNaN`, `Number.isFinite`.
+- `Number.parseInt`/`Number.parseFloat` are the exact same functions as their global counterparts (no behavior change), so this is a pure rename.
+- `Number.isNaN`/`Number.isFinite` do **not** coerce their argument first, unlike the global versions. Only apply this rule where the value is already a `number` (e.g. a function parameter typed `number`, or the result of `parseInt`/`parseFloat`, which is always `number`-typed even when `NaN`). If a value might still be a non-number type (string, `unknown`, etc.) at the check site, coerce/validate it explicitly before switching to `Number.isNaN`/`Number.isFinite`, since the two are not drop-in equivalent for non-number inputs.

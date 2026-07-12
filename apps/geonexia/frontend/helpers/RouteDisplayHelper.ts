@@ -107,7 +107,7 @@ export function computeHexBounds(
 			// Skip invalid cells
 		}
 	}
-	if (!isFinite(minLat)) return null;
+	if (!Number.isFinite(minLat)) return null;
 	return { minLat, maxLat, minLng, maxLng };
 }
 

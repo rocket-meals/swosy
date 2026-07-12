@@ -515,8 +515,8 @@ export default function HexTextureConfigScreen() {
 											pointerEvents="none"
 											onMessage={(event) => {
 												const parts = event.nativeEvent.data.split(',');
-												const w = parseInt(parts[0], 10);
-												const h = parseInt(parts[1], 10);
+												const w = Number.parseInt(parts[0], 10);
+												const h = Number.parseInt(parts[1], 10);
 												if (w > 0 && h > 0) {
 													setImageDims((prev) => ({ ...prev, [terrainKey]: { width: w, height: h } }));
 												}

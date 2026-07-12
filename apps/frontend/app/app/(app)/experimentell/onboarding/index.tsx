@@ -350,7 +350,7 @@ const OnboardingScreen = () => {
 				aggregate: { count: '*' },
 			}) as { count: string | number }[];
 			const rawCount = result?.[0]?.count;
-			const count = typeof rawCount === 'number' ? rawCount : parseInt(rawCount as string, 10);
+			const count = typeof rawCount === 'number' ? rawCount : Number.parseInt(rawCount as string, 10);
 			if (Number.isFinite(count) && !Number.isNaN(count) && count > 0) {
 				serverRespondedRef.current = true;
 				if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);

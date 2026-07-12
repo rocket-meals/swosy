@@ -61,8 +61,8 @@ function ScoreInputContent({
 			onSave(null);
 			return;
 		}
-		const num = parseInt(text, 10);
-		if (isNaN(num)) {
+		const num = Number.parseInt(text, 10);
+		if (Number.isNaN(num)) {
 			onSave(null);
 			return;
 		}
@@ -71,7 +71,7 @@ function ScoreInputContent({
 
 	const handleQuickScore = useCallback(
 		(delta: number) => {
-			const currentNum = text.trim() === '' ? 0 : parseInt(text, 10) || 0;
+			const currentNum = text.trim() === '' ? 0 : Number.parseInt(text, 10) || 0;
 			const currentSigned = signMode === 'minus' ? -Math.abs(currentNum) : Math.abs(currentNum);
 			const newValue = delta === 0 ? 0 : currentSigned + delta;
 			if (newValue < 0) {

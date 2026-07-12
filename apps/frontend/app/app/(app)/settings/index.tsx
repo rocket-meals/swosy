@@ -301,15 +301,15 @@ const Settings = () => {
                         initialValue: String(appRatingScore),
                         saveLabel: translate(TranslationKeys.save),
                         onSave: (value: string) => {
-                                const parsed = parseInt(value, 10);
-                                if (!isNaN(parsed) && parsed >= 0) {
+                                const parsed = Number.parseInt(value, 10);
+                                if (!Number.isNaN(parsed) && parsed >= 0) {
                                         setAppRatingScore(parsed);
                                 }
                         },
                         checkTextInput: (value: string) => {
-                                const parsed = parseInt(value, 10);
+                                const parsed = Number.parseInt(value, 10);
                                 return {
-                                        isValid: !isNaN(parsed) && parsed >= 0,
+                                        isValid: !Number.isNaN(parsed) && parsed >= 0,
                                         value: value.trim(),
                                 };
                         },

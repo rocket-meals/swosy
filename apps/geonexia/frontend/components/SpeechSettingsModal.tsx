@@ -121,8 +121,8 @@ function PaceMinSecModal({
 							]}
 							value={String(mins)}
 							onChangeText={(t) => {
-								const n = parseInt(t, 10);
-								if (!isNaN(n)) setMins(Math.max(0, Math.min(99, n)));
+								const n = Number.parseInt(t, 10);
+								if (!Number.isNaN(n)) setMins(Math.max(0, Math.min(99, n)));
 							}}
 							keyboardType="number-pad"
 							textAlign="center"
@@ -160,8 +160,8 @@ function PaceMinSecModal({
 							]}
 							value={String(secs)}
 							onChangeText={(t) => {
-								const n = parseInt(t, 10);
-								if (!isNaN(n)) setSecs(Math.max(0, Math.min(59, n)));
+								const n = Number.parseInt(t, 10);
+								if (!Number.isNaN(n)) setSecs(Math.max(0, Math.min(59, n)));
 							}}
 							keyboardType="number-pad"
 							textAlign="center"
