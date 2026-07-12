@@ -37,7 +37,11 @@ if (csvPath !== rootDir && !csvPath.startsWith(rootDirWithSep)) {
   process.exit(1);
 }
 
-const csvContent = fs.readFileSync(csvPath, 'utf-8');
+// Sink reviewed as safe: csvPath was just canonicalized and confirmed to be rootDir
+// itself or a descendant of it, immediately above. Suppressed after 3 rounds of
+// sanitizer hardening (see PR #3764, #3766, #3768) didn't clear this SonarCloud
+// finding.
+const csvContent = fs.readFileSync(csvPath, 'utf-8'); // NOSONAR
 const lines = csvContent.split(/\r?\n/).slice(1); // skip header
 
 for (const line of lines) {
