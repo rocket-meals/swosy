@@ -15,12 +15,12 @@
 ## 🔒 Security (2/2)
 
 - **LLMs running this code with faulty CLI arguments can escape from shell sandboxes. Refactor this code to validate untrusted data before passing them to OS commands.**
-  apps/backend/sync/importSchema.js:319
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L319
+  apps/backend/sync/importSchema.js:326
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/sync/importSchema.js#L326
 
 - **A path canonicalized from CLI-controlled data must be validated before use.**
-  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:39
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L39
+  apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:52
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts#L52
 
 ## 🐛 Reliability (48/84)
 
