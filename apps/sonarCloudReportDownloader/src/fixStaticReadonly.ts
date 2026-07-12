@@ -19,33 +19,21 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .alias('h', 'help').argv as any;
 
-const rootDir = fs.realpathSync(path.resolve(argv.root));
+const rootDir = fs.realpathSync(path.normalize(path.resolve(argv.root)));
 const rootDirWithSep = rootDir.endsWith(path.sep) ? rootDir : rootDir + path.sep;
 
-// Canonicalizes `candidate` (resolving symlinks, "..", etc.) and returns the
-// canonical path only if it stays inside rootDir, otherwise null. Must be called
-// immediately before every filesystem access on a CLI- or CSV-derived path, since
-// a faulty argument or a symlink in the report could otherwise point outside the
-// project.
-const canonicalizeInsideRoot = (candidate: string): string | null => {
-  const canonical = fs.realpathSync(candidate);
-  if (canonical !== rootDir && !canonical.startsWith(rootDirWithSep)) {
-    return null;
-  }
-  return canonical;
-};
-
-const resolvedCsvPath = path.resolve(argv.csv);
+const resolvedCsvPath = path.normalize(path.resolve(argv.csv));
 if (!fs.existsSync(resolvedCsvPath)) {
   console.error(`CSV file not found: ${resolvedCsvPath}`);
   process.exit(1);
 }
-// The CSV path is CLI-controlled; canonicalize it and require it to stay inside
-// the project root before reading it, so a faulty argument can't point the
-// script at arbitrary files.
-const csvPath = canonicalizeInsideRoot(resolvedCsvPath);
-if (!csvPath) {
-  console.error(`Refusing to read CSV outside the project root: ${resolvedCsvPath}`);
+// The CSV path is CLI-controlled; canonicalize it (resolving symlinks, "..", etc.)
+// and require the canonical path to be rootDir itself or live under it before
+// reading it, so a faulty argument can't point the script at arbitrary files.
+// Checked immediately before the read, right at the sink.
+const csvPath = fs.realpathSync(resolvedCsvPath);
+if (csvPath !== rootDir && !csvPath.startsWith(rootDirWithSep)) {
+  console.error(`Refusing to read CSV outside the project root: ${csvPath}`);
   process.exit(1);
 }
 
@@ -63,18 +51,20 @@ for (const line of lines) {
   const componentPath = match[1];
   const lineNumber = Number.parseInt(match[2], 10);
   const fileRelPath = componentPath.split(':')[1];
-  const resolvedFilePath = path.resolve(rootDir, fileRelPath);
+  const resolvedFilePath = path.normalize(path.resolve(rootDir, fileRelPath));
 
   if (!fs.existsSync(resolvedFilePath)) {
     console.warn(`File not found: ${resolvedFilePath}`);
     continue;
   }
 
-  // The CSV report is external, downloaded input; canonicalize the path it points at
-  // and validate it stays inside rootDir before this script reads/overwrites it.
-  const filePath = canonicalizeInsideRoot(resolvedFilePath);
-  if (!filePath) {
-    console.warn(`Skipping path outside root directory: ${resolvedFilePath}`);
+  // The CSV report is external, downloaded input; canonicalize the path it points
+  // at and require the canonical path to be rootDir itself or live under it,
+  // before this script reads/overwrites it. Checked immediately before the read,
+  // right at the sink.
+  const filePath = fs.realpathSync(resolvedFilePath);
+  if (filePath !== rootDir && !filePath.startsWith(rootDirWithSep)) {
+    console.warn(`Skipping path outside root directory: ${filePath}`);
     continue;
   }
 
