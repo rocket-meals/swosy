@@ -20,19 +20,32 @@ const argv = yargs(hideBin(process.argv))
   .alias('h', 'help').argv as any;
 
 const rootDir = fs.realpathSync(path.resolve(argv.root));
+const rootDirWithSep = rootDir.endsWith(path.sep) ? rootDir : rootDir + path.sep;
+
+// Canonicalizes `candidate` (resolving symlinks, "..", etc.) and returns the
+// canonical path only if it stays inside rootDir, otherwise null. Must be called
+// immediately before every filesystem access on a CLI- or CSV-derived path, since
+// a faulty argument or a symlink in the report could otherwise point outside the
+// project.
+const canonicalizeInsideRoot = (candidate: string): string | null => {
+  const canonical = fs.realpathSync(candidate);
+  if (canonical !== rootDir && !canonical.startsWith(rootDirWithSep)) {
+    return null;
+  }
+  return canonical;
+};
 
 const resolvedCsvPath = path.resolve(argv.csv);
 if (!fs.existsSync(resolvedCsvPath)) {
   console.error(`CSV file not found: ${resolvedCsvPath}`);
   process.exit(1);
 }
-// The CSV path is CLI-controlled; canonicalize it (resolving symlinks, "..", etc.)
-// and require it to stay inside the project root before reading it, so a faulty
-// argument can't point the script at arbitrary files.
-const csvPath = fs.realpathSync(resolvedCsvPath);
-const csvRelativeToRoot = path.relative(rootDir, csvPath);
-if (csvRelativeToRoot.startsWith('..') || path.isAbsolute(csvRelativeToRoot)) {
-  console.error(`Refusing to read CSV outside the project root: ${csvPath}`);
+// The CSV path is CLI-controlled; canonicalize it and require it to stay inside
+// the project root before reading it, so a faulty argument can't point the
+// script at arbitrary files.
+const csvPath = canonicalizeInsideRoot(resolvedCsvPath);
+if (!csvPath) {
+  console.error(`Refusing to read CSV outside the project root: ${resolvedCsvPath}`);
   process.exit(1);
 }
 
@@ -59,10 +72,9 @@ for (const line of lines) {
 
   // The CSV report is external, downloaded input; canonicalize the path it points at
   // and validate it stays inside rootDir before this script reads/overwrites it.
-  const filePath = fs.realpathSync(resolvedFilePath);
-  const relativeToRoot = path.relative(rootDir, filePath);
-  if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
-    console.warn(`Skipping path outside root directory: ${filePath}`);
+  const filePath = canonicalizeInsideRoot(resolvedFilePath);
+  if (!filePath) {
+    console.warn(`Skipping path outside root directory: ${resolvedFilePath}`);
     continue;
   }
 
