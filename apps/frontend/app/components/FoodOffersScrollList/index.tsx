@@ -256,41 +256,36 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[sortBy, language, ownFoodFeedbacksForSort, profile, foodCategories, foodOfferCategories]
 	);
 
-	useEffect(() => {
-		setDays(prev => {
-			const updated = prev.map(d => ({ ...d, offers: sortOffers(d.offers) }));
-			// Only update the cache if data has already been loaded for the current cacheKey.
-			// This prevents the sort effect from writing the previous canteen's data into the
-			// new canteen's cache key when the canteen changes (which would corrupt the cache
-			// before the fetch for the new canteen completes).
-			if (updated.length > 0 && daysCache[cacheKey] !== undefined) {
-				updateCache(updated);
-			}
-			return updated;
-		});
-	}, [sortOffers, updateCache, cacheKey]);
+	// Sorting is applied at render time (see `displayDays` below) instead of mutating
+	// `days`/`daysCache` here. Re-sorting used to run as an effect that raced with the
+	// focus-triggered `init()` (below), which reads `daysCache` synchronously and could
+	// overwrite the freshly sorted state with the stale, previously-cached order.
+	// Keeping `days`/`daysCache` sort-agnostic avoids that race entirely and makes the
+	// on-screen order update immediately whenever the sort option changes.
+	const displayDays = useMemo(
+		() => days.map(d => ({ ...d, offers: sortOffers(d.offers) })),
+		[days, sortOffers]
+	);
 
 	const loadDay = useCallback(
 		async (date: string): Promise<DayData> => {
 			const res = await fetchFoodOffersByCanteen(canteenId, date);
 			const offers = res?.data || [];
-			const sortedOffers = sortOffers(offers);
 			// Persist to AsyncStorage cache
 			await cacheFoodOffers(canteenId, date, offers);
-			return { date, offers: sortedOffers } as DayData;
+			return { date, offers } as DayData;
 		},
-		[canteenId, sortOffers]
+		[canteenId]
 	);
 
 	const loadCachedDay = useCallback(
 		async (date: string): Promise<DayData | null> => {
 			const cached = await getCachedFoodOffers(canteenId, date);
 			if (!cached || cached.offers.length === 0) return null;
-			const sortedOffers = sortOffers(cached.offers);
 			dayHashesRef.current[date] = cached.hash;
-			return { date, offers: sortedOffers };
+			return { date, offers: cached.offers };
 		},
-		[canteenId, sortOffers]
+		[canteenId]
 	);
 
 	const init = useCallback(
@@ -556,7 +551,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			<FoodOffersLoadingBar color={foods_area_color} loading={serverLoading} isOffline={isOffline} textColor={theme.screen.text} />
 			<FlatList
 				ref={flatListRef}
-				data={days}
+				data={displayDays}
 				keyExtractor={item => item.date}
 				renderItem={renderDay}
 				onEndReached={onEndReached}
