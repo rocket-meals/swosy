@@ -1199,6 +1199,16 @@
     "tr": "Kart hemen okunmazsa cihazınızın farklı bölgelerine tutmayı deneyin – NFC çipi her cihazda farklı bir yerde bulunur. Çoğu Android telefonda NFC anteni arka yüzde, genellikle kamera çevresinde bulunur.",
     "zh": "如果没有立即读取到卡片,请尝试将卡片贴近设备的不同位置——不同设备的 NFC 芯片位置各不相同。大多数安卓手机的 NFC 天线位于背面,通常靠近摄像头附近。"
   },
+  "nfcInstructionOldBalance": {
+    "de": "Altes Guthaben",
+    "en": "Previous balance",
+    "ar": "الرصيد السابق",
+    "es": "Saldo anterior",
+    "fr": "Solde précédent",
+    "ru": "Предыдущий баланс",
+    "tr": "Önceki bakiye",
+    "zh": "原余额"
+  },
   "showNfcInstruction": {
     "de": "NFC-Anleitung anzeigen",
     "en": "Show NFC instruction",
