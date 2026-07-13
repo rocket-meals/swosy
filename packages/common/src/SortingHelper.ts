@@ -201,9 +201,16 @@ export function sortByOwnFavorite(foodOffers: DatabaseTypes.Foodoffers[], ownFee
 }
 
 export function sortByPublicFavorite(foodOffers: DatabaseTypes.Foodoffers[]) {
+  const getEffectiveRating = (food: DatabaseTypes.Foods): number | null | undefined => {
+    return food?.rating_average ?? food?.rating_average_legacy;
+  };
+
   foodOffers.sort((a, b) => {
     const aFood = (typeof a.food === 'object' && a.food !== null ? a.food : {}) as DatabaseTypes.Foods;
     const bFood = (typeof b.food === 'object' && b.food !== null ? b.food : {}) as DatabaseTypes.Foods;
+    const aRating = getEffectiveRating(aFood);
+    const bRating = getEffectiveRating(bFood);
+
     const getRatingCategory = (rating: number | null | undefined) => {
       if (isRatingNegative(rating)) return 'negative';
       if (rating === null || rating === undefined) return 'null';
@@ -211,15 +218,20 @@ export function sortByPublicFavorite(foodOffers: DatabaseTypes.Foodoffers[]) {
       return 'unknown'; // Fallback for unexpected cases
     };
 
-    const aCategory = getRatingCategory(aFood?.rating_average);
-    const bCategory = getRatingCategory(bFood?.rating_average);
+    const aCategory = getRatingCategory(aRating);
+    const bCategory = getRatingCategory(bRating);
 
     const priorityOrder = ['positive', 'unknown', 'null', 'negative'];
 
     const aPriority = priorityOrder.indexOf(aCategory);
     const bPriority = priorityOrder.indexOf(bCategory);
 
-    return aPriority - bPriority;
+    if (aPriority !== bPriority) {
+      return aPriority - bPriority;
+    }
+
+    // Within the same category, rank by the actual rating value (highest first)
+    return (bRating ?? 0) - (aRating ?? 0);
   });
 
 

@@ -33,6 +33,30 @@ describe('SortingHelper', () => {
     expect(sorted.map((o: any) => o.food.rating_average)).toEqual([4, null, 2]);
   });
 
+  test('sortByPublicFavorite ranks items within the same category by their actual rating, highest first', () => {
+    // Reproduces the bug where items with the same "positive" bucket kept their original,
+    // unsorted order instead of being ranked by their numeric rating (e.g. 4.4, 4.6, 3.9, 4.9, 4.2 shown unsorted).
+    const offers: any = [
+      { food: { rating_average: 4.4 } },
+      { food: { rating_average: 4.6 } },
+      { food: { rating_average: 3.9 } },
+      { food: { rating_average: 4.9 } },
+      { food: { rating_average: 4.2 } },
+    ];
+    const sorted = sortByPublicFavorite(offers);
+    expect(sorted.map((o: any) => o.food.rating_average)).toEqual([4.9, 4.6, 4.4, 4.2, 3.9]);
+  });
+
+  test('sortByPublicFavorite falls back to rating_average_legacy when rating_average is missing', () => {
+    const offers: any = [
+      { food: { rating_average: null, rating_average_legacy: 3.5 } },
+      { food: { rating_average: 4.8, rating_average_legacy: null } },
+      { food: { rating_average: null, rating_average_legacy: null } },
+    ];
+    const sorted = sortByPublicFavorite(offers);
+    expect(sorted.map((o: any) => o.food.rating_average ?? o.food.rating_average_legacy)).toEqual([4.8, 3.5, null]);
+  });
+
   test('sortByOwnFavorite orders by personal rating', () => {
     const offers: any = [{ food: { id: 'f1' } }, { food: { id: 'f2' } }, { food: { id: 'f3' } }];
     const feedbacks = [
