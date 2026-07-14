@@ -39,7 +39,7 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         const { translate } = useLanguage();
 
         const dispatch = useDispatch();
-        const { canteenFoodOffers } = useAppSelector((state) => state.canteenReducer);
+        const { canteenFoodOffers } = useAppSelector((state) => state.foodOffers);
         const { primaryColor, language: languageCode, sortBy, appSettings } = useAppSelector((state) => state.settings);
         const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
         const { profile } = useAppSelector((state) => state.authReducer);

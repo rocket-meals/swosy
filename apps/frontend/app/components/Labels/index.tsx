@@ -32,7 +32,7 @@ const selectMarkings = (state: RootState) => state.food.markings;
 const selectMarkingGroups = (state: RootState) => state.food.markingGroups;
 
 export const selectFoodOffer = (offerId?: string) =>
-	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
+	createSelector([(state: RootState) => state.foodOffers.selectedCanteenFoodOffers], foodOffers =>
 		offerId ? getFoodOffer(foodOffers, offerId) : undefined
 	);
 

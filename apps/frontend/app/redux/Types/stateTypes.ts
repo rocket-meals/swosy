@@ -34,12 +34,15 @@ export type CanteensState = {
 	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
 	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
-	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
-	canteenFoodOffers: DatabaseTypes.Foodoffers[];
 	businessHours: DatabaseTypes.Businesshours[];
 	businessHoursGroups: DatabaseTypes.BusinesshoursGroups[];
 	canteenFeedbackLabels: DatabaseTypes.CanteensFeedbacksLabels[];
 	ownCanteenFeedBackLabelEntries: DatabaseTypes.CanteensFeedbacksLabelsEntries[];
+}
+
+export type FoodOffersState = {
+	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
+	canteenFoodOffers: DatabaseTypes.Foodoffers[];
 }
 
 export type SettingsState = {

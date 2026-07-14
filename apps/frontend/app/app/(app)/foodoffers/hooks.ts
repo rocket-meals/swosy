@@ -100,7 +100,7 @@ export const useFoodOffersData = (
         languageCode
     });
 
-    const currentFoodOffers = useAppSelector((state: RootState) => state.canteenReducer.canteenFoodOffers, shallowEqual);
+    const currentFoodOffers = useAppSelector((state: RootState) => state.foodOffers.canteenFoodOffers, shallowEqual);
 
     useEffect(() => {
         stateRef.current = {

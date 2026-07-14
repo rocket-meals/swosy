@@ -42,7 +42,8 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
   const { user, profile } = useAppSelector(state => state.authReducer);
   const { primaryColor } = useAppSelector(state => state.settings);
   const { collectibleEvents } = useAppSelector(state => state.collectibleEvents ?? {});
-  const { canteens, buildingsDict, buildingsOrganizations, organisations, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useAppSelector(state => state.canteenReducer);
+  const { canteens, buildingsDict, buildingsOrganizations, organisations, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useAppSelector(state => state.canteenReducer);
+  const { selectedCanteenFoodOffers, canteenFoodOffers } = useAppSelector(state => state.foodOffers);
   
   const { foodFeedbackLabels, ownFoodFeedbacks, ownfoodFeedbackLabelEntries, markings, selectedFoodMarkings, foodCategories, foodOfferCategories, markingDetails } = useAppSelector(state => state.food);
 

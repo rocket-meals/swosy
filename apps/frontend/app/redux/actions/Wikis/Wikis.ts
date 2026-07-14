@@ -8,15 +8,32 @@ export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
 		super('wikis', client);
 	}
 
-	// Fetch all wikis with optional query overrides
+	// Fetch all wikis for menus/lists. Deliberately excludes translations.content (the
+	// markdown body): this list is kept in redux for the drawer/footer menus and only
+	// needs the title, not the full page - the content is fetched on demand for whichever
+	// wiki the user actually opens, see fetchWikiWithContent().
 	async fetchWikis(queryOverride?: Query<DatabaseTypes.Wikis>) {
 		const defaultQuery = {
-			fields: [' *.* '],
+			fields: ['*', 'translations.id', 'translations.languages_code', 'translations.title'],
 			limit: -1, // Fetch all
 		};
 
 		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
+	}
+
+	// Fetch a single wiki including its full translations (title + content). Used by the
+	// wiki detail screen when a page is actually opened - callers should keep the result
+	// in local component state and must not dispatch/persist it into redux.
+	async fetchWikiWithContent(params: { id?: string; custom_id?: string }) {
+		const { id, custom_id } = params;
+		if (!id && !custom_id) return undefined;
+		const items = await this.readItems({
+			fields: ['*', 'translations.*'],
+			filter: id ? { id: { _eq: id } } : { custom_id: { _eq: custom_id } },
+			limit: 1,
+		});
+		return items?.[0];
 	}
 
 	// Fetch a specific wikis by ID
