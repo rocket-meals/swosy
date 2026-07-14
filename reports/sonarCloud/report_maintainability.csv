@@ -2,7 +2,7 @@ Key,Message,Component,Line
 "AZ9gjKBEzJugdJpoBVO1","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",71
 "AZ9gjKFPzJugdJpoBVO7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",260
 "AZ9gjKFPzJugdJpoBVO8","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",582
-"AZ9gjKMCzJugdJpoBVPL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",732
+"AZ9gjKMCzJugdJpoBVPL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",750
 "AZ9gKdXunQ6LQh7VFNhX","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",215
 "AZ9gKdXunQ6LQh7VFNhY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",567
 "AZ9f2tGyF1SkmM3wO4jE","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",210
@@ -82,7 +82,7 @@ Key,Message,Component,Line
 "AZ9BYlLN993SQF2ql_XH","Remove this useless assignment to variable ""canteens"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",94
 "AZ9BYlDm993SQF2ql_XG","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/avatars/index.tsx",71
 "AZ9BYlmS993SQF2ql_XI","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",442
-"AZ9BYmf8993SQF2ql_XJ","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",2635
+"AZ9BYmf8993SQF2ql_XJ","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",2653
 "AZ8zDhmJPgOMskWIqBLD","Remove this useless assignment to variable ""appSettings"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/index.tsx",59
 "AZ8zDhyQPgOMskWIqBLE","Remove this unused import of 'router'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",16
 "AZ8vcikSyU4aPEVURR6f","Remove this unused import of 'computeEdgesFromHexTiles'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",26
@@ -152,38 +152,38 @@ Key,Message,Component,Line
 "AZ6HQcROOdZXxk7mATjP","Refactor this function to reduce its Cognitive Complexity from 38 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",208
 "AZ4DHAw8SXjfS0q6Tqyq","Remove this unused import of 'View'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/app-download-management/index.tsx",2
 "AZ3_ByBqxBiyTwy6NSQO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatar/index.tsx",180
-"AZ3_Bx_oxBiyTwy6NSQF","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1089
-"AZ3_Bx_oxBiyTwy6NSQB","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1110
-"AZ3_Bx_oxBiyTwy6NSQG","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1518
-"AZ3_Bx_oxBiyTwy6NSQH","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1526
-"AZ3_Bx_oxBiyTwy6NSQI","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1539
-"AZ3_Bx_oxBiyTwy6NSQJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1549
-"AZ3_Bx_oxBiyTwy6NSQK","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1562
-"AZ3-y9J1Oyc73zbL1Brh","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1449
-"AZ3-y9J1Oyc73zbL1Bri","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1487
-"AZ35__9bcUa8YvF8RrkL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1456
-"AZ35__9bcUa8YvF8RrkQ","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1605
-"AZ3205jwJFePJGTAv0Kv","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",779
-"AZ3205jwJFePJGTAv0Kw","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1575
-"AZ32uo6mcfeLMCCGALRp","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1480
-"AZ31Zc85sX4yEkDoU0nQ","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",483
-"AZ31Zc85sX4yEkDoU0nR","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1050
-"AZ30JA-GkYAhKoGLFmjC","A fragment with only one child is redundant.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1351
-"AZ30JA-GkYAhKoGLFmjH","Do not use Array index in keys","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",2281
-"AZ3ywE1xFbXHROefrrIW","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyScrollViewModal/index.tsx",134
-"AZ3x-yeoPi00FShfoAus","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",187
-"AZ3x-yeoPi00FShfoAut","Remove this useless assignment to variable ""diceIconColor"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1345
-"AZ3xhI74Pi00FShfjKGl","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",914
-"AZ3xhI74Pi00FShfjKGm","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1511
-"AZ3qrnFA1SbUOZuE_SnE","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",784
-"AZ3qfuixDB_MdPLc7AqS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",851
-"AZ3qfuixDB_MdPLc7AqT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",853
-"AZ3qfuixDB_MdPLc7AqU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",908
-"AZ3qfuixDB_MdPLc7AqV","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",910
-"AZ3qfuixDB_MdPLc7AqX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1367
-"AZ3qfuixDB_MdPLc7AqY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1369
-"AZ3qQNEoWw6vxPu01kuS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",781
-"AZ3qQNEoWw6vxPu01kuR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1573
+"AZ3_Bx_oxBiyTwy6NSQF","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1107
+"AZ3_Bx_oxBiyTwy6NSQB","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1128
+"AZ3_Bx_oxBiyTwy6NSQG","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1536
+"AZ3_Bx_oxBiyTwy6NSQH","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1544
+"AZ3_Bx_oxBiyTwy6NSQI","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1557
+"AZ3_Bx_oxBiyTwy6NSQJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1567
+"AZ3_Bx_oxBiyTwy6NSQK","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1580
+"AZ3-y9J1Oyc73zbL1Brh","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1467
+"AZ3-y9J1Oyc73zbL1Bri","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1505
+"AZ35__9bcUa8YvF8RrkL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1474
+"AZ35__9bcUa8YvF8RrkQ","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1623
+"AZ3205jwJFePJGTAv0Kv","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",797
+"AZ3205jwJFePJGTAv0Kw","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1593
+"AZ32uo6mcfeLMCCGALRp","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1498
+"AZ31Zc85sX4yEkDoU0nQ","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",501
+"AZ31Zc85sX4yEkDoU0nR","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1068
+"AZ30JA-GkYAhKoGLFmjC","A fragment with only one child is redundant.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1369
+"AZ30JA-GkYAhKoGLFmjH","Do not use Array index in keys","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",2299
+"AZ3ywE1xFbXHROefrrIW","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyScrollViewModal/index.tsx",164
+"AZ3x-yeoPi00FShfoAus","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",205
+"AZ3x-yeoPi00FShfoAut","Remove this useless assignment to variable ""diceIconColor"".","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1363
+"AZ3xhI74Pi00FShfjKGl","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",932
+"AZ3xhI74Pi00FShfjKGm","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1529
+"AZ3qrnFA1SbUOZuE_SnE","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",802
+"AZ3qfuixDB_MdPLc7AqS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",869
+"AZ3qfuixDB_MdPLc7AqT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",871
+"AZ3qfuixDB_MdPLc7AqU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",926
+"AZ3qfuixDB_MdPLc7AqV","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",928
+"AZ3qfuixDB_MdPLc7AqX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1385
+"AZ3qfuixDB_MdPLc7AqY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1387
+"AZ3qQNEoWw6vxPu01kuS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",799
+"AZ3qQNEoWw6vxPu01kuR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1591
 "AZ3oau6RXYbs7Obc7Vpu","'accentColor' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx",22
 "AZ3lqYUi8DXjeodrPW-w","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",208
 "AZ3gUBzOs6Hfl3oGA0Jt","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",240
