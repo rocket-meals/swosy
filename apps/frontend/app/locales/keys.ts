@@ -750,4 +750,6 @@ export enum TranslationKeys {
 	further_settings = 'further_settings',
 	options_and_information = 'options_and_information',
 	show_average_rating_on_card = 'show_average_rating_on_card',
+	feedback_include_app_state_title = 'feedback_include_app_state_title',
+	feedback_include_app_state_description = 'feedback_include_app_state_description',
 }

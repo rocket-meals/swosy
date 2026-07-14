@@ -6497,6 +6497,26 @@
     "tr": "Daha fazla iyileştirme veya istek fark ettiyseniz, lütfen bunları bizimle paylaşın.",
     "zh": "如果您发现了其他改进或愿望，请随时与我们分享。"
   },
+  "feedback_include_app_state_title": {
+    "de": "App-Zustand zur Fehlerbehebung mitsenden",
+    "en": "Include app state for troubleshooting",
+    "ar": "إرفاق حالة التطبيق لاستكشاف الأخطاء",
+    "es": "Incluir el estado de la app para la resolución de errores",
+    "fr": "Inclure l'état de l'application pour le dépannage",
+    "ru": "Прикрепить состояние приложения для устранения неполадок",
+    "tr": "Sorun giderme için uygulama durumunu ekle",
+    "zh": "附加应用状态以便排查问题"
+  },
+  "feedback_include_app_state_description": {
+    "de": "Sendet zusätzlich einen technischen Schnappschuss deiner App-Daten mit, damit wir deinen Fehler leichter nachvollziehen können. Du musst diese Daten nicht einsehen.",
+    "en": "Additionally sends a technical snapshot of your app data so we can more easily reproduce your issue. You don't need to review this data yourself.",
+    "ar": "يرسل أيضًا لقطة تقنية لبيانات التطبيق الخاصة بك حتى نتمكن من إعادة إنتاج مشكلتك بسهولة أكبر. لست بحاجة لمراجعة هذه البيانات بنفسك.",
+    "es": "Además, envía una instantánea técnica de los datos de tu app para que podamos reproducir tu problema más fácilmente. No es necesario que revises estos datos tú mismo.",
+    "fr": "Envoie également un instantané technique des données de votre application afin que nous puissions reproduire plus facilement votre problème. Vous n'avez pas besoin de consulter ces données vous-même.",
+    "ru": "Дополнительно отправляется техническая копия данных приложения, чтобы нам было проще воспроизвести вашу проблему. Просматривать эти данные самостоятельно не требуется.",
+    "tr": "Sorununuzu daha kolay tekrar oluşturabilmemiz için uygulama verilerinizin teknik bir anlık görüntüsünü de gönderir. Bu verileri kendiniz incelemeniz gerekmez.",
+    "zh": "还会发送应用数据的技术快照，以便我们更容易重现您的问题。您无需自行查看这些数据。"
+  },
   "public_links": {
     "de": "Öffentliche Links",
     "en": "Public Links",

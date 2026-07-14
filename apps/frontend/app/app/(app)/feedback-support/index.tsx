@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -15,6 +15,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes, EmailHelper, StringHelper } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
+import { configureStore } from '@/redux/store';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
@@ -39,6 +40,7 @@ const FeedbackScreen = () => {
 	}>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);
+	const [includeAppState, setIncludeAppState] = useState(true);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const { openTextInputModal } = useMyScrollviewTextInputModal();
 
@@ -200,6 +202,16 @@ const FeedbackScreen = () => {
 		[inputValues, openTextInputModal, translate]
 	);
 
+	const appendAppStateToContent = (sanitizedInput: { [key: string]: any }) => {
+		if (!includeAppState) return;
+		try {
+			const appStateJson = JSON.stringify(configureStore.getState());
+			sanitizedInput.content = `${sanitizedInput.content ?? ''}\n\n---APP_STATE_JSON---\n${appStateJson}`;
+		} catch (e) {
+			// ignore serialization errors, submit feedback without the app state snapshot
+		}
+	};
+
 	const handleCreateAppFeedback = async () => {
 		if (inputValues) {
 			setLoading(true);
@@ -216,6 +228,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
+			appendAppStateToContent(sanitizedInput);
 			try {
 				console.log('Creating app feedback with input:');
 				await appFeedback.createAppFeedback(sanitizedInput);
@@ -259,6 +272,7 @@ const FeedbackScreen = () => {
 					return true;
 				})
 			);
+			appendAppStateToContent(sanitizedInput);
 			try {
 				await appFeedback.updateAppFeedback(String(app_feedbacks_id), sanitizedInput);
 				setLoading(false);
@@ -501,6 +515,17 @@ const FeedbackScreen = () => {
 								noIconIndent
 							/>
 						))}
+
+						<SettingsGroupTitle fontSize={14}>
+							{translate(TranslationKeys.feedback_include_app_state_description)}
+						</SettingsGroupTitle>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="bug-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.feedback_include_app_state_title)}
+							rightElement={<Switch value={includeAppState} onValueChange={setIncludeAppState} />}
+							groupPosition="single"
+						/>
 
 						{errorJson && <Text style={{ color: 'red', marginVertical: 10 }}>{errorJson}</Text>}
 						{errorMessage && <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>}
