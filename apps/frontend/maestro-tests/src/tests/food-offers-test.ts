@@ -7,7 +7,7 @@
  * Maestro web tests can locate elements by their id attribute.
  */
 
-import { MaestroTestCase } from '../framework/MaestroTestCase';
+import { MaestroTestCase } from 'repo-depkit-maestro-framework';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
 import { performAnonymousLogin, selectFirstCanteen } from '../framework/loginHelper';
 

@@ -1,42 +1,71 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+// BottomSheetTextInput's blur handler calls RNTextInput.State.currentlyFocusedInput(),
+// which react-native-web doesn't implement - it throws when the input loses focus
+// (e.g. after tapping "Save"). Fall back to the plain TextInput on web, matching the
+// same platform check already used by repo-depkit-common-ui's SettingsListTextInput.
+const ResolvedScoreTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { Ionicons } from '@expo/vector-icons';
 import {
 	SettingsList,
 	SettingsListTextInput,
+	SettingsListGroupTitle,
+	SettingsListSelectOptionSingle,
+	SettingsListAvatar,
 	useMyScrollViewModal,
 	useTheme,
 	MyColorPicker,
+	myContrastColor,
+	AvatarStyle,
 } from 'repo-depkit-common-ui';
+import type { AvatarConfig } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from 'expo-router';
 import {
-	addPlayer,
+	addGuestPlayer,
+	addFriendPlayer,
 	renamePlayer,
 	setPlayerColor,
+	setPlayerAvatar,
 	removePlayer,
 	setScore,
-	addRound,
+	startGame,
+	goToPreviousRound,
+	goToNextRound,
 	resetScores,
 	resetAll,
 } from '../store/gameSlice';
+import { archiveGame } from '../store/gameHistorySlice';
+import { setColumnsPortrait, setColumnsLandscape } from '../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
+import type { Player } from '../helpers/GameStorage';
+import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
+import type { Friend } from '../helpers/FriendsStorage';
+import { ComponentIds } from '../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
+const WARNING_COLOR = '#f59e0b';
 
-const TILE_BORDER_RADIUS = 16;
-const TILE_GAP = 12;
-const MIN_TILE_HEIGHT = 120;
+// Avatar preview sizes (50% larger than the original design across the board).
+const EDIT_AVATAR_SIZE = 60;
+const PICKER_AVATAR_SIZE = 48;
+
+const TILE_GAP = 10;
 
 // Helper to determine groupPosition for list items
 function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
 	if (total === 1 || index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+function generateHistoryId(): string {
+	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────
@@ -120,7 +149,7 @@ function ScoreInputContent({
 					{signMode === 'minus' ? '−' : '+'}
 				</Text>
 				<View style={styles.scoreInputTextWrapper}>
-					<BottomSheetTextInput
+					<ResolvedScoreTextInput
 						style={[styles.scoreInputNative, { color: theme.screen.text }]}
 						value={text}
 						onChangeText={setText}
@@ -134,6 +163,7 @@ function ScoreInputContent({
 				</View>
 			</View>
 			<TouchableOpacity
+				nativeID={ComponentIds.GAME_SCORE_INPUT_SAVE_BUTTON}
 				style={[styles.scoreInputSaveButton, { backgroundColor: PRIMARY_COLOR }]}
 				onPress={handleSave}
 				activeOpacity={0.8}
@@ -164,52 +194,191 @@ function ScoreInputContent({
 	);
 }
 
-// ─── Player Tile ──────────────────────────────────────────────────────────────
+// ─── Player score row (active game, scoreboard view) ──────────────────────────
+//
+// Reuses the shared SettingsListAvatar (the same building block as the player
+// edit rows and the friends screen) so avatar sizing, text wrapping/colors and
+// spacing all stay consistent: the player's color fills the whole row, name
+// and points stack on their own lines (so a long name is never lost), and the
+// leader crown replaces the row's default right icon.
+
+const TILE_AVATAR_SIZE = 84;
+const MISSING_SCORE_BORDER = 'rgba(255,255,255,0.85)';
 
 function PlayerTile({
+	playerId,
 	name,
 	score,
 	color,
+	avatarConfig,
 	isLeader,
+	hasScore,
 	onPress,
-	onLongPress,
-	tileHeight,
 	tileWidth,
 }: {
+	playerId: string;
 	name: string;
 	score: number;
 	color: string;
+	avatarConfig?: AvatarConfig;
 	isLeader: boolean;
+	hasScore: boolean;
 	onPress: () => void;
-	onLongPress: () => void;
-	tileHeight: number;
 	tileWidth?: number;
 }) {
+	const { theme, isDark } = useTheme();
+	const textColor = myContrastColor(color, theme, isDark);
+
 	return (
-		<TouchableOpacity
-			style={[
-				styles.playerTile,
-				{
-					backgroundColor: color,
-					height: tileHeight,
-					width: tileWidth,
-				},
-			]}
-			onPress={onPress}
-			onLongPress={onLongPress}
-			activeOpacity={0.8}
-		>
-			{isLeader && (
-				<View style={styles.leaderBadge}>
-					<Ionicons name="trophy" size={28} color="#fbbf24" />
-				</View>
-			)}
-			<Text style={styles.playerTileName} numberOfLines={2} adjustsFontSizeToFit>
-				{name}
-			</Text>
-			<Text style={styles.playerTileScore}>{score}</Text>
-			<Text style={styles.playerTileLabel}>Punkte</Text>
-		</TouchableOpacity>
+		<SettingsListAvatar
+			nativeID={`${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`}
+			config={avatarConfig}
+			onPressOverride={onPress}
+			label={name}
+			value={String(score)}
+			stackedValue
+			previewSize={TILE_AVATAR_SIZE}
+			avatarBackgroundColor="#ffffff"
+			width={tileWidth}
+			backgroundColor={color}
+			titleColor={textColor}
+			valueColor={textColor}
+			titleFontSize={20}
+			valueFontSize={26}
+			borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
+			borderWidth={hasScore ? undefined : 2.5}
+			borderStyle="dashed"
+			rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
+			groupPosition="single"
+			showSeparator={false}
+		/>
+	);
+}
+
+// ─── Player edit row group (setup phase + header "Spieler bearbeiten" mode) ───
+
+function PlayerEditGroup({
+	player,
+	onRename,
+	onColorChange,
+	onAvatarChange,
+	onDelete,
+}: {
+	player: Player;
+	onRename: (name: string) => void;
+	onColorChange: (color: string) => void;
+	onAvatarChange: (config: AvatarConfig) => void;
+	onDelete: () => void;
+}) {
+	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
+
+	const handleOpenColorModal = useCallback(() => {
+		showColorModal({
+			title: 'Farbe wählen',
+			children: (
+				<MyColorPicker
+					colors={PLAYER_COLORS}
+					selectedColor={player.color}
+					onSelect={(color) => {
+						onColorChange(color);
+						closeColorModal();
+					}}
+				/>
+			),
+		});
+	}, [showColorModal, closeColorModal, player.color, onColorChange]);
+
+	return (
+		<View style={styles.playerEditGroup} nativeID={`${ComponentIds.GAME_PLAYER_ROW_PREFIX}${player.id}`}>
+			<SettingsListAvatar
+				config={player.avatarConfig}
+				onChange={onAvatarChange}
+				label={player.name}
+				previewSize={EDIT_AVATAR_SIZE}
+				avatarBackgroundColor={player.color}
+				groupPosition="top"
+				editorOptions={{ title: 'Avatar', allowedStyles: [AvatarStyle.AVATAAARS] }}
+			/>
+			<SettingsListTextInput
+				label="Name"
+				placeholder="Name eingeben"
+				initialValue={player.name}
+				value={player.name}
+				onSave={onRename}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				label="Farbe"
+				leftIcon={<Ionicons name="color-palette-outline" size={20} color="#ffffff" />}
+				iconBgColor={player.color}
+				handleFunction={handleOpenColorModal}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				nativeID={`${ComponentIds.GAME_PLAYER_ROW_DELETE_PREFIX}${player.id}`}
+				label="Spieler löschen"
+				leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
+				iconBgColor={DANGER_COLOR}
+				handleFunction={onDelete}
+				groupPosition="bottom"
+			/>
+		</View>
+	);
+}
+
+// ─── Columns settings section (settings modal) ────────────────────────────────
+//
+// Rendered as its own component (rather than JSX built inline in a callback)
+// so it re-renders from its own `useSelector` subscription and the selected
+// option updates live while the modal stays open - a plain closure-captured
+// JSX tree would keep showing the option that was selected at open-time.
+
+function ColumnsSettingsSection() {
+	const dispatch = useDispatch<AppDispatch>();
+	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
+	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Spalten (Hochformat)" />
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_PORTRAIT_1}
+				label="1 Spalte"
+				leftIcon={<Ionicons name="reorder-four-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsPortrait === 1}
+				onPress={() => dispatch(setColumnsPortrait(1))}
+				groupPosition="top"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_PORTRAIT_2}
+				label="2 Spalten"
+				leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsPortrait === 2}
+				onPress={() => dispatch(setColumnsPortrait(2))}
+				groupPosition="bottom"
+			/>
+			<SettingsListGroupTitle title="Spalten (Querformat)" />
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_LANDSCAPE_1}
+				label="1 Spalte"
+				leftIcon={<Ionicons name="reorder-four-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsLandscape === 1}
+				onPress={() => dispatch(setColumnsLandscape(1))}
+				groupPosition="top"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_LANDSCAPE_2}
+				label="2 Spalten"
+				leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsLandscape === 2}
+				onPress={() => dispatch(setColumnsLandscape(2))}
+				groupPosition="bottom"
+			/>
+		</>
 	);
 }
 
@@ -221,21 +390,35 @@ export default function GameScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const players = useSelector((state: RootState) => state.game.players);
 	const rounds = useSelector((state: RootState) => state.game.rounds);
-	const { show: showModal, close: closeModal } = useMyScrollViewModal();
-	const { show: showDeleteModal, close: closeDeleteModal } = useMyScrollViewModal();
+	const status = useSelector((state: RootState) => state.game.status);
+	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
+	const friends = useSelector((state: RootState) => state.friends.friends);
+	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
+	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
+
 	const { show: showScoreModal, close: closeScoreModal } = useMyScrollViewModal();
-	const { show: showEditModal, close: closeEditModal } = useMyScrollViewModal();
+	const { show: showAddPlayerModal, close: closeAddPlayerModal } = useMyScrollViewModal();
+	const { show: showSettingsModal, close: closeSettingsModal } = useMyScrollViewModal();
 	const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
 	const navigation = useNavigation();
 
-	// Landscape detection and column count
-	const isLandscape = windowWidth > windowHeight;
-	const columnCount = (players.length === 4 || (isLandscape && players.length >= 2)) ? 2 : 1;
+	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
 
-	// Keep a ref to players so the header handler always has fresh data
-	const playersRef = useRef(players);
-	playersRef.current = players;
+	// Leaving the setup phase always drops back into the scoreboard view.
+	const prevStatusRef = useRef(status);
+	useEffect(() => {
+		if (prevStatusRef.current === 'setup' && status === 'active') {
+			setIsEditingPlayers(false);
+		}
+		prevStatusRef.current = status;
+	}, [status]);
+
+	const showEditRows = status === 'setup' || isEditingPlayers;
+
+	// Landscape detection and column count (independently configurable per orientation)
+	const isLandscape = windowWidth > windowHeight;
+	const columnCount = isLandscape ? columnsLandscape : columnsPortrait;
 
 	// Compute totals per player
 	const totals = useMemo(() => {
@@ -268,214 +451,179 @@ export default function GameScreen() {
 		return maxId;
 	}, [players, totals]);
 
-	// Compute tile height to fill screen
-	const tileHeight = useMemo(() => {
-		const count = players.length;
-		if (count === 0) return 200;
-		// Available height: window minus header (~56), bottom bar (~80), safe areas, gaps
-		const rows = Math.ceil(count / columnCount);
-		const availableHeight = windowHeight - 56 - 80 - insets.top - insets.bottom - TILE_GAP * (rows + 1);
-		const minHeight = MIN_TILE_HEIGHT;
-		return Math.max(minHeight, Math.floor(availableHeight / rows));
-	}, [players.length, windowHeight, insets.top, insets.bottom, columnCount]);
+	const currentRound = rounds[currentRoundIndex] ?? null;
+	const currentRoundNumber = currentRoundIndex + 1;
 
-	// Tile width for multi-column grid layout
+	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
 		if (columnCount === 1) return undefined;
 		const availableWidth = windowWidth - insets.left - insets.right;
 		return Math.floor((availableWidth - TILE_GAP * (columnCount + 1)) / columnCount);
 	}, [columnCount, windowWidth, insets.left, insets.right]);
 
-	// ─── Header buttons ───────────────────────────────────────────────────────
+	// ─── Add-player chooser (friend roster or guest) ─────────────────────────
 
-	const handleOpenEditNamesModal = useCallback(() => {
-		const currentPlayers = playersRef.current;
-		showEditModal({
-			title: '✏️ Namen bearbeiten',
+	const handleOpenAddPlayerModal = useCallback(() => {
+		const existingFriendIds = new Set(players.map((p) => p.friendId).filter((id): id is string => !!id));
+		const availableFriends = friends.filter((f) => !existingFriendIds.has(f.id));
+
+		showAddPlayerModal({
+			title: 'Spieler hinzufügen',
 			children: (
 				<View style={styles.modalContent}>
-					{currentPlayers.map((player, index) => (
-						<SettingsListTextInput
-							key={player.id}
-							label={player.name}
-							placeholder="Name eingeben"
-							initialValue={player.name}
-							onSave={(newName) => {
-								dispatch(renamePlayer({ playerId: player.id, name: newName }));
-							}}
-							groupPosition={getGroupPosition(index, currentPlayers.length)}
-						/>
-					))}
+					<SettingsListGroupTitle title="Freunde" />
+					{availableFriends.length === 0 ? (
+						<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+							Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
+						</Text>
+					) : (
+						availableFriends.map((friend: Friend, index) => (
+							<SettingsListAvatar
+								key={friend.id}
+								nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
+								config={friend.avatarConfig}
+								avatarBackgroundColor={friend.color}
+								previewSize={PICKER_AVATAR_SIZE}
+								label={friend.name}
+								rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
+								onPressOverride={() => {
+									dispatch(addFriendPlayer(friend));
+									closeAddPlayerModal();
+								}}
+								groupPosition={getGroupPosition(index, availableFriends.length)}
+							/>
+						))
+					)}
+					<SettingsListGroupTitle title="Sonstige" />
+					<SettingsList
+						nativeID={ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON}
+						label="Gast hinzufügen"
+						leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={() => {
+							dispatch(addGuestPlayer());
+							closeAddPlayerModal();
+						}}
+						groupPosition="single"
+					/>
 				</View>
 			),
 		});
-	}, [showEditModal, dispatch]);
+	}, [players, friends, showAddPlayerModal, closeAddPlayerModal, dispatch, theme]);
 
-	React.useLayoutEffect(() => {
+	// ─── Settings modal (header gear) ────────────────────────────────────────
+
+	const handleStartNewGame = useCallback(() => {
+		if (players.length > 0) {
+			const entry: GameHistoryEntry = {
+				id: generateHistoryId(),
+				endedAt: Date.now(),
+				roundsCount: rounds.length,
+				players: players.map((p) => ({
+					playerId: p.id,
+					friendId: p.friendId,
+					name: p.name,
+					color: p.color,
+					avatarConfig: p.avatarConfig,
+				})),
+				finalScores: Object.fromEntries(players.map((p) => [p.id, totals[p.id] ?? 0])),
+			};
+			dispatch(archiveGame(entry));
+		}
+		dispatch(resetAll());
+		closeSettingsModal();
+	}, [players, rounds, totals, dispatch, closeSettingsModal]);
+
+	const handleOpenSettingsModal = useCallback(() => {
+		showSettingsModal({
+			title: '⚙️ Einstellungen',
+			children: (
+				<View style={styles.modalContent}>
+					<ColumnsSettingsSection />
+
+					{status === 'active' && (
+						<>
+							<SettingsListGroupTitle title="Spiel" />
+							<SettingsList
+								nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
+								label="Alle Punkte zurücksetzen"
+								leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
+								iconBgColor={WARNING_COLOR}
+								handleFunction={() => {
+									dispatch(resetScores());
+									closeSettingsModal();
+								}}
+								groupPosition="top"
+							/>
+							<SettingsList
+								nativeID={ComponentIds.GAME_SETTINGS_NEW_GAME}
+								label="Neues Spiel"
+								leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
+								iconBgColor={DANGER_COLOR}
+								handleFunction={handleStartNewGame}
+								groupPosition="bottom"
+							/>
+						</>
+					)}
+				</View>
+			),
+		});
+	}, [status, dispatch, closeSettingsModal, handleStartNewGame]);
+
+	// ─── Header buttons ───────────────────────────────────────────────────────
+
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
 				<View style={styles.headerButtons}>
-					<TouchableOpacity onPress={handleOpenEditNamesModal} style={styles.headerButton}>
-						<Ionicons name="create-outline" size={22} color={theme.header.text} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={handleOpenDeleteModal} style={styles.headerButton}>
-						<Ionicons name="trash-outline" size={22} color={theme.header.text} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={handleAddPlayer} style={styles.headerButton}>
-						<Ionicons name="person-add-outline" size={22} color={theme.header.text} />
+					{status === 'active' && (
+						<TouchableOpacity
+							nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
+							onPress={() => setIsEditingPlayers((v) => !v)}
+							style={styles.headerButton}
+						>
+							<Ionicons
+								name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
+								size={22}
+								color={theme.header.text}
+							/>
+						</TouchableOpacity>
+					)}
+					<TouchableOpacity
+						nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
+						onPress={handleOpenSettingsModal}
+						style={styles.headerButton}
+					>
+						<Ionicons name="settings-outline" size={22} color={theme.header.text} />
 					</TouchableOpacity>
 				</View>
 			),
 		});
-	}, [navigation, theme.header.text, handleOpenEditNamesModal]);
+	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal]);
 
-	// ─── Handlers ─────────────────────────────────────────────────────────────
-
-	const handleAddPlayer = useCallback(() => {
-		dispatch(addPlayer());
-	}, [dispatch]);
-
-	const handleOpenPlayerModal = useCallback(
-		(playerId: string, playerName: string, playerColor: string) => {
-			showModal({
-				title: playerName,
-				children: (
-					<View style={styles.modalContent}>
-						<SettingsListTextInput
-							label="Name ändern"
-							placeholder="Name eingeben"
-							initialValue={playerName}
-							onSave={(newName) => {
-								dispatch(renamePlayer({ playerId, name: newName }));
-								closeModal();
-							}}
-							groupPosition="top"
-						/>
-						<SettingsList
-							label="Farbe ändern"
-							leftIcon={<Ionicons name="color-palette-outline" size={20} color="#ffffff" />}
-							iconBgColor={playerColor}
-							groupPosition="middle"
-						/>
-						<MyColorPicker
-							colors={PLAYER_COLORS}
-							selectedColor={playerColor}
-							onSelect={(color) => {
-								dispatch(setPlayerColor({ playerId, color }));
-							}}
-						/>
-						<SettingsList
-							label="Spieler löschen"
-							leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
-							iconBgColor={DANGER_COLOR}
-							handleFunction={() => {
-								dispatch(removePlayer(playerId));
-								closeModal();
-							}}
-							groupPosition="bottom"
-						/>
-					</View>
-				),
-			});
-		},
-		[showModal, closeModal, dispatch],
-	);
-
-	const handleOpenDeleteModal = useCallback(() => {
-		showDeleteModal({
-			title: '🗑️ Daten verwalten',
-			children: (
-				<View style={styles.modalContent}>
-					<SettingsList
-						label="Alle Punkte zurücksetzen"
-						leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
-						iconBgColor="#f59e0b"
-						handleFunction={() => {
-							dispatch(resetScores());
-							closeDeleteModal();
-						}}
-						groupPosition="top"
-					/>
-					<SettingsList
-						label="Alle Spieler & Punkte löschen"
-						leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
-						iconBgColor={DANGER_COLOR}
-						handleFunction={() => {
-							dispatch(resetAll());
-							closeDeleteModal();
-						}}
-						groupPosition="bottom"
-					/>
-				</View>
-			),
-		});
-	}, [showDeleteModal, closeDeleteModal, dispatch]);
+	// ─── Score entry ──────────────────────────────────────────────────────────
 
 	const handleTilePress = useCallback(
 		(playerId: string) => {
-			// If there are no rounds yet, add one first — the score modal
-			// will open on next render via the effect below.
-			if (rounds.length === 0) {
-				dispatch(addRound());
-				// Rounds state will update on next render; schedule modal open
-				pendingScorePlayerRef.current = playerId;
-				return;
-			}
-			openScoreModalForPlayer(playerId);
-		},
-		[rounds, dispatch],
-	);
-
-	const pendingScorePlayerRef = React.useRef<string | null>(null);
-
-	const openScoreModalForPlayer = useCallback(
-		(playerId: string) => {
-			const latestRound = rounds[rounds.length - 1];
-			if (!latestRound) return;
+			if (!currentRound) return;
 			showScoreModal({
 				title: 'Punkte eingeben',
 				children: (
 					<ScoreInputContent
-						initialValue={latestRound.scores[playerId] ?? null}
+						initialValue={currentRound.scores[playerId] ?? null}
 						onSave={(value) => {
-							dispatch(setScore({ roundId: latestRound.id, playerId, score: value }));
+							dispatch(setScore({ roundId: currentRound.id, playerId, score: value }));
 							closeScoreModal();
 						}}
 					/>
 				),
 			});
 		},
-		[rounds, showScoreModal, closeScoreModal, dispatch],
+		[currentRound, showScoreModal, closeScoreModal, dispatch],
 	);
 
-	// Open score modal after a round was auto-created
-	React.useEffect(() => {
-		if (pendingScorePlayerRef.current && rounds.length > 0) {
-			const playerId = pendingScorePlayerRef.current;
-			pendingScorePlayerRef.current = null;
-			openScoreModalForPlayer(playerId);
-		}
-	}, [rounds, openScoreModalForPlayer]);
-
-	const handleAddRound = useCallback(() => {
-		dispatch(addRound());
-	}, [dispatch]);
-
-	// ─── Empty state ──────────────────────────────────────────────────────────
-
-	if (players.length === 0) {
-		return (
-			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
-				<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
-				<Text style={[styles.emptyText, { color: theme.screen.text }]}>
-					Noch keine Spieler
-				</Text>
-				<Text style={[styles.emptySubtext, { color: theme.screen.placeholder }]}>
-					Füge einen Spieler über den + Button im Header hinzu
-				</Text>
-			</View>
-		);
-	}
+	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);
+	const handleNextRound = useCallback(() => dispatch(goToNextRound()), [dispatch]);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -485,36 +633,98 @@ export default function GameScreen() {
 				style={styles.tilesScroll}
 				contentContainerStyle={[
 					styles.tilesContainer,
-					columnCount > 1 && styles.tilesContainerGrid,
-					{ paddingBottom: insets.bottom + 80 },
+					!showEditRows && columnCount > 1 && styles.tilesContainerGrid,
+					{ paddingBottom: insets.bottom + 96 },
 				]}
 				showsVerticalScrollIndicator={false}
 			>
-				{players.map((player) => (
-					<PlayerTile
-						key={player.id}
-						name={player.name}
-						score={totals[player.id] ?? 0}
-						color={player.color}
-						isLeader={player.id === leaderId}
-						onPress={() => handleTilePress(player.id)}
-						onLongPress={() => handleOpenPlayerModal(player.id, player.name, player.color)}
-						tileHeight={tileHeight}
-						tileWidth={tileWidth}
-					/>
-				))}
+				{showEditRows ? (
+					<>
+						{players.map((player) => (
+							<PlayerEditGroup
+								key={player.id}
+								player={player}
+								onRename={(name) => dispatch(renamePlayer({ playerId: player.id, name }))}
+								onColorChange={(color) => dispatch(setPlayerColor({ playerId: player.id, color }))}
+								onAvatarChange={(config) => dispatch(setPlayerAvatar({ playerId: player.id, avatarConfig: config }))}
+								onDelete={() => dispatch(removePlayer(player.id))}
+							/>
+						))}
+						<TouchableOpacity
+							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON}
+							style={[styles.addPlayerButton, { borderColor: PRIMARY_COLOR }]}
+							onPress={handleOpenAddPlayerModal}
+							activeOpacity={0.7}
+						>
+							<Ionicons name="add-circle-outline" size={22} color={PRIMARY_COLOR} />
+							<Text style={[styles.addPlayerButtonText, { color: PRIMARY_COLOR }]}>Spieler hinzufügen</Text>
+						</TouchableOpacity>
+						{players.length === 0 && status === 'setup' && (
+							<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+								Noch keine Spieler. Füge Freunde oder Gäste hinzu, um zu starten.
+							</Text>
+						)}
+					</>
+				) : (
+					players.map((player) => (
+						<PlayerTile
+							key={player.id}
+							playerId={player.id}
+							name={player.name}
+							score={totals[player.id] ?? 0}
+							color={player.color}
+							avatarConfig={player.avatarConfig}
+							isLeader={player.id === leaderId}
+							hasScore={currentRound ? currentRound.scores[player.id] != null : false}
+							onPress={() => handleTilePress(player.id)}
+							tileWidth={tileWidth}
+						/>
+					))
+				)}
 			</ScrollView>
 
-			{/* Bottom bar: "Nächste Runde" button */}
-			<View style={[styles.bottomBar, { borderTopColor: theme.screen.border, paddingBottom: insets.bottom + 12 }]}>
-				<TouchableOpacity
-					style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR }]}
-					onPress={handleAddRound}
-					activeOpacity={0.8}
-				>
-					<Text style={styles.nextRoundText}>Nächste Runde</Text>
-				</TouchableOpacity>
-			</View>
+			{(status === 'setup' || !isEditingPlayers) && (
+				<View style={[styles.bottomBar, { borderTopColor: theme.screen.border, paddingBottom: insets.bottom + 12 }]}>
+					{status === 'setup' ? (
+						<TouchableOpacity
+							nativeID={ComponentIds.GAME_START_BUTTON}
+							style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR, opacity: players.length === 0 ? 0.5 : 1 }]}
+							onPress={() => dispatch(startGame())}
+							disabled={players.length === 0}
+							activeOpacity={0.8}
+						>
+							<Text style={styles.nextRoundText}>Spiel starten</Text>
+						</TouchableOpacity>
+					) : (
+						<>
+							<TouchableOpacity
+								nativeID={ComponentIds.GAME_ROUND_PREV_BUTTON}
+								style={[styles.roundNavButton, { backgroundColor: theme.screen.border, opacity: currentRoundIndex === 0 ? 0.4 : 1 }]}
+								onPress={handlePrevRound}
+								disabled={currentRoundIndex === 0}
+								activeOpacity={0.8}
+							>
+								<Ionicons name="chevron-back" size={18} color={theme.screen.text} />
+								{currentRoundNumber > 1 && (
+									<Text style={[styles.roundNavText, { color: theme.screen.text }]}>Runde {currentRoundNumber - 1}</Text>
+								)}
+							</TouchableOpacity>
+							<Text nativeID={ComponentIds.GAME_ROUND_LABEL} style={[styles.roundLabel, { color: theme.screen.text }]}>
+								Runde {currentRoundNumber}
+							</Text>
+							<TouchableOpacity
+								nativeID={ComponentIds.GAME_ROUND_NEXT_BUTTON}
+								style={[styles.roundNavButton, { backgroundColor: PRIMARY_COLOR }]}
+								onPress={handleNextRound}
+								activeOpacity={0.8}
+							>
+								<Text style={styles.roundNavText}>Runde {currentRoundNumber + 1}</Text>
+								<Ionicons name="chevron-forward" size={18} color="#ffffff" />
+							</TouchableOpacity>
+						</>
+					)}
+				</View>
+			)}
 		</View>
 	);
 }
@@ -524,22 +734,6 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-	},
-	emptyContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingHorizontal: 32,
-	},
-	emptyText: {
-		fontSize: 18,
-		fontWeight: '600',
-		marginTop: 16,
-	},
-	emptySubtext: {
-		fontSize: 14,
-		marginTop: 8,
-		textAlign: 'center',
 	},
 	headerButtons: {
 		flexDirection: 'row',
@@ -560,44 +754,33 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	},
-	playerTile: {
-		borderRadius: TILE_BORDER_RADIUS,
-		justifyContent: 'center',
+	rightIconPlaceholder: {
+		width: 24,
+		height: 24,
+	},
+	playerEditGroup: {
+		marginBottom: 4,
+	},
+	addPlayerButton: {
+		flexDirection: 'row',
 		alignItems: 'center',
-		paddingHorizontal: 20,
-		paddingVertical: 16,
-		position: 'relative',
-	},
-	leaderBadge: {
-		position: 'absolute',
-		top: 12,
-		right: 12,
-		backgroundColor: 'rgba(0,0,0,0.25)',
-		borderRadius: 20,
-		width: 40,
-		height: 40,
 		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	playerTileName: {
-		fontSize: 28,
-		fontWeight: '700',
-		color: '#ffffff',
-		textAlign: 'center',
-		marginBottom: 8,
-	},
-	playerTileScore: {
-		fontSize: 56,
-		fontWeight: '800',
-		color: '#ffffff',
-		textAlign: 'center',
-	},
-	playerTileLabel: {
-		fontSize: 16,
-		fontWeight: '500',
-		color: 'rgba(255,255,255,0.75)',
-		textAlign: 'center',
+		gap: 8,
+		borderWidth: 1.5,
+		borderStyle: 'dashed',
+		borderRadius: 12,
+		paddingVertical: 14,
 		marginTop: 4,
+	},
+	addPlayerButtonText: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	emptyHint: {
+		fontSize: 13,
+		textAlign: 'center',
+		paddingHorizontal: 16,
+		paddingVertical: 12,
 	},
 	bottomBar: {
 		position: 'absolute',
@@ -610,6 +793,25 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		borderTopWidth: 1,
 		gap: 12,
+	},
+	roundNavButton: {
+		flex: 1,
+		height: 44,
+		borderRadius: 8,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 4,
+	},
+	roundNavText: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	roundLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+		paddingHorizontal: 4,
 	},
 	signToggle: {
 		flexDirection: 'row',

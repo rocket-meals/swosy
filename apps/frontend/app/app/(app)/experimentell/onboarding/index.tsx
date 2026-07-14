@@ -22,7 +22,7 @@ import LottieView from 'lottie-react-native';
 import animation from '@/assets/animations/priceGroup.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { AvatarConfig, AvatarStyle, MICAH_PRESETS, MyAvatar, presetToConfig, AvatarSize } from 'repo-depkit-common-ui';
+import { AvatarConfig, AvatarStyle, AVATAAARS_PRESETS, MyAvatar, presetToConfig, AvatarSize } from 'repo-depkit-common-ui';
 import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
@@ -62,8 +62,8 @@ const profileHelper = new ProfileHelper();
 
 // Precomputed quickstart configs – AvatarSize.SMALL is stored in the config, but the
 // carousel renders with an explicit size={AVATAR_CAROUSEL_SIZE} prop so there is no layout jump.
-const QUICKSTART_AVATAR_CONFIGS: AvatarConfig[] = MICAH_PRESETS.map(
-	(p) => presetToConfig(p, AvatarStyle.MICAH, AvatarSize.SMALL),
+const QUICKSTART_AVATAR_CONFIGS: AvatarConfig[] = AVATAAARS_PRESETS.map(
+	(p) => presetToConfig(p, AvatarStyle.AVATAAARS, AvatarSize.SMALL),
 );
 
 const OnboardingScreen = () => {

@@ -8,8 +8,8 @@
     "strict": true,
     "types": ["node"],
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "."
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "generate.ts"],
   "exclude": ["node_modules", "generated", "dist"]
 }

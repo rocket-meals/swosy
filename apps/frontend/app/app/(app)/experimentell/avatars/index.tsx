@@ -26,7 +26,7 @@ const ALL_AVATAR_STYLES = Object.values(AvatarStyle).map((style) => ({
 
 // Debug-only default config used for the size-comparison row below when the user has no avatar yet.
 const DEBUG_SIZE_PREVIEW_CONFIG: AvatarConfig = {
-	style: AvatarStyle.MICAH,
+	style: AvatarStyle.AVATAAARS,
 	size: AvatarSize.LARGE,
 };
 
@@ -42,7 +42,7 @@ const AvatarsScreen = () => {
 	const debugMode = useDebugMode();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
-	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.MICAH);
+	const [selectedStyle, setSelectedStyle] = useState<AvatarStyle>(AvatarStyle.AVATAAARS);
 
 	const { avatarConfig, openEditor, deleteAvatar } = useAvatarProfileEditor();
 

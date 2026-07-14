@@ -1,9 +1,12 @@
 **/*.DS_Store
 .idea/**
 
-# Ignore generated Maestro YAML files (produced by maestro-tests/src/framework/generate.ts)
+# Ignore generated Maestro YAML files (produced by maestro-tests/generate.ts,
+# via the shared repo-depkit-maestro-framework package)
 apps/frontend/maestro-tests/generated/*
 !apps/frontend/maestro-tests/generated/.keep
+apps/score-tracker/maestro-tests/generated/*
+!apps/score-tracker/maestro-tests/generated/.keep
 
 # Ignore the env files
 .env

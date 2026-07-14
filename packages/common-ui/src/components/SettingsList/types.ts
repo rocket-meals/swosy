@@ -90,6 +90,34 @@ type SettingsListPropsOwn = SettingsListItemBaseProps & {
 	 * true. Consuming apps can use this to open an account-required modal.
 	 */
 	onAccountRequired?: () => void;
+	/** Overrides the row's width (defaults to `'100%'`), e.g. for a multi-column layout. */
+	width?: number;
+	/**
+	 * Overrides the row's background color (defaults to `theme.screen.iconBg`).
+	 * Useful for e.g. a scoreboard row tinted with a per-item accent color.
+	 */
+	backgroundColor?: string;
+	/** Optional border color, e.g. to highlight a row (paired with `borderWidth`). */
+	borderColor?: string;
+	/** Optional border width. Has no visual effect without `borderColor`. */
+	borderWidth?: number;
+	/** Optional border style. Defaults to `'solid'`. */
+	borderStyle?: 'solid' | 'dashed';
+	/** Overrides the title text's font size (defaults to 15). */
+	titleFontSize?: number;
+	/** Overrides the value text's font size (defaults to 13). */
+	valueFontSize?: number;
+	/** Overrides the title text's color (defaults to `theme.screen.text`). */
+	titleColor?: string;
+	/** Overrides the value text's color (defaults to `theme.screen.text`). */
+	valueColor?: string;
+	/**
+	 * Renders `value` on its own full-width line below `title` instead of
+	 * alongside it. Useful when both need visible room regardless of length
+	 * (e.g. a long name plus a prominent score) rather than the default
+	 * same-line-with-wrap-fallback layout.
+	 */
+	stackedValue?: boolean;
 };
 
 export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;

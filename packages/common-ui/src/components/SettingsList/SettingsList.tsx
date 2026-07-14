@@ -35,6 +35,16 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	accountRequiredGroupPosition,
 	onAccountRequired,
 	nativeID,
+	width,
+	backgroundColor,
+	borderColor,
+	borderWidth,
+	borderStyle,
+	titleFontSize,
+	valueFontSize,
+	titleColor,
+	valueColor,
+	stackedValue = false,
 }) => {
 	const { theme, isDark } = useTheme();
 	const settingsCtx = useSettingsContext();
@@ -57,7 +67,13 @@ const SettingsList: React.FC<SettingsListProps> = ({
 			: React.cloneElement(leftIcon as any, { color: iconColor })
 		: leftIcon;
 
-	const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: theme.screen.iconBg } as ViewStyle];
+	const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: backgroundColor ?? theme.screen.iconBg } as ViewStyle];
+	if (width !== undefined) {
+		containerStyles.push({ width });
+	}
+	if (borderColor) {
+		containerStyles.push({ borderColor, borderWidth: borderWidth ?? StyleSheet.hairlineWidth, borderStyle: borderStyle ?? 'solid' });
+	}
 	const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
 
 	if (iconBg?.toLowerCase() === 'transparent') {
@@ -101,15 +117,33 @@ const SettingsList: React.FC<SettingsListProps> = ({
 				leftIconComponent ? leftIconComponent : renderedLeftIcon
 			) : null}
 			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
-			<View style={styles.textWrapper}>
-				<View style={styles.titleContainer}>
-					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={titleNumberOfLines} ellipsizeMode="tail">
+			<View style={stackedValue ? styles.textWrapperStacked : styles.textWrapper}>
+				<View style={stackedValue ? styles.titleContainerStacked : styles.titleContainer}>
+					<Text
+						selectable
+						style={[
+							styles.title,
+							{ color: titleColor ?? theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle,
+							titleFontSize ? { fontSize: titleFontSize } : null,
+						]}
+						numberOfLines={titleNumberOfLines}
+						ellipsizeMode="tail"
+					>
 						{title || label}
 					</Text>
 				</View>
 				{value ? (
-					<View style={styles.valueContainer}>
-						<Text selectable style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+					<View style={stackedValue ? styles.valueContainerStacked : styles.valueContainer}>
+						<Text
+							selectable
+							style={[
+								styles.value,
+								stackedValue ? styles.valueStacked : null,
+								{ color: valueColor ?? theme.screen.text } as TextStyle,
+								valueFontSize ? { fontSize: valueFontSize } : null,
+							]}
+							numberOfLines={0}
+						>
 							{value}
 						</Text>
 					</View>
@@ -189,6 +223,11 @@ const styles = StyleSheet.create({
 		columnGap: 3,
 		flex: 1,
 	},
+	textWrapperStacked: {
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+		flex: 1,
+	},
 	title: {
 		fontSize: 15,
 	},
@@ -197,11 +236,21 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		minWidth: 0,
 	},
+	titleContainerStacked: {
+		width: '100%',
+	},
 	valueContainer: {
 		flexShrink: 1,
 		flexGrow: 1,
 		justifyContent: 'center',
 		alignItems: 'flex-end',
+	},
+	valueContainerStacked: {
+		width: '100%',
+		alignItems: 'flex-start',
+	},
+	valueStacked: {
+		textAlign: 'left',
 	},
 	value: {
 		fontSize: 13,
