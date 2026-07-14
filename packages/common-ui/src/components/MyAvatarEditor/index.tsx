@@ -70,6 +70,24 @@
  *   `Platform.OS === 'web'`.  This constrains the scroll view to the remaining
  *   height inside the sheet, restoring scroll on web for all modals.
  *
+ * ─── SCROLL FIX 6 (native: reset scroll offset when modal content changes) ───
+ *   Symptom: after picking a value in a category sub-modal (e.g. a hairstyle)
+ *   and returning to the editor, the sticky avatar header was not rendered
+ *   until the user scrolled slightly.
+ *   Root cause: the modal stack renders only the top-most item inside ONE
+ *   BaseBottomSheet, and every stack item is a MyScrollViewModal at the same
+ *   tree position — React therefore reuses the SAME component instance (and
+ *   the same native scroll view including its content offset) and only swaps
+ *   the children. The sticky header element inside the content, however, IS
+ *   remounted, and RN's ScrollViewStickyHeader positions itself from scroll
+ *   events only — until the first scroll event it assumes offset 0, so with
+ *   the carried-over offset it is translated off-screen.
+ *   Fix: `MyScrollViewModal` scrolls back to the top (native only) whenever
+ *   its children change, keeping native offset and sticky-header state
+ *   consistent. Side effect (intended): each modal content starts at the top
+ *   instead of inheriting the previous content's offset. A mount effect can
+ *   NOT work here because the component never remounts between contents.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
