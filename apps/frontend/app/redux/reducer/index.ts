@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteStorage } from '@/redux/storage/sqliteStorage';
 import authReducer from './authReducer';
 import canteenReducer from './canteenReducer';
 import foodOffersReducer from './foodOffersReducer';
@@ -20,11 +20,10 @@ import chatsReducer from './chatsReducer';
 import friendshipsReducer from './friendshipsReducer';
 import { ApartmentsState, AppElementState, AuthState, CampusState, CanteensState, ChatsState, CollectibleEventsState, FoodAttributesState, FoodOffersState, FoodState, FormState, FriendshipsState, LastUpdatedState, ManagementState, NewsState, PopupEventsHashState, SettingsState } from '../Types/stateTypes';
 
-// FoodOffers gets its own persisted AsyncStorage item ("persist:foodOffers") instead of
-// living inside "persist:root" - see redux/store/store.ts for why (Android's ~2MB
-// per-item AsyncStorage limit).
+// FoodOffers gets its own persisted item ("persist:foodOffers") instead of living inside
+// "persist:root" - see redux/store/store.ts for why.
 const foodOffersPersistedReducer = persistReducer(
-	{ key: 'foodOffers', version: 1, storage: AsyncStorage },
+	{ key: 'foodOffers', version: 1, storage: sqliteStorage },
 	foodOffersReducer
 );
 

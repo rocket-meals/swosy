@@ -4,6 +4,7 @@ import * as thunk from 'redux-thunk';
 import promise from 'redux-promise';
 import { createMigrate, createTransform, persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteStorage } from '@/redux/storage/sqliteStorage';
 import { reducer } from '@/redux/reducer';
 
 const migrations = {
@@ -35,14 +36,13 @@ const settingsTransform = createTransform(
 const persistConfig = {
 	key: 'root',
 	version: 1, // 🔁 Bump this when you make breaking changes
-	storage: AsyncStorage,
+	storage: sqliteStorage,
 	migrate: createMigrate(migrations, { debug: false }),
 	// News is refetched whenever its screen is opened (see app/(app)/news/index.tsx) and
-	// FoodOffers persists under its own AsyncStorage item (see redux/reducer/index.ts) -
-	// neither belongs in this combined "persist:root" blob. Keeping the root item small is
-	// what avoids hitting Android's ~2MB per-AsyncStorage-item limit, whose silent write
-	// failures were causing the profile to fail to rehydrate and users to loop through
-	// onboarding on every start.
+	// FoodOffers persists under its own storage item (see redux/reducer/index.ts) -
+	// neither belongs in this combined "persist:root" blob. Keeping the root item small
+	// mattered for Android's ~2MB per-AsyncStorage-item limit; sqliteStorage removes that
+	// ceiling, but the split still keeps unrelated data out of the same blob.
 	blacklist: ['news', 'foodOffers'],
 	transforms: [settingsTransform],
 };
