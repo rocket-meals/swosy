@@ -3,6 +3,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 
 const CACHE_KEY_PREFIX = 'food_offers_cache_';
 const TRACKER_KEY = 'food_offers_cache_tracker';
+const META_KEY = 'food_offers_cache_meta';
 
 /**
  * Generates a simple hash string for an array of food offers.
@@ -22,15 +23,27 @@ function getCacheKey(canteenId: string, date: string): string {
     return `${CACHE_KEY_PREFIX}${canteenId}_${date}`;
 }
 
+function toDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 /**
  * Returns today's date as YYYY-MM-DD string in local time.
  */
 function getTodayDateString(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return toDateString(new Date());
+}
+
+/**
+ * Returns tomorrow's date as YYYY-MM-DD string in local time.
+ */
+function getTomorrowDateString(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return toDateString(tomorrow);
 }
 
 /**
@@ -56,32 +69,55 @@ async function setTracker(tracker: Record<string, string[]>): Promise<void> {
 }
 
 /**
- * Removes cached entries for dates that are in the past for the given canteen.
+ * Which canteen + day the currently cached entries belong to. Only one canteen's
+ * data is ever meant to be cached at a time - see cacheFoodOffers() below.
  */
-async function cleanupPastDates(canteenId: string, tracker: Record<string, string[]>): Promise<Record<string, string[]>> {
-    const today = getTodayDateString();
-    const dates = tracker[canteenId];
-    if (!dates || dates.length === 0) return tracker;
+type CacheMeta = { canteenId: string; day: string };
 
-    const pastDates = dates.filter(d => d < today);
-    const futureDates = dates.filter(d => d >= today);
-
-    if (pastDates.length > 0) {
-        const keysToRemove = pastDates.map(d => getCacheKey(canteenId, d));
-        try {
-            await AsyncStorage.multiRemove(keysToRemove);
-        } catch (e) {
-            console.error('FoodOffersCacheHelper: Error removing past dates', e);
-        }
+async function getMeta(): Promise<CacheMeta | null> {
+    try {
+        const raw = await AsyncStorage.getItem(META_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch (e) {
+        console.error('FoodOffersCacheHelper: Error reading cache meta', e);
     }
+    return null;
+}
 
-    const updated = { ...tracker, [canteenId]: futureDates };
-    return updated;
+async function setMeta(meta: CacheMeta): Promise<void> {
+    try {
+        await AsyncStorage.setItem(META_KEY, JSON.stringify(meta));
+    } catch (e) {
+        console.error('FoodOffersCacheHelper: Error writing cache meta', e);
+    }
 }
 
 /**
- * Saves food offers for a specific canteen + date into AsyncStorage.
- * Also updates the tracker and cleans up past dates.
+ * Removes every tracked cached entry, for every canteen, and returns an empty tracker.
+ * Used whenever the selected canteen or the current day changes, since only the
+ * current+next day of the currently selected canteen are meant to stay cached.
+ */
+async function clearTrackedCache(tracker: Record<string, string[]>): Promise<Record<string, string[]>> {
+    const keysToRemove = Object.entries(tracker).flatMap(([canteenId, dates]) =>
+        dates.map(d => getCacheKey(canteenId, d))
+    );
+    if (keysToRemove.length > 0) {
+        try {
+            await AsyncStorage.multiRemove(keysToRemove);
+        } catch (e) {
+            console.error('FoodOffersCacheHelper: Error clearing food offers cache', e);
+        }
+    }
+    return {};
+}
+
+/**
+ * Saves food offers for a specific canteen + date into AsyncStorage - but only if
+ * `date` is today or tomorrow. Only the current and next day of the currently
+ * selected canteen are worth keeping offline; further scrolled-to days are still
+ * fetched live, just never persisted. Whenever the selected canteen or the current
+ * day differs from what's already cached, every previously cached entry is wiped
+ * first instead of being left to linger.
  */
 export async function cacheFoodOffers(
     canteenId: string,
@@ -89,14 +125,22 @@ export async function cacheFoodOffers(
     offers: DatabaseTypes.Foodoffers[],
 ): Promise<void> {
     try {
+        const today = getTodayDateString();
+        const tomorrow = getTomorrowDateString();
+        if (date !== today && date !== tomorrow) {
+            return;
+        }
+
+        const meta = await getMeta();
+        let tracker = await getTracker();
+        if (!meta || meta.canteenId !== canteenId || meta.day !== today) {
+            tracker = await clearTrackedCache(tracker);
+        }
+
         const hash = computeFoodOffersHash(offers);
         const cacheKey = getCacheKey(canteenId, date);
         await AsyncStorage.setItem(cacheKey, JSON.stringify({ hash, offers }));
 
-        let tracker = await getTracker();
-        // Cleanup past dates for this canteen
-        tracker = await cleanupPastDates(canteenId, tracker);
-        // Add current date if not already tracked
         const dates = tracker[canteenId] || [];
         if (!dates.includes(date)) {
             dates.push(date);
@@ -105,6 +149,7 @@ export async function cacheFoodOffers(
             tracker[canteenId] = dates;
         }
         await setTracker(tracker);
+        await setMeta({ canteenId, day: today });
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error caching food offers', e);
     }
@@ -117,13 +162,19 @@ export interface CachedFoodOffersResult {
 
 /**
  * Loads cached food offers for a specific canteen + date.
- * Returns null if nothing is cached.
+ * Returns null if nothing is cached, or if `date` isn't today or tomorrow (see
+ * cacheFoodOffers() - nothing else is meant to stay cached, including leftover
+ * entries from before this policy existed).
  */
 export async function getCachedFoodOffers(
     canteenId: string,
     date: string,
 ): Promise<CachedFoodOffersResult | null> {
     try {
+        if (date !== getTodayDateString() && date !== getTomorrowDateString()) {
+            return null;
+        }
+
         const cacheKey = getCacheKey(canteenId, date);
         const raw = await AsyncStorage.getItem(cacheKey);
         if (!raw) return null;
