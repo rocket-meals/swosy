@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsListAvatar, useTheme } from 'repo-depkit-common-ui';
@@ -11,7 +11,7 @@ import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
-const FRIEND_AVATAR_SIZE = 60; // 50% larger than the original 40
+const FRIEND_AVATAR_SIZE = 84; // Same size as the Game scoreboard's player avatars
 
 export default function PlayersScreen() {
 	const { theme } = useTheme();
@@ -19,6 +19,13 @@ export default function PlayersScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const navigation = useNavigation();
+	const [searchQuery, setSearchQuery] = useState('');
+
+	const filteredFriends = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		if (!query) return friends;
+		return friends.filter((friend) => friend.name.toLowerCase().includes(query));
+	}, [friends, searchQuery]);
 
 	const handleAddFriend = useCallback(() => {
 		const friendNumber = friends.length + 1;
@@ -43,12 +50,31 @@ export default function PlayersScreen() {
 	}, [navigation, theme.header.text, handleAddFriend]);
 
 	return (
-		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
+			{friends.length > 0 && (
+				<View style={styles.searchBarWrapper}>
+					<View style={[styles.searchBar, { backgroundColor: theme.screen.iconBg }]}>
+						<Ionicons name="search-outline" size={18} color={theme.screen.icon} />
+						<TextInput
+							nativeID={ComponentIds.PLAYERS_SCREEN_SEARCH_INPUT}
+							style={[styles.searchInput, { color: theme.screen.text }]}
+							placeholder="Freund suchen"
+							placeholderTextColor={theme.screen.placeholder}
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							returnKeyType="search"
+							autoCorrect={false}
+						/>
+						{searchQuery.length > 0 && (
+							<TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={8}>
+								<Ionicons name="close-circle" size={18} color={theme.screen.icon} />
+							</TouchableOpacity>
+						)}
+					</View>
+				</View>
+			)}
 			<ScrollView
-				contentContainerStyle={[
-					styles.listContent,
-					{ paddingBottom: insets.bottom + 32, paddingLeft: insets.left, paddingRight: insets.right },
-				]}
+				contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32 }]}
 			>
 				{friends.length === 0 ? (
 					<View style={styles.emptyContainer}>
@@ -58,8 +84,12 @@ export default function PlayersScreen() {
 							Füge einen Freund über den + Button im Header hinzu
 						</Text>
 					</View>
+				) : filteredFriends.length === 0 ? (
+					<Text style={[styles.emptySubtext, styles.noResultsText, { color: theme.screen.placeholder }]}>
+						Kein Freund gefunden für „{searchQuery}“.
+					</Text>
 				) : (
-					friends.map((friend, index) => (
+					filteredFriends.map((friend, index) => (
 						<SettingsListAvatar
 							key={friend.id}
 							nativeID={`${ComponentIds.PLAYERS_SCREEN_FRIEND_ROW_PREFIX}${friend.id}`}
@@ -69,7 +99,7 @@ export default function PlayersScreen() {
 							label={friend.name}
 							rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 							onPressOverride={() => router.push({ pathname: '/players/[id]', params: { id: friend.id } })}
-							groupPosition={index === 0 ? 'top' : index === friends.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={index === 0 ? 'top' : index === filteredFriends.length - 1 ? 'bottom' : 'middle'}
 						/>
 					))
 				)}
@@ -85,6 +115,23 @@ const styles = StyleSheet.create({
 	headerButton: {
 		padding: 4,
 		marginRight: 8,
+	},
+	searchBarWrapper: {
+		paddingHorizontal: 12,
+		paddingTop: 12,
+	},
+	searchBar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		borderRadius: 10,
+		paddingHorizontal: 12,
+		height: 40,
+	},
+	searchInput: {
+		flex: 1,
+		fontSize: 15,
+		height: '100%',
 	},
 	listContent: {
 		padding: 12,
@@ -105,5 +152,9 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		marginTop: 8,
 		textAlign: 'center',
+	},
+	noResultsText: {
+		marginTop: 32,
+		paddingHorizontal: 16,
 	},
 });
