@@ -13,10 +13,14 @@ import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
+import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 
 const Index = () => {
 	const { theme } = useTheme();
 	const { translate, translateDynamic } = useLanguage();
+	// Title-only wiki (no content) coming from redux, used for an instant header while the
+	// full page loads. The full content is fetched directly below and kept in local state
+	// only - it is never dispatched to redux/persisted.
 	const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
 	const [loading, setLoading] = useState(true);
 	const { wikis, language, primaryColor } = useAppSelector((state) => state.settings);
@@ -26,28 +30,28 @@ const Index = () => {
 	const title = wiki?.translations ? translateDynamic(getTitleFromTranslation(wiki?.translations, language)) : 'Wikis';
 	useSetPageTitle(title);
 
-	const filterWiki = () => {
-		const wiki_data = wikis?.filter((wiki: any) => wiki?.custom_id === custom_id);
-		if (wiki_data) {
-			setWiki(wiki_data[0]);
-			setLoading(false);
-		}
-	};
-
-	const filterWikiWithId = () => {
-		const wiki_data = wikis?.filter((wiki: any) => wiki?.id === id);
-		if (wiki_data) {
-			setWiki(wiki_data[0]);
-			setLoading(false);
-		}
-	};
-
 	useEffect(() => {
-		if (wikis?.length > 0 && custom_id) {
-			filterWiki();
-		} else if (wikis?.length > 0 && id) {
-			filterWikiWithId();
+		const wikiTitleOnly = wikis?.find((wiki: any) => (custom_id ? wiki?.custom_id === custom_id : wiki?.id === id));
+		if (wikiTitleOnly) {
+			setWiki(wikiTitleOnly as DatabaseTypes.Wikis);
 		}
+
+		if (!custom_id && !id) {
+			setLoading(false);
+			return;
+		}
+
+		setLoading(true);
+		const wikisHelper = new WikisHelper();
+		wikisHelper
+			.fetchWikiWithContent({ id: id as string | undefined, custom_id: custom_id as string | undefined })
+			.then((wikiWithContent) => {
+				if (wikiWithContent) {
+					setWiki(wikiWithContent as DatabaseTypes.Wikis);
+				}
+			})
+			.catch((error) => console.error('Error fetching wiki content:', error))
+			.finally(() => setLoading(false));
 	}, [wikis, custom_id, id]);
 
 	return (

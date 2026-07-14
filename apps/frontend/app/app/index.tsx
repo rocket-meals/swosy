@@ -9,6 +9,7 @@ import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { Platform } from 'react-native';
+import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
 const extractRawExpoToken = (token: string | null) => {
 	if (!token) return null;
@@ -102,6 +103,7 @@ const Index = () => {
 	if (loggedIn) {
 		return <Redirect href="/(app)" />;
 	} else {
+		markOnboardingShouldBeShownAfterLogin();
 		return <Redirect href="/(auth)/login" />;
 	}
 };

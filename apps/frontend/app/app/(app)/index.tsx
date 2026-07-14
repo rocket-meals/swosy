@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { AppScreens } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
+import { consumeShouldShowOnboardingAfterLogin } from '@/helper/onboardingIntentHelper';
 
-// Skip onboarding entirely once a canteen and price group are known (checked
-// synchronously from the persisted state, no network round-trip needed) - otherwise
-// onboarding would still mount and briefly flash before redirecting itself.
+// Onboarding is only ever entered right after a fresh login (see app/index.tsx and
+// (app)/_layout.tsx, which set the flag consumed below just before sending an
+// unauthenticated user to the login screen) - never from this profile-completeness check
+// alone. Otherwise a rehydration hiccup that makes profile.canteen/price_group look
+// incomplete would send a returning user through onboarding on every single app start.
 const Home = () => {
 	const dispatch = useDispatch();
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const { selectedCanteen } = useAppSelector((state) => state.canteenReducer);
+	const [shouldShowOnboarding] = useState(() => consumeShouldShowOnboardingAfterLogin());
 
 	// Sessions from before profile.canteen was persisted (older app versions only ever set
 	// the separately-tracked selectedCanteen) would look incomplete forever and be sent
@@ -28,10 +32,10 @@ const Home = () => {
 		}
 	}, [profile, selectedCanteen?.id, dispatch]);
 
-	if (hasCompleteProfile) {
-		return <Redirect href={('/(app)/' + AppScreens.FOOD_OFFERS) as any} />;
+	if (!hasCompleteProfile && shouldShowOnboarding) {
+		return <Redirect href="/(app)/experimentell/onboarding" />;
 	}
-	return <Redirect href="/(app)/experimentell/onboarding" />;
+	return <Redirect href={('/(app)/' + AppScreens.FOOD_OFFERS) as any} />;
 };
 
 export default Home;

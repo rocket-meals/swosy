@@ -9,7 +9,7 @@ import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
-import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_FRIENDSHIPS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_FRIENDSHIPS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
@@ -22,10 +22,10 @@ import { FoodOffersInfoItemsHelper } from '@/redux/actions/FoodOffersInfoItems/F
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
+import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
-import { NewsHelper } from '@/redux/actions/News/News';
 import { CollectibleEventsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEvents';
 import { ChatsHelper } from '@/redux/actions/Chats/Chats';
 import { FoodAttributeGroupHelper } from '@/redux/actions/FoodAttributes/FoodAttributeGroup';
@@ -76,7 +76,6 @@ export default function Layout() {
 	const businessHoursGroupsHelper = useMemo(() => new BusinessHoursGroupsHelper(), []);
 	const foodOffersCategoriesHelper = useMemo(() => new FoodOffersCategoriesHelper(), []);
 	const foodOffersInfoItemsHelper = useMemo(() => new FoodOffersInfoItemsHelper(), []);
-	const newsHelper = useMemo(() => new NewsHelper(), []);
 	const collectibleEventsHelper = useMemo(() => new CollectibleEventsHelper(), []);
 	const chatsHelper = useMemo(() => new ChatsHelper(), []);
 	const collectionLastUpdateHelper = useMemo(() => new CollectionLastUpdateHelper(), []);
@@ -298,34 +297,6 @@ export default function Layout() {
 			console.error('Error fetching markings:', error);
 		}
 	};
-
-        const getNews = async () => {
-                try {
-                        const result = (await newsHelper.fetchNews({})) as DatabaseTypes.News[];
-                        if (result) {
-                                const today = new Date().toISOString().split('T')[0];
-				const sortedNews = [...result].sort((a, b) => {
-					const dateA = a?.date;
-					const dateB = b?.date;
-
-					if (!dateA && !dateB) return 0;
-					if (!dateA) return 1;
-					if (!dateB) return -1;
-
-					const dayA = dateA.split('T')[0];
-					const dayB = dateB.split('T')[0];
-
-					if (dayA === today && dayB !== today) return -1;
-					if (dayB === today && dayA !== today) return 1;
-
-					return dayA < dayB ? 1 : -1;
-				});
-				dispatch({ type: SET_NEWS, payload: sortedNews });
-			}
-		} catch (error) {
-                        console.error('Error fetching news:', error);
-                }
-        };
 
         const getCollectibleEvents = async () => {
                 try {
@@ -550,7 +521,6 @@ export default function Layout() {
 			key: CollectionKeys.FOODS_FEEDBACKS_LABELS,
 			action: getFoodFeedBackLabels,
 		},
-                { key: CollectionKeys.NEWS, action: getNews },
                 {
                         key: [CollectionKeys.COLLECTIBLE_EVENTS, CollectionKeys.COLLECTIBLE_EVENTS_TRANSLATIONS],
                         action: getCollectibleEvents,
@@ -631,6 +601,7 @@ export default function Layout() {
 	);
 
 	if (!loggedIn && !kioskMode) {
+		markOnboardingShouldBeShownAfterLogin();
 		return <Redirect href="/(auth)/login" />;
 	}
 
