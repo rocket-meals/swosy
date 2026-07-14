@@ -752,4 +752,7 @@ export enum TranslationKeys {
 	show_average_rating_on_card = 'show_average_rating_on_card',
 	feedback_include_app_state_title = 'feedback_include_app_state_title',
 	feedback_include_app_state_description = 'feedback_include_app_state_description',
+	debug_request_send = 'debug_request_send',
+	debug_request_default_title = 'debug_request_default_title',
+	debug_request_default_content = 'debug_request_default_content',
 }

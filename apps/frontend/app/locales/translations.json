@@ -6517,6 +6517,36 @@
     "tr": "Sorununuzu daha kolay tekrar oluşturabilmemiz için uygulama verilerinizin teknik bir anlık görüntüsünü de gönderir. Bu verileri kendiniz incelemeniz gerekmez.",
     "zh": "还会发送应用数据的技术快照，以便我们更容易重现您的问题。您无需自行查看这些数据。"
   },
+  "debug_request_send": {
+    "de": "Debug Anfrage senden",
+    "en": "Send debug request",
+    "ar": "إرسال طلب تصحيح الأخطاء",
+    "es": "Enviar solicitud de depuración",
+    "fr": "Envoyer une demande de débogage",
+    "ru": "Отправить отладочный запрос",
+    "tr": "Hata ayıklama talebi gönder",
+    "zh": "发送调试请求"
+  },
+  "debug_request_default_title": {
+    "de": "Debug-Anfrage",
+    "en": "Debug request",
+    "ar": "طلب تصحيح الأخطاء",
+    "es": "Solicitud de depuración",
+    "fr": "Demande de débogage",
+    "ru": "Отладочный запрос",
+    "tr": "Hata ayıklama talebi",
+    "zh": "调试请求"
+  },
+  "debug_request_default_content": {
+    "de": "Automatisch erstellte Debug-Anfrage, gesendet über den Debug-Button im Feedback-Formular.",
+    "en": "Automatically created debug request, sent via the debug button in the feedback form.",
+    "ar": "طلب تصحيح أخطاء تم إنشاؤه تلقائيًا، تم إرساله عبر زر تصحيح الأخطاء في نموذج التعليقات.",
+    "es": "Solicitud de depuración creada automáticamente, enviada a través del botón de depuración en el formulario de comentarios.",
+    "fr": "Demande de débogage créée automatiquement, envoyée via le bouton de débogage du formulaire de retour.",
+    "ru": "Автоматически созданный отладочный запрос, отправленный с помощью кнопки отладки в форме обратной связи.",
+    "tr": "Geri bildirim formundaki hata ayıklama düğmesi aracılığıyla gönderilen otomatik olarak oluşturulmuş hata ayıklama talebi.",
+    "zh": "通过反馈表单中的调试按钮发送的自动创建的调试请求。"
+  },
   "public_links": {
     "de": "Öffentliche Links",
     "en": "Public Links",

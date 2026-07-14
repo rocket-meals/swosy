@@ -212,10 +212,18 @@ const FeedbackScreen = () => {
 		}
 	};
 
-	const handleCreateAppFeedback = async () => {
+	const handleCreateAppFeedback = async (defaultValues?: { title: string; content: string }) => {
 		if (inputValues) {
 			setLoading(true);
 			const { email, ...filteredInputValues } = inputValues;
+			if (defaultValues) {
+				if (!String(filteredInputValues.title ?? '').trim()) {
+					filteredInputValues.title = defaultValues.title;
+				}
+				if (!String(filteredInputValues.content ?? '').trim()) {
+					filteredInputValues.content = defaultValues.content;
+				}
+			}
 			if (profile?.id) {
 				filteredInputValues.profile = profile?.id;
 			}
@@ -256,6 +264,14 @@ const FeedbackScreen = () => {
 			}
 		}
 	};
+
+	const handleSendDebugRequest = () => {
+		handleCreateAppFeedback({
+			title: translate(TranslationKeys.debug_request_default_title),
+			content: translate(TranslationKeys.debug_request_default_content),
+		});
+	};
+
 	const handleUpdateAppFeedback = async () => {
 		if (inputValues && app_feedbacks_id) {
 			setLoading(true);
@@ -526,6 +542,40 @@ const FeedbackScreen = () => {
 							rightElement={<Switch value={includeAppState} onValueChange={setIncludeAppState} />}
 							groupPosition="single"
 						/>
+
+						{!app_feedbacks_id && (
+							<TouchableOpacity
+								style={[
+									styles.row,
+									{
+										marginTop: 10,
+										padding: 15,
+										borderRadius: 10,
+										backgroundColor: theme.screen.iconBg,
+										opacity: loading ? 0.5 : 1,
+									},
+								]}
+								onPress={handleSendDebugRequest}
+								disabled={loading}
+							>
+								<View style={styles.leftView}>
+									<Text
+										style={[
+											styles.linkText,
+											{
+												color: theme.screen.text,
+												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+											},
+										]}
+									>
+										{translate(TranslationKeys.debug_request_send)}
+									</Text>
+								</View>
+								<View>
+									<MaterialCommunityIcons name="bug-outline" size={24} color={theme.screen.text} />
+								</View>
+							</TouchableOpacity>
+						)}
 
 						{errorJson && <Text style={{ color: 'red', marginVertical: 10 }}>{errorJson}</Text>}
 						{errorMessage && <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>}
