@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsList, MyAvatar, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListAvatar, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addFriend } from '../../store/friendsSlice';
@@ -11,6 +11,7 @@ import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
+const FRIEND_AVATAR_SIZE = 60; // 50% larger than the original 40
 
 export default function PlayersScreen() {
 	const { theme } = useTheme();
@@ -59,21 +60,15 @@ export default function PlayersScreen() {
 					</View>
 				) : (
 					friends.map((friend, index) => (
-						<SettingsList
+						<SettingsListAvatar
 							key={friend.id}
 							nativeID={`${ComponentIds.PLAYERS_SCREEN_FRIEND_ROW_PREFIX}${friend.id}`}
+							config={friend.avatarConfig}
+							avatarBackgroundColor={friend.color}
+							previewSize={FRIEND_AVATAR_SIZE}
 							label={friend.name}
-							leftIconComponent={
-								<MyAvatar
-									style={friend.avatarConfig?.style}
-									options={friend.avatarConfig?.options}
-									size={40}
-									rounded
-									backgroundColor={friend.color}
-								/>
-							}
 							rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-							handleFunction={() => router.push({ pathname: '/players/[id]', params: { id: friend.id } })}
+							onPressOverride={() => router.push({ pathname: '/players/[id]', params: { id: friend.id } })}
 							groupPosition={index === 0 ? 'top' : index === friends.length - 1 ? 'bottom' : 'middle'}
 						/>
 					))

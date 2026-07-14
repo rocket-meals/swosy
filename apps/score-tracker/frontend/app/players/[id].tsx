@@ -98,7 +98,7 @@ export default function PlayerDetailScreen() {
 					config={friend.avatarConfig}
 					onChange={(config) => dispatch(setFriendAvatar({ friendId: friend.id, avatarConfig: config }))}
 					label="Avatar"
-					previewSize={48}
+					previewSize={72}
 					avatarBackgroundColor={friend.color}
 					groupPosition="top"
 					editorOptions={{ title: 'Avatar' }}

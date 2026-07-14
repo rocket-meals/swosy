@@ -18,7 +18,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 	MyColorPicker,
-	MyAvatar,
+	myContrastColor,
 } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,7 +50,10 @@ const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const WARNING_COLOR = '#f59e0b';
 
-const TILE_BORDER_RADIUS = 16;
+// Avatar preview sizes (50% larger than the original design across the board).
+const EDIT_AVATAR_SIZE = 60;
+const PICKER_AVATAR_SIZE = 48;
+
 const TILE_GAP = 10;
 
 // Helper to determine groupPosition for list items
@@ -192,11 +195,14 @@ function ScoreInputContent({
 
 // ─── Player score row (active game, scoreboard view) ──────────────────────────
 //
-// Laid out like a settings-list "single" row: avatar on the left (colored by
-// the player's color), name next to it, points as the right-aligned value,
-// and the leader crown as the row's right icon.
+// Reuses the shared SettingsListAvatar (the same building block as the player
+// edit rows and the friends screen) so avatar sizing, text wrapping/colors and
+// spacing all stay consistent: the player's color fills the whole row, name
+// and points stack on their own lines (so a long name is never lost), and the
+// leader crown replaces the row's default right icon.
 
-const TILE_AVATAR_SIZE = 56;
+const TILE_AVATAR_SIZE = 84;
+const MISSING_SCORE_BORDER = 'rgba(255,255,255,0.85)';
 
 function PlayerTile({
 	playerId,
@@ -219,50 +225,32 @@ function PlayerTile({
 	onPress: () => void;
 	tileWidth?: number;
 }) {
-	const { theme } = useTheme();
+	const { theme, isDark } = useTheme();
+	const textColor = myContrastColor(color, theme, isDark);
+
 	return (
-		<TouchableOpacity
+		<SettingsListAvatar
 			nativeID={`${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`}
-			style={[
-				styles.playerTile,
-				{
-					backgroundColor: theme.screen.iconBg,
-					width: tileWidth,
-					borderWidth: hasScore ? 2.5 : 2,
-					borderStyle: hasScore ? 'solid' : 'dashed',
-					borderColor: hasScore ? color : theme.screen.border,
-				},
-			]}
-			onPress={onPress}
-			activeOpacity={0.8}
-		>
-			<MyAvatar
-				style={avatarConfig?.style}
-				options={avatarConfig?.options}
-				size={TILE_AVATAR_SIZE}
-				rounded
-				backgroundColor={color}
-			/>
-			<View style={styles.playerTileBody}>
-				<Text
-					style={[styles.playerTileName, { color: theme.screen.text }]}
-					numberOfLines={1}
-					adjustsFontSizeToFit
-				>
-					{name}
-				</Text>
-				<Text
-					style={[styles.playerTileScore, { color: theme.screen.text }]}
-					numberOfLines={1}
-					adjustsFontSizeToFit
-				>
-					{score}
-				</Text>
-			</View>
-			{isLeader && (
-				<Ionicons name="trophy" size={24} color="#fbbf24" style={styles.leaderBadge} />
-			)}
-		</TouchableOpacity>
+			config={avatarConfig}
+			onPressOverride={onPress}
+			label={name}
+			value={String(score)}
+			stackedValue
+			previewSize={TILE_AVATAR_SIZE}
+			avatarBackgroundColor="#ffffff"
+			width={tileWidth}
+			backgroundColor={color}
+			titleColor={textColor}
+			valueColor={textColor}
+			titleFontSize={20}
+			valueFontSize={26}
+			borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
+			borderWidth={hasScore ? undefined : 2.5}
+			borderStyle="dashed"
+			rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
+			groupPosition="single"
+			showSeparator={false}
+		/>
 	);
 }
 
@@ -305,7 +293,7 @@ function PlayerEditGroup({
 				config={player.avatarConfig}
 				onChange={onAvatarChange}
 				label={player.name}
-				previewSize={40}
+				previewSize={EDIT_AVATAR_SIZE}
 				avatarBackgroundColor={player.color}
 				groupPosition="top"
 				editorOptions={{ title: 'Avatar' }}
@@ -489,14 +477,15 @@ export default function GameScreen() {
 						</Text>
 					) : (
 						availableFriends.map((friend: Friend, index) => (
-							<SettingsList
+							<SettingsListAvatar
 								key={friend.id}
 								nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
+								config={friend.avatarConfig}
+								avatarBackgroundColor={friend.color}
+								previewSize={PICKER_AVATAR_SIZE}
 								label={friend.name}
-								leftIconComponent={
-									<MyAvatar style={friend.avatarConfig?.style} options={friend.avatarConfig?.options} size={32} rounded backgroundColor={friend.color} />
-								}
-								handleFunction={() => {
+								rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
+								onPressOverride={() => {
 									dispatch(addFriendPlayer(friend));
 									closeAddPlayerModal();
 								}}
@@ -764,32 +753,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	},
-	playerTile: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		borderRadius: TILE_BORDER_RADIUS,
-		paddingHorizontal: 14,
-		paddingVertical: 12,
-		gap: 14,
-	},
-	playerTileBody: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: 10,
-	},
-	playerTileName: {
-		fontSize: 20,
-		fontWeight: '700',
-		flexShrink: 1,
-	},
-	playerTileScore: {
-		fontSize: 30,
-		fontWeight: '800',
-	},
-	leaderBadge: {
-		marginLeft: 2,
+	rightIconPlaceholder: {
+		width: 24,
+		height: 24,
 	},
 	playerEditGroup: {
 		marginBottom: 4,
