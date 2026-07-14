@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AvatarConfig, AvatarStyle, AvatarPropKey, useAvatarEditorModal } from 'repo-depkit-common-ui';
+import { AvatarConfig, AvatarStyle, useAvatarEditorModal } from 'repo-depkit-common-ui';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { useAppSelector } from '@/redux/hooks';
@@ -11,14 +11,6 @@ import useDebugMode from '@/hooks/useDebugMode';
 const profileHelper = new ProfileHelper();
 
 const AVATAR_BACKGROUND_COLOR = '#ffffff';
-const COLOR_BLACK = '000000';
-const COLOR_WHITE = 'ffffff';
-
-const MICAH_HIDDEN_PROPS = {
-	[AvatarPropKey.Micah.EYES_COLOR]: COLOR_BLACK,
-	[AvatarPropKey.Micah.EYE_SHADOW_COLOR]: COLOR_WHITE,
-	[AvatarPropKey.Micah.GLASSES_COLOR]: COLOR_BLACK,
-};
 
 export const AVATAR_BACKGROUND = AVATAR_BACKGROUND_COLOR;
 export const AVATAR_SETTINGS_ROW_SIZE = 64;
@@ -70,8 +62,10 @@ export function useAvatarProfileEditor() {
 		title: translate(TranslationKeys.avatars),
 		accentColor: primaryColor,
 		debugMode,
-		allowedStyles: [AvatarStyle.MICAH],
-		hiddenProps: MICAH_HIDDEN_PROPS,
+		// Avataaars is the default avatar style. Users with a legacy avatar in another
+		// style (e.g. micah) keep it until they open the editor and make a change –
+		// the editor then starts in quickstart mode with the current default style.
+		allowedStyles: [AvatarStyle.AVATAAARS],
 		translate,
 	}), [translate, primaryColor, debugMode]);
 

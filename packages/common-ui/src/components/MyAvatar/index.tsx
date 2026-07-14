@@ -151,7 +151,7 @@ function stripRedundantViewboxMask(svg: string): string {
 
 const MyAvatar: React.FC<MyAvatarProps> = ({
 	config,
-	style: styleProp = AvatarStyle.LORELEI,
+	style: styleProp = AvatarStyle.AVATAAARS,
 	size: sizeProp = AvatarSize.LARGE,
 	borderRadius = 0,
 	rounded = true,

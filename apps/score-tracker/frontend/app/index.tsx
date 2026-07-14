@@ -19,6 +19,7 @@ import {
 	useTheme,
 	MyColorPicker,
 	myContrastColor,
+	AvatarStyle,
 } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -296,7 +297,7 @@ function PlayerEditGroup({
 				previewSize={EDIT_AVATAR_SIZE}
 				avatarBackgroundColor={player.color}
 				groupPosition="top"
-				editorOptions={{ title: 'Avatar' }}
+				editorOptions={{ title: 'Avatar', allowedStyles: [AvatarStyle.AVATAAARS] }}
 			/>
 			<SettingsListTextInput
 				label="Name"

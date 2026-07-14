@@ -3667,6 +3667,36 @@
     "tr": "Hızlı Başlangıç",
     "zh": "快速开始"
   },
+  "avatar_section_custom_color": {
+    "de": "Eigene Farbe",
+    "en": "Custom Color",
+    "ar": "لون مخصص",
+    "es": "Color Personalizado",
+    "fr": "Couleur Personnalisée",
+    "ru": "Свой Цвет",
+    "tr": "Özel Renk",
+    "zh": "自定义颜色"
+  },
+  "avatar_section_preset_colors": {
+    "de": "Vorlagen",
+    "en": "Presets",
+    "ar": "الإعدادات المسبقة",
+    "es": "Preajustes",
+    "fr": "Préréglages",
+    "ru": "Пресеты",
+    "tr": "Hazır Ayarlar",
+    "zh": "预设"
+  },
+  "avatar_use_custom_color": {
+    "de": "Diese Farbe verwenden",
+    "en": "Use this color",
+    "ar": "استخدام هذا اللون",
+    "es": "Usar este color",
+    "fr": "Utiliser cette couleur",
+    "ru": "Использовать этот цвет",
+    "tr": "Bu rengi kullan",
+    "zh": "使用此颜色"
+  },
   "avatar_apply": {
     "de": "Übernehmen",
     "en": "Apply",
