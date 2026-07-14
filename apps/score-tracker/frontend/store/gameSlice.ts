@@ -3,6 +3,7 @@ import type { AvatarConfig } from 'repo-depkit-common-ui';
 import type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
+import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 export type { Player, Round, GameState, GameStatus };
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -154,6 +155,33 @@ const gameSlice = createSlice({
 		resetAll() {
 			return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0 };
 		},
+	},
+	// Players added from a friend are linked via friendId. When the friend is
+	// edited in the players screen, mirror the change onto the linked player(s)
+	// of the current game so both screens stay in sync.
+	extraReducers: (builder) => {
+		builder
+			.addCase(renameFriend, (state, action) => {
+				for (const player of state.players) {
+					if (player.friendId === action.payload.friendId) {
+						player.name = action.payload.name;
+					}
+				}
+			})
+			.addCase(setFriendColor, (state, action) => {
+				for (const player of state.players) {
+					if (player.friendId === action.payload.friendId) {
+						player.color = action.payload.color;
+					}
+				}
+			})
+			.addCase(setFriendAvatar, (state, action) => {
+				for (const player of state.players) {
+					if (player.friendId === action.payload.friendId) {
+						player.avatarConfig = action.payload.avatarConfig;
+					}
+				}
+			});
 	},
 });
 

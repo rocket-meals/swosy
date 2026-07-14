@@ -44,6 +44,35 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	React.useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 	React.useEffect(() => () => { onCloseRef.current?.(); }, []);
 
+	// SCROLL FIX 6 (native: reset scroll offset when the modal content changes)
+	// The modal stack renders only the top-most item inside ONE BaseBottomSheet
+	// (see ModalRenderer). All stack items render a MyScrollViewModal at the
+	// same tree position, so React does NOT remount it when the content is
+	// swapped (editor -> category picker -> back) — it re-renders the SAME
+	// instance (and the same native scroll view, which keeps its content
+	// offset) with the new children. The sticky header element inside the
+	// content however IS remounted, and React Native's ScrollViewStickyHeader
+	// only positions itself from scroll events: until the first scroll event
+	// it assumes offset 0. With the carried-over offset the header is
+	// therefore translated off-screen and stays invisible until the user
+	// scrolls. Fix: whenever the content (children) changes, scroll back to
+	// the top — this keeps native offset and sticky-header state consistent
+	// (both 0) and makes every modal content start at the top instead of
+	// inheriting the previous content's offset. A mount effect cannot work
+	// here because the component never remounts between contents. Web is
+	// untouched (no stickyHeaderIndices there, see SCROLL FIX 4).
+	const scrollableRef = React.useRef<any>(null);
+	React.useEffect(() => {
+		if (Platform.OS === 'web') return;
+		const node = scrollableRef.current;
+		if (!node) return;
+		if (typeof node.scrollTo === 'function') {
+			node.scrollTo({ x: 0, y: 0, animated: false });
+		} else if (typeof node.scrollToOffset === 'function') {
+			node.scrollToOffset({ offset: 0, animated: false });
+		}
+	}, [children]);
+
 	const titleElement = title ? (
 		<View
 			key="__title"
@@ -88,6 +117,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 		return (
 			<View style={[containerStyle, webFlex]}>
 				<BottomSheetFlatList
+					ref={scrollableRef}
 					style={webFlex}
 					data={data}
 					keyExtractor={keyExtractor}
@@ -137,6 +167,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 		<View style={[containerStyle, webFlex]}>
 			{renderStickyOutside && <View>{stickyHeaderComponent}</View>}
 			<BottomSheetScrollView
+				ref={scrollableRef}
 				style={webFlex}
 				contentContainerStyle={contentStyle}
 				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
