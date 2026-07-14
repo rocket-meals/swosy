@@ -55,7 +55,8 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, SettingsListProgress } from 'repo-depkit-common-ui';
+import { getAsyncStorageUsage, formatBytes, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
@@ -351,6 +352,27 @@ const Settings = () => {
                         payload: !debugMode,
                 });
         };
+
+        const [storageUsage, setStorageUsage] = useState<AsyncStorageKeyUsage[]>([]);
+        const [storageUsageTotalBytes, setStorageUsageTotalBytes] = useState(0);
+
+        const refreshStorageUsage = useCallback(async () => {
+                try {
+                        const { items, totalBytes } = await getAsyncStorageUsage();
+                        setStorageUsage(items);
+                        setStorageUsageTotalBytes(totalBytes);
+                } catch (error) {
+                        console.error('Error reading AsyncStorage usage:', error);
+                }
+        }, []);
+
+        // AsyncStorage sizes only matter for debugging - only read them once debug mode is on,
+        // not on every settings screen visit.
+        useEffect(() => {
+                if (debugMode) {
+                        refreshStorageUsage();
+                }
+        }, [debugMode, refreshStorageUsage]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -828,6 +850,35 @@ const Settings = () => {
 						/>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="bottom" />
 					</View>
+					<View style={groupStyle}>
+						<SettingsListProgress
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="database" size={24} color={theme.screen.icon} />}
+							label="AsyncStorage gesamt"
+							progress={storageUsageTotalBytes / (2 * 1024 * 1024)}
+							progressText={formatBytes(storageUsageTotalBytes)}
+							description="Richtwert: Android begrenzt einen einzelnen AsyncStorage-Eintrag auf ca. 2 MB."
+							groupPosition="top"
+						/>
+						{storageUsage.map((item) => (
+							<SettingsList
+								key={item.key}
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="key-outline" size={24} color={theme.screen.icon} />}
+								label={item.key}
+								value={formatBytes(item.bytes)}
+								groupPosition="middle"
+							/>
+						))}
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="refresh" size={24} color={theme.screen.icon} />}
+							label="Speicher aktualisieren"
+							value=""
+							handleFunction={refreshStorageUsage}
+							groupPosition="bottom"
+						/>
+					</View>
 				</DebugView>
 			),
 		});
@@ -871,6 +922,7 @@ const Settings = () => {
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
+		storageUsage, storageUsageTotalBytes, refreshStorageUsage,
 	]);
 
 	return (
