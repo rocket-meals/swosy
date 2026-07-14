@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-14T10:24:03.507Z",
+  "report_timestamp": "2026-07-14T12:12:24.570Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
-          "maximum": 97,
-          "average": 1.5437083496667974,
-          "amountSavedValuesForKeys": 3938,
+          "median": 1.5,
+          "maximum": 99,
+          "average": 1.5472501936483347,
+          "amountSavedValuesForKeys": 3995,
           "amountKeys": 27
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 97,
-          "average": 1.5602218700475436,
-          "amountSavedValuesForKeys": 3938,
+          "median": 1,
+          "maximum": 99,
+          "average": 1.563600782778865,
+          "amountSavedValuesForKeys": 3995,
           "amountKeys": 28
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4130,
-        "detection_time_ms": 78,
+        "ast_generation_time_ms": 4416,
+        "detection_time_ms": 72,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1018-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 297.7,
-          "os_memory_free": 14845267968,
-          "os_memory_total": 16765382656,
+          "os_uptime": 117.56,
+          "os_memory_free": 14973542400,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3318
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 0,
-    "amount_files_with_data_clumps": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 8,
+    "amount_files_with_data_clumps": 7,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 12,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 0
+    "amount_data_clumps": 12
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "ca2ff989c0521d6e6a1e5268f2c71db0712bf7be",
-    "project_commit_hash": "ca2ff989c0521d6e6a1e5268f2c71db0712bf7be",
+    "project_version": "85fee57291c56f1f46d8bad8f737836eccb06434",
+    "project_commit_hash": "85fee57291c56f1f46d8bad8f737836eccb06434",
     "project_tag": null,
-    "project_commit_date": "1784024515",
+    "project_commit_date": "1784031038",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 540,
-    "number_of_classes_or_interfaces": 1131,
+    "number_of_files": 548,
+    "number_of_classes_or_interfaces": 1145,
     "number_of_methods": 1425,
-    "number_of_data_fields": 3938,
+    "number_of_data_fields": 3995,
     "number_of_method_parameters": 1562
   },
   "detector": {
@@ -90,5 +90,1320 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {}
+  "data_clumps": {
+    "fields_to_fields_data_clump-apps/frontend/app/components/DebugView/index.tsx-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelbackgroundColorborderColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/DebugView/index.tsx-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelbackgroundColorborderColor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/DebugView/index.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction",
+      "from_class_or_interface_name": "DebugAction",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListAvatar/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps",
+      "to_class_or_interface_name": "SettingsListAvatarProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/label": {
+          "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 9,
+            "endLine": 13,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/backgroundColor": {
+          "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 9,
+            "endLine": 16,
+            "endColumn": 34
+          }
+        },
+        "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/borderColor": {
+          "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/borderColor",
+          "name": "borderColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/borderColor",
+            "name": "borderColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 9,
+            "endLine": 17,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelrightIconvalue": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelrightIconvalue",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/TimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
+      "from_class_or_interface_name": "TimeTableListProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListAvatar/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps",
+      "to_class_or_interface_name": "SettingsListAvatarProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
+          "name": "rightIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/rightIcon",
+            "name": "rightIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 2,
+              "endLine": 44,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 30
+          }
+        },
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/FriendsStorage.ts-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-idnamecoloravatarConfig": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/FriendsStorage.ts-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-idnamecoloravatarConfig",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/FriendsStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend",
+      "from_class_or_interface_name": "Friend",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player",
+      "to_class_or_interface_name": "Player",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/id": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 13
+          }
+        },
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/FriendsStorage.ts-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-namecoloravatarConfig": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/FriendsStorage.ts-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-namecoloravatarConfig",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/FriendsStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend",
+      "from_class_or_interface_name": "Friend",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry",
+      "to_class_or_interface_name": "GameHistoryPlayerEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-friendIdnamecoloravatarConfig": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-friendIdnamecoloravatarConfig",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry",
+      "from_class_or_interface_name": "GameHistoryPlayerEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player",
+      "to_class_or_interface_name": "Player",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/friendId": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/friendId",
+          "name": "friendId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/friendId",
+            "name": "friendId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 20
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-namecoloravatarConfig": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-namecoloravatarConfig",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry",
+      "from_class_or_interface_name": "GameHistoryPlayerEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/FriendsStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend",
+      "to_class_or_interface_name": "Friend",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndex": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndex",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
+      "from_class_or_interface_name": "GameState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/store/gameSlice.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState",
+      "to_class_or_interface_name": "GameSliceState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/players": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/players",
+          "name": "players",
+          "type": "Player[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/players",
+            "name": "players",
+            "type": "Player[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 2,
+            "endLine": 35,
+            "endColumn": 20
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds",
+          "name": "rounds",
+          "type": "Round[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/rounds",
+            "name": "rounds",
+            "type": "Round[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 18
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/status": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/status",
+          "name": "status",
+          "type": "GameStatus",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/status",
+            "name": "status",
+            "type": "GameStatus",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 2,
+            "endLine": 37,
+            "endColumn": 21
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/currentRoundIndex": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/currentRoundIndex",
+          "name": "currentRoundIndex",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/currentRoundIndex",
+            "name": "currentRoundIndex",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 2,
+            "endLine": 38,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-idnamecoloravatarConfig": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend-idnamecoloravatarConfig",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player",
+      "from_class_or_interface_name": "Player",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/FriendsStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend",
+      "to_class_or_interface_name": "Friend",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/id": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 13
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/FriendsStorage.ts/interface/Friend/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-namecoloravatarConfigfriendId": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry-namecoloravatarConfigfriendId",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player",
+      "from_class_or_interface_name": "Player",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry",
+      "to_class_or_interface_name": "GameHistoryPlayerEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 16
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/avatarConfig",
+          "name": "avatarConfig",
+          "type": "AvatarConfig",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/avatarConfig",
+            "name": "avatarConfig",
+            "type": "AvatarConfig",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 30
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/friendId": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/Player/memberField/friendId",
+          "name": "friendId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryPlayerEntry/memberField/friendId",
+            "name": "friendId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndex": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndex",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/store/gameSlice.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState",
+      "from_class_or_interface_name": "GameSliceState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
+      "to_class_or_interface_name": "GameState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/players": {
+          "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/players",
+          "name": "players",
+          "type": "Player[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/players",
+            "name": "players",
+            "type": "Player[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 2,
+              "endLine": 35,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 20
+          }
+        },
+        "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/rounds": {
+          "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/rounds",
+          "name": "rounds",
+          "type": "Round[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds",
+            "name": "rounds",
+            "type": "Round[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 18
+          }
+        },
+        "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/status": {
+          "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/status",
+          "name": "status",
+          "type": "GameStatus",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/status",
+            "name": "status",
+            "type": "GameStatus",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 2,
+              "endLine": 37,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 21
+          }
+        },
+        "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/currentRoundIndex": {
+          "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/currentRoundIndex",
+          "name": "currentRoundIndex",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/currentRoundIndex",
+            "name": "currentRoundIndex",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 2,
+              "endLine": 38,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-labelbackgroundColorborderColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-labelbackgroundColorborderColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListAvatar/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps",
+      "from_class_or_interface_name": "SettingsListAvatarProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/DebugView/index.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction",
+      "to_class_or_interface_name": "DebugAction",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 9,
+              "endLine": 13,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 9,
+              "endLine": 16,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/borderColor": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/borderColor",
+          "name": "borderColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction/memberField/borderColor",
+            "name": "borderColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 9,
+              "endLine": 17,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-labelvaluerightIcon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-labelvaluerightIcon",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListAvatar/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps",
+      "from_class_or_interface_name": "SettingsListAvatarProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/TimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
+      "to_class_or_interface_name": "TimeTableListProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/value": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/rightIcon": {
+          "key": "packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps/memberField/rightIcon",
+          "name": "rightIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
+            "name": "rightIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 2,
+            "endLine": 44,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 3
+      }
+    }
+  }
 }
