@@ -1,4 +1,11 @@
 Key,Message,Component,Line
+"AZ9gjKGLzJugdJpoBVO_","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",81
+"AZ9gjKGLzJugdJpoBVPB","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",97
+"AZ9gjKGLzJugdJpoBVPF","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",122
+"AZ9gjKGLzJugdJpoBVPG","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",146
+"AZ9gjKGLzJugdJpoBVPH","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",154
+"AZ9gjKGLzJugdJpoBVPI","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",163
+"AZ9gjKGLzJugdJpoBVPJ","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",170
 "AZ9LJjfRJ76BOezZrqes","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",108
 "AZ9LJjfRJ76BOezZrqeu","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",108
 "AZ9IrY5GlMp6Y7T5BdN4","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",21

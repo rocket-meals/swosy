@@ -4,15 +4,25 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 32 | 32 |
-| 🔧 Maintainability | 1913 | 18 |
+| 🔒 Security | 2 | 2 |
+| 🐛 Reliability | 39 | 39 |
+| 🔧 Maintainability | 1928 | 9 |
 
-**Total issues:** 1945 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1969 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (32/32)
+## 🔒 Security (2/2)
+
+- **Make sure that using this pseudorandom number generator is safe here.**
+  apps/score-tracker/frontend/app/index.tsx:68
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L68
+
+- **Make sure that using this pseudorandom number generator is safe here.**
+  apps/score-tracker/frontend/store/friendsSlice.ts:19
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/friendsSlice.ts#L19
+
+## 🐛 Reliability (39/39)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -134,6 +144,34 @@
   apps/geonexia/frontend/helpers/TTSHelper.ts:82
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
 
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:81
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L81
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:97
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L97
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:122
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L122
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:146
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L146
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:154
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L154
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:163
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L163
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:170
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L170
+
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   packages/common/src/EmailHelper.ts:2
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EmailHelper.ts#L2
@@ -142,7 +180,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (18/1913)
+## 🔧 Maintainability (9/1928)
 
 - **Prefer `node:path` over `path`.**
   apps/accessibilityTester/src/index.ts:1
@@ -179,40 +217,4 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
-
-- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
-  apps/accessibilityTester/src/report.ts:111
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L111
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:114
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L114
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:115
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L115
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:116
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L116
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L117
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:118
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L118
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:119
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L119
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:120
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L120
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:123
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L123
 
