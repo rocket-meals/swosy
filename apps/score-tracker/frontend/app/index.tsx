@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+// BottomSheetTextInput's blur handler calls RNTextInput.State.currentlyFocusedInput(),
+// which react-native-web doesn't implement - it throws when the input loses focus
+// (e.g. after tapping "Save"). Fall back to the plain TextInput on web, matching the
+// same platform check already used by repo-depkit-common-ui's SettingsListTextInput.
+const ResolvedScoreTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import { Ionicons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -32,7 +38,7 @@ import {
 	resetAll,
 } from '../store/gameSlice';
 import { archiveGame } from '../store/gameHistorySlice';
-import { setColumnsMode } from '../store/appSettingsSlice';
+import { setColumnsPortrait, setColumnsLandscape } from '../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Player } from '../helpers/GameStorage';
@@ -46,7 +52,6 @@ const WARNING_COLOR = '#f59e0b';
 
 const TILE_BORDER_RADIUS = 16;
 const TILE_GAP = 10;
-const MIN_TILE_HEIGHT = 100;
 
 // Helper to determine groupPosition for list items
 function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
@@ -140,7 +145,7 @@ function ScoreInputContent({
 					{signMode === 'minus' ? '−' : '+'}
 				</Text>
 				<View style={styles.scoreInputTextWrapper}>
-					<BottomSheetTextInput
+					<ResolvedScoreTextInput
 						style={[styles.scoreInputNative, { color: theme.screen.text }]}
 						value={text}
 						onChangeText={setText}
@@ -185,56 +190,78 @@ function ScoreInputContent({
 	);
 }
 
-// ─── Player score tile (active game, scoreboard view) ─────────────────────────
+// ─── Player score row (active game, scoreboard view) ──────────────────────────
+//
+// Laid out like a settings-list "single" row: avatar on the left (colored by
+// the player's color), name next to it, points as the right-aligned value,
+// and the leader crown as the row's right icon.
+
+const TILE_AVATAR_SIZE = 56;
 
 function PlayerTile({
 	playerId,
 	name,
 	score,
 	color,
+	avatarConfig,
 	isLeader,
 	hasScore,
 	onPress,
-	tileHeight,
 	tileWidth,
 }: {
 	playerId: string;
 	name: string;
 	score: number;
 	color: string;
+	avatarConfig?: AvatarConfig;
 	isLeader: boolean;
 	hasScore: boolean;
 	onPress: () => void;
-	tileHeight: number;
 	tileWidth?: number;
 }) {
+	const { theme } = useTheme();
 	return (
 		<TouchableOpacity
 			nativeID={`${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`}
 			style={[
 				styles.playerTile,
 				{
-					backgroundColor: color,
-					height: tileHeight,
+					backgroundColor: theme.screen.iconBg,
 					width: tileWidth,
-					borderWidth: hasScore ? 3 : 2,
+					borderWidth: hasScore ? 2.5 : 2,
 					borderStyle: hasScore ? 'solid' : 'dashed',
-					borderColor: hasScore ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
+					borderColor: hasScore ? color : theme.screen.border,
 				},
 			]}
 			onPress={onPress}
 			activeOpacity={0.8}
 		>
+			<MyAvatar
+				style={avatarConfig?.style}
+				options={avatarConfig?.options}
+				size={TILE_AVATAR_SIZE}
+				rounded
+				backgroundColor={color}
+			/>
+			<View style={styles.playerTileBody}>
+				<Text
+					style={[styles.playerTileName, { color: theme.screen.text }]}
+					numberOfLines={1}
+					adjustsFontSizeToFit
+				>
+					{name}
+				</Text>
+				<Text
+					style={[styles.playerTileScore, { color: theme.screen.text }]}
+					numberOfLines={1}
+					adjustsFontSizeToFit
+				>
+					{score}
+				</Text>
+			</View>
 			{isLeader && (
-				<View style={styles.leaderBadge}>
-					<Ionicons name="trophy" size={24} color="#fbbf24" />
-				</View>
+				<Ionicons name="trophy" size={24} color="#fbbf24" style={styles.leaderBadge} />
 			)}
-			<Text style={styles.playerTileName} numberOfLines={2} adjustsFontSizeToFit>
-				{name}
-			</Text>
-			<Text style={styles.playerTileScore}>{score}</Text>
-			<Text style={styles.playerTileLabel}>Punkte</Text>
 		</TouchableOpacity>
 	);
 }
@@ -279,6 +306,7 @@ function PlayerEditGroup({
 				onChange={onAvatarChange}
 				label={player.name}
 				previewSize={40}
+				avatarBackgroundColor={player.color}
 				groupPosition="top"
 				editorOptions={{ title: 'Avatar' }}
 			/>
@@ -286,6 +314,7 @@ function PlayerEditGroup({
 				label="Name"
 				placeholder="Name eingeben"
 				initialValue={player.name}
+				value={player.name}
 				onSave={onRename}
 				groupPosition="middle"
 			/>
@@ -308,6 +337,62 @@ function PlayerEditGroup({
 	);
 }
 
+// ─── Columns settings section (settings modal) ────────────────────────────────
+//
+// Rendered as its own component (rather than JSX built inline in a callback)
+// so it re-renders from its own `useSelector` subscription and the selected
+// option updates live while the modal stays open - a plain closure-captured
+// JSX tree would keep showing the option that was selected at open-time.
+
+function ColumnsSettingsSection() {
+	const dispatch = useDispatch<AppDispatch>();
+	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
+	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Spalten (Hochformat)" />
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_PORTRAIT_1}
+				label="1 Spalte"
+				leftIcon={<Ionicons name="reorder-four-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsPortrait === 1}
+				onPress={() => dispatch(setColumnsPortrait(1))}
+				groupPosition="top"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_PORTRAIT_2}
+				label="2 Spalten"
+				leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsPortrait === 2}
+				onPress={() => dispatch(setColumnsPortrait(2))}
+				groupPosition="bottom"
+			/>
+			<SettingsListGroupTitle title="Spalten (Querformat)" />
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_LANDSCAPE_1}
+				label="1 Spalte"
+				leftIcon={<Ionicons name="reorder-four-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsLandscape === 1}
+				onPress={() => dispatch(setColumnsLandscape(1))}
+				groupPosition="top"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_LANDSCAPE_2}
+				label="2 Spalten"
+				leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={columnsLandscape === 2}
+				onPress={() => dispatch(setColumnsLandscape(2))}
+				groupPosition="bottom"
+			/>
+		</>
+	);
+}
+
 // ─── Game Screen ──────────────────────────────────────────────────────────────
 
 export default function GameScreen() {
@@ -319,7 +404,8 @@ export default function GameScreen() {
 	const status = useSelector((state: RootState) => state.game.status);
 	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
 	const friends = useSelector((state: RootState) => state.friends.friends);
-	const columnsMode = useSelector((state: RootState) => state.appSettings.columnsMode);
+	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
+	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
 
 	const { show: showScoreModal, close: closeScoreModal } = useMyScrollViewModal();
 	const { show: showAddPlayerModal, close: closeAddPlayerModal } = useMyScrollViewModal();
@@ -341,9 +427,9 @@ export default function GameScreen() {
 
 	const showEditRows = status === 'setup' || isEditingPlayers;
 
-	// Landscape detection and column count (portrait is always a single-column list)
+	// Landscape detection and column count (independently configurable per orientation)
 	const isLandscape = windowWidth > windowHeight;
-	const columnCount = columnsMode === 'landscape-2' && isLandscape ? 2 : 1;
+	const columnCount = isLandscape ? columnsLandscape : columnsPortrait;
 
 	// Compute totals per player
 	const totals = useMemo(() => {
@@ -379,16 +465,7 @@ export default function GameScreen() {
 	const currentRound = rounds[currentRoundIndex] ?? null;
 	const currentRoundNumber = currentRoundIndex + 1;
 
-	// Compute tile height to fill screen
-	const tileHeight = useMemo(() => {
-		const count = players.length;
-		if (count === 0) return 200;
-		const rows = Math.ceil(count / columnCount);
-		const availableHeight = windowHeight - 56 - 80 - insets.top - insets.bottom - TILE_GAP * (rows + 1);
-		return Math.max(MIN_TILE_HEIGHT, Math.floor(availableHeight / rows));
-	}, [players.length, windowHeight, insets.top, insets.bottom, columnCount]);
-
-	// Tile width for the 2-column landscape layout
+	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
 		if (columnCount === 1) return undefined;
 		const availableWidth = windowWidth - insets.left - insets.right;
@@ -417,7 +494,7 @@ export default function GameScreen() {
 								nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
 								label={friend.name}
 								leftIconComponent={
-									<MyAvatar style={friend.avatarConfig?.style} options={friend.avatarConfig?.options} size={32} rounded backgroundColor="#ffffff" />
+									<MyAvatar style={friend.avatarConfig?.style} options={friend.avatarConfig?.options} size={32} rounded backgroundColor={friend.color} />
 								}
 								handleFunction={() => {
 									dispatch(addFriendPlayer(friend));
@@ -472,25 +549,7 @@ export default function GameScreen() {
 			title: '⚙️ Einstellungen',
 			children: (
 				<View style={styles.modalContent}>
-					<SettingsListGroupTitle title="Layout" />
-					<SettingsListSelectOptionSingle
-						nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_SINGLE}
-						label="Einspaltig"
-						leftIcon={<Ionicons name="reorder-four-outline" size={20} color="#ffffff" />}
-						iconBgColor={PRIMARY_COLOR}
-						isSelected={columnsMode === 'single'}
-						onPress={() => dispatch(setColumnsMode('single'))}
-						groupPosition="top"
-					/>
-					<SettingsListSelectOptionSingle
-						nativeID={ComponentIds.GAME_SETTINGS_COLUMNS_LANDSCAPE_2}
-						label="2 Spalten im Querformat"
-						leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
-						iconBgColor={PRIMARY_COLOR}
-						isSelected={columnsMode === 'landscape-2'}
-						onPress={() => dispatch(setColumnsMode('landscape-2'))}
-						groupPosition="bottom"
-					/>
+					<ColumnsSettingsSection />
 
 					{status === 'active' && (
 						<>
@@ -519,7 +578,7 @@ export default function GameScreen() {
 				</View>
 			),
 		});
-	}, [columnsMode, status, dispatch, closeSettingsModal, handleStartNewGame]);
+	}, [status, dispatch, closeSettingsModal, handleStartNewGame]);
 
 	// ─── Header buttons ───────────────────────────────────────────────────────
 
@@ -624,10 +683,10 @@ export default function GameScreen() {
 							name={player.name}
 							score={totals[player.id] ?? 0}
 							color={player.color}
+							avatarConfig={player.avatarConfig}
 							isLeader={player.id === leaderId}
 							hasScore={currentRound ? currentRound.scores[player.id] != null : false}
 							onPress={() => handleTilePress(player.id)}
-							tileHeight={tileHeight}
 							tileWidth={tileWidth}
 						/>
 					))
@@ -706,43 +765,31 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 	},
 	playerTile: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		borderRadius: TILE_BORDER_RADIUS,
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingHorizontal: 10,
-		paddingVertical: 8,
-		position: 'relative',
+		paddingHorizontal: 14,
+		paddingVertical: 12,
+		gap: 14,
 	},
-	leaderBadge: {
-		position: 'absolute',
-		top: 8,
-		right: 8,
-		backgroundColor: 'rgba(0,0,0,0.25)',
-		borderRadius: 18,
-		width: 36,
-		height: 36,
-		justifyContent: 'center',
+	playerTileBody: {
+		flex: 1,
+		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 10,
 	},
 	playerTileName: {
-		fontSize: 26,
+		fontSize: 20,
 		fontWeight: '700',
-		color: '#ffffff',
-		textAlign: 'center',
-		marginBottom: 2,
+		flexShrink: 1,
 	},
 	playerTileScore: {
-		fontSize: 52,
+		fontSize: 30,
 		fontWeight: '800',
-		color: '#ffffff',
-		textAlign: 'center',
 	},
-	playerTileLabel: {
-		fontSize: 14,
-		fontWeight: '500',
-		color: 'rgba(255,255,255,0.75)',
-		textAlign: 'center',
-		marginTop: 2,
+	leaderBadge: {
+		marginLeft: 2,
 	},
 	playerEditGroup: {
 		marginBottom: 4,

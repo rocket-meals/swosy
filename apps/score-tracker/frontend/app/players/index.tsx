@@ -69,7 +69,7 @@ export default function PlayersScreen() {
 									options={friend.avatarConfig?.options}
 									size={40}
 									rounded
-									backgroundColor="#ffffff"
+									backgroundColor={friend.color}
 								/>
 							}
 							rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}

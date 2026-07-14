@@ -99,6 +99,7 @@ export default function PlayerDetailScreen() {
 					onChange={(config) => dispatch(setFriendAvatar({ friendId: friend.id, avatarConfig: config }))}
 					label="Avatar"
 					previewSize={48}
+					avatarBackgroundColor={friend.color}
 					groupPosition="top"
 					editorOptions={{ title: 'Avatar' }}
 				/>
@@ -106,6 +107,7 @@ export default function PlayerDetailScreen() {
 					label="Name"
 					placeholder="Name eingeben"
 					initialValue={friend.name}
+					value={friend.name}
 					onSave={(name) => {
 						dispatch(renameFriend({ friendId: friend.id, name }));
 					}}

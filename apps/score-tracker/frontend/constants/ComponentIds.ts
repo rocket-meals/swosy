@@ -38,7 +38,9 @@ export const ComponentIds = {
 	GAME_SCORE_INPUT_SAVE_BUTTON: 'game-score-input-save-button',
 
 	// Settings modal (header gear)
-	GAME_SETTINGS_COLUMNS_SINGLE: 'game-settings-columns-single',
+	GAME_SETTINGS_COLUMNS_PORTRAIT_1: 'game-settings-columns-portrait-1',
+	GAME_SETTINGS_COLUMNS_PORTRAIT_2: 'game-settings-columns-portrait-2',
+	GAME_SETTINGS_COLUMNS_LANDSCAPE_1: 'game-settings-columns-landscape-1',
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_2: 'game-settings-columns-landscape-2',
 	GAME_SETTINGS_RESET_SCORES: 'game-settings-reset-scores',
 	GAME_SETTINGS_NEW_GAME: 'game-settings-new-game',

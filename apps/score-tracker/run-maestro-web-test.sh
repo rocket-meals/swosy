@@ -136,7 +136,7 @@ mkdir -p "$MAESTRO_DEBUG_DIR"
 echo "Running Maestro tests..."
 echo ""
 set +e
-maestro test "$GENERATED_DIR" --platform web --screen-size "$SCREEN_SIZE" --debug-output "$MAESTRO_DEBUG_DIR"
+maestro test "$GENERATED_DIR" --platform web --headless --screen-size "$SCREEN_SIZE" --debug-output "$MAESTRO_DEBUG_DIR"
 MAESTRO_EXIT_CODE=$?
 set -e
 

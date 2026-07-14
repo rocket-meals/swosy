@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ColumnsMode } from '../helpers/AppSettingsStorage';
-export type { ColumnsMode };
+import type { ColumnsCount } from '../helpers/AppSettingsStorage';
+export type { ColumnsCount };
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
 export type AppSettingsSliceState = {
-	columnsMode: ColumnsMode;
+	columnsPortrait: ColumnsCount;
+	columnsLandscape: ColumnsCount;
 };
 
 const initialState: AppSettingsSliceState = {
-	columnsMode: 'single',
+	columnsPortrait: 1,
+	columnsLandscape: 2,
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
@@ -20,14 +22,19 @@ const appSettingsSlice = createSlice({
 	reducers: {
 		/** Load persisted app settings from disk. Called once at startup. */
 		loadAppSettings(state, action: PayloadAction<AppSettingsSliceState>) {
-			state.columnsMode = action.payload.columnsMode;
+			state.columnsPortrait = action.payload.columnsPortrait;
+			state.columnsLandscape = action.payload.columnsLandscape;
 		},
 
-		setColumnsMode(state, action: PayloadAction<ColumnsMode>) {
-			state.columnsMode = action.payload;
+		setColumnsPortrait(state, action: PayloadAction<ColumnsCount>) {
+			state.columnsPortrait = action.payload;
+		},
+
+		setColumnsLandscape(state, action: PayloadAction<ColumnsCount>) {
+			state.columnsLandscape = action.payload;
 		},
 	},
 });
 
-export const { loadAppSettings, setColumnsMode } = appSettingsSlice.actions;
+export const { loadAppSettings, setColumnsPortrait, setColumnsLandscape } = appSettingsSlice.actions;
 export default appSettingsSlice.reducer;
