@@ -57,6 +57,7 @@ import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewM
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, SettingsListProgress } from 'repo-depkit-common-ui';
 import { getAsyncStorageUsage, formatBytes, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
+import { getSqliteStorageUsage, SqliteStorageKeyUsage } from '@/helper/SqliteStorageUsageHelper';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
@@ -355,6 +356,8 @@ const Settings = () => {
 
         const [storageUsage, setStorageUsage] = useState<AsyncStorageKeyUsage[]>([]);
         const [storageUsageTotalBytes, setStorageUsageTotalBytes] = useState(0);
+        const [sqliteStorageUsage, setSqliteStorageUsage] = useState<SqliteStorageKeyUsage[]>([]);
+        const [sqliteStorageUsageTotalBytes, setSqliteStorageUsageTotalBytes] = useState(0);
 
         const refreshStorageUsage = useCallback(async () => {
                 try {
@@ -366,13 +369,24 @@ const Settings = () => {
                 }
         }, []);
 
-        // AsyncStorage sizes only matter for debugging - only read them once debug mode is on,
+        const refreshSqliteStorageUsage = useCallback(async () => {
+                try {
+                        const { items, totalBytes } = await getSqliteStorageUsage();
+                        setSqliteStorageUsage(items);
+                        setSqliteStorageUsageTotalBytes(totalBytes);
+                } catch (error) {
+                        console.error('Error reading sqlite storage usage:', error);
+                }
+        }, []);
+
+        // Storage sizes only matter for debugging - only read them once debug mode is on,
         // not on every settings screen visit.
         useEffect(() => {
                 if (debugMode) {
                         refreshStorageUsage();
+                        refreshSqliteStorageUsage();
                 }
-        }, [debugMode, refreshStorageUsage]);
+        }, [debugMode, refreshStorageUsage, refreshSqliteStorageUsage]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -879,6 +893,33 @@ const Settings = () => {
 							groupPosition="bottom"
 						/>
 					</View>
+					<View style={groupStyle}>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="database" size={24} color={theme.screen.icon} />}
+							label="SQLite gesamt"
+							value={formatBytes(sqliteStorageUsageTotalBytes)}
+							groupPosition="top"
+						/>
+						{sqliteStorageUsage.map((item) => (
+							<SettingsList
+								key={item.key}
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="key-outline" size={24} color={theme.screen.icon} />}
+								label={item.key}
+								value={formatBytes(item.bytes)}
+								groupPosition="middle"
+							/>
+						))}
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="refresh" size={24} color={theme.screen.icon} />}
+							label="Speicher aktualisieren"
+							value=""
+							handleFunction={refreshSqliteStorageUsage}
+							groupPosition="bottom"
+						/>
+					</View>
 				</DebugView>
 			),
 		});
@@ -923,6 +964,7 @@ const Settings = () => {
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
 		storageUsage, storageUsageTotalBytes, refreshStorageUsage,
+		sqliteStorageUsage, sqliteStorageUsageTotalBytes, refreshSqliteStorageUsage,
 	]);
 
 	return (

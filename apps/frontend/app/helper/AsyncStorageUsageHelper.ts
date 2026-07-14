@@ -7,7 +7,9 @@ export type AsyncStorageKeyUsage = {
 
 // Approximates the UTF-8 byte size AsyncStorage actually persists per key, without relying
 // on TextEncoder (not guaranteed to exist on every RN/Hermes runtime this app targets).
-const getUtf8ByteLength = (value: string): number => {
+// Exported for reuse by SqliteStorageUsageHelper.ts, which needs the same approximation
+// for values read out of the sqlite kv table.
+export const getUtf8ByteLength = (value: string): number => {
 	let bytes = 0;
 	for (let i = 0; i < value.length; i++) {
 		const codePoint = value.codePointAt(i) as number;

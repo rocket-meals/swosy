@@ -18,7 +18,9 @@ import type { Storage } from 'redux-persist';
 const DB_NAME = 'redux_persist.db';
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
-function getDb(): Promise<SQLite.SQLiteDatabase> {
+// Exported so SqliteStorageUsageHelper.ts can query the same kv table for the debug
+// storage-usage screen without opening a second connection to the db.
+export function getSqliteDb(): Promise<SQLite.SQLiteDatabase> {
 	if (!dbPromise) {
 		dbPromise = SQLite.openDatabaseAsync(DB_NAME).then(async (db) => {
 			await db.execAsync('CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY NOT NULL, value TEXT)');
@@ -30,7 +32,7 @@ function getDb(): Promise<SQLite.SQLiteDatabase> {
 
 export const sqliteStorage: Storage = {
 	async getItem(key: string) {
-		const db = await getDb();
+		const db = await getSqliteDb();
 		const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM kv WHERE key = ?', key);
 		if (row) {
 			return row.value;
@@ -48,12 +50,12 @@ export const sqliteStorage: Storage = {
 	},
 
 	async setItem(key: string, value: string) {
-		const db = await getDb();
+		const db = await getSqliteDb();
 		await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
 	},
 
 	async removeItem(key: string) {
-		const db = await getDb();
+		const db = await getSqliteDb();
 		await db.runAsync('DELETE FROM kv WHERE key = ?', key);
 	},
 };
