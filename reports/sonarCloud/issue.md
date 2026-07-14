@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 39 | 39 |
-| 🔧 Maintainability | 1928 | 9 |
+| 🔧 Maintainability | 1929 | 9 |
 
-**Total issues:** 1969 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1970 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -57,8 +57,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/index.tsx:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
+  apps/frontend/app/app/index.tsx:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L16
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:21
@@ -180,7 +180,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (9/1928)
+## 🔧 Maintainability (9/1929)
 
 - **Prefer `node:path` over `path`.**
   apps/accessibilityTester/src/index.ts:1
