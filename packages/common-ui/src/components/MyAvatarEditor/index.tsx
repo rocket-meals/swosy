@@ -89,6 +89,7 @@ import SettingsList from '../SettingsList';
 import SettingsListLeftRight, { type SettingsListLeftRightItem } from '../SettingsListLeftRight/SettingsListLeftRight';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
+import MyCustomColorPicker from '../MyCustomColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsListSelectOptionSingle from '../SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
@@ -179,7 +180,7 @@ class ModeObservable {
 	}
 }
 
-const DEFAULT_AVATAR_STYLE = AvatarStyle.LORELEI;
+const DEFAULT_AVATAR_STYLE = AvatarStyle.AVATAAARS;
 
 let _defaultAvatarConfig: AvatarConfig | null = null;
 function getDefaultAvatarConfig(): AvatarConfig {
@@ -704,7 +705,7 @@ const AvatarStickyHeaderConditional: React.FC<AvatarStickyHeaderConditionalProps
 };
 
 type ColorPickerModalContentProps = AvatarPreviewAppearanceProps &
-	Pick<AvatarEditorBehaviorProps, 'debugMode'> & {
+	Pick<AvatarEditorBehaviorProps, 'debugMode' | 'translate'> & {
 		colors: string[];
 		initialSelectedColor: string | null;
 		onSelectAndClose: (color: string) => void;
@@ -722,10 +723,55 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	rounded,
 	backgroundColor,
 	debugMode,
+	translate,
 }) => {
 	const { theme, isDark } = useTheme();
+	// Custom color chosen via the free color picker (hex input / hue slider / SV surface).
+	const [customColor, setCustomColor] = useState<string | null>(initialSelectedColor);
+	const customPreviewOptions = customColor
+		? { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(customColor)] }
+		: config.options;
+	const isCustomSelected =
+		!!customColor && initialSelectedColor?.toLowerCase() === customColor.toLowerCase();
 	return (
 		<>
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_custom_color') : 'Custom Color'} />
+			<MyCustomColorPicker
+				color={customColor ?? undefined}
+				onColorChange={setCustomColor}
+			/>
+			{customColor && (
+				<SettingsListSelectOptionSingle
+					label={translate ? translate('avatar_use_custom_color') : 'Use this color'}
+					leftIcon={
+						<View style={styles.previewAvatarWrapper}>
+							<MyAvatar
+								style={config.style}
+								size={PREVIEW_AVATAR_SIZE}
+								borderRadius={PREVIEW_AVATAR_SIZE / 2}
+								rounded={rounded}
+								backgroundColor={backgroundColor}
+								options={customPreviewOptions}
+							/>
+						</View>
+					}
+					noIconIndent
+					selectionColor={accentColor}
+					isSelected={isCustomSelected}
+					groupPosition="single"
+					showSeparator={false}
+					onPress={() => onSelectAndClose(customColor)}
+					extraRightContent={
+						<View
+							style={[
+								styles.colorSwatchLarge,
+								{ backgroundColor: customColor, borderColor: myContrastColor(customColor, theme, isDark) },
+							]}
+						/>
+					}
+				/>
+			)}
+			<SettingsListGroupTitle title={translate ? translate('avatar_section_preset_colors') : 'Presets'} />
 			{colors.map((color, index) => {
 				const groupPosition =
 					colors.length === 1
@@ -992,7 +1038,9 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 	const hiddenPropKeys = useMemo(() => new Set(Object.keys(hiddenProps ?? {})), [hiddenProps]);
 
-	const effectiveAllowedStyles = allowedStyles ?? Object.values(AvatarStyle);
+	// In debug mode the style restriction is lifted so testers can switch between all
+	// DiceBear styles (micah, avataaars, ...) regardless of the app's configured default.
+	const effectiveAllowedStyles = debugMode ? Object.values(AvatarStyle) : (allowedStyles ?? Object.values(AvatarStyle));
 
 	const applyHiddenProps = useCallback(
 		(cfg: AvatarConfig): AvatarConfig => {
@@ -1216,6 +1264,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					rounded={rounded}
 					backgroundColor={backgroundColor}
 					debugMode={debugMode}
+					translate={translate}
 					onSelectAndClose={(color) => {
 						handleOptionChange(key, stripHashPrefix(color));
 						closeCategoryModal();
@@ -1927,10 +1976,193 @@ export const MICAH_PRESETS: AvatarPreset[] = [
 ];
 
 /**
+ * Predefined avatar presets for the AVATAAARS style (the default style).
+ * The quick-start selection should let as many users as possible find a starting
+ * point they identify with, so each preset intentionally represents a different
+ * group of people (gender expressions, skin tones, hair types, religious head
+ * coverings, age groups, glasses wearers, ...). The comment above each preset
+ * documents which group it is meant to represent.
+ * All color values are sourced from the shared palette constants – no raw hex strings.
+ */
+export const AVATAAARS_PRESETS: AvatarPreset[] = [
+	// Young woman with long blonde hair – represents feminine-presenting users with long hair.
+	{
+		name: 'Long Straight',
+		top: ['straight01'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[6])],    // d6b370 – Blonde
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['shirtScoopNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[19])], // f43f5e – Rose
+		skinColor:   [stripHashPrefix(SKIN_COLORS[3])],     // ffdbac – Warm Light
+	},
+	// Young man with a short haircut and hoodie – represents masculine-presenting, casual users.
+	{
+		name: 'Short Hoodie',
+		top: ['shortFlat'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[1])],     // 2c1b18 – Dark Brown
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['hoodie'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[7])],  // 3b82f6 – Blue
+		skinColor:   [stripHashPrefix(SKIN_COLORS[4])],     // edb98a – Light
+	},
+	// Woman wearing a hijab – represents Muslim users / users with religious head coverings.
+	{
+		name: 'Hijab',
+		top: ['hijab'],
+		hatColor:    [stripHashPrefix(PRESET_COLORS[15])],  // 047857 – Emerald
+		eyebrows: ['defaultNatural'],
+		eyes: ['happy'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['blazerAndShirt'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[4])],  // 4b5563 – Slate Gray
+		skinColor:   [stripHashPrefix(SKIN_COLORS[6])],     // d08b5b – Medium Light
+	},
+	// Man wearing a turban with a full beard – represents Sikh users.
+	{
+		name: 'Turban Beard',
+		top: ['turban'],
+		hatColor:    [stripHashPrefix(PRESET_COLORS[9])],   // 1e3a8a – Navy
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: ['beardMedium'],
+		facialHairColor: [stripHashPrefix(HAIR_COLORS[1])], // 2c1b18 – Dark Brown
+		accessories: [],
+		clothing: ['shirtCrewNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[0])],  // ffffff – White
+		skinColor:   [stripHashPrefix(SKIN_COLORS[7])],     // ae5d29 – Medium
+	},
+	// Person with a natural afro and darker skin tone – represents Black users / afro-textured hair.
+	{
+		name: 'Afro',
+		top: ['fro'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[0])],     // 000000 – Black
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['twinkle'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['shirtVNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[26])], // f59e0b – Amber Gold
+		skinColor:   [stripHashPrefix(SKIN_COLORS[8])],     // 694d3d – Medium Dark
+	},
+	// Bald man with a light beard – represents bald users / users with facial hair.
+	{
+		name: 'Bald Beard',
+		top: [],
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['serious'],
+		facialHair: ['beardLight'],
+		facialHairColor: [stripHashPrefix(HAIR_COLORS[2])], // 4a312c – Brown
+		accessories: [],
+		clothing: ['shirtCrewNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[10])], // 1e293b – Dark Slate
+		skinColor:   [stripHashPrefix(SKIN_COLORS[5])],     // e0a96d – Golden Tan
+	},
+	// Older person with gray hair and prescription glasses – represents older users and glasses wearers.
+	{
+		name: 'Gray Glasses',
+		top: ['shortWaved'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[10])],    // b7a69e – Gray
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: ['prescription02'],
+		accessoriesColor: [stripHashPrefix(PRESET_COLORS[11])], // 1f2937 – Charcoal
+		clothing: ['collarAndSweater'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[14])], // 15803d – Dark Green
+		skinColor:   [stripHashPrefix(SKIN_COLORS[3])],     // ffdbac – Warm Light
+	},
+	// Woman with big curly hair and a medium skin tone – represents users with curly hair types.
+	{
+		name: 'Curly',
+		top: ['curly'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[2])],     // 4a312c – Brown
+		eyebrows: ['defaultNatural'],
+		eyes: ['happy'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['overall'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[17])], // ef4444 – Red
+		skinColor:   [stripHashPrefix(SKIN_COLORS[6])],     // d08b5b – Medium Light
+	},
+	// Person with dreadlocks – represents users wearing locs.
+	{
+		name: 'Dreads',
+		top: ['dreads01'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[1])],     // 2c1b18 – Dark Brown
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['shirtVNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[35])], // 0e7490 – Dark Teal
+		skinColor:   [stripHashPrefix(SKIN_COLORS[9])],     // 4a312c – Dark
+	},
+	// Red-haired (auburn) person – represents red-haired users.
+	{
+		name: 'Auburn Long',
+		top: ['longButNotTooLong'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[4])],     // a55728 – Auburn
+		eyebrows: ['raisedExcitedNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['shirtScoopNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[13])], // 22c55e – Green
+		skinColor:   [stripHashPrefix(SKIN_COLORS[1])],     // ffe0bd – Porcelain
+	},
+	// Androgynous person with shaved sides and a fashion hair color – represents non-binary / queer users.
+	{
+		name: 'Shaved Sides',
+		top: ['shavedSides'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[15])],    // 9b59b6 – Purple
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['shirtVNeck'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[11])], // 1f2937 – Charcoal
+		skinColor:   [stripHashPrefix(SKIN_COLORS[4])],     // edb98a – Light
+	},
+	// Woman with a black bob haircut – represents East Asian users / users with straight dark hair.
+	{
+		name: 'Black Bob',
+		top: ['bob'],
+		hairColor:   [stripHashPrefix(HAIR_COLORS[0])],     // 000000 – Black
+		eyebrows: ['defaultNatural'],
+		eyes: ['default'],
+		mouth: ['smile'],
+		facialHair: [],
+		accessories: [],
+		clothing: ['blazerAndSweater'],
+		clothesColor: [stripHashPrefix(PRESET_COLORS[30])], // fbcfe8 – Light Pink
+		skinColor:   [stripHashPrefix(SKIN_COLORS[2])],     // fddbb4 – Very Light
+	},
+];
+
+/**
  * Map of avatar styles to their predefined presets.
  * Styles without presets will use random avatars for quick-start selection.
  */
 const AVATAR_PRESETS_BY_STYLE: Partial<Record<AvatarStyle, AvatarPreset[]>> = {
+	[AvatarStyle.AVATAAARS]: AVATAAARS_PRESETS,
 	[AvatarStyle.OPEN_PEEPS]: OPEN_PEEPS_PRESETS,
 	[AvatarStyle.MICAH]: MICAH_PRESETS,
 };
@@ -2381,8 +2613,18 @@ export const useAvatarEditorModal = () => {
 			const defaultStyle = allowedStyles[0] ?? DEFAULT_AVATAR_STYLE;
 			const size = AvatarSize.LARGE;
 
-			const initialMode: Mode = currentAvatar != null ? 'editor' : 'quickstart';
-			let initialConfig: AvatarConfig = currentAvatar ?? {
+			// Avatars in a style that is no longer allowed (e.g. legacy micah avatars after the
+			// switch to avataaars as default) are kept untouched for display, but cannot be edited
+			// anymore: the editor starts in quickstart mode so the user creates a new avatar in the
+			// current default style. Closing without a change keeps the stored legacy avatar because
+			// saving only happens via the dirty flag. Debug mode lifts this restriction (there the
+			// style selector offers all styles anyway).
+			const isLegacyStyle =
+				currentAvatar != null && !options?.debugMode && !allowedStyles.includes(currentAvatar.style);
+			const editableAvatar = isLegacyStyle ? null : currentAvatar;
+
+			const initialMode: Mode = editableAvatar != null ? 'editor' : 'quickstart';
+			let initialConfig: AvatarConfig = editableAvatar ?? {
 				style: defaultStyle,
 				size,
 				options: getDefaultOptionsForStyle(defaultStyle),

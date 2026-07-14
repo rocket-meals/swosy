@@ -10,6 +10,7 @@ import {
 	MyColorPicker,
 	useMyScrollViewModal,
 	useTheme,
+	AvatarStyle,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -101,7 +102,7 @@ export default function PlayerDetailScreen() {
 					previewSize={72}
 					avatarBackgroundColor={friend.color}
 					groupPosition="top"
-					editorOptions={{ title: 'Avatar' }}
+					editorOptions={{ title: 'Avatar', allowedStyles: [AvatarStyle.AVATAAARS] }}
 				/>
 				<SettingsListTextInput
 					label="Name"
