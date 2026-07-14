@@ -15,7 +15,7 @@
  * the rendered HTML id has a dynamic suffix (e.g. `canteen-select-button-23456543`).
  */
 
-import { MaestroTestCase } from './MaestroTestCase';
+import { MaestroTestCase } from 'repo-depkit-maestro-framework';
 import { ComponentIds } from '../../../app/constants/ComponentIds';
 
 /**

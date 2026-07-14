@@ -108,3 +108,6 @@ export type { UseAvatarEditorModalOptions, OpenAvatarEditorProps, AvatarPreset }
 
 export { default as MyColorPicker, PRESET_COLORS, HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS } from './src/components/MyColorPicker';
 export type { MyColorPickerProps } from './src/components/MyColorPicker';
+
+export { default as SettingsListAvatar } from './src/components/SettingsListAvatar';
+export type { SettingsListAvatarProps } from './src/components/SettingsListAvatar';

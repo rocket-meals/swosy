@@ -1,10 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
 import themeReducer from './themeSlice';
 import gameReducer from './gameSlice';
+import friendsReducer from './friendsSlice';
+import gameHistoryReducer from './gameHistorySlice';
+import appSettingsReducer from './appSettingsSlice';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { saveGameState } from '../helpers/GameStorage';
+import { saveFriends } from '../helpers/FriendsStorage';
+import { saveGameHistory } from '../helpers/GameHistoryStorage';
+import { saveAppSettings } from '../helpers/AppSettingsStorage';
 import type { ThemeMode } from './themeSlice';
 import type { GameSliceState } from './gameSlice';
+import type { FriendsSliceState } from './friendsSlice';
+import type { GameHistorySliceState } from './gameHistorySlice';
+import type { AppSettingsSliceState } from './appSettingsSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -12,6 +21,9 @@ export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
 		game: gameReducer,
+		friends: friendsReducer,
+		gameHistory: gameHistoryReducer,
+		appSettings: appSettingsReducer,
 	},
 });
 
@@ -20,6 +32,11 @@ export const store = configureStore({
 let _lastSavedThemeMode: ThemeMode | null = null;
 let _gameTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedGame: GameSliceState | null = null;
+let _friendsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedFriends: FriendsSliceState | null = null;
+let _historyTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedHistory: GameHistorySliceState | null = null;
+let _lastSavedAppSettings: AppSettingsSliceState | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -35,9 +52,40 @@ store.subscribe(() => {
 		_lastSavedGame = game;
 		if (_gameTimer) clearTimeout(_gameTimer);
 		_gameTimer = setTimeout(() => {
-			saveGameState({ players: game.players, rounds: game.rounds });
+			saveGameState({
+				players: game.players,
+				rounds: game.rounds,
+				status: game.status,
+				currentRoundIndex: game.currentRoundIndex,
+			});
 			_gameTimer = null;
 		}, 300);
+	}
+
+	const friends = state.friends;
+	if (friends !== _lastSavedFriends) {
+		_lastSavedFriends = friends;
+		if (_friendsTimer) clearTimeout(_friendsTimer);
+		_friendsTimer = setTimeout(() => {
+			saveFriends(friends.friends);
+			_friendsTimer = null;
+		}, 300);
+	}
+
+	const gameHistory = state.gameHistory;
+	if (gameHistory !== _lastSavedHistory) {
+		_lastSavedHistory = gameHistory;
+		if (_historyTimer) clearTimeout(_historyTimer);
+		_historyTimer = setTimeout(() => {
+			saveGameHistory(gameHistory.entries);
+			_historyTimer = null;
+		}, 300);
+	}
+
+	const appSettings = state.appSettings;
+	if (appSettings !== _lastSavedAppSettings) {
+		_lastSavedAppSettings = appSettings;
+		saveAppSettings(appSettings);
 	}
 });
 

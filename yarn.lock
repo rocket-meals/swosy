@@ -26659,6 +26659,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"repo-depkit-maestro-framework@workspace:*, repo-depkit-maestro-framework@workspace:packages/maestro-framework":
+  version: 0.0.0-use.local
+  resolution: "repo-depkit-maestro-framework@workspace:packages/maestro-framework"
+  dependencies:
+    typescript: "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "require-directory@npm:^2.1.1":
   version: 2.1.1
   resolution: "require-directory@npm:2.1.1"
@@ -27079,6 +27087,7 @@ __metadata:
     redux-thunk: "npm:^3.1.0"
     repo-depkit-common: "workspace:*"
     repo-depkit-common-ui: "workspace:*"
+    repo-depkit-maestro-framework: "workspace:*"
     reselect: "npm:^5.1.1"
     setimmediate: "npm:^1.0.5"
     tinycolor2: "npm:^1.6.0"
@@ -27436,6 +27445,7 @@ __metadata:
     react-redux: "npm:^9.2.0"
     repo-depkit-common: "workspace:*"
     repo-depkit-common-ui: "workspace:*"
+    repo-depkit-maestro-framework: "workspace:*"
     setimmediate: "npm:^1.0.5"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.3"

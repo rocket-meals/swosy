@@ -1,0 +1,73 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { AvatarConfig } from 'repo-depkit-common-ui';
+import type { Friend } from '../helpers/FriendsStorage';
+export type { Friend };
+
+// ─── State type ───────────────────────────────────────────────────────────────
+
+export type FriendsSliceState = {
+	friends: Friend[];
+};
+
+const initialState: FriendsSliceState = {
+	friends: [],
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function generateId(): string {
+	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// ─── Slice ────────────────────────────────────────────────────────────────────
+
+const friendsSlice = createSlice({
+	name: 'friends',
+	initialState,
+	reducers: {
+		/** Load persisted friends from disk. Called once at startup. */
+		loadFriends(state, action: PayloadAction<Friend[]>) {
+			state.friends = action.payload;
+		},
+
+		/** Create a new friend with a default name/color and no avatar yet. */
+		addFriend: {
+			reducer(state, action: PayloadAction<Friend>) {
+				state.friends.push(action.payload);
+			},
+			prepare(name: string, color: string) {
+				const friend: Friend = { id: generateId(), name, color, createdAt: Date.now() };
+				return { payload: friend };
+			},
+		},
+
+		renameFriend(state, action: PayloadAction<{ friendId: string; name: string }>) {
+			const friend = state.friends.find((f) => f.id === action.payload.friendId);
+			if (friend) friend.name = action.payload.name;
+		},
+
+		setFriendColor(state, action: PayloadAction<{ friendId: string; color: string }>) {
+			const friend = state.friends.find((f) => f.id === action.payload.friendId);
+			if (friend) friend.color = action.payload.color;
+		},
+
+		setFriendAvatar(state, action: PayloadAction<{ friendId: string; avatarConfig: AvatarConfig }>) {
+			const friend = state.friends.find((f) => f.id === action.payload.friendId);
+			if (friend) friend.avatarConfig = action.payload.avatarConfig;
+		},
+
+		removeFriend(state, action: PayloadAction<string>) {
+			state.friends = state.friends.filter((f) => f.id !== action.payload);
+		},
+	},
+});
+
+export const {
+	loadFriends,
+	addFriend,
+	renameFriend,
+	setFriendColor,
+	setFriendAvatar,
+	removeFriend,
+} = friendsSlice.actions;
+export default friendsSlice.reducer;

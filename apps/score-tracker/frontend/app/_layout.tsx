@@ -12,10 +12,17 @@ import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadGameState as loadGameStateAction } from '../store/gameSlice';
+import { loadFriends as loadFriendsAction } from '../store/friendsSlice';
+import { loadGameHistory as loadGameHistoryAction } from '../store/gameHistorySlice';
+import { loadAppSettings as loadAppSettingsAction } from '../store/appSettingsSlice';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadGameState } from '../helpers/GameStorage';
+import { loadFriends } from '../helpers/FriendsStorage';
+import { loadGameHistory } from '../helpers/GameHistoryStorage';
+import { loadAppSettings } from '../helpers/AppSettingsStorage';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
+import { ComponentIds } from '../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -58,6 +65,22 @@ function ThemedDrawerNavigator() {
 					}}
 				/>
 				<Drawer.Screen
+					name="players/index"
+					options={{
+						title: 'Spieler',
+						drawerIcon: ({ color, size }) => (
+							<Ionicons name="people-outline" size={size} color={color} />
+						),
+					}}
+				/>
+				<Drawer.Screen
+					name="players/[id]"
+					options={{
+						title: 'Spieler',
+						drawerItemStyle: { display: 'none' },
+					}}
+				/>
+				<Drawer.Screen
 					name="settings/index"
 					options={{
 						title: 'Settings',
@@ -80,12 +103,21 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 		{
 			key: 'index',
 			label: 'Game',
+			nativeID: ComponentIds.DRAWER_ITEM_GAME,
 			renderIcon: (_, color) => <Ionicons name="game-controller-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{
+			key: 'players/index',
+			label: 'Spieler',
+			nativeID: ComponentIds.DRAWER_ITEM_PLAYERS,
+			renderIcon: (_, color) => <Ionicons name="people-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('players/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
+			nativeID: ComponentIds.DRAWER_ITEM_SETTINGS,
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('settings/index'),
 		},
@@ -120,6 +152,27 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted game state:', err);
+			});
+		loadFriends()
+			.then((friends) => {
+				store.dispatch(loadFriendsAction(friends));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted friends:', err);
+			});
+		loadGameHistory()
+			.then((entries) => {
+				store.dispatch(loadGameHistoryAction(entries));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted game history:', err);
+			});
+		loadAppSettings()
+			.then((settings) => {
+				store.dispatch(loadAppSettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted app settings:', err);
 			});
 	}, []);
 

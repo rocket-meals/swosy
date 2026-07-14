@@ -1,9 +1,22 @@
 /**
- * generate.ts – discovers all `MaestroTestCase` files in `src/tests/` and
- * writes one Maestro YAML per test into `generated/`.
+ * generateMaestroTests – discovers all `MaestroTestCase` files in `testsDir`
+ * and writes one Maestro YAML per test into `generatedDir`.
  *
- * Usage (from `apps/frontend/app/`):
- *   yarn maestro:generate
+ * Each consuming app calls this from its own thin `generate.ts` entry point
+ * with its own `src/tests` and `generated` paths, e.g.:
+ *
+ * ```ts
+ * import * as path from 'path';
+ * import { generateMaestroTests } from 'repo-depkit-maestro-framework';
+ *
+ * generateMaestroTests(
+ *   path.join(__dirname, 'src', 'tests'),
+ *   path.join(__dirname, 'generated'),
+ * ).catch((err) => {
+ *   console.error(err);
+ *   process.exit(1);
+ * });
+ * ```
  *
  * The generated YAML files are gitignored; only `generated/.keep` is tracked.
  */
@@ -13,10 +26,7 @@ import * as path from 'path';
 
 import { MaestroTestCase } from './MaestroTestCase';
 
-const testsDir = path.join(__dirname, '..', 'tests');
-const generatedDir = path.join(__dirname, '..', '..', 'generated');
-
-async function generate(): Promise<void> {
+export async function generateMaestroTests(testsDir: string, generatedDir: string): Promise<void> {
 	fs.mkdirSync(generatedDir, { recursive: true });
 
 	const testFiles = fs
@@ -47,8 +57,3 @@ async function generate(): Promise<void> {
 		console.log(`Generated: ${outputPath}`);
 	}
 }
-
-generate().catch((err) => {
-	console.error(err);
-	process.exit(1);
-});
