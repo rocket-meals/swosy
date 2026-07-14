@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ9i7pHIxQC8bk9G8ao_","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",136
 "AZ9iElsVctCaOeGEpiJt","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodOffersReducer.ts",13
 "AZ9gjKBEzJugdJpoBVO1","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",71
 "AZ9gjKFPzJugdJpoBVO7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",260
@@ -23,8 +24,8 @@ Key,Message,Component,Line
 "AZ9LvIuJjgFVDsF01yGT","'fs' imported multiple times.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",1
 "AZ9LvIuJjgFVDsF01yGU","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",2
 "AZ9LvIuJjgFVDsF01yGV","'fs' imported multiple times.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",2
-"AZ9LvIbPjgFVDsF01yGL","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",17
-"AZ9LvIbPjgFVDsF01yGM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",104
+"AZ9LvIbPjgFVDsF01yGL","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",18
+"AZ9LvIbPjgFVDsF01yGM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",148
 "AZ9LvIqPjgFVDsF01yGO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1876
 "AZ9LvIqPjgFVDsF01yGP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2844
 "AZ9LvIiWjgFVDsF01yGN","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",478
