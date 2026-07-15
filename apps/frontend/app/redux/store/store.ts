@@ -2,8 +2,9 @@ import * as redux from 'redux';
 import { legacy_createStore as createStore } from 'redux';
 import * as thunk from 'redux-thunk';
 import promise from 'redux-promise';
-import { createMigrate, createTransform, persistReducer, persistStore } from 'redux-persist';
+import { createMigrate, persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteStorage } from '@/redux/storage/sqliteStorage';
 import { reducer } from '@/redux/reducer';
 
 const migrations = {
@@ -22,29 +23,16 @@ const migrations = {
 	},
 };
 
-// Strip wiki content (list + translations, incl. markdown body) before the "settings"
-// slice is written to AsyncStorage. Wikis are refetched title-only on every app start
-// anyway (see (wikis)/_layout.tsx, CustomDrawerContent), so nothing is lost - this just
-// keeps the heaviest field out of the persisted blob.
-const settingsTransform = createTransform(
-	(inboundState: any) => ({ ...inboundState, wikis: [], wikisPages: [] }),
-	(outboundState: any) => outboundState,
-	{ whitelist: ['settings'] }
-);
-
 const persistConfig = {
 	key: 'root',
 	version: 1, // 🔁 Bump this when you make breaking changes
-	storage: AsyncStorage,
+	storage: sqliteStorage,
 	migrate: createMigrate(migrations, { debug: false }),
-	// News is refetched whenever its screen is opened (see app/(app)/news/index.tsx) and
-	// FoodOffers persists under its own AsyncStorage item (see redux/reducer/index.ts) -
-	// neither belongs in this combined "persist:root" blob. Keeping the root item small is
-	// what avoids hitting Android's ~2MB per-AsyncStorage-item limit, whose silent write
-	// failures were causing the profile to fail to rehydrate and users to loop through
-	// onboarding on every start.
-	blacklist: ['news', 'foodOffers'],
-	transforms: [settingsTransform],
+	// FoodOffers persists under its own storage item (see redux/reducer/index.ts) instead
+	// of this combined "persist:root" blob. News and the settings slice's wikis/wikisPages
+	// used to be excluded/stripped here too to stay under Android's ~2MB per-AsyncStorage-
+	// item limit; sqliteStorage has no such ceiling, so both are fully persisted again.
+	blacklist: ['foodOffers'],
 };
 
 const rootReducer = (state: any, action: any) => {
