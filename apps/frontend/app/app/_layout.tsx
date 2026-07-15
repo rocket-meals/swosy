@@ -31,7 +31,7 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {configureStore, persistor} from '@/redux/store';
 import {ServerAPI} from '@/redux/actions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {sqliteKeyValueStorage} from '@/redux/storage/sqliteStorage';
 import {useTheme} from '@/hooks/useTheme';
 import ServerStatusLoader from '@/components/ServerStatusLoader/ServerStatusLoader';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -50,14 +50,14 @@ import { afterRehydration } from '@/helper/afterRehydration';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
-		const storedData = await AsyncStorage.getItem('auth_data');
+		const storedData = await sqliteKeyValueStorage.getItem('auth_data');
 		return storedData ? JSON.parse(storedData) : null;
 	},
 	async value => {
 		if (value) {
-			await AsyncStorage.setItem('auth_data', JSON.stringify(value));
+			await sqliteKeyValueStorage.setItem('auth_data', JSON.stringify(value));
 		} else {
-			await AsyncStorage.removeItem('auth_data');
+			await sqliteKeyValueStorage.removeItem('auth_data');
 		}
 	}
 );
@@ -116,7 +116,7 @@ export default function Layout() {
         useEffect(() => {
                 const setServerUrl = async () => {
                         const customerConfigs = getCustomerConfigsDict();
-                        const storedCustomerEnum = (await AsyncStorage.getItem('selected_customer_enum')) as
+                        const storedCustomerEnum = (await sqliteKeyValueStorage.getItem('selected_customer_enum')) as
                                 | ConfigCustomerEnum
                                 | null;
 
@@ -144,7 +144,7 @@ export default function Layout() {
                                 return;
                         }
 
-                        const url = await AsyncStorage.getItem('server_url_custom');
+                        const url = await sqliteKeyValueStorage.getItem('server_url_custom');
                         if (url) {
                                 ServerAPI.updateServerUrl(url);
                         }

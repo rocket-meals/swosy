@@ -21,7 +21,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -321,13 +321,13 @@ const Settings = () => {
         const handleSelectServer = useCallback(
                 async (config: CustomerConfig) => {
                         ServerAPI.updateServerUrl(config.server_url);
-                        await AsyncStorage.setItem('server_url_custom', config.server_url);
+                        await sqliteKeyValueStorage.setItem('server_url_custom', config.server_url);
                         const selectedCustomer = getCustomerEnumForConfig(config) ?? ConfigCustomerEnum.TEST;
                         dispatch({
                                 type: SET_SELECTED_CUSTOMER,
                                 payload: selectedCustomer,
                         });
-                        await AsyncStorage.setItem('selected_customer_enum', selectedCustomer);
+                        await sqliteKeyValueStorage.setItem('selected_customer_enum', selectedCustomer);
                         await performLogout(dispatch, router);
                 },
                 [dispatch, router]

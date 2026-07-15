@@ -3,8 +3,7 @@ import { legacy_createStore as createStore } from 'redux';
 import * as thunk from 'redux-thunk';
 import promise from 'redux-promise';
 import { createMigrate, persistReducer, persistStore } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { sqliteStorage } from '@/redux/storage/sqliteStorage';
+import { sqliteStorage, sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { reducer } from '@/redux/reducer';
 
 const migrations = {
@@ -38,7 +37,7 @@ const persistConfig = {
 const rootReducer = (state: any, action: any) => {
 	if (action.type === 'RESET_STORE') {
 		const { settings } = state;
-		AsyncStorage.clear(); // optional: force clear AsyncStorage too
+		sqliteKeyValueStorage.clear(); // optional: force clear all storage too
 		state = { settings };
 	}
 	return reducer(state, action);

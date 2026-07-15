@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { DatabaseTypes } from 'repo-depkit-common';
 
 const CACHE_KEY_PREFIX = 'food_offers_cache_';
@@ -47,12 +47,12 @@ function getTomorrowDateString(): string {
 }
 
 /**
- * Reads the tracker from AsyncStorage.
+ * Reads the tracker from storage.
  * Tracker shape: { [canteenId]: string[] }  (list of YYYY-MM-DD dates)
  */
 async function getTracker(): Promise<Record<string, string[]>> {
     try {
-        const raw = await AsyncStorage.getItem(TRACKER_KEY);
+        const raw = await sqliteKeyValueStorage.getItem(TRACKER_KEY);
         if (raw) return JSON.parse(raw);
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error reading tracker', e);
@@ -62,7 +62,7 @@ async function getTracker(): Promise<Record<string, string[]>> {
 
 async function setTracker(tracker: Record<string, string[]>): Promise<void> {
     try {
-        await AsyncStorage.setItem(TRACKER_KEY, JSON.stringify(tracker));
+        await sqliteKeyValueStorage.setItem(TRACKER_KEY, JSON.stringify(tracker));
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error writing tracker', e);
     }
@@ -76,7 +76,7 @@ type CacheMeta = { canteenId: string; day: string };
 
 async function getMeta(): Promise<CacheMeta | null> {
     try {
-        const raw = await AsyncStorage.getItem(META_KEY);
+        const raw = await sqliteKeyValueStorage.getItem(META_KEY);
         if (raw) return JSON.parse(raw);
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error reading cache meta', e);
@@ -86,7 +86,7 @@ async function getMeta(): Promise<CacheMeta | null> {
 
 async function setMeta(meta: CacheMeta): Promise<void> {
     try {
-        await AsyncStorage.setItem(META_KEY, JSON.stringify(meta));
+        await sqliteKeyValueStorage.setItem(META_KEY, JSON.stringify(meta));
     } catch (e) {
         console.error('FoodOffersCacheHelper: Error writing cache meta', e);
     }
@@ -103,7 +103,7 @@ async function clearTrackedCache(tracker: Record<string, string[]>): Promise<Rec
     );
     if (keysToRemove.length > 0) {
         try {
-            await AsyncStorage.multiRemove(keysToRemove);
+            await sqliteKeyValueStorage.multiRemove(keysToRemove);
         } catch (e) {
             console.error('FoodOffersCacheHelper: Error clearing food offers cache', e);
         }
@@ -112,7 +112,7 @@ async function clearTrackedCache(tracker: Record<string, string[]>): Promise<Rec
 }
 
 /**
- * Saves food offers for a specific canteen + date into AsyncStorage - but only if
+ * Saves food offers for a specific canteen + date into storage - but only if
  * `date` is today or tomorrow. Only the current and next day of the currently
  * selected canteen are worth keeping offline; further scrolled-to days are still
  * fetched live, just never persisted. Whenever the selected canteen or the current
@@ -139,7 +139,7 @@ export async function cacheFoodOffers(
 
         const hash = computeFoodOffersHash(offers);
         const cacheKey = getCacheKey(canteenId, date);
-        await AsyncStorage.setItem(cacheKey, JSON.stringify({ hash, offers }));
+        await sqliteKeyValueStorage.setItem(cacheKey, JSON.stringify({ hash, offers }));
 
         const dates = tracker[canteenId] || [];
         if (!dates.includes(date)) {
@@ -176,7 +176,7 @@ export async function getCachedFoodOffers(
         }
 
         const cacheKey = getCacheKey(canteenId, date);
-        const raw = await AsyncStorage.getItem(cacheKey);
+        const raw = await sqliteKeyValueStorage.getItem(cacheKey);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         return {

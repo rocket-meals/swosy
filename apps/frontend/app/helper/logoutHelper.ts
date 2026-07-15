@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { Dispatch } from 'redux';
 import {
 	CLEAR_APARTMENTS,
@@ -60,7 +60,7 @@ export const performLogout = async (
                 clearAppDownloadBannerDismissed();
                 dispatch({ type: CLEAR_SETTINGS });
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
-		await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
+		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
 
 		persistor.purge();
 		router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });

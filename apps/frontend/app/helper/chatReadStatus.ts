@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 
 const STORAGE_KEY = 'chat_read_status';
 
 export const loadChatReadStatus = async (): Promise<Record<string, string>> => {
         try {
-                const stored = await AsyncStorage.getItem(STORAGE_KEY);
+                const stored = await sqliteKeyValueStorage.getItem(STORAGE_KEY);
                 if (!stored) {
                         return {};
                 }
@@ -23,11 +23,11 @@ export const loadChatReadStatus = async (): Promise<Record<string, string>> => {
 export const persistChatReadStatus = async (status: Record<string, string>) => {
         try {
                 if (!status || Object.keys(status).length === 0) {
-                        await AsyncStorage.removeItem(STORAGE_KEY);
+                        await sqliteKeyValueStorage.removeItem(STORAGE_KEY);
                         return;
                 }
 
-                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(status));
+                await sqliteKeyValueStorage.setItem(STORAGE_KEY, JSON.stringify(status));
         } catch (error) {
                 console.error('Failed to persist chat read status', error);
         }
@@ -35,7 +35,7 @@ export const persistChatReadStatus = async (status: Record<string, string>) => {
 
 export const clearChatReadStatus = async () => {
         try {
-                await AsyncStorage.removeItem(STORAGE_KEY);
+                await sqliteKeyValueStorage.removeItem(STORAGE_KEY);
         } catch (error) {
                 console.error('Failed to clear chat read status', error);
         }

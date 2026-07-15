@@ -12,6 +12,7 @@ export const getSqliteStorageUsage = async (): Promise<{ items: SqliteStorageKey
 	const db = await getSqliteDb();
 	const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM kv');
 	const items = rows
+		.filter((row) => !row.key.startsWith('__') || !row.key.endsWith('__'))
 		.map((row) => ({ key: row.key, bytes: getUtf8ByteLength(row.value) }))
 		.sort((a, b) => b.bytes - a.bytes);
 	const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);

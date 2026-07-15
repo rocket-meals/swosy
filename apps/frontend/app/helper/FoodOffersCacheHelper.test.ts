@@ -1,9 +1,30 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+jest.mock('@/redux/storage/sqliteStorage', () => {
+	const store = new Map<string, string>();
+	return {
+		sqliteKeyValueStorage: {
+			getItem: async (key: string) => (store.has(key) ? (store.get(key) as string) : null),
+			setItem: async (key: string, value: string) => {
+				store.set(key, value);
+			},
+			removeItem: async (key: string) => {
+				store.delete(key);
+			},
+			multiRemove: async (keys: string[]) => {
+				keys.forEach((key) => store.delete(key));
+			},
+			clear: async () => {
+				store.clear();
+			},
+		},
+	};
+});
+
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { cacheFoodOffers, getCachedFoodOffers } from './FoodOffersCacheHelper';
 
 describe('FoodOffersCacheHelper', () => {
 	beforeEach(async () => {
-		await AsyncStorage.clear();
+		await sqliteKeyValueStorage.clear();
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date('2026-07-16T10:00:00'));
 	});

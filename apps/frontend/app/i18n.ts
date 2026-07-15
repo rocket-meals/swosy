@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import translations from './locales/translations.json';
 import { LanguageCode } from '@/constants/SettingData';
 
@@ -21,7 +21,7 @@ const languageDetector = {
 	type: 'languageDetector' as const,
 	async: true,
 	detect: (callback: any) => {
-		AsyncStorage.getItem('user-language', (err, language) => {
+		sqliteKeyValueStorage.getItem('user-language').then((language) => {
 			if (language) {
 				callback(language);
 			} else {
@@ -31,7 +31,7 @@ const languageDetector = {
 	},
 	init: () => {},
 	cacheUserLanguage: (language: string) => {
-		AsyncStorage.setItem('user-language', language);
+		sqliteKeyValueStorage.setItem('user-language', language);
 	},
 };
 
