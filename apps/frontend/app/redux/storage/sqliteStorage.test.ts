@@ -117,4 +117,30 @@ describe('sqliteStorage', () => {
 		const { sqliteStorage } = await import('./sqliteStorage');
 		expect(await sqliteStorage.getItem('persist:root')).toBe('{"a":1}');
 	});
+
+	it('migration overwrites a pre-existing sqlite row with AsyncStorage data, not the other way round', async () => {
+		// Regression test: a stray/poisoned sqlite row (e.g. left over from a since-fixed
+		// race condition) must not block real data still sitting in AsyncStorage from being
+		// migrated - INSERT OR IGNORE used to do exactly that and permanently destroy the
+		// real value (AsyncStorage was cleared regardless of whether the insert landed).
+		sqliteRows['persist:root'] = '{"a":"poisoned"}';
+		asyncStorageRows['persist:root'] = '{"a":"real"}';
+
+		const { sqliteKeyValueStorage } = await import('./sqliteStorage');
+		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBe('{"a":"real"}');
+	});
+
+	it('migrateAsyncStorageToSqlite() can be re-run manually after the automatic migration already completed', async () => {
+		const { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } = await import('./sqliteStorage');
+		await sqliteKeyValueStorage.getItem('anything'); // forces the automatic (empty) migration to run and set its sentinel
+
+		// Something left a key in AsyncStorage after the automatic migration already ran
+		// (e.g. code that hasn't been updated to use sqliteKeyValueStorage yet).
+		asyncStorageRows['leftover_key'] = '"still here"';
+
+		const result = await migrateAsyncStorageToSqlite();
+		expect(result.migratedKeys).toEqual(['leftover_key']);
+		expect(await sqliteKeyValueStorage.getItem('leftover_key')).toBe('"still here"');
+		expect(Object.keys(asyncStorageRows)).toEqual([]);
+	});
 });

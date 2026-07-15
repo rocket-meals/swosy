@@ -56,8 +56,9 @@ import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
-import { formatBytes } from '@/helper/AsyncStorageUsageHelper';
+import { formatBytes, getAsyncStorageUsage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
 import { getSqliteStorageUsage, SqliteStorageKeyUsage } from '@/helper/SqliteStorageUsageHelper';
+import { migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
@@ -356,6 +357,9 @@ const Settings = () => {
 
         const [sqliteStorageUsage, setSqliteStorageUsage] = useState<SqliteStorageKeyUsage[]>([]);
         const [sqliteStorageUsageTotalBytes, setSqliteStorageUsageTotalBytes] = useState(0);
+        const [asyncStorageUsage, setAsyncStorageUsage] = useState<AsyncStorageKeyUsage[]>([]);
+        const [asyncStorageUsageTotalBytes, setAsyncStorageUsageTotalBytes] = useState(0);
+        const [isMigratingStorage, setIsMigratingStorage] = useState(false);
 
         const refreshSqliteStorageUsage = useCallback(async () => {
                 try {
@@ -367,13 +371,26 @@ const Settings = () => {
                 }
         }, []);
 
-        // Sqlite storage size only matters for debugging - only read it once debug mode is
-        // on, not on every settings screen visit.
+        const refreshAsyncStorageUsage = useCallback(async () => {
+                try {
+                        const { items, totalBytes } = await getAsyncStorageUsage();
+                        setAsyncStorageUsage(items);
+                        setAsyncStorageUsageTotalBytes(totalBytes);
+                } catch (error) {
+                        console.error('Error reading AsyncStorage usage:', error);
+                }
+        }, []);
+
+        // Storage sizes only matter for debugging - only read them once debug mode is on,
+        // not on every settings screen visit. AsyncStorage should end up near-empty on
+        // native once the migration into sqlite has run - showing it here next to "SQLite
+        // gesamt" makes a stuck/incomplete migration visible instead of silent.
         useEffect(() => {
                 if (debugMode) {
                         refreshSqliteStorageUsage();
+                        refreshAsyncStorageUsage();
                 }
-        }, [debugMode, refreshSqliteStorageUsage]);
+        }, [debugMode, refreshSqliteStorageUsage, refreshAsyncStorageUsage]);
 
         const openSqliteStorageKeysSheet = useCallback(() => {
                 showScrollViewModal({
@@ -398,6 +415,49 @@ const Settings = () => {
                         ),
                 });
         }, [sqliteStorageUsage, primaryColor, theme.screen.icon, theme.screen.text, showScrollViewModal]);
+
+        const openAsyncStorageKeysSheet = useCallback(() => {
+                showScrollViewModal({
+                        title: 'AsyncStorage Keys',
+                        children: (
+                                <View style={{ gap: 8 }}>
+                                        {asyncStorageUsage.length === 0 ? (
+                                                <Text style={{ color: theme.screen.text }}>Keine Einträge</Text>
+                                        ) : (
+                                                asyncStorageUsage.map((item) => (
+                                                        <SettingsList
+                                                                key={item.key}
+                                                                iconBgColor={primaryColor}
+                                                                leftIcon={<MaterialCommunityIcons name="key-outline" size={24} color={theme.screen.icon} />}
+                                                                label={item.key}
+                                                                value={formatBytes(item.bytes)}
+                                                                groupPosition="middle"
+                                                        />
+                                                ))
+                                        )}
+                                </View>
+                        ),
+                });
+        }, [asyncStorageUsage, primaryColor, theme.screen.icon, theme.screen.text, showScrollViewModal]);
+
+        const handleMigrateStorage = useCallback(async () => {
+                setIsMigratingStorage(true);
+                try {
+                        const { migratedKeys } = await migrateAsyncStorageToSqlite();
+                        await Promise.all([refreshAsyncStorageUsage(), refreshSqliteStorageUsage()]);
+                        toast(
+                                migratedKeys.length > 0
+                                        ? `${migratedKeys.length} Einträge migriert: ${migratedKeys.join(', ')}`
+                                        : 'Keine Einträge mehr in AsyncStorage',
+                                'success'
+                        );
+                } catch (error) {
+                        console.error('Error migrating AsyncStorage to sqlite:', error);
+                        toast('Migration fehlgeschlagen', 'error');
+                } finally {
+                        setIsMigratingStorage(false);
+                }
+        }, [refreshAsyncStorageUsage, refreshSqliteStorageUsage, toast]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -879,6 +939,33 @@ const Settings = () => {
 						<SettingsList
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="database" size={24} color={theme.screen.icon} />}
+							label="AsyncStorage gesamt"
+							value={formatBytes(asyncStorageUsageTotalBytes)}
+							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+							handleFunction={openAsyncStorageKeysSheet}
+							groupPosition="top"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="refresh" size={24} color={theme.screen.icon} />}
+							label="Speicher aktualisieren"
+							value=""
+							handleFunction={refreshAsyncStorageUsage}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="database-sync-outline" size={24} color={theme.screen.icon} />}
+							label="Daten migrieren"
+							value={isMigratingStorage ? '...' : ''}
+							handleFunction={isMigratingStorage ? undefined : handleMigrateStorage}
+							groupPosition="bottom"
+						/>
+					</View>
+					<View style={groupStyle}>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="database" size={24} color={theme.screen.icon} />}
 							label="SQLite gesamt"
 							value={formatBytes(sqliteStorageUsageTotalBytes)}
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
@@ -938,6 +1025,8 @@ const Settings = () => {
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
 		sqliteStorageUsageTotalBytes, refreshSqliteStorageUsage, openSqliteStorageKeysSheet,
+		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
+		isMigratingStorage, handleMigrateStorage,
 	]);
 
 	return (

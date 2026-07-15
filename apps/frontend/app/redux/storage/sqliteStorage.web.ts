@@ -15,4 +15,9 @@ export const sqliteKeyValueStorage = {
 	clear: () => AsyncStorage.clear(),
 };
 
+// Web has no separate sqlite store to migrate into - AsyncStorage already is the store.
+export async function migrateAsyncStorageToSqlite(): Promise<{ migratedKeys: string[] }> {
+	return { migratedKeys: [] };
+}
+
 export const sqliteStorage: Storage = AsyncStorage;

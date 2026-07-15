@@ -8,7 +8,7 @@ import type { Storage } from 'redux-persist';
 // single storage engine for the whole app - not just redux-persist's state, but every
 // AsyncStorage-backed key (auth token, server selection, per-feature caches, ...) via
 // sqliteKeyValueStorage below. Once every user has upgraded past this, AsyncStorage - and
-// the migration in ensureAsyncStorageMigrated() - can be deleted outright.
+// the migration below - can be deleted outright.
 //
 // This is the native/default implementation on purpose: expo-sqlite's web build pulls in
 // a wasm module that Metro can't resolve without extra bundler/server config, so it must
@@ -19,20 +19,46 @@ const DB_NAME = 'redux_persist.db';
 const MIGRATION_DONE_KEY = '__async_storage_migration_done__';
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
-// Copies every existing AsyncStorage key into the kv table, once, then clears AsyncStorage.
-// This runs as part of opening the db (see getSqliteDb() below), before dbPromise resolves,
-// so every getItem()/setItem()/removeItem() call - for any key, from any of this app's
-// storage helpers - waits on this same promise first. That's what makes it race-free: a
-// setItem() for one key can never land while an unrelated key is still mid-migration and
-// overwrite the table with something migrated from a snapshot of AsyncStorage as it looked
-// before this ran (see the "dispatch before rehydration" bug this replaced, where per-key
-// lazy migration let a fast write win a race against a slower one and permanently strand
-// the real data in AsyncStorage).
+// Copies every currently-existing AsyncStorage key into the kv table and then clears
+// AsyncStorage. Crash-safe: AsyncStorage is only cleared after the sqlite write is
+// confirmed, so a crash mid-copy just means the same keys get copied again next call.
 //
-// INSERT OR IGNORE: crash-safety. If a previous run copied a key into sqlite but crashed
-// before removing it from AsyncStorage, that key would still be in legacyKeys next launch -
-// IGNORE means we don't clobber the sqlite copy (which may already have newer writes) with
-// the stale AsyncStorage leftover.
+// Uses INSERT OR REPLACE, not INSERT OR IGNORE: an earlier version of this used IGNORE on
+// the (wrong) assumption that an existing sqlite row was always a newer, more authoritative
+// write than whatever's left in AsyncStorage. That assumption broke real user data - a
+// build with a since-fixed race condition (see afterRehydration.ts) could write a blank
+// "persist:root" row into sqlite *without* ever clearing the real value out of AsyncStorage.
+// For those users IGNORE meant this migration saw "a row already exists", kept the blank
+// sqlite row, and then deleted the last real copy from AsyncStorage anyway - permanent data
+// loss. AsyncStorage is being retired here, so its copy should always win when both exist.
+async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<string[]> {
+	const legacyKeys = await AsyncStorage.getAllKeys();
+	if (legacyKeys.length === 0) {
+		return [];
+	}
+
+	const legacyEntries = await AsyncStorage.multiGet(legacyKeys);
+	const migratedKeys: string[] = [];
+	await db.withExclusiveTransactionAsync(async (txn) => {
+		for (const [key, value] of legacyEntries) {
+			if (value !== null) {
+				await txn.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
+				migratedKeys.push(key);
+			}
+		}
+	});
+	await AsyncStorage.multiRemove(legacyKeys);
+	return migratedKeys;
+}
+
+// Runs the copy above exactly once per db (guarded by a sentinel row), as part of opening
+// the db (see getSqliteDb() below) - before dbPromise resolves, so every getItem()/
+// setItem()/removeItem() call, for any key, from any of this app's storage helpers, waits
+// on this same promise first. That's what makes it race-free: a setItem() for one key can
+// never land while an unrelated key is still mid-migration and overwrite the table with
+// something derived from a stale, pre-migration snapshot (see the "dispatch before
+// rehydration" bug this replaced, where per-key lazy migration let a fast write win a race
+// against a slower one and permanently strand the real data in AsyncStorage).
 async function ensureAsyncStorageMigrated(db: SQLite.SQLiteDatabase): Promise<void> {
 	const alreadyMigrated = await db.getFirstAsync<{ value: string }>(
 		'SELECT value FROM kv WHERE key = ?',
@@ -42,19 +68,7 @@ async function ensureAsyncStorageMigrated(db: SQLite.SQLiteDatabase): Promise<vo
 		return;
 	}
 
-	const legacyKeys = await AsyncStorage.getAllKeys();
-	if (legacyKeys.length > 0) {
-		const legacyEntries = await AsyncStorage.multiGet(legacyKeys);
-		await db.withExclusiveTransactionAsync(async (txn) => {
-			for (const [key, value] of legacyEntries) {
-				if (value !== null) {
-					await txn.runAsync('INSERT OR IGNORE INTO kv (key, value) VALUES (?, ?)', key, value);
-				}
-			}
-		});
-		await AsyncStorage.multiRemove(legacyKeys);
-	}
-
+	await copyAsyncStorageIntoSqlite(db);
 	await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', MIGRATION_DONE_KEY, 'true');
 }
 
@@ -71,11 +85,22 @@ export function getSqliteDb(): Promise<SQLite.SQLiteDatabase> {
 	return dbPromise;
 }
 
+// Manual, repeatable re-run of the migration copy, exposed for the settings debug screen's
+// "Daten migrieren" button. The automatic migration above only ever runs once per db (it's
+// meant to be invisible), so it can't be retried from the UI if something looks wrong; this
+// bypasses the sentinel and re-copies whatever's currently left in AsyncStorage, so a user
+// (or support) can force a resync without reinstalling the app.
+export async function migrateAsyncStorageToSqlite(): Promise<{ migratedKeys: string[] }> {
+	const db = await getSqliteDb();
+	const migratedKeys = await copyAsyncStorageIntoSqlite(db);
+	return { migratedKeys };
+}
+
 // General-purpose AsyncStorage-shaped key/value API backed by the same kv table and the
 // same migration as sqliteStorage below. Use this (via constants/AsyncStorageHelper.ts, or
 // directly for raw string values) instead of importing AsyncStorage anywhere in the app -
-// the goal is for AsyncStorage to only ever be read from during the one-time migration
-// above, never written to again.
+// the goal is for AsyncStorage to only ever be read from during the migration above, never
+// written to again.
 export const sqliteKeyValueStorage = {
 	async getItem(key: string): Promise<string | null> {
 		const db = await getSqliteDb();

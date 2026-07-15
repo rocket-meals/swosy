@@ -1,6 +1,13 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export type AsyncStorageKeyUsage = {
+	key: string;
+	bytes: number;
+};
+
 // Approximates the UTF-8 byte size a stored value takes up, without relying on
 // TextEncoder (not guaranteed to exist on every RN/Hermes runtime this app targets).
-// Used by SqliteStorageUsageHelper.ts for the debug storage-usage screen.
+// Also used by SqliteStorageUsageHelper.ts for the debug storage-usage screen.
 export const getUtf8ByteLength = (value: string): number => {
 	let bytes = 0;
 	for (let i = 0; i < value.length; i++) {
@@ -12,6 +19,19 @@ export const getUtf8ByteLength = (value: string): number => {
 		else bytes += 4;
 	}
 	return bytes;
+};
+
+// What's left in AsyncStorage right now - meant to be near-empty on native once the
+// migration in redux/storage/sqliteStorage.ts has run. Shown in the debug settings screen
+// next to "SQLite gesamt" so a stuck migration is visible instead of silent.
+export const getAsyncStorageUsage = async (): Promise<{ items: AsyncStorageKeyUsage[]; totalBytes: number }> => {
+	const keys = await AsyncStorage.getAllKeys();
+	const entries = await AsyncStorage.multiGet(keys);
+	const items = entries
+		.map(([key, value]) => ({ key, bytes: value ? getUtf8ByteLength(value) : 0 }))
+		.sort((a, b) => b.bytes - a.bytes);
+	const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
+	return { items, totalBytes };
 };
 
 export const formatBytes = (bytes: number): string => {
