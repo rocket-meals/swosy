@@ -43,7 +43,7 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-        return 3;
+        return 4;
 }
 
 export function getVersionInternalForAppsettingsScreen() {

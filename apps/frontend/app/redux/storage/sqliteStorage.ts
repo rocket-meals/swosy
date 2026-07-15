@@ -19,9 +19,12 @@ const DB_NAME = 'redux_persist.db';
 const MIGRATION_DONE_KEY = '__async_storage_migration_done__';
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
-// Copies every currently-existing AsyncStorage key into the kv table and then clears
-// AsyncStorage. Crash-safe: AsyncStorage is only cleared after the sqlite write is
-// confirmed, so a crash mid-copy just means the same keys get copied again next call.
+// Copies every currently-existing AsyncStorage key into the kv table. Deliberately does
+// NOT clear AsyncStorage afterwards (yet) - keeping the old copy around is a safety net
+// while this migration is still being validated in production, so a bug here can't cause
+// permanent data loss the way INSERT OR IGNORE previously did (see below). Once the sqlite
+// migration is confirmed solid for a while, re-add an AsyncStorage.multiRemove(legacyKeys)
+// call here (and update the sqliteKeyValueStorage doc comment) to actually retire it.
 //
 // Uses INSERT OR REPLACE, not INSERT OR IGNORE: an earlier version of this used IGNORE on
 // the (wrong) assumption that an existing sqlite row was always a newer, more authoritative
@@ -47,7 +50,6 @@ async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<st
 			}
 		}
 	});
-	await AsyncStorage.multiRemove(legacyKeys);
 	return migratedKeys;
 }
 

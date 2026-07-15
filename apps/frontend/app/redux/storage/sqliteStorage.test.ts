@@ -63,7 +63,10 @@ describe('sqliteStorage', () => {
 		expect(await sqliteStorage.getItem('missing')).toBeNull();
 	});
 
-	it('bulk-migrates every legacy AsyncStorage key into sqlite and clears AsyncStorage, once', async () => {
+	it('bulk-migrates every legacy AsyncStorage key into sqlite, without deleting AsyncStorage', async () => {
+		// AsyncStorage is deliberately kept as a safety net for now (see the comment on
+		// copyAsyncStorageIntoSqlite) - it should still have every key after migration, not
+		// just sqlite.
 		asyncStorageRows['persist:root'] = '{"a":1}';
 		asyncStorageRows['auth_data'] = '{"token":"xyz"}';
 		asyncStorageRows['selected_customer_enum'] = 'test';
@@ -73,7 +76,9 @@ describe('sqliteStorage', () => {
 		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBe('{"a":1}');
 		expect(await sqliteKeyValueStorage.getItem('auth_data')).toBe('{"token":"xyz"}');
 		expect(await sqliteKeyValueStorage.getItem('selected_customer_enum')).toBe('test');
-		expect(Object.keys(asyncStorageRows)).toEqual([]);
+		expect(asyncStorageRows['persist:root']).toBe('{"a":1}');
+		expect(asyncStorageRows['auth_data']).toBe('{"token":"xyz"}');
+		expect(asyncStorageRows['selected_customer_enum']).toBe('test');
 	});
 
 	it('never re-copies AsyncStorage once the one-time migration has run', async () => {
@@ -141,6 +146,9 @@ describe('sqliteStorage', () => {
 		const result = await migrateAsyncStorageToSqlite();
 		expect(result.migratedKeys).toEqual(['leftover_key']);
 		expect(await sqliteKeyValueStorage.getItem('leftover_key')).toBe('"still here"');
-		expect(Object.keys(asyncStorageRows)).toEqual([]);
+		// AsyncStorage is kept as a safety net for now - re-running the copy again should
+		// still report the same key, not an empty list.
+		const secondResult = await migrateAsyncStorageToSqlite();
+		expect(secondResult.migratedKeys).toEqual(['leftover_key']);
 	});
 });
