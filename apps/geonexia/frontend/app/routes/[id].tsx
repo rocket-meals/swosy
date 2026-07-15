@@ -8,6 +8,8 @@ import {
 	MyMapHandle,
 	SettingsList,
 	SettingsListGroupTitle,
+	SettingsListSelectOption,
+	SettingsListSelectOptionItem,
 	SettingsListTextInput,
 	type SettingsListTextInputSuggestion,
 	useMyScrollViewModal,
@@ -15,8 +17,8 @@ import {
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
-import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
+import { SavedRoute, loadRoute, loadRoutes, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
+import { deleteActivity, loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
@@ -263,6 +265,38 @@ function ManualActivityContent({
 	);
 }
 
+// ─── Reassign-activities modal content (shown when deleting a route that has activities) ────
+
+function ReassignRouteContent({
+	routes,
+	onSelect,
+	onCancel,
+	theme,
+}: {
+	routes: SavedRoute[];
+	onSelect: (routeId: string) => void;
+	onCancel: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	return (
+		<View style={{ paddingBottom: 24 }}>
+			<SettingsListSelectOption
+				options={routes.map((r) => ({ id: r.id, label: r.name }))}
+				selectedOption={null}
+				selectionColor={PRIMARY_COLOR}
+				onSelect={(opt: SettingsListSelectOptionItem<string>) => onSelect(opt.id)}
+			/>
+			<TouchableOpacity
+				style={{ alignItems: 'center', paddingVertical: 14, marginTop: 8 }}
+				onPress={onCancel}
+				activeOpacity={0.8}
+			>
+				<Text style={{ fontSize: 15, fontWeight: '500', color: theme.screen.text }}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 export default function RouteDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -285,6 +319,7 @@ export default function RouteDetailScreen() {
 	const isDebugMode = useDebugMode();
 	const { showAlert } = useGeonexiaAlert();
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
+	const { show: showReassignModal, close: closeReassignModal } = useMyScrollViewModal();
 	const { show: showHexTileModal } = useMyScrollViewModal();
 	const { show: showAggregatedModal } = useMyScrollViewModal();
 	const { show: showEnclosedAggregatedModal } = useMyScrollViewModal();
@@ -913,20 +948,103 @@ export default function RouteDetailScreen() {
 		});
 	}, [route, showManualActivityModal, closeManualActivityModal, theme, router, dispatch]);
 
+	// Delete the route together with every activity assigned to it.
+	const handleDeleteWithActivities = useCallback(async () => {
+		if (!route) return;
+		for (const activity of routeActivities) {
+			try {
+				await deleteActivity(activity.id);
+			} catch (err) {
+				console.warn('[RouteDetailScreen] Failed to delete activity', activity.id, err);
+			}
+		}
+		await deleteRoute(route.id);
+		router.replace('/routes');
+	}, [route, routeActivities, router]);
+
+	// Re-point every activity of this route to `targetRouteId`, then delete the route.
+	const handleReassignActivitiesAndDelete = useCallback(async (targetRouteId: string) => {
+		if (!route) return;
+		try {
+			const targetRoute = await loadRoute(targetRouteId);
+			const targetActivityIds = new Set(targetRoute?.activityIds ?? []);
+			for (const activity of routeActivities) {
+				targetActivityIds.add(activity.id);
+				try {
+					await saveActivity({ ...activity, routeId: targetRouteId });
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to reassign activity', activity.id, err);
+				}
+			}
+			if (targetRoute) {
+				await saveRoute({ ...targetRoute, activityIds: [...targetActivityIds] });
+			}
+		} catch (err) {
+			console.warn('[RouteDetailScreen] Failed to reassign activities to new route:', err);
+		}
+		await deleteRoute(route.id);
+		router.replace('/routes');
+	}, [route, routeActivities, router]);
+
+	// Show the route picker used to re-assign this route's activities elsewhere.
+	const handleOpenReassignPicker = useCallback(async () => {
+		if (!route) return;
+		let allRoutes: SavedRoute[] = [];
+		try {
+			allRoutes = await loadRoutes();
+		} catch {
+			allRoutes = [];
+		}
+		const otherRoutes = allRoutes.filter((r) => r.id !== route.id);
+		if (otherRoutes.length === 0) {
+			showAlert('Keine andere Route vorhanden', 'Es gibt keine weitere Route, der die Aktivitäten zugeordnet werden könnten.');
+			return;
+		}
+		showReassignModal({
+			title: 'Route für Aktivitäten wählen',
+			children: (
+				<ReassignRouteContent
+					routes={otherRoutes}
+					onSelect={(targetRouteId) => {
+						closeReassignModal();
+						handleReassignActivitiesAndDelete(targetRouteId);
+					}}
+					onCancel={closeReassignModal}
+					theme={theme}
+				/>
+			),
+		});
+	}, [route, showReassignModal, closeReassignModal, showAlert, theme, handleReassignActivitiesAndDelete]);
+
 	const handleDelete = useCallback(() => {
 		if (!route) return;
-		showAlert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
-			{ text: 'Abbrechen', style: 'cancel' },
-			{
-				text: 'Löschen',
-				style: 'destructive',
-				onPress: () => {
-					deleteRoute(route.id);
-					router.replace('/routes');
+
+		if (routeActivities.length === 0) {
+			showAlert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
+				{ text: 'Abbrechen', style: 'cancel' },
+				{
+					text: 'Löschen',
+					style: 'destructive',
+					onPress: () => {
+						deleteRoute(route.id);
+						router.replace('/routes');
+					},
 				},
-			},
-		]);
-	}, [route, router]);
+			]);
+			return;
+		}
+
+		const count = routeActivities.length;
+		showAlert(
+			'Route löschen',
+			`Für diese Route ${count === 1 ? 'existiert noch eine Aktivität' : `existieren noch ${count} Aktivitäten`}. Was soll damit passieren?`,
+			[
+				{ text: 'Abbrechen', style: 'cancel' },
+				{ text: 'Anderer Route zuordnen', onPress: handleOpenReassignPicker },
+				{ text: 'Aktivitäten auch löschen', style: 'destructive', onPress: handleDeleteWithActivities },
+			],
+		);
+	}, [route, routeActivities, router, showAlert, handleOpenReassignPicker, handleDeleteWithActivities]);
 
 	if (notFound) {
 		return (
@@ -1268,7 +1386,6 @@ export default function RouteDetailScreen() {
 				);
 			})()}
 
-				{isDebugMode && (
 				<TouchableOpacity
 					style={styles.deleteButton}
 					onPress={handleDelete}
@@ -1277,7 +1394,6 @@ export default function RouteDetailScreen() {
 					<MaterialIcons name="delete-outline" size={18} color="#ef4444" />
 					<Text style={styles.deleteButtonText}>Route löschen</Text>
 				</TouchableOpacity>
-			)}
 			</View>
 		</ScrollView>
 	);
