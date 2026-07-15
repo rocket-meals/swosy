@@ -519,7 +519,7 @@ Key,Message,Component,Line
 "AZ0gXN4d8BW5-kmhjssT","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",693
 "AZ0flHc93b07Lomn1R-K","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",457
 "AZ0flHc93b07Lomn1R-N","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",559
-"AZ0fd-JWapyM9SrSXIMM","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/frontend/app/app/_layout.tsx",64
+"AZ0fd-JWapyM9SrSXIMM","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/frontend/app/app/_layout.tsx",65
 "AZ0fd-UFapyM9SrSXIMO","Use `export…from` to re-export `default`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",2
 "AZ0fd-VDapyM9SrSXIMP","Use `export…from` to re-export `default`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListBoolean/SettingsListBoolean.tsx",4
 "AZ0feAdTapyM9SrSXIMY","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/context/SettingsContext.tsx",17
@@ -1727,7 +1727,6 @@ Key,Message,Component,Line
 "AZkUSvUQS4VhJojFFAhl","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",11
 "AZkUSvUQS4VhJojFFAhm","Member 'collection' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",30
 "AZkUSvVYS4VhJojFFAiO","Redundant double negation.","rocket-meals_rocket-meals:apps/frontend/app/helper/iconHelper.tsx",53
-"AZkUSve2S4VhJojFFCV3","Remove this useless assignment to variable ""systemTheme"".","rocket-meals_rocket-meals:apps/frontend/app/hooks/useTheme.ts",32
 "AZ0TplVdufp2jxPAhS4b","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Apartments/Apartments.ts",3
 "AZ0TplWJufp2jxPAhS4i","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppElements/AppElements.ts",3
 "AZ0TplQZufp2jxPAhS3v","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppFeedback/AppFeedback.ts",3
