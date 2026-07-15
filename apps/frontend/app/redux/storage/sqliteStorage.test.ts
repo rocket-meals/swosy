@@ -6,9 +6,21 @@
 const sqliteRows: Record<string, string> = {};
 const asyncStorageRows: Record<string, string> = {};
 
+// Set to a key name to make the *next* attempted INSERT for that key silently no-op, once -
+// simulates a transient/partial write failure so tests can verify that the migration only
+// marks itself "verified" (and stops retrying) once a copy has actually been confirmed to
+// have landed correctly.
+let failNextWriteForKey: string | null = null;
+
 function applySql(sql: string, key?: string, value?: string) {
 	if (sql.startsWith('INSERT')) {
-		if (key !== undefined) sqliteRows[key] = value as string;
+		if (key !== undefined) {
+			if (key === failNextWriteForKey) {
+				failNextWriteForKey = null;
+				return;
+			}
+			sqliteRows[key] = value as string;
+		}
 	} else if (sql.startsWith('DELETE FROM kv WHERE')) {
 		if (key !== undefined) delete sqliteRows[key];
 	} else if (sql.startsWith('DELETE FROM kv')) {
@@ -53,6 +65,7 @@ describe('sqliteStorage', () => {
 	beforeEach(() => {
 		Object.keys(sqliteRows).forEach((key) => delete sqliteRows[key]);
 		Object.keys(asyncStorageRows).forEach((key) => delete asyncStorageRows[key]);
+		failNextWriteForKey = null;
 		jest.resetModules();
 	});
 
@@ -61,10 +74,7 @@ describe('sqliteStorage', () => {
 		expect(await sqliteStorage.getItem('missing')).toBeNull();
 	});
 
-	it('migrates every legacy AsyncStorage key into sqlite on boot, without deleting AsyncStorage', async () => {
-		// AsyncStorage is deliberately kept as a safety net for now (see the comment on
-		// copyAsyncStorageIntoSqlite) - it should still have every key after migration, not
-		// just sqlite.
+	it('migrates every legacy AsyncStorage key into sqlite on first boot, without deleting AsyncStorage', async () => {
 		asyncStorageRows['persist:root'] = '{"a":1}';
 		asyncStorageRows['auth_data'] = '{"token":"xyz"}';
 		asyncStorageRows['selected_customer_enum'] = 'test';
@@ -79,20 +89,48 @@ describe('sqliteStorage', () => {
 		expect(asyncStorageRows['selected_customer_enum']).toBe('test');
 	});
 
-	it('re-syncs from AsyncStorage on every fresh boot, self-healing a bad previous run', async () => {
-		// Regression test for a real incident: an earlier version gated the migration behind
-		// a one-time "already migrated" sentinel row. A boot that ran the copy with a
-		// since-fixed bug still wrote that sentinel, which then permanently blocked the
-		// *fixed* code from ever re-running automatically for that user on later boots (e.g.
-		// after loading a new update via expo-updates) - only the manual "Daten migrieren"
-		// button, which bypassed the sentinel, could fix it. There must be no such gate: a
-		// fresh boot (new module instance, i.e. a fresh dbPromise) has to re-copy from
-		// AsyncStorage and overwrite whatever's in sqlite every time, automatically.
+	it('retries on the next boot if the previous boot never verified successfully, self-healing a bad run', async () => {
+		// sqliteRows has stale/wrong data and, crucially, no "verified" sentinel - as if a
+		// previous boot copied it wrong and (correctly, per the fix below) never marked
+		// itself done. A fresh boot must retry and overwrite it with the real value.
 		sqliteRows['persist:root'] = '{"a":"poisoned-by-a-previous-buggy-boot"}';
 		asyncStorageRows['persist:root'] = '{"a":"real"}';
 
 		const { sqliteKeyValueStorage } = await import('./sqliteStorage');
 		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBe('{"a":"real"}');
+	});
+
+	it('does not mark the migration verified if a write silently fails, and retries next boot', async () => {
+		// Regression coverage for the bug INSERT OR IGNORE caused: a copy that doesn't
+		// actually land must not be trusted just because nothing threw.
+		asyncStorageRows['flaky_key'] = '"value"';
+		failNextWriteForKey = 'flaky_key';
+
+		const { sqliteKeyValueStorage: firstBoot } = await import('./sqliteStorage');
+		expect(await firstBoot.getItem('flaky_key')).toBeNull(); // the simulated failed write
+
+		jest.resetModules();
+		const { sqliteKeyValueStorage: secondBoot } = await import('./sqliteStorage');
+		expect(await secondBoot.getItem('flaky_key')).toBe('"value"'); // retried, and this time nothing failed
+	});
+
+	it('does NOT overwrite a newer sqlite write with AsyncStorage once the migration is verified', async () => {
+		// Regression test for a real incident: without a "verified, stop repeating" gate,
+		// the copy re-ran unconditionally on every boot. Since AsyncStorage is kept around
+		// as a frozen snapshot (never updated again after migration), that meant every
+		// restart silently reverted any value the app had since written via setItem() back
+		// to whatever AsyncStorage happened to have at the very first migration - the app
+		// could never actually "live" in sqlite afterwards.
+		asyncStorageRows['foo'] = '"old-value-from-async-storage"';
+
+		const { sqliteKeyValueStorage: firstBoot } = await import('./sqliteStorage');
+		expect(await firstBoot.getItem('foo')).toBe('"old-value-from-async-storage"'); // migrated + verified this boot
+
+		await firstBoot.setItem('foo', '"new-value-written-after-migration"');
+
+		jest.resetModules();
+		const { sqliteKeyValueStorage: secondBoot } = await import('./sqliteStorage');
+		expect(await secondBoot.getItem('foo')).toBe('"new-value-written-after-migration"');
 	});
 
 	it('setItem/removeItem/multiRemove/clear operate directly on sqlite', async () => {

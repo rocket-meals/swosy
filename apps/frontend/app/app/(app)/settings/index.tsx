@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -56,7 +56,7 @@ import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
-import { formatBytes, getAsyncStorageUsage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
+import { formatBytes, getAsyncStorageUsage, clearAsyncStorage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
 import { getSqliteStorageUsage, SqliteStorageKeyUsage } from '@/helper/SqliteStorageUsageHelper';
 import { migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import { FriendsContent } from '@/components/FriendsContent';
@@ -360,6 +360,7 @@ const Settings = () => {
         const [asyncStorageUsage, setAsyncStorageUsage] = useState<AsyncStorageKeyUsage[]>([]);
         const [asyncStorageUsageTotalBytes, setAsyncStorageUsageTotalBytes] = useState(0);
         const [isMigratingStorage, setIsMigratingStorage] = useState(false);
+        const [isClearingAsyncStorage, setIsClearingAsyncStorage] = useState(false);
 
         const refreshSqliteStorageUsage = useCallback(async () => {
                 try {
@@ -458,6 +459,33 @@ const Settings = () => {
                         setIsMigratingStorage(false);
                 }
         }, [refreshAsyncStorageUsage, refreshSqliteStorageUsage, toast]);
+
+        const handleClearAsyncStorage = useCallback(() => {
+                Alert.alert(
+                        'AsyncStorage löschen',
+                        'Löscht nur AsyncStorage (nicht SQLite) - zum Testen/Debuggen der Migration. Fortfahren?',
+                        [
+                                { text: translate(TranslationKeys.cancel), style: 'cancel' },
+                                {
+                                        text: 'Löschen',
+                                        style: 'destructive',
+                                        onPress: async () => {
+                                                setIsClearingAsyncStorage(true);
+                                                try {
+                                                        await clearAsyncStorage();
+                                                        await refreshAsyncStorageUsage();
+                                                        toast('AsyncStorage geleert', 'success');
+                                                } catch (error) {
+                                                        console.error('Error clearing AsyncStorage:', error);
+                                                        toast('Löschen fehlgeschlagen', 'error');
+                                                } finally {
+                                                        setIsClearingAsyncStorage(false);
+                                                }
+                                        },
+                                },
+                        ]
+                );
+        }, [refreshAsyncStorageUsage, toast, translate]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -959,6 +987,14 @@ const Settings = () => {
 							label="Daten migrieren"
 							value={isMigratingStorage ? '...' : ''}
 							handleFunction={isMigratingStorage ? undefined : handleMigrateStorage}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="delete-outline" size={24} color={theme.screen.icon} />}
+							label="AsyncStorage löschen"
+							value={isClearingAsyncStorage ? '...' : ''}
+							handleFunction={isClearingAsyncStorage ? undefined : handleClearAsyncStorage}
 							groupPosition="bottom"
 						/>
 					</View>
@@ -1027,6 +1063,7 @@ const Settings = () => {
 		sqliteStorageUsageTotalBytes, refreshSqliteStorageUsage, openSqliteStorageKeysSheet,
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,
+		isClearingAsyncStorage, handleClearAsyncStorage,
 	]);
 
 	return (

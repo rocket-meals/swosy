@@ -34,6 +34,13 @@ export const getAsyncStorageUsage = async (): Promise<{ items: AsyncStorageKeyUs
 	return { items, totalBytes };
 };
 
+// Debug-only escape hatch for the settings screen's "AsyncStorage löschen" button - lets a
+// tester wipe AsyncStorage on demand (e.g. to set up a clean state for re-testing the
+// sqlite migration in redux/storage/sqliteStorage.ts). Not used by any non-debug code path.
+export const clearAsyncStorage = async (): Promise<void> => {
+	await AsyncStorage.clear();
+};
+
 export const formatBytes = (bytes: number): string => {
 	if (bytes < 1024) return `${bytes} B`;
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
