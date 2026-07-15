@@ -1,6 +1,6 @@
 Key,Message,Component,Line
 "AZ9i7pHIxQC8bk9G8ao_","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",136
-"AZ9jM_Jxx617WU1gkj-w","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",24
+"AZ9jM_Jxx617WU1gkj-w","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",64
 "AZ9iElsVctCaOeGEpiJt","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodOffersReducer.ts",13
 "AZ9gjKBEzJugdJpoBVO1","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",71
 "AZ9gjKFPzJugdJpoBVO7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",260
@@ -1701,7 +1701,7 @@ Key,Message,Component,Line
 "AZkUSvAUS4VhJojFFAQV","Rename interface ""sheetProps"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningSheet/types.ts",1
 "AZkUSvEFS4VhJojFFASG","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/components/WashingMachines/index.tsx",27
 "AZkUSvEFS4VhJojFFASH","Remove this useless assignment to variable ""id"".","rocket-meals_rocket-meals:apps/frontend/app/components/WashingMachines/index.tsx",95
-"AZkUSvecS4VhJojFFCVw","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/constants/AsyncStorageHelper.ts",29
+"AZkUSvecS4VhJojFFCVw","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/constants/AsyncStorageHelper.ts",30
 "AZkUSveIS4VhJojFFCTg","Remove this useless assignment to variable ""bytesMaxAmount"".","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",12
 "AZkUSveIS4VhJojFFCTh","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",46
 "AZkUSvelS4VhJojFFCVx","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/UrlHelper.ts",8
