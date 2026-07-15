@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,17 +12,15 @@ export type PlayerInformation = {
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
 
-function getPlayerInformationFile(): File {
-	return new File(Paths.document, 'geonexia-player-information.json');
-}
+const PLAYER_INFORMATION_KEY = 'geonexia-player-information.json';
 
 /**
  * Persist player information to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function savePlayerInformation(info: PlayerInformation): void {
+export async function savePlayerInformation(info: PlayerInformation): Promise<void> {
 	try {
-		getPlayerInformationFile().write(JSON.stringify(info));
+		await setStorageItem(PLAYER_INFORMATION_KEY, JSON.stringify(info));
 	} catch (err) {
 		console.warn('[PlayerInformationStorage] Failed to save player information:', err);
 	}
@@ -34,10 +32,9 @@ export function savePlayerInformation(info: PlayerInformation): void {
  */
 export async function loadPlayerInformation(): Promise<PlayerInformation> {
 	try {
-		const file = getPlayerInformationFile();
-		if (!file.exists) return { homeHexTile: null };
-		const content = await file.text();
-		const parsed = JSON.parse(content) as Partial<PlayerInformation>;
+		const raw = await getStorageItem(PLAYER_INFORMATION_KEY);
+		if (raw === null) return { homeHexTile: null };
+		const parsed = JSON.parse(raw) as Partial<PlayerInformation>;
 		return {
 			homeHexTile: typeof parsed.homeHexTile === 'string' ? parsed.homeHexTile : null,
 		};

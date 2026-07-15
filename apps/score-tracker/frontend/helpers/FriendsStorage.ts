@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -15,18 +15,16 @@ export type FriendsState = {
 	friends: Friend[];
 };
 
-// ─── File access ──────────────────────────────────────────────────────────────
+// ─── Storage access ───────────────────────────────────────────────────────────
 
-function getFriendsFile(): File {
-	return new File(Paths.document, 'score-tracker-friends.json');
-}
+const FRIENDS_KEY = 'score-tracker-friends.json';
 
 /**
  * Persist the friends roster to disk.
  */
-export function saveFriends(friends: Friend[]): void {
+export async function saveFriends(friends: Friend[]): Promise<void> {
 	try {
-		getFriendsFile().write(JSON.stringify({ friends }));
+		await setStorageItem(FRIENDS_KEY, JSON.stringify({ friends }));
 	} catch (err) {
 		console.warn('[FriendsStorage] Failed to save friends:', err);
 	}
@@ -37,10 +35,9 @@ export function saveFriends(friends: Friend[]): void {
  */
 export async function loadFriends(): Promise<Friend[]> {
 	try {
-		const file = getFriendsFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		const parsed = JSON.parse(content) as Partial<FriendsState>;
+		const raw = await getStorageItem(FRIENDS_KEY);
+		if (raw === null) return [];
+		const parsed = JSON.parse(raw) as Partial<FriendsState>;
 		if (Array.isArray(parsed.friends)) return parsed.friends;
 		return [];
 	} catch {

@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -11,21 +11,19 @@ import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
  */
 export type HexTileFeatureCache = Record<string, MapFeatureInfo[]>;
 
-// ─── Storage file ─────────────────────────────────────────────────────────────
+// ─── Storage key ──────────────────────────────────────────────────────────────
 
-function getHexTileFeatureCacheFile(): File {
-	return new File(Paths.document, 'geonexia-hex-tile-features.json');
-}
+const HEX_TILE_FEATURE_CACHE_KEY = 'geonexia-hex-tile-features.json';
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
 
 /**
- * Persist the hex-tile feature cache to disk (synchronous write).
+ * Persist the hex-tile feature cache to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveHexTileFeatureCache(cache: HexTileFeatureCache): void {
+export async function saveHexTileFeatureCache(cache: HexTileFeatureCache): Promise<void> {
 	try {
-		getHexTileFeatureCacheFile().write(JSON.stringify(cache));
+		await setStorageItem(HEX_TILE_FEATURE_CACHE_KEY, JSON.stringify(cache));
 	} catch (err) {
 		console.warn('[HexTileFeatureStorage] Failed to save feature cache:', err);
 	}
@@ -37,10 +35,9 @@ export function saveHexTileFeatureCache(cache: HexTileFeatureCache): void {
  */
 export async function loadHexTileFeatureCache(): Promise<HexTileFeatureCache> {
 	try {
-		const file = getHexTileFeatureCacheFile();
-		if (!file.exists) return {};
-		const content = await file.text();
-		return JSON.parse(content) as HexTileFeatureCache;
+		const raw = await getStorageItem(HEX_TILE_FEATURE_CACHE_KEY);
+		if (raw === null) return {};
+		return JSON.parse(raw) as HexTileFeatureCache;
 	} catch {
 		return {};
 	}
@@ -56,6 +53,6 @@ export async function mergeHexTileFeatureCache(
 ): Promise<HexTileFeatureCache> {
 	const existing = await loadHexTileFeatureCache();
 	const merged: HexTileFeatureCache = { ...existing, ...newEntries };
-	saveHexTileFeatureCache(merged);
+	await saveHexTileFeatureCache(merged);
 	return merged;
 }

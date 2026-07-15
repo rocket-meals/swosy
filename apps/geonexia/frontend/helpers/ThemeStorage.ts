@@ -1,18 +1,16 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
 export type ThemeMode = 'light' | 'dark' | 'systematic';
 
-function getThemeFile(): File {
-	return new File(Paths.document, 'geonexia-theme.json');
-}
+const THEME_KEY = 'geonexia-theme.json';
 
 /**
  * Persist the selected theme mode to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveThemeMode(mode: ThemeMode): void {
+export async function saveThemeMode(mode: ThemeMode): Promise<void> {
 	try {
-		getThemeFile().write(JSON.stringify({ mode }));
+		await setStorageItem(THEME_KEY, JSON.stringify({ mode }));
 	} catch (err) {
 		console.warn('[ThemeStorage] Failed to save theme mode:', err);
 	}
@@ -24,10 +22,9 @@ export function saveThemeMode(mode: ThemeMode): void {
  */
 export async function loadThemeMode(): Promise<ThemeMode> {
 	try {
-		const file = getThemeFile();
-		if (!file.exists) return 'systematic';
-		const content = await file.text();
-		const parsed = JSON.parse(content) as { mode?: ThemeMode };
+		const raw = await getStorageItem(THEME_KEY);
+		if (raw === null) return 'systematic';
+		const parsed = JSON.parse(raw) as { mode?: ThemeMode };
 		const mode = parsed.mode;
 		if (mode === 'light' || mode === 'dark' || mode === 'systematic') return mode;
 		return 'systematic';

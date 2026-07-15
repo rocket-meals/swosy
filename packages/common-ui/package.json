@@ -11,6 +11,7 @@
     "expo-clipboard": "*",
     "expo-file-system": "*",
     "expo-location": "*",
+    "expo-sqlite": "*",
     "react": "*",
     "react-native": "*",
     "react-native-gesture-handler": "*",

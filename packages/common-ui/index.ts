@@ -12,6 +12,7 @@ export type { SettingsContextType } from './src/context/SettingsContext';
 // Helpers
 export { myContrastColor, getContrastRatio, getColorAsHex } from './src/helpers/ColorHelper';
 export { accountRequiredStyles } from './src/helpers/accountRequiredStyles';
+export { getStorageItem, setStorageItem, removeStorageItem } from './src/helpers/SqliteKeyValueStorage';
 
 // Constants
 export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/ui';

@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem, removeStorageItem } from 'repo-depkit-common-ui';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,9 +34,7 @@ export type TTSLogEntry = SpokenTextFields & {
 /** Maximum number of log entries to keep in storage to avoid unbounded growth. */
 const MAX_LOG_ENTRIES = 500;
 
-function getLogFile(): File {
-	return new File(Paths.document, 'geonexia-tts-log.json');
-}
+const LOG_KEY = 'geonexia-tts-log.json';
 
 /**
  * Load all TTS log entries from disk. Returns an empty array when the file does
@@ -44,10 +42,9 @@ function getLogFile(): File {
  */
 export async function loadTTSLog(): Promise<TTSLogEntry[]> {
 	try {
-		const file = getLogFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		const entries = JSON.parse(content);
+		const raw = await getStorageItem(LOG_KEY);
+		if (raw === null) return [];
+		const entries = JSON.parse(raw);
 		if (!Array.isArray(entries)) return [];
 		return entries as TTSLogEntry[];
 	} catch {
@@ -68,7 +65,7 @@ export async function appendTTSLogEntry(entry: TTSLogEntry): Promise<void> {
 		const trimmed = existing.length > MAX_LOG_ENTRIES
 			? existing.slice(existing.length - MAX_LOG_ENTRIES)
 			: existing;
-		getLogFile().write(JSON.stringify(trimmed));
+		await setStorageItem(LOG_KEY, JSON.stringify(trimmed));
 	} catch (err) {
 		console.warn('[TTSLogStorage] Failed to append log entry:', err);
 	}
@@ -78,10 +75,9 @@ export async function appendTTSLogEntry(entry: TTSLogEntry): Promise<void> {
  * Clear all TTS log entries from disk.
  * Silently ignores errors.
  */
-export function clearTTSLog(): void {
+export async function clearTTSLog(): Promise<void> {
 	try {
-		const file = getLogFile();
-		if (file.exists) file.delete();
+		await removeStorageItem(LOG_KEY);
 	} catch (err) {
 		console.warn('[TTSLogStorage] Failed to clear TTS log:', err);
 	}

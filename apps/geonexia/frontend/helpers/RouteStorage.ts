@@ -1,4 +1,4 @@
-import { Directory, File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem, removeStorageItem } from 'repo-depkit-common-ui';
 import type { RedLineRouteFields } from './ActivityRouteSharedTypes';
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
@@ -35,14 +35,26 @@ export type SavedRoute = RedLineRouteFields & {
 	enclosedTiles?: string[];
 };
 
-// ─── Storage directories and files ───────────────────────────────────────────
+// ─── Storage keys ─────────────────────────────────────────────────────────────
 
-function getRoutesDir(): Directory {
-	return new Directory(Paths.document, 'geonexia-routes');
+// One key per route, plus an index key listing which route IDs exist (mirrors
+// the old one-file-per-route directory layout, since the sqlite kv store has
+// no directory-listing equivalent).
+const ROUTES_INDEX_KEY = 'geonexia-routes-index.json';
+
+function getRouteKey(id: string): string {
+	return `geonexia-route-${id}.json`;
 }
 
-function getRouteFile(id: string): File {
-	return new File(getRoutesDir(), id + '.json');
+async function getRouteIds(): Promise<string[]> {
+	try {
+		const raw = await getStorageItem(ROUTES_INDEX_KEY);
+		if (raw === null) return [];
+		const ids = JSON.parse(raw);
+		return Array.isArray(ids) ? ids : [];
+	} catch {
+		return [];
+	}
 }
 
 // ─── Route persistence ───────────────────────────────────────────────────────
@@ -74,37 +86,28 @@ function migrateRoute(route: SavedRoute): SavedRoute {
 	return route;
 }
 
-export function saveRoute(route: SavedRoute): void {
-	const dir = getRoutesDir();
-	if (!dir.exists) {
-		dir.create({ idempotent: true });
+export async function saveRoute(route: SavedRoute): Promise<void> {
+	await setStorageItem(getRouteKey(route.id), JSON.stringify(route));
+	const ids = await getRouteIds();
+	if (!ids.includes(route.id)) {
+		ids.push(route.id);
+		await setStorageItem(ROUTES_INDEX_KEY, JSON.stringify(ids));
 	}
-	getRouteFile(route.id).write(JSON.stringify(route));
 }
 
 export async function loadRoutes(): Promise<SavedRoute[]> {
-	const dir = getRoutesDir();
-	if (!dir.exists) return [];
-
-	let entries: (File | Directory)[];
-	try {
-		entries = dir.list();
-	} catch {
-		return [];
-	}
-
+	const ids = await getRouteIds();
 	const routes: SavedRoute[] = [];
-	for (const entry of entries) {
-		if (!(entry instanceof File)) continue;
-		if (!entry.name.endsWith('.json')) continue;
+	for (const id of ids) {
 		try {
-			const content = await entry.text();
-			const parsed = JSON.parse(content);
+			const raw = await getStorageItem(getRouteKey(id));
+			if (raw === null) continue;
+			const parsed = JSON.parse(raw);
 			if (isValidRoute(parsed)) {
 				routes.push(migrateRoute(parsed));
 			}
 		} catch {
-			// Skip corrupted files
+			// Skip corrupted entries
 		}
 	}
 	// Sort by createdAt descending (newest first)
@@ -113,36 +116,36 @@ export async function loadRoutes(): Promise<SavedRoute[]> {
 }
 
 export async function loadRoute(id: string): Promise<SavedRoute | null> {
-	const file = getRouteFile(id);
-	if (!file.exists) return null;
 	try {
-		const content = await file.text();
-		const parsed = JSON.parse(content);
+		const raw = await getStorageItem(getRouteKey(id));
+		if (raw === null) return null;
+		const parsed = JSON.parse(raw);
 		return isValidRoute(parsed) ? migrateRoute(parsed) : null;
 	} catch {
 		return null;
 	}
 }
 
-export function deleteRoute(id: string): void {
+export async function deleteRoute(id: string): Promise<void> {
 	try {
-		const file = getRouteFile(id);
-		if (file.exists) file.delete();
+		await removeStorageItem(getRouteKey(id));
+		const ids = await getRouteIds();
+		const filtered = ids.filter((existingId) => existingId !== id);
+		if (filtered.length !== ids.length) {
+			await setStorageItem(ROUTES_INDEX_KEY, JSON.stringify(filtered));
+		}
 	} catch {
 		// Ignore errors
 	}
 }
 
-export function deleteAllRoutes(): void {
+export async function deleteAllRoutes(): Promise<void> {
 	try {
-		const dir = getRoutesDir();
-		if (!dir.exists) return;
-		const entries = dir.list();
-		for (const entry of entries) {
-			if (entry instanceof File && entry.name.endsWith('.json')) {
-				entry.delete();
-			}
+		const ids = await getRouteIds();
+		for (const id of ids) {
+			await removeStorageItem(getRouteKey(id));
 		}
+		await removeStorageItem(ROUTES_INDEX_KEY);
 	} catch {
 		// Ignore errors
 	}

@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem, removeStorageItem } from 'repo-depkit-common-ui';
 import type { RecordingSessionFields } from './ActivityRouteSharedTypes';
 import type { SportType } from '../store/sportTypeSlice';
 
@@ -30,17 +30,15 @@ export type InterruptedRecordingSnapshot = RecordingSessionFields & {
 
 // ─── Storage ──────────────────────────────────────────────────────────────────
 
-function getSnapshotFile(): File {
-	return new File(Paths.document, 'geonexia-interrupted-recording.json');
-}
+const SNAPSHOT_KEY = 'geonexia-interrupted-recording.json';
 
 /**
  * Persist a recording snapshot to disk. Called periodically during recording.
  * Silently ignores write errors.
  */
-export function saveRecordingSnapshot(snapshot: InterruptedRecordingSnapshot): void {
+export async function saveRecordingSnapshot(snapshot: InterruptedRecordingSnapshot): Promise<void> {
 	try {
-		getSnapshotFile().write(JSON.stringify(snapshot));
+		await setStorageItem(SNAPSHOT_KEY, JSON.stringify(snapshot));
 	} catch (err) {
 		console.warn('[InterruptedRecordingStorage] Failed to save snapshot:', err);
 	}
@@ -52,10 +50,9 @@ export function saveRecordingSnapshot(snapshot: InterruptedRecordingSnapshot): v
  */
 export async function loadRecordingSnapshot(): Promise<InterruptedRecordingSnapshot | null> {
 	try {
-		const file = getSnapshotFile();
-		if (!file.exists) return null;
-		const content = await file.text();
-		const data = JSON.parse(content) as InterruptedRecordingSnapshot;
+		const raw = await getStorageItem(SNAPSHOT_KEY);
+		if (raw === null) return null;
+		const data = JSON.parse(raw) as InterruptedRecordingSnapshot;
 		// Basic validation – a valid snapshot must at least have a startedAt timestamp
 		if (typeof data.startedAt !== 'number' || data.startedAt <= 0) return null;
 		if (!Array.isArray(data.routePoints)) return null;
@@ -69,10 +66,9 @@ export async function loadRecordingSnapshot(): Promise<InterruptedRecordingSnaps
  * Delete any saved recording snapshot. Called when a recording is stopped
  * cleanly so that no stale recovery prompt is shown on next launch.
  */
-export function clearRecordingSnapshot(): void {
+export async function clearRecordingSnapshot(): Promise<void> {
 	try {
-		const file = getSnapshotFile();
-		if (file.exists) file.delete();
+		await removeStorageItem(SNAPSHOT_KEY);
 	} catch (err) {
 		console.warn('[InterruptedRecordingStorage] Failed to clear snapshot:', err);
 	}
