@@ -16,7 +16,6 @@ import type { Storage } from 'redux-persist';
 // instead for web builds (same pattern as hooks/useColorScheme.web.ts).
 
 const DB_NAME = 'redux_persist.db';
-const MIGRATION_DONE_KEY = '__async_storage_migration_done__';
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 // Copies every currently-existing AsyncStorage key into the kv table. Deliberately does
@@ -53,25 +52,27 @@ async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<st
 	return migratedKeys;
 }
 
-// Runs the copy above exactly once per db (guarded by a sentinel row), as part of opening
-// the db (see getSqliteDb() below) - before dbPromise resolves, so every getItem()/
-// setItem()/removeItem() call, for any key, from any of this app's storage helpers, waits
-// on this same promise first. That's what makes it race-free: a setItem() for one key can
-// never land while an unrelated key is still mid-migration and overwrite the table with
+// Runs the copy above once per app boot (dbPromise is a per-process singleton, see
+// getSqliteDb() below), before dbPromise resolves - so every getItem()/setItem()/
+// removeItem() call, for any key, from any of this app's storage helpers, waits on this
+// same promise first. That's what makes it race-free: a setItem() for one key can never
+// land while an unrelated key is still mid-migration and overwrite the table with
 // something derived from a stale, pre-migration snapshot (see the "dispatch before
 // rehydration" bug this replaced, where per-key lazy migration let a fast write win a race
 // against a slower one and permanently strand the real data in AsyncStorage).
+//
+// Deliberately NOT gated by a "already migrated" sentinel row: an earlier version wrote one
+// after the first run and skipped the copy on every later boot once it was set. That backfired
+// for exactly the users this migration exists for - a boot that ran the copy with a
+// since-fixed bug (see the INSERT OR REPLACE comment above) still wrote the sentinel, which
+// then permanently blocked the *fixed* code from ever re-running automatically for that
+// user - only a manual retry via migrateAsyncStorageToSqlite() (bypassing the sentinel)
+// could fix it. Running the copy unconditionally on every boot instead means a fixed build
+// always self-heals on its very next launch, no manual step required. AsyncStorage is kept
+// around (see copyAsyncStorageIntoSqlite() above) specifically so this stays cheap and safe
+// to repeat - each run just re-confirms/replaces the same handful of keys.
 async function ensureAsyncStorageMigrated(db: SQLite.SQLiteDatabase): Promise<void> {
-	const alreadyMigrated = await db.getFirstAsync<{ value: string }>(
-		'SELECT value FROM kv WHERE key = ?',
-		MIGRATION_DONE_KEY
-	);
-	if (alreadyMigrated) {
-		return;
-	}
-
 	await copyAsyncStorageIntoSqlite(db);
-	await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', MIGRATION_DONE_KEY, 'true');
 }
 
 // Exported so SqliteStorageUsageHelper.ts can query the same kv table for the debug
@@ -87,11 +88,8 @@ export function getSqliteDb(): Promise<SQLite.SQLiteDatabase> {
 	return dbPromise;
 }
 
-// Manual, repeatable re-run of the migration copy, exposed for the settings debug screen's
-// "Daten migrieren" button. The automatic migration above only ever runs once per db (it's
-// meant to be invisible), so it can't be retried from the UI if something looks wrong; this
-// bypasses the sentinel and re-copies whatever's currently left in AsyncStorage, so a user
-// (or support) can force a resync without reinstalling the app.
+// Manual re-run of the migration copy, exposed for the settings debug screen's "Daten
+// migrieren" button - lets a user force an immediate resync without restarting the app.
 export async function migrateAsyncStorageToSqlite(): Promise<{ migratedKeys: string[] }> {
 	const db = await getSqliteDb();
 	const migratedKeys = await copyAsyncStorageIntoSqlite(db);

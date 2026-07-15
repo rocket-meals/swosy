@@ -7,9 +7,7 @@ const sqliteRows: Record<string, string> = {};
 const asyncStorageRows: Record<string, string> = {};
 
 function applySql(sql: string, key?: string, value?: string) {
-	if (sql.startsWith('INSERT OR IGNORE')) {
-		if (key !== undefined && !(key in sqliteRows)) sqliteRows[key] = value as string;
-	} else if (sql.startsWith('INSERT')) {
+	if (sql.startsWith('INSERT')) {
 		if (key !== undefined) sqliteRows[key] = value as string;
 	} else if (sql.startsWith('DELETE FROM kv WHERE')) {
 		if (key !== undefined) delete sqliteRows[key];
@@ -63,7 +61,7 @@ describe('sqliteStorage', () => {
 		expect(await sqliteStorage.getItem('missing')).toBeNull();
 	});
 
-	it('bulk-migrates every legacy AsyncStorage key into sqlite, without deleting AsyncStorage', async () => {
+	it('migrates every legacy AsyncStorage key into sqlite on boot, without deleting AsyncStorage', async () => {
 		// AsyncStorage is deliberately kept as a safety net for now (see the comment on
 		// copyAsyncStorageIntoSqlite) - it should still have every key after migration, not
 		// just sqlite.
@@ -81,20 +79,20 @@ describe('sqliteStorage', () => {
 		expect(asyncStorageRows['selected_customer_enum']).toBe('test');
 	});
 
-	it('never re-copies AsyncStorage once the one-time migration has run', async () => {
-		asyncStorageRows['persist:root'] = '{"a":1}';
-		const { sqliteKeyValueStorage: firstOpen } = await import('./sqliteStorage');
-		await firstOpen.getItem('persist:root'); // forces the db (and migration) open
+	it('re-syncs from AsyncStorage on every fresh boot, self-healing a bad previous run', async () => {
+		// Regression test for a real incident: an earlier version gated the migration behind
+		// a one-time "already migrated" sentinel row. A boot that ran the copy with a
+		// since-fixed bug still wrote that sentinel, which then permanently blocked the
+		// *fixed* code from ever re-running automatically for that user on later boots (e.g.
+		// after loading a new update via expo-updates) - only the manual "Daten migrieren"
+		// button, which bypassed the sentinel, could fix it. There must be no such gate: a
+		// fresh boot (new module instance, i.e. a fresh dbPromise) has to re-copy from
+		// AsyncStorage and overwrite whatever's in sqlite every time, automatically.
+		sqliteRows['persist:root'] = '{"a":"poisoned-by-a-previous-buggy-boot"}';
+		asyncStorageRows['persist:root'] = '{"a":"real"}';
 
-		// Something writes back into AsyncStorage after migration already completed - e.g.
-		// leftover code that hasn't been updated yet. A later app launch (fresh module
-		// instance, mirroring a fresh db connection to the same on-disk db) must not pick
-		// this up: the migration is guarded by a one-time sentinel row, not a per-key check.
-		asyncStorageRows['persist:root'] = '{"a":"stale-should-be-ignored"}';
-
-		jest.resetModules();
-		const { sqliteKeyValueStorage: secondOpen } = await import('./sqliteStorage');
-		expect(await secondOpen.getItem('persist:root')).toBe('{"a":1}');
+		const { sqliteKeyValueStorage } = await import('./sqliteStorage');
+		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBe('{"a":"real"}');
 	});
 
 	it('setItem/removeItem/multiRemove/clear operate directly on sqlite', async () => {
@@ -123,32 +121,21 @@ describe('sqliteStorage', () => {
 		expect(await sqliteStorage.getItem('persist:root')).toBe('{"a":1}');
 	});
 
-	it('migration overwrites a pre-existing sqlite row with AsyncStorage data, not the other way round', async () => {
-		// Regression test: a stray/poisoned sqlite row (e.g. left over from a since-fixed
-		// race condition) must not block real data still sitting in AsyncStorage from being
-		// migrated - INSERT OR IGNORE used to do exactly that and permanently destroy the
-		// real value (AsyncStorage was cleared regardless of whether the insert landed).
-		sqliteRows['persist:root'] = '{"a":"poisoned"}';
-		asyncStorageRows['persist:root'] = '{"a":"real"}';
-
-		const { sqliteKeyValueStorage } = await import('./sqliteStorage');
-		expect(await sqliteKeyValueStorage.getItem('persist:root')).toBe('{"a":"real"}');
-	});
-
-	it('migrateAsyncStorageToSqlite() can be re-run manually after the automatic migration already completed', async () => {
+	it('migrateAsyncStorageToSqlite() (the debug "Daten migrieren" button) can be re-run manually any time', async () => {
 		const { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } = await import('./sqliteStorage');
-		await sqliteKeyValueStorage.getItem('anything'); // forces the automatic (empty) migration to run and set its sentinel
+		await sqliteKeyValueStorage.getItem('anything'); // forces the db (and the boot-time migration) open
 
-		// Something left a key in AsyncStorage after the automatic migration already ran
-		// (e.g. code that hasn't been updated to use sqliteKeyValueStorage yet).
+		// Something left a key in AsyncStorage after boot already ran the automatic copy
+		// (e.g. a setting changed while offline via code that still writes AsyncStorage).
 		asyncStorageRows['leftover_key'] = '"still here"';
 
 		const result = await migrateAsyncStorageToSqlite();
-		expect(result.migratedKeys).toEqual(['leftover_key']);
+		expect(result.migratedKeys).toContain('leftover_key');
 		expect(await sqliteKeyValueStorage.getItem('leftover_key')).toBe('"still here"');
-		// AsyncStorage is kept as a safety net for now - re-running the copy again should
-		// still report the same key, not an empty list.
+
+		// AsyncStorage is kept as a safety net for now - re-running again should still
+		// report the same key, not an empty list.
 		const secondResult = await migrateAsyncStorageToSqlite();
-		expect(secondResult.migratedKeys).toEqual(['leftover_key']);
+		expect(secondResult.migratedKeys).toContain('leftover_key');
 	});
 });
