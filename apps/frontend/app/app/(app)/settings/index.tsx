@@ -361,6 +361,7 @@ const Settings = () => {
         const [asyncStorageUsageTotalBytes, setAsyncStorageUsageTotalBytes] = useState(0);
         const [isMigratingStorage, setIsMigratingStorage] = useState(false);
         const [isClearingAsyncStorage, setIsClearingAsyncStorage] = useState(false);
+        const [isClearingSqliteStorage, setIsClearingSqliteStorage] = useState(false);
 
         const refreshSqliteStorageUsage = useCallback(async () => {
                 try {
@@ -486,6 +487,33 @@ const Settings = () => {
                         ]
                 );
         }, [refreshAsyncStorageUsage, toast, translate]);
+
+        const handleClearSqliteStorage = useCallback(() => {
+                Alert.alert(
+                        'SQLite löschen',
+                        'Löscht die komplette SQLite-Datenbank inkl. Migrations-Status - zum Testen/Debuggen. Beim nächsten Start wird AsyncStorage erneut migriert. Fortfahren?',
+                        [
+                                { text: translate(TranslationKeys.cancel), style: 'cancel' },
+                                {
+                                        text: 'Löschen',
+                                        style: 'destructive',
+                                        onPress: async () => {
+                                                setIsClearingSqliteStorage(true);
+                                                try {
+                                                        await sqliteKeyValueStorage.clear();
+                                                        await refreshSqliteStorageUsage();
+                                                        toast('SQLite geleert', 'success');
+                                                } catch (error) {
+                                                        console.error('Error clearing sqlite storage:', error);
+                                                        toast('Löschen fehlgeschlagen', 'error');
+                                                } finally {
+                                                        setIsClearingSqliteStorage(false);
+                                                }
+                                        },
+                                },
+                        ]
+                );
+        }, [refreshSqliteStorageUsage, toast, translate]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -1014,6 +1042,14 @@ const Settings = () => {
 							label="Speicher aktualisieren"
 							value=""
 							handleFunction={refreshSqliteStorageUsage}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="delete-outline" size={24} color={theme.screen.icon} />}
+							label="SQLite löschen"
+							value={isClearingSqliteStorage ? '...' : ''}
+							handleFunction={isClearingSqliteStorage ? undefined : handleClearSqliteStorage}
 							groupPosition="bottom"
 						/>
 					</View>
@@ -1064,6 +1100,7 @@ const Settings = () => {
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,
 		isClearingAsyncStorage, handleClearAsyncStorage,
+		isClearingSqliteStorage, handleClearSqliteStorage,
 	]);
 
 	return (
