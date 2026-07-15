@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -38,18 +38,16 @@ export type GameState = {
 	currentRoundIndex: number;
 };
 
-// ─── File access ──────────────────────────────────────────────────────────────
+// ─── Storage access ───────────────────────────────────────────────────────────
 
-function getGameFile(): File {
-	return new File(Paths.document, 'score-tracker-game.json');
-}
+const GAME_KEY = 'score-tracker-game.json';
 
 /**
  * Persist game state to disk.
  */
-export function saveGameState(state: GameState): void {
+export async function saveGameState(state: GameState): Promise<void> {
 	try {
-		getGameFile().write(JSON.stringify(state));
+		await setStorageItem(GAME_KEY, JSON.stringify(state));
 	} catch (err) {
 		console.warn('[GameStorage] Failed to save game state:', err);
 	}
@@ -68,10 +66,9 @@ function emptyGameState(): GameState {
  */
 export async function loadGameState(): Promise<GameState> {
 	try {
-		const file = getGameFile();
-		if (!file.exists) return emptyGameState();
-		const content = await file.text();
-		const parsed = JSON.parse(content) as Partial<GameState>;
+		const raw = await getStorageItem(GAME_KEY);
+		if (raw === null) return emptyGameState();
+		const parsed = JSON.parse(raw) as Partial<GameState>;
 		if (Array.isArray(parsed.players) && Array.isArray(parsed.rounds)) {
 			const rounds = parsed.rounds;
 			const status: GameStatus = parsed.status ?? (rounds.length > 0 ? 'active' : 'setup');

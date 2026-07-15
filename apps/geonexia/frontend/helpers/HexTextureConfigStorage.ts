@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import { AnchorOverrideFields } from './AnchorOverrideFields';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -9,17 +9,15 @@ export type HexTextureConfigState = Record<string, TextureSpriteAnchorOverride>;
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
 
-function getHexTextureConfigFile(): File {
-	return new File(Paths.document, 'geonexia-hex-texture-config.json');
-}
+const HEX_TEXTURE_CONFIG_KEY = 'geonexia-hex-texture-config.json';
 
 /**
  * Persist hex texture config (sprite anchor overrides) to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveHexTextureConfig(config: HexTextureConfigState): void {
+export async function saveHexTextureConfig(config: HexTextureConfigState): Promise<void> {
 	try {
-		getHexTextureConfigFile().write(JSON.stringify(config));
+		await setStorageItem(HEX_TEXTURE_CONFIG_KEY, JSON.stringify(config));
 	} catch (err) {
 		console.warn('[HexTextureConfigStorage] Failed to save hex texture config:', err);
 	}
@@ -31,10 +29,9 @@ export function saveHexTextureConfig(config: HexTextureConfigState): void {
  */
 export async function loadHexTextureConfig(): Promise<HexTextureConfigState> {
 	try {
-		const file = getHexTextureConfigFile();
-		if (!file.exists) return {};
-		const content = await file.text();
-		return JSON.parse(content) as HexTextureConfigState;
+		const raw = await getStorageItem(HEX_TEXTURE_CONFIG_KEY);
+		if (raw === null) return {};
+		return JSON.parse(raw) as HexTextureConfigState;
 	} catch {
 		return {};
 	}

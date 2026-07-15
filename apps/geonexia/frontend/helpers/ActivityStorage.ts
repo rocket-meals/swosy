@@ -1,4 +1,4 @@
-import { Directory, File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem, removeStorageItem } from 'repo-depkit-common-ui';
 import type { RedLineRouteFields, RecordingSessionFields } from './ActivityRouteSharedTypes';
 import type { GpsRoutePoint, SpeedStats as CommonSpeedStats } from 'repo-depkit-common';
 
@@ -154,50 +154,50 @@ export type SavedActivity = RedLineRouteFields &
 		isManual?: boolean;
 	};
 
-// ─── Storage directories and files ───────────────────────────────────────────
+// ─── Storage keys ─────────────────────────────────────────────────────────────
 
-function getActivitiesDir(): Directory {
-	return new Directory(Paths.document, 'geonexia-activities');
+// One key per activity, plus an index key listing which activity IDs exist
+// (mirrors the old one-file-per-activity directory layout, since the sqlite kv
+// store has no directory-listing equivalent).
+const ACTIVITIES_INDEX_KEY = 'geonexia-activities-index.json';
+const CONSENT_KEY = 'geonexia-osm-consent.json';
+
+function getActivityKey(id: string): string {
+	return `geonexia-activity-${id}.json`;
 }
 
-function getActivityFile(id: string): File {
-	return new File(getActivitiesDir(), id + '.json');
-}
-
-function getConsentFile(): File {
-	return new File(Paths.document, 'geonexia-osm-consent.json');
+async function getActivityIds(): Promise<string[]> {
+	try {
+		const raw = await getStorageItem(ACTIVITIES_INDEX_KEY);
+		if (raw === null) return [];
+		const ids = JSON.parse(raw);
+		return Array.isArray(ids) ? ids : [];
+	} catch {
+		return [];
+	}
 }
 
 // ─── Activity persistence ─────────────────────────────────────────────────────
 
-export function saveActivity(activity: SavedActivity): void {
-	const dir = getActivitiesDir();
-	if (!dir.exists) {
-		dir.create({ idempotent: true });
+export async function saveActivity(activity: SavedActivity): Promise<void> {
+	await setStorageItem(getActivityKey(activity.id), JSON.stringify(activity));
+	const ids = await getActivityIds();
+	if (!ids.includes(activity.id)) {
+		ids.push(activity.id);
+		await setStorageItem(ACTIVITIES_INDEX_KEY, JSON.stringify(ids));
 	}
-	getActivityFile(activity.id).write(JSON.stringify(activity));
 }
 
 export async function loadActivities(): Promise<SavedActivity[]> {
-	const dir = getActivitiesDir();
-	if (!dir.exists) return [];
-
-	let entries: (File | Directory)[];
-	try {
-		entries = dir.list();
-	} catch {
-		return [];
-	}
-
+	const ids = await getActivityIds();
 	const activities: SavedActivity[] = [];
-	for (const entry of entries) {
-		if (!(entry instanceof File)) continue;
-		if (!entry.name.endsWith('.json')) continue;
+	for (const id of ids) {
 		try {
-			const content = await entry.text();
-			activities.push(JSON.parse(content) as SavedActivity);
+			const raw = await getStorageItem(getActivityKey(id));
+			if (raw === null) continue;
+			activities.push(JSON.parse(raw) as SavedActivity);
 		} catch {
-			// Skip corrupted files
+			// Skip corrupted entries
 		}
 	}
 	// Sort by startedAt descending (newest first)
@@ -206,35 +206,35 @@ export async function loadActivities(): Promise<SavedActivity[]> {
 }
 
 export async function loadActivity(id: string): Promise<SavedActivity | null> {
-	const file = getActivityFile(id);
-	if (!file.exists) return null;
 	try {
-		const content = await file.text();
-		return JSON.parse(content) as SavedActivity;
+		const raw = await getStorageItem(getActivityKey(id));
+		if (raw === null) return null;
+		return JSON.parse(raw) as SavedActivity;
 	} catch {
 		return null;
 	}
 }
 
-export function deleteActivity(id: string): void {
+export async function deleteActivity(id: string): Promise<void> {
 	try {
-		const file = getActivityFile(id);
-		if (file.exists) file.delete();
+		await removeStorageItem(getActivityKey(id));
+		const ids = await getActivityIds();
+		const filtered = ids.filter((existingId) => existingId !== id);
+		if (filtered.length !== ids.length) {
+			await setStorageItem(ACTIVITIES_INDEX_KEY, JSON.stringify(filtered));
+		}
 	} catch {
 		// Ignore errors
 	}
 }
 
-export function deleteAllActivities(): void {
+export async function deleteAllActivities(): Promise<void> {
 	try {
-		const dir = getActivitiesDir();
-		if (!dir.exists) return;
-		const entries = dir.list();
-		for (const entry of entries) {
-			if (entry instanceof File && entry.name.endsWith('.json')) {
-				entry.delete();
-			}
+		const ids = await getActivityIds();
+		for (const id of ids) {
+			await removeStorageItem(getActivityKey(id));
 		}
+		await removeStorageItem(ACTIVITIES_INDEX_KEY);
 	} catch {
 		// Ignore errors
 	}
@@ -242,9 +242,9 @@ export function deleteAllActivities(): void {
 
 // ─── OSM consent persistence ──────────────────────────────────────────────────
 
-export function saveOsmConsent(consented: boolean): void {
+export async function saveOsmConsent(consented: boolean): Promise<void> {
 	try {
-		getConsentFile().write(JSON.stringify({ consented }));
+		await setStorageItem(CONSENT_KEY, JSON.stringify({ consented }));
 	} catch {
 		// Ignore write errors
 	}
@@ -252,10 +252,9 @@ export function saveOsmConsent(consented: boolean): void {
 
 export async function loadOsmConsent(): Promise<boolean> {
 	try {
-		const file = getConsentFile();
-		if (!file.exists) return false;
-		const content = await file.text();
-		const data = JSON.parse(content) as { consented?: boolean };
+		const raw = await getStorageItem(CONSENT_KEY);
+		if (raw === null) return false;
+		const data = JSON.parse(raw) as { consented?: boolean };
 		return data.consented === true;
 	} catch {
 		return false;

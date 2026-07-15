@@ -1,18 +1,16 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
 export const GPS_INTERVAL_DEFAULT_SECONDS = 10;
 
-function getGpsIntervalFile(): File {
-	return new File(Paths.document, 'geonexia-gps-interval.json');
-}
+const GPS_INTERVAL_KEY = 'geonexia-gps-interval.json';
 
 /**
  * Persist the GPS interval (in seconds) to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveGpsIntervalSeconds(seconds: number): void {
+export async function saveGpsIntervalSeconds(seconds: number): Promise<void> {
 	try {
-		getGpsIntervalFile().write(JSON.stringify({ seconds }));
+		await setStorageItem(GPS_INTERVAL_KEY, JSON.stringify({ seconds }));
 	} catch (err) {
 		console.warn('[GpsIntervalStorage] Failed to save GPS interval seconds:', err);
 	}
@@ -25,10 +23,9 @@ export function saveGpsIntervalSeconds(seconds: number): void {
  */
 export async function loadGpsIntervalSeconds(): Promise<number> {
 	try {
-		const file = getGpsIntervalFile();
-		if (!file.exists) return GPS_INTERVAL_DEFAULT_SECONDS;
-		const content = await file.text();
-		const parsed = JSON.parse(content) as { seconds?: unknown; mode?: string };
+		const raw = await getStorageItem(GPS_INTERVAL_KEY);
+		if (raw === null) return GPS_INTERVAL_DEFAULT_SECONDS;
+		const parsed = JSON.parse(raw) as { seconds?: unknown; mode?: string };
 		if (typeof parsed.seconds === 'number' && parsed.seconds > 0) return parsed.seconds;
 		// Migrate from legacy mode-based storage
 		if (typeof parsed.mode === 'string') {

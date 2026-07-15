@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -227,41 +227,21 @@ export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | '
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
 
-function getHexTileFile(): File {
-	return new File(Paths.document, 'geonexia-hex-tiles.json');
-}
-
-function getDevHexTileFile(): File {
-	return new File(Paths.document, 'geonexia-dev-hex-tiles.json');
-}
-
-function getDevModeFlagFile(): File {
-	return new File(Paths.document, 'geonexia-dev-mode.json');
-}
-
-function getWalkedEdgesFile(): File {
-	return new File(Paths.document, 'geonexia-walked-edges.json');
-}
-
-function getDevWalkedEdgesFile(): File {
-	return new File(Paths.document, 'geonexia-dev-walked-edges.json');
-}
-
-function getWalkedEdgesRedLineFile(): File {
-	return new File(Paths.document, 'geonexia-walked-edges-h11.json');
-}
-
-function getDevWalkedEdgesRedLineFile(): File {
-	return new File(Paths.document, 'geonexia-dev-walked-edges-h11.json');
-}
+const HEX_TILE_KEY = 'geonexia-hex-tiles.json';
+const DEV_HEX_TILE_KEY = 'geonexia-dev-hex-tiles.json';
+const DEV_MODE_FLAG_KEY = 'geonexia-dev-mode.json';
+const WALKED_EDGES_KEY = 'geonexia-walked-edges.json';
+const DEV_WALKED_EDGES_KEY = 'geonexia-dev-walked-edges.json';
+const WALKED_EDGES_RED_LINE_KEY = 'geonexia-walked-edges-h11.json';
+const DEV_WALKED_EDGES_RED_LINE_KEY = 'geonexia-dev-walked-edges-h11.json';
 
 /**
  * Persist the full hex tile record map to disk (synchronous write).
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveHexTileState(records: Record<string, HexTileRecord>): void {
+export async function saveHexTileState(records: Record<string, HexTileRecord>): Promise<void> {
 	try {
-		getHexTileFile().write(JSON.stringify(records));
+		await setStorageItem(HEX_TILE_KEY, JSON.stringify(records));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save hex tile state:', err);
 	}
@@ -273,10 +253,9 @@ export function saveHexTileState(records: Record<string, HexTileRecord>): void {
  */
 export async function loadHexTileState(): Promise<Record<string, HexTileRecord>> {
 	try {
-		const file = getHexTileFile();
-		if (!file.exists) return {};
-		const content = await file.text();
-		return JSON.parse(content) as Record<string, HexTileRecord>;
+		const raw = await getStorageItem(HEX_TILE_KEY);
+		if (raw === null) return {};
+		return JSON.parse(raw) as Record<string, HexTileRecord>;
 	} catch {
 		return {};
 	}
@@ -286,9 +265,9 @@ export async function loadHexTileState(): Promise<Record<string, HexTileRecord>>
  * Persist the dev-mode hex tile record map to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveDevHexTileState(records: Record<string, HexTileRecord>): void {
+export async function saveDevHexTileState(records: Record<string, HexTileRecord>): Promise<void> {
 	try {
-		getDevHexTileFile().write(JSON.stringify(records));
+		await setStorageItem(DEV_HEX_TILE_KEY, JSON.stringify(records));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save dev hex tile state:', err);
 	}
@@ -300,10 +279,9 @@ export function saveDevHexTileState(records: Record<string, HexTileRecord>): voi
  */
 export async function loadDevHexTileState(): Promise<Record<string, HexTileRecord>> {
 	try {
-		const file = getDevHexTileFile();
-		if (!file.exists) return {};
-		const content = await file.text();
-		return JSON.parse(content) as Record<string, HexTileRecord>;
+		const raw = await getStorageItem(DEV_HEX_TILE_KEY);
+		if (raw === null) return {};
+		return JSON.parse(raw) as Record<string, HexTileRecord>;
 	} catch {
 		return {};
 	}
@@ -315,9 +293,9 @@ export async function loadDevHexTileState(): Promise<Record<string, HexTileRecor
  * index first so duplicate edges are naturally deduplicated.
  * Silently ignores write errors.
  */
-export function saveWalkedEdges(edges: string[]): void {
+export async function saveWalkedEdges(edges: string[]): Promise<void> {
 	try {
-		getWalkedEdgesFile().write(JSON.stringify(edges));
+		await setStorageItem(WALKED_EDGES_KEY, JSON.stringify(edges));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save walked edges:', err);
 	}
@@ -329,10 +307,9 @@ export function saveWalkedEdges(edges: string[]): void {
  */
 export async function loadWalkedEdges(): Promise<string[]> {
 	try {
-		const file = getWalkedEdgesFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		return JSON.parse(content) as string[];
+		const raw = await getStorageItem(WALKED_EDGES_KEY);
+		if (raw === null) return [];
+		return JSON.parse(raw) as string[];
 	} catch {
 		return [];
 	}
@@ -342,9 +319,9 @@ export async function loadWalkedEdges(): Promise<string[]> {
  * Persist the dev-mode walked edges array to disk.
  * Silently ignores write errors.
  */
-export function saveDevWalkedEdges(edges: string[]): void {
+export async function saveDevWalkedEdges(edges: string[]): Promise<void> {
 	try {
-		getDevWalkedEdgesFile().write(JSON.stringify(edges));
+		await setStorageItem(DEV_WALKED_EDGES_KEY, JSON.stringify(edges));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save dev walked edges:', err);
 	}
@@ -356,10 +333,9 @@ export function saveDevWalkedEdges(edges: string[]): void {
  */
 export async function loadDevWalkedEdges(): Promise<string[]> {
 	try {
-		const file = getDevWalkedEdgesFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		return JSON.parse(content) as string[];
+		const raw = await getStorageItem(DEV_WALKED_EDGES_KEY);
+		if (raw === null) return [];
+		return JSON.parse(raw) as string[];
 	} catch {
 		return [];
 	}
@@ -370,9 +346,9 @@ export async function loadDevWalkedEdges(): Promise<string[]> {
  * Each edge is stored as "cellA:cellB" with the lexicographically smaller
  * index first. Silently ignores write errors.
  */
-export function saveWalkedEdgesRedLine(edges: string[]): void {
+export async function saveWalkedEdgesRedLine(edges: string[]): Promise<void> {
 	try {
-		getWalkedEdgesRedLineFile().write(JSON.stringify(edges));
+		await setStorageItem(WALKED_EDGES_RED_LINE_KEY, JSON.stringify(edges));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save red-line walked edges:', err);
 	}
@@ -384,10 +360,9 @@ export function saveWalkedEdgesRedLine(edges: string[]): void {
  */
 export async function loadWalkedEdgesRedLine(): Promise<string[]> {
 	try {
-		const file = getWalkedEdgesRedLineFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		return JSON.parse(content) as string[];
+		const raw = await getStorageItem(WALKED_EDGES_RED_LINE_KEY);
+		if (raw === null) return [];
+		return JSON.parse(raw) as string[];
 	} catch {
 		return [];
 	}
@@ -397,9 +372,9 @@ export async function loadWalkedEdgesRedLine(): Promise<string[]> {
  * Persist the dev-mode red-line walked edges array to disk.
  * Silently ignores write errors.
  */
-export function saveDevWalkedEdgesRedLine(edges: string[]): void {
+export async function saveDevWalkedEdgesRedLine(edges: string[]): Promise<void> {
 	try {
-		getDevWalkedEdgesRedLineFile().write(JSON.stringify(edges));
+		await setStorageItem(DEV_WALKED_EDGES_RED_LINE_KEY, JSON.stringify(edges));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save dev red-line walked edges:', err);
 	}
@@ -411,10 +386,9 @@ export function saveDevWalkedEdgesRedLine(edges: string[]): void {
  */
 export async function loadDevWalkedEdgesRedLine(): Promise<string[]> {
 	try {
-		const file = getDevWalkedEdgesRedLineFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		return JSON.parse(content) as string[];
+		const raw = await getStorageItem(DEV_WALKED_EDGES_RED_LINE_KEY);
+		if (raw === null) return [];
+		return JSON.parse(raw) as string[];
 	} catch {
 		return [];
 	}
@@ -424,9 +398,9 @@ export async function loadDevWalkedEdgesRedLine(): Promise<string[]> {
  * Persist the dev-mode active flag to disk.
  * Silently ignores write errors.
  */
-export function saveDevModeFlag(isDevMode: boolean): void {
+export async function saveDevModeFlag(isDevMode: boolean): Promise<void> {
 	try {
-		getDevModeFlagFile().write(JSON.stringify({ active: isDevMode }));
+		await setStorageItem(DEV_MODE_FLAG_KEY, JSON.stringify({ active: isDevMode }));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save dev mode flag:', err);
 	}
@@ -438,10 +412,9 @@ export function saveDevModeFlag(isDevMode: boolean): void {
  */
 export async function loadDevModeFlag(): Promise<boolean> {
 	try {
-		const file = getDevModeFlagFile();
-		if (!file.exists) return false;
-		const content = await file.text();
-		const data = JSON.parse(content) as { active?: boolean };
+		const raw = await getStorageItem(DEV_MODE_FLAG_KEY);
+		if (raw === null) return false;
+		const data = JSON.parse(raw) as { active?: boolean };
 		return data.active === true;
 	} catch {
 		return false;
@@ -450,21 +423,16 @@ export async function loadDevModeFlag(): Promise<boolean> {
 
 // ─── World building ID ────────────────────────────────────────────────────────
 
-function getWorldBuildingIdFile(): File {
-	return new File(Paths.document, 'geonexia-world-building-id.json');
-}
-
-function getDevWorldBuildingIdFile(): File {
-	return new File(Paths.document, 'geonexia-dev-world-building-id.json');
-}
+const WORLD_BUILDING_ID_KEY = 'geonexia-world-building-id.json';
+const DEV_WORLD_BUILDING_ID_KEY = 'geonexia-dev-world-building-id.json';
 
 /**
  * Persist the world building ID to disk.
  * Silently ignores write errors.
  */
-export function saveWorldBuildingId(id: number): void {
+export async function saveWorldBuildingId(id: number): Promise<void> {
 	try {
-		getWorldBuildingIdFile().write(JSON.stringify({ id }));
+		await setStorageItem(WORLD_BUILDING_ID_KEY, JSON.stringify({ id }));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save world building id:', err);
 	}
@@ -476,10 +444,9 @@ export function saveWorldBuildingId(id: number): void {
  */
 export async function loadWorldBuildingId(): Promise<number | null> {
 	try {
-		const file = getWorldBuildingIdFile();
-		if (!file.exists) return null;
-		const content = await file.text();
-		const data = JSON.parse(content) as { id?: number };
+		const raw = await getStorageItem(WORLD_BUILDING_ID_KEY);
+		if (raw === null) return null;
+		const data = JSON.parse(raw) as { id?: number };
 		return typeof data.id === 'number' ? data.id : null;
 	} catch {
 		return null;
@@ -490,9 +457,9 @@ export async function loadWorldBuildingId(): Promise<number | null> {
  * Persist the dev-mode world building ID to disk.
  * Silently ignores write errors.
  */
-export function saveDevWorldBuildingId(id: number): void {
+export async function saveDevWorldBuildingId(id: number): Promise<void> {
 	try {
-		getDevWorldBuildingIdFile().write(JSON.stringify({ id }));
+		await setStorageItem(DEV_WORLD_BUILDING_ID_KEY, JSON.stringify({ id }));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save dev world building id:', err);
 	}
@@ -504,10 +471,9 @@ export function saveDevWorldBuildingId(id: number): void {
  */
 export async function loadDevWorldBuildingId(): Promise<number | null> {
 	try {
-		const file = getDevWorldBuildingIdFile();
-		if (!file.exists) return null;
-		const content = await file.text();
-		const data = JSON.parse(content) as { id?: number };
+		const raw = await getStorageItem(DEV_WORLD_BUILDING_ID_KEY);
+		if (raw === null) return null;
+		const data = JSON.parse(raw) as { id?: number };
 		return typeof data.id === 'number' ? data.id : null;
 	} catch {
 		return null;
@@ -516,17 +482,15 @@ export async function loadDevWorldBuildingId(): Promise<number | null> {
 
 // ─── Debug mode flag ──────────────────────────────────────────────────────────
 
-function getDebugModeFlagFile(): File {
-	return new File(Paths.document, 'geonexia-debug-mode.json');
-}
+const DEBUG_MODE_FLAG_KEY = 'geonexia-debug-mode.json';
 
 /**
  * Persist the debug mode active flag to disk.
  * Silently ignores write errors.
  */
-export function saveDebugModeFlag(isDebugMode: boolean): void {
+export async function saveDebugModeFlag(isDebugMode: boolean): Promise<void> {
 	try {
-		getDebugModeFlagFile().write(JSON.stringify({ active: isDebugMode }));
+		await setStorageItem(DEBUG_MODE_FLAG_KEY, JSON.stringify({ active: isDebugMode }));
 	} catch (err) {
 		console.warn('[HexTileStorage] Failed to save debug mode flag:', err);
 	}
@@ -538,10 +502,9 @@ export function saveDebugModeFlag(isDebugMode: boolean): void {
  */
 export async function loadDebugModeFlag(): Promise<boolean> {
 	try {
-		const file = getDebugModeFlagFile();
-		if (!file.exists) return false;
-		const content = await file.text();
-		const data = JSON.parse(content) as { active?: boolean };
+		const raw = await getStorageItem(DEBUG_MODE_FLAG_KEY);
+		if (raw === null) return false;
+		const data = JSON.parse(raw) as { active?: boolean };
 		return data.active === true;
 	} catch {
 		return false;

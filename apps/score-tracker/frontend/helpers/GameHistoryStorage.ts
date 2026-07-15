@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -26,18 +26,16 @@ export type GameHistoryState = {
 	entries: GameHistoryEntry[];
 };
 
-// ─── File access ──────────────────────────────────────────────────────────────
+// ─── Storage access ───────────────────────────────────────────────────────────
 
-function getHistoryFile(): File {
-	return new File(Paths.document, 'score-tracker-history.json');
-}
+const HISTORY_KEY = 'score-tracker-history.json';
 
 /**
  * Persist the game history to disk.
  */
-export function saveGameHistory(entries: GameHistoryEntry[]): void {
+export async function saveGameHistory(entries: GameHistoryEntry[]): Promise<void> {
 	try {
-		getHistoryFile().write(JSON.stringify({ entries }));
+		await setStorageItem(HISTORY_KEY, JSON.stringify({ entries }));
 	} catch (err) {
 		console.warn('[GameHistoryStorage] Failed to save game history:', err);
 	}
@@ -48,10 +46,9 @@ export function saveGameHistory(entries: GameHistoryEntry[]): void {
  */
 export async function loadGameHistory(): Promise<GameHistoryEntry[]> {
 	try {
-		const file = getHistoryFile();
-		if (!file.exists) return [];
-		const content = await file.text();
-		const parsed = JSON.parse(content) as Partial<GameHistoryState>;
+		const raw = await getStorageItem(HISTORY_KEY);
+		if (raw === null) return [];
+		const parsed = JSON.parse(raw) as Partial<GameHistoryState>;
 		if (Array.isArray(parsed.entries)) return parsed.entries;
 		return [];
 	} catch {

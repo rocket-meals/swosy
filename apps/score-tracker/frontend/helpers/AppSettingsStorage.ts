@@ -1,4 +1,4 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
 /** Number of scoreboard columns. Currently only 1 or 2 are offered in the settings UI. */
 export type ColumnsCount = 1 | 2;
@@ -13,9 +13,7 @@ const DEFAULT_APP_SETTINGS: AppSettingsState = {
 	columnsLandscape: 2,
 };
 
-function getAppSettingsFile(): File {
-	return new File(Paths.document, 'score-tracker-app-settings.json');
-}
+const APP_SETTINGS_KEY = 'score-tracker-app-settings.json';
 
 function normalizeColumnsCount(value: unknown, fallback: ColumnsCount): ColumnsCount {
 	return value === 1 || value === 2 ? value : fallback;
@@ -24,9 +22,9 @@ function normalizeColumnsCount(value: unknown, fallback: ColumnsCount): ColumnsC
 /**
  * Persist app settings (e.g. the scoreboard columns layout) to disk.
  */
-export function saveAppSettings(settings: AppSettingsState): void {
+export async function saveAppSettings(settings: AppSettingsState): Promise<void> {
 	try {
-		getAppSettingsFile().write(JSON.stringify(settings));
+		await setStorageItem(APP_SETTINGS_KEY, JSON.stringify(settings));
 	} catch (err) {
 		console.warn('[AppSettingsStorage] Failed to save app settings:', err);
 	}
@@ -37,10 +35,9 @@ export function saveAppSettings(settings: AppSettingsState): void {
  */
 export async function loadAppSettings(): Promise<AppSettingsState> {
 	try {
-		const file = getAppSettingsFile();
-		if (!file.exists) return DEFAULT_APP_SETTINGS;
-		const content = await file.text();
-		const parsed = JSON.parse(content) as Partial<AppSettingsState>;
+		const raw = await getStorageItem(APP_SETTINGS_KEY);
+		if (raw === null) return DEFAULT_APP_SETTINGS;
+		const parsed = JSON.parse(raw) as Partial<AppSettingsState>;
 		return {
 			columnsPortrait: normalizeColumnsCount(parsed.columnsPortrait, DEFAULT_APP_SETTINGS.columnsPortrait),
 			columnsLandscape: normalizeColumnsCount(parsed.columnsLandscape, DEFAULT_APP_SETTINGS.columnsLandscape),

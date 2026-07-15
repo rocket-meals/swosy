@@ -1,17 +1,15 @@
-import { File, Paths } from 'expo-file-system';
+import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { SportType } from '../store/sportTypeSlice';
 
-function getSportTypeFile(): File {
-	return new File(Paths.document, 'geonexia-sport-type.json');
-}
+const SPORT_TYPE_KEY = 'geonexia-sport-type.json';
 
 /**
  * Persist the selected sport type to disk.
  * Silently ignores write errors to avoid crashing on storage failures.
  */
-export function saveSportType(type: SportType): void {
+export async function saveSportType(type: SportType): Promise<void> {
 	try {
-		getSportTypeFile().write(JSON.stringify({ type }));
+		await setStorageItem(SPORT_TYPE_KEY, JSON.stringify({ type }));
 	} catch (err) {
 		console.warn('[SportTypeStorage] Failed to save sport type:', err);
 	}
@@ -23,10 +21,9 @@ export function saveSportType(type: SportType): void {
  */
 export async function loadSportType(): Promise<SportType> {
 	try {
-		const file = getSportTypeFile();
-		if (!file.exists) return 'run';
-		const content = await file.text();
-		const parsed = JSON.parse(content) as { type?: SportType };
+		const raw = await getStorageItem(SPORT_TYPE_KEY);
+		if (raw === null) return 'run';
+		const parsed = JSON.parse(raw) as { type?: SportType };
 		return parsed.type ?? 'run';
 	} catch {
 		return 'run';
