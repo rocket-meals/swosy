@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 39 | 39 |
-| 🔧 Maintainability | 1931 | 9 |
+| 🐛 Reliability | 48 | 48 |
+| 🔧 Maintainability | 1931 | 0 |
 
-**Total issues:** 1972 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1981 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,7 +22,7 @@
   apps/score-tracker/frontend/store/friendsSlice.ts:19
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/friendsSlice.ts#L19
 
-## 🐛 Reliability (39/39)
+## 🐛 Reliability (48/48)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -112,6 +112,18 @@
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/activities/[id].tsx:518
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L518
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/activities/[id].tsx:542
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L542
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/activities/index.tsx:586
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L586
+
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:114
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
@@ -127,6 +139,30 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/index.tsx:3466
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L3466
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/index.tsx:5013
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5013
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/routes/[id].tsx:571
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L571
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/routes/[id].tsx:1088
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L1088
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/settings/index.tsx:474
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L474
+
+- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
+  apps/geonexia/frontend/app/settings/index.tsx:539
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L539
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
@@ -179,42 +215,4 @@
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
-
-## 🔧 Maintainability (9/1931)
-
-- **Prefer `node:path` over `path`.**
-  apps/accessibilityTester/src/index.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L1
-
-- **'fs' imported multiple times.**
-  apps/accessibilityTester/src/report.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
-
-- **Prefer `node:fs` over `fs`.**
-  apps/accessibilityTester/src/report.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
-
-- **'fs' imported multiple times.**
-  apps/accessibilityTester/src/report.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
-
-- **Prefer `node:fs` over `fs`.**
-  apps/accessibilityTester/src/report.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
-
-- **Prefer `node:path` over `path`.**
-  apps/accessibilityTester/src/report.ts:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L3
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
-
-- **`String.raw` should be used to avoid escaping `\`.**
-  apps/accessibilityTester/src/report.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
 

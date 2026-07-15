@@ -1,4 +1,13 @@
 Key,Message,Component,Line
+"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",518
+"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",542
+"AZ9lpRU4KqeTrVO2SpWQ","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",586
+"AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3466
+"AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5013
+"AZ9lpRQkKqeTrVO2SpWM","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",571
+"AZ9lpRQkKqeTrVO2SpWN","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",1088
+"AZ9lpRVqKqeTrVO2SpWR","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",474
+"AZ9lpRVqKqeTrVO2SpWS","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",539
 "AZ9gjKGLzJugdJpoBVO_","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",81
 "AZ9gjKGLzJugdJpoBVPB","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",97
 "AZ9gjKGLzJugdJpoBVPF","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",122
