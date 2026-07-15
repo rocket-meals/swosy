@@ -46,6 +46,7 @@ import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 import { SettingsProvider } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import { afterRehydration } from '@/helper/afterRehydration';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -149,7 +150,7 @@ export default function Layout() {
                         }
                 };
 
-                setServerUrl();
+                return afterRehydration(setServerUrl);
         }, []);
 
 	if (!fontsLoaded) {

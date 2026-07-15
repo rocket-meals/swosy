@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Appearance, Platform, StatusBar } from 'react-native';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import { configureStore } from '@/redux/store';
+import { afterRehydration } from '@/helper/afterRehydration';
 
 export const useTheme = () => {
 	const [theme, setTheme] = useState(configureStore.getState().settings.selectedTheme);
@@ -29,17 +30,19 @@ export const useTheme = () => {
 		});
 
 		if (theme === 'systematic') {
-			const systemTheme = Appearance.getColorScheme();
-			configureStore.dispatch(changeTheme('systematic'));
+			const unsubscribeRehydration = afterRehydration(() => {
+				configureStore.dispatch(changeTheme('systematic'));
+			});
 
 			const listener = Appearance.addChangeListener(({ colorScheme }) => {
 				if (colorScheme) {
-					configureStore.dispatch(changeTheme('systematic'));
+					afterRehydration(() => configureStore.dispatch(changeTheme('systematic')));
 				}
 			});
 
 			return () => {
 				listener.remove();
+				unsubscribeRehydration();
 				unsubscribe();
 			};
 		}
