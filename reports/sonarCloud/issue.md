@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 39 | 39 |
-| 🔧 Maintainability | 1930 | 9 |
+| 🔧 Maintainability | 1931 | 9 |
 
-**Total issues:** 1971 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1972 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -180,7 +180,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (9/1930)
+## 🔧 Maintainability (9/1931)
 
 - **Prefer `node:path` over `path`.**
   apps/accessibilityTester/src/index.ts:1
