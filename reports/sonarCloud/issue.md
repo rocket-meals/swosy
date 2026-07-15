@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 48 | 48 |
-| 🔧 Maintainability | 1934 | 0 |
+| 🔧 Maintainability | 1936 | 0 |
 
-**Total issues:** 1984 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1986 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -157,12 +157,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L1206
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/settings/index.tsx:474
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L474
+  apps/geonexia/frontend/app/settings/index.tsx:475
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L475
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/settings/index.tsx:539
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L539
+  apps/geonexia/frontend/app/settings/index.tsx:540
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L540
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
