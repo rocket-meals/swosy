@@ -6,6 +6,7 @@ import {
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListSelectOption,
+	SettingsListSqliteStorage,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
@@ -71,6 +72,24 @@ export default function SettingsScreen() {
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleOpenThemeSelection}
 					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Storage" />
+				<SettingsListSqliteStorage
+					iconBgColor="#6b7280"
+					iconColor="#ffffff"
+					textColor={theme.screen.text}
+					texts={{
+						total: 'Storage used',
+						refresh: 'Refresh',
+						clear: 'Clear storage',
+						keysModalTitle: 'Storage keys',
+						emptyKeys: 'No entries',
+						clearConfirmTitle: 'Clear storage',
+						clearConfirmMessage: 'Deletes all locally stored data (theme, games, friends, ...). Continue?',
+						cancel: 'Cancel',
+						confirmClear: 'Delete',
+					}}
 				/>
 
 				<SettingsListGroupTitle title="About" />

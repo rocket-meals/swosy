@@ -1,25 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUtf8ByteLength, formatBytes } from 'repo-depkit-common-ui';
 
 export type AsyncStorageKeyUsage = {
 	key: string;
 	bytes: number;
 };
 
-// Approximates the UTF-8 byte size a stored value takes up, without relying on
-// TextEncoder (not guaranteed to exist on every RN/Hermes runtime this app targets).
-// Also used by SqliteStorageUsageHelper.ts for the debug storage-usage screen.
-export const getUtf8ByteLength = (value: string): number => {
-	let bytes = 0;
-	for (let i = 0; i < value.length; i++) {
-		const codePoint = value.codePointAt(i) as number;
-		if (codePoint > 0xffff) i++; // surrogate pair - consumes two UTF-16 code units
-		if (codePoint <= 0x7f) bytes += 1;
-		else if (codePoint <= 0x7ff) bytes += 2;
-		else if (codePoint <= 0xffff) bytes += 3;
-		else bytes += 4;
-	}
-	return bytes;
-};
+// Re-exported for existing callers (this module used to define these itself) - the
+// implementation now lives in repo-depkit-common-ui so the sqlite debug storage list
+// (SettingsListSqliteStorage) can share the same byte-formatting as this AsyncStorage one.
+export { getUtf8ByteLength, formatBytes };
 
 // What's left in AsyncStorage right now - meant to be near-empty on native once the
 // migration in redux/storage/sqliteStorage.ts has run. Shown in the debug settings screen
@@ -39,10 +29,4 @@ export const getAsyncStorageUsage = async (): Promise<{ items: AsyncStorageKeyUs
 // sqlite migration in redux/storage/sqliteStorage.ts). Not used by any non-debug code path.
 export const clearAsyncStorage = async (): Promise<void> => {
 	await AsyncStorage.clear();
-};
-
-export const formatBytes = (bytes: number): string => {
-	if (bytes < 1024) return `${bytes} B`;
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-	return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 };

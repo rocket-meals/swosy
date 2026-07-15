@@ -55,9 +55,8 @@ import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityM
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
-import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, SettingsListSqliteStorage } from 'repo-depkit-common-ui';
 import { formatBytes, getAsyncStorageUsage, clearAsyncStorage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
-import { getSqliteStorageUsage, SqliteStorageKeyUsage } from '@/helper/SqliteStorageUsageHelper';
 import { migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
@@ -355,23 +354,11 @@ const Settings = () => {
                 });
         };
 
-        const [sqliteStorageUsage, setSqliteStorageUsage] = useState<SqliteStorageKeyUsage[]>([]);
-        const [sqliteStorageUsageTotalBytes, setSqliteStorageUsageTotalBytes] = useState(0);
         const [asyncStorageUsage, setAsyncStorageUsage] = useState<AsyncStorageKeyUsage[]>([]);
         const [asyncStorageUsageTotalBytes, setAsyncStorageUsageTotalBytes] = useState(0);
         const [isMigratingStorage, setIsMigratingStorage] = useState(false);
         const [isClearingAsyncStorage, setIsClearingAsyncStorage] = useState(false);
-        const [isClearingSqliteStorage, setIsClearingSqliteStorage] = useState(false);
-
-        const refreshSqliteStorageUsage = useCallback(async () => {
-                try {
-                        const { items, totalBytes } = await getSqliteStorageUsage();
-                        setSqliteStorageUsage(items);
-                        setSqliteStorageUsageTotalBytes(totalBytes);
-                } catch (error) {
-                        console.error('Error reading sqlite storage usage:', error);
-                }
-        }, []);
+        const [sqliteStorageRefreshSignal, setSqliteStorageRefreshSignal] = useState(0);
 
         const refreshAsyncStorageUsage = useCallback(async () => {
                 try {
@@ -383,40 +370,16 @@ const Settings = () => {
                 }
         }, []);
 
-        // Storage sizes only matter for debugging - only read them once debug mode is on,
-        // not on every settings screen visit. AsyncStorage should end up near-empty on
-        // native once the migration into sqlite has run - showing it here next to "SQLite
-        // gesamt" makes a stuck/incomplete migration visible instead of silent.
+        // Storage size only matters for debugging - only read it once debug mode is on, not
+        // on every settings screen visit. AsyncStorage should end up near-empty on native
+        // once the migration into sqlite has run - showing it here next to "SQLite gesamt"
+        // (rendered by SettingsListSqliteStorage, which reads its own usage on mount) makes a
+        // stuck/incomplete migration visible instead of silent.
         useEffect(() => {
                 if (debugMode) {
-                        refreshSqliteStorageUsage();
                         refreshAsyncStorageUsage();
                 }
-        }, [debugMode, refreshSqliteStorageUsage, refreshAsyncStorageUsage]);
-
-        const openSqliteStorageKeysSheet = useCallback(() => {
-                showScrollViewModal({
-                        title: 'SQLite Keys',
-                        children: (
-                                <View style={{ gap: 8 }}>
-                                        {sqliteStorageUsage.length === 0 ? (
-                                                <Text style={{ color: theme.screen.text }}>Keine Einträge</Text>
-                                        ) : (
-                                                sqliteStorageUsage.map((item) => (
-                                                        <SettingsList
-                                                                key={item.key}
-                                                                iconBgColor={primaryColor}
-                                                                leftIcon={<MaterialCommunityIcons name="key-outline" size={24} color={theme.screen.icon} />}
-                                                                label={item.key}
-                                                                value={formatBytes(item.bytes)}
-                                                                groupPosition="middle"
-                                                        />
-                                                ))
-                                        )}
-                                </View>
-                        ),
-                });
-        }, [sqliteStorageUsage, primaryColor, theme.screen.icon, theme.screen.text, showScrollViewModal]);
+        }, [debugMode, refreshAsyncStorageUsage]);
 
         const openAsyncStorageKeysSheet = useCallback(() => {
                 showScrollViewModal({
@@ -446,7 +409,8 @@ const Settings = () => {
                 setIsMigratingStorage(true);
                 try {
                         const { migratedKeys } = await migrateAsyncStorageToSqlite();
-                        await Promise.all([refreshAsyncStorageUsage(), refreshSqliteStorageUsage()]);
+                        await refreshAsyncStorageUsage();
+                        setSqliteStorageRefreshSignal((value) => value + 1);
                         toast(
                                 migratedKeys.length > 0
                                         ? `${migratedKeys.length} Einträge migriert: ${migratedKeys.join(', ')}`
@@ -459,7 +423,7 @@ const Settings = () => {
                 } finally {
                         setIsMigratingStorage(false);
                 }
-        }, [refreshAsyncStorageUsage, refreshSqliteStorageUsage, toast]);
+        }, [refreshAsyncStorageUsage, toast]);
 
         const handleClearAsyncStorage = useCallback(() => {
                 Alert.alert(
@@ -488,32 +452,13 @@ const Settings = () => {
                 );
         }, [refreshAsyncStorageUsage, toast, translate]);
 
-        const handleClearSqliteStorage = useCallback(() => {
-                Alert.alert(
-                        'SQLite löschen',
-                        'Löscht die komplette SQLite-Datenbank inkl. Migrations-Status - zum Testen/Debuggen. Beim nächsten Start wird AsyncStorage erneut migriert. Fortfahren?',
-                        [
-                                { text: translate(TranslationKeys.cancel), style: 'cancel' },
-                                {
-                                        text: 'Löschen',
-                                        style: 'destructive',
-                                        onPress: async () => {
-                                                setIsClearingSqliteStorage(true);
-                                                try {
-                                                        await sqliteKeyValueStorage.clear();
-                                                        await refreshSqliteStorageUsage();
-                                                        toast('SQLite geleert', 'success');
-                                                } catch (error) {
-                                                        console.error('Error clearing sqlite storage:', error);
-                                                        toast('Löschen fehlgeschlagen', 'error');
-                                                } finally {
-                                                        setIsClearingSqliteStorage(false);
-                                                }
-                                        },
-                                },
-                        ]
-                );
-        }, [refreshSqliteStorageUsage, toast, translate]);
+        const handleSqliteStorageCleared = useCallback(() => {
+                toast('SQLite geleert', 'success');
+        }, [toast]);
+
+        const handleSqliteStorageClearError = useCallback(() => {
+                toast('Löschen fehlgeschlagen', 'error');
+        }, [toast]);
 
         const toggleSimulateExpoUpdate = () => {
                 dispatch({
@@ -1027,30 +972,14 @@ const Settings = () => {
 						/>
 					</View>
 					<View style={groupStyle}>
-						<SettingsList
+						<SettingsListSqliteStorage
+							dbName="redux_persist.db"
 							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="database" size={24} color={theme.screen.icon} />}
-							label="SQLite gesamt"
-							value={formatBytes(sqliteStorageUsageTotalBytes)}
-							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-							handleFunction={openSqliteStorageKeysSheet}
-							groupPosition="top"
-						/>
-						<SettingsList
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="refresh" size={24} color={theme.screen.icon} />}
-							label="Speicher aktualisieren"
-							value=""
-							handleFunction={refreshSqliteStorageUsage}
-							groupPosition="middle"
-						/>
-						<SettingsList
-							iconBgColor={primaryColor}
-							leftIcon={<MaterialCommunityIcons name="delete-outline" size={24} color={theme.screen.icon} />}
-							label="SQLite löschen"
-							value={isClearingSqliteStorage ? '...' : ''}
-							handleFunction={isClearingSqliteStorage ? undefined : handleClearSqliteStorage}
-							groupPosition="bottom"
+							iconColor={theme.screen.icon}
+							textColor={theme.screen.text}
+							refreshSignal={sqliteStorageRefreshSignal}
+							onCleared={handleSqliteStorageCleared}
+							onClearError={handleSqliteStorageClearError}
 						/>
 					</View>
 				</DebugView>
@@ -1096,11 +1025,10 @@ const Settings = () => {
 		appRatingScore, openAppRatingScoreSheet, showDebugRatingModal, appRatingData,
 		settingsAvatarConfig, openAvatarEditor,
 		appSettings?.foods_ratings_average_display,
-		sqliteStorageUsageTotalBytes, refreshSqliteStorageUsage, openSqliteStorageKeysSheet,
+		sqliteStorageRefreshSignal, handleSqliteStorageCleared, handleSqliteStorageClearError,
 		asyncStorageUsageTotalBytes, refreshAsyncStorageUsage, openAsyncStorageKeysSheet,
 		isMigratingStorage, handleMigrateStorage,
 		isClearingAsyncStorage, handleClearAsyncStorage,
-		isClearingSqliteStorage, handleClearSqliteStorage,
 	]);
 
 	return (

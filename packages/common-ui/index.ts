@@ -12,7 +12,17 @@ export type { SettingsContextType } from './src/context/SettingsContext';
 // Helpers
 export { myContrastColor, getContrastRatio, getColorAsHex } from './src/helpers/ColorHelper';
 export { accountRequiredStyles } from './src/helpers/accountRequiredStyles';
-export { getStorageItem, setStorageItem, removeStorageItem } from './src/helpers/SqliteKeyValueStorage';
+export {
+	DEFAULT_DB_NAME,
+	getKvDatabase,
+	getStorageItem,
+	setStorageItem,
+	removeStorageItem,
+	getStorageUsage,
+	clearStorage,
+} from './src/helpers/SqliteKeyValueStorage';
+export type { SqliteStorageKeyUsage } from './src/helpers/SqliteKeyValueStorage';
+export { getUtf8ByteLength, formatBytes } from './src/helpers/ByteSizeHelper';
 
 // Constants
 export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/ui';
@@ -115,3 +125,9 @@ export type { MyCustomColorPickerProps } from './src/components/MyCustomColorPic
 
 export { default as SettingsListAvatar } from './src/components/SettingsListAvatar';
 export type { SettingsListAvatarProps } from './src/components/SettingsListAvatar';
+
+export { default as SettingsListSqliteStorage } from './src/components/SettingsListSqliteStorage';
+export type {
+	SettingsListSqliteStorageProps,
+	SettingsListSqliteStorageTexts,
+} from './src/components/SettingsListSqliteStorage';

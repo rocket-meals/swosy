@@ -8,6 +8,7 @@ import {
 	SettingsListNumberInput,
 	SettingsListSelectOption,
 	SettingsListMyMapThemeSelection,
+	SettingsListSqliteStorage,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
@@ -794,6 +795,13 @@ export default function SettingsScreen() {
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleResetAllData}
 					groupPosition="bottom"
+				/>
+
+				<SettingsListGroupTitle title="Speicher" />
+				<SettingsListSqliteStorage
+					iconBgColor={NEUTRAL_COLOR}
+					iconColor="#ffffff"
+					textColor={theme.screen.text}
 				/>
 
 				<SettingsListGroupTitle title="About" />

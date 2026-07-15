@@ -28,3 +28,17 @@ export async function removeStorageItem(key: string, dbName?: string): Promise<v
 	const file = getFile(key);
 	if (file.exists) file.delete();
 }
+
+export type SqliteStorageKeyUsage = { key: string; bytes: number };
+
+// Web has no shared "db" file to introspect (see getFile() above - every key is its own
+// file), so there's nothing meaningful to report here. Mirrors the app-level
+// SqliteStorageUsageHelper.web.ts helper this replaced.
+export async function getStorageUsage(
+	dbName?: string
+): Promise<{ items: SqliteStorageKeyUsage[]; totalBytes: number }> {
+	return { items: [], totalBytes: 0 };
+}
+
+// No-op on web for the same reason getStorageUsage() is empty - nothing shared to clear.
+export async function clearStorage(dbName?: string): Promise<void> {}

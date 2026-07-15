@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SQLite from 'expo-sqlite';
+import { getKvDatabase } from 'repo-depkit-common-ui';
 import type { Storage } from 'redux-persist';
 
 // AsyncStorage enforces a hard ~2MB limit per item on Android, which this app has
@@ -13,11 +13,15 @@ import type { Storage } from 'redux-persist';
 // This is the native/default implementation on purpose: expo-sqlite's web build pulls in
 // a wasm module that Metro can't resolve without extra bundler/server config, so it must
 // never be imported into the web bundle - see sqliteStorage.web.ts, which Metro picks
-// instead for web builds (same pattern as hooks/useColorScheme.web.ts).
+// instead for web builds (same pattern as hooks/useColorScheme.web.ts). The actual
+// expo-sqlite import + db-open/table-creation boilerplate lives in repo-depkit-common-ui's
+// SqliteKeyValueStorage (getKvDatabase) so it isn't duplicated per app; this module only
+// owns the AsyncStorage-migration logic below, which is specific to rocket-meals.
 
 const DB_NAME = 'redux_persist.db';
 const MIGRATION_VERIFIED_KEY = '__async_storage_migration_verified__';
-let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
+type KvDatabase = Awaited<ReturnType<typeof getKvDatabase>>;
+let migratedDbPromise: Promise<KvDatabase> | null = null;
 
 // Copies every currently-existing AsyncStorage key into the kv table. Deliberately does
 // NOT clear AsyncStorage afterwards (yet) - keeping the old copy around is a safety net
@@ -34,7 +38,7 @@ let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 // For those users IGNORE meant this migration saw "a row already exists", kept the blank
 // sqlite row, and then deleted the last real copy from AsyncStorage anyway - permanent data
 // loss. AsyncStorage is being retired here, so its copy should always win when both exist.
-async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<string[]> {
+async function copyAsyncStorageIntoSqlite(db: KvDatabase): Promise<string[]> {
 	const legacyKeys = await AsyncStorage.getAllKeys();
 	if (legacyKeys.length === 0) {
 		return [];
@@ -42,7 +46,7 @@ async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<st
 
 	const legacyEntries = await AsyncStorage.multiGet(legacyKeys);
 	const migratedKeys: string[] = [];
-	await db.withExclusiveTransactionAsync(async (txn) => {
+	await db.withExclusiveTransactionAsync(async (txn: any) => {
 		for (const [key, value] of legacyEntries) {
 			if (value !== null) {
 				await txn.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
@@ -57,7 +61,7 @@ async function copyAsyncStorageIntoSqlite(db: SQLite.SQLiteDatabase): Promise<st
 // confirms copyAsyncStorageIntoSqlite() actually landed correctly instead of just assuming
 // it did because no exception was thrown. This is what INSERT OR IGNORE was missing: it
 // silently "succeeded" while keeping a stale/blank sqlite row, and nothing ever caught that.
-async function isMigrationVerified(db: SQLite.SQLiteDatabase): Promise<boolean> {
+async function isMigrationVerified(db: KvDatabase): Promise<boolean> {
 	const legacyKeys = await AsyncStorage.getAllKeys();
 	if (legacyKeys.length === 0) {
 		return true;
@@ -87,7 +91,7 @@ async function isMigrationVerified(db: SQLite.SQLiteDatabase): Promise<boolean> 
 // written via setItem() after migration) with the stale original values on every restart.
 // Verifying before gating fixes both: a bad copy is retried next boot (self-heals), a good
 // copy is trusted and left alone (so the app can actually live in sqlite afterwards).
-async function copyAndVerify(db: SQLite.SQLiteDatabase): Promise<{ migratedKeys: string[]; verified: boolean }> {
+async function copyAndVerify(db: KvDatabase): Promise<{ migratedKeys: string[]; verified: boolean }> {
 	const migratedKeys = await copyAsyncStorageIntoSqlite(db);
 	const verified = await isMigrationVerified(db);
 	if (verified) {
@@ -96,14 +100,14 @@ async function copyAndVerify(db: SQLite.SQLiteDatabase): Promise<{ migratedKeys:
 	return { migratedKeys, verified };
 }
 
-// Runs as part of opening the db (see getSqliteDb() below), before dbPromise resolves - so
-// every getItem()/setItem()/removeItem() call, for any key, from any of this app's storage
-// helpers, waits on this same promise first. That's what makes it race-free: a setItem() for
-// one key can never land while an unrelated key is still mid-migration and overwrite the
-// table with something derived from a stale, pre-migration snapshot (see the "dispatch
-// before rehydration" bug this replaced, where per-key lazy migration let a fast write win a
-// race against a slower one and permanently strand the real data in AsyncStorage).
-async function ensureAsyncStorageMigrated(db: SQLite.SQLiteDatabase): Promise<void> {
+// Runs as part of opening the db (see getSqliteDb() below), before migratedDbPromise
+// resolves - so every getItem()/setItem()/removeItem() call, for any key, from any of this
+// app's storage helpers, waits on this same promise first. That's what makes it race-free: a
+// setItem() for one key can never land while an unrelated key is still mid-migration and
+// overwrite the table with something derived from a stale, pre-migration snapshot (see the
+// "dispatch before rehydration" bug this replaced, where per-key lazy migration let a fast
+// write win a race against a slower one and permanently strand the real data in AsyncStorage).
+async function ensureAsyncStorageMigrated(db: KvDatabase): Promise<void> {
 	const alreadyVerified = await db.getFirstAsync<{ value: string }>(
 		'SELECT value FROM kv WHERE key = ?',
 		MIGRATION_VERIFIED_KEY
@@ -115,17 +119,16 @@ async function ensureAsyncStorageMigrated(db: SQLite.SQLiteDatabase): Promise<vo
 	await copyAndVerify(db);
 }
 
-// Exported so SqliteStorageUsageHelper.ts can query the same kv table for the debug
-// storage-usage screen without opening a second connection to the db.
-export function getSqliteDb(): Promise<SQLite.SQLiteDatabase> {
-	if (!dbPromise) {
-		dbPromise = SQLite.openDatabaseAsync(DB_NAME).then(async (db) => {
-			await db.execAsync('CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY NOT NULL, value TEXT)');
+// Exported so the debug storage-usage settings screen (SettingsListSqliteStorage, dbName
+// "redux_persist.db") can query the same kv table without opening a second connection.
+export function getSqliteDb(): Promise<KvDatabase> {
+	if (!migratedDbPromise) {
+		migratedDbPromise = getKvDatabase(DB_NAME).then(async (db) => {
 			await ensureAsyncStorageMigrated(db);
 			return db;
 		});
 	}
-	return dbPromise;
+	return migratedDbPromise;
 }
 
 // Manual re-run of the migration copy, exposed for the settings debug screen's "Daten
@@ -162,7 +165,7 @@ export const sqliteKeyValueStorage = {
 	async multiRemove(keys: string[]): Promise<void> {
 		if (keys.length === 0) return;
 		const db = await getSqliteDb();
-		await db.withExclusiveTransactionAsync(async (txn) => {
+		await db.withExclusiveTransactionAsync(async (txn: any) => {
 			for (const key of keys) {
 				await txn.runAsync('DELETE FROM kv WHERE key = ?', key);
 			}
