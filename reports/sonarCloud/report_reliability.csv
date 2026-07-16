@@ -2,8 +2,8 @@ Key,Message,Component,Line
 "AZ9qyn9KHKfHY7dxI2cK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cL","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cM","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
-"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",518
-"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",542
+"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",524
+"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",548
 "AZ9lpRU4KqeTrVO2SpWQ","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",586
 "AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3474
 "AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5022
