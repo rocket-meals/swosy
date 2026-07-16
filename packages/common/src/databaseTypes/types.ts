@@ -108,7 +108,6 @@ export type AppSettings = {
   foods_placeholder_image_thumb_hash?: string | null;
   foods_ratings_amount_display?: boolean | null;
   foods_ratings_average_display?: boolean | null;
-  foods_ratings_average_display_on_card?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
   friends_enabled?: boolean | null;
@@ -173,6 +172,20 @@ export type AppSettingsLoginScreenTranslations = {
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   translation_settings: string;
+};
+
+export type AppUsageEvents = {
+  app_version?: string | null;
+  client_timestamp?: string | null;
+  date_created?: string | null;
+  event_name?: string | null;
+  event_type?: string | null;
+  id: string;
+  payload?: unknown | null;
+  platform?: string | null;
+  screen_name?: string | null;
+  sequence_number?: number | null;
+  session_id?: string | null;
 };
 
 export type AutoTranslationSettings = {
@@ -1975,6 +1988,7 @@ export type CustomDirectusTypes = {
   app_settings_balance_translations: AppSettingsBalanceTranslations[];
   app_settings_housing_translations: AppSettingsHousingTranslations[];
   app_settings_login_screen_translations: AppSettingsLoginScreenTranslations[];
+  app_usage_events: AppUsageEvents[];
   auto_translation_settings: AutoTranslationSettings;
   buildings: Buildings[];
   buildings_attributes: BuildingsAttributes[];

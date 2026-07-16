@@ -35,13 +35,31 @@ export class DirectusDatabaseSync {
   constructor(config: DirectusDatabaseSyncOptions) {
     this.config = config;
     // pathToDataDirectusSyncData originates from a CLI argument (--path-to-data-directus-sync).
-    // Canonicalize and validate it stays within the current working directory before it is
-    // used to build every other path this class reads from / writes to.
-    const validatedRoot = DirectusDatabaseSync.validatePathWithinBase(this.config.pathToDataDirectusSyncData, process.cwd());
+    // Canonicalize and validate it stays within the repository root before it is used to build
+    // every other path this class reads from / writes to. The repo root (not process.cwd()) is
+    // used as the base because this class always runs with cwd = apps/backend-sync (locally via
+    // `yarn workspace backend-sync sync`, and in Docker via WORKDIR), while the legitimate sync
+    // data directory lives at "<repo-root>/data/directus-sync-data", a sibling of apps/.
+    const validatedRoot = DirectusDatabaseSync.validatePathWithinBase(this.config.pathToDataDirectusSyncData, DirectusDatabaseSync.findRepoRoot());
     this.directusConfigCollectionsPath = path.resolve(validatedRoot, 'configuration/directus-config/collections');
     this.directusConfigOverwriteCollectionsPath = path.resolve(validatedRoot, 'configuration/directus-config-overwrite/collections');
     this.configurationPathCollections = path.resolve(validatedRoot, 'configuration/collections');
     this.dumpPath = path.resolve(validatedRoot, 'configuration/directus-config');
+  }
+
+  // Walks up from cwd to find the repository root. Looks for ".git" (present in a local
+  // checkout) or ".yarnrc.yml" (present in the Docker image, which doesn't include .git),
+  // falling back to cwd if neither marker is found.
+  private static findRepoRoot(): string {
+    let current = process.cwd();
+    while (true) {
+      if (fs.existsSync(path.join(current, '.git')) || fs.existsSync(path.join(current, '.yarnrc.yml'))) {
+        return current;
+      }
+      const parent = path.dirname(current);
+      if (parent === current) return process.cwd();
+      current = parent;
+    }
   }
 
   // Ensures a CLI-controlled path canonicalizes to somewhere inside `basePath`, preventing
