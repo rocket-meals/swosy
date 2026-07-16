@@ -432,9 +432,16 @@ export default function Layout() {
                         if (response) {
                                 const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
 
+                                // Keep each event's already-seen/closed state across refetches - only default
+                                // to unseen for events we haven't stored before. Without this, refetching
+                                // (triggered whenever *any* popup event's data changes) would reset isOpen
+                                // back to false for every event, including ones the user already permanently
+                                // dismissed, making them pop back up.
+                                const previousIsOpenById = new Map(popupEvents.map((e: any) => [String(e.id), Boolean(e.isOpen)]));
+
                                 const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion()).map((event, index) => ({
                                         ...event,
-                                        isOpen: false,
+                                        isOpen: previousIsOpenById.get(String(event.id)) ?? false,
                                         isCurrent: index === 0,
                                 }));
 				const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));

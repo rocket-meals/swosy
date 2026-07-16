@@ -36,6 +36,8 @@ type ModalContextType = {
 	/** @internal used by ModalRenderer */
 	_handleSheetChange: (index: number) => void;
 	/** @internal used by ModalRenderer */
+	_handleNativeClose: () => void;
+	/** @internal used by ModalRenderer */
 	_screenBackgroundColor: string;
 };
 
@@ -51,6 +53,24 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 	const sheetRef = useRef<any>(null);
 	const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isClosingRef = useRef(false);
+
+	// The sheet's native close animation (triggered below via sheetRef.close()) completes
+	// asynchronously. If a new modal replaces the current one (open/openAndDiscardOthers)
+	// while that animation is still in flight, the animation's own onClose callback fires
+	// *after* the replacement is already showing and would otherwise close it too. Arm this
+	// flag right before we trigger our own native close so that one resulting callback is
+	// swallowed instead of being treated as a fresh (e.g. swipe-to-dismiss) close request.
+	const suppressNextNativeCloseRef = useRef(false);
+	const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const armSuppressNextNativeClose = () => {
+		suppressNextNativeCloseRef.current = true;
+		if (suppressResetTimeoutRef.current) clearTimeout(suppressResetTimeoutRef.current);
+		suppressResetTimeoutRef.current = setTimeout(() => {
+			suppressNextNativeCloseRef.current = false;
+			suppressResetTimeoutRef.current = null;
+		}, SHEET_CLOSE_ANIMATION_MS + 200);
+	};
 
 	const { theme } = useTheme();
 
@@ -128,6 +148,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		isClosingRef.current = true;
 
 		modalStackRef.current = [];
+		armSuppressNextNativeClose();
 		sheetRef.current?.close?.();
 		clearCloseTimeout();
 		closeTimeoutRef.current = setTimeout(() => {
@@ -152,6 +173,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 		if (modalStackRef.current.length === 1) {
 			modalStackRef.current = [];
+			armSuppressNextNativeClose();
 			sheetRef.current?.close?.();
 			clearCloseTimeout();
 			closeTimeoutRef.current = setTimeout(() => {
@@ -177,6 +199,22 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			closeInvocations: prev.closeInvocations + 1,
 		}));
 	};
+
+	// Bound to the sheet's native onClose (fires for any reason the sheet's index reaches
+	// -1: swipe-to-dismiss, backdrop tap, handle drag, or our own sheetRef.close() call
+	// above finishing its animation). Swallows the latter so a stale close animation from a
+	// modal that has since been replaced doesn't close the new one on top of it.
+	const handleNativeClose = useCallback(() => {
+		if (suppressNextNativeCloseRef.current) {
+			suppressNextNativeCloseRef.current = false;
+			if (suppressResetTimeoutRef.current) {
+				clearTimeout(suppressResetTimeoutRef.current);
+				suppressResetTimeoutRef.current = null;
+			}
+			return;
+		}
+		close();
+	}, []);
 
 	const handleSheetChange = useCallback((index: number) => {
 		if (index >= 0) {
@@ -242,6 +280,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			_currentItem: currentItem,
 			_sheetRef: sheetRef,
 			_handleSheetChange: handleSheetChange,
+			_handleNativeClose: handleNativeClose,
 			_screenBackgroundColor: screenBackgroundColor,
 		}}>
 			{children}
@@ -250,7 +289,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 };
 
 export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const { _currentItem: currentItem, _sheetRef: sheetRef, _handleSheetChange: handleSheetChange, _screenBackgroundColor: screenBackgroundColor, close } = useModalContext();
+	const { _currentItem: currentItem, _sheetRef: sheetRef, _handleSheetChange: handleSheetChange, _handleNativeClose: handleNativeClose, _screenBackgroundColor: screenBackgroundColor } = useModalContext();
 
 	return (
 		<>
@@ -264,7 +303,7 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 					<BaseBottomSheet
 						ref={sheetRef}
 						enablePanDownToClose
-						onClose={close}
+						onClose={handleNativeClose}
 						onChange={handleSheetChange}
 						headerBackgroundColor={screenBackgroundColor}
 						backgroundStyle={currentItem.backgroundStyle}
