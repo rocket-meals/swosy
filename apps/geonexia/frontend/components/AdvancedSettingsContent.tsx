@@ -21,7 +21,6 @@ const ROUTE_SMOOTHING_OPTIONS: SettingsListSelectOptionItem<RouteSmoothingLevel>
 
 const ROAD_MATCH_JUNCTION_OPTIONS: SettingsListSelectOptionItem<RoadMatchJunctionMode>[] = [
 	{ id: 'direct', label: 'Direkt', icon: <MaterialIcons name="trending-flat" size={22} color="#ffffff" /> },
-	{ id: 'nearestEndpoint', label: 'Bis Straßenende', icon: <MaterialIcons name="turn-right" size={22} color="#ffffff" /> },
 	{ id: 'network', label: 'Netzwerksuche', icon: <MaterialIcons name="hub" size={22} color="#ffffff" /> },
 ];
 
@@ -87,7 +86,7 @@ export default function AdvancedSettingsContent() {
 				iconBgColor={ROAD_MATCH_COLOR}
 			/>
 			<Text style={[styles.hint, { color: theme.screen.icon }]}>
-				Bestimmt, wie die gelbe Linie verbunden wird, wenn die Route von einer Straße/einem Weg auf eine andere wechselt. „Direkt" verbindet die beiden Punkte gerade. „Bis Straßenende" folgt der aktuellen Straße bis zu ihrem nächstgelegenen Ende und springt dann direkt zur nächsten. „Netzwerksuche" sucht den kürzesten Weg über das echte Straßen-/Wegenetz, auch über mehrere Straßen hinweg.
+				Bestimmt, wie die gelbe Linie verbunden wird, wenn die Route von einer Straße/einem Weg auf eine andere wechselt. „Direkt" verbindet die beiden Punkte gerade. „Netzwerksuche" sucht den kürzesten Weg über das echte Straßen-/Wegenetz, auch über mehrere Straßen hinweg.
 			</Text>
 
 			<SettingsListGroupTitle title="Aktionen" />
