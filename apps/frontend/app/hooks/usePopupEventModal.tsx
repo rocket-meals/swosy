@@ -24,37 +24,51 @@ const usePopupEventModal = () => {
 		[dispatch, popupEvents]
 	);
 
+	// These two only record that the event has been handled (redux + the in-memory
+	// "permanently dismissed" set) - they deliberately never touch the native sheet
+	// themselves. openActiveModal (re-run because popupEvents/currentPopupEvent changed)
+	// is the only place that decides whether to instantly swap in the next queued event
+	// or actually close the sheet. Closing the sheet here and letting the next event's
+	// open race the still-running close animation used to make that next event's sheet
+	// close itself moments after opening.
 	const closeEventSheet = useCallback(
 		(event?: any) => {
 			const targetEvent = event || currentPopupEvent;
-			closeScrollViewModal();
 			if (targetEvent) {
 				markEventAsOpen(targetEvent);
 			}
-			popupEventShownIdRef.current = null;
-			setCurrentPopupEvent(null);
 		},
-		[closeScrollViewModal, currentPopupEvent, markEventAsOpen]
+		[currentPopupEvent, markEventAsOpen]
 	);
 
 	const closeEventSheetForSession = useCallback(
 		(event?: any) => {
 			const targetEvent = event || currentPopupEvent;
-			closeScrollViewModal();
 			if (targetEvent?.id) {
 				PopupEventHelper.dismiss(targetEvent.id);
 			}
-			popupEventShownIdRef.current = null;
-			setCurrentPopupEvent(null);
+			if (targetEvent) {
+				markEventAsOpen(targetEvent);
+			}
 		},
-		[closeScrollViewModal, currentPopupEvent]
+		[currentPopupEvent, markEventAsOpen]
 	);
 
 	const openActiveModal = useCallback(() => {
 		if (kioskMode) return;
 
 		const nextEvent = popupEvents?.find((e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id));
-		if (!nextEvent) return;
+
+		if (!nextEvent) {
+			// Nothing left in the queue. Only actually close the sheet if something from
+			// this queue is still tracked as shown - otherwise there's nothing to do.
+			if (popupEventShownIdRef.current !== null) {
+				popupEventShownIdRef.current = null;
+				setCurrentPopupEvent(null);
+				closeScrollViewModal();
+			}
+			return;
+		}
 
 		const eventId = String(nextEvent.id ?? '');
 		if (popupEventShownIdRef.current === eventId) return;
@@ -62,9 +76,8 @@ const usePopupEventModal = () => {
 
 		setCurrentPopupEvent(nextEvent);
 
-		// discardOthers guarantees at most one popup-event sheet is ever in the
-		// modal stack, even if this runs more than once in quick succession
-		// (e.g. multiple qualifying events becoming active around the same time).
+		// discardOthers instantly swaps the sheet's content instead of closing and
+		// reopening it, so advancing the queue never races a close animation.
 		showScrollViewModalAndDiscardOthers(
 			{
 				onClose: () => closeEventSheetForSession(nextEvent),
@@ -78,7 +91,7 @@ const usePopupEventModal = () => {
 			},
 			{}
 		);
-	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModalAndDiscardOthers]);
+	}, [closeEventSheet, closeEventSheetForSession, closeScrollViewModal, kioskMode, popupEvents, showScrollViewModalAndDiscardOthers]);
 
 	return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
 };

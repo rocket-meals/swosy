@@ -23,6 +23,7 @@ import {
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 import { clearAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
+import { PopupEventHelper } from '@/helper/PopupEventHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 // ⚠️ Reminder: this function is the single place that resets app state on logout.
@@ -58,6 +59,7 @@ export const performLogout = async (
                 dispatch({ type: CLEAR_CHATS });
                 await clearChatReadStatus();
                 clearAppDownloadBannerDismissed();
+                PopupEventHelper.reset();
                 dispatch({ type: CLEAR_SETTINGS });
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
 		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
