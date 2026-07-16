@@ -1,6 +1,11 @@
 Key,Message,Component,Line
-"AZ9sTn6FN1fS3h9x8mJ_","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",33
-"AZ9sTn6FN1fS3h9x8mKA","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",63
+"AZ9sZyGg04m_SfjRDf9H","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",40
+"AZ9sZyGg04m_SfjRDf9I","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",209
+"AZ9sZyGg04m_SfjRDf9J","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",210
+"AZ9sZyGg04m_SfjRDf9K","Refactor this function to reduce its Cognitive Complexity from 30 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",230
+"AZ9sZyGg04m_SfjRDf9L","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",251
+"AZ9sZyGg04m_SfjRDf9M","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",264
+"AZ9sTn6FN1fS3h9x8mKA","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",70
 "AZ9sLidFQMjpz0jP6Fo6","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:packages/common/src/BoxplotHelper.ts",40
 "AZ9rGQ894wtR-0yQaSOz","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts",100
 "AZ9q9-3D-CVnoIP89Q1_","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",128
@@ -271,7 +276,7 @@ Key,Message,Component,Line
 "AZ12vOj-UMVYmqxuhWiY","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",977
 "AZ12vOj-UMVYmqxuhWia","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",1032
 "AZ12eg0jus-xC6EIJUtY","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",57
-"AZ12ZwpBu61jthfYG4oN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteSmootherHelper.ts",84
+"AZ12ZwpBu61jthfYG4oN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteSmootherHelper.ts",97
 "AZ12NX8jY0q7Lw4Vi3Do","Remove this unused import of 'isPentagon'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",30
 "AZ12NX8jY0q7Lw4Vi3Dq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1325
 "AZ12NX8jY0q7Lw4Vi3Dr","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1325
