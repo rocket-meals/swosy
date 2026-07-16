@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 51 | 45 |
-| 🔧 Maintainability | 1954 | 0 |
+| 🔧 Maintainability | 1953 | 0 |
 
-**Total issues:** 2010 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2009 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -125,12 +125,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:525
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L525
+  apps/geonexia/frontend/app/activities/[id].tsx:526
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L526
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:549
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L549
+  apps/geonexia/frontend/app/activities/[id].tsx:550
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L550
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
   apps/geonexia/frontend/app/activities/index.tsx:586
