@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 51 | 45 |
-| 🔧 Maintainability | 1950 | 0 |
+| 🔧 Maintainability | 1954 | 0 |
 
-**Total issues:** 2006 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2010 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
