@@ -87,4 +87,19 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 			hideInstruction();
 		}
 	}
+
+	async cancelRead(): Promise<void> {
+		if (isExpoGo) return;
+		const nfc = await loadNfc();
+		if (!nfc?.NfcManager) return;
+		try {
+			// Tearing down the NFC session interrupts whatever native call
+			// readCard() is currently awaiting (requestTechnology/transceive),
+			// so its try/finally unwinds early instead of waiting for a card.
+			await nfc.NfcManager.cancelTechnologyRequest();
+		} catch (e) {
+			// Best-effort, same as MensaCardReaderHelper._cleanUp - nothing to
+			// recover from if there was no active request.
+		}
+	}
 }

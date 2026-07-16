@@ -37,6 +37,8 @@ type ModalContextType = {
 	_handleSheetChange: (index: number) => void;
 	/** @internal used by ModalRenderer */
 	_screenBackgroundColor: string;
+	/** @internal used by ModalRenderer - how many modals are stacked, to decide whether the header button shows a back-chevron (stack) or an X (single modal) */
+	_stackDepth: number;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -178,6 +180,17 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		}));
 	};
 
+	// Desired dismiss behaviour (see BaseBottomSheetProps for the matching
+	// prop docs): a backdrop tap or a swipe-down-to-close gesture is a "get me
+	// out of here" gesture from the user, independent of how many modals are
+	// stacked - both dismiss the ENTIRE stack via onDismissAll/closeAll. Only
+	// the header close/back button steps back one level via onClose/close().
+	// Because BaseBottomSheet already calls onDismissAll (closeAll) before
+	// invoking this onChange handler for index === -1, modalStackRef is
+	// already empty by the time we get here - so there is nothing left to
+	// re-expand for a partial pop anymore (that used to be a real case when
+	// swipe-down only popped one level; kept as a no-op guard in case a
+	// future caller reaches index === -1 with stack items still present).
 	const handleSheetChange = useCallback((index: number) => {
 		if (index >= 0) {
 			clearCloseTimeout();
@@ -243,6 +256,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			_sheetRef: sheetRef,
 			_handleSheetChange: handleSheetChange,
 			_screenBackgroundColor: screenBackgroundColor,
+			_stackDepth: modalStack.length,
 		}}>
 			{children}
 		</ModalContext.Provider>
@@ -250,7 +264,15 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 };
 
 export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const { _currentItem: currentItem, _sheetRef: sheetRef, _handleSheetChange: handleSheetChange, _screenBackgroundColor: screenBackgroundColor, close } = useModalContext();
+	const {
+		_currentItem: currentItem,
+		_sheetRef: sheetRef,
+		_handleSheetChange: handleSheetChange,
+		_screenBackgroundColor: screenBackgroundColor,
+		_stackDepth: stackDepth,
+		close,
+		closeAll,
+	} = useModalContext();
 
 	return (
 		<>
@@ -265,6 +287,8 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 						ref={sheetRef}
 						enablePanDownToClose
 						onClose={close}
+						onDismissAll={closeAll}
+						showBackChevron={stackDepth > 1}
 						onChange={handleSheetChange}
 						headerBackgroundColor={screenBackgroundColor}
 						backgroundStyle={currentItem.backgroundStyle}
