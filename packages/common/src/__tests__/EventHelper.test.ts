@@ -1,4 +1,4 @@
-import { DatabaseTypes, filterPopupEvents, isPopupEventActive } from 'repo-depkit-common';
+import { DatabaseTypes, doesAppVersionMatchConstraint, filterPopupEvents, isPopupEventActive } from 'repo-depkit-common';
 
 describe('Popup event helper', () => {
   const baseEvent: DatabaseTypes.PopupEvents = {
@@ -73,5 +73,54 @@ describe('Popup event helper', () => {
     const filtered = filterPopupEvents(events, 'show_on_android', referenceDate);
 
     expect(filtered.map((event) => event.id)).toEqual(['1']);
+  });
+
+  describe('doesAppVersionMatchConstraint', () => {
+    it('shows the event on every version when no constraint is set', () => {
+      expect(doesAppVersionMatchConstraint(null, '20.200.0')).toBe(true);
+      expect(doesAppVersionMatchConstraint(undefined, '20.200.0')).toBe(true);
+      expect(doesAppVersionMatchConstraint('   ', '20.200.0')).toBe(true);
+    });
+
+    it('fails open when the current app version is unknown', () => {
+      expect(doesAppVersionMatchConstraint('<20.200.0', undefined)).toBe(true);
+    });
+
+    it('fails open when the constraint cannot be parsed', () => {
+      expect(doesAppVersionMatchConstraint('not-a-version', '20.200.0')).toBe(true);
+    });
+
+    it('only shows the event on older versions for a "<" constraint', () => {
+      expect(doesAppVersionMatchConstraint('<20.200.0', '19.999.9')).toBe(true);
+      expect(doesAppVersionMatchConstraint('<20.200.0', '20.199.9')).toBe(true);
+      expect(doesAppVersionMatchConstraint('<20.200.0', '20.200.0')).toBe(false);
+      expect(doesAppVersionMatchConstraint('<20.200.0', '20.200.1')).toBe(false);
+      expect(doesAppVersionMatchConstraint('<20.200.0', '21.0.0')).toBe(false);
+    });
+
+    it('supports <=, >, >= and exact match constraints', () => {
+      expect(doesAppVersionMatchConstraint('<=20.200.0', '20.200.0')).toBe(true);
+      expect(doesAppVersionMatchConstraint('<=20.200.0', '20.200.1')).toBe(false);
+
+      expect(doesAppVersionMatchConstraint('>20.200.0', '20.200.1')).toBe(true);
+      expect(doesAppVersionMatchConstraint('>20.200.0', '20.200.0')).toBe(false);
+
+      expect(doesAppVersionMatchConstraint('>=20.200.0', '20.200.0')).toBe(true);
+      expect(doesAppVersionMatchConstraint('>=20.200.0', '20.199.9')).toBe(false);
+
+      expect(doesAppVersionMatchConstraint('20.200.0', '20.200.0')).toBe(true);
+      expect(doesAppVersionMatchConstraint('20.200.0', '20.200.1')).toBe(false);
+    });
+
+    it('excludes an event from the filtered results once the app is updated past the constraint', () => {
+      const event: DatabaseTypes.PopupEvents = {
+        ...baseEvent,
+        id: '4',
+        show_on_app_version: '<20.200.0',
+      };
+
+      expect(filterPopupEvents([event], 'show_on_android', referenceDate, '19.999.9').map((e) => e.id)).toEqual(['4']);
+      expect(filterPopupEvents([event], 'show_on_android', referenceDate, '20.200.0').map((e) => e.id)).toEqual([]);
+    });
   });
 });

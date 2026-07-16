@@ -42,6 +42,7 @@ import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
+import { getVersion } from '@/config';
 import { format } from 'date-fns';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
@@ -431,7 +432,7 @@ export default function Layout() {
                         if (response) {
                                 const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
 
-                                const filteredEvents = filterPopupEvents(response, platformKey).map((event, index) => ({
+                                const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion()).map((event, index) => ({
                                         ...event,
                                         isOpen: false,
                                         isCurrent: index === 0,
