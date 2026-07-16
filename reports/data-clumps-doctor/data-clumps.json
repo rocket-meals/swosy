@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-16T17:34:11.035Z",
+  "report_timestamp": "2026-07-16T18:09:01.335Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 101,
-          "average": 1.5499808502489467,
-          "amountSavedValuesForKeys": 4047,
+          "average": 1.5504973221117062,
+          "amountSavedValuesForKeys": 4053,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 101,
-          "average": 1.5661764705882353,
-          "amountSavedValuesForKeys": 4047,
+          "average": 1.5666795516041747,
+          "amountSavedValuesForKeys": 4053,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4730,
-        "detection_time_ms": 89,
+        "ast_generation_time_ms": 4797,
+        "detection_time_ms": 98,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 149.05,
-          "os_memory_free": 14976786432,
-          "os_memory_total": 16766423040,
+          "os_uptime": 172.48,
+          "os_memory_free": 14983749632,
+          "os_memory_total": 16766418944,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 8,
-    "amount_files_with_data_clumps": 7,
+    "amount_classes_or_interfaces_with_data_clumps": 10,
+    "amount_files_with_data_clumps": 9,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 12,
+    "fields_to_fields_data_clump": 14,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 12
+    "amount_data_clumps": 14
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c4f22f4fb333ca9fe2c6c6a440be8dfd0cac2bf3",
-    "project_commit_hash": "c4f22f4fb333ca9fe2c6c6a440be8dfd0cac2bf3",
+    "project_version": "eb63ce3c343d44410a06efd160874c50d1e22de6",
+    "project_commit_hash": "eb63ce3c343d44410a06efd160874c50d1e22de6",
     "project_tag": null,
-    "project_commit_date": "1784223124",
+    "project_commit_date": "1784225217",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 557,
     "number_of_classes_or_interfaces": 1162,
     "number_of_methods": 1433,
-    "number_of_data_fields": 4047,
+    "number_of_data_fields": 4053,
     "number_of_method_parameters": 1564
   },
   "detector": {
@@ -1211,6 +1211,178 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/Boxplot/Boxplot.tsx-packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps-statsboxColormedianColorlowColorhighColorformatValue": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/Boxplot/Boxplot.tsx-packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps-statsboxColormedianColorlowColorhighColorformatValue",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/Boxplot/Boxplot.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps",
+      "from_class_or_interface_name": "BoxplotProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps",
+      "to_class_or_interface_name": "SettingsListBoxplotOwnProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/stats": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/stats",
+          "name": "stats",
+          "type": "BoxplotStats",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/stats",
+            "name": "stats",
+            "type": "BoxplotStats",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/boxColor": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/boxColor",
+          "name": "boxColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/boxColor",
+            "name": "boxColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/medianColor": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/medianColor",
+          "name": "medianColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/medianColor",
+            "name": "medianColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/lowColor": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/lowColor",
+          "name": "lowColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/lowColor",
+            "name": "lowColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/highColor": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/highColor",
+          "name": "highColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/highColor",
+            "name": "highColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/formatValue": {
+          "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/formatValue",
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/formatValue",
+            "name": "formatValue",
+            "type": "(value: number) => string",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 42
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 2,
+            "endLine": 33,
+            "endColumn": 42
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-labelbackgroundColorborderColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListAvatar/index.tsx-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-labelbackgroundColorborderColor",
@@ -1403,6 +1575,178 @@
       "data_clump_type_additional": {
         "cluster_id": 1,
         "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps-packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps-statsformatValueboxColormedianColorlowColorhighColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx-packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps-packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps-statsformatValueboxColormedianColorlowColorhighColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps",
+      "from_class_or_interface_name": "SettingsListBoxplotOwnProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/Boxplot/Boxplot.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps",
+      "to_class_or_interface_name": "BoxplotProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/stats": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/stats",
+          "name": "stats",
+          "type": "BoxplotStats",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/stats",
+            "name": "stats",
+            "type": "BoxplotStats",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/formatValue": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/formatValue",
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/formatValue",
+            "name": "formatValue",
+            "type": "(value: number) => string",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 2,
+              "endLine": 33,
+              "endColumn": 42
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 42
+          }
+        },
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/boxColor": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/boxColor",
+          "name": "boxColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/boxColor",
+            "name": "boxColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/medianColor": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/medianColor",
+          "name": "medianColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/medianColor",
+            "name": "medianColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/lowColor": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/lowColor",
+          "name": "lowColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/lowColor",
+            "name": "lowColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/highColor": {
+          "key": "packages/common-ui/src/components/SettingsListBoxplot/SettingsListBoxplot.tsx/interface/SettingsListBoxplotOwnProps/memberField/highColor",
+          "name": "highColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/Boxplot/Boxplot.tsx/interface/BoxplotProps/memberField/highColor",
+            "name": "highColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 2
       }
     }
   }
