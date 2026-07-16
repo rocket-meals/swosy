@@ -31,7 +31,7 @@ import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
-import { snapToRoad } from '../../helpers/RouteSmootherHelper';
+import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -838,7 +838,7 @@ export default function ActivityDetailScreen() {
 	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
 	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
 	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
-	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
+	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
@@ -1044,8 +1044,8 @@ export default function ActivityDetailScreen() {
 		// We compute smoothed [lng, lat] coordinates and use those for display
 		// while keeping the original speed values from the raw route points.
 		const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
-		const displayCoords: [number, number][] = routeSmoothingEnabled
-			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated))
+		const displayCoords: [number, number][] = routeSmoothingLevel !== 'off'
+			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated), ROUTE_SMOOTHING_WINDOWS[routeSmoothingLevel])
 			: rawCoords;
 
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
@@ -1209,7 +1209,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingEnabled]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingLevel]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {

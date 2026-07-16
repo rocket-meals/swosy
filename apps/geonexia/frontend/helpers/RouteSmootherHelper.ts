@@ -8,6 +8,15 @@
 /** Number of neighbouring points used by the moving-average smoother. */
 export const SNAP_SMOOTH_WINDOW = 9;
 
+/** How aggressively `snapToRoad` projects a route onto its smoothed centre-line. */
+export type RouteSmoothingLevel = 'off' | 'light' | 'strong';
+
+/** Moving-average window size for each non-'off' smoothing level (see `movingAverage`). */
+export const ROUTE_SMOOTHING_WINDOWS: Record<Exclude<RouteSmoothingLevel, 'off'>, number> = {
+	light: 5,
+	strong: SNAP_SMOOTH_WINDOW,
+};
+
 /** Squared Euclidean distance in degrees (good enough for small distances). */
 export function squaredDistDeg(a: [number, number], b: [number, number]): number {
 	const dx = b[0] - a[0];
@@ -60,14 +69,16 @@ export function projectOntoSegment(
  * @param coords           Array of [lng, lat] pairs.
  * @param interpolatedMask Optional boolean mask; `true` entries are left
  *                         unchanged (already interpolated, no snapping needed).
+ * @param window           Moving-average window size, see `ROUTE_SMOOTHING_WINDOWS`.
  */
 export function snapToRoad(
 	coords: [number, number][],
 	interpolatedMask?: boolean[],
+	window: number = SNAP_SMOOTH_WINDOW,
 ): [number, number][] {
 	if (coords.length < 2) return coords;
 
-	const smoothed = movingAverage(coords, SNAP_SMOOTH_WINDOW);
+	const smoothed = movingAverage(coords, window);
 
 	return coords.map((pt, i) => {
 		if (interpolatedMask && interpolatedMask.length === coords.length && interpolatedMask[i])

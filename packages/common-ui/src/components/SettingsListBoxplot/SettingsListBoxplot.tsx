@@ -94,9 +94,19 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 				</View>
 				{expanded ? (
 					<View style={styles.descriptionSection}>
-						<Text style={[styles.statsLine, { color: theme.screen.text }]}>
-							{`Min ${format(stats.min)}  ·  Q1 ${format(stats.q1)}  ·  Median ${format(stats.median)}  ·  Q3 ${format(stats.q3)}  ·  Max ${format(stats.max)}`}
-						</Text>
+						<View style={styles.statsList}>
+							{([
+								['Min', stats.min],
+								['Q1', stats.q1],
+								['Median', stats.median],
+								['Q3', stats.q3],
+								['Max', stats.max],
+							] as const).map(([label, value]) => (
+								<Text key={label} style={[styles.statsLine, { color: theme.screen.text }]}>
+									{`•  ${label}: ${format(value)}`}
+								</Text>
+							))}
+						</View>
 						<Text style={[styles.description, { color: theme.screen.icon }]}>
 							{description ?? DEFAULT_DESCRIPTION}
 						</Text>
@@ -125,7 +135,10 @@ const styles = StyleSheet.create({
 		paddingLeft: CONTENT_LEFT_OFFSET,
 		paddingRight: horizontalScreenPadding,
 		paddingBottom: 12,
-		gap: 4,
+		gap: 8,
+	},
+	statsList: {
+		gap: 3,
 	},
 	statsLine: {
 		fontSize: 12,

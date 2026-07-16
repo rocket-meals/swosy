@@ -4,11 +4,11 @@ import type { BoxplotStats } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { mixColors } from '../../helpers/ColorHelper';
 
-const PLOT_HEIGHT = 28;
-const BOX_HEIGHT = 20;
-const CAP_HEIGHT = 14;
+const PLOT_HEIGHT = 32;
+const BOX_HEIGHT = 28;
+const CAP_HEIGHT = 20;
 const WHISKER_THICKNESS = 2;
-const MEDIAN_THICKNESS = 2;
+const MEDIAN_THICKNESS = 3;
 const WHISKER_GRADIENT_STEPS = 10;
 
 // Same palette as the speed-colored route line on the map (see speedToColor
