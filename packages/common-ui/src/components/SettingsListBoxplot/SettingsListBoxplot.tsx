@@ -13,15 +13,19 @@ const ICON_WIDTH = 34;
 const ICON_MARGIN_RIGHT = 10;
 const CONTENT_LEFT_OFFSET = horizontalScreenPadding + ICON_WIDTH + ICON_MARGIN_RIGHT;
 
-const DEFAULT_DESCRIPTION =
+const DEFAULT_DESCRIPTION_QUARTILE =
 	'Die grüne Box zeigt die mittleren 50 % aller Messwerte (vom unteren zum oberen Quartil), der rote Strich in der Box ist der Median. Die Antennen an den Enden reichen bis zum kleinsten (rot) bzw. größten (blau) gemessenen Wert.';
+
+function defaultBandDescription(format: (value: number) => string, medianBandValue: number): string {
+	return `Die grüne Box zeigt den Bereich Median ± ${format(medianBandValue)}, der rote Strich ist der Median. Die Antennen an den Enden reichen bis zum kleinsten (rot) bzw. größten (blau) gemessenen Wert.`;
+}
 
 type SettingsListBoxplotOwnProps = {
 	stats: BoxplotStats;
 	/** Explanation shown below the plot once expanded. Defaults to a generic "how to read a boxplot" text. */
 	description?: string;
 	formatValue?: (value: number) => string;
-	/** Color of the box (Q1→Q3, the middle 50% of samples). Defaults to green. */
+	/** Color of the box (the "normal"/green range). Defaults to green. */
 	boxColor?: string;
 	/** Color of the median line inside the box. Defaults to red. */
 	medianColor?: string;
@@ -29,6 +33,13 @@ type SettingsListBoxplotOwnProps = {
 	lowColor?: string;
 	/** Color at the max end of the right whisker. Defaults to blue. */
 	highColor?: string;
+	/**
+	 * When set, the box represents `median ± medianBandValue` instead of the
+	 * statistical `[q1, q3]` quartile range - see `BoxplotProps.medianBandValue`.
+	 * Also changes the expanded stats list to show the resulting green-zone
+	 * boundaries instead of Q1/Q3.
+	 */
+	medianBandValue?: number;
 	/** Whether the explanation is shown initially, without the user tapping the row. Defaults to false. */
 	initiallyExpanded?: boolean;
 };
@@ -46,6 +57,7 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 	medianColor,
 	lowColor,
 	highColor,
+	medianBandValue,
 	primaryColor,
 	initiallyExpanded = false,
 	showSeparator = true,
@@ -64,6 +76,26 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 	} else if (groupPosition === 'single') {
 		wrapperStyle = { borderRadius: borderRadiusContainer };
 	}
+
+	const statsEntries: readonly (readonly [string, number])[] =
+		medianBandValue !== undefined
+			? [
+					['Min', stats.min],
+					['Grün ab', Math.max(stats.min, stats.median - medianBandValue)],
+					['Median', stats.median],
+					['Grün bis', Math.min(stats.max, stats.median + medianBandValue)],
+					['Max', stats.max],
+				]
+			: [
+					['Min', stats.min],
+					['Q1', stats.q1],
+					['Median', stats.median],
+					['Q3', stats.q3],
+					['Max', stats.max],
+				];
+
+	const resolvedDescription =
+		description ?? (medianBandValue !== undefined ? defaultBandDescription(format, medianBandValue) : DEFAULT_DESCRIPTION_QUARTILE);
 
 	return (
 		<>
@@ -89,26 +121,21 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 						medianColor={medianColor}
 						lowColor={lowColor}
 						highColor={highColor}
+						medianBandValue={medianBandValue}
 						formatValue={formatValue}
 					/>
 				</View>
 				{expanded ? (
 					<View style={styles.descriptionSection}>
 						<View style={styles.statsList}>
-							{([
-								['Min', stats.min],
-								['Q1', stats.q1],
-								['Median', stats.median],
-								['Q3', stats.q3],
-								['Max', stats.max],
-							] as const).map(([label, value]) => (
+							{statsEntries.map(([label, value]) => (
 								<Text key={label} style={[styles.statsLine, { color: theme.screen.text }]}>
 									{`•  ${label}: ${format(value)}`}
 								</Text>
 							))}
 						</View>
 						<Text style={[styles.description, { color: theme.screen.icon }]}>
-							{description ?? DEFAULT_DESCRIPTION}
+							{resolvedDescription}
 						</Text>
 					</View>
 				) : null}

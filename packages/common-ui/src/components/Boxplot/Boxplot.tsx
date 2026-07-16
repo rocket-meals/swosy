@@ -7,7 +7,7 @@ import { mixColors } from '../../helpers/ColorHelper';
 const PLOT_HEIGHT = 32;
 const BOX_HEIGHT = 28;
 const CAP_HEIGHT = 20;
-const WHISKER_THICKNESS = 2;
+const WHISKER_THICKNESS = 4;
 const MEDIAN_THICKNESS = 3;
 const WHISKER_GRADIENT_STEPS = 10;
 
@@ -21,7 +21,7 @@ const DEFAULT_MEDIAN_COLOR = '#ef4444';
 
 export type BoxplotProps = {
 	stats: BoxplotStats;
-	/** Color of the box (Q1→Q3, the middle 50% of samples). Defaults to green. */
+	/** Color of the box (the "normal"/green range). Defaults to green. */
 	boxColor?: string;
 	/** Color of the median line inside the box. Defaults to red. */
 	medianColor?: string;
@@ -29,6 +29,13 @@ export type BoxplotProps = {
 	lowColor?: string;
 	/** Color at the max end of the right whisker; the whisker gradient-interpolates from boxColor. Defaults to blue. */
 	highColor?: string;
+	/**
+	 * When set, the box represents `median ± medianBandValue` (clamped to
+	 * `[min, max]`) instead of the statistical `[q1, q3]` quartile range - e.g.
+	 * "±1 km/h around the median counts as normal/green" rather than "the
+	 * middle 50% of samples". When omitted, falls back to `[q1, q3]`.
+	 */
+	medianBandValue?: number;
 	/** Formats a raw value for the min/median/max labels below the plot. Defaults to one decimal place. */
 	formatValue?: (value: number) => string;
 	/** Hides the min/median/max labels below the plot when false. Defaults to true. */
@@ -70,7 +77,8 @@ function renderWhiskerGradient(
 
 /**
  * Horizontal boxplot rendered with plain Views (no charting library).
- * The whiskers span min→max, the box spans the lower→upper quartile (Q1→Q3),
+ * The whiskers span min→max, the box spans either [q1, q3] or, when
+ * `medianBandValue` is given, [median-medianBandValue, median+medianBandValue],
  * and the vertical line inside the box marks the median.
  */
 const Boxplot: React.FC<BoxplotProps> = ({
@@ -79,6 +87,7 @@ const Boxplot: React.FC<BoxplotProps> = ({
 	medianColor = DEFAULT_MEDIAN_COLOR,
 	lowColor = DEFAULT_LOW_COLOR,
 	highColor = DEFAULT_HIGH_COLOR,
+	medianBandValue,
 	formatValue,
 	showLabels = true,
 }) => {
@@ -88,23 +97,25 @@ const Boxplot: React.FC<BoxplotProps> = ({
 	const range = stats.max - stats.min;
 	const toPercent = (value: number) => (range > 0 ? ((value - stats.min) / range) * 100 : 50);
 
-	const q1Percent = toPercent(stats.q1);
-	const q3Percent = toPercent(stats.q3);
+	const boxLow = medianBandValue !== undefined ? Math.max(stats.min, stats.median - medianBandValue) : stats.q1;
+	const boxHigh = medianBandValue !== undefined ? Math.min(stats.max, stats.median + medianBandValue) : stats.q3;
+	const boxLowPercent = toPercent(boxLow);
+	const boxHighPercent = toPercent(boxHigh);
 	const medianPercent = toPercent(stats.median);
-	const boxWidthPercent = Math.max(q3Percent - q1Percent, 0);
+	const boxWidthPercent = Math.max(boxHighPercent - boxLowPercent, 0);
 
 	return (
 		<View style={styles.wrapper}>
 			<View style={styles.plotArea}>
-				{renderWhiskerGradient(0, q1Percent, lowColor, boxColor, 'low')}
-				{renderWhiskerGradient(q3Percent, 100, boxColor, highColor, 'high')}
+				{renderWhiskerGradient(0, boxLowPercent, lowColor, boxColor, 'low')}
+				{renderWhiskerGradient(boxHighPercent, 100, boxColor, highColor, 'high')}
 				<View style={[styles.cap, { left: 0, backgroundColor: lowColor }]} />
 				<View style={[styles.cap, styles.capRight, { backgroundColor: highColor }]} />
 				<View
 					style={[
 						styles.box,
 						{
-							left: `${q1Percent}%` as `${number}%`,
+							left: `${boxLowPercent}%` as `${number}%`,
 							width: `${boxWidthPercent}%` as `${number}%`,
 							borderColor: boxColor,
 							backgroundColor: boxColor,

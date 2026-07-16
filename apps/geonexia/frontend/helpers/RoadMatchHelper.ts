@@ -272,25 +272,11 @@ type RoadGraph = {
 };
 
 /**
- * Vector tiles clip way geometry at tile boundaries, so a single real-world
- * path that crosses a tile edge is returned as two separate way fragments
- * whose endpoint coordinates usually don't match exactly (independent
- * tile-relative interpolation on each side of the boundary can differ by a
- * few meters). Any two *way endpoints* within this distance are bridged with
- * an extra graph edge so the path search can still cross the boundary,
- * without merging endpoints that are close by coincidence rather than being
- * the same real point (this threshold is deliberately small).
- */
-const ENDPOINT_BRIDGE_METERS = 20;
-
-/**
  * Builds a graph where nodes are the (deduplicated) vertices of all ways and
- * edges are the ways' own segments, plus short "bridge" edges between nearby
- * way endpoints (see `ENDPOINT_BRIDGE_METERS`). Two ways that share an exact
- * vertex (a real intersection) - or whose endpoints are bridged - are
- * connected there for free, so a shortest-path search over this graph
- * naturally "walks to the junction" along a way's remaining segments before
- * continuing onto the next way - no special-casing needed.
+ * edges are the ways' own segments. Two ways that share an exact vertex (a
+ * real intersection) are connected there for free, so a shortest-path search
+ * over this graph naturally "walks to the junction" along a way's remaining
+ * segments before continuing onto the next way - no special-casing needed.
  */
 function buildRoadGraph(ways: RoadWay[]): RoadGraph {
 	const nodeIndexByKey = new Map<string, number>();
@@ -308,7 +294,6 @@ function buildRoadGraph(ways: RoadWay[]): RoadGraph {
 		return idx;
 	}
 
-	const endpointNodeIndices = new Set<number>();
 	for (const way of ways) {
 		for (let i = 0; i < way.points.length - 1; i++) {
 			const aIdx = getOrCreateNode(way.points[i]);
@@ -317,43 +302,6 @@ function buildRoadGraph(ways: RoadWay[]): RoadGraph {
 			const d = distDeg(way.points[i], way.points[i + 1]);
 			adjacency[aIdx].push({ to: bIdx, dist: d });
 			adjacency[bIdx].push({ to: aIdx, dist: d });
-		}
-		if (way.points.length > 0) {
-			endpointNodeIndices.add(getOrCreateNode(way.points[0]));
-			endpointNodeIndices.add(getOrCreateNode(way.points[way.points.length - 1]));
-		}
-	}
-
-	// Bucket endpoints by grid cell (same technique as buildSegmentGrid) so
-	// nearby-endpoint lookups stay fast even with thousands of ways.
-	const endpointBuckets = new Map<string, number[]>();
-	for (const idx of endpointNodeIndices) {
-		const [x, y] = gridCell(nodeCoords[idx][0], nodeCoords[idx][1]);
-		const key = `${x},${y}`;
-		const bucket = endpointBuckets.get(key);
-		if (bucket) bucket.push(idx);
-		else endpointBuckets.set(key, [idx]);
-	}
-	const bridgeThresholdDegSq = metersToDeg(ENDPOINT_BRIDGE_METERS) ** 2;
-	const bridgedPairs = new Set<string>();
-	for (const idx of endpointNodeIndices) {
-		const [cellX, cellY] = gridCell(nodeCoords[idx][0], nodeCoords[idx][1]);
-		for (let dx = -1; dx <= 1; dx++) {
-			for (let dy = -1; dy <= 1; dy++) {
-				const bucket = endpointBuckets.get(`${cellX + dx},${cellY + dy}`);
-				if (!bucket) continue;
-				for (const otherIdx of bucket) {
-					if (otherIdx === idx) continue;
-					const pairKey = idx < otherIdx ? `${idx}|${otherIdx}` : `${otherIdx}|${idx}`;
-					if (bridgedPairs.has(pairKey)) continue;
-					const d2 = squaredDistDeg(nodeCoords[idx], nodeCoords[otherIdx]);
-					if (d2 > bridgeThresholdDegSq) continue;
-					bridgedPairs.add(pairKey);
-					const d = Math.sqrt(d2);
-					adjacency[idx].push({ to: otherIdx, dist: d });
-					adjacency[otherIdx].push({ to: idx, dist: d });
-				}
-			}
 		}
 	}
 

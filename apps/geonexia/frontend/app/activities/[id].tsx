@@ -54,6 +54,8 @@ const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
 const SPEED_WARMUP_MS = 10_000;
 const SPEED_WINDOW_SIZE = 5;
+/** Speed variation of ±this many km/h around the median counts as "normal"/green, both in the boxplot and on the map. */
+const SPEED_BAND_KMH = 1;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const R = 6371;
@@ -114,8 +116,6 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
 	const startTimestamp = points[0].timestamp;
-	let speedDistanceKm = 0;
-	let speedDurationSeconds = 0;
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
 		distanceKm += segKm;
@@ -132,10 +132,8 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 				: dtSec > 0
 				? (segKm / dtSec) * 3600
 				: 0;
-		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
-			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
-			speedDistanceKm += segKm;
-			speedDurationSeconds += dtSec;
+		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS && segSpeedKmh > 0) {
+			speedsKmh.push(segSpeedKmh);
 		}
 	}
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
@@ -147,18 +145,14 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
 		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
 	}
-	const maxSpeedKmh = windowedSpeeds.length > 0 ? Math.max(...windowedSpeeds) : 0;
-	const minSpeedKmh = windowedSpeeds.length > 0 ? Math.min(...windowedSpeeds) : 0;
-	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
-	const medianSpeedKmh = (() => {
-		if (speedsKmh.length === 0) return 0;
-		const sorted = [...speedsKmh].sort((a, b) => a - b);
-		const mid = Math.floor(sorted.length / 2);
-		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-	})();
-	// q1/q3 come from the same windowed speed samples as min/max, so the boxplot
-	// shown on the activity detail screen lines up with the min/max/avg stats above it.
-	const { q1: q1SpeedKmh, q3: q3SpeedKmh } = computeBoxplotStats(windowedSpeeds);
+	// min/max/median/q1/q3 AND avg all come from the same windowed speed samples,
+	// so they can never contradict each other (e.g. avg ending up below min, which
+	// happened when avg was separately computed as a raw distance/time ratio while
+	// min/max used the smoothed window - two different underlying data sets).
+	const { min: minSpeedKmh, q1: q1SpeedKmh, median: medianSpeedKmh, q3: q3SpeedKmh, max: maxSpeedKmh } = computeBoxplotStats(windowedSpeeds);
+	const avgSpeedKmh = windowedSpeeds.length > 0
+		? windowedSpeeds.reduce((sum, v) => sum + v, 0) / windowedSpeeds.length
+		: 0;
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
@@ -361,126 +355,6 @@ function WeatherTypePickerContent({
 		</View>
 	);
 }
-
-// ─── Speed Range Item ─────────────────────────────────────────────────────────
-
-const GRADIENT_SEGMENTS = 32;
-
-function interpolateSpeedColor(t: number): string {
-	// t: 0 = red, 0.5 = green, 1 = blue
-	// red: #ef4444, green: #22c55e, blue: #3b82f6
-	let r: number, g: number, b: number;
-	if (t <= 0.5) {
-		const s = t * 2;
-		r = Math.round(0xef + (0x22 - 0xef) * s);
-		g = Math.round(0x44 + (0xc5 - 0x44) * s);
-		b = Math.round(0x44 + (0x5e - 0x44) * s);
-	} else {
-		const s = (t - 0.5) * 2;
-		r = Math.round(0x22 + (0x3b - 0x22) * s);
-		g = Math.round(0xc5 + (0x82 - 0xc5) * s);
-		b = Math.round(0x5e + (0xf6 - 0x5e) * s);
-	}
-	return `rgb(${r},${g},${b})`;
-}
-
-function SpeedRangeItem({
-	minSpeedKmh,
-	avgSpeedKmh,
-	maxSpeedKmh,
-	theme,
-}: {
-	minSpeedKmh: number;
-	avgSpeedKmh: number;
-	maxSpeedKmh: number;
-	theme: ReturnType<typeof useTheme>['theme'];
-}) {
-	// Convert speeds to pace: min speed → slowest pace (highest min/km), max speed → fastest pace (lowest min/km)
-	const paceFromSpeed = (kmh: number) => (kmh > 0 ? 60 / kmh : 0);
-	const minPace = paceFromSpeed(maxSpeedKmh); // fastest pace (shown on right/blue side)
-	const avgPace = paceFromSpeed(avgSpeedKmh);
-	const maxPace = paceFromSpeed(minSpeedKmh); // slowest pace (shown on left/red side)
-
-	return (
-		<View style={[speedRangeStyles.container, { backgroundColor: theme.screen.iconBg }]}>
-			<View style={[speedRangeStyles.labelsRow, { marginTop: 0 }]}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{formatPace(maxPace)}</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{formatPace(avgPace)}</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{formatPace(minPace)}</Text>
-			</View>
-			<View style={speedRangeStyles.barWrapper}>
-				{Array.from({ length: GRADIENT_SEGMENTS }).map((_, i) => (
-					<View
-						key={i}
-						style={[
-							speedRangeStyles.barSegment,
-							{ backgroundColor: interpolateSpeedColor(i / (GRADIENT_SEGMENTS - 1)) },
-							i === 0 && speedRangeStyles.barSegmentFirst,
-							i === GRADIENT_SEGMENTS - 1 && speedRangeStyles.barSegmentLast,
-						]}
-					/>
-				))}
-			</View>
-			<View style={[speedRangeStyles.labelsRow, { marginBottom: 0 }]}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
-			</View>
-			<View style={[speedRangeStyles.separator, { backgroundColor: theme.screen.background }]} />
-		</View>
-	);
-}
-
-const speedRangeStyles = StyleSheet.create({
-	container: {
-		paddingHorizontal: 16,
-		paddingTop: 10,
-		paddingBottom: 10,
-	},
-	labelsRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		marginBottom: 6,
-		marginTop: 6,
-	},
-	labelMin: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'left',
-	},
-	labelAvg: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'center',
-	},
-	labelMax: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'right',
-	},
-	barWrapper: {
-		flexDirection: 'row',
-		height: 8,
-		overflow: 'hidden',
-	},
-	barSegment: {
-		flex: 1,
-		height: 8,
-	},
-	barSegmentFirst: {
-		borderTopLeftRadius: 4,
-		borderBottomLeftRadius: 4,
-	},
-	barSegmentLast: {
-		borderTopRightRadius: 4,
-		borderBottomRightRadius: 4,
-	},
-	separator: {
-		height: StyleSheet.hairlineWidth,
-		marginTop: 0,
-		marginLeft: 54,
-	},
-});
 
 // ─── Route Assignment Modal Content ──────────────────────────────────────────
 
@@ -1007,9 +881,10 @@ export default function ActivityDetailScreen() {
 	}, [id]);
 
 	// Build speed-colored segments from route points and send along with the speed
-	// boxplot's quartiles, so the map can color each segment the same way the speed
-	// boxplot does: below Q1 → red, between Q1 and Q3 (middle 50%) → green, above Q3 → blue.
-	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'maxSpeedKmh' | 'q1SpeedKmh' | 'q3SpeedKmh'>) => {
+	// boxplot's median/band, so the map can color each segment the same way the
+	// speed boxplot does: below median-band → red, within median±band → green,
+	// above median+band → blue.
+	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'maxSpeedKmh' | 'medianSpeedKmh'>) => {
 		if (points.length < 2) return null;
 		const segments = [];
 		for (let i = 0; i < points.length - 1; i++) {
@@ -1023,8 +898,8 @@ export default function ActivityDetailScreen() {
 			segments,
 			speedRange: {
 				min: stats.minSpeedKmh,
-				q1: stats.q1SpeedKmh ?? stats.minSpeedKmh,
-				q3: stats.q3SpeedKmh ?? stats.maxSpeedKmh,
+				median: stats.medianSpeedKmh ?? (stats.minSpeedKmh + stats.maxSpeedKmh) / 2,
+				band: SPEED_BAND_KMH,
 				max: stats.maxSpeedKmh,
 			},
 		};
@@ -1668,8 +1543,8 @@ export default function ActivityDetailScreen() {
 		})()),
 	];
 
-	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then the speed boxplot,
-	// then statsRows.slice(1) at 'middle'/'bottom'. idx within the slice runs
+	// Render: statsRows[0] (Date) at 'top', then the speed boxplot, then
+	// statsRows.slice(1) at 'middle'/'bottom'. idx within the slice runs
 	// 0…statsRows.length-2; the last item (idx === statsRows.length-2) gets
 	// groupPosition='bottom' and showSeparator=false.
 	return (
@@ -1725,13 +1600,6 @@ export default function ActivityDetailScreen() {
 					showSeparator
 					groupPosition="top"
 				/>
-				{/* Speed range item – directly under Date */}
-				<SpeedRangeItem
-					minSpeedKmh={stats.minSpeedKmh}
-					avgSpeedKmh={stats.avgSpeedKmh}
-					maxSpeedKmh={stats.maxSpeedKmh}
-					theme={theme}
-				/>
 				{/* Speed boxplot – collapsed explanation, expands on tap */}
 				<SettingsListBoxplot
 					iconBackgroundColor={PRIMARY_COLOR}
@@ -1744,8 +1612,9 @@ export default function ActivityDetailScreen() {
 						q3: stats.q3SpeedKmh ?? stats.maxSpeedKmh,
 						max: stats.maxSpeedKmh,
 					}}
+					medianBandValue={SPEED_BAND_KMH}
 					formatValue={(value) => `${value.toFixed(1)} km/h`}
-					description="Die grüne Box zeigt die mittleren 50 % aller gemessenen Geschwindigkeiten (zwischen unterem und oberem Quartil), der rote Strich ist der Median. Die Antennen reichen bis zur langsamsten (rot) bzw. schnellsten (blau) Geschwindigkeit – dieselben Farben werden für die Streckenlinie auf der Karte verwendet."
+					description={`Grün = Geschwindigkeit innerhalb von ±${SPEED_BAND_KMH.toFixed(1)} km/h um den Median (die normale Schwankung). Langsamer als das ist rot, schneller ist blau – dieselben Farben werden für die Streckenlinie auf der Karte verwendet.`}
 					groupPosition="middle"
 				/>
 				{/* Remaining rows */}

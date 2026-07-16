@@ -88,12 +88,12 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] =
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
 
-const GPS_PRESET_SECONDS = [1, 10, 30];
+const GPS_PRESET_SECONDS = [1, 5, 15];
 
 const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[] = [
 	{ id: 1, label: '1s', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
-	{ id: 10, label: '10s', icon: <MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" /> },
-	{ id: 30, label: '30s', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
+	{ id: 5, label: '5s', icon: <MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" /> },
+	{ id: 15, label: '15s', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
 ];
 
 function gpsIntervalLabel(seconds: number): string {
