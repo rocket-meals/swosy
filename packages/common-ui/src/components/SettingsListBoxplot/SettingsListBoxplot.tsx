@@ -4,11 +4,9 @@ import type { PropsWithChildren } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BoxplotStats } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
-import { useSettingsContext } from '../../context/SettingsContext';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
 import Boxplot from '../Boxplot';
-import { lightTheme } from '../../themes';
 import { borderRadiusContainer, horizontalScreenPadding } from '../../constants/ui';
 
 const ICON_WIDTH = 34;
@@ -16,14 +14,21 @@ const ICON_MARGIN_RIGHT = 10;
 const CONTENT_LEFT_OFFSET = horizontalScreenPadding + ICON_WIDTH + ICON_MARGIN_RIGHT;
 
 const DEFAULT_DESCRIPTION =
-	'Die Box zeigt den Bereich der mittleren 50 % aller Messwerte (vom unteren zum oberen Quartil), der Strich in der Box ist der Median. Die dünnen Linien an den Enden (Antennen) markieren den kleinsten und größten gemessenen Wert.';
+	'Die grüne Box zeigt die mittleren 50 % aller Messwerte (vom unteren zum oberen Quartil), der rote Strich in der Box ist der Median. Die Antennen an den Enden reichen bis zum kleinsten (rot) bzw. größten (blau) gemessenen Wert.';
 
 type SettingsListBoxplotOwnProps = {
 	stats: BoxplotStats;
 	/** Explanation shown below the plot once expanded. Defaults to a generic "how to read a boxplot" text. */
 	description?: string;
 	formatValue?: (value: number) => string;
-	boxplotColor?: string;
+	/** Color of the box (Q1→Q3, the middle 50% of samples). Defaults to green. */
+	boxColor?: string;
+	/** Color of the median line inside the box. Defaults to red. */
+	medianColor?: string;
+	/** Color at the min end of the left whisker. Defaults to red. */
+	lowColor?: string;
+	/** Color at the max end of the right whisker. Defaults to blue. */
+	highColor?: string;
 	/** Whether the explanation is shown initially, without the user tapping the row. Defaults to false. */
 	initiallyExpanded?: boolean;
 };
@@ -37,7 +42,10 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 	stats,
 	description,
 	formatValue,
-	boxplotColor,
+	boxColor,
+	medianColor,
+	lowColor,
+	highColor,
 	primaryColor,
 	initiallyExpanded = false,
 	showSeparator = true,
@@ -45,9 +53,8 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 	...settingsListProps
 }) => {
 	const { theme } = useTheme();
-	const settingsCtx = useSettingsContext();
-	const resolvedColor = boxplotColor ?? primaryColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
 	const [expanded, setExpanded] = useState(initiallyExpanded);
+	const format = formatValue ?? ((value: number) => value.toFixed(1));
 
 	let wrapperStyle: ViewStyle = {};
 	if (groupPosition === 'top') {
@@ -76,10 +83,20 @@ const SettingsListBoxplot: React.FC<SettingsListBoxplotProps> = ({
 					}
 				/>
 				<View style={styles.plotSection}>
-					<Boxplot stats={stats} color={resolvedColor} formatValue={formatValue} />
+					<Boxplot
+						stats={stats}
+						boxColor={boxColor}
+						medianColor={medianColor}
+						lowColor={lowColor}
+						highColor={highColor}
+						formatValue={formatValue}
+					/>
 				</View>
 				{expanded ? (
 					<View style={styles.descriptionSection}>
+						<Text style={[styles.statsLine, { color: theme.screen.text }]}>
+							{`Min ${format(stats.min)}  ·  Q1 ${format(stats.q1)}  ·  Median ${format(stats.median)}  ·  Q3 ${format(stats.q3)}  ·  Max ${format(stats.max)}`}
+						</Text>
 						<Text style={[styles.description, { color: theme.screen.icon }]}>
 							{description ?? DEFAULT_DESCRIPTION}
 						</Text>
@@ -108,6 +125,11 @@ const styles = StyleSheet.create({
 		paddingLeft: CONTENT_LEFT_OFFSET,
 		paddingRight: horizontalScreenPadding,
 		paddingBottom: 12,
+		gap: 4,
+	},
+	statsLine: {
+		fontSize: 12,
+		fontWeight: '600',
 	},
 	description: {
 		fontSize: 12,

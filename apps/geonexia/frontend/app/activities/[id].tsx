@@ -995,9 +995,10 @@ export default function ActivityDetailScreen() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id]);
 
-	// Build speed-colored segments from route points and send along with speed range
-	// so the map can interpolate red (min) → green (avg) → blue (max).
-	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'avgSpeedKmh' | 'maxSpeedKmh'>) => {
+	// Build speed-colored segments from route points and send along with the speed
+	// boxplot's quartiles, so the map can color each segment the same way the speed
+	// boxplot does: below Q1 → red, between Q1 and Q3 (middle 50%) → green, above Q3 → blue.
+	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'maxSpeedKmh' | 'q1SpeedKmh' | 'q3SpeedKmh'>) => {
 		if (points.length < 2) return null;
 		const segments = [];
 		for (let i = 0; i < points.length - 1; i++) {
@@ -1007,7 +1008,15 @@ export default function ActivityDetailScreen() {
 		const speedKmh = (((a.speed ?? 0) + (b.speed ?? 0)) / 2) * 3.6;
 			segments.push({ coords: [[a.lng, a.lat], [b.lng, b.lat]], speedKmh });
 		}
-		return { segments, speedRange: { min: stats.minSpeedKmh, avg: stats.avgSpeedKmh, max: stats.maxSpeedKmh } };
+		return {
+			segments,
+			speedRange: {
+				min: stats.minSpeedKmh,
+				q1: stats.q1SpeedKmh ?? stats.minSpeedKmh,
+				q3: stats.q3SpeedKmh ?? stats.maxSpeedKmh,
+				max: stats.maxSpeedKmh,
+			},
+		};
 	}, []);
 
 	// Compute the bounding box of a route using a loop (avoids spread-operator stack
@@ -1627,7 +1636,7 @@ export default function ActivityDetailScreen() {
 						max: stats.maxSpeedKmh,
 					}}
 					formatValue={(value) => `${value.toFixed(1)} km/h`}
-					boxplotColor={PRIMARY_COLOR}
+					description="Die grüne Box zeigt die mittleren 50 % aller gemessenen Geschwindigkeiten (zwischen unterem und oberem Quartil), der rote Strich ist der Median. Die Antennen reichen bis zur langsamsten (rot) bzw. schnellsten (blau) Geschwindigkeit – dieselben Farben werden für die Streckenlinie auf der Karte verwendet."
 					groupPosition="middle"
 				/>
 				{/* Remaining rows */}
