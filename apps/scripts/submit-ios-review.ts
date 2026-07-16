@@ -37,6 +37,20 @@ function createAppStoreConnectToken(keyId: string, issuerId: string, privateKeyP
   return `${unsigned}.${base64url(signature)}`;
 }
 
+type AscApiErrorDetail = { code?: string; detail?: string };
+
+class AscApiError extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly errors: AscApiErrorDetail[],
+    rawText: string,
+    method: string,
+    path: string
+  ) {
+    super(`App Store Connect API Fehler (${status} ${method} ${path}):\n${rawText}`);
+  }
+}
+
 async function ascRequest(token: string, method: string, path: string, body?: unknown): Promise<JsonApiDocument> {
   const response = await fetch(`${API_BASE}${path}`, {
     method,
@@ -50,7 +64,13 @@ async function ascRequest(token: string, method: string, path: string, body?: un
   const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(`App Store Connect API Fehler (${response.status} ${method} ${path}):\n${text}`);
+    let errors: AscApiErrorDetail[] = [];
+    try {
+      errors = (JSON.parse(text) as { errors?: AscApiErrorDetail[] }).errors ?? [];
+    } catch {
+      // response body wasn't JSON - leave errors empty, raw text is still in the thrown error message
+    }
+    throw new AscApiError(response.status, errors, text, method, path);
   }
 
   return text ? JSON.parse(text) : {};
@@ -159,13 +179,31 @@ async function updateReleaseNotes(token: string, appStoreVersionId: string, rele
   }
 
   for (const localization of localizations) {
-    await ascRequest(token, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, {
-      data: {
-        type: 'appStoreVersionLocalizations',
-        id: localization.id,
-        attributes: { whatsNew: releaseNotes },
-      },
-    });
+    try {
+      await ascRequest(token, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, {
+        data: {
+          type: 'appStoreVersionLocalizations',
+          id: localization.id,
+          attributes: { whatsNew: releaseNotes },
+        },
+      });
+    } catch (error) {
+      // Apple doesn't allow "What's New" to be set on an app's very first ever version
+      // (there's nothing to describe changes relative to). Once the first version is
+      // approved and released, whatsNew becomes editable for all subsequent versions.
+      const isWhatsNewLockedOnFirstVersion =
+        error instanceof AscApiError &&
+        error.status === 409 &&
+        error.errors.some(e => e.code === 'STATE_ERROR' && e.detail?.includes("'whatsNew'"));
+
+      if (!isWhatsNewLockedOnFirstVersion) {
+        throw error;
+      }
+
+      console.log(
+        `   ⚠️  "What's New" kann für Sprache ${localization.attributes?.locale} nicht gesetzt werden (vermutlich die allererste Version dieser App) - wird übersprungen.`
+      );
+    }
   }
 }
 
