@@ -90,8 +90,17 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 	const webAccessibilityOverrides = Platform.OS === 'web' ? { accessibilityRole: null as any, accessibilityLabel: null as any } : {};
 	const renderBackground = useCallback((backgroundProps: BottomSheetBackgroundProps) => <View pointerEvents={backgroundProps.pointerEvents} style={[backgroundStyles.background, backgroundProps.style]} />, []);
 
+	// Android now enforces edge-to-edge (Expo SDK 54 / targetSdk 35+), so the
+	// window never actually resizes when the keyboard opens regardless of the
+	// declared windowSoftInputMode. Telling @gorhom/bottom-sheet
+	// android_keyboardInputMode="adjustResize" makes it assume the OS already
+	// shrank the container and skip its own keyboard-avoidance math entirely
+	// (it force-sets heightWithinContainer to 0 - see their BottomSheet.tsx),
+	// so the sheet no longer lifts above the keyboard on Android. Declaring
+	// "adjustPan" matches what actually happens under edge-to-edge and lets
+	// the library shift the sheet up by the tracked keyboard height itself.
 	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundComponent={Platform.OS === 'web' ? renderBackground : undefined} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustResize" topInset={topInset} {...webAccessibilityOverrides} {...props}>
+		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundComponent={Platform.OS === 'web' ? renderBackground : undefined} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} keyboardBehavior="interactive" keyboardBlurBehavior="restore" android_keyboardInputMode="adjustPan" topInset={topInset} {...webAccessibilityOverrides} {...props}>
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
