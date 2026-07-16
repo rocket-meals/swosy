@@ -1,7 +1,7 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem } from 'repo-depkit-common-ui';
+import { SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, horizontalScreenPadding, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { updateDisplaySettings, DISPLAY_SETTINGS_DEFAULTS } from '../store/displaySettingsSlice';
@@ -10,6 +10,7 @@ import type { AppDispatch, RootState } from '../store/store';
 
 const MAP_COLOR = '#0891b2';
 const RESET_COLOR = '#6b7280';
+const ROAD_MATCH_COLOR = '#eab308';
 
 const ROUTE_SMOOTHING_OPTIONS: SettingsListSelectOptionItem<RouteSmoothingLevel>[] = [
 	{ id: 'off', label: 'Aus', icon: <MaterialIcons name="block" size={22} color="#ffffff" /> },
@@ -18,14 +19,17 @@ const ROUTE_SMOOTHING_OPTIONS: SettingsListSelectOptionItem<RouteSmoothingLevel>
 ];
 
 export default function AdvancedSettingsContent() {
+	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
+	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
 
 	const handleReset = () => {
 		dispatch(updateDisplaySettings({
 			routeSmoothingLevel: DISPLAY_SETTINGS_DEFAULTS.routeSmoothingLevel,
 			showGpsPoints: DISPLAY_SETTINGS_DEFAULTS.showGpsPoints,
+			showRoadMatch: DISPLAY_SETTINGS_DEFAULTS.showRoadMatch,
 		}));
 	};
 
@@ -51,6 +55,21 @@ export default function AdvancedSettingsContent() {
 				iconBgColor={MAP_COLOR}
 			/>
 
+			<SettingsListGroupTitle title="Straßen/Wege-Abgleich" />
+			<SettingsListBoolean
+				leftIcon={<MaterialIcons name="alt-route" size={22} color="#ffffff" />}
+				iconBgColor={ROAD_MATCH_COLOR}
+				label="Auf Straße/Weg ausrichten"
+				valueActive="Eingeschaltet"
+				valueInactive="Ausgeschaltet"
+				isEnabled={showRoadMatch}
+				onToggle={() => dispatch(updateDisplaySettings({ showRoadMatch: !showRoadMatch }))}
+				groupPosition="single"
+			/>
+			<Text style={[styles.hint, { color: theme.screen.icon }]}>
+				Gleicht die aufgezeichnete Route mit dem echten Straßen- und Wegenetz ab und zeichnet das Ergebnis gelb ein – wie bei einer Navigationsroute. Die GPS-Punkte dienen dabei nur zur Erkennung, welche Straße bzw. welcher Weg gegangen wurde.
+			</Text>
+
 			<SettingsListGroupTitle title="Aktionen" />
 			<SettingsList
 				leftIcon={<MaterialIcons name="restore" size={22} color="#ffffff" />}
@@ -62,3 +81,13 @@ export default function AdvancedSettingsContent() {
 		</ScrollView>
 	);
 }
+
+const styles = StyleSheet.create({
+	hint: {
+		fontSize: 12,
+		lineHeight: 17,
+		paddingHorizontal: horizontalScreenPadding,
+		paddingTop: 6,
+		paddingBottom: 4,
+	},
+});

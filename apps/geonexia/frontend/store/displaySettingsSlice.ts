@@ -21,6 +21,8 @@ export type DisplaySettingsState = {
 	routeSmoothingLevel: RouteSmoothingLevel;
 	/** Whether to render raw GPS measurement points on the activity map. */
 	showGpsPoints: boolean;
+	/** Whether to show the recorded route matched onto the real road/path network (yellow line). */
+	showRoadMatch: boolean;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -32,6 +34,7 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexObjectOpacity: 0.9,
 	routeSmoothingLevel: 'off',
 	showGpsPoints: false,
+	showRoadMatch: false,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };

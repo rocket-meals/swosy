@@ -32,6 +32,7 @@ import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
+import { fetchRoadSegmentsForBounds, matchPointsToRoads } from '../../helpers/RoadMatchHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -840,6 +841,7 @@ export default function ActivityDetailScreen() {
 	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
 	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
+	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -1035,6 +1037,38 @@ export default function ActivityDetailScreen() {
 		}
 		return { minLat, maxLat, minLng, maxLng };
 	}, []);
+
+	// When enabled, fetch the real road/path network around the route and snap
+	// the raw GPS points onto it, so the map can show the actual street/path
+	// that was likely walked (like a navigation route) instead of the raw track.
+	useEffect(() => {
+		if (!showRoadMatch || !mapMounted || !activity || !mapRef.current) {
+			mapRef.current?.sendToMap({ matchedRoadCoordinates: null });
+			return;
+		}
+		const bounds = computeRouteBounds(activity.routePoints);
+		if (!bounds) return;
+
+		let cancelled = false;
+		const marginDeg = 0.01; // ~1km padding so nearby roads just outside the route's bbox are still found
+		fetchRoadSegmentsForBounds({
+			minLat: bounds.minLat - marginDeg,
+			minLng: bounds.minLng - marginDeg,
+			maxLat: bounds.maxLat + marginDeg,
+			maxLng: bounds.maxLng + marginDeg,
+		})
+			.then((segments) => {
+				if (cancelled) return;
+				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
+				const matched = matchPointsToRoads(rawCoords, segments);
+				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
+			})
+			.catch((err) => {
+				console.warn('[ActivityDetailScreen] Failed to match route to roads:', err);
+			});
+
+		return () => { cancelled = true; };
+	}, [showRoadMatch, mapMounted, activity, computeRouteBounds]);
 
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
