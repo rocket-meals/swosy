@@ -75,6 +75,7 @@ async function findLatestValidBuild(token: string, appId: string): Promise<{ bui
   const query = new URLSearchParams({
     'filter[app]': appId,
     'filter[processingState]': 'VALID',
+    'filter[buildAudienceType]': 'APP_STORE_ELIGIBLE',
     sort: '-uploadedDate',
     limit: '1',
     include: 'preReleaseVersion',
@@ -96,18 +97,38 @@ async function findLatestValidBuild(token: string, appId: string): Promise<{ bui
 }
 
 async function findOrCreateAppStoreVersion(token: string, appId: string, versionString: string): Promise<string> {
-  const query = new URLSearchParams({ 'filter[versionString]': versionString, 'filter[platform]': 'IOS' });
+  // Apple only ever allows a single non-released ("editable") version per platform at a time.
+  // A brand new app already has one (created automatically, often with a placeholder versionString
+  // like "1.0"), so we must reuse and rename that one instead of creating a second one - creating a
+  // second one fails with 409 ENTITY_ERROR.RELATIONSHIP.INVALID ("... in the current state").
+  const query = new URLSearchParams({ 'filter[platform]': 'IOS' });
   const result = await ascRequest(token, 'GET', `/apps/${appId}/appStoreVersions?${query}`);
-  const existing = asArray(result.data)[0];
+  const versions = asArray(result.data);
 
-  if (existing) {
-    const state = existing.attributes?.appStoreState as string;
+  console.log(`   Vorhandene App Store Versions (${versions.length}): ${versions.map(v => `${v.attributes?.versionString}=${v.attributes?.appStoreState}`).join(', ') || '(keine)'}`);
+
+  const exactMatch = versions.find(v => v.attributes?.versionString === versionString);
+  if (exactMatch) {
+    const state = exactMatch.attributes?.appStoreState as string;
     if (!SUBMITTABLE_APP_VERSION_STATES.includes(state)) {
       throw new Error(
         `App Store Version ${versionString} existiert bereits mit Status "${state}" und kann nicht automatisch eingereicht werden. Bitte manuell in App Store Connect prüfen.`
       );
     }
-    return existing.id;
+    return exactMatch.id;
+  }
+
+  const editableVersion = versions.find(v => SUBMITTABLE_APP_VERSION_STATES.includes(v.attributes?.appStoreState as string));
+  if (editableVersion) {
+    console.log(`   Benenne vorhandene Entwurfsversion "${editableVersion.attributes?.versionString}" (${editableVersion.id}) zu "${versionString}" um ...`);
+    await ascRequest(token, 'PATCH', `/appStoreVersions/${editableVersion.id}`, {
+      data: {
+        type: 'appStoreVersions',
+        id: editableVersion.id,
+        attributes: { versionString },
+      },
+    });
+    return editableVersion.id;
   }
 
   const created = await ascRequest(token, 'POST', '/appStoreVersions', {
