@@ -427,34 +427,54 @@ export const DEFAULT_ROAD_MATCH_JUNCTION_MODE: RoadMatchJunctionMode = 'network'
  * Connects `prevMatch` (on one way) to `currMatch` (on a different way) by
  * walking each way to whichever of its own ends is nearer to the other match,
  * then jumping once directly between those two ends - no multi-way search.
- * Returns the points strictly between `prevMatch.point` and `currMatch.point`.
+ * Returns the points strictly between `prevMatch.point` and `currMatch.point`,
+ * or `null` if the resulting detour would exceed `maxTotalDistDeg` (the caller
+ * should fall back to a direct connect in that case).
+ *
+ * The walking direction along each way is decided *locally*: which side of
+ * the current segment (not the way's global first/last vertex) is closer to
+ * the target. Comparing the way's global endpoints directly - as an earlier
+ * version of this function did - can pick the far, wrong-direction end of a
+ * long or winding way whenever that end happens to be marginally closer to
+ * the target in straight-line distance, producing a wild detour. The distance
+ * cap is a second safety net on top of that: even with the correct local
+ * direction, a way can genuinely be very long, so the walk to its end (plus
+ * the single hop to the next way) is still capped rather than unconditional -
+ * matching how 'network' mode also gives up and falls back beyond its cap.
  */
 function connectViaNearestEndpoints(
 	prevWayPoints: [number, number][],
 	prevMatch: PointMatch,
 	currWayPoints: [number, number][],
 	currMatch: PointMatch,
-): [number, number][] {
-	const prevFirst = prevWayPoints[0];
-	const prevLast = prevWayPoints[prevWayPoints.length - 1];
-	const prevTowardLast = distDeg(prevLast, currMatch.point) <= distDeg(prevFirst, currMatch.point);
-	const prevEndSegIndex = prevTowardLast ? prevWayPoints.length - 2 : 0;
-	const prevEndT = prevTowardLast ? 1 : 0;
-	const prevEndPoint = prevTowardLast ? prevLast : prevFirst;
+	maxTotalDistDeg: number,
+): [number, number][] | null {
+	const prevSegA = prevWayPoints[prevMatch.segIndex];
+	const prevSegB = prevWayPoints[prevMatch.segIndex + 1];
+	const prevForward = distDeg(prevSegB, currMatch.point) <= distDeg(prevSegA, currMatch.point);
+	const prevEndSegIndex = prevForward ? prevWayPoints.length - 2 : 0;
+	const prevEndT = prevForward ? 1 : 0;
+	const prevEndPoint = prevWayPoints[prevForward ? prevWayPoints.length - 1 : 0];
 
-	const currFirst = currWayPoints[0];
-	const currLast = currWayPoints[currWayPoints.length - 1];
-	const currStartIsFirst = distDeg(currFirst, prevEndPoint) <= distDeg(currLast, prevEndPoint);
-	const currStartSegIndex = currStartIsFirst ? 0 : currWayPoints.length - 2;
-	const currStartT = currStartIsFirst ? 0 : 1;
-	const currStartPoint = currStartIsFirst ? currFirst : currLast;
+	const currSegA = currWayPoints[currMatch.segIndex];
+	const currSegB = currWayPoints[currMatch.segIndex + 1];
+	const currBackward = distDeg(currSegA, prevMatch.point) <= distDeg(currSegB, prevMatch.point);
+	const currStartSegIndex = currBackward ? 0 : currWayPoints.length - 2;
+	const currStartT = currBackward ? 0 : 1;
+	const currStartPoint = currWayPoints[currBackward ? 0 : currWayPoints.length - 1];
 
-	const path: [number, number][] = [];
+	const path: [number, number][] = [prevMatch.point];
 	path.push(...extractWaySubPath(prevWayPoints, prevMatch.segIndex, prevMatch.t, prevEndSegIndex, prevEndT));
 	pushDistinct(path, prevEndPoint);
 	pushDistinct(path, currStartPoint);
 	path.push(...extractWaySubPath(currWayPoints, currStartSegIndex, currStartT, currMatch.segIndex, currMatch.t));
-	return path;
+	pushDistinct(path, currMatch.point);
+
+	let totalDist = 0;
+	for (let i = 1; i < path.length; i++) totalDist += distDeg(path[i - 1], path[i]);
+	if (totalDist > maxTotalDistDeg) return null;
+
+	return path.slice(1, -1);
 }
 
 // ─── Main matching ──────────────────────────────────────────────────────────
@@ -534,8 +554,10 @@ export function matchRouteToRoads(
 		} else if (prevMatch && currMatch && junctionMode === 'direct') {
 			pushDistinct(result, currMatch.point);
 		} else if (prevMatch && currMatch && junctionMode === 'nearestEndpoint') {
-			const path = connectViaNearestEndpoints(ways[prevMatch.wayIndex].points, prevMatch, ways[currMatch.wayIndex].points, currMatch);
-			for (const pt of path) pushDistinct(result, pt);
+			const path = connectViaNearestEndpoints(ways[prevMatch.wayIndex].points, prevMatch, ways[currMatch.wayIndex].points, currMatch, maxConnectDistDeg);
+			if (path) {
+				for (const pt of path) pushDistinct(result, pt);
+			}
 			pushDistinct(result, currMatch.point);
 		} else if (prevMatch && currMatch) {
 			// 'network': search for a real road/path route between them instead of

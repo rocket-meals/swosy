@@ -33,6 +33,7 @@ import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileI
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
 import { fetchRoadWaysForBounds, matchRouteToRoads } from '../../helpers/RoadMatchHelper';
+import type { RoadWay } from '../../helpers/RoadMatchHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -850,6 +851,13 @@ export default function ActivityDetailScreen() {
 	const { showAlert } = useGeonexiaAlert();
 	const { show: showDebugModal } = useMyScrollViewModal();
 	const [routeSiblingActivities, setRouteSiblingActivities] = useState<SavedActivity[]>([]);
+	// Road-match test-case export tooling (debug): lets a developer tap hex tiles
+	// to select an area, then export the raw GPS points + road-matched line +
+	// road network within that area as JSON, for building RoadMatchHelper test cases.
+	const [testExportMode, setTestExportMode] = useState(false);
+	const [selectedHexIds, setSelectedHexIds] = useState<string[]>([]);
+	const [lastRoadWays, setLastRoadWays] = useState<RoadWay[] | null>(null);
+	const [lastMatchedRoadCoords, setLastMatchedRoadCoords] = useState<[number, number][] | null>(null);
 
 	// Stop map-side auto-rotate and replay animation on unmount
 	useEffect(() => {
@@ -1045,6 +1053,8 @@ export default function ActivityDetailScreen() {
 	useEffect(() => {
 		if (!showRoadMatch || !mapMounted || !activity || !mapRef.current) {
 			mapRef.current?.sendToMap({ matchedRoadCoordinates: null });
+			setLastRoadWays(null);
+			setLastMatchedRoadCoords(null);
 			return;
 		}
 		const bounds = computeRouteBounds(activity.routePoints);
@@ -1063,6 +1073,8 @@ export default function ActivityDetailScreen() {
 				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
 				const matched = matchRouteToRoads(rawCoords, ways, { junctionMode: roadMatchJunctionMode });
 				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
+				setLastRoadWays(ways);
+				setLastMatchedRoadCoords(matched);
 			})
 			.catch((err) => {
 				console.warn('[ActivityDetailScreen] Failed to match route to roads:', err);
@@ -1070,6 +1082,64 @@ export default function ActivityDetailScreen() {
 
 		return () => { cancelled = true; };
 	}, [showRoadMatch, mapMounted, activity, computeRouteBounds, roadMatchJunctionMode]);
+
+	// Highlight the hex tiles selected for test-case export.
+	useEffect(() => {
+		if (!mapMounted || !mapRef.current) return;
+		if (selectedHexIds.length === 0) {
+			mapRef.current.sendToMap({ selectedHexTilesGeoJson: null });
+			return;
+		}
+		const features = selectedHexIds
+			.map((h3Index) => {
+				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
+				if (boundary.length === 0) return null;
+				return {
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [[...boundary, boundary[0]]] },
+					properties: { h3Index },
+				};
+			})
+			.filter((f): f is NonNullable<typeof f> => f !== null);
+		mapRef.current.sendToMap({ selectedHexTilesGeoJson: { type: 'FeatureCollection', features } });
+	}, [mapMounted, selectedHexIds]);
+
+	// Debug tool: bundles the raw GPS points, the road-matched line, and the
+	// underlying road network within the selected hex tiles' bounding box into
+	// JSON on the clipboard, for building RoadMatchHelper regression test cases.
+	const handleExportTestCase = useCallback(async () => {
+		if (!activity || selectedHexIds.length === 0) return;
+
+		let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+		for (const h3Index of selectedHexIds) {
+			for (const [lat, lng] of cellToBoundary(h3Index)) {
+				if (lat < minLat) minLat = lat;
+				if (lat > maxLat) maxLat = lat;
+				if (lng < minLng) minLng = lng;
+				if (lng > maxLng) maxLng = lng;
+			}
+		}
+		const inBounds = (lat: number, lng: number) => lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+
+		const filteredRoutePoints = activity.routePoints.filter((p) => inBounds(p.lat, p.lng));
+		const filteredMatchedRoadCoordinates = (lastMatchedRoadCoords ?? []).filter(([lng, lat]) => inBounds(lat, lng));
+		const filteredWays = (lastRoadWays ?? []).filter((way) => way.points.some(([lng, lat]) => inBounds(lat, lng)));
+
+		const testCase = {
+			hexIds: selectedHexIds,
+			bounds: { minLat, minLng, maxLat, maxLng },
+			roadMatchJunctionMode,
+			routePoints: filteredRoutePoints,
+			matchedRoadCoordinates: filteredMatchedRoadCoordinates,
+			ways: filteredWays,
+		};
+
+		await Clipboard.setStringAsync(JSON.stringify(testCase, null, 2));
+		showAlert(
+			'Testfall exportiert',
+			`${filteredRoutePoints.length} GPS-Punkte, ${filteredMatchedRoadCoordinates.length} Linienpunkte und ${filteredWays.length} Straßen/Wege in die Zwischenablage kopiert.`,
+		);
+	}, [activity, selectedHexIds, lastMatchedRoadCoords, lastRoadWays, roadMatchJunctionMode, showAlert]);
 
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
@@ -1346,12 +1416,16 @@ export default function ActivityDetailScreen() {
 	}, [dispatch, replayIsDisabled]);
 
 	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string };
+		const msg = data as { tag?: string; h3Index?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
 		}
+		if (msg.tag === 'HexTileClicked' && testExportMode && msg.h3Index) {
+			const h3Index = msg.h3Index;
+			setSelectedHexIds((prev) => (prev.includes(h3Index) ? prev.filter((id) => id !== h3Index) : [...prev, h3Index]));
+		}
 		// Auto-rotate is stopped automatically on the map side when user interacts
-	}, []);
+	}, [testExportMode]);
 
 	const handleOpenRouteAssignment = useCallback(() => {
 		if (!activity) return;
@@ -1703,6 +1777,28 @@ export default function ActivityDetailScreen() {
 						onPress={handleRecalculateComputedValues}
 					/>
 				</View>
+				<SettingsListGroupTitle title="Testfall-Export (Debug)" />
+				<SettingsListBoolean
+					leftIcon={<MaterialIcons name="touch-app" size={20} color="#ffffff" />}
+					iconBgColor="#9333ea"
+					label="Hex-Tiles auswählen"
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
+					isEnabled={testExportMode}
+					onToggle={() => {
+						setTestExportMode((v) => !v);
+						setSelectedHexIds([]);
+					}}
+					groupPosition="top"
+				/>
+				<SettingsList
+					leftIcon={<MaterialIcons name="ios-share" size={20} color="#ffffff" />}
+					iconBackgroundColor="#9333ea"
+					title="Auswahl exportieren"
+					value={`${selectedHexIds.length} Tile${selectedHexIds.length === 1 ? '' : 's'}`}
+					groupPosition="bottom"
+					onPress={handleExportTestCase}
+				/>
 				<SettingsListGroupTitle title="Routen Information" />
 				<SettingsList
 					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
