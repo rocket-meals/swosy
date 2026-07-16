@@ -1,0 +1,46 @@
+name: Prepare Apple App Store Connect API key
+description: Schreibt den App Store Connect API Key (.p8) auf Platte und exportiert die zugehörigen Env-Variablen
+
+inputs:
+  EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT:
+    required: true
+    description: Inhalt des Apple App Store Connect API Keys (.p8)
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🔐 Write key and export env vars
+      shell: bash
+      env:
+        EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ inputs.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+      run: |
+        set -euo pipefail
+
+        ASC_KEY_DIR="$(mktemp -d)"
+        ASC_KEY_PATH="${ASC_KEY_DIR}/AuthKey.p8"
+
+        printf "%s" "$EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT" > "$ASC_KEY_PATH"
+
+        ASC_ENV_VARS=$(node - <<'EOF'
+        require('ts-node').register({
+          transpileOnly: true,
+          compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+        });
+
+        const { getEasSubmitEnvVariables } = require('./apps/frontend/scripts/getEasSubmitEnvVariables.ts');
+
+        const envVars = getEasSubmitEnvVariables();
+
+        for (const [key, value] of Object.entries(envVars)) {
+          if (!value) {
+            throw new Error(`Missing value for ${key}`);
+          }
+          console.log(`${key}=${value}`);
+        }
+        EOF
+        )
+
+        {
+          echo "EXPO_ASC_API_KEY_PATH=$ASC_KEY_PATH"
+          echo "$ASC_ENV_VARS"
+        } >> "$GITHUB_ENV"

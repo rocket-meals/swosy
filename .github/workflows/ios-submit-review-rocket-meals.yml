@@ -1,0 +1,59 @@
+name: "🍎 iOS Submit for Review: Rocket Meals"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: "Changelog-Text (What's New), der in App Store Connect gesetzt wird"
+        required: false
+        default: "Fehlerbehebungen und Aktualisierung von Bibliotheken."
+
+jobs:
+  submit-for-review:
+    name: "🚀 Submit latest build for App Review"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn v2"
+        run: corepack enable
+
+      - name: "📦 Install dependencies"
+        run: yarn install --immutable
+
+      - name: "🔐 Prepare Apple App Store Connect API key"
+        uses: ./.github/actions/prepare-asc-api-key
+        with:
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+
+      - name: "🏷️ Resolve customer from repository name"
+        run: bash scripts/customer-config.sh >> "$GITHUB_ENV"
+
+      - name: "📱 Resolve iOS bundle identifier"
+        working-directory: ./apps/frontend/app
+        run: |
+          set -euo pipefail
+
+          BUNDLE_ID=$(node - <<'EOF'
+          require('ts-node').register({
+            transpileOnly: true,
+            compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+          });
+          const { getCustomerConfig } = require('./config.ts');
+          console.log(getCustomerConfig().bundleIdIos);
+          EOF
+          )
+          echo "IOS_BUNDLE_ID=${BUNDLE_ID}" >> "$GITHUB_ENV"
+
+      - name: "🚀 Submit latest build for App Review"
+        run: yarn workspace rocket-meals-scripts submit:ios:review
+        env:
+          IOS_RELEASE_NOTES: ${{ inputs.release_notes }}

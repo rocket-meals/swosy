@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "generate:eas": "ts-node --project ./tsconfig.json ./generate-eas-config.ts",
-    "analyze:data-clumps": "ts-node --project ./tsconfig.json ./analyze-data-clumps.ts"
+    "analyze:data-clumps": "ts-node --project ./tsconfig.json ./analyze-data-clumps.ts",
+    "submit:ios:review": "ts-node --project ./tsconfig.json ./submit-ios-review.ts"
   },
   "devDependencies": {
     "@types/node": "^22.9.4",
