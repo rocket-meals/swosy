@@ -1,7 +1,6 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { PopupEventHelper } from '@/helper/PopupEventHelper';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
@@ -11,87 +10,79 @@ const usePopupEventModal = () => {
 	const dispatch = useDispatch();
 	const kioskMode = useKioskMode();
 	const popupEvents = useAppSelector((state) => state.food.popupEvents, shallowEqual);
-	const { showAndDiscardOthers: showScrollViewModalAndDiscardOthers, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { showAndDiscardOthers: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
+
+	// Kept in sync with the redux value below, but also written to directly inside
+	// markEventAsOpen so handleClosed can read the just-updated list synchronously,
+	// without waiting for a redux round-trip and re-render.
+	const popupEventsRef = useRef(popupEvents);
+	useEffect(() => {
+		popupEventsRef.current = popupEvents;
+	}, [popupEvents]);
 
 	const markEventAsOpen = useCallback(
 		(event: any) => {
 			if (!event) return;
-			const updatedEvents = popupEvents.map((e: any) => (e.id === event.id ? { ...e, isOpen: true } : e));
+			const updatedEvents = popupEventsRef.current.map((e: any) => (e.id === event.id ? { ...e, isOpen: true } : e));
+			popupEventsRef.current = updatedEvents;
 			dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
 		},
-		[dispatch, popupEvents]
+		[dispatch]
 	);
 
-	// These two only record that the event has been handled (redux + the in-memory
-	// "permanently dismissed" set) - they deliberately never touch the native sheet
-	// themselves. openActiveModal (re-run because popupEvents/currentPopupEvent changed)
-	// is the only place that decides whether to instantly swap in the next queued event
-	// or actually close the sheet. Closing the sheet here and letting the next event's
-	// open race the still-running close animation used to make that next event's sheet
-	// close itself moments after opening.
-	const closeEventSheet = useCallback(
-		(event?: any) => {
-			const targetEvent = event || currentPopupEvent;
-			if (targetEvent) {
-				markEventAsOpen(targetEvent);
-			}
+	// Always points at the latest showEvent so handleClosed can call it without a
+	// circular useCallback dependency (handleClosed -> showEvent -> onClose -> handleClosed).
+	const showEventRef = useRef<(event: any) => void>(() => {});
+
+	// The single place that decides what happens once a popup event's sheet has *actually*
+	// finished closing (native onClose fired after the real close animation - see
+	// MyScrollViewModal's unmount-triggered onClose). Records the event as seen and, only
+	// now that the sheet is confirmed empty, opens the next queued event if there is one.
+	// Never opening the next event before this fires is what guarantees it can't be closed
+	// again moments later by a close animation that was still in flight for the previous one.
+	const handleClosed = useCallback(
+		(event: any) => {
+			if (event) markEventAsOpen(event);
+			popupEventShownIdRef.current = null;
+			setCurrentPopupEvent(null);
+
+			if (kioskMode) return;
+			const nextEvent = popupEventsRef.current?.find((e: any) => !e.isOpen);
+			if (!nextEvent) return;
+			showEventRef.current(nextEvent);
 		},
-		[currentPopupEvent, markEventAsOpen]
+		[kioskMode, markEventAsOpen]
 	);
 
-	const closeEventSheetForSession = useCallback(
-		(event?: any) => {
-			const targetEvent = event || currentPopupEvent;
-			if (targetEvent?.id) {
-				PopupEventHelper.dismiss(targetEvent.id);
-			}
-			if (targetEvent) {
-				markEventAsOpen(targetEvent);
-			}
+	const showEvent = useCallback(
+		(event: any) => {
+			popupEventShownIdRef.current = String(event.id ?? '');
+			setCurrentPopupEvent(event);
+			showScrollViewModal(
+				{
+					onClose: () => handleClosed(event),
+					children: <PopupEventSheet closeSheet={closeScrollViewModal} eventData={event} />,
+				},
+				{}
+			);
 		},
-		[currentPopupEvent, markEventAsOpen]
+		[closeScrollViewModal, handleClosed, showScrollViewModal]
 	);
+	showEventRef.current = showEvent;
 
 	const openActiveModal = useCallback(() => {
 		if (kioskMode) return;
 
-		const nextEvent = popupEvents?.find((e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id));
-
-		if (!nextEvent) {
-			// Nothing left in the queue. Only actually close the sheet if something from
-			// this queue is still tracked as shown - otherwise there's nothing to do.
-			if (popupEventShownIdRef.current !== null) {
-				popupEventShownIdRef.current = null;
-				setCurrentPopupEvent(null);
-				closeScrollViewModal();
-			}
-			return;
-		}
+		const nextEvent = popupEvents?.find((e: any) => !e.isOpen);
+		if (!nextEvent) return;
 
 		const eventId = String(nextEvent.id ?? '');
 		if (popupEventShownIdRef.current === eventId) return;
-		popupEventShownIdRef.current = eventId;
 
-		setCurrentPopupEvent(nextEvent);
-
-		// discardOthers instantly swaps the sheet's content instead of closing and
-		// reopening it, so advancing the queue never races a close animation.
-		showScrollViewModalAndDiscardOthers(
-			{
-				onClose: () => closeEventSheetForSession(nextEvent),
-				children: (
-					<PopupEventSheet
-						closeSheet={() => closeEventSheet(nextEvent)}
-						dismissSheet={() => closeEventSheetForSession(nextEvent)}
-						eventData={nextEvent}
-					/>
-				),
-			},
-			{}
-		);
-	}, [closeEventSheet, closeEventSheetForSession, closeScrollViewModal, kioskMode, popupEvents, showScrollViewModalAndDiscardOthers]);
+		showEvent(nextEvent);
+	}, [kioskMode, popupEvents, showEvent]);
 
 	return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
 };

@@ -59,23 +59,12 @@ const styles = StyleSheet.create({
 	},
 });
 
-const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
+const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData }) => {
 	const { theme } = useTheme();
 	const { language } = useAppSelector((state) => state.settings);
 	const { translate } = useLanguage();
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
-
-	// Deliberately does not touch the native sheet itself (e.g. no useMyScrollViewModal
-	// close() call here) - closeSheet/dismissSheet just record that this event has been
-	// handled. The caller (usePopupEventModal for the auto-queue, or the Events screen for
-	// a manually opened one) owns deciding whether/how the sheet should actually close, so
-	// that advancing a queue of several events never races this sheet's close animation
-	// against the next event's open.
-	const handleClose = () => {
-		dismissSheet?.();
-		closeSheet();
-	};
 
 	return (
 		<View style={styles.container}>
@@ -87,7 +76,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
+				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={closeSheet} />
 			</View>
 			<View style={styles.sheetHeaderText}>
 				<View />
