@@ -1,4 +1,8 @@
 Key,Message,Component,Line
+"AZ9qyn9KHKfHY7dxI2cI","`SUBMITTABLE_APP_VERSION_STATES` should be a `Set`, and use `SUBMITTABLE_APP_VERSION_STATES.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",7
+"AZ9qyn9KHKfHY7dxI2cJ","`NON_TERMINAL_REVIEW_SUBMISSION_STATES` should be a `Set`, and use `NON_TERMINAL_REVIEW_SUBMISSION_STATES.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",10
+"AZ9qyn9KHKfHY7dxI2cK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
+"AZ9qyn9KHKfHY7dxI2cL","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9mzuUCReHRwKWsmvkt","Use `export…from` to re-export `formatBytes`.","rocket-meals_rocket-meals:apps/frontend/app/helper/AsyncStorageUsageHelper.ts",12
 "AZ9mzuMBReHRwKWsmvks","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/storage/sqliteStorage.ts",125
 "AZ9mzul9ReHRwKWsmvku","Unexpected empty async function 'clearStorage'.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",44

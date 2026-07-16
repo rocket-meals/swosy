@@ -4,15 +4,27 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 48 | 48 |
-| 🔧 Maintainability | 1936 | 0 |
+| 🔒 Security | 5 | 5 |
+| 🐛 Reliability | 51 | 45 |
+| 🔧 Maintainability | 1940 | 0 |
 
-**Total issues:** 1986 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1996 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (2/2)
+## 🔒 Security (5/5)
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/workflows/ios-submit-review-geonexia.yml:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-geonexia.yml#L30
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/workflows/ios-submit-review-rocket-meals.yml:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-rocket-meals.yml#L30
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/workflows/ios-submit-review-score-tracker.yml:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L30
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/app/index.tsx:68
@@ -22,7 +34,7 @@
   apps/score-tracker/frontend/store/friendsSlice.ts:19
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/friendsSlice.ts#L19
 
-## 🐛 Reliability (48/48)
+## 🐛 Reliability (45/51)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -203,16 +215,4 @@
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:163
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L163
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/score-tracker/run-maestro-web-test.sh:170
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L170
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  packages/common/src/EmailHelper.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EmailHelper.ts#L2
-
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  packages/common/src/NumberHelper.ts:38
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
