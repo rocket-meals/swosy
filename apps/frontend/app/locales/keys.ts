@@ -119,6 +119,7 @@ export enum TranslationKeys {
         nfcInstructionChipPosition = 'nfcInstructionChipPosition',
         nfcInstructionOldBalance = 'nfcInstructionOldBalance',
         showNfcInstruction = 'showNfcInstruction',
+        nfcCancelRead = 'nfcCancelRead',
         new = 'new',
 	attention = 'attention',
 	without_account_limitations = 'without_account_limitations',
