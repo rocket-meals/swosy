@@ -43,8 +43,13 @@ type ModalContextType = {
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
-const SHEET_CLOSE_ANIMATION_MS = 300;
 const CLOSE_GUARD_RESET_DELAY_MS = 150;
+const POP_DEBOUNCE_MS = 300;
+// Generous safety net in case the sheet's own onChange(-1) confirmation (see
+// handleSheetChange) never fires - e.g. the native ref wasn't attached. Real close
+// animations settle in well under a second, so this should never race that real
+// confirmation; it only exists to guarantee we don't get stuck if it's missing.
+const CLOSE_CONFIRMATION_FALLBACK_MS = 1500;
 
 export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [modalStack, setModalStack] = useState<ModalStackItem[]>([]);
@@ -52,25 +57,13 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 	const sheetRef = useRef<any>(null);
 	const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	// True from the moment we ask the sheet to close (either because our own close() was
+	// called, or because handleNativeClose reacted to a user gesture) until the sheet's
+	// onChange confirms index -1 was actually reached. Finalizing (clearing modalStack) only
+	// ever happens in reaction to that real confirmation - never on a guessed timeout - so a
+	// next event can never be opened while the previous one's close animation is still
+	// in flight, and there's nothing stale left to race it.
 	const isClosingRef = useRef(false);
-
-	// The sheet's native close animation (triggered below via sheetRef.close()) completes
-	// asynchronously. If a new modal replaces the current one (open/openAndDiscardOthers)
-	// while that animation is still in flight, the animation's own onClose callback fires
-	// *after* the replacement is already showing and would otherwise close it too. Arm this
-	// flag right before we trigger our own native close so that one resulting callback is
-	// swallowed instead of being treated as a fresh (e.g. swipe-to-dismiss) close request.
-	const suppressNextNativeCloseRef = useRef(false);
-	const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-	const armSuppressNextNativeClose = () => {
-		suppressNextNativeCloseRef.current = true;
-		if (suppressResetTimeoutRef.current) clearTimeout(suppressResetTimeoutRef.current);
-		suppressResetTimeoutRef.current = setTimeout(() => {
-			suppressNextNativeCloseRef.current = false;
-			suppressResetTimeoutRef.current = null;
-		}, SHEET_CLOSE_ANIMATION_MS + 200);
-	};
 
 	const { theme } = useTheme();
 
@@ -148,14 +141,13 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		isClosingRef.current = true;
 
 		modalStackRef.current = [];
-		armSuppressNextNativeClose();
 		sheetRef.current?.close?.();
 		clearCloseTimeout();
 		closeTimeoutRef.current = setTimeout(() => {
+			isClosingRef.current = false;
 			setModalStack([]);
 			clearCloseTimeout();
-			isClosingRef.current = false;
-		}, SHEET_CLOSE_ANIMATION_MS);
+		}, CLOSE_CONFIRMATION_FALLBACK_MS);
 
 		setDebug(prev => ({
 			...prev,
@@ -172,23 +164,27 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		isClosingRef.current = true;
 
 		if (modalStackRef.current.length === 1) {
+			// Ask the sheet to close, but don't touch modalStack (React state) yet -
+			// handleSheetChange finalizes it once the sheet's onChange confirms index -1
+			// was actually reached, whether that's from this call or a user gesture.
 			modalStackRef.current = [];
-			armSuppressNextNativeClose();
 			sheetRef.current?.close?.();
 			clearCloseTimeout();
 			closeTimeoutRef.current = setTimeout(() => {
+				isClosingRef.current = false;
 				setModalStack([]);
 				clearCloseTimeout();
-				isClosingRef.current = false;
-			}, SHEET_CLOSE_ANIMATION_MS);
+			}, CLOSE_CONFIRMATION_FALLBACK_MS);
 		} else {
+			// No native close animation to wait for here - just swap back to the
+			// previous stack item, which stays open throughout.
 			modalStackRef.current = modalStackRef.current.slice(0, -1);
 			setModalStack([...modalStackRef.current]);
 			clearCloseTimeout();
 			closeTimeoutRef.current = setTimeout(() => {
 				isClosingRef.current = false;
 				clearCloseTimeout();
-			}, SHEET_CLOSE_ANIMATION_MS);
+			}, POP_DEBOUNCE_MS);
 		}
 
 		setDebug(prev => ({
@@ -200,33 +196,38 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		}));
 	};
 
-	// Bound to the sheet's native onClose (fires for any reason the sheet's index reaches
-	// -1: swipe-to-dismiss, backdrop tap, handle drag, or our own sheetRef.close() call
-	// above finishing its animation). Swallows the latter so a stale close animation from a
-	// modal that has since been replaced doesn't close the new one on top of it.
+	// Bound to the sheet's native onClose (fires whenever its index reaches -1: swipe-to-
+	// dismiss, backdrop tap, handle drag, or our own sheetRef.close() call above finishing
+	// its animation). A user-initiated close that we didn't ask for yet is a fresh close
+	// request; one we already initiated is confirmed by handleSheetChange below instead
+	// (isClosingRef is already true by then), so this is a no-op for that case.
 	const handleNativeClose = useCallback(() => {
-		if (suppressNextNativeCloseRef.current) {
-			suppressNextNativeCloseRef.current = false;
-			if (suppressResetTimeoutRef.current) {
-				clearTimeout(suppressResetTimeoutRef.current);
-				suppressResetTimeoutRef.current = null;
-			}
-			return;
-		}
 		close();
 	}, []);
 
 	const handleSheetChange = useCallback((index: number) => {
 		if (index >= 0) {
-			clearCloseTimeout();
 			if (isClosingRef.current) {
-				closeTimeoutRef.current = setTimeout(() => {
-					isClosingRef.current = false;
-					clearCloseTimeout();
-				}, CLOSE_GUARD_RESET_DELAY_MS);
+				// The sheet snapped back open instead of finishing a close - treat it as
+				// cancelled rather than leaving a close "confirmed" later for the wrong item.
+				isClosingRef.current = false;
+				clearCloseTimeout();
 			}
-		} else if (index === -1 && modalStackRef.current.length > 0) {
-			sheetRef.current?.expand?.();
+			return;
+		}
+
+		if (index === -1) {
+			if (isClosingRef.current) {
+				// Real confirmation that the close animation actually finished - only now
+				// is it safe to finalize (unmount the sheet's content).
+				isClosingRef.current = false;
+				clearCloseTimeout();
+				setModalStack([]);
+			} else if (modalStackRef.current.length > 0) {
+				// Closed without us asking for it while something should still be shown -
+				// snap back open.
+				sheetRef.current?.expand?.();
+			}
 		}
 	}, []);
 
