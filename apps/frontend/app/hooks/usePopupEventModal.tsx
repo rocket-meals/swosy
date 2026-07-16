@@ -11,7 +11,7 @@ const usePopupEventModal = () => {
 	const dispatch = useDispatch();
 	const kioskMode = useKioskMode();
 	const popupEvents = useAppSelector((state) => state.food.popupEvents, shallowEqual);
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { showAndDiscardOthers: showScrollViewModalAndDiscardOthers, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
@@ -62,7 +62,10 @@ const usePopupEventModal = () => {
 
 		setCurrentPopupEvent(nextEvent);
 
-		showScrollViewModal(
+		// discardOthers guarantees at most one popup-event sheet is ever in the
+		// modal stack, even if this runs more than once in quick succession
+		// (e.g. multiple qualifying events becoming active around the same time).
+		showScrollViewModalAndDiscardOthers(
 			{
 				onClose: () => closeEventSheetForSession(nextEvent),
 				children: (
@@ -75,7 +78,7 @@ const usePopupEventModal = () => {
 			},
 			{}
 		);
-	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal]);
+	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModalAndDiscardOthers]);
 
 	return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
 };

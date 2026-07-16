@@ -11,6 +11,9 @@ import ProjectButton from '../ProjectButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
 import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import { getVersion } from '@/config';
 
 const styles = StyleSheet.create({
 	container: {
@@ -46,12 +49,22 @@ const styles = StyleSheet.create({
 		height: '100%',
 		resizeMode: 'contain',
 	},
+	versionInfo: {
+		width: '100%',
+		marginTop: 20,
+	},
+	versionInfoText: {
+		textAlign: 'center',
+		fontSize: 12,
+		opacity: 0.6,
+	},
 });
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
 	const { language } = useAppSelector((state) => state.settings);
+	const { translate } = useLanguage();
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const rawText = eventData?.translations ? getTextFromTranslation(eventData?.translations, language) : '';
 
@@ -99,6 +112,16 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 			{eventData?.show_app_rating_button ? (
 				<View style={{ width: '100%', marginTop: 20 }}>
 					<RateAppSettingsItem groupPosition="single" showSeparator={false} />
+				</View>
+			) : null}
+			{eventData?.show_on_app_version ? (
+				<View style={styles.versionInfo}>
+					<Text style={[styles.versionInfoText, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.popup_event_current_app_version)}: {getVersion()}
+					</Text>
+					<Text style={[styles.versionInfoText, { color: theme.screen.text }]}>
+						{translate(TranslationKeys.popup_event_version_condition)}: {eventData.show_on_app_version}
+					</Text>
 				</View>
 			) : null}
 		</View>

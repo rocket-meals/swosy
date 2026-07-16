@@ -5407,6 +5407,26 @@
     "tr": "Görülen açılır etkinlikleri sıfırla",
     "zh": "重置已查看的弹窗事件"
   },
+  "popup_event_current_app_version": {
+    "de": "Aktuelle App-Version",
+    "en": "Current app version",
+    "ar": "إصدار التطبيق الحالي",
+    "es": "Versión actual de la app",
+    "fr": "Version actuelle de l'application",
+    "ru": "Текущая версия приложения",
+    "tr": "Mevcut uygulama sürümü",
+    "zh": "当前应用版本"
+  },
+  "popup_event_version_condition": {
+    "de": "Anzeigebedingung",
+    "en": "Display condition",
+    "ar": "شرط العرض",
+    "es": "Condición de visualización",
+    "fr": "Condition d'affichage",
+    "ru": "Условие показа",
+    "tr": "Görüntüleme koşulu",
+    "zh": "显示条件"
+  },
   "optional": {
     "de": "Optional",
     "en": "Optional",
