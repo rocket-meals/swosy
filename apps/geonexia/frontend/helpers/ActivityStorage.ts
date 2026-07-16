@@ -90,6 +90,13 @@ export type RunStats = SpeedStats & {
 	durationSeconds: number;
 	paceMinPerKm: number;
 	medianSpeedKmh: number;
+	/**
+	 * Lower/upper quartile of the (windowed) speed samples, in km/h. Optional because
+	 * activities saved before the speed boxplot was introduced don't have them yet;
+	 * they get backfilled on next load, see the migration in activities/[id].tsx.
+	 */
+	q1SpeedKmh?: number;
+	q3SpeedKmh?: number;
 	kcal: number;
 	steps: number;
 	elevationGainM: number;

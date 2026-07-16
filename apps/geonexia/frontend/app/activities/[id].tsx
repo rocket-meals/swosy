@@ -12,7 +12,8 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListBoxplot, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { computeBoxplotStats } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
@@ -102,6 +103,7 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		return {
 			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
 			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0, medianSpeedKmh: 0,
+			q1SpeedKmh: 0, q3SpeedKmh: 0,
 			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
 		};
 	}
@@ -152,12 +154,16 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		const mid = Math.floor(sorted.length / 2);
 		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 	})();
+	// q1/q3 come from the same windowed speed samples as min/max, so the boxplot
+	// shown on the activity detail screen lines up with the min/max/avg stats above it.
+	const { q1: q1SpeedKmh, q3: q3SpeedKmh } = computeBoxplotStats(windowedSpeeds);
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 	return {
 		distanceKm, durationSeconds, paceMinPerKm,
 		maxSpeedKmh, minSpeedKmh, avgSpeedKmh, medianSpeedKmh,
+		q1SpeedKmh, q3SpeedKmh,
 		kcal, steps, elevationGainM, elevationLossM, fluidNeedsMl,
 	};
 }
@@ -929,6 +935,13 @@ export default function ActivityDetailScreen() {
 					}
 				}
 
+				// Migrate activities saved before the speed boxplot quartiles were introduced.
+				if (a.stats.q1SpeedKmh === undefined || a.stats.q3SpeedKmh === undefined) {
+					const { q1SpeedKmh, q3SpeedKmh } = computeActivityStats(a.routePoints);
+					a = { ...a, stats: { ...a.stats, q1SpeedKmh, q3SpeedKmh } };
+					saveActivity(a);
+				}
+
 				setActivity(a);
 
 				// Load the assigned route for display
@@ -1537,9 +1550,10 @@ export default function ActivityDetailScreen() {
 		})()),
 	];
 
-	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
-	// 'middle'/'bottom'. idx within the slice runs 0…statsRows.length-2; the last item (idx
-	// === statsRows.length-2) gets groupPosition='bottom' and showSeparator=false.
+	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then the speed boxplot,
+	// then statsRows.slice(1) at 'middle'/'bottom'. idx within the slice runs
+	// 0…statsRows.length-2; the last item (idx === statsRows.length-2) gets
+	// groupPosition='bottom' and showSeparator=false.
 	return (
 		<ScrollView
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
@@ -1599,6 +1613,22 @@ export default function ActivityDetailScreen() {
 					avgSpeedKmh={stats.avgSpeedKmh}
 					maxSpeedKmh={stats.maxSpeedKmh}
 					theme={theme}
+				/>
+				{/* Speed boxplot – collapsed explanation, expands on tap */}
+				<SettingsListBoxplot
+					iconBackgroundColor={PRIMARY_COLOR}
+					leftIcon={<MaterialIcons name="ssid-chart" size={20} color="#ffffff" />}
+					title="Geschwindigkeitsverteilung"
+					stats={{
+						min: stats.minSpeedKmh,
+						q1: stats.q1SpeedKmh ?? stats.minSpeedKmh,
+						median: stats.medianSpeedKmh ?? stats.avgSpeedKmh,
+						q3: stats.q3SpeedKmh ?? stats.maxSpeedKmh,
+						max: stats.maxSpeedKmh,
+					}}
+					formatValue={(value) => `${value.toFixed(1)} km/h`}
+					boxplotColor={PRIMARY_COLOR}
+					groupPosition="middle"
 				/>
 				{/* Remaining rows */}
 				{statsRows.slice(1).map((row, idx) => (
