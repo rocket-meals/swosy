@@ -35,7 +35,7 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 199;
+	return 200;
 }
 
 export function getMajorVersion() {
@@ -340,9 +340,9 @@ export function getFinalConfig(config?: any) {
 					'expo-build-properties',
 					{
 						android: {
-							compileSdkVersion: 35,
-							targetSdkVersion: 35,
-							buildToolsVersion: '35.0.0',
+							compileSdkVersion: 36,
+							targetSdkVersion: 36,
+							buildToolsVersion: '36.0.0',
 						},
 						ios: {
 							deploymentTarget: '15.1',
