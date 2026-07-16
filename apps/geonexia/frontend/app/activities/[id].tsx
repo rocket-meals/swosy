@@ -842,6 +842,7 @@ export default function ActivityDetailScreen() {
 	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
 	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
+	const roadMatchJunctionMode = useSelector((state: RootState) => state.displaySettings.roadMatchJunctionMode);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -1060,7 +1061,7 @@ export default function ActivityDetailScreen() {
 			.then((ways) => {
 				if (cancelled) return;
 				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
-				const matched = matchRouteToRoads(rawCoords, ways);
+				const matched = matchRouteToRoads(rawCoords, ways, { junctionMode: roadMatchJunctionMode });
 				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
 			})
 			.catch((err) => {
@@ -1068,7 +1069,7 @@ export default function ActivityDetailScreen() {
 			});
 
 		return () => { cancelled = true; };
-	}, [showRoadMatch, mapMounted, activity, computeRouteBounds]);
+	}, [showRoadMatch, mapMounted, activity, computeRouteBounds, roadMatchJunctionMode]);
 
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {

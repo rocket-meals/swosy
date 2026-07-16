@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { MapStyleKey } from 'repo-depkit-common-ui';
 import type { RouteSmoothingLevel } from '../helpers/RouteSmootherHelper';
+import type { RoadMatchJunctionMode } from '../helpers/RoadMatchHelper';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -23,6 +24,8 @@ export type DisplaySettingsState = {
 	showGpsPoints: boolean;
 	/** Whether to show the recorded route matched onto the real road/path network (yellow line). */
 	showRoadMatch: boolean;
+	/** How road-matching connects a transition between two different matched ways (junctions). */
+	roadMatchJunctionMode: RoadMatchJunctionMode;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -35,6 +38,7 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	routeSmoothingLevel: 'off',
 	showGpsPoints: false,
 	showRoadMatch: false,
+	roadMatchJunctionMode: 'network',
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };

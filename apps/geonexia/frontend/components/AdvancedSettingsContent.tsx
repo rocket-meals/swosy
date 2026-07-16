@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { updateDisplaySettings, DISPLAY_SETTINGS_DEFAULTS } from '../store/displaySettingsSlice';
 import type { RouteSmoothingLevel } from '../helpers/RouteSmootherHelper';
+import type { RoadMatchJunctionMode } from '../helpers/RoadMatchHelper';
 import type { AppDispatch, RootState } from '../store/store';
 
 const MAP_COLOR = '#0891b2';
@@ -18,18 +19,26 @@ const ROUTE_SMOOTHING_OPTIONS: SettingsListSelectOptionItem<RouteSmoothingLevel>
 	{ id: 'strong', label: 'Stark', icon: <MaterialIcons name="blur-circular" size={22} color="#ffffff" /> },
 ];
 
+const ROAD_MATCH_JUNCTION_OPTIONS: SettingsListSelectOptionItem<RoadMatchJunctionMode>[] = [
+	{ id: 'direct', label: 'Direkt', icon: <MaterialIcons name="trending-flat" size={22} color="#ffffff" /> },
+	{ id: 'nearestEndpoint', label: 'Bis Straßenende', icon: <MaterialIcons name="turn-right" size={22} color="#ffffff" /> },
+	{ id: 'network', label: 'Netzwerksuche', icon: <MaterialIcons name="hub" size={22} color="#ffffff" /> },
+];
+
 export default function AdvancedSettingsContent() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
 	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
+	const roadMatchJunctionMode = useSelector((state: RootState) => state.displaySettings.roadMatchJunctionMode);
 
 	const handleReset = () => {
 		dispatch(updateDisplaySettings({
 			routeSmoothingLevel: DISPLAY_SETTINGS_DEFAULTS.routeSmoothingLevel,
 			showGpsPoints: DISPLAY_SETTINGS_DEFAULTS.showGpsPoints,
 			showRoadMatch: DISPLAY_SETTINGS_DEFAULTS.showRoadMatch,
+			roadMatchJunctionMode: DISPLAY_SETTINGS_DEFAULTS.roadMatchJunctionMode,
 		}));
 	};
 
@@ -68,6 +77,17 @@ export default function AdvancedSettingsContent() {
 			/>
 			<Text style={[styles.hint, { color: theme.screen.icon }]}>
 				Gleicht die aufgezeichnete Route mit dem echten Straßen- und Wegenetz ab und zeichnet das Ergebnis gelb ein – wie bei einer Navigationsroute. Die GPS-Punkte dienen dabei nur zur Erkennung, welche Straße bzw. welcher Weg gegangen wurde.
+			</Text>
+
+			<SettingsListGroupTitle title="Kreuzungsberechnung" />
+			<SettingsListSelectOption
+				options={ROAD_MATCH_JUNCTION_OPTIONS}
+				selectedOption={roadMatchJunctionMode}
+				onSelect={(option) => dispatch(updateDisplaySettings({ roadMatchJunctionMode: option.id }))}
+				iconBgColor={ROAD_MATCH_COLOR}
+			/>
+			<Text style={[styles.hint, { color: theme.screen.icon }]}>
+				Bestimmt, wie die gelbe Linie verbunden wird, wenn die Route von einer Straße/einem Weg auf eine andere wechselt. „Direkt" verbindet die beiden Punkte gerade. „Bis Straßenende" folgt der aktuellen Straße bis zu ihrem nächstgelegenen Ende und springt dann direkt zur nächsten. „Netzwerksuche" sucht den kürzesten Weg über das echte Straßen-/Wegenetz, auch über mehrere Straßen hinweg.
 			</Text>
 
 			<SettingsListGroupTitle title="Aktionen" />

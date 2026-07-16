@@ -232,6 +232,30 @@ function pushDistinct(path: [number, number][], pt: [number, number]): void {
 	if (!last || last[0] !== pt[0] || last[1] !== pt[1]) path.push(pt);
 }
 
+/**
+ * Returns the way's own intermediate vertices strictly between position
+ * `fromSegIndex + fromT` and `toSegIndex + toT` (excluding both endpoints), in
+ * whichever direction the walk goes - so the line follows the way's bends
+ * instead of cutting a straight line between the two positions.
+ */
+function extractWaySubPath(
+	wayPoints: [number, number][],
+	fromSegIndex: number,
+	fromT: number,
+	toSegIndex: number,
+	toT: number,
+): [number, number][] {
+	const fromPos = fromSegIndex + fromT;
+	const toPos = toSegIndex + toT;
+	const result: [number, number][] = [];
+	if (fromPos <= toPos) {
+		for (let idx = fromSegIndex + 1; idx <= toSegIndex; idx++) result.push(wayPoints[idx]);
+	} else {
+		for (let idx = fromSegIndex; idx > toSegIndex; idx--) result.push(wayPoints[idx]);
+	}
+	return result;
+}
+
 // ─── Road network graph & connecting-route search ──────────────────────────
 
 /** Coordinate precision (decimal places) used to merge shared vertices into one graph node. */
@@ -380,6 +404,59 @@ function segmentEndpointsAsWeightedNodes(graph: RoadGraph, wayPoints: [number, n
 	return nodes;
 }
 
+// ─── Junction-connection variants ───────────────────────────────────────────
+
+/**
+ * How a transition from one matched way to a different one is connected.
+ * - `direct`: cut a straight line between the two snapped points (no
+ *   junction handling at all - the simplest, most predictable baseline).
+ * - `nearestEndpoint`: follow the current way to whichever of its own two
+ *   ends is closer to the target, jump once directly to whichever end of the
+ *   next way is closer to that point, then follow the next way onward. A
+ *   single hop, no search across other ways.
+ * - `network`: full shortest-path search over all fetched ways (see
+ *   `findConnectingPath`) - the most road-accurate, but depends on the vector
+ *   tile data actually connecting the ways the way they're connected in
+ *   reality.
+ */
+export type RoadMatchJunctionMode = 'direct' | 'nearestEndpoint' | 'network';
+
+export const DEFAULT_ROAD_MATCH_JUNCTION_MODE: RoadMatchJunctionMode = 'network';
+
+/**
+ * Connects `prevMatch` (on one way) to `currMatch` (on a different way) by
+ * walking each way to whichever of its own ends is nearer to the other match,
+ * then jumping once directly between those two ends - no multi-way search.
+ * Returns the points strictly between `prevMatch.point` and `currMatch.point`.
+ */
+function connectViaNearestEndpoints(
+	prevWayPoints: [number, number][],
+	prevMatch: PointMatch,
+	currWayPoints: [number, number][],
+	currMatch: PointMatch,
+): [number, number][] {
+	const prevFirst = prevWayPoints[0];
+	const prevLast = prevWayPoints[prevWayPoints.length - 1];
+	const prevTowardLast = distDeg(prevLast, currMatch.point) <= distDeg(prevFirst, currMatch.point);
+	const prevEndSegIndex = prevTowardLast ? prevWayPoints.length - 2 : 0;
+	const prevEndT = prevTowardLast ? 1 : 0;
+	const prevEndPoint = prevTowardLast ? prevLast : prevFirst;
+
+	const currFirst = currWayPoints[0];
+	const currLast = currWayPoints[currWayPoints.length - 1];
+	const currStartIsFirst = distDeg(currFirst, prevEndPoint) <= distDeg(currLast, prevEndPoint);
+	const currStartSegIndex = currStartIsFirst ? 0 : currWayPoints.length - 2;
+	const currStartT = currStartIsFirst ? 0 : 1;
+	const currStartPoint = currStartIsFirst ? currFirst : currLast;
+
+	const path: [number, number][] = [];
+	path.push(...extractWaySubPath(prevWayPoints, prevMatch.segIndex, prevMatch.t, prevEndSegIndex, prevEndT));
+	pushDistinct(path, prevEndPoint);
+	pushDistinct(path, currStartPoint);
+	path.push(...extractWaySubPath(currWayPoints, currStartSegIndex, currStartT, currMatch.segIndex, currMatch.t));
+	return path;
+}
+
 // ─── Main matching ──────────────────────────────────────────────────────────
 
 /**
@@ -396,19 +473,24 @@ function segmentEndpointsAsWeightedNodes(graph: RoadGraph, wayPoints: [number, n
  * - Consecutive points matched to the *same* way are connected using that
  *   way's own vertices between the two projections, instead of a straight cut,
  *   so the line follows the road/path shape that was actually walked.
- * - Consecutive points matched to *different* ways are connected via a small
- *   local shortest-path search over the road network (`findConnectingPath`),
- *   so the line still walks to the junction (following bends) and, if the two
- *   ways don't directly touch, bridges the gap via other nearby ways. If no
- *   connecting path is found within `MAX_CONNECT_SEARCH_METERS`, falls back to
- *   a direct connect between the two points.
+ * - Consecutive points matched to *different* ways are connected according to
+ *   `junctionMode` (see `RoadMatchJunctionMode`) instead of a straight cut
+ *   across the corner. Where that produces no result (e.g. `network` mode
+ *   found no path within `MAX_CONNECT_SEARCH_METERS`), falls back to a direct
+ *   connect between the two points.
  */
 export function matchRouteToRoads(
 	points: [number, number][],
 	ways: RoadWay[],
-	maxSnapDistanceMeters: number = DEFAULT_MAX_SNAP_DISTANCE_METERS,
+	options: {
+		maxSnapDistanceMeters?: number;
+		junctionMode?: RoadMatchJunctionMode;
+	} = {},
 ): [number, number][] {
 	if (ways.length === 0 || points.length === 0) return points;
+
+	const maxSnapDistanceMeters = options.maxSnapDistanceMeters ?? DEFAULT_MAX_SNAP_DISTANCE_METERS;
+	const junctionMode = options.junctionMode ?? DEFAULT_ROAD_MATCH_JUNCTION_MODE;
 
 	const grid = buildSegmentGrid(ways);
 	const maxDistDegSq = metersToDeg(maxSnapDistanceMeters) ** 2;
@@ -445,17 +527,19 @@ export function matchRouteToRoads(
 			// Follow the way's own vertices between the two projections instead of
 			// cutting a straight line, in whichever direction the walk went.
 			const wayPoints = ways[prevMatch.wayIndex].points;
-			const fromPos = prevMatch.segIndex + prevMatch.t;
-			const toPos = currMatch.segIndex + currMatch.t;
-			if (fromPos <= toPos) {
-				for (let idx = prevMatch.segIndex + 1; idx <= currMatch.segIndex; idx++) pushDistinct(result, wayPoints[idx]);
-			} else {
-				for (let idx = prevMatch.segIndex; idx > currMatch.segIndex; idx--) pushDistinct(result, wayPoints[idx]);
+			for (const pt of extractWaySubPath(wayPoints, prevMatch.segIndex, prevMatch.t, currMatch.segIndex, currMatch.t)) {
+				pushDistinct(result, pt);
 			}
 			pushDistinct(result, currMatch.point);
+		} else if (prevMatch && currMatch && junctionMode === 'direct') {
+			pushDistinct(result, currMatch.point);
+		} else if (prevMatch && currMatch && junctionMode === 'nearestEndpoint') {
+			const path = connectViaNearestEndpoints(ways[prevMatch.wayIndex].points, prevMatch, ways[currMatch.wayIndex].points, currMatch);
+			for (const pt of path) pushDistinct(result, pt);
+			pushDistinct(result, currMatch.point);
 		} else if (prevMatch && currMatch) {
-			// Different ways: search for a real road/path route between them
-			// instead of cutting a straight line across the corner.
+			// 'network': search for a real road/path route between them instead of
+			// cutting a straight line across the corner.
 			if (!graph) graph = buildRoadGraph(ways);
 			const sources = segmentEndpointsAsWeightedNodes(graph, ways[prevMatch.wayIndex].points, prevMatch);
 			const targets = segmentEndpointsAsWeightedNodes(graph, ways[currMatch.wayIndex].points, currMatch);
