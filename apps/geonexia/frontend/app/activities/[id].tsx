@@ -32,7 +32,7 @@ import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
-import { fetchRoadSegmentsForBounds, matchPointsToRoads } from '../../helpers/RoadMatchHelper';
+import { fetchRoadWaysForBounds, matchRouteToRoads } from '../../helpers/RoadMatchHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -1051,16 +1051,16 @@ export default function ActivityDetailScreen() {
 
 		let cancelled = false;
 		const marginDeg = 0.01; // ~1km padding so nearby roads just outside the route's bbox are still found
-		fetchRoadSegmentsForBounds({
+		fetchRoadWaysForBounds({
 			minLat: bounds.minLat - marginDeg,
 			minLng: bounds.minLng - marginDeg,
 			maxLat: bounds.maxLat + marginDeg,
 			maxLng: bounds.maxLng + marginDeg,
 		})
-			.then((segments) => {
+			.then((ways) => {
 				if (cancelled) return;
 				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
-				const matched = matchPointsToRoads(rawCoords, segments);
+				const matched = matchRouteToRoads(rawCoords, ways);
 				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
 			})
 			.catch((err) => {

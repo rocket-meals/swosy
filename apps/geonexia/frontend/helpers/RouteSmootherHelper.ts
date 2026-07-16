@@ -48,6 +48,24 @@ export function movingAverage(coords: [number, number][], window: number): [numb
 
 /**
  * Project point `p` onto the line segment `a`→`b`.
+ * Returns the closest point on the segment to `p`, and how far along the
+ * segment (0 = at `a`, 1 = at `b`) that point lies.
+ */
+export function projectOntoSegmentWithT(
+	p: [number, number],
+	a: [number, number],
+	b: [number, number],
+): { point: [number, number]; t: number } {
+	const dx = b[0] - a[0];
+	const dy = b[1] - a[1];
+	const lenSq = dx * dx + dy * dy;
+	if (lenSq === 0) return { point: a, t: 0 };
+	const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
+	return { point: [a[0] + t * dx, a[1] + t * dy], t };
+}
+
+/**
+ * Project point `p` onto the line segment `a`→`b`.
  * Returns the closest point on the segment to `p`.
  */
 export function projectOntoSegment(
@@ -55,12 +73,7 @@ export function projectOntoSegment(
 	a: [number, number],
 	b: [number, number],
 ): [number, number] {
-	const dx = b[0] - a[0];
-	const dy = b[1] - a[1];
-	const lenSq = dx * dx + dy * dy;
-	if (lenSq === 0) return a;
-	const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
-	return [a[0] + t * dx, a[1] + t * dy];
+	return projectOntoSegmentWithT(p, a, b).point;
 }
 
 /**
