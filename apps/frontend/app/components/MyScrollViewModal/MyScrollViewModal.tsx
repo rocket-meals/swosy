@@ -40,7 +40,16 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
   const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
 
-  React.useEffect(() => () => onClose?.(), [onClose]);
+  // onClose must only fire when this component truly unmounts. The global modal
+  // stack renders every stack item's MyScrollViewModal at the same tree position
+  // (see ModalRenderer), so popping back to the previous modal re-renders the SAME
+  // instance with the previous modal's props. With onClose in the effect deps, that
+  // prop swap ran the cleanup with the just-popped modal's onClose (usually the
+  // stack's close()) and closed the remaining modal too - e.g. the account-required
+  // modal took the modal beneath it down with it despite showing the back chevron.
+  const onCloseRef = React.useRef(onClose);
+  React.useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+  React.useEffect(() => () => { onCloseRef.current?.(); }, []);
 
   const headerComponent = (
     <>
