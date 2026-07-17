@@ -15,11 +15,14 @@ import { loadGameState as loadGameStateAction } from '../store/gameSlice';
 import { loadFriends as loadFriendsAction } from '../store/friendsSlice';
 import { loadGameHistory as loadGameHistoryAction } from '../store/gameHistorySlice';
 import { loadAppSettings as loadAppSettingsAction } from '../store/appSettingsSlice';
+import { loadDebugState as loadDebugStateAction } from '../store/debugSlice';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadGameState } from '../helpers/GameStorage';
 import { loadFriends } from '../helpers/FriendsStorage';
 import { loadGameHistory } from '../helpers/GameHistoryStorage';
 import { loadAppSettings } from '../helpers/AppSettingsStorage';
+import { loadDebugState } from '../helpers/DebugStorage';
+import { installGlobalDebugErrorHandler } from '../helpers/DebugLogger';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
 import { ComponentIds } from '../constants/ComponentIds';
@@ -139,6 +142,14 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function Layout() {
 	useEffect(() => {
+		installGlobalDebugErrorHandler();
+		loadDebugState()
+			.then((state) => {
+				store.dispatch(loadDebugStateAction(state));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted debug state:', err);
+			});
 		loadThemeMode()
 			.then((mode) => {
 				store.dispatch(loadThemeModeAction(mode));

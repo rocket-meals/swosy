@@ -4,16 +4,19 @@ import gameReducer from './gameSlice';
 import friendsReducer from './friendsSlice';
 import gameHistoryReducer from './gameHistorySlice';
 import appSettingsReducer from './appSettingsSlice';
+import debugReducer from './debugSlice';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { saveGameState } from '../helpers/GameStorage';
 import { saveFriends } from '../helpers/FriendsStorage';
 import { saveGameHistory } from '../helpers/GameHistoryStorage';
 import { saveAppSettings } from '../helpers/AppSettingsStorage';
+import { saveDebugState } from '../helpers/DebugStorage';
 import type { ThemeMode } from './themeSlice';
 import type { GameSliceState } from './gameSlice';
 import type { FriendsSliceState } from './friendsSlice';
 import type { GameHistorySliceState } from './gameHistorySlice';
 import type { AppSettingsSliceState } from './appSettingsSlice';
+import type { DebugSliceState } from './debugSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +27,7 @@ export const store = configureStore({
 		friends: friendsReducer,
 		gameHistory: gameHistoryReducer,
 		appSettings: appSettingsReducer,
+		debug: debugReducer,
 	},
 });
 
@@ -37,6 +41,8 @@ let _lastSavedFriends: FriendsSliceState | null = null;
 let _historyTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedHistory: GameHistorySliceState | null = null;
 let _lastSavedAppSettings: AppSettingsSliceState | null = null;
+let _debugTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedDebug: DebugSliceState | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -86,6 +92,16 @@ store.subscribe(() => {
 	if (appSettings !== _lastSavedAppSettings) {
 		_lastSavedAppSettings = appSettings;
 		saveAppSettings(appSettings);
+	}
+
+	const debug = state.debug;
+	if (debug !== _lastSavedDebug) {
+		_lastSavedDebug = debug;
+		if (_debugTimer) clearTimeout(_debugTimer);
+		_debugTimer = setTimeout(() => {
+			saveDebugState(debug);
+			_debugTimer = null;
+		}, 300);
 	}
 });
 

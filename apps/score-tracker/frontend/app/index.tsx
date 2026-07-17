@@ -46,6 +46,7 @@ import type { Player } from '../helpers/GameStorage';
 import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
+import { logDebug } from '../helpers/DebugLogger';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -292,12 +293,19 @@ function PlayerEditGroup({
 		<View style={styles.playerEditGroup} nativeID={`${ComponentIds.GAME_PLAYER_ROW_PREFIX}${player.id}`}>
 			<SettingsListAvatar
 				config={player.avatarConfig}
-				onChange={onAvatarChange}
+				onChange={(config) => {
+					logDebug(`game: avatar onChange player=${player.id} style=${config.style}`);
+					onAvatarChange(config);
+				}}
 				label={player.name}
 				previewSize={EDIT_AVATAR_SIZE}
 				avatarBackgroundColor={player.color}
 				groupPosition="top"
-				editorOptions={{ title: 'Avatar', allowedStyles: [AvatarStyle.AVATAAARS] }}
+				editorOptions={{
+					title: 'Avatar',
+					allowedStyles: [AvatarStyle.AVATAAARS],
+					onDebugEvent: (event) => logDebug(`game: avatar-editor ${event} player=${player.id}`),
+				}}
 			/>
 			<SettingsListTextInput
 				label="Name"

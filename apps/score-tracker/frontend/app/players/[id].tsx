@@ -18,6 +18,7 @@ import { renameFriend, setFriendColor, setFriendAvatar, removeFriend } from '../
 import type { AppDispatch, RootState } from '../../store/store';
 import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
+import { logDebug } from '../../helpers/DebugLogger';
 
 const DANGER_COLOR = '#dc2626';
 
@@ -76,7 +77,12 @@ export default function PlayerDetailScreen() {
 	const handleDelete = useCallback(() => {
 		if (!friend) return;
 		dispatch(removeFriend(friend.id));
-		router.back();
+		// router.back() is unreliable here: "players/[id]" is a hidden top-level
+		// Drawer.Screen, and Drawer navigators don't keep a real push history the
+		// way a Stack does, so "back" can fall through to the drawer's initial
+		// route (Game) instead of the Friends list. Navigate there explicitly -
+		// there's nothing to return to on this screen anyway once the friend is gone.
+		router.replace('/players');
 	}, [friend, dispatch]);
 
 	if (!friend) {
@@ -97,12 +103,19 @@ export default function PlayerDetailScreen() {
 			>
 				<SettingsListAvatar
 					config={friend.avatarConfig}
-					onChange={(config) => dispatch(setFriendAvatar({ friendId: friend.id, avatarConfig: config }))}
+					onChange={(config) => {
+						logDebug(`players/[id]: avatar onChange friend=${friend.id} style=${config.style}`);
+						dispatch(setFriendAvatar({ friendId: friend.id, avatarConfig: config }));
+					}}
 					label="Avatar"
 					previewSize={72}
 					avatarBackgroundColor={friend.color}
 					groupPosition="top"
-					editorOptions={{ title: 'Avatar', allowedStyles: [AvatarStyle.AVATAAARS] }}
+					editorOptions={{
+						title: 'Avatar',
+						allowedStyles: [AvatarStyle.AVATAAARS],
+						onDebugEvent: (event) => logDebug(`players/[id]: avatar-editor ${event} friend=${friend.id}`),
+					}}
 				/>
 				<SettingsListTextInput
 					label="Name"

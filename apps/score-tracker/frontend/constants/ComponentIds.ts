@@ -50,4 +50,10 @@ export const ComponentIds = {
 	PLAYERS_SCREEN_SEARCH_INPUT: 'players-screen-search-input',
 	PLAYERS_SCREEN_FRIEND_ROW_PREFIX: 'players-screen-friend-row-',
 	PLAYER_DETAIL_DELETE_BUTTON: 'player-detail-delete-button',
+
+	// Settings screen: debug mode
+	SETTINGS_VERSION_ROW: 'settings-version-row',
+	SETTINGS_DEBUG_MODE_TOGGLE: 'settings-debug-mode-toggle',
+	SETTINGS_DEBUG_COPY_LOGS: 'settings-debug-copy-logs',
+	SETTINGS_DEBUG_CLEAR_LOGS: 'settings-debug-clear-logs',
 } as const;

@@ -1,9 +1,11 @@
-import React, { useCallback } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import {
 	SettingsList,
+	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListSelectOption,
 	SettingsListSqliteStorage,
@@ -14,7 +16,9 @@ import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
+import { setDebugMode, clearDebugLogs } from '../../store/debugSlice';
 import type { AppDispatch, RootState } from '../../store/store';
+import { ComponentIds } from '../../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -32,14 +36,58 @@ function themeModeLabel(mode: ThemeMode): string {
 	}
 }
 
+// Number of quick taps on the "Version" row needed to reveal the debug section -
+// same "secret" convention as Android's build-number tap, so the toggle isn't
+// visible to everyday users but is easy to find once you know it's there.
+const DEV_UNLOCK_TAP_COUNT = 5;
+// Taps must land within this window of each other, otherwise the counter resets.
+const DEV_UNLOCK_TAP_WINDOW_MS = 3000;
+const DEBUG_COLOR = '#7c3aed';
+
 export default function SettingsScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
+	const debugLogs = useSelector((state: RootState) => state.debug.logs);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+
+	// Revealed for this app session once the version row has been tapped enough
+	// times. Not persisted on its own - debugMode itself (toggled once revealed)
+	// is what's actually persisted, and reveals this section again on next launch
+	// (mirrors rocket-meals-dev's DebugView: `isVisible || debugMode || ...`).
+	const [devRevealed, setDevRevealed] = useState(false);
+	const tapCountRef = useRef(0);
+	const lastTapAtRef = useRef(0);
+
+	const handleVersionPress = useCallback(() => {
+		const now = Date.now();
+		if (now - lastTapAtRef.current > DEV_UNLOCK_TAP_WINDOW_MS) {
+			tapCountRef.current = 0;
+		}
+		lastTapAtRef.current = now;
+		tapCountRef.current += 1;
+		if (tapCountRef.current >= DEV_UNLOCK_TAP_COUNT) {
+			tapCountRef.current = 0;
+			setDevRevealed(true);
+		}
+	}, []);
+
+	const showDebugSection = devRevealed || debugMode;
+
+	const formattedLogs = useMemo(() => {
+		return debugLogs
+			.slice()
+			.reverse()
+			.map((entry) => `${new Date(entry.timestamp).toLocaleTimeString('de-DE')} - ${entry.message}`);
+	}, [debugLogs]);
+
+	const handleCopyLogs = useCallback(async () => {
+		await Clipboard.setStringAsync(formattedLogs.join('\n') || '(keine Logs)');
+	}, [formattedLogs]);
 
 	const handleOpenThemeSelection = useCallback(() => {
 		showModal({
@@ -94,14 +142,66 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="About" />
 				<SettingsList
+					nativeID={ComponentIds.SETTINGS_VERSION_ROW}
 					iconBgColor="#6b7280"
 					leftIcon={
 						<Ionicons name="information-circle-outline" size={22} color="#ffffff" />
 					}
 					label="Version"
 					value={appVersion}
+					handleFunction={handleVersionPress}
 					groupPosition="single"
 				/>
+
+				{showDebugSection && (
+					<>
+						<SettingsListGroupTitle title="Debug" />
+						<SettingsListBoolean
+							nativeID={ComponentIds.SETTINGS_DEBUG_MODE_TOGGLE}
+							iconBgColor={DEBUG_COLOR}
+							leftIcon={<MaterialCommunityIcons name="bug-outline" size={22} color="#ffffff" />}
+							label="Debug-Modus"
+							isEnabled={debugMode}
+							onToggle={() => dispatch(setDebugMode(!debugMode))}
+							groupPosition={debugMode ? 'top' : 'single'}
+						/>
+						{debugMode && (
+							<>
+								<SettingsList
+									nativeID={ComponentIds.SETTINGS_DEBUG_COPY_LOGS}
+									iconBgColor={DEBUG_COLOR}
+									leftIcon={<MaterialCommunityIcons name="content-copy" size={22} color="#ffffff" />}
+									label="Logs kopieren"
+									value={`${debugLogs.length} Einträge`}
+									handleFunction={handleCopyLogs}
+									groupPosition="middle"
+								/>
+								<SettingsList
+									nativeID={ComponentIds.SETTINGS_DEBUG_CLEAR_LOGS}
+									iconBgColor={DEBUG_COLOR}
+									leftIcon={<MaterialCommunityIcons name="delete-outline" size={22} color="#ffffff" />}
+									label="Logs löschen"
+									handleFunction={() => dispatch(clearDebugLogs())}
+									groupPosition="bottom"
+								/>
+								<View style={[styles.logsContainer, { borderColor: theme.screen.text + '22' }]}>
+									{formattedLogs.length === 0 ? (
+										<Text style={[styles.logsEmptyText, { color: theme.screen.placeholder }]}>
+											Noch keine Logs. Der Avatar-Editor und Absturz-Fehler protokollieren hier, solange der Debug-Modus aktiv ist.
+										</Text>
+									) : (
+										formattedLogs.slice(0, 100).map((line, index) => (
+											// eslint-disable-next-line react/no-array-index-key
+											<Text key={index} style={[styles.logLine, { color: theme.screen.text }]}>
+												{line}
+											</Text>
+										))
+									)}
+								</View>
+							</>
+						)}
+					</>
+				)}
 			</ScrollView>
 		</View>
 	);
@@ -112,5 +212,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	listContent: {
+	},
+	logsContainer: {
+		marginTop: 8,
+		padding: 12,
+		borderWidth: 1,
+		borderRadius: 8,
+		gap: 4,
+	},
+	logsEmptyText: {
+		fontSize: 13,
+	},
+	logLine: {
+		fontFamily: 'monospace',
+		fontSize: 11,
 	},
 });

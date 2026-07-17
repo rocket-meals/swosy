@@ -645,6 +645,14 @@ type AvatarEditorBehaviorProps = {
 	hiddenProps?: Record<string, string>;
 	/** Translation function for localising section headers, buttons, and category labels. */
 	translate?: (key: string) => string;
+	/**
+	 * Optional diagnostic hook, called at key lifecycle points (open, QuickStart
+	 * preset/customize selected, close) so a consumer can capture a persistent debug
+	 * log of what actually happened during an editor session - e.g. to tell apart
+	 * "the preset tap never registered" from "it registered but saving failed"
+	 * when a bug can't be reproduced directly. No-op unless provided.
+	 */
+	onDebugEvent?: (event: string) => void;
 };
 
 type AvatarEditorModalContentProps = AvatarPreviewAppearanceProps &
@@ -2370,6 +2378,7 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 	rounded,
 	backgroundColor,
 	translate,
+	onDebugEvent,
 }) => {
 	const [mode, setMode] = useState<Mode>(modeObservable.get());
 
@@ -2379,12 +2388,13 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 
 	const switchToEditor = useCallback(
 		(config: AvatarConfig) => {
+			onDebugEvent?.(`quickstart:selected style=${config.style}`);
 			configRef.current = { ...config };
 			configObservable.set({ ...config });
 			modeObservable.set('editor');
 			onChange?.();
 		},
-		[configRef, configObservable, modeObservable, onChange],
+		[configRef, configObservable, modeObservable, onChange, onDebugEvent],
 	);
 
 	if (mode === 'quickstart') {
@@ -2642,6 +2652,7 @@ export const useAvatarEditorModal = () => {
 			const editableAvatar = isLegacyStyle ? null : currentAvatar;
 
 			const initialMode: Mode = editableAvatar != null ? 'editor' : 'quickstart';
+			options?.onDebugEvent?.(`open initialMode=${initialMode} isLegacyStyle=${isLegacyStyle}`);
 			let initialConfig: AvatarConfig = editableAvatar ?? {
 				style: defaultStyle,
 				size,
@@ -2667,6 +2678,7 @@ export const useAvatarEditorModal = () => {
 			show({
 				title: options?.title ?? 'Avatar Editor',
 				onClose: () => {
+					options?.onDebugEvent?.(`closed dirty=${isDirtyRef.current}`);
 					if (isDirtyRef.current) {
 						onDone(configRef.current);
 					}
@@ -2686,6 +2698,7 @@ export const useAvatarEditorModal = () => {
 						configObservable={observableRef.current}
 						configRef={configRef}
 						onApply={() => {
+							options?.onDebugEvent?.('apply');
 							isDirtyRef.current = true;
 							onDone(configRef.current);
 							close();
@@ -2701,6 +2714,7 @@ export const useAvatarEditorModal = () => {
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
 						translate={options?.translate}
+						onDebugEvent={options?.onDebugEvent}
 					/>
 				),
 			});
