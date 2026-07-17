@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
-| 🐛 Reliability | 51 | 45 |
-| 🔧 Maintainability | 1955 | 0 |
+| 🐛 Reliability | 53 | 45 |
+| 🔧 Maintainability | 1927 | 0 |
 
-**Total issues:** 2011 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1985 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -34,7 +34,7 @@
   apps/score-tracker/frontend/store/friendsSlice.ts:19
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/friendsSlice.ts#L19
 
-## 🐛 Reliability (45/51)
+## 🐛 Reliability (45/53)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -125,12 +125,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:526
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L526
+  apps/geonexia/frontend/app/activities/[id].tsx:400
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L400
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:550
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L550
+  apps/geonexia/frontend/app/activities/[id].tsx:424
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L424
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
   apps/geonexia/frontend/app/activities/index.tsx:586

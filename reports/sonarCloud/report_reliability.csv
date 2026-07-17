@@ -1,9 +1,11 @@
 Key,Message,Component,Line
+"AZ9wjYi175F_EoJO9xIP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",30
+"AZ9wjYi175F_EoJO9xIQ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",31
 "AZ9qyn9KHKfHY7dxI2cK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cL","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cM","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
-"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",526
-"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",550
+"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",400
+"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",424
 "AZ9lpRU4KqeTrVO2SpWQ","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",586
 "AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3474
 "AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5022
