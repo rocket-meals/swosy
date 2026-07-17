@@ -12,6 +12,7 @@ import {
 	CLEAR_FRIENDSHIPS,
 	CLEAR_MANAGEMENT,
 	CLEAR_NEWS,
+	CLEAR_POPUP_EVENTS,
 	CLEAR_POPUP_EVENTS_HASH,
 	CLEAR_PROFILE,
 	CLEAR_SETTINGS,
@@ -59,6 +60,12 @@ export const performLogout = async (
                 await clearChatReadStatus();
                 clearAppDownloadBannerDismissed();
                 dispatch({ type: CLEAR_SETTINGS });
+		// Explicitly drop the popup events incl. their isOpen "already dismissed"
+		// flags. CLEAR_FOODS above resets them too as part of wiping the whole food
+		// slice, but the dismiss state must never survive a logout (next user on a
+		// shared/kiosk device would inherit it), so it gets its own dedicated clear
+		// right next to the matching hash reset instead of relying on that side effect.
+		dispatch({ type: CLEAR_POPUP_EVENTS });
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
 		await sqliteKeyValueStorage.multiRemove(['auth_data', 'persist:root']);
 
