@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import CustomDrawerContent from '@/components/Drawer/CustomDrawerContent';
 import { useTheme } from '@/hooks/useTheme';
@@ -42,6 +42,7 @@ import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
+import { getVersion } from '@/config';
 import { format } from 'date-fns';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
@@ -90,6 +91,16 @@ export default function Layout() {
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
+	// Live view of loggedIn for async fetch callbacks. The fetches below can still be
+	// in flight while performLogout runs; when they resolve afterwards, their closures
+	// hold pre-logout state. Dispatching then would resurrect just-cleared slices
+	// (e.g. popup events incl. their isOpen dismiss flags, or the collection
+	// last-updated map) and redux-persist would write that state right back to the
+	// storage performLogout just purged - the next login would rehydrate it again.
+	const loggedInRef = useRef(loggedIn);
+	useEffect(() => {
+		loggedInRef.current = loggedIn;
+	}, [loggedIn]);
 	const { canteens, selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
@@ -428,12 +439,26 @@ export default function Layout() {
 		}
 		try {
 			const response = (await popupEventsHelper.fetchAllPopupEvents()) as DatabaseTypes.PopupEvents[];
+			// Re-check AFTER the await: a logout may have completed while the fetch was in
+			// flight. Dispatching now would resurrect the popup events - including this
+			// closure's pre-logout isOpen dismiss flags - after performLogout already
+			// cleared them, and redux-persist would persist that resurrected state again.
+			if (!loggedInRef.current) {
+				return;
+			}
                         if (response) {
                                 const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
 
-                                const filteredEvents = filterPopupEvents(response, platformKey).map((event, index) => ({
+                                // Keep each event's already-seen/closed state across refetches - only default
+                                // to unseen for events we haven't stored before. Without this, refetching
+                                // (triggered whenever *any* popup event's data changes) would reset isOpen
+                                // back to false for every event, including ones the user already permanently
+                                // dismissed, making them pop back up.
+                                const previousIsOpenById = new Map(popupEvents.map((e: any) => [String(e.id), Boolean(e.isOpen)]));
+
+                                const filteredEvents = filterPopupEvents(response, platformKey, new Date(), getVersion()).map((event, index) => ({
                                         ...event,
-                                        isOpen: false,
+                                        isOpen: previousIsOpenById.get(String(event.id)) ?? false,
                                         isCurrent: index === 0,
                                 }));
 				const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));
@@ -546,6 +571,12 @@ export default function Layout() {
 	];
 
 	const getAllCollectionDatesLastUpdate = async () => {
+		// The [user] effect below also fires when performLogout clears the user - don't
+		// kick off the whole refetch cascade for a session that is just being torn down.
+		// (Kiosk mode fetches without a real login, so it stays exempt.)
+		if (!loggedInRef.current && !kioskMode) {
+			return;
+		}
 		try {
 			const result = (await collectionLastUpdateHelper.fetchCollectionDatesLastUpdate({})) as DatabaseTypes.CollectionsDatesLastUpdate[];
 			if (result) {
@@ -562,6 +593,13 @@ export default function Layout() {
 					})
 				);
 
+				// Re-check AFTER the awaits above: if a logout finished in the meantime,
+				// storing the fresh server dates now would mark all collections as
+				// up-to-date in the persisted state while their data was just cleared -
+				// the next login would then skip refetching them entirely.
+				if (!loggedInRef.current && !kioskMode) {
+					return;
+				}
 				dispatch({
 					type: SET_COLLECTION_DATES_LAST_UPDATED,
 					payload: serverMap,

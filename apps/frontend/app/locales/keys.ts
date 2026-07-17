@@ -584,6 +584,8 @@ export enum TranslationKeys {
 	chat_last_message_unanswered = 'chat_last_message_unanswered',
 	events = 'events',
 	reset_seen_popup_events = 'reset_seen_popup_events',
+	popup_event_current_app_version = 'popup_event_current_app_version',
+	popup_event_version_condition = 'popup_event_version_condition',
 	optional = 'optional',
 	date_created = 'date_created',
 	date_updated = 'date_updated',

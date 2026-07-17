@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { CLEAR_ANONYMOUSLY, CLEAR_APARTMENTS, CLEAR_CAMPUSES, CLEAR_CANTEENS, CLEAR_CHATS, CLEAR_COLLECTION_DATES_LAST_UPDATED, CLEAR_FOODS, CLEAR_MANAGEMENT, CLEAR_NEWS, CLEAR_POPUP_EVENTS_HASH, CLEAR_PROFILE, CLEAR_SETTINGS, ON_LOGOUT } from '@/redux/Types/types';
+import { CLEAR_ANONYMOUSLY, CLEAR_APARTMENTS, CLEAR_CAMPUSES, CLEAR_CANTEENS, CLEAR_CHATS, CLEAR_COLLECTION_DATES_LAST_UPDATED, CLEAR_FOODS, CLEAR_MANAGEMENT, CLEAR_NEWS, CLEAR_POPUP_EVENTS, CLEAR_POPUP_EVENTS_HASH, CLEAR_PROFILE, CLEAR_SETTINGS, ON_LOGOUT } from '@/redux/Types/types';
 import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { persistor } from '@/redux/store';
 import { router } from 'expo-router';
@@ -47,6 +47,10 @@ const DebugLogout = () => {
 		{
 			label: 'CLEAR_SETTINGS',
 			action: () => dispatch({ type: CLEAR_SETTINGS }),
+		},
+		{
+			label: 'CLEAR_POPUP_EVENTS',
+			action: () => dispatch({ type: CLEAR_POPUP_EVENTS }),
 		},
 		{
 			label: 'CLEAR_POPUP_EVENTS_HASH',
