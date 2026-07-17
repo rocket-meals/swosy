@@ -126,6 +126,16 @@ export default function SettingsScreen() {
 					}}
 				/>
 
+				<SettingsListGroupTitle title="About" />
+				<SettingsList
+					nativeID={ComponentIds.SETTINGS_VERSION_ROW}
+					iconBgColor="#6b7280"
+					leftIcon={<MaterialCommunityIcons name="numeric" size={22} color="#ffffff" />}
+					label="Version"
+					value={appVersion}
+					groupPosition="single"
+				/>
+
 				{showDebugSection && (
 					<>
 						<SettingsListGroupTitle title="Debug" />
@@ -177,7 +187,7 @@ export default function SettingsScreen() {
 				)}
 
 				<TouchableOpacity
-					nativeID={ComponentIds.SETTINGS_VERSION_ROW}
+					nativeID={ComponentIds.SETTINGS_FOOTER}
 					style={styles.footer}
 					onPress={handleFooterPress}
 				>

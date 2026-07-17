@@ -53,6 +53,7 @@ export const ComponentIds = {
 
 	// Settings screen: debug mode
 	SETTINGS_VERSION_ROW: 'settings-version-row',
+	SETTINGS_FOOTER: 'settings-footer',
 	SETTINGS_DEBUG_MODE_TOGGLE: 'settings-debug-mode-toggle',
 	SETTINGS_DEBUG_COPY_LOGS: 'settings-debug-copy-logs',
 	SETTINGS_DEBUG_CLEAR_LOGS: 'settings-debug-clear-logs',
