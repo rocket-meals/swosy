@@ -12,7 +12,8 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListBoxplot, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { computeBoxplotStats } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
@@ -30,7 +31,9 @@ import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
-import { snapToRoad } from '../../helpers/RouteSmootherHelper';
+import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
+import { fetchRoadWaysForBounds, matchRouteToRoads } from '../../helpers/RoadMatchHelper';
+import type { RoadWay } from '../../helpers/RoadMatchHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -51,6 +54,8 @@ const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
 const SPEED_WARMUP_MS = 10_000;
 const SPEED_WINDOW_SIZE = 5;
+/** Speed variation of ±this many km/h around the median counts as "normal"/green, both in the boxplot and on the map. */
+const SPEED_BAND_KMH = 1;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const R = 6371;
@@ -102,6 +107,7 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		return {
 			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
 			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0, medianSpeedKmh: 0,
+			q1SpeedKmh: 0, q3SpeedKmh: 0,
 			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
 		};
 	}
@@ -110,8 +116,6 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
 	const startTimestamp = points[0].timestamp;
-	let speedDistanceKm = 0;
-	let speedDurationSeconds = 0;
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
 		distanceKm += segKm;
@@ -128,10 +132,8 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 				: dtSec > 0
 				? (segKm / dtSec) * 3600
 				: 0;
-		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
-			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
-			speedDistanceKm += segKm;
-			speedDurationSeconds += dtSec;
+		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS && segSpeedKmh > 0) {
+			speedsKmh.push(segSpeedKmh);
 		}
 	}
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
@@ -143,21 +145,21 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
 		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
 	}
-	const maxSpeedKmh = windowedSpeeds.length > 0 ? Math.max(...windowedSpeeds) : 0;
-	const minSpeedKmh = windowedSpeeds.length > 0 ? Math.min(...windowedSpeeds) : 0;
-	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
-	const medianSpeedKmh = (() => {
-		if (speedsKmh.length === 0) return 0;
-		const sorted = [...speedsKmh].sort((a, b) => a - b);
-		const mid = Math.floor(sorted.length / 2);
-		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-	})();
+	// min/max/median/q1/q3 AND avg all come from the same windowed speed samples,
+	// so they can never contradict each other (e.g. avg ending up below min, which
+	// happened when avg was separately computed as a raw distance/time ratio while
+	// min/max used the smoothed window - two different underlying data sets).
+	const { min: minSpeedKmh, q1: q1SpeedKmh, median: medianSpeedKmh, q3: q3SpeedKmh, max: maxSpeedKmh } = computeBoxplotStats(windowedSpeeds);
+	const avgSpeedKmh = windowedSpeeds.length > 0
+		? windowedSpeeds.reduce((sum, v) => sum + v, 0) / windowedSpeeds.length
+		: 0;
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 	return {
 		distanceKm, durationSeconds, paceMinPerKm,
 		maxSpeedKmh, minSpeedKmh, avgSpeedKmh, medianSpeedKmh,
+		q1SpeedKmh, q3SpeedKmh,
 		kcal, steps, elevationGainM, elevationLossM, fluidNeedsMl,
 	};
 }
@@ -353,126 +355,6 @@ function WeatherTypePickerContent({
 		</View>
 	);
 }
-
-// ─── Speed Range Item ─────────────────────────────────────────────────────────
-
-const GRADIENT_SEGMENTS = 32;
-
-function interpolateSpeedColor(t: number): string {
-	// t: 0 = red, 0.5 = green, 1 = blue
-	// red: #ef4444, green: #22c55e, blue: #3b82f6
-	let r: number, g: number, b: number;
-	if (t <= 0.5) {
-		const s = t * 2;
-		r = Math.round(0xef + (0x22 - 0xef) * s);
-		g = Math.round(0x44 + (0xc5 - 0x44) * s);
-		b = Math.round(0x44 + (0x5e - 0x44) * s);
-	} else {
-		const s = (t - 0.5) * 2;
-		r = Math.round(0x22 + (0x3b - 0x22) * s);
-		g = Math.round(0xc5 + (0x82 - 0xc5) * s);
-		b = Math.round(0x5e + (0xf6 - 0x5e) * s);
-	}
-	return `rgb(${r},${g},${b})`;
-}
-
-function SpeedRangeItem({
-	minSpeedKmh,
-	avgSpeedKmh,
-	maxSpeedKmh,
-	theme,
-}: {
-	minSpeedKmh: number;
-	avgSpeedKmh: number;
-	maxSpeedKmh: number;
-	theme: ReturnType<typeof useTheme>['theme'];
-}) {
-	// Convert speeds to pace: min speed → slowest pace (highest min/km), max speed → fastest pace (lowest min/km)
-	const paceFromSpeed = (kmh: number) => (kmh > 0 ? 60 / kmh : 0);
-	const minPace = paceFromSpeed(maxSpeedKmh); // fastest pace (shown on right/blue side)
-	const avgPace = paceFromSpeed(avgSpeedKmh);
-	const maxPace = paceFromSpeed(minSpeedKmh); // slowest pace (shown on left/red side)
-
-	return (
-		<View style={[speedRangeStyles.container, { backgroundColor: theme.screen.iconBg }]}>
-			<View style={[speedRangeStyles.labelsRow, { marginTop: 0 }]}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{formatPace(maxPace)}</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{formatPace(avgPace)}</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{formatPace(minPace)}</Text>
-			</View>
-			<View style={speedRangeStyles.barWrapper}>
-				{Array.from({ length: GRADIENT_SEGMENTS }).map((_, i) => (
-					<View
-						key={i}
-						style={[
-							speedRangeStyles.barSegment,
-							{ backgroundColor: interpolateSpeedColor(i / (GRADIENT_SEGMENTS - 1)) },
-							i === 0 && speedRangeStyles.barSegmentFirst,
-							i === GRADIENT_SEGMENTS - 1 && speedRangeStyles.barSegmentLast,
-						]}
-					/>
-				))}
-			</View>
-			<View style={[speedRangeStyles.labelsRow, { marginBottom: 0 }]}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
-			</View>
-			<View style={[speedRangeStyles.separator, { backgroundColor: theme.screen.background }]} />
-		</View>
-	);
-}
-
-const speedRangeStyles = StyleSheet.create({
-	container: {
-		paddingHorizontal: 16,
-		paddingTop: 10,
-		paddingBottom: 10,
-	},
-	labelsRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		marginBottom: 6,
-		marginTop: 6,
-	},
-	labelMin: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'left',
-	},
-	labelAvg: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'center',
-	},
-	labelMax: {
-		fontSize: 12,
-		fontWeight: '600',
-		textAlign: 'right',
-	},
-	barWrapper: {
-		flexDirection: 'row',
-		height: 8,
-		overflow: 'hidden',
-	},
-	barSegment: {
-		flex: 1,
-		height: 8,
-	},
-	barSegmentFirst: {
-		borderTopLeftRadius: 4,
-		borderBottomLeftRadius: 4,
-	},
-	barSegmentLast: {
-		borderTopRightRadius: 4,
-		borderBottomRightRadius: 4,
-	},
-	separator: {
-		height: StyleSheet.hairlineWidth,
-		marginTop: 0,
-		marginLeft: 54,
-	},
-});
 
 // ─── Route Assignment Modal Content ──────────────────────────────────────────
 
@@ -832,8 +714,10 @@ export default function ActivityDetailScreen() {
 	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
 	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
 	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
-	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
+	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
+	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
+	const roadMatchJunctionMode = useSelector((state: RootState) => state.displaySettings.roadMatchJunctionMode);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -841,6 +725,13 @@ export default function ActivityDetailScreen() {
 	const { showAlert } = useGeonexiaAlert();
 	const { show: showDebugModal } = useMyScrollViewModal();
 	const [routeSiblingActivities, setRouteSiblingActivities] = useState<SavedActivity[]>([]);
+	// Road-match test-case export tooling (debug): lets a developer tap hex tiles
+	// to select an area, then export the raw GPS points + road-matched line +
+	// road network within that area as JSON, for building RoadMatchHelper test cases.
+	const [testExportMode, setTestExportMode] = useState(false);
+	const [selectedHexIds, setSelectedHexIds] = useState<string[]>([]);
+	const [lastRoadWays, setLastRoadWays] = useState<RoadWay[] | null>(null);
+	const [lastMatchedRoadCoords, setLastMatchedRoadCoords] = useState<[number, number][] | null>(null);
 
 	// Stop map-side auto-rotate and replay animation on unmount
 	useEffect(() => {
@@ -929,6 +820,13 @@ export default function ActivityDetailScreen() {
 					}
 				}
 
+				// Migrate activities saved before the speed boxplot quartiles were introduced.
+				if (a.stats.q1SpeedKmh === undefined || a.stats.q3SpeedKmh === undefined) {
+					const { q1SpeedKmh, q3SpeedKmh } = computeActivityStats(a.routePoints);
+					a = { ...a, stats: { ...a.stats, q1SpeedKmh, q3SpeedKmh } };
+					saveActivity(a);
+				}
+
 				setActivity(a);
 
 				// Load the assigned route for display
@@ -982,9 +880,11 @@ export default function ActivityDetailScreen() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id]);
 
-	// Build speed-colored segments from route points and send along with speed range
-	// so the map can interpolate red (min) → green (avg) → blue (max).
-	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'avgSpeedKmh' | 'maxSpeedKmh'>) => {
+	// Build speed-colored segments from route points and send along with the speed
+	// boxplot's median/band, so the map can color each segment the same way the
+	// speed boxplot does: below median-band → red, within median±band → green,
+	// above median+band → blue.
+	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'maxSpeedKmh' | 'medianSpeedKmh'>) => {
 		if (points.length < 2) return null;
 		const segments = [];
 		for (let i = 0; i < points.length - 1; i++) {
@@ -994,7 +894,15 @@ export default function ActivityDetailScreen() {
 		const speedKmh = (((a.speed ?? 0) + (b.speed ?? 0)) / 2) * 3.6;
 			segments.push({ coords: [[a.lng, a.lat], [b.lng, b.lat]], speedKmh });
 		}
-		return { segments, speedRange: { min: stats.minSpeedKmh, avg: stats.avgSpeedKmh, max: stats.maxSpeedKmh } };
+		return {
+			segments,
+			speedRange: {
+				min: stats.minSpeedKmh,
+				median: stats.medianSpeedKmh ?? (stats.minSpeedKmh + stats.maxSpeedKmh) / 2,
+				band: SPEED_BAND_KMH,
+				max: stats.maxSpeedKmh,
+			},
+		};
 	}, []);
 
 	// Compute the bounding box of a route using a loop (avoids spread-operator stack
@@ -1014,6 +922,100 @@ export default function ActivityDetailScreen() {
 		return { minLat, maxLat, minLng, maxLng };
 	}, []);
 
+	// When enabled, fetch the real road/path network around the route and snap
+	// the raw GPS points onto it, so the map can show the actual street/path
+	// that was likely walked (like a navigation route) instead of the raw track.
+	useEffect(() => {
+		if (!showRoadMatch || !mapMounted || !activity || !mapRef.current) {
+			mapRef.current?.sendToMap({ matchedRoadCoordinates: null });
+			setLastRoadWays(null);
+			setLastMatchedRoadCoords(null);
+			return;
+		}
+		const bounds = computeRouteBounds(activity.routePoints);
+		if (!bounds) return;
+
+		let cancelled = false;
+		const marginDeg = 0.01; // ~1km padding so nearby roads just outside the route's bbox are still found
+		fetchRoadWaysForBounds({
+			minLat: bounds.minLat - marginDeg,
+			minLng: bounds.minLng - marginDeg,
+			maxLat: bounds.maxLat + marginDeg,
+			maxLng: bounds.maxLng + marginDeg,
+		})
+			.then((ways) => {
+				if (cancelled) return;
+				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
+				const matched = matchRouteToRoads(rawCoords, ways, { junctionMode: roadMatchJunctionMode });
+				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
+				setLastRoadWays(ways);
+				setLastMatchedRoadCoords(matched);
+			})
+			.catch((err) => {
+				console.warn('[ActivityDetailScreen] Failed to match route to roads:', err);
+			});
+
+		return () => { cancelled = true; };
+	}, [showRoadMatch, mapMounted, activity, computeRouteBounds, roadMatchJunctionMode]);
+
+	// Highlight the hex tiles selected for test-case export.
+	useEffect(() => {
+		if (!mapMounted || !mapRef.current) return;
+		if (selectedHexIds.length === 0) {
+			mapRef.current.sendToMap({ selectedHexTilesGeoJson: null });
+			return;
+		}
+		const features = selectedHexIds
+			.map((h3Index) => {
+				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
+				if (boundary.length === 0) return null;
+				return {
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [[...boundary, boundary[0]]] },
+					properties: { h3Index },
+				};
+			})
+			.filter((f): f is NonNullable<typeof f> => f !== null);
+		mapRef.current.sendToMap({ selectedHexTilesGeoJson: { type: 'FeatureCollection', features } });
+	}, [mapMounted, selectedHexIds]);
+
+	// Debug tool: bundles the raw GPS points, the road-matched line, and the
+	// underlying road network within the selected hex tiles' bounding box into
+	// JSON on the clipboard, for building RoadMatchHelper regression test cases.
+	const handleExportTestCase = useCallback(async () => {
+		if (!activity || selectedHexIds.length === 0) return;
+
+		let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+		for (const h3Index of selectedHexIds) {
+			for (const [lat, lng] of cellToBoundary(h3Index)) {
+				if (lat < minLat) minLat = lat;
+				if (lat > maxLat) maxLat = lat;
+				if (lng < minLng) minLng = lng;
+				if (lng > maxLng) maxLng = lng;
+			}
+		}
+		const inBounds = (lat: number, lng: number) => lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+
+		const filteredRoutePoints = activity.routePoints.filter((p) => inBounds(p.lat, p.lng));
+		const filteredMatchedRoadCoordinates = (lastMatchedRoadCoords ?? []).filter(([lng, lat]) => inBounds(lat, lng));
+		const filteredWays = (lastRoadWays ?? []).filter((way) => way.points.some(([lng, lat]) => inBounds(lat, lng)));
+
+		const testCase = {
+			hexIds: selectedHexIds,
+			bounds: { minLat, minLng, maxLat, maxLng },
+			roadMatchJunctionMode,
+			routePoints: filteredRoutePoints,
+			matchedRoadCoordinates: filteredMatchedRoadCoordinates,
+			ways: filteredWays,
+		};
+
+		await Clipboard.setStringAsync(JSON.stringify(testCase, null, 2));
+		showAlert(
+			'Testfall exportiert',
+			`${filteredRoutePoints.length} GPS-Punkte, ${filteredMatchedRoadCoordinates.length} Linienpunkte und ${filteredWays.length} Straßen/Wege in die Zwischenablage kopiert.`,
+		);
+	}, [activity, selectedHexIds, lastMatchedRoadCoords, lastRoadWays, roadMatchJunctionMode, showAlert]);
+
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
@@ -1022,8 +1024,8 @@ export default function ActivityDetailScreen() {
 		// We compute smoothed [lng, lat] coordinates and use those for display
 		// while keeping the original speed values from the raw route points.
 		const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
-		const displayCoords: [number, number][] = routeSmoothingEnabled
-			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated))
+		const displayCoords: [number, number][] = routeSmoothingLevel !== 'off'
+			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated), ROUTE_SMOOTHING_WINDOWS[routeSmoothingLevel])
 			: rawCoords;
 
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
@@ -1187,7 +1189,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingEnabled]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingLevel]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {
@@ -1289,12 +1291,16 @@ export default function ActivityDetailScreen() {
 	}, [dispatch, replayIsDisabled]);
 
 	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string };
+		const msg = data as { tag?: string; h3Index?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
 		}
+		if (msg.tag === 'HexTileClicked' && testExportMode && msg.h3Index) {
+			const h3Index = msg.h3Index;
+			setSelectedHexIds((prev) => (prev.includes(h3Index) ? prev.filter((id) => id !== h3Index) : [...prev, h3Index]));
+		}
 		// Auto-rotate is stopped automatically on the map side when user interacts
-	}, []);
+	}, [testExportMode]);
 
 	const handleOpenRouteAssignment = useCallback(() => {
 		if (!activity) return;
@@ -1537,9 +1543,10 @@ export default function ActivityDetailScreen() {
 		})()),
 	];
 
-	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
-	// 'middle'/'bottom'. idx within the slice runs 0…statsRows.length-2; the last item (idx
-	// === statsRows.length-2) gets groupPosition='bottom' and showSeparator=false.
+	// Render: statsRows[0] (Date) at 'top', then the speed boxplot, then
+	// statsRows.slice(1) at 'middle'/'bottom'. idx within the slice runs
+	// 0…statsRows.length-2; the last item (idx === statsRows.length-2) gets
+	// groupPosition='bottom' and showSeparator=false.
 	return (
 		<ScrollView
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
@@ -1593,12 +1600,22 @@ export default function ActivityDetailScreen() {
 					showSeparator
 					groupPosition="top"
 				/>
-				{/* Speed range item – directly under Date */}
-				<SpeedRangeItem
-					minSpeedKmh={stats.minSpeedKmh}
-					avgSpeedKmh={stats.avgSpeedKmh}
-					maxSpeedKmh={stats.maxSpeedKmh}
-					theme={theme}
+				{/* Speed boxplot – collapsed explanation, expands on tap */}
+				<SettingsListBoxplot
+					iconBackgroundColor={PRIMARY_COLOR}
+					leftIcon={<MaterialIcons name="ssid-chart" size={20} color="#ffffff" />}
+					title="Geschwindigkeitsverteilung"
+					stats={{
+						min: stats.minSpeedKmh,
+						q1: stats.q1SpeedKmh ?? stats.minSpeedKmh,
+						median: stats.medianSpeedKmh ?? stats.avgSpeedKmh,
+						q3: stats.q3SpeedKmh ?? stats.maxSpeedKmh,
+						max: stats.maxSpeedKmh,
+					}}
+					medianBandValue={SPEED_BAND_KMH}
+					formatValue={(value) => `${value.toFixed(1)} km/h`}
+					description={`Grün = Geschwindigkeit innerhalb von ±${SPEED_BAND_KMH.toFixed(1)} km/h um den Median (die normale Schwankung). Langsamer als das ist rot, schneller ist blau – dieselben Farben werden für die Streckenlinie auf der Karte verwendet.`}
+					groupPosition="middle"
 				/>
 				{/* Remaining rows */}
 				{statsRows.slice(1).map((row, idx) => (
@@ -1629,6 +1646,28 @@ export default function ActivityDetailScreen() {
 						onPress={handleRecalculateComputedValues}
 					/>
 				</View>
+				<SettingsListGroupTitle title="Testfall-Export (Debug)" />
+				<SettingsListBoolean
+					leftIcon={<MaterialIcons name="touch-app" size={20} color="#ffffff" />}
+					iconBgColor="#9333ea"
+					label="Hex-Tiles auswählen"
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
+					isEnabled={testExportMode}
+					onToggle={() => {
+						setTestExportMode((v) => !v);
+						setSelectedHexIds([]);
+					}}
+					groupPosition="top"
+				/>
+				<SettingsList
+					leftIcon={<MaterialIcons name="ios-share" size={20} color="#ffffff" />}
+					iconBackgroundColor="#9333ea"
+					title="Auswahl exportieren"
+					value={`${selectedHexIds.length} Tile${selectedHexIds.length === 1 ? '' : 's'}`}
+					groupPosition="bottom"
+					onPress={handleExportTestCase}
+				/>
 				<SettingsListGroupTitle title="Routen Information" />
 				<SettingsList
 					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}

@@ -15,6 +15,14 @@ export function getColorAsHex(color: string | undefined): string | undefined {
 	return Color(color).toHexString();
 }
 
+/**
+ * Linearly blends two colors. `amount` is 0 (pure colorA) to 1 (pure colorB).
+ */
+export function mixColors(colorA: string, colorB: string, amount: number): string {
+	const clampedAmount = Math.max(0, Math.min(1, amount));
+	return Color.mix(colorA, colorB, clampedAmount * 100).toRgbString();
+}
+
 enum ContrastThreshold {
 	MaternaLandNiedersachsen = 4.5,
 	WCAG_AA = 3.0,

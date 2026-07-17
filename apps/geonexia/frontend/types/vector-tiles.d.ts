@@ -17,6 +17,14 @@ declare module 'pbf' {
 declare module '@mapbox/vector-tile' {
 	import type Pbf from 'pbf';
 
+	type VectorTileGeoJSONGeometry =
+		| { type: 'Point'; coordinates: [number, number] }
+		| { type: 'MultiPoint'; coordinates: [number, number][] }
+		| { type: 'LineString'; coordinates: [number, number][] }
+		| { type: 'MultiLineString'; coordinates: [number, number][][] }
+		| { type: 'Polygon'; coordinates: [number, number][][] }
+		| { type: 'MultiPolygon'; coordinates: [number, number][][][] };
+
 	export class VectorTileFeature {
 		properties: Record<string, number | string | boolean>;
 		extent: number;
@@ -24,6 +32,12 @@ declare module '@mapbox/vector-tile' {
 		id: number | undefined;
 		/** Return the bounding box of the feature geometry in tile coordinates [x1, y1, x2, y2]. */
 		bbox(): [number, number, number, number];
+		/** Convert the feature geometry to GeoJSON lng/lat coordinates, given its tile's x/y/z. */
+		toGeoJSON(x: number, y: number, z: number): {
+			type: 'Feature';
+			geometry: VectorTileGeoJSONGeometry;
+			properties: Record<string, number | string | boolean>;
+		};
 	}
 
 	export class VectorTileLayer {

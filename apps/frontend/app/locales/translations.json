@@ -1219,6 +1219,16 @@
     "tr": "NFC talimatını göster",
     "zh": "显示 NFC 指南"
   },
+  "nfcCancelRead": {
+    "de": "Auslesen abbrechen",
+    "en": "Cancel reading",
+    "ar": "إلغاء القراءة",
+    "es": "Cancelar lectura",
+    "fr": "Annuler la lecture",
+    "ru": "Отменить чтение",
+    "tr": "Okumayı iptal et",
+    "zh": "取消读取"
+  },
   "new": {
     "de": "Neu",
     "en": "New",

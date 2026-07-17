@@ -1,6 +1,6 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 
-export const GPS_INTERVAL_DEFAULT_SECONDS = 10;
+export const GPS_INTERVAL_DEFAULT_SECONDS = 5;
 
 const GPS_INTERVAL_KEY = 'geonexia-gps-interval.json';
 

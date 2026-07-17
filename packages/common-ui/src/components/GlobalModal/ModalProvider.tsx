@@ -36,9 +36,9 @@ type ModalContextType = {
 	/** @internal used by ModalRenderer */
 	_handleSheetChange: (index: number) => void;
 	/** @internal used by ModalRenderer */
-	_handleNativeClose: () => void;
-	/** @internal used by ModalRenderer */
 	_screenBackgroundColor: string;
+	/** @internal used by ModalRenderer - how many modals are stacked, to decide whether the header button shows a back-chevron (stack) or an X (single modal) */
+	_stackDepth: number;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -57,8 +57,8 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 	const sheetRef = useRef<any>(null);
 	const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	// True from the moment we ask the sheet to close (either because our own close() was
-	// called, or because handleNativeClose reacted to a user gesture) until the sheet's
+	// True from the moment the sheet is asked to close - via close()/closeAll(), or via
+	// BaseBottomSheet's onDismissAll/onClose reacting to a user gesture - until the sheet's
 	// onChange confirms index -1 was actually reached. Finalizing (clearing modalStack) only
 	// ever happens in reaction to that real confirmation - never on a guessed timeout - so a
 	// next event can never be opened while the previous one's close animation is still
@@ -196,15 +196,15 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		}));
 	};
 
-	// Bound to the sheet's native onClose (fires whenever its index reaches -1: swipe-to-
-	// dismiss, backdrop tap, handle drag, or our own sheetRef.close() call above finishing
-	// its animation). A user-initiated close that we didn't ask for yet is a fresh close
-	// request; one we already initiated is confirmed by handleSheetChange below instead
-	// (isClosingRef is already true by then), so this is a no-op for that case.
-	const handleNativeClose = useCallback(() => {
-		close();
-	}, []);
-
+	// Desired dismiss behaviour (see BaseBottomSheetProps for the matching prop docs): a
+	// backdrop tap or a swipe-down-to-close gesture is a "get me out of here" gesture from
+	// the user, independent of how many modals are stacked - both dismiss the ENTIRE stack
+	// via onDismissAll/closeAll, called directly by BaseBottomSheet before this onChange
+	// handler runs for index === -1. Only the header close/back button steps back one level
+	// via onClose/close(). Either way, by the time this sees index === -1 for a real close
+	// (as opposed to some other caller's stray/aborted transition), isClosingRef is already
+	// true - that's the actual confirmation the close animation finished, so only now is it
+	// safe to finalize (unmount the sheet's content) rather than guessing at its timing.
 	const handleSheetChange = useCallback((index: number) => {
 		if (index >= 0) {
 			if (isClosingRef.current) {
@@ -281,8 +281,8 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			_currentItem: currentItem,
 			_sheetRef: sheetRef,
 			_handleSheetChange: handleSheetChange,
-			_handleNativeClose: handleNativeClose,
 			_screenBackgroundColor: screenBackgroundColor,
+			_stackDepth: modalStack.length,
 		}}>
 			{children}
 		</ModalContext.Provider>
@@ -290,7 +290,15 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 };
 
 export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const { _currentItem: currentItem, _sheetRef: sheetRef, _handleSheetChange: handleSheetChange, _handleNativeClose: handleNativeClose, _screenBackgroundColor: screenBackgroundColor } = useModalContext();
+	const {
+		_currentItem: currentItem,
+		_sheetRef: sheetRef,
+		_handleSheetChange: handleSheetChange,
+		_screenBackgroundColor: screenBackgroundColor,
+		_stackDepth: stackDepth,
+		close,
+		closeAll,
+	} = useModalContext();
 
 	return (
 		<>
@@ -304,7 +312,9 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 					<BaseBottomSheet
 						ref={sheetRef}
 						enablePanDownToClose
-						onClose={handleNativeClose}
+						onClose={close}
+						onDismissAll={closeAll}
+						showBackChevron={stackDepth > 1}
 						onChange={handleSheetChange}
 						headerBackgroundColor={screenBackgroundColor}
 						backgroundStyle={currentItem.backgroundStyle}

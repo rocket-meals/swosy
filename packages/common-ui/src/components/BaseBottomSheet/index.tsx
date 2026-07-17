@@ -54,12 +54,35 @@ const backgroundStyles = StyleSheet.create({
 });
 
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
+	/**
+	 * Header close/back button only. Steps back one level of the modal stack
+	 * (see ModalProvider's `close()`) - does NOT touch the sheet's open/closed
+	 * state unless the stack is down to its last item. Rendered as a chevron
+	 * ("back") instead of an X when `showBackChevron` is set, so the user
+	 * understands this only steps back rather than dismissing everything.
+	 */
 	onClose?: () => void;
+	/**
+	 * Backdrop tap and swipe-down-to-close. Both are a "get me out of here"
+	 * gesture from the user's perspective, independent of how many modals are
+	 * stacked - so both dismiss the entire stack at once (ModalProvider's
+	 * `closeAll()`) rather than stepping back one level like the header
+	 * button does. Falls back to `onClose` when not provided, so standalone
+	 * consumers of this component (outside the global modal stack, e.g.
+	 * BaseBottomModal/MarkingBottomSheet - a single sheet with no "stack" to
+	 * distinguish) keep their previous behaviour of a single close handler
+	 * for the button, backdrop, and swipe alike.
+	 */
+	onDismissAll?: () => void;
 	headerBackgroundColor?: string;
+	/** Shows a "back" chevron instead of an X in the header button - set when more than one modal is stacked, since the button only steps back one level. */
+	showBackChevron?: boolean;
 }
 
-const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
-	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <CustomBackdrop {...backdropProps} onPress={onClose} />, [onClose]);
+const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, onDismissAll, children, backgroundStyle, onChange, headerBackgroundColor, showBackChevron, ...props }, ref) => {
+	// See onDismissAll doc: falls back to onClose for standalone (non-stacked) consumers.
+	const dismissAll = onDismissAll ?? onClose;
+	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <CustomBackdrop {...backdropProps} onPress={dismissAll} />, [dismissAll]);
 	const { theme } = useTheme();
 	const { top: topInset } = useSafeAreaInsets();
 	const snapPoints = useMemo(() => ['80%'], []);
@@ -69,14 +92,17 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 
 	const handleColor = theme.sheet.closeBg;
 
+	// Swipe-down-to-close animates the sheet to index -1 - same "dismiss
+	// everything" intent as a backdrop tap (see onDismissAll doc above), so it
+	// goes through the same handler rather than the header button's onClose.
 	const handleChange = useCallback(
 		(index: number) => {
 			if (index === -1) {
-				onClose?.();
+				dismissAll?.();
 			}
 			(onChange as any)?.(index);
 		},
-		[onClose, onChange],
+		[dismissAll, onChange],
 	);
 
 	// On web, @gorhom/bottom-sheet defaults to accessibilityRole "adjustable",
@@ -105,7 +131,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
 				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose} nativeID={CommonUiComponentIds.MODAL_CLOSE_BUTTON}>
-					<AntDesign name="close" size={24} color={theme.sheet.closeIcon} />
+					<AntDesign name={showBackChevron ? 'left' : 'close'} size={24} color={theme.sheet.closeIcon} />
 				</TouchableOpacity>
 			</View>
 			{children}

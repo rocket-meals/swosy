@@ -66,6 +66,12 @@ export type { SettingsListCoordinateProps, LinkCoordinate } from './src/componen
 export { default as SettingsListProgress } from './src/components/SettingsListProgress';
 export type { SettingsListProgressProps } from './src/components/SettingsListProgress';
 
+export { default as Boxplot } from './src/components/Boxplot';
+export type { BoxplotProps } from './src/components/Boxplot';
+
+export { default as SettingsListBoxplot } from './src/components/SettingsListBoxplot';
+export type { SettingsListBoxplotProps } from './src/components/SettingsListBoxplot';
+
 export { default as SettingsListNumberInput } from './src/components/SettingsListNumberInput';
 export type { SettingsListNumberInputProps } from './src/components/SettingsListNumberInput';
 

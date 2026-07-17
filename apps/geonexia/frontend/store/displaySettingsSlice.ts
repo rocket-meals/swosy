@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { MapStyleKey } from 'repo-depkit-common-ui';
+import type { RouteSmoothingLevel } from '../helpers/RouteSmootherHelper';
+import type { RoadMatchJunctionMode } from '../helpers/RoadMatchHelper';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -16,10 +18,14 @@ export type DisplaySettingsState = {
 	hexTextureAdaptionOpacity: number;
 	/** Opacity for face-camera hex object sprites at anchor positions (0.0 – 1.0). */
 	hexObjectOpacity: number;
-	/** Whether to apply centre-line projection (road-snap smoothing) when displaying activity routes. */
-	routeSmoothingEnabled: boolean;
+	/** Level of centre-line projection (road-snap smoothing) applied when displaying activity routes. */
+	routeSmoothingLevel: RouteSmoothingLevel;
 	/** Whether to render raw GPS measurement points on the activity map. */
 	showGpsPoints: boolean;
+	/** Whether to show the recorded route matched onto the real road/path network (yellow line). */
+	showRoadMatch: boolean;
+	/** How road-matching connects a transition between two different matched ways (junctions). */
+	roadMatchJunctionMode: RoadMatchJunctionMode;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -29,8 +35,10 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTextureOpacity: 0.9,
 	hexTextureAdaptionOpacity: 0.9,
 	hexObjectOpacity: 0.9,
-	routeSmoothingEnabled: true,
+	routeSmoothingLevel: 'off',
 	showGpsPoints: false,
+	showRoadMatch: false,
+	roadMatchJunctionMode: 'network',
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };

@@ -39,6 +39,7 @@ import { setGpsIntervalSeconds } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import AdvancedSettingsContent from '../../components/AdvancedSettingsContent';
+import type { RouteSmoothingLevel } from '../../helpers/RouteSmootherHelper';
 import { AppDispatch, RootState, store } from '../../store/store';
 import { updateDisplaySettings } from '../../store/displaySettingsSlice';
 import {
@@ -87,17 +88,25 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] =
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
 
-const GPS_PRESET_SECONDS = [1, 10, 30];
+const GPS_PRESET_SECONDS = [1, 5, 15];
 
 const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[] = [
 	{ id: 1, label: '1s', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
-	{ id: 10, label: '10s', icon: <MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" /> },
-	{ id: 30, label: '30s', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
+	{ id: 5, label: '5s', icon: <MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" /> },
+	{ id: 15, label: '15s', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
 ];
 
 function gpsIntervalLabel(seconds: number): string {
 	if (GPS_PRESET_SECONDS.includes(seconds)) return `${seconds}s`;
 	return `Custom (${seconds}s)`;
+}
+
+function routeSmoothingLabel(level: RouteSmoothingLevel): string {
+	switch (level) {
+		case 'off': return 'Standard';
+		case 'light': return 'Glättung: Leicht';
+		case 'strong': return 'Glättung: Stark';
+	}
 }
 
 function themeModeLabel(mode: ThemeMode): string {
@@ -275,7 +284,7 @@ export default function SettingsScreen() {
 	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
-	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
+	const routeSmoothingLevel = useSelector((state: RootState) => state.displaySettings.routeSmoothingLevel);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
@@ -765,7 +774,7 @@ export default function SettingsScreen() {
 					iconBgColor={MAP_COLOR}
 					leftIcon={<MaterialIcons name="tune" size={22} color="#ffffff" />}
 					label="Erweiterte Einstellungen"
-					value={routeSmoothingEnabled ? 'Glättung aktiv' : 'Standard'}
+					value={routeSmoothingLabel(routeSmoothingLevel)}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleOpenAdvancedSettings}
 					groupPosition="single"

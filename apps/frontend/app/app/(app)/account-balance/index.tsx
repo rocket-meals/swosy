@@ -34,7 +34,6 @@ import ProjectButton from '@/components/ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import useDebugMode from '@/hooks/useDebugMode';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -60,7 +59,6 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const debugMode = useDebugMode();
-	const { show: showInstructionModal, close: closeInstructionModal } = useMyScrollViewModal();
 	const { profile, isDevMode } = useAppSelector((state) => state.authReducer);
 	const { appSettings, language, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : primaryColor;
@@ -72,17 +70,16 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const [animationJson, setAmimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
-        // The NFC "hold your card" instruction opens as its own instance on the
-        // global modal stack (like the account-required modal inside the foodoffers
-        // details modal): close() only pops the top stack item, so an underlying
-        // balance modal stays open. isInstructionModalOpenRef guards hideInstruction
-        // so it only ever closes the instruction's own instance - readCard calls
-        // hideInstruction even when no instruction was shown (iOS system NFC sheet,
-        // cancelled reads), and without the guard that close() would pop - and thus
-        // close - the balance modal instead. The ref is reset via the modal's
-        // onClose (fired on content unmount), which also covers the user dismissing
-        // the instruction manually (pan-down/close button) while a read is running.
-        const isInstructionModalOpenRef = useRef(false);
+        // The NFC "hold your card" instruction (Android only - iOS has its own
+        // system sheet, see MyNativeCardReader) used to be pushed as its own item
+        // on the global modal stack on top of this screen's modal. That made the
+        // modal-stack renderer (which only mounts the top-most stack item) unmount
+        // this whole component whenever the instruction opened or closed, wiping
+        // all local state and re-triggering autoStartNfc in a loop every time the
+        // instruction closed. Rendering the instruction as local state instead
+        // keeps this component mounted the entire time (works the same whether
+        // opened as a modal from foodoffers or navigated to as a plain screen).
+        const [showingInstruction, setShowingInstruction] = useState(false);
         const { addPointsForBalanceRead } = useAppRatingScore();
 
         const debugLogMessages = useMemo(
@@ -203,16 +200,14 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 	};
 
         const hideInstruction = useCallback(() => {
-                if (!isInstructionModalOpenRef.current) return;
-                isInstructionModalOpenRef.current = false;
-                closeInstructionModal();
-        }, [closeInstructionModal]);
+                setShowingInstruction(false);
+        }, []);
 
         // Debug-only: pretend the NFC module returned a card with the given balance,
         // running the exact same callback as a real read (redux update + persist),
         // then dismissing the instruction like a completed read would. Lets us verify
-        // on-device that a read finishing while the instruction modal is stacked on
-        // top of the balance modal closes only the instruction and updates the UI.
+        // that a read finishing while the instruction is shown hides it again and
+        // updates the UI.
         const simulateNfcRead = async (amount: number) => {
                 const mock: CardResponse = {
                         currentBalance: amount.toFixed(2),
@@ -235,76 +230,17 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 
         const showInstruction = useCallback(() => {
                 if (!isActive) return;
-                if (isInstructionModalOpenRef.current) return;
-                isInstructionModalOpenRef.current = true;
-                showInstructionModal({
-                        title: 'NFC',
-                        onClose: () => {
-                                isInstructionModalOpenRef.current = false;
-                        },
-                        children: (
-                                <View style={styles.sheetView}>
-                                        {/* Previous balance (snapshot from before this read), so the user
-                                            still sees their old value while scanning - especially when the
-                                            foodoffers quick-access opens balance with auto-started NFC and
-                                            Android jumps straight to this instruction. Only shown when a
-                                            previous balance actually exists. */}
-                                        {profile?.credit_balance !== null && profile?.credit_balance !== undefined && (
-                                                <Text style={{ ...styles.nfcInstructionRead, color: theme.screen.text, marginBottom: 8 }}>
-                                                        {`${translate(TranslationKeys.nfcInstructionOldBalance)}: ${showFormatedPrice(formatPrice(profile.credit_balance))}`}
-                                                </Text>
-                                        )}
-                                        <Text
-                                                style={{
-                                                        ...styles.nfcInstructionRead,
-                                                        color: theme.screen.text,
-                                                }}
-                                        >
-                                                {translate(TranslationKeys.nfcInstructionRead)}
-                                        </Text>
-                                        <View style={styles.nfcAnimationContainer}>
-                                                <LottieView
-                                                        source={require('@/assets/gifs/nfc.json')}
-                                                        resizeMode="contain"
-                                                        style={styles.nfcAnimation}
-                                                        autoPlay
-                                                        loop
-                                                />
-                                        </View>
-                                        <Text
-                                                style={{
-                                                        ...styles.nfcInstructionChipPosition,
-                                                        color: theme.screen.text,
-                                                }}
-                                        >
-                                                {translate(TranslationKeys.nfcInstructionChipPosition)}
-                                        </Text>
-                                        {debugMode && (
-                                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
-                                                        {[1, 5, 10].map(amount => (
-                                                                <TouchableOpacity
-                                                                        key={`instruction-simulate-${amount}`}
-                                                                        style={{
-                                                                                paddingVertical: 8,
-                                                                                paddingHorizontal: 14,
-                                                                                borderRadius: 8,
-                                                                                borderWidth: 1,
-                                                                                borderColor: theme.screen.iconBg,
-                                                                                marginHorizontal: 6,
-                                                                                marginTop: 8,
-                                                                        }}
-                                                                        onPress={() => void simulateNfcRead(amount)}
-                                                                >
-                                                                        <Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
-                                                                </TouchableOpacity>
-                                                        ))}
-                                                </View>
-                                        )}
-                                </View>
-                        ),
-                });
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [isActive, showInstructionModal, debugMode, profile?.credit_balance, theme.screen.text, theme.screen.iconBg, translate]);
+                setShowingInstruction(true);
+        }, [isActive]);
+
+        // Cancel button on the instruction: tears down the in-flight NFC session
+        // (best-effort, safe even if the native call has already finished) and
+        // immediately shows the normal balance content again, instead of waiting
+        // for readCard()'s own cleanup to unwind.
+        const handleCancelRead = useCallback(() => {
+                setShowingInstruction(false);
+                myCardReader.cancelRead().catch((e: any) => addDebugError(e, 'Cancel NFC Read'));
+        }, [myCardReader, addDebugError]);
 
 	const onReadNfcPress = async () => {
 		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translate(TranslationKeys.nfcInstructionRead));
@@ -325,7 +261,10 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 	// screen is active and NFC is confirmed supported+enabled - used when this
 	// screen is opened from the foodoffers quick-access button. Guarded to fire
 	// only once per mount so it doesn't re-trigger after the read completes and
-	// the focus/NFC-status effects above re-run.
+	// the focus/NFC-status effects above re-run. Safe to keep as a plain local
+	// ref: the instruction is now local state (see showingInstruction above)
+	// instead of a second modal-stack item, so this component no longer
+	// unmounts/remounts while the instruction is shown or dismissed.
 	const hasAutoStartedNfcRef = useRef(false);
 	useEffect(() => {
 		if (!autoStartNfc || hasAutoStartedNfcRef.current) return;
@@ -410,6 +349,55 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 			return <LottieView ref={animationRef} source={animationJson ? animationJson : {}} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={!!autoPlay} loop={false} />;
 		}
 	}, [autoPlay, animationJson]);
+
+	if (showingInstruction) {
+		return (
+			<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }} contentContainerStyle={{ alignItems: 'center' }}>
+				<View style={styles.sheetView}>
+					{/* Previous balance (snapshot from before this read), so the user
+					    still sees their old value while scanning - especially when the
+					    foodoffers quick-access opens balance with auto-started NFC and
+					    Android jumps straight to this instruction. Only shown when a
+					    previous balance actually exists. */}
+					{profile?.credit_balance !== null && profile?.credit_balance !== undefined && (
+						<Text style={{ ...styles.nfcInstructionRead, color: theme.screen.text, marginBottom: 8 }}>
+							{`${translate(TranslationKeys.nfcInstructionOldBalance)}: ${showFormatedPrice(formatPrice(profile.credit_balance))}`}
+						</Text>
+					)}
+					<Text style={{ ...styles.nfcInstructionRead, color: theme.screen.text }}>{translate(TranslationKeys.nfcInstructionRead)}</Text>
+					<View style={styles.nfcAnimationContainer}>
+						<LottieView source={require('@/assets/gifs/nfc.json')} resizeMode="contain" style={styles.nfcAnimation} autoPlay loop />
+					</View>
+					<Text style={{ ...styles.nfcInstructionChipPosition, color: theme.screen.text }}>{translate(TranslationKeys.nfcInstructionChipPosition)}</Text>
+					<TouchableOpacity style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg, marginTop: 16 }} onPress={handleCancelRead}>
+						<MaterialCommunityIcons name="close-circle-outline" size={24} color={theme.screen.icon} />
+						<Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>{translate(TranslationKeys.nfcCancelRead)}</Text>
+					</TouchableOpacity>
+					{debugMode && (
+						<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
+							{[1, 5, 10].map(amount => (
+								<TouchableOpacity
+									key={`instruction-simulate-${amount}`}
+									style={{
+										paddingVertical: 8,
+										paddingHorizontal: 14,
+										borderRadius: 8,
+										borderWidth: 1,
+										borderColor: theme.screen.iconBg,
+										marginHorizontal: 6,
+										marginTop: 8,
+									}}
+									onPress={() => void simulateNfcRead(amount)}
+								>
+									<Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+					)}
+				</View>
+			</ScrollView>
+		);
+	}
 
 	return (
 		<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }} contentContainerStyle={{ alignItems: 'center' }}>

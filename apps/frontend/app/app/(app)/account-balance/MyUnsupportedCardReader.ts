@@ -22,4 +22,8 @@ export default class MyUnsupportedCardReader implements MyCardReaderInterface {
 	async readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
 		throw new Error('NFC is not supported on this device');
 	}
+
+	async cancelRead(): Promise<void> {
+		// No-op: readCard() always throws here, so there is never a read to cancel.
+	}
 }
