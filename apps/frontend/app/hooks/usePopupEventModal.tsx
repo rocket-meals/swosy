@@ -5,6 +5,7 @@ import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
 import useKioskMode from '@/hooks/useKioskMode';
+import type { ModalCloseReason } from 'repo-depkit-common-ui';
 
 const usePopupEventModal = () => {
 	const dispatch = useDispatch();
@@ -33,20 +34,30 @@ const usePopupEventModal = () => {
 	);
 
 	// Always points at the latest showEvent so handleClosed can call it without a
-	// circular useCallback dependency (handleClosed -> showEvent -> onClose -> handleClosed).
+	// circular useCallback dependency (handleClosed -> showEvent -> onClosed -> handleClosed).
 	const showEventRef = useRef<(event: any) => void>(() => {});
 
-	// The single place that decides what happens once a popup event's sheet has *actually*
-	// finished closing (native onClose fired after the real close animation - see
-	// MyScrollViewModal's unmount-triggered onClose). Records the event as seen and, only
-	// now that the sheet is confirmed empty, opens the next queued event if there is one.
-	// Never opening the next event before this fires is what guarantees it can't be closed
-	// again moments later by a close animation that was still in flight for the previous one.
+	// The single place that decides what happens once a popup event's sheet is gone.
+	// Driven by the modal stack's onClosed signal (see ModalProvider): for a real close
+	// ('closed') it only fires AFTER the sheet's close animation is confirmed finished -
+	// a pure signal, never a guessed timeout. Opening the next event from in here is
+	// therefore always safe and always happens: there is no close animation left in
+	// flight that could tear the next popup down, and no timer that could fire too early
+	// or too late.
 	const handleClosed = useCallback(
-		(event: any) => {
-			if (event) markEventAsOpen(event);
+		(event: any, reason: ModalCloseReason) => {
 			popupEventShownIdRef.current = null;
 			setCurrentPopupEvent(null);
+
+			if (reason !== 'closed') {
+				// The sheet was replaced by some other modal (openAndDiscardOthers), not
+				// closed by the user. Don't mark the event as seen - it can be shown again
+				// later - and don't chain the next event here: it would immediately replace
+				// whatever modal just took over the sheet.
+				return;
+			}
+
+			if (event) markEventAsOpen(event);
 
 			if (kioskMode) return;
 			const nextEvent = popupEventsRef.current?.find((e: any) => !e.isOpen);
@@ -62,10 +73,11 @@ const usePopupEventModal = () => {
 			setCurrentPopupEvent(event);
 			showScrollViewModal(
 				{
-					onClose: () => handleClosed(event),
 					children: <PopupEventSheet closeSheet={closeScrollViewModal} eventData={event} />,
 				},
-				{}
+				{
+					onClosed: (reason: ModalCloseReason) => handleClosed(event, reason),
+				}
 			);
 		},
 		[closeScrollViewModal, handleClosed, showScrollViewModal]

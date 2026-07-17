@@ -1,10 +1,16 @@
 import React, { ReactNode } from 'react';
 import MyScrollViewModal, { MyScrollViewModalProps } from '@/components/MyScrollViewModal';
 import { useModal } from './useModal';
+import type { ModalCloseReason } from 'repo-depkit-common-ui';
 
 export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
 
-type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string };
+type ScrollViewModalOptions = {
+	backgroundStyle?: any;
+	headerBackgroundColor?: string;
+	/** Forwarded to the global modal stack - see ModalOptions.onClosed in repo-depkit-common-ui. */
+	onClosed?: (reason: ModalCloseReason) => void;
+};
 
 export const useMyScrollViewModal = () => {
         const { show: showModal, close, showAndDiscardOthers: showAndDiscardOthersModal, closeAll, debug } = useModal();
