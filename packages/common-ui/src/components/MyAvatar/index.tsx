@@ -217,8 +217,14 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		return stripRedundantViewboxMask(rawSvg);
 	}, [style, size, options]);
 
+	// pointerEvents="none": MyAvatar is purely decorative — press handling always lives on a
+	// parent (TouchableOpacity/Pressable rows, the QuickStart preset grid, ...). react-native-svg
+	// performs its own native hit-testing and can claim/swallow touches before they reach the
+	// surrounding touchable (observed on iOS release builds: QuickStart preset tiles — whose whole
+	// surface is the SVG — showed no press feedback at all in TestFlight while working in Expo Go).
+	// Opting the avatar out of hit-testing lets every touch fall through to the parent touchable.
 	return (
-		<View style={[styles.container, { width: size, height: size, borderRadius: resolvedBorderRadius, backgroundColor }]}>
+		<View pointerEvents="none" style={[styles.container, { width: size, height: size, borderRadius: resolvedBorderRadius, backgroundColor }]}>
 			<SvgXml xml={svgXml} width={size} height={size} />
 		</View>
 	);

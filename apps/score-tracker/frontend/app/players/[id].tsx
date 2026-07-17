@@ -33,6 +33,7 @@ export default function PlayerDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const friend = useSelector((state: RootState) => state.friends.friends.find((f) => f.id === id));
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 
 	const friendGames = useMemo(() => {
@@ -114,6 +115,10 @@ export default function PlayerDetailScreen() {
 					editorOptions={{
 						title: 'Avatar',
 						allowedStyles: [AvatarStyle.AVATAAARS],
+						// Debug-Modus (Settings → 5x auf Version tippen) blendet im QuickStart
+						// zusätzliche Touch-Test-Buttons ein, um den TestFlight-only Bug
+						// "Preset-Kacheln reagieren nicht" ohne Dev-Build eingrenzen zu können.
+						debugMode,
 						onDebugEvent: (event) => logDebug(`players/[id]: avatar-editor ${event} friend=${friend.id}`),
 					}}
 				/>
