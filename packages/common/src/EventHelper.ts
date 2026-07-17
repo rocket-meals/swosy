@@ -66,6 +66,10 @@ export const doesAppVersionMatchConstraint = (
   }
 
   const [, operator = '=', targetVersion] = match;
+  if (!targetVersion) {
+    console.warn(`PopupEvents: could not parse show_on_app_version constraint "${constraint}"`);
+    return true;
+  }
   const comparison = compareAppVersions(currentAppVersion, targetVersion);
 
   switch (operator) {
