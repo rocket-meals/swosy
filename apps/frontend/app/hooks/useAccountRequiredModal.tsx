@@ -22,9 +22,12 @@ const useAccountRequiredModal = () => {
 			void performLogout(dispatch, router);
 		};
 
+		// No onClose here: MyScrollViewModal fires onClose on unmount, and this modal
+		// also unmounts when the back chevron pops it while another modal is still on
+		// the stack (the stack renders only the top-most item). Passing close would
+		// close that remaining modal too instead of returning to it.
 		show({
 			title: translate(TranslationKeys.access_limited),
-			onClose: close,
 			children: (
 				<View style={{ gap: 12 }}>
 					<Text style={{ color: theme.sheet.text }}>
@@ -41,7 +44,7 @@ const useAccountRequiredModal = () => {
 				</View>
 			),
 		});
-	}, [close, closeAll, dispatch, router, show, theme.sheet.text, translate]);
+	}, [closeAll, dispatch, router, show, theme.sheet.text, translate]);
 
 	return { openAccountRequiredModal, closeAccountRequiredModal: close };
 };
