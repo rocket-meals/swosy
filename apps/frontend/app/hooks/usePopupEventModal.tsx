@@ -15,6 +15,21 @@ const usePopupEventModal = () => {
 	const popupEventShownIdRef = useRef<string | null>(null);
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
+	// Events the user closed only via the header X button, backdrop tap or swipe-down
+	// in THIS app session. Those closes are deliberately NOT persisted as "seen"
+	// (redux isOpen stays false, so the event shows up again next app session) - but
+	// they must be remembered in-memory, otherwise the queue logic below would
+	// immediately re-open the event the user just closed.
+	const sessionClosedIdsRef = useRef<Set<string>>(new Set());
+	// Armed right before the sheet's explicit "Schließen und nicht erneut anzeigen"
+	// button triggers its close, so handleClosed can tell a permanent dismiss apart
+	// from a mere get-me-out-of-here close (X button / backdrop / swipe).
+	const permanentDismissEventIdRef = useRef<string | null>(null);
+
+	// An event is still eligible for the popup queue if it was neither permanently
+	// dismissed (persisted isOpen flag) nor closed earlier in this session.
+	const isEventPending = (e: any) => !e?.isOpen && !sessionClosedIdsRef.current.has(String(e?.id ?? ''));
+
 	// Kept in sync with the redux value below, but also written to directly inside
 	// markEventAsOpen so handleClosed can read the just-updated list synchronously,
 	// without waiting for a redux round-trip and re-render.
@@ -48,6 +63,9 @@ const usePopupEventModal = () => {
 		(event: any, reason: ModalCloseReason) => {
 			popupEventShownIdRef.current = null;
 			setCurrentPopupEvent(null);
+			const eventId = String(event?.id ?? '');
+			const wasPermanentDismiss = permanentDismissEventIdRef.current === eventId;
+			permanentDismissEventIdRef.current = null;
 
 			if (reason !== 'closed') {
 				// The sheet was replaced by some other modal (openAndDiscardOthers), not
@@ -57,10 +75,21 @@ const usePopupEventModal = () => {
 				return;
 			}
 
-			if (event) markEventAsOpen(event);
+			if (event) {
+				if (wasPermanentDismiss) {
+					// "Schließen und nicht erneut anzeigen" - persist the dismissal, the
+					// event never shows again.
+					markEventAsOpen(event);
+				} else {
+					// X button / backdrop / swipe: only closed for now. Don't persist
+					// isOpen (the event shows again next app session), just keep it from
+					// re-opening within the current one.
+					sessionClosedIdsRef.current.add(eventId);
+				}
+			}
 
 			if (kioskMode) return;
-			const nextEvent = popupEventsRef.current?.find((e: any) => !e.isOpen);
+			const nextEvent = popupEventsRef.current?.find(isEventPending);
 			if (!nextEvent) return;
 			showEventRef.current(nextEvent);
 		},
@@ -71,9 +100,16 @@ const usePopupEventModal = () => {
 		(event: any) => {
 			popupEventShownIdRef.current = String(event.id ?? '');
 			setCurrentPopupEvent(event);
+			// Only the sheet's own button goes through here - the header X, backdrop and
+			// swipe close paths bypass it - so arming the permanent-dismiss marker here is
+			// what lets handleClosed distinguish "nicht erneut anzeigen" from a mere close.
+			const dismissPermanentlyAndClose = () => {
+				permanentDismissEventIdRef.current = String(event.id ?? '');
+				closeScrollViewModal();
+			};
 			showScrollViewModal(
 				{
-					children: <PopupEventSheet closeSheet={closeScrollViewModal} eventData={event} />,
+					children: <PopupEventSheet closeSheet={dismissPermanentlyAndClose} eventData={event} />,
 				},
 				{
 					onClosed: (reason: ModalCloseReason) => handleClosed(event, reason),
@@ -87,7 +123,7 @@ const usePopupEventModal = () => {
 	const openActiveModal = useCallback(() => {
 		if (kioskMode) return;
 
-		const nextEvent = popupEvents?.find((e: any) => !e.isOpen);
+		const nextEvent = popupEvents?.find(isEventPending);
 		if (!nextEvent) return;
 
 		const eventId = String(nextEvent.id ?? '');
