@@ -26,6 +26,8 @@ import { installGlobalDebugErrorHandler } from '../helpers/DebugLogger';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
 import { ComponentIds } from '../constants/ComponentIds';
+import ExpoUpdateLoader from '../components/ExpoUpdateLoader';
+import { useExpoUpdateForegroundCheck } from '../hooks/useExpoUpdateForegroundCheck';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -141,6 +143,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 // ─── Root layout ──────────────────────────────────────────────────────────────
 
 export default function Layout() {
+	useExpoUpdateForegroundCheck();
+
 	useEffect(() => {
 		installGlobalDebugErrorHandler();
 		loadDebugState()
@@ -188,22 +192,24 @@ export default function Layout() {
 	}, []);
 
 	return (
-		<Provider store={store}>
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<SafeAreaProvider>
-					<ThemeProvider>
-						<ThemeSyncBridge />
-						<SettingsProvider primaryColor={PRIMARY_COLOR}>
-							<ModalProvider>
-								<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
-									<ThemedDrawerNavigator />
-								</KeyboardAvoidingView>
-							</ModalProvider>
-						</SettingsProvider>
-					</ThemeProvider>
-				</SafeAreaProvider>
-			</GestureHandlerRootView>
-		</Provider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<ExpoUpdateLoader>
+				<Provider store={store}>
+					<SafeAreaProvider>
+						<ThemeProvider>
+							<ThemeSyncBridge />
+							<SettingsProvider primaryColor={PRIMARY_COLOR}>
+								<ModalProvider>
+									<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
+										<ThemedDrawerNavigator />
+									</KeyboardAvoidingView>
+								</ModalProvider>
+							</SettingsProvider>
+						</ThemeProvider>
+					</SafeAreaProvider>
+				</Provider>
+			</ExpoUpdateLoader>
+		</GestureHandlerRootView>
 	);
 }
 
