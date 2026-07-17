@@ -17,7 +17,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 	return {
 		...config,
 		owner: 'baumgartner-software',
-		name: 'Score Tracker',
+		name: 'Punktlandung',
 		slug: 'score-tracker',
 		version: `1.0.${buildNumber}`,
 		orientation: 'default',
