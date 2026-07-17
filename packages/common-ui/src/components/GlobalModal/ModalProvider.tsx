@@ -58,6 +58,8 @@ type ModalContextType = {
 	_screenBackgroundColor: string;
 	/** @internal used by ModalRenderer - how many modals are stacked, to decide whether the header button shows a back-chevron (stack) or an X (single modal) */
 	_stackDepth: number;
+	/** @internal used by ModalRenderer - true while the sheet's close animation is in flight, so the static overlay can hide immediately instead of lingering until the close is confirmed */
+	_isSheetClosing: boolean;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -72,6 +74,13 @@ const CLOSE_CONFIRMATION_FALLBACK_MS = 1500;
 export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [modalStack, setModalStack] = useState<ModalStackItem[]>([]);
 	const modalStackRef = useRef<ModalStackItem[]>([]);
+	// React-state twin of isClosingRef, only for rendering: while true, ModalRenderer
+	// hides its static overlay right away so the screen behind brightens the moment a
+	// close starts - the sheet's own animated backdrop handles the smooth fade-out.
+	// Waiting for the confirmed finalize here (which can only happen once the close
+	// animation has fully settled) made closing feel slow, since the overlay stayed at
+	// full opacity the entire time even though the sheet was already sliding away.
+	const [isSheetClosing, setIsSheetClosing] = useState(false);
 
 	const sheetRef = useRef<any>(null);
 	const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -125,6 +134,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 	// modal (e.g. the popup-event queue) always starts from a settled, empty sheet.
 	const finalizeConfirmedClose = () => {
 		isClosingRef.current = false;
+		setIsSheetClosing(false);
 		clearCloseTimeout();
 		setModalStack([]);
 		notifyClosed(takePendingClosed(), 'closed');
@@ -134,6 +144,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		const supersededClose = isClosingRef.current;
 		clearCloseTimeout();
 		isClosingRef.current = false;
+		setIsSheetClosing(false);
 		if (supersededClose) {
 			// A new modal interrupts an in-flight close: the closing items are already off
 			// the stack but their close was never confirmed - notify them as discarded so
@@ -167,6 +178,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 	const openAndDiscardOthers = (c: ReactNode, options?: ModalOptions) => {
 		clearCloseTimeout();
 		isClosingRef.current = false;
+		setIsSheetClosing(false);
 		// Everything still pending from an in-flight close plus everything currently on
 		// the stack is being replaced without a proper close.
 		const discarded = [...takePendingClosed(), ...modalStackRef.current];
@@ -213,6 +225,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			// handleSheetChange finalizes it once the sheet's onChange confirms index -1
 			// was actually reached, whether that's from this call or a user gesture.
 			isClosingRef.current = true;
+			setIsSheetClosing(true);
 			pendingClosedRef.current = closingItems;
 			sheetRef.current.close();
 			clearCloseTimeout();
@@ -246,6 +259,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 				// handleSheetChange finalizes it once the sheet's onChange confirms index -1
 				// was actually reached, whether that's from this call or a user gesture.
 				isClosingRef.current = true;
+				setIsSheetClosing(true);
 				pendingClosedRef.current = closingItems;
 				sheetRef.current.close();
 				clearCloseTimeout();
@@ -288,6 +302,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 				// the pending items so the stack and the visible sheet agree again; otherwise
 				// the header close button would be dead afterwards.
 				isClosingRef.current = false;
+				setIsSheetClosing(false);
 				clearCloseTimeout();
 				if (modalStackRef.current.length === 0) {
 					modalStackRef.current = pendingClosedRef.current;
@@ -366,6 +381,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			_handleSheetChange: handleSheetChange,
 			_screenBackgroundColor: screenBackgroundColor,
 			_stackDepth: modalStack.length,
+			_isSheetClosing: isSheetClosing,
 		}}>
 			{children}
 		</ModalContext.Provider>
@@ -379,6 +395,7 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 		_handleSheetChange: handleSheetChange,
 		_screenBackgroundColor: screenBackgroundColor,
 		_stackDepth: stackDepth,
+		_isSheetClosing: isSheetClosing,
 		close,
 		closeAll,
 	} = useModalContext();
@@ -388,10 +405,16 @@ export const ModalRenderer: React.FC<{ children: ReactNode }> = ({ children }) =
 			{children}
 			{currentItem && (
 				<View style={styles.modalContainer} pointerEvents="box-none">
-					<View
-						style={[StyleSheet.absoluteFillObject, currentItem.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' }]}
-						pointerEvents="none"
-					/>
+					{/* Static overlay behind the sheet. Hidden the moment a close starts
+					    (not when it's confirmed finished): the sheet keeps its own animated
+					    backdrop that fades out in sync with the close animation, so keeping
+					    this one up until the confirmed finalize just made closing look slow. */}
+					{!isSheetClosing && (
+						<View
+							style={[StyleSheet.absoluteFillObject, currentItem.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+							pointerEvents="none"
+						/>
+					)}
 					<BaseBottomSheet
 						ref={sheetRef}
 						enablePanDownToClose
