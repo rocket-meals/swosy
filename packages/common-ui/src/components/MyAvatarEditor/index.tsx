@@ -88,6 +88,34 @@
  *   instead of inheriting the previous content's offset. A mount effect can
  *   NOT work here because the component never remounts between contents.
  *
+ * ─── TOUCH FIX 1 (QuickStart preset tiles dead in iOS release builds) ────────
+ *   Symptom (TestFlight only, Expo Go unaffected): tapping a QuickStart preset
+ *   tile did nothing — not even the TouchableOpacity press feedback (no dimming),
+ *   so the touch never reached the touchable at all. The "Customize" row below
+ *   worked. Debug log showed `open initialMode=quickstart` and then `closed
+ *   dirty=false` with no `quickstart:selected` in between.
+ *   Root cause hypothesis: the preset tiles' entire touch surface is the DiceBear
+ *   SVG (react-native-svg <SvgXml>), and react-native-svg performs its own native
+ *   hit-testing which can claim touches before the parent touchable sees them
+ *   (behaviour differs between Expo Go and standalone release builds). The
+ *   Customize row worked because its surface is mostly text/empty row area, not SVG.
+ *   Fix: MyAvatar's container now sets pointerEvents="none" (MyAvatar is purely
+ *   decorative; press handling always lives on a parent), so touches always fall
+ *   through to the surrounding touchable. Additionally the QuickStart screen got a
+ *   debugMode-only diagnostics section (QuickstartDebugSection) plus pressIn/press
+ *   onDebugEvent logging on every preset tile so this class of bug can be diagnosed
+ *   from a production build via the persisted debug log.
+ *   UPDATE (follow-up report): taps DO register in TestFlight, but only in a tiny
+ *   strip at the tile's bottom edge — so the touchable's hit box is shifted or
+ *   shrunken relative to the rendered avatar, rather than touches being swallowed
+ *   entirely. That also explains why the full-width Customize row always worked:
+ *   an offset tap still lands inside a large row, but misses a 88px tile. To
+ *   measure this from a production build, debugMode now draws a red border around
+ *   each tile's touchable box and a yellow border around the avatar's view box,
+ *   logs every tile's onLayout rect (quickstart:tile-layout), and includes the
+ *   touch coordinates (locX/locY relative to the touchable, pageX/pageY absolute)
+ *   in the quickstart:pressIn events.
+ *
  * ─── NESTED SCROLLVIEW (do NOT add) ──────────────────────────────────────────
  *   Do NOT add another ScrollView / FlatList inside AvatarEditorModalContent.
  *   All scrolling must be handled by MyScrollViewModal's BottomSheetScrollView
@@ -97,7 +125,7 @@
  *   own BottomSheetScrollView — that is fine.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
@@ -2271,8 +2299,107 @@ function getPresetsForStyle(style: AvatarStyle, size: AvatarSize): AvatarConfig[
 /** Size used for preset grid avatars. */
 const PRESET_AVATAR_SIZE = 72;
 
+type QuickstartDebugSectionProps = AvatarPreviewAppearanceProps & {
+	presets: AvatarConfig[];
+	onSelectPreset: (config: AvatarConfig) => void;
+	onDebugEvent?: (event: string) => void;
+	theme: any;
+};
+
+/**
+ * Debug-only touch diagnostics for the QuickStart screen (rendered when the editor's
+ * `debugMode` option is true). Exists because of a TestFlight-only bug report where the
+ * QuickStart preset tiles did not react to taps at all (no opacity feedback) while the
+ * Customize row below worked, and everything worked in Expo Go. The buttons isolate the
+ * layers involved:
+ *   - "Test: TouchableOpacity" / "Test: Pressable" — plain touchables with only text
+ *     inside; if these log but the grid doesn't, the touchable itself is fine and the
+ *     tile *content* (the SVG avatar) is eating the touches.
+ *   - "Test: Kachel mit SVG-Avatar" — a tile built exactly like a preset grid tile
+ *     (TouchableOpacity + MyAvatar/SVG); verifies whether the pointerEvents="none" fix
+ *     in MyAvatar makes SVG-covered tiles tappable in release builds.
+ *   - Numbered fallback buttons — select a preset through plain text buttons without any
+ *     SVG in the touch path, so testers can still complete the QuickStart flow (and
+ *     confirm the selection logic itself works) even while the grid is unresponsive.
+ * Every interaction is reported via onDebugEvent so it lands in the app's persisted
+ * debug log and can be copied out of a production build.
+ */
+const QuickstartDebugSection: React.FC<QuickstartDebugSectionProps> = ({
+	presets,
+	onSelectPreset,
+	onDebugEvent,
+	accentColor,
+	rounded,
+	backgroundColor,
+	theme,
+}) => {
+	const buttonBg = accentColor ?? theme.screen.text;
+	const buttonTextColor = myContrastColor(buttonBg, theme, false);
+	const debugTilePreset = presets[0];
+	return (
+		<View style={styles.debugSection}>
+			<SettingsListGroupTitle title="Debug: QuickStart Touch-Tests" />
+			<TouchableOpacity
+				style={[styles.debugShowButton, { backgroundColor: buttonBg }]}
+				onPressIn={() => onDebugEvent?.('debug:touchable-test pressIn')}
+				onPress={() => onDebugEvent?.('debug:touchable-test press')}
+			>
+				<Text style={[styles.debugShowButtonText, { color: buttonTextColor }]}>Test: TouchableOpacity (nur Text)</Text>
+			</TouchableOpacity>
+			<Pressable
+				style={({ pressed }) => [styles.debugShowButton, { backgroundColor: buttonBg, opacity: pressed ? 0.5 : 1 }]}
+				onPressIn={() => onDebugEvent?.('debug:pressable-test pressIn')}
+				onPress={() => onDebugEvent?.('debug:pressable-test press')}
+			>
+				<Text style={[styles.debugShowButtonText, { color: buttonTextColor }]}>Test: Pressable (nur Text)</Text>
+			</Pressable>
+			{debugTilePreset && (
+				<View style={styles.debugTileRow}>
+					<TouchableOpacity
+						style={[styles.presetItem, styles.debugTouchBox]}
+						onPressIn={(e) => {
+							const n = e.nativeEvent;
+							onDebugEvent?.(`debug:svg-tile pressIn locX=${Math.round(n.locationX)} locY=${Math.round(n.locationY)} pageX=${Math.round(n.pageX)} pageY=${Math.round(n.pageY)}`);
+						}}
+						onPress={() => onDebugEvent?.('debug:svg-tile press')}
+					>
+						<View style={styles.debugViewBox}>
+							<MyAvatar
+								config={{ ...debugTilePreset, size: PRESET_AVATAR_SIZE as AvatarSize }}
+								borderRadius={PRESET_AVATAR_SIZE / 2}
+								rounded={rounded}
+								backgroundColor={backgroundColor}
+							/>
+						</View>
+					</TouchableOpacity>
+					<Text style={[styles.debugTileHint, { color: theme.screen.text }]}>
+						Test: Kachel mit SVG-Avatar (wie im Grid, ohne Auswahl)
+					</Text>
+				</View>
+			)}
+			<Text style={[styles.debugTileHint, { color: theme.screen.text }]}>
+				Fallback: Preset per Text-Button wählen (ohne SVG in der Touch-Fläche)
+			</Text>
+			<View style={styles.debugFallbackRow}>
+				{presets.map((presetConfig, index) => (
+					<TouchableOpacity
+						key={index}
+						style={[styles.debugFallbackButton, { backgroundColor: buttonBg }]}
+						onPress={() => {
+							onDebugEvent?.(`debug:fallback-preset press index=${index}`);
+							onSelectPreset(presetConfig);
+						}}
+					>
+						<Text style={[styles.debugShowButtonText, { color: buttonTextColor }]}>{index + 1}</Text>
+					</TouchableOpacity>
+				))}
+			</View>
+		</View>
+	);
+};
+
 type PresetSelectionModalContentProps = AvatarPreviewAppearanceProps &
-	Pick<AvatarEditorBehaviorProps, 'translate'> & {
+	Pick<AvatarEditorBehaviorProps, 'translate' | 'debugMode' | 'onDebugEvent'> & {
 		allowedStyles: AvatarStyle[];
 		size: AvatarSize;
 		onSelectPreset: (config: AvatarConfig) => void;
@@ -2288,6 +2415,8 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 	rounded,
 	backgroundColor,
 	translate,
+	debugMode,
+	onDebugEvent,
 }) => {
 	const { theme } = useTheme();
 
@@ -2301,28 +2430,95 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 			<Text style={[styles.quickstartHint, { color: theme.screen.placeholder }]}>
 				{translate ? translate('avatar_quickstart_pick_hint') : 'Choose a basis to start'}
 			</Text>
-			<View style={styles.presetGrid}>
+			<View
+				style={styles.presetGrid}
+				onLayout={
+					debugMode
+						? (e) => {
+							const { x, y, width, height } = e.nativeEvent.layout;
+							onDebugEvent?.(`quickstart:grid-layout x=${Math.round(x)} y=${Math.round(y)} w=${Math.round(width)} h=${Math.round(height)}`);
+						}
+						: undefined
+				}
+			>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={index}
-						style={styles.presetItem}
-						onPress={() => onSelectPreset(presetConfig)}
+						// Debug: red border = the touchable's actual layout box (the touch target).
+						// If it doesn't line up with the yellow-bordered avatar view, hit-testing
+						// and visuals have drifted apart (the "tap only works at the bottom edge"
+						// TestFlight symptom).
+						style={[styles.presetItem, debugMode ? styles.debugTouchBox : null]}
+						// Debug: layout rect relative to the grid — reveals collapsed/oversized/
+						// mispositioned touch boxes straight from a production debug log.
+						onLayout={
+							debugMode
+								? (e) => {
+									const { x, y, width, height } = e.nativeEvent.layout;
+									onDebugEvent?.(`quickstart:tile-layout index=${index} x=${Math.round(x)} y=${Math.round(y)} w=${Math.round(width)} h=${Math.round(height)}`);
+								}
+								: undefined
+						}
+						// pressIn fires as soon as the touch reaches this touchable — logging it
+						// separately from onPress tells apart "the tap never reached the touchable"
+						// (no pressIn) from "it registered but the press was cancelled" (pressIn
+						// without press) when debugging unresponsive preset tiles in release builds.
+						// In debug mode the touch coordinates are included: locX/locY are relative
+						// to the touchable's box — if the user visually taps the tile's center but
+						// locY reports near 0 or near the box height, the hit box is offset
+						// against the rendered content.
+						onPressIn={(e) => {
+							const n = e.nativeEvent;
+							onDebugEvent?.(
+								`quickstart:pressIn index=${index}` +
+								(debugMode ? ` locX=${Math.round(n.locationX)} locY=${Math.round(n.locationY)} pageX=${Math.round(n.pageX)} pageY=${Math.round(n.pageY)}` : ''),
+							);
+						}}
+						onPress={() => {
+							onDebugEvent?.(`quickstart:press index=${index}`);
+							onSelectPreset(presetConfig);
+						}}
 					>
-						<MyAvatar
-							config={{ ...presetConfig, size: PRESET_AVATAR_SIZE as AvatarSize }}
-							borderRadius={PRESET_AVATAR_SIZE / 2}
-							rounded={rounded}
-							backgroundColor={backgroundColor}
-						/>
+						{/* Debug: yellow border = the view box the avatar content is laid out in. */}
+						<View style={debugMode ? styles.debugViewBox : null}>
+							<MyAvatar
+								config={{ ...presetConfig, size: PRESET_AVATAR_SIZE as AvatarSize }}
+								borderRadius={PRESET_AVATAR_SIZE / 2}
+								rounded={rounded}
+								backgroundColor={backgroundColor}
+							/>
+						</View>
 					</TouchableOpacity>
 				))}
 			</View>
+			{debugMode && (
+				<Text style={[styles.debugTileHint, { color: theme.screen.text }]}>
+					Debug: Roter Rahmen = Touch-Fläche (TouchableOpacity), gelber Rahmen = View mit Avatar-Inhalt.
+					Liegen sie nicht übereinander (oder trifft dein Tap laut locX/locY nicht dahin, wo du gedrückt
+					hast), ist die Hit-Box gegen die Darstellung verschoben.
+				</Text>
+			)}
+
+			{debugMode && (
+				<QuickstartDebugSection
+					presets={presets}
+					onSelectPreset={onSelectPreset}
+					onDebugEvent={onDebugEvent}
+					accentColor={accentColor}
+					rounded={rounded}
+					backgroundColor={backgroundColor}
+					theme={theme}
+				/>
+			)}
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
 				title={translate ? translate('avatar_customize') : 'Customize'}
 				value={translate ? translate('avatar_customize_hint') : 'Customize avatar completely from scratch'}
-				onPress={onCustomize}
+				onPress={() => {
+					onDebugEvent?.('quickstart:customize press');
+					onCustomize();
+				}}
 				leftIcon={<MaterialCommunityIcons name="tune-variant" size={20} />}
 				iconBgColor={accentColor}
 				groupPosition="single"
@@ -2407,6 +2603,8 @@ const AvatarEditorUnifiedContent: React.FC<AvatarEditorUnifiedContentProps> = ({
 				rounded={rounded}
 				backgroundColor={backgroundColor}
 				translate={translate}
+				debugMode={debugMode}
+				onDebugEvent={onDebugEvent}
 				onSelectPreset={switchToEditor}
 				onCustomize={() => {
 					switchToEditor({
@@ -2562,6 +2760,8 @@ export const useAvatarEditorModal = () => {
 						rounded={options?.rounded}
 						backgroundColor={options?.backgroundColor}
 						translate={options?.translate}
+						debugMode={options?.debugMode}
+						onDebugEvent={options?.onDebugEvent}
 						onSelectPreset={openEditorWithConfig}
 						onCustomize={openCustomizeFromScratch}
 					/>
@@ -2823,5 +3023,44 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		marginTop: 16,
 		overflow: 'hidden',
+	},
+	debugTileRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		paddingHorizontal: 12,
+	},
+	// Debug visualization: red outlines the touchable's layout box (= the area that
+	// actually receives touches), yellow outlines the inner view holding the avatar
+	// content. When hit-testing and rendering agree, yellow sits inside red with the
+	// tile's 8px padding between them; a shifted/shrunken red box (or taps whose
+	// locX/locY don't match where the user aimed) exposes the release-build bug where
+	// only a sliver of the tile was tappable.
+	debugTouchBox: {
+		borderWidth: 2,
+		borderColor: 'red',
+	},
+	debugViewBox: {
+		borderWidth: 2,
+		borderColor: 'yellow',
+	},
+	debugTileHint: {
+		flexShrink: 1,
+		fontSize: 12,
+		paddingHorizontal: 12,
+		paddingTop: 8,
+	},
+	debugFallbackRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+		padding: 12,
+	},
+	debugFallbackButton: {
+		minWidth: 40,
+		paddingVertical: 10,
+		paddingHorizontal: 12,
+		borderRadius: 8,
+		alignItems: 'center',
 	},
 });

@@ -272,6 +272,7 @@ function PlayerEditGroup({
 	onDelete: () => void;
 }) {
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 
 	const handleOpenColorModal = useCallback(() => {
 		showColorModal({
@@ -304,6 +305,9 @@ function PlayerEditGroup({
 				editorOptions={{
 					title: 'Avatar',
 					allowedStyles: [AvatarStyle.AVATAAARS],
+					// Debug-Modus (Settings → 5x auf Version tippen) blendet im QuickStart
+					// zusätzliche Touch-Test-Buttons ein (siehe QuickstartDebugSection).
+					debugMode,
 					onDebugEvent: (event) => logDebug(`game: avatar-editor ${event} player=${player.id}`),
 				}}
 			/>
