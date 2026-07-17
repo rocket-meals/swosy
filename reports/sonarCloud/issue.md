@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 53 | 45 |
-| 🔧 Maintainability | 1927 | 0 |
+| 🔧 Maintainability | 1930 | 0 |
 
-**Total issues:** 1985 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1988 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -27,8 +27,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L30
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/index.tsx:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L68
+  apps/score-tracker/frontend/app/index.tsx:69
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L69
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/store/friendsSlice.ts:19

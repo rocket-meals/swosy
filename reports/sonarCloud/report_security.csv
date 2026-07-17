@@ -2,5 +2,5 @@ Key,Message,Component,Line
 "AZ9qyoAPHKfHY7dxI2cN","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-geonexia.yml",30
 "AZ9qyoBIHKfHY7dxI2cO","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-rocket-meals.yml",30
 "AZ9qyoBrHKfHY7dxI2cP","Lifecycle scripts are enabled by default in Yarn v2+.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-score-tracker.yml",30
-"AZ9gjKFPzJugdJpoBVO6","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",68
+"AZ9gjKFPzJugdJpoBVO6","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",69
 "AZ9gjJ_1zJugdJpoBVO0","Make sure that using this pseudorandom number generator is safe here.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/friendsSlice.ts",19
