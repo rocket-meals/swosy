@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, ScrollView, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
@@ -19,6 +19,7 @@ import type { ThemeMode } from '../../store/themeSlice';
 import { setDebugMode, clearDebugLogs } from '../../store/debugSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { ComponentIds } from '../../constants/ComponentIds';
+import { getCompanyLogoLocalSaved, getCustomerConfig } from '../../config';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -36,12 +37,6 @@ function themeModeLabel(mode: ThemeMode): string {
 	}
 }
 
-// Number of quick taps on the "Version" row needed to reveal the debug section -
-// same "secret" convention as Android's build-number tap, so the toggle isn't
-// visible to everyday users but is easy to find once you know it's there.
-const DEV_UNLOCK_TAP_COUNT = 5;
-// Taps must land within this window of each other, otherwise the counter resets.
-const DEV_UNLOCK_TAP_WINDOW_MS = 3000;
 const DEBUG_COLOR = '#7c3aed';
 
 export default function SettingsScreen() {
@@ -54,26 +49,17 @@ export default function SettingsScreen() {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+	const appName = getCustomerConfig().projectName;
 
-	// Revealed for this app session once the version row has been tapped enough
-	// times. Not persisted on its own - debugMode itself (toggled once revealed)
-	// is what's actually persisted, and reveals this section again on next launch
-	// (mirrors rocket-meals-dev's DebugView: `isVisible || debugMode || ...`).
+	// Revealed for this app session by pressing the footer logo/version (see
+	// handleFooterPress below). Not persisted on its own - debugMode itself
+	// (toggled once revealed) is what's actually persisted, and reveals this
+	// section again on next launch (mirrors rocket-meals-dev's DebugView:
+	// `isVisible || debugMode || ...`).
 	const [devRevealed, setDevRevealed] = useState(false);
-	const tapCountRef = useRef(0);
-	const lastTapAtRef = useRef(0);
 
-	const handleVersionPress = useCallback(() => {
-		const now = Date.now();
-		if (now - lastTapAtRef.current > DEV_UNLOCK_TAP_WINDOW_MS) {
-			tapCountRef.current = 0;
-		}
-		lastTapAtRef.current = now;
-		tapCountRef.current += 1;
-		if (tapCountRef.current >= DEV_UNLOCK_TAP_COUNT) {
-			tapCountRef.current = 0;
-			setDevRevealed(true);
-		}
+	const handleFooterPress = useCallback(() => {
+		setDevRevealed((prev) => !prev);
 	}, []);
 
 	const showDebugSection = devRevealed || debugMode;
@@ -140,19 +126,6 @@ export default function SettingsScreen() {
 					}}
 				/>
 
-				<SettingsListGroupTitle title="About" />
-				<SettingsList
-					nativeID={ComponentIds.SETTINGS_VERSION_ROW}
-					iconBgColor="#6b7280"
-					leftIcon={
-						<Ionicons name="information-circle-outline" size={22} color="#ffffff" />
-					}
-					label="Version"
-					value={appVersion}
-					handleFunction={handleVersionPress}
-					groupPosition="single"
-				/>
-
 				{showDebugSection && (
 					<>
 						<SettingsListGroupTitle title="Debug" />
@@ -202,6 +175,20 @@ export default function SettingsScreen() {
 						)}
 					</>
 				)}
+
+				<TouchableOpacity
+					nativeID={ComponentIds.SETTINGS_VERSION_ROW}
+					style={styles.footer}
+					onPress={handleFooterPress}
+				>
+					<View style={styles.logoContainer}>
+						<Image source={getCompanyLogoLocalSaved()} style={styles.logo} />
+					</View>
+					<View>
+						<Text style={[styles.heading, { color: theme.screen.text }]}>{appName}</Text>
+						<Text style={[styles.versionText, { color: theme.screen.placeholder }]}>Version {appVersion}</Text>
+					</View>
+				</TouchableOpacity>
 			</ScrollView>
 		</View>
 	);
@@ -226,5 +213,35 @@ const styles = StyleSheet.create({
 	logLine: {
 		fontFamily: 'monospace',
 		fontSize: 11,
+	},
+	// Footer: app logo + name/version, pressing it reveals the hidden Debug
+	// section - same pattern as rocket-meals-dev's Settings screen footer.
+	footer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 24,
+		paddingHorizontal: 4,
+	},
+	logoContainer: {
+		width: 56,
+		height: 56,
+		borderRadius: 8,
+		backgroundColor: '#424242',
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginRight: 15,
+	},
+	logo: {
+		width: 48,
+		height: 48,
+		resizeMode: 'contain',
+	},
+	heading: {
+		fontSize: 20,
+		fontWeight: '700',
+	},
+	versionText: {
+		fontSize: 13,
+		marginTop: 2,
 	},
 });
