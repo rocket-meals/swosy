@@ -76,6 +76,12 @@ export const ComponentIds = {
 	TIMER_RESET_BUTTON: 'timer-reset-button',
 
 	// Dice screen
+	DICE_TYPE_BUTTON_PREFIX: 'dice-type-button-',
+	DICE_CUSTOM_INPUT: 'dice-custom-input',
+	DICE_CUSTOM_ADD_BUTTON: 'dice-custom-add-button',
+	DICE_POOL_ITEM_PREFIX: 'dice-pool-item-',
+	DICE_POOL_CLEAR_BUTTON: 'dice-pool-clear-button',
+	DICE_MODE_BUTTON_PREFIX: 'dice-mode-button-',
 	DICE_ROLL_BUTTON: 'dice-roll-button',
 
 	// Settings screen: debug mode
