@@ -82,9 +82,12 @@ const friendsSlice = createSlice({
 		},
 
 		/**
-		 * Merge an imported friends list into the roster: friends whose id
-		 * already exists are overwritten with the imported data, new ids are
-		 * appended. Re-importing the same export is therefore idempotent.
+		 * Merge an imported friends list into the roster: fields of an
+		 * existing friend are overwritten with the imported ones (via
+		 * `Object.assign`, so a key the import omits - e.g. an `avatarConfig`
+		 * exported before one was ever set - is left untouched rather than
+		 * cleared), new ids are appended. Re-importing the same export is
+		 * therefore idempotent.
 		 */
 		importFriends(state, action: PayloadAction<Friend[]>) {
 			for (const imported of action.payload) {
