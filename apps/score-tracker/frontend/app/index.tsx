@@ -23,13 +23,15 @@ import {
 } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import {
 	addGuestPlayer,
 	addFriendPlayer,
 	renamePlayer,
 	setPlayerColor,
 	setPlayerAvatar,
+	linkPlayerToFriend,
+	setGameType,
 	removePlayer,
 	setScore,
 	startGame,
@@ -38,6 +40,8 @@ import {
 	resetScores,
 	resetAll,
 } from '../store/gameSlice';
+import { addFriendFromPlayer } from '../store/friendsSlice';
+import { addGameType } from '../store/gameTypesSlice';
 import { archiveGame } from '../store/gameHistorySlice';
 import { setColumnsPortrait, setColumnsLandscape } from '../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../store/store';
@@ -47,10 +51,12 @@ import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
+import GameTypeIcon from '../components/GameTypeIcon';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const WARNING_COLOR = '#f59e0b';
+const SUCCESS_COLOR = '#16a34a';
 
 // Avatar preview sizes (50% larger than the original design across the board).
 const EDIT_AVATAR_SIZE = 60;
@@ -263,12 +269,15 @@ function PlayerEditGroup({
 	onRename,
 	onColorChange,
 	onAvatarChange,
+	onSaveAsFriend,
 	onDelete,
 }: {
 	player: Player;
 	onRename: (name: string) => void;
 	onColorChange: (color: string) => void;
 	onAvatarChange: (config: AvatarConfig) => void;
+	/** Only set for guest players (no friendId yet): saves them to the friends roster. */
+	onSaveAsFriend?: () => void;
 	onDelete: () => void;
 }) {
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
@@ -326,6 +335,16 @@ function PlayerEditGroup({
 				handleFunction={handleOpenColorModal}
 				groupPosition="middle"
 			/>
+			{onSaveAsFriend && (
+				<SettingsList
+					nativeID={`${ComponentIds.GAME_PLAYER_ROW_SAVE_FRIEND_PREFIX}${player.id}`}
+					label="Als Freund speichern"
+					leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
+					iconBgColor={SUCCESS_COLOR}
+					handleFunction={onSaveAsFriend}
+					groupPosition="middle"
+				/>
+			)}
 			<SettingsList
 				nativeID={`${ComponentIds.GAME_PLAYER_ROW_DELETE_PREFIX}${player.id}`}
 				label="Spieler löschen"
@@ -394,6 +413,69 @@ function ColumnsSettingsSection() {
 	);
 }
 
+// ─── Game type selector (setup phase modal) ───────────────────────────────────
+//
+// Rendered as its own component so it re-renders from its own `useSelector`
+// subscription and the selected option updates live while the modal is open
+// (same pattern as ColumnsSettingsSection).
+
+function GameTypeSelectSection({ onDone }: { onDone: () => void }) {
+	const dispatch = useDispatch<AppDispatch>();
+	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
+	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);
+
+	const handleCreateGameType = useCallback(() => {
+		const action = dispatch(addGameType(`Spiel ${gameTypes.length + 1}`));
+		dispatch(setGameType(action.payload.id));
+		onDone();
+		// Jump straight into the new game's detail screen so name/icon/rules
+		// can be filled in right away.
+		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
+	}, [dispatch, gameTypes.length, onDone]);
+
+	return (
+		<View style={styles.modalContent}>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAME_TYPE_SELECT_NONE}
+				label="Kein bestimmtes Spiel"
+				leftIcon={<Ionicons name="game-controller-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={!gameTypeId}
+				onPress={() => {
+					dispatch(setGameType(undefined));
+					onDone();
+				}}
+				groupPosition={gameTypes.length === 0 ? 'single' : 'top'}
+			/>
+			{gameTypes.map((gameType, index) => (
+				<SettingsListSelectOptionSingle
+					key={gameType.id}
+					nativeID={`${ComponentIds.GAME_TYPE_SELECT_ROW_PREFIX}${gameType.id}`}
+					label={gameType.name}
+					leftIcon={<Text style={styles.gameTypeOptionEmoji}>{gameType.icon}</Text>}
+					iconBgColor="#ffffff"
+					selectionColor={PRIMARY_COLOR}
+					isSelected={gameTypeId === gameType.id}
+					onPress={() => {
+						dispatch(setGameType(gameType.id));
+						onDone();
+					}}
+					groupPosition={index === gameTypes.length - 1 ? 'bottom' : 'middle'}
+				/>
+			))}
+			<SettingsListGroupTitle title="Neu" />
+			<SettingsList
+				nativeID={ComponentIds.GAME_TYPE_SELECT_CREATE}
+				label="Neues Spiel erstellen"
+				leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={handleCreateGameType}
+				groupPosition="single"
+			/>
+		</View>
+	);
+}
+
 // ─── Game Screen ──────────────────────────────────────────────────────────────
 
 export default function GameScreen() {
@@ -405,12 +487,15 @@ export default function GameScreen() {
 	const status = useSelector((state: RootState) => state.game.status);
 	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
 	const friends = useSelector((state: RootState) => state.friends.friends);
+	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
+	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);
 	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
 	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
 
 	const { show: showScoreModal, close: closeScoreModal } = useMyScrollViewModal();
 	const { show: showAddPlayerModal, close: closeAddPlayerModal } = useMyScrollViewModal();
 	const { show: showSettingsModal, close: closeSettingsModal } = useMyScrollViewModal();
+	const { show: showGameTypeModal, close: closeGameTypeModal } = useMyScrollViewModal();
 	const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
 	const navigation = useNavigation();
@@ -427,6 +512,13 @@ export default function GameScreen() {
 	}, [status]);
 
 	const showEditRows = status === 'setup' || isEditingPlayers;
+
+	const selectedGameType = useMemo(
+		() => (gameTypeId ? gameTypes.find((g) => g.id === gameTypeId) : undefined),
+		[gameTypes, gameTypeId],
+	);
+	const maxRounds = selectedGameType?.maxRounds ?? null;
+	const scoringMode = selectedGameType?.scoringMode ?? 'highWins';
 
 	// Landscape detection and column count (independently configurable per orientation)
 	const isLandscape = windowWidth > windowHeight;
@@ -446,22 +538,27 @@ export default function GameScreen() {
 		return result;
 	}, [players, rounds]);
 
-	// Find leader (player with highest score)
+	// Find leader. With the default "highWins" scoring the highest total leads;
+	// game types with "lowWins" (e.g. golf-style card games) invert this.
 	const leaderId = useMemo(() => {
 		if (players.length === 0) return null;
-		let maxScore = -Infinity;
-		let maxId: string | null = null;
+		const anyScoreEntered = rounds.some((round) => players.some((p) => round.scores[p.id] != null));
+		if (!anyScoreEntered) return null;
+		let bestScore = scoringMode === 'lowWins' ? Infinity : -Infinity;
+		let bestId: string | null = null;
 		for (const player of players) {
 			const total = totals[player.id] ?? 0;
-			if (total > maxScore) {
-				maxScore = total;
-				maxId = player.id;
+			const isBetter = scoringMode === 'lowWins' ? total < bestScore : total > bestScore;
+			if (isBetter) {
+				bestScore = total;
+				bestId = player.id;
 			}
 		}
-		// Only show leader if at least one player has a score > 0
-		if (maxScore <= 0) return null;
-		return maxId;
-	}, [players, totals]);
+		// With "highWins", keep the crown hidden until someone is actually in
+		// the plus (matches the previous behavior).
+		if (scoringMode === 'highWins' && bestScore <= 0) return null;
+		return bestId;
+	}, [players, rounds, totals, scoringMode]);
 
 	const currentRound = rounds[currentRoundIndex] ?? null;
 	const currentRoundNumber = currentRoundIndex + 1;
@@ -539,12 +636,34 @@ export default function GameScreen() {
 					avatarConfig: p.avatarConfig,
 				})),
 				finalScores: Object.fromEntries(players.map((p) => [p.id, totals[p.id] ?? 0])),
+				gameTypeId,
 			};
 			dispatch(archiveGame(entry));
 		}
 		dispatch(resetAll());
 		closeSettingsModal();
-	}, [players, rounds, totals, dispatch, closeSettingsModal]);
+	}, [players, rounds, totals, gameTypeId, dispatch, closeSettingsModal]);
+
+	// ─── Game type selection (setup phase) ───────────────────────────────────
+
+	const handleOpenGameTypeModal = useCallback(() => {
+		showGameTypeModal({
+			title: 'Spiel auswählen',
+			children: <GameTypeSelectSection onDone={closeGameTypeModal} />,
+		});
+	}, [showGameTypeModal, closeGameTypeModal]);
+
+	// Save a guest player to the friends roster and link them, so future edits
+	// stay in sync and the player can be re-added from the roster next time.
+	const handleSaveGuestAsFriend = useCallback(
+		(player: Player) => {
+			const action = dispatch(
+				addFriendFromPlayer({ name: player.name, color: player.color, avatarConfig: player.avatarConfig }),
+			);
+			dispatch(linkPlayerToFriend({ playerId: player.id, friendId: action.payload.id }));
+		},
+		[dispatch],
+	);
 
 	const handleOpenSettingsModal = useCallback(() => {
 		showSettingsModal({
@@ -586,6 +705,8 @@ export default function GameScreen() {
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
+			// Show which game is being played right in the header
+			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
 			headerRight: () => (
 				<View style={styles.headerButtons}>
 					{status === 'active' && (
@@ -611,7 +732,7 @@ export default function GameScreen() {
 				</View>
 			),
 		});
-	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal]);
+	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal, selectedGameType]);
 
 	// ─── Score entry ──────────────────────────────────────────────────────────
 
@@ -652,6 +773,29 @@ export default function GameScreen() {
 			>
 				{showEditRows ? (
 					<>
+						{status === 'setup' && (
+							<View style={styles.gameTypeRow}>
+								<SettingsList
+									nativeID={ComponentIds.GAME_SETUP_GAME_TYPE_ROW}
+									label="Spiel"
+									value={selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel'}
+									leftIconComponent={
+										selectedGameType ? (
+											<View style={styles.gameTypeIconWrapper}>
+												<GameTypeIcon icon={selectedGameType.icon} size={40} />
+											</View>
+										) : undefined
+									}
+									leftIcon={
+										selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />
+									}
+									iconBgColor={PRIMARY_COLOR}
+									rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+									handleFunction={handleOpenGameTypeModal}
+									groupPosition="single"
+								/>
+							</View>
+						)}
 						{players.map((player) => (
 							<PlayerEditGroup
 								key={player.id}
@@ -659,6 +803,7 @@ export default function GameScreen() {
 								onRename={(name) => dispatch(renamePlayer({ playerId: player.id, name }))}
 								onColorChange={(color) => dispatch(setPlayerColor({ playerId: player.id, color }))}
 								onAvatarChange={(config) => dispatch(setPlayerAvatar({ playerId: player.id, avatarConfig: config }))}
+								onSaveAsFriend={player.friendId ? undefined : () => handleSaveGuestAsFriend(player)}
 								onDelete={() => dispatch(removePlayer(player.id))}
 							/>
 						))}
@@ -723,14 +868,23 @@ export default function GameScreen() {
 							</TouchableOpacity>
 							<Text nativeID={ComponentIds.GAME_ROUND_LABEL} style={[styles.roundLabel, { color: theme.screen.text }]}>
 								Runde {currentRoundNumber}
+								{maxRounds != null ? ` / ${maxRounds}` : ''}
 							</Text>
 							<TouchableOpacity
 								nativeID={ComponentIds.GAME_ROUND_NEXT_BUTTON}
-								style={[styles.roundNavButton, { backgroundColor: PRIMARY_COLOR }]}
+								style={[
+									styles.roundNavButton,
+									{ backgroundColor: PRIMARY_COLOR, opacity: maxRounds != null && currentRoundNumber >= maxRounds ? 0.4 : 1 },
+								]}
 								onPress={handleNextRound}
+								disabled={maxRounds != null && currentRoundNumber >= maxRounds}
 								activeOpacity={0.8}
 							>
-								<Text style={styles.roundNavText}>Runde {currentRoundNumber + 1}</Text>
+								<Text style={styles.roundNavText}>
+									{maxRounds != null && currentRoundNumber >= maxRounds
+										? 'Letzte Runde'
+										: `Runde ${currentRoundNumber + 1}`}
+								</Text>
 								<Ionicons name="chevron-forward" size={18} color="#ffffff" />
 							</TouchableOpacity>
 						</>
@@ -772,6 +926,15 @@ const styles = StyleSheet.create({
 	},
 	playerEditGroup: {
 		marginBottom: 4,
+	},
+	gameTypeRow: {
+		marginBottom: 8,
+	},
+	gameTypeIconWrapper: {
+		marginRight: 12,
+	},
+	gameTypeOptionEmoji: {
+		fontSize: 18,
 	},
 	addPlayerButton: {
 		flexDirection: 'row',

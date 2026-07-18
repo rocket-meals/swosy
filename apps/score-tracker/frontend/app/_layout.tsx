@@ -6,19 +6,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadGameState as loadGameStateAction } from '../store/gameSlice';
 import { loadFriends as loadFriendsAction } from '../store/friendsSlice';
+import { loadGameTypes as loadGameTypesAction } from '../store/gameTypesSlice';
 import { loadGameHistory as loadGameHistoryAction } from '../store/gameHistorySlice';
 import { loadAppSettings as loadAppSettingsAction } from '../store/appSettingsSlice';
 import { loadDebugState as loadDebugStateAction } from '../store/debugSlice';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadGameState } from '../helpers/GameStorage';
 import { loadFriends } from '../helpers/FriendsStorage';
+import { loadGameTypes } from '../helpers/GameTypesStorage';
 import { loadGameHistory } from '../helpers/GameHistoryStorage';
 import { loadAppSettings } from '../helpers/AppSettingsStorage';
 import { loadDebugState } from '../helpers/DebugStorage';
@@ -54,10 +56,14 @@ function ThemedDrawerNavigator() {
 			<StatusBar style="auto" />
 			<Drawer
 				drawerContent={(props) => <CustomDrawerContent {...props} />}
+				backBehavior="history"
 				screenOptions={{
 					drawerActiveTintColor: PRIMARY_COLOR,
 					headerStyle: { backgroundColor: theme.header.background },
 					headerTintColor: theme.header.text,
+					// Overlay the drawer over the content (like the rocket-meals app)
+					// instead of pushing/sliding the whole screen aside.
+					drawerType: 'front',
 				}}
 			>
 				<Drawer.Screen
@@ -70,19 +76,46 @@ function ThemedDrawerNavigator() {
 					}}
 				/>
 				<Drawer.Screen
+					name="games/index"
+					options={{
+						title: 'Spiele',
+						drawerIcon: ({ color, size }) => (
+							<Ionicons name="dice-outline" size={size} color={color} />
+						),
+					}}
+				/>
+				<Drawer.Screen
+					name="games/[id]"
+					options={{
+						title: 'Spiel',
+						drawerItemStyle: { display: 'none' },
+					}}
+				/>
+				<Drawer.Screen
 					name="players/index"
 					options={{
-						title: 'Spieler',
+						title: 'Freunde',
 						drawerIcon: ({ color, size }) => (
 							<Ionicons name="people-outline" size={size} color={color} />
 						),
 					}}
 				/>
 				<Drawer.Screen
-					name="players/[id]"
+					name="timer/index"
 					options={{
-						title: 'Spieler',
-						drawerItemStyle: { display: 'none' },
+						title: 'Timer',
+						drawerIcon: ({ color, size }) => (
+							<Ionicons name="stopwatch-outline" size={size} color={color} />
+						),
+					}}
+				/>
+				<Drawer.Screen
+					name="dice/index"
+					options={{
+						title: 'Würfel',
+						drawerIcon: ({ color, size }) => (
+							<Ionicons name="dice-outline" size={size} color={color} />
+						),
 					}}
 				/>
 				<Drawer.Screen
@@ -113,11 +146,32 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{
+			key: 'games/index',
+			label: 'Spiele',
+			nativeID: ComponentIds.DRAWER_ITEM_GAMES,
+			renderIcon: (_, color) => <Ionicons name="dice-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('games/index'),
+		},
+		{
 			key: 'players/index',
-			label: 'Spieler',
+			label: 'Freunde',
 			nativeID: ComponentIds.DRAWER_ITEM_PLAYERS,
 			renderIcon: (_, color) => <Ionicons name="people-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('players/index'),
+		},
+		{
+			key: 'timer/index',
+			label: 'Timer',
+			nativeID: ComponentIds.DRAWER_ITEM_TIMER,
+			renderIcon: (_, color) => <Ionicons name="stopwatch-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('timer/index'),
+		},
+		{
+			key: 'dice/index',
+			label: 'Würfel',
+			nativeID: ComponentIds.DRAWER_ITEM_DICE,
+			renderIcon: (_, color) => <MaterialCommunityIcons name="dice-multiple-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('dice/index'),
 		},
 		{
 			key: 'settings/index',
@@ -174,6 +228,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted friends:', err);
+			});
+		loadGameTypes()
+			.then((gameTypes) => {
+				store.dispatch(loadGameTypesAction(gameTypes));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted game types:', err);
 			});
 		loadGameHistory()
 			.then((entries) => {

@@ -36,6 +36,8 @@ export type GameState = {
 	rounds: Round[];
 	status: GameStatus;
 	currentRoundIndex: number;
+	/** Set when the current match is played as a specific game (see GameTypesStorage). */
+	gameTypeId?: string;
 };
 
 // ─── Storage access ───────────────────────────────────────────────────────────
@@ -73,7 +75,7 @@ export async function loadGameState(): Promise<GameState> {
 			const rounds = parsed.rounds;
 			const status: GameStatus = parsed.status ?? (rounds.length > 0 ? 'active' : 'setup');
 			const currentRoundIndex = parsed.currentRoundIndex ?? Math.max(0, rounds.length - 1);
-			return { players: parsed.players, rounds, status, currentRoundIndex };
+			return { players: parsed.players, rounds, status, currentRoundIndex, gameTypeId: parsed.gameTypeId };
 		}
 		return emptyGameState();
 	} catch {

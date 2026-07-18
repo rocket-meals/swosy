@@ -11,7 +11,10 @@
 export const ComponentIds = {
 	// Drawer navigation
 	DRAWER_ITEM_GAME: 'drawer-item-game',
+	DRAWER_ITEM_GAMES: 'drawer-item-games',
 	DRAWER_ITEM_PLAYERS: 'drawer-item-players',
+	DRAWER_ITEM_TIMER: 'drawer-item-timer',
+	DRAWER_ITEM_DICE: 'drawer-item-dice',
 	DRAWER_ITEM_SETTINGS: 'drawer-item-settings',
 
 	// Game screen header
@@ -25,11 +28,16 @@ export const ComponentIds = {
 
 	// Setup phase (round 0)
 	GAME_START_BUTTON: 'game-start-button',
+	GAME_SETUP_GAME_TYPE_ROW: 'game-setup-game-type-row',
+	GAME_TYPE_SELECT_ROW_PREFIX: 'game-type-select-row-',
+	GAME_TYPE_SELECT_NONE: 'game-type-select-none',
+	GAME_TYPE_SELECT_CREATE: 'game-type-select-create',
 
 	// Player list (shared between setup and edit-mode)
 	GAME_PLAYER_TILE_PREFIX: 'game-player-tile-',
 	GAME_PLAYER_ROW_PREFIX: 'game-player-row-',
 	GAME_PLAYER_ROW_DELETE_PREFIX: 'game-player-row-delete-',
+	GAME_PLAYER_ROW_SAVE_FRIEND_PREFIX: 'game-player-row-save-friend-',
 	GAME_ADD_PLAYER_BUTTON: 'game-add-player-button',
 	GAME_ADD_PLAYER_GUEST_BUTTON: 'game-add-player-guest-button',
 	GAME_ADD_PLAYER_FRIEND_ROW_PREFIX: 'game-add-player-friend-row-',
@@ -50,6 +58,25 @@ export const ComponentIds = {
 	PLAYERS_SCREEN_SEARCH_INPUT: 'players-screen-search-input',
 	PLAYERS_SCREEN_FRIEND_ROW_PREFIX: 'players-screen-friend-row-',
 	PLAYER_DETAIL_DELETE_BUTTON: 'player-detail-delete-button',
+	PLAYER_DETAIL_ID_ROW: 'player-detail-id-row',
+
+	// Games (game types) screen
+	GAMES_SCREEN_ADD_BUTTON: 'games-screen-add-button',
+	GAMES_SCREEN_SEARCH_INPUT: 'games-screen-search-input',
+	GAMES_SCREEN_GAME_ROW_PREFIX: 'games-screen-game-row-',
+	GAME_DETAIL_BACK_BUTTON: 'game-detail-back-button',
+	GAME_DETAIL_EDIT_BUTTON: 'game-detail-edit-button',
+	GAME_DETAIL_DELETE_BUTTON: 'game-detail-delete-button',
+	GAME_DETAIL_ID_ROW: 'game-detail-id-row',
+	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
+	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',
+
+	// Timer screen
+	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',
+	TIMER_RESET_BUTTON: 'timer-reset-button',
+
+	// Dice screen
+	DICE_ROLL_BUTTON: 'dice-roll-button',
 
 	// Settings screen: debug mode
 	SETTINGS_VERSION_ROW: 'settings-version-row',

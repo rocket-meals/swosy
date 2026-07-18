@@ -20,6 +20,8 @@ export type GameHistoryEntry = {
 	players: GameHistoryPlayerEntry[];
 	/** Final total score per player, keyed by `GameHistoryPlayerEntry.playerId`. */
 	finalScores: Record<string, number>;
+	/** Present when the match was played as a specific game (see GameTypesStorage). */
+	gameTypeId?: string;
 };
 
 export type GameHistoryState = {

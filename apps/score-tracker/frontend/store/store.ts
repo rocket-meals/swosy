@@ -2,18 +2,21 @@ import { configureStore } from '@reduxjs/toolkit';
 import themeReducer from './themeSlice';
 import gameReducer from './gameSlice';
 import friendsReducer from './friendsSlice';
+import gameTypesReducer from './gameTypesSlice';
 import gameHistoryReducer from './gameHistorySlice';
 import appSettingsReducer from './appSettingsSlice';
 import debugReducer from './debugSlice';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { saveGameState } from '../helpers/GameStorage';
 import { saveFriends } from '../helpers/FriendsStorage';
+import { saveGameTypes } from '../helpers/GameTypesStorage';
 import { saveGameHistory } from '../helpers/GameHistoryStorage';
 import { saveAppSettings } from '../helpers/AppSettingsStorage';
 import { saveDebugState } from '../helpers/DebugStorage';
 import type { ThemeMode } from './themeSlice';
 import type { GameSliceState } from './gameSlice';
 import type { FriendsSliceState } from './friendsSlice';
+import type { GameTypesSliceState } from './gameTypesSlice';
 import type { GameHistorySliceState } from './gameHistorySlice';
 import type { AppSettingsSliceState } from './appSettingsSlice';
 import type { DebugSliceState } from './debugSlice';
@@ -25,6 +28,7 @@ export const store = configureStore({
 		theme: themeReducer,
 		game: gameReducer,
 		friends: friendsReducer,
+		gameTypes: gameTypesReducer,
 		gameHistory: gameHistoryReducer,
 		appSettings: appSettingsReducer,
 		debug: debugReducer,
@@ -38,6 +42,8 @@ let _gameTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedGame: GameSliceState | null = null;
 let _friendsTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedFriends: FriendsSliceState | null = null;
+let _gameTypesTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedGameTypes: GameTypesSliceState | null = null;
 let _historyTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedHistory: GameHistorySliceState | null = null;
 let _lastSavedAppSettings: AppSettingsSliceState | null = null;
@@ -63,6 +69,7 @@ store.subscribe(() => {
 				rounds: game.rounds,
 				status: game.status,
 				currentRoundIndex: game.currentRoundIndex,
+				gameTypeId: game.gameTypeId,
 			});
 			_gameTimer = null;
 		}, 300);
@@ -75,6 +82,16 @@ store.subscribe(() => {
 		_friendsTimer = setTimeout(() => {
 			saveFriends(friends.friends);
 			_friendsTimer = null;
+		}, 300);
+	}
+
+	const gameTypes = state.gameTypes;
+	if (gameTypes !== _lastSavedGameTypes) {
+		_lastSavedGameTypes = gameTypes;
+		if (_gameTypesTimer) clearTimeout(_gameTypesTimer);
+		_gameTypesTimer = setTimeout(() => {
+			saveGameTypes(gameTypes.gameTypes);
+			_gameTypesTimer = null;
 		}, 300);
 	}
 

@@ -4,6 +4,7 @@ import type { Player, Round, GameState, GameStatus } from '../helpers/GameStorag
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
+import { removeGameType } from './gameTypesSlice';
 export type { Player, Round, GameState, GameStatus };
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -13,6 +14,8 @@ export type GameSliceState = {
 	rounds: Round[];
 	status: GameStatus;
 	currentRoundIndex: number;
+	/** Set when the current match is played as a specific game type. */
+	gameTypeId?: string;
 };
 
 const initialState: GameSliceState = {
@@ -20,6 +23,7 @@ const initialState: GameSliceState = {
 	rounds: [],
 	status: 'setup',
 	currentRoundIndex: 0,
+	gameTypeId: undefined,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -53,6 +57,7 @@ const gameSlice = createSlice({
 				rounds: action.payload.rounds,
 				status: action.payload.status,
 				currentRoundIndex: action.payload.currentRoundIndex,
+				gameTypeId: action.payload.gameTypeId,
 			};
 		},
 
@@ -107,6 +112,22 @@ const gameSlice = createSlice({
 			}
 		},
 
+		/**
+		 * Link an existing (guest) player to a friend, e.g. right after the guest
+		 * was saved to the friends roster via "Als Freund speichern".
+		 */
+		linkPlayerToFriend(state, action: PayloadAction<{ playerId: string; friendId: string }>) {
+			const player = state.players.find((p) => p.id === action.payload.playerId);
+			if (player) {
+				player.friendId = action.payload.friendId;
+			}
+		},
+
+		/** Select (or clear) the game type the current match is played as. */
+		setGameType(state, action: PayloadAction<string | undefined>) {
+			state.gameTypeId = action.payload;
+		},
+
 		/** Remove a player and their scores from all rounds. */
 		removePlayer(state, action: PayloadAction<string>) {
 			state.players = state.players.filter((p) => p.id !== action.payload);
@@ -153,7 +174,7 @@ const gameSlice = createSlice({
 
 		/** Delete everything (players and rounds) and return to the setup phase. */
 		resetAll() {
-			return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0 };
+			return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0, gameTypeId: undefined };
 		},
 	},
 	// Players added from a friend are linked via friendId. When the friend is
@@ -181,6 +202,13 @@ const gameSlice = createSlice({
 						player.avatarConfig = action.payload.avatarConfig;
 					}
 				}
+			})
+			// A deleted game type must not leave a dangling reference on the
+			// current match - fall back to "no specific game".
+			.addCase(removeGameType, (state, action) => {
+				if (state.gameTypeId === action.payload) {
+					state.gameTypeId = undefined;
+				}
 			});
 	},
 });
@@ -192,6 +220,8 @@ export const {
 	renamePlayer,
 	setPlayerColor,
 	setPlayerAvatar,
+	linkPlayerToFriend,
+	setGameType,
 	removePlayer,
 	setScore,
 	startGame,

@@ -1,17 +1,193 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { SettingsListAvatar, useTheme } from 'repo-depkit-common-ui';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+	SettingsList,
+	SettingsListGroupTitle,
+	SettingsListTextInput,
+	SettingsListAvatar,
+	MyColorPicker,
+	useMyScrollViewModal,
+	useTheme,
+	AvatarStyle,
+} from 'repo-depkit-common-ui';
+import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
-import { router, useNavigation } from 'expo-router';
-import { addFriend } from '../../store/friendsSlice';
+import { useNavigation } from 'expo-router';
+import { addFriend, renameFriend, setFriendColor, setFriendAvatar, removeFriend } from '../../store/friendsSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
+import { logDebug } from '../../helpers/DebugLogger';
 
-const PRIMARY_COLOR = '#2563eb';
+const DANGER_COLOR = '#dc2626';
+const DEBUG_COLOR = '#7c3aed';
 const FRIEND_AVATAR_SIZE = 84; // Same size as the Game scoreboard's player avatars
+
+function formatDate(timestamp: number): string {
+	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// ─── Friend edit modal content ────────────────────────────────────────────────
+//
+// Lives in a modal (instead of a separate screen) so editing a friend never
+// leaves the friends list. Rendered as its own component so it re-renders
+// from its own `useSelector` subscriptions while the modal stays open.
+
+function FriendEditContent({ friendId, onClose }: { friendId: string; onClose: () => void }) {
+	const { theme } = useTheme();
+	const dispatch = useDispatch<AppDispatch>();
+	const friend = useSelector((state: RootState) => state.friends.friends.find((f) => f.id === friendId));
+	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
+	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
+	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
+
+	const friendGames = useMemo(() => {
+		if (!friend) return [];
+		return historyEntries
+			.filter((entry) => entry.players.some((p) => p.friendId === friend.id))
+			.map((entry) => {
+				const sorted = [...entry.players].sort(
+					(a, b) => (entry.finalScores[b.playerId] ?? 0) - (entry.finalScores[a.playerId] ?? 0),
+				);
+				const playerEntry = entry.players.find((p) => p.friendId === friend.id)!;
+				const rank = sorted.findIndex((p) => p.playerId === playerEntry.playerId) + 1;
+				const gameType = entry.gameTypeId ? gameTypes.find((g) => g.id === entry.gameTypeId) : undefined;
+				return {
+					id: entry.id,
+					endedAt: entry.endedAt,
+					roundsCount: entry.roundsCount,
+					score: entry.finalScores[playerEntry.playerId] ?? 0,
+					rank,
+					totalPlayers: entry.players.length,
+					gameLabel: gameType ? `${gameType.icon} ${gameType.name}` : undefined,
+				};
+			})
+			.sort((a, b) => b.endedAt - a.endedAt);
+	}, [historyEntries, gameTypes, friend]);
+
+	const handleOpenColorModal = useCallback(() => {
+		if (!friend) return;
+		showColorModal({
+			title: 'Farbe wählen',
+			children: (
+				<MyColorPicker
+					colors={PLAYER_COLORS}
+					selectedColor={friend.color}
+					onSelect={(color) => {
+						dispatch(setFriendColor({ friendId: friend.id, color }));
+						closeColorModal();
+					}}
+				/>
+			),
+		});
+	}, [showColorModal, closeColorModal, friend, dispatch]);
+
+	const handleDelete = useCallback(() => {
+		if (!friend) return;
+		dispatch(removeFriend(friend.id));
+		onClose();
+	}, [friend, dispatch, onClose]);
+
+	const handleCopyId = useCallback(async () => {
+		if (!friend) return;
+		await Clipboard.setStringAsync(friend.id);
+	}, [friend]);
+
+	if (!friend) {
+		return (
+			<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>Freund nicht gefunden.</Text>
+		);
+	}
+
+	return (
+		<View style={styles.modalContent}>
+			<SettingsListAvatar
+				config={friend.avatarConfig}
+				onChange={(config) => {
+					logDebug(`players: avatar onChange friend=${friend.id} style=${config.style}`);
+					dispatch(setFriendAvatar({ friendId: friend.id, avatarConfig: config }));
+				}}
+				label="Avatar"
+				previewSize={72}
+				avatarBackgroundColor={friend.color}
+				groupPosition="top"
+				editorOptions={{
+					title: 'Avatar',
+					allowedStyles: [AvatarStyle.AVATAAARS],
+					// Debug-Modus (Settings → 5x auf Version tippen) blendet im QuickStart
+					// zusätzliche Touch-Test-Buttons ein (siehe QuickstartDebugSection).
+					debugMode,
+					onDebugEvent: (event) => logDebug(`players: avatar-editor ${event} friend=${friend.id}`),
+				}}
+			/>
+			<SettingsListTextInput
+				label="Name"
+				placeholder="Name eingeben"
+				initialValue={friend.name}
+				value={friend.name}
+				onSave={(name) => {
+					dispatch(renameFriend({ friendId: friend.id, name }));
+				}}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				label="Farbe"
+				leftIcon={<Ionicons name="color-palette-outline" size={20} color="#ffffff" />}
+				iconBgColor={friend.color}
+				handleFunction={handleOpenColorModal}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				nativeID={ComponentIds.PLAYER_DETAIL_DELETE_BUTTON}
+				label="Freund löschen"
+				leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
+				iconBgColor={DANGER_COLOR}
+				handleFunction={handleDelete}
+				groupPosition="bottom"
+			/>
+
+			{debugMode && (
+				<>
+					<SettingsListGroupTitle title="Debug" />
+					<SettingsList
+						nativeID={ComponentIds.PLAYER_DETAIL_ID_ROW}
+						label="ID"
+						value={friend.id}
+						leftIcon={<MaterialCommunityIcons name="identifier" size={20} color="#ffffff" />}
+						iconBgColor={DEBUG_COLOR}
+						rightIcon={<MaterialCommunityIcons name="content-copy" size={18} color="#9ca3af" />}
+						handleFunction={handleCopyId}
+						groupPosition="single"
+					/>
+				</>
+			)}
+
+			<SettingsListGroupTitle title="Gespielte Partien" />
+			{friendGames.length === 0 ? (
+				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+					Noch keine gespielten Partien.
+				</Text>
+			) : (
+				friendGames.map((game, index) => (
+					<SettingsList
+						key={game.id}
+						label={game.gameLabel ? `${game.gameLabel} · ${formatDate(game.endedAt)}` : formatDate(game.endedAt)}
+						value={`${game.score} Punkte · Platz ${game.rank}/${game.totalPlayers} · ${game.roundsCount} Runden`}
+						stackedValue
+						leftIcon={<Ionicons name="trophy-outline" size={20} color="#ffffff" />}
+						iconBgColor={friend.color}
+						groupPosition={index === 0 ? 'top' : index === friendGames.length - 1 ? 'bottom' : 'middle'}
+					/>
+				))
+			)}
+		</View>
+	);
+}
+
+// ─── Players (friends) screen ─────────────────────────────────────────────────
 
 export default function PlayersScreen() {
 	const { theme } = useTheme();
@@ -20,6 +196,7 @@ export default function PlayersScreen() {
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
+	const { show: showFriendModal, close: closeFriendModal } = useMyScrollViewModal();
 
 	const filteredFriends = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
@@ -27,13 +204,22 @@ export default function PlayersScreen() {
 		return friends.filter((friend) => friend.name.toLowerCase().includes(query));
 	}, [friends, searchQuery]);
 
+	const handleOpenFriendModal = useCallback(
+		(friendId: string) => {
+			showFriendModal({
+				title: 'Freund bearbeiten',
+				children: <FriendEditContent friendId={friendId} onClose={closeFriendModal} />,
+			});
+		},
+		[showFriendModal, closeFriendModal],
+	);
+
 	const handleAddFriend = useCallback(() => {
 		const friendNumber = friends.length + 1;
 		const color = PLAYER_COLORS[friends.length % PLAYER_COLORS.length];
 		const action = dispatch(addFriend(`Freund ${friendNumber}`, color));
-		const newFriendId = action.payload.id;
-		router.push({ pathname: '/players/[id]', params: { id: newFriendId } });
-	}, [friends.length, dispatch]);
+		handleOpenFriendModal(action.payload.id);
+	}, [friends.length, dispatch, handleOpenFriendModal]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
@@ -97,8 +283,8 @@ export default function PlayersScreen() {
 							avatarBackgroundColor={friend.color}
 							previewSize={FRIEND_AVATAR_SIZE}
 							label={friend.name}
-							rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-							onPressOverride={() => router.push({ pathname: '/players/[id]', params: { id: friend.id } })}
+							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#9ca3af" />}
+							onPressOverride={() => handleOpenFriendModal(friend.id)}
 							groupPosition={index === 0 ? 'top' : index === filteredFriends.length - 1 ? 'bottom' : 'middle'}
 						/>
 					))
@@ -136,6 +322,9 @@ const styles = StyleSheet.create({
 	listContent: {
 		padding: 12,
 	},
+	modalContent: {
+		padding: 10,
+	},
 	emptyContainer: {
 		flex: 1,
 		justifyContent: 'center',
@@ -156,5 +345,11 @@ const styles = StyleSheet.create({
 	noResultsText: {
 		marginTop: 32,
 		paddingHorizontal: 16,
+	},
+	emptyHint: {
+		fontSize: 13,
+		textAlign: 'center',
+		paddingHorizontal: 16,
+		paddingVertical: 12,
 	},
 });

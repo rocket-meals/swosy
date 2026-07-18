@@ -41,6 +41,27 @@ const friendsSlice = createSlice({
 			},
 		},
 
+		/**
+		 * Save an existing (guest) player to the friends roster, keeping their
+		 * name, color and avatar. The prepared payload carries the generated id
+		 * so callers can link the player to the new friend afterwards.
+		 */
+		addFriendFromPlayer: {
+			reducer(state, action: PayloadAction<Friend>) {
+				state.friends.push(action.payload);
+			},
+			prepare(input: { name: string; color: string; avatarConfig?: AvatarConfig }) {
+				const friend: Friend = {
+					id: generateId(),
+					name: input.name,
+					color: input.color,
+					avatarConfig: input.avatarConfig,
+					createdAt: Date.now(),
+				};
+				return { payload: friend };
+			},
+		},
+
 		renameFriend(state, action: PayloadAction<{ friendId: string; name: string }>) {
 			const friend = state.friends.find((f) => f.id === action.payload.friendId);
 			if (friend) friend.name = action.payload.name;
@@ -65,6 +86,7 @@ const friendsSlice = createSlice({
 export const {
 	loadFriends,
 	addFriend,
+	addFriendFromPlayer,
 	renameFriend,
 	setFriendColor,
 	setFriendAvatar,
