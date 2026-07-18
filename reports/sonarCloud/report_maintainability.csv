@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ925T8lCc1P49Fnq6JN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",41
+"AZ925T8lCc1P49Fnq6JO","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",69
 "AZ92gkzAcUMiqJpTxgmb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",910
 "AZ92LuSOucyJk4EgwJln","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",70
 "AZ92LuSOucyJk4EgwJlo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",74
@@ -10,8 +12,8 @@ Key,Message,Component,Line
 "AZ90OX_plqCs1FI_2yqh","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",116
 "AZ90OYAhlqCs1FI_2yqr","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",422
 "AZ90OYAhlqCs1FI_2yqs","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",481
-"AZ90OYA2lqCs1FI_2yqt","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",38
-"AZ90OYA2lqCs1FI_2yqu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",182
+"AZ90OYA2lqCs1FI_2yqt","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",110
+"AZ90OYA2lqCs1FI_2yqu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",263
 "AZ90OX_YlqCs1FI_2yqe","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",53
 "AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",49
 "AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",75
@@ -60,10 +62,10 @@ Key,Message,Component,Line
 "AZ9gKdXunQ6LQh7VFNhX","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",215
 "AZ9gKdXunQ6LQh7VFNhY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",567
 "AZ9f2tGyF1SkmM3wO4jE","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",210
-"AZ9gjKE4zJugdJpoBVO4","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",273
-"AZ9gjKE4zJugdJpoBVO5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",288
+"AZ9gjKE4zJugdJpoBVO4","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",382
+"AZ9gjKE4zJugdJpoBVO5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",397
 "AZ9gjJxQzJugdJpoBVOz","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/maestro-tests/generate.ts",9
-"AZ9gjKE4zJugdJpoBVO3","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",226
+"AZ9gjKE4zJugdJpoBVO3","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",325
 "AZ9gjKF-zJugdJpoBVO9","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/score-tracker/maestro-tests/generate.ts",9
 "AZ9gjKGLzJugdJpoBVO-","Add a default case (*) to handle unexpected values.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",38
 "AZ9gjKGLzJugdJpoBVPA","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",82
