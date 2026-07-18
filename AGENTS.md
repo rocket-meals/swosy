@@ -19,6 +19,13 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 - Änderungen möglichst klein und gezielt halten.
 - Nur notwendige Dateien anfassen.
 
+## Pull-Request-Pflicht je nach Projekt
+
+- **Rocket Meals** (dieses Repo insgesamt, insbesondere alles außerhalb der unten genannten Ausnahmen): Änderungen **immer zuerst als Pull Request** erstellen, niemals direkt auf `master`/`main` pushen.
+- **Geonexia** und **Score Tracker** (`apps/geonexia`, `apps/score-tracker`): Änderungen dürfen **direkt auf `master`** erfolgen, kein PR nötig.
+- **`packages/common` und `packages/common-ui`**: Da diese von Rocket Meals genutzt werden, gilt hier ebenfalls die PR-Pflicht — **immer zuerst ein PR**, auch wenn die Änderung von Geonexia oder Score Tracker ausgelöst wurde.
+- Ausnahme: Der Nutzer kann im jeweiligen Task explizit etwas anderes anweisen (z. B. "push direkt"); dann gilt diese Anweisung für diesen Task.
+
 ## Frontend-Features: Screenshots in Pull Requests
 
 - **Bei Pull Requests, die Features oder visuelle Änderungen in einer der Frontend-Apps betreffen, muss immer ein Screenshot oder Bild der Änderung beigefügt werden.**
