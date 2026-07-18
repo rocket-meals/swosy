@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -96,13 +96,10 @@ export default function DiceScreen() {
 	const nextIdRef = useRef(0);
 
 	const addDie = useCallback((sides: number) => {
-		if (!Number.isFinite(sides) || sides < MIN_CUSTOM_SIDES) return;
-		setPool((prev) => {
-			if (prev.length >= MAX_POOL_SIZE) return prev;
-			nextIdRef.current += 1;
-			return [...prev, { id: `die-${nextIdRef.current}`, sides }];
-		});
-	}, []);
+		if (!Number.isFinite(sides) || sides < MIN_CUSTOM_SIDES || pool.length >= MAX_POOL_SIZE) return;
+		nextIdRef.current += 1;
+		setPool((prev) => [...prev, { id: `die-${nextIdRef.current}`, sides }]);
+	}, [pool.length]);
 
 	const removeDie = useCallback((id: string) => {
 		setPool((prev) => prev.filter((die) => die.id !== id));
@@ -113,12 +110,13 @@ export default function DiceScreen() {
 	}, []);
 
 	const handleAddCustom = useCallback(() => {
+		if (pool.length >= MAX_POOL_SIZE) return;
 		const sides = parseInt(customSidesText, 10);
 		if (!Number.isFinite(sides) || sides < MIN_CUSTOM_SIDES || sides > MAX_CUSTOM_SIDES) return;
 		addDie(sides);
 		setCustomSidesText('');
 		setShowCustomInput(false);
-	}, [customSidesText, addDie]);
+	}, [customSidesText, addDie, pool.length]);
 
 	// Shuffle the faces rapidly for a moment before settling on the final roll -
 	// cheap "animation" without needing reanimated.
@@ -138,7 +136,7 @@ export default function DiceScreen() {
 		}, ROLL_ANIMATION_STEP_MS);
 	}, [pool, isRolling, rollMode]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		return () => {
 			if (animationRef.current) clearInterval(animationRef.current);
 		};
@@ -149,24 +147,27 @@ export default function DiceScreen() {
 			<ScrollView contentContainerStyle={styles.content}>
 				<SettingsListGroupTitle title="Würfel auswählen" />
 				<View style={styles.typeRow}>
-					{DICE_PRESETS.map((sides) => (
-						<TouchableOpacity
-							key={sides}
-							nativeID={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}${sides}`}
-							style={[styles.typeChip, { borderColor: PRIMARY_COLOR }]}
-							onPress={() => addDie(sides)}
-							disabled={pool.length >= MAX_POOL_SIZE}
-							activeOpacity={0.7}
-						>
-							<MaterialCommunityIcons name={diceIconForSides(sides)} size={26} color={PRIMARY_COLOR} />
-							<Text style={[styles.typeChipText, { color: PRIMARY_COLOR }]}>W{sides}</Text>
-						</TouchableOpacity>
-					))}
+					{DICE_PRESETS.map((sides) => {
+						const disabled = isRolling || pool.length >= MAX_POOL_SIZE;
+						return (
+							<TouchableOpacity
+								key={sides}
+								nativeID={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}${sides}`}
+								style={[styles.typeChip, { borderColor: PRIMARY_COLOR, opacity: disabled ? 0.4 : 1 }]}
+								onPress={() => addDie(sides)}
+								disabled={disabled}
+								activeOpacity={0.7}
+							>
+								<MaterialCommunityIcons name={diceIconForSides(sides)} size={26} color={PRIMARY_COLOR} />
+								<Text style={[styles.typeChipText, { color: PRIMARY_COLOR }]}>W{sides}</Text>
+							</TouchableOpacity>
+						);
+					})}
 					<TouchableOpacity
 						nativeID={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}custom`}
-						style={[styles.typeChip, { borderColor: PRIMARY_COLOR }]}
+						style={[styles.typeChip, { borderColor: PRIMARY_COLOR, opacity: isRolling || pool.length >= MAX_POOL_SIZE ? 0.4 : 1 }]}
 						onPress={() => setShowCustomInput((prev) => !prev)}
-						disabled={pool.length >= MAX_POOL_SIZE}
+						disabled={isRolling || pool.length >= MAX_POOL_SIZE}
 						activeOpacity={0.7}
 					>
 						<MaterialCommunityIcons name={CUSTOM_ICON} size={26} color={PRIMARY_COLOR} />
@@ -185,12 +186,14 @@ export default function DiceScreen() {
 							onChangeText={setCustomSidesText}
 							keyboardType="number-pad"
 							returnKeyType="done"
+							editable={!isRolling}
 							onSubmitEditing={handleAddCustom}
 						/>
 						<TouchableOpacity
 							nativeID={ComponentIds.DICE_CUSTOM_ADD_BUTTON}
-							style={[styles.customAddButton, { backgroundColor: PRIMARY_COLOR }]}
+							style={[styles.customAddButton, { backgroundColor: PRIMARY_COLOR, opacity: isRolling || pool.length >= MAX_POOL_SIZE ? 0.4 : 1 }]}
 							onPress={handleAddCustom}
+							disabled={isRolling || pool.length >= MAX_POOL_SIZE}
 							activeOpacity={0.8}
 						>
 							<Text style={styles.customAddButtonText}>Hinzufügen</Text>
@@ -201,7 +204,13 @@ export default function DiceScreen() {
 				<View style={styles.sectionHeaderRow}>
 					<SettingsListGroupTitle title={`Ausgewählte Würfel (${pool.length})`} />
 					{pool.length > 0 && (
-						<TouchableOpacity nativeID={ComponentIds.DICE_POOL_CLEAR_BUTTON} onPress={clearPool} hitSlop={8} style={styles.clearButton}>
+						<TouchableOpacity
+							nativeID={ComponentIds.DICE_POOL_CLEAR_BUTTON}
+							onPress={clearPool}
+							disabled={isRolling}
+							hitSlop={8}
+							style={[styles.clearButton, { opacity: isRolling ? 0.4 : 1 }]}
+						>
 							<Ionicons name="close-circle" size={16} color={theme.screen.placeholder} />
 							<Text style={[styles.clearButtonText, { color: theme.screen.placeholder }]}>Leeren</Text>
 						</TouchableOpacity>
@@ -217,8 +226,9 @@ export default function DiceScreen() {
 							<TouchableOpacity
 								key={die.id}
 								nativeID={`${ComponentIds.DICE_POOL_ITEM_PREFIX}${die.id}`}
-								style={[styles.poolChip, { backgroundColor: PRIMARY_COLOR }]}
+								style={[styles.poolChip, { backgroundColor: PRIMARY_COLOR, opacity: isRolling ? 0.6 : 1 }]}
 								onPress={() => removeDie(die.id)}
+								disabled={isRolling}
 								activeOpacity={0.7}
 							>
 								<MaterialCommunityIcons name={diceIconForSides(die.sides)} size={20} color="#ffffff" />
@@ -235,8 +245,9 @@ export default function DiceScreen() {
 						<TouchableOpacity
 							key={mode.key}
 							nativeID={`${ComponentIds.DICE_MODE_BUTTON_PREFIX}${mode.key}`}
-							style={[styles.modeButton, rollMode === mode.key && { backgroundColor: PRIMARY_COLOR }]}
+							style={[styles.modeButton, rollMode === mode.key && { backgroundColor: PRIMARY_COLOR }, { opacity: isRolling ? 0.6 : 1 }]}
 							onPress={() => setRollMode(mode.key)}
+							disabled={isRolling}
 							activeOpacity={0.7}
 						>
 							<MaterialCommunityIcons name={mode.icon} size={16} color={rollMode === mode.key ? '#ffffff' : theme.screen.text} />
@@ -275,7 +286,7 @@ export default function DiceScreen() {
 					disabled={isRolling || pool.length === 0}
 					activeOpacity={0.8}
 				>
-					<MaterialCommunityIcons name="dice-multiple-outline" size={24} color="#ffffff" />
+					<MaterialCommunityIcons name={FALLBACK_ICON} size={24} color="#ffffff" />
 					<Text style={styles.rollButtonText}>
 						{isRolling ? 'Würfeln...' : pool.length === 0 ? 'Wähle zuerst Würfel' : 'Würfeln'}
 					</Text>
