@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ92EgyuNqjKlFTKHx5D","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",114
+"AZ92EgyuNqjKlFTKHx5E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",291
 "AZ90Pca37VSiD7VvJZTH","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",72
 "AZ90Pca37VSiD7VvJZTI","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",90
 "AZ90OX_olqCs1FI_2yqf","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",82
@@ -9,8 +11,6 @@ Key,Message,Component,Line
 "AZ90OYA2lqCs1FI_2yqt","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",38
 "AZ90OYA2lqCs1FI_2yqu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",182
 "AZ90OX_YlqCs1FI_2yqe","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",53
-"AZ90OYBAlqCs1FI_2yqw","Do not use Array index in keys","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",101
-"AZ90OYBAlqCs1FI_2yqx","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",103
 "AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",48
 "AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",74
 "AZ90OYABlqCs1FI_2yqo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",106
