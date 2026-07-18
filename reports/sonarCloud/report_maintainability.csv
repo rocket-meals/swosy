@@ -1,6 +1,7 @@
 Key,Message,Component,Line
-"AZ92EgyuNqjKlFTKHx5D","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",114
-"AZ92EgyuNqjKlFTKHx5E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",291
+"AZ92LuSOucyJk4EgwJln","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",70
+"AZ92LuSOucyJk4EgwJlo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",74
+"AZ92EgyuNqjKlFTKHx5E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",313
 "AZ90Pca37VSiD7VvJZTH","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",72
 "AZ90Pca37VSiD7VvJZTI","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",90
 "AZ90OX_olqCs1FI_2yqf","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",82

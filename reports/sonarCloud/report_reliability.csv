@@ -1,5 +1,4 @@
 Key,Message,Component,Line
-"AZ92EgyuNqjKlFTKHx5D","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",114
 "AZ9wjYi175F_EoJO9xIP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",30
 "AZ9wjYi175F_EoJO9xIQ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",31
 "AZ9qyn9KHKfHY7dxI2cK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
