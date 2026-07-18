@@ -13,6 +13,8 @@ export type GameType = {
 	scoringMode: ScoringMode;
 	/** Maximum number of rounds per match. undefined/null = unlimited. */
 	maxRounds?: number | null;
+	/** Total score at which a match ends. undefined/null = unlimited. */
+	maxScore?: number | null;
 	createdAt: number;
 };
 

@@ -42,6 +42,7 @@ const gameTypesSlice = createSlice({
 					icon: DEFAULT_GAME_TYPE_ICON,
 					scoringMode: 'highWins',
 					maxRounds: null,
+					maxScore: null,
 					createdAt: Date.now(),
 				};
 				return { payload: gameType };
@@ -68,6 +69,11 @@ const gameTypesSlice = createSlice({
 			if (gameType) gameType.maxRounds = action.payload.maxRounds;
 		},
 
+		setGameTypeMaxScore(state, action: PayloadAction<{ gameTypeId: string; maxScore: number | null }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.maxScore = action.payload.maxScore;
+		},
+
 		removeGameType(state, action: PayloadAction<string>) {
 			state.gameTypes = state.gameTypes.filter((g) => g.id !== action.payload);
 		},
@@ -81,6 +87,7 @@ export const {
 	setGameTypeIcon,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
+	setGameTypeMaxScore,
 	removeGameType,
 } = gameTypesSlice.actions;
 export default gameTypesSlice.reducer;

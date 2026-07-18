@@ -518,6 +518,7 @@ export default function GameScreen() {
 		[gameTypes, gameTypeId],
 	);
 	const maxRounds = selectedGameType?.maxRounds ?? null;
+	const maxScore = selectedGameType?.maxScore ?? null;
 	const scoringMode = selectedGameType?.scoringMode ?? 'highWins';
 
 	// Landscape detection and column count (independently configurable per orientation)
@@ -560,8 +561,17 @@ export default function GameScreen() {
 		return bestId;
 	}, [players, rounds, totals, scoringMode]);
 
+	// A match is over once any player's total reaches the game type's optional
+	// max score - independent of scoringMode (both "first to X" and
+	// "bust at X" games use a target/limit score this way).
+	const matchFinished = useMemo(() => {
+		if (maxScore == null) return false;
+		return players.some((player) => (totals[player.id] ?? 0) >= maxScore);
+	}, [maxScore, players, totals]);
+
 	const currentRound = rounds[currentRoundIndex] ?? null;
 	const currentRoundNumber = currentRoundIndex + 1;
+	const isLastPossibleRound = matchFinished || (maxRounds != null && currentRoundNumber >= maxRounds);
 
 	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
@@ -823,20 +833,31 @@ export default function GameScreen() {
 						)}
 					</>
 				) : (
-					players.map((player) => (
-						<PlayerTile
-							key={player.id}
-							playerId={player.id}
-							name={player.name}
-							score={totals[player.id] ?? 0}
-							color={player.color}
-							avatarConfig={player.avatarConfig}
-							isLeader={player.id === leaderId}
-							hasScore={currentRound ? currentRound.scores[player.id] != null : false}
-							onPress={() => handleTilePress(player.id)}
-							tileWidth={tileWidth}
-						/>
-					))
+					<>
+						{matchFinished && (
+							<View nativeID={ComponentIds.GAME_FINISHED_BANNER} style={[styles.finishedBanner, { backgroundColor: SUCCESS_COLOR }]}>
+								<Ionicons name="trophy-outline" size={18} color="#ffffff" />
+								<Text style={styles.finishedBannerText}>
+									Spiel beendet - Zielscore {maxScore} erreicht
+									{leaderId ? ` von ${players.find((p) => p.id === leaderId)?.name}` : ''}
+								</Text>
+							</View>
+						)}
+						{players.map((player) => (
+							<PlayerTile
+								key={player.id}
+								playerId={player.id}
+								name={player.name}
+								score={totals[player.id] ?? 0}
+								color={player.color}
+								avatarConfig={player.avatarConfig}
+								isLeader={player.id === leaderId}
+								hasScore={currentRound ? currentRound.scores[player.id] != null : false}
+								onPress={() => handleTilePress(player.id)}
+								tileWidth={tileWidth}
+							/>
+						))}
+					</>
 				)}
 			</ScrollView>
 
@@ -874,16 +895,18 @@ export default function GameScreen() {
 								nativeID={ComponentIds.GAME_ROUND_NEXT_BUTTON}
 								style={[
 									styles.roundNavButton,
-									{ backgroundColor: PRIMARY_COLOR, opacity: maxRounds != null && currentRoundNumber >= maxRounds ? 0.4 : 1 },
+									{ backgroundColor: PRIMARY_COLOR, opacity: isLastPossibleRound ? 0.4 : 1 },
 								]}
 								onPress={handleNextRound}
-								disabled={maxRounds != null && currentRoundNumber >= maxRounds}
+								disabled={isLastPossibleRound}
 								activeOpacity={0.8}
 							>
 								<Text style={styles.roundNavText}>
-									{maxRounds != null && currentRoundNumber >= maxRounds
-										? 'Letzte Runde'
-										: `Runde ${currentRoundNumber + 1}`}
+									{matchFinished
+										? 'Spiel beendet'
+										: maxRounds != null && currentRoundNumber >= maxRounds
+											? 'Letzte Runde'
+											: `Runde ${currentRoundNumber + 1}`}
 								</Text>
 								<Ionicons name="chevron-forward" size={18} color="#ffffff" />
 							</TouchableOpacity>
@@ -956,6 +979,23 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		paddingHorizontal: 16,
 		paddingVertical: 12,
+	},
+	finishedBanner: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		borderRadius: 12,
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		marginBottom: 12,
+	},
+	finishedBannerText: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '700',
+		textAlign: 'center',
+		flexShrink: 1,
 	},
 	bottomBar: {
 		position: 'absolute',

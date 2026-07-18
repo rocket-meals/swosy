@@ -25,6 +25,7 @@ export const ComponentIds = {
 	GAME_ROUND_PREV_BUTTON: 'game-round-prev-button',
 	GAME_ROUND_NEXT_BUTTON: 'game-round-next-button',
 	GAME_ROUND_LABEL: 'game-round-label',
+	GAME_FINISHED_BANNER: 'game-finished-banner',
 
 	// Setup phase (round 0)
 	GAME_START_BUTTON: 'game-start-button',

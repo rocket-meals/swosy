@@ -20,6 +20,7 @@ import {
 	setGameTypeIcon,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
+	setGameTypeMaxScore,
 	removeGameType,
 } from '../../store/gameTypesSlice';
 import { resetScores, setGameType } from '../../store/gameSlice';
@@ -325,6 +326,26 @@ export default function GameTypeDetailScreen() {
 					disableLabel="Unbegrenzt"
 					onDisable={() => {
 						dispatch(setGameTypeMaxRounds({ gameTypeId: gameType.id, maxRounds: null }));
+					}}
+					groupPosition="middle"
+				/>
+				<SettingsListNumberInput
+					label="Maximale Punktzahl"
+					value={gameType.maxScore ? String(gameType.maxScore) : 'Unbegrenzt'}
+					leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Maximale Punktzahl"
+					placeholder="z.B. 100"
+					initialValue={gameType.maxScore ?? undefined}
+					min={1}
+					max={999999}
+					onSave={(value) => {
+						dispatch(setGameTypeMaxScore({ gameTypeId: gameType.id, maxScore: value }));
+					}}
+					allowDisable
+					disableLabel="Unbegrenzt"
+					onDisable={() => {
+						dispatch(setGameTypeMaxScore({ gameTypeId: gameType.id, maxScore: null }));
 					}}
 					groupPosition="middle"
 				/>
