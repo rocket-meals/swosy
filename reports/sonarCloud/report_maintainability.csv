@@ -1,6 +1,4 @@
 Key,Message,Component,Line
-"AZ90Pca37VSiD7VvJZTH","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",72
-"AZ90Pca37VSiD7VvJZTI","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",90
 "AZ90OX_olqCs1FI_2yqf","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",82
 "AZ90OX_olqCs1FI_2yqg","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",107
 "AZ90OX_plqCs1FI_2yqh","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",116
