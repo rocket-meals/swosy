@@ -133,6 +133,7 @@ const gameSlice = createSlice({
 			state.players = state.players.filter((p) => p.id !== action.payload);
 			for (const round of state.rounds) {
 				delete round.scores[action.payload];
+				if (round.cardSelections) delete round.cardSelections[action.payload];
 			}
 		},
 
@@ -142,6 +143,22 @@ const gameSlice = createSlice({
 			if (round) {
 				round.scores[action.payload.playerId] = action.payload.score;
 			}
+		},
+
+		/**
+		 * Set a player's card selection for a round (card-based score entry, see
+		 * GameRules) together with the score already computed from it via the
+		 * game type's rule formula.
+		 */
+		setCardSelection(
+			state,
+			action: PayloadAction<{ roundId: string; playerId: string; cardIds: string[]; score: number }>,
+		) {
+			const round = state.rounds.find((r) => r.id === action.payload.roundId);
+			if (!round) return;
+			round.scores[action.payload.playerId] = action.payload.score;
+			if (!round.cardSelections) round.cardSelections = {};
+			round.cardSelections[action.payload.playerId] = action.payload.cardIds;
 		},
 
 		/** Leave the setup phase (round 0) and start round 1. */
@@ -224,6 +241,7 @@ export const {
 	setGameType,
 	removePlayer,
 	setScore,
+	setCardSelection,
 	startGame,
 	goToPreviousRound,
 	goToNextRound,

@@ -1,4 +1,5 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
+import type { GameRules } from './GameRules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,6 +16,8 @@ export type GameType = {
 	maxRounds?: number | null;
 	/** Total score at which a match ends. undefined/null = unlimited. */
 	maxScore?: number | null;
+	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
+	rules?: GameRules | null;
 	createdAt: number;
 };
 

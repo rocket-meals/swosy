@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { GameType, ScoringMode } from '../helpers/GameTypesStorage';
 import { DEFAULT_GAME_TYPE_ICON } from '../helpers/GameTypesStorage';
+import type { GamePreset, GameRules } from '../helpers/GameRules';
 export type { GameType, ScoringMode };
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -43,6 +44,27 @@ const gameTypesSlice = createSlice({
 					scoringMode: 'highWins',
 					maxRounds: null,
 					maxScore: null,
+					rules: null,
+					createdAt: Date.now(),
+				};
+				return { payload: gameType };
+			},
+		},
+
+		/** Create a new game type from an imported/preset template (e.g. "Flip Seven laden"). */
+		addGameTypeFromPreset: {
+			reducer(state, action: PayloadAction<GameType>) {
+				state.gameTypes.push(action.payload);
+			},
+			prepare(preset: GamePreset) {
+				const gameType: GameType = {
+					id: generateId(),
+					name: preset.name,
+					icon: preset.icon,
+					scoringMode: preset.scoringMode,
+					maxRounds: preset.maxRounds ?? null,
+					maxScore: preset.maxScore ?? null,
+					rules: preset.rules ?? null,
 					createdAt: Date.now(),
 				};
 				return { payload: gameType };
@@ -74,6 +96,11 @@ const gameTypesSlice = createSlice({
 			if (gameType) gameType.maxScore = action.payload.maxScore;
 		},
 
+		setGameTypeRules(state, action: PayloadAction<{ gameTypeId: string; rules: GameRules | null }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.rules = action.payload.rules;
+		},
+
 		removeGameType(state, action: PayloadAction<string>) {
 			state.gameTypes = state.gameTypes.filter((g) => g.id !== action.payload);
 		},
@@ -83,11 +110,13 @@ const gameTypesSlice = createSlice({
 export const {
 	loadGameTypes,
 	addGameType,
+	addGameTypeFromPreset,
 	renameGameType,
 	setGameTypeIcon,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
+	setGameTypeRules,
 	removeGameType,
 } = gameTypesSlice.actions;
 export default gameTypesSlice.reducer;

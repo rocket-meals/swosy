@@ -2,13 +2,16 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsList, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList, SettingsListGroupTitle, SettingsListTextInput, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
-import { addGameType } from '../../store/gameTypesSlice';
+import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
 import type { AppDispatch, RootState } from '../../store/store';
+import { FLIP_SEVEN_PRESET, parseGamePreset } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
+
+const PRIMARY_COLOR = '#2563eb';
 
 export default function GamesScreen() {
 	const { theme } = useTheme();
@@ -18,6 +21,7 @@ export default function GamesScreen() {
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const filteredGameTypes = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
@@ -42,19 +46,81 @@ export default function GamesScreen() {
 		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
 	}, [gameTypes.length, dispatch]);
 
+	const handleLoadFlipSeven = useCallback(() => {
+		const action = dispatch(addGameTypeFromPreset(FLIP_SEVEN_PRESET));
+		closeModal();
+		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
+	}, [dispatch, closeModal]);
+
+	const handleImportPreset = useCallback(
+		(value: string) => {
+			const preset = parseGamePreset(value);
+			if (!preset) return;
+			const action = dispatch(addGameTypeFromPreset(preset));
+			closeModal();
+			router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
+		},
+		[dispatch, closeModal],
+	);
+
+	const handleOpenImportModal = useCallback(() => {
+		showModal({
+			title: 'Spiel laden',
+			children: (
+				<View style={styles.modalContent}>
+					<SettingsListGroupTitle title="Beispiel" />
+					<SettingsList
+						nativeID={ComponentIds.GAMES_IMPORT_LOAD_FLIP_SEVEN_ROW}
+						label="🃏 Flip Seven laden"
+						value="Fertig konfiguriertes Beispielspiel"
+						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleLoadFlipSeven}
+						groupPosition="single"
+					/>
+					<SettingsListGroupTitle title="Eigenes Spiel importieren" />
+					<SettingsListTextInput
+						nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
+						label="Spiel importieren"
+						leftIcon={<Ionicons name="clipboard-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						modalTitle="Spiel importieren"
+						placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
+						saveLabel="Importieren"
+						multiline
+						numberOfLines={10}
+						textAlignVertical="top"
+						checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
+						onSave={handleImportPreset}
+						groupPosition="single"
+					/>
+				</View>
+			),
+		});
+	}, [showModal, handleLoadFlipSeven, handleImportPreset]);
+
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
-				<TouchableOpacity
-					nativeID={ComponentIds.GAMES_SCREEN_ADD_BUTTON}
-					onPress={handleAddGameType}
-					style={styles.headerButton}
-				>
-					<Ionicons name="add-circle-outline" size={24} color={theme.header.text} />
-				</TouchableOpacity>
+				<View style={styles.headerButtons}>
+					<TouchableOpacity
+						nativeID={ComponentIds.GAMES_SCREEN_IMPORT_BUTTON}
+						onPress={handleOpenImportModal}
+						style={styles.headerButton}
+					>
+						<Ionicons name="cloud-download-outline" size={22} color={theme.header.text} />
+					</TouchableOpacity>
+					<TouchableOpacity
+						nativeID={ComponentIds.GAMES_SCREEN_ADD_BUTTON}
+						onPress={handleAddGameType}
+						style={styles.headerButton}
+					>
+						<Ionicons name="add-circle-outline" size={24} color={theme.header.text} />
+					</TouchableOpacity>
+				</View>
 			),
 		});
-	}, [navigation, theme.header.text, handleAddGameType]);
+	}, [navigation, theme.header.text, handleAddGameType, handleOpenImportModal]);
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -126,9 +192,16 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	headerButtons: {
+		flexDirection: 'row',
+		gap: 12,
+		marginRight: 8,
+	},
 	headerButton: {
 		padding: 4,
-		marginRight: 8,
+	},
+	modalContent: {
+		padding: 10,
 	},
 	searchBarWrapper: {
 		paddingHorizontal: 12,

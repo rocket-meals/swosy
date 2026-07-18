@@ -34,6 +34,7 @@ import {
 	setGameType,
 	removePlayer,
 	setScore,
+	setCardSelection,
 	startGame,
 	goToPreviousRound,
 	goToNextRound,
@@ -52,6 +53,7 @@ import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
 import GameTypeIcon from '../components/GameTypeIcon';
+import CardScoreEntryModal from '../components/CardScoreEntryModal';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -752,6 +754,26 @@ export default function GameScreen() {
 	const handleTilePress = useCallback(
 		(playerId: string) => {
 			if (!currentRound) return;
+			const scoreEntryRules = selectedGameType?.rules?.scoreEntry;
+			if (scoreEntryRules) {
+				showScoreModal({
+					title: 'Punkte eingeben',
+					children: (
+						<CardScoreEntryModal
+							items={scoreEntryRules.items}
+							scoreFormula={scoreEntryRules.scoreFormula}
+							enableBustOnDuplicateNumber={scoreEntryRules.enableBustOnDuplicateNumber}
+							autoFreezeAtNumberCount={scoreEntryRules.autoFreezeAtNumberCount}
+							initialSelection={currentRound.cardSelections?.[playerId] ?? []}
+							onSave={(cardIds, score) => {
+								dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));
+								closeScoreModal();
+							}}
+						/>
+					),
+				});
+				return;
+			}
 			showScoreModal({
 				title: 'Punkte eingeben',
 				children: (
@@ -765,7 +787,7 @@ export default function GameScreen() {
 				),
 			});
 		},
-		[currentRound, showScoreModal, closeScoreModal, dispatch],
+		[currentRound, selectedGameType, showScoreModal, closeScoreModal, dispatch],
 	);
 
 	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);

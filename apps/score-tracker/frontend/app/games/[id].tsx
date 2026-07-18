@@ -21,6 +21,8 @@ import {
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
+	setGameTypeRules,
+	addGameTypeFromPreset,
 	removeGameType,
 } from '../../store/gameTypesSlice';
 import { resetScores, setGameType } from '../../store/gameSlice';
@@ -28,7 +30,9 @@ import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
 import { GAME_TYPE_ICONS } from '../../helpers/GameTypesStorage';
-import type { ScoringMode } from '../../helpers/GameTypesStorage';
+import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
+import type { GamePreset } from '../../helpers/GameRules';
+import { parseGamePreset } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
@@ -42,6 +46,18 @@ function generateHistoryId(): string {
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+/** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
+function gameTypeToPreset(gameType: GameType): GamePreset {
+	return {
+		name: gameType.name,
+		icon: gameType.icon,
+		scoringMode: gameType.scoringMode,
+		maxRounds: gameType.maxRounds ?? null,
+		maxScore: gameType.maxScore ?? null,
+		rules: gameType.rules ?? null,
+	};
 }
 
 // ─── Icon picker modal content ────────────────────────────────────────────────
@@ -257,6 +273,26 @@ export default function GameTypeDetailScreen() {
 		await Clipboard.setStringAsync(gameType.id);
 	}, [gameType]);
 
+	const handleExportPreset = useCallback(async () => {
+		if (!gameType) return;
+		await Clipboard.setStringAsync(JSON.stringify(gameTypeToPreset(gameType), null, 2));
+	}, [gameType]);
+
+	const handleImportPreset = useCallback(
+		(value: string) => {
+			const preset = parseGamePreset(value);
+			if (!preset) return;
+			const action = dispatch(addGameTypeFromPreset(preset));
+			router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
+		},
+		[dispatch],
+	);
+
+	const handleRemoveRules = useCallback(() => {
+		if (!gameType) return;
+		dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: null }));
+	}, [gameType, dispatch]);
+
 	if (!gameType) {
 		return (
 			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
@@ -355,6 +391,51 @@ export default function GameTypeDetailScreen() {
 					leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
 					iconBgColor={DANGER_COLOR}
 					handleFunction={handleDelete}
+					groupPosition="bottom"
+				/>
+
+				<SettingsListGroupTitle title="Spielregeln" />
+				<SettingsList
+					label="Punkte-Eingabe"
+					value={gameType.rules ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
+					leftIcon={<MaterialCommunityIcons name={gameType.rules ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					groupPosition={gameType.rules ? 'top' : 'single'}
+				/>
+				{gameType.rules && (
+					<SettingsList
+						label="Regeln entfernen"
+						value="Zurück zur Zahleneingabe"
+						leftIcon={<Ionicons name="close-circle-outline" size={20} color="#ffffff" />}
+						iconBgColor={DANGER_COLOR}
+						handleFunction={handleRemoveRules}
+						groupPosition="bottom"
+					/>
+				)}
+
+				<SettingsListGroupTitle title="Spiel als Vorlage teilen" />
+				<SettingsList
+					nativeID={ComponentIds.GAME_DETAIL_EXPORT_ROW}
+					label="Dieses Spiel exportieren"
+					value={gameType.name}
+					leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					handleFunction={handleExportPreset}
+					groupPosition="top"
+				/>
+				<SettingsListTextInput
+					nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
+					label="Spiel importieren"
+					leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Spiel importieren"
+					placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
+					saveLabel="Importieren"
+					multiline
+					numberOfLines={10}
+					textAlignVertical="top"
+					checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
+					onSave={handleImportPreset}
 					groupPosition="bottom"
 				/>
 

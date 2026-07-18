@@ -27,6 +27,15 @@ export const PLAYER_COLORS = [
 export type Round = {
 	id: string;
 	scores: Record<string, number | null>; // playerId → score (null = not entered)
+	/**
+	 * playerId → ids of the cards selected for that player this round, for
+	 * game types with custom card-based score entry (see GameRules). The
+	 * score itself still lives in `scores` (pre-computed from this selection
+	 * via the game type's rule formula) so all existing totals/leaderboard
+	 * logic keeps working unchanged; this is only kept so the card picker can
+	 * be re-opened and edited later.
+	 */
+	cardSelections?: Record<string, string[]>;
 };
 
 export type GameStatus = 'setup' | 'active';

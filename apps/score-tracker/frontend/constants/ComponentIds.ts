@@ -46,6 +46,10 @@ export const ComponentIds = {
 	// Score entry modal
 	GAME_SCORE_INPUT_SAVE_BUTTON: 'game-score-input-save-button',
 
+	// Card-based score entry modal (custom game rules, see GameRules)
+	GAME_CARD_SCORE_CARD_PREFIX: 'game-card-score-card-',
+	GAME_CARD_SCORE_SAVE_BUTTON: 'game-card-score-save-button',
+
 	// Settings modal (header gear)
 	GAME_SETTINGS_COLUMNS_PORTRAIT_1: 'game-settings-columns-portrait-1',
 	GAME_SETTINGS_COLUMNS_PORTRAIT_2: 'game-settings-columns-portrait-2',
@@ -68,14 +72,18 @@ export const ComponentIds = {
 
 	// Games (game types) screen
 	GAMES_SCREEN_ADD_BUTTON: 'games-screen-add-button',
+	GAMES_SCREEN_IMPORT_BUTTON: 'games-screen-import-button',
 	GAMES_SCREEN_SEARCH_INPUT: 'games-screen-search-input',
 	GAMES_SCREEN_GAME_ROW_PREFIX: 'games-screen-game-row-',
+	GAMES_IMPORT_LOAD_FLIP_SEVEN_ROW: 'games-import-load-flip-seven-row',
+	GAMES_IMPORT_PRESET_ROW: 'games-import-preset-row',
 	GAME_DETAIL_BACK_BUTTON: 'game-detail-back-button',
 	GAME_DETAIL_EDIT_BUTTON: 'game-detail-edit-button',
 	GAME_DETAIL_DELETE_BUTTON: 'game-detail-delete-button',
 	GAME_DETAIL_ID_ROW: 'game-detail-id-row',
 	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
 	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',
+	GAME_DETAIL_EXPORT_ROW: 'game-detail-export-row',
 
 	// Timer screen
 	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',
