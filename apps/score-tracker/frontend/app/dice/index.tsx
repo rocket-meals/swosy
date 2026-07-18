@@ -271,13 +271,16 @@ export default function DiceScreen() {
 							<>
 								{(['A', 'B'] as const).map((rollKey, index) => {
 									const roll = rollKey === 'A' ? results.rollA : results.rollB;
-									const isKept = results.keptRoll === rollKey;
+									// Only reveal which roll counts once the shuffle has settled - while
+									// still animating, both rolls are shown neutrally so nothing gives
+									// away the outcome mid-shuffle.
+									const isKept = !isRolling && results.keptRoll === rollKey;
 									return (
 										<View
 											key={rollKey}
 											style={[
 												styles.rollSet,
-												{ borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: isKept ? 1 : 0.55 },
+												{ borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: !isRolling && !isKept ? 0.55 : 1 },
 											]}
 										>
 											<View style={styles.rollSetHeader}>
