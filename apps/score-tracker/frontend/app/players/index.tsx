@@ -15,15 +15,87 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from 'expo-router';
-import { addFriend, renameFriend, setFriendColor, setFriendAvatar, removeFriend } from '../../store/friendsSlice';
+import {
+	addFriend,
+	renameFriend,
+	setFriendColor,
+	setFriendAvatar,
+	removeFriend,
+	importFriends,
+} from '../../store/friendsSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { PLAYER_COLORS } from '../../helpers/GameStorage';
+import type { Friend } from '../../helpers/FriendsStorage';
+import { parseFriendsExport } from '../../helpers/FriendsStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { logDebug } from '../../helpers/DebugLogger';
 
+const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const DEBUG_COLOR = '#7c3aed';
 const FRIEND_AVATAR_SIZE = 84; // Same size as the Game scoreboard's player avatars
+
+// ─── Import/export rows (shared between the header "Optionen" modal and the
+// friend detail modal) ─────────────────────────────────────────────────────
+
+function ExportFriendsRow({
+	friends,
+	label,
+	nativeID,
+	groupPosition,
+}: {
+	friends: Friend[];
+	label: string;
+	nativeID?: string;
+	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+}) {
+	const handleExport = useCallback(async () => {
+		await Clipboard.setStringAsync(JSON.stringify(friends, null, 2));
+	}, [friends]);
+
+	return (
+		<SettingsList
+			nativeID={nativeID}
+			label={label}
+			value={friends.length === 1 ? friends[0].name : `${friends.length} Freunde`}
+			leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
+			iconBgColor={PRIMARY_COLOR}
+			handleFunction={handleExport}
+			groupPosition={groupPosition}
+		/>
+	);
+}
+
+function ImportFriendsRow({
+	nativeID,
+	groupPosition,
+}: {
+	nativeID?: string;
+	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+}) {
+	const dispatch = useDispatch<AppDispatch>();
+
+	return (
+		<SettingsListTextInput
+			nativeID={nativeID}
+			label="Freunde importieren"
+			leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+			iconBgColor={PRIMARY_COLOR}
+			modalTitle="Freunde importieren"
+			placeholder='[{"id": "...", "name": "Anna", "color": "#2563eb", "createdAt": 0}]'
+			saveLabel="Importieren"
+			multiline
+			numberOfLines={10}
+			textAlignVertical="top"
+			checkTextInput={(value) => ({ isValid: parseFriendsExport(value) !== null, value })}
+			onSave={(value) => {
+				const parsed = parseFriendsExport(value);
+				if (parsed) dispatch(importFriends(parsed));
+			}}
+			groupPosition={groupPosition}
+		/>
+	);
+}
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -149,6 +221,15 @@ function FriendEditContent({ friendId, onClose }: { friendId: string; onClose: (
 				groupPosition="bottom"
 			/>
 
+			<SettingsListGroupTitle title="Import / Export" />
+			<ExportFriendsRow
+				nativeID={ComponentIds.PLAYER_DETAIL_EXPORT_ROW}
+				friends={[friend]}
+				label="Diesen Freund exportieren"
+				groupPosition="top"
+			/>
+			<ImportFriendsRow nativeID={ComponentIds.PLAYER_DETAIL_IMPORT_ROW} groupPosition="bottom" />
+
 			{debugMode && (
 				<>
 					<SettingsListGroupTitle title="Debug" />
@@ -196,7 +277,7 @@ export default function PlayersScreen() {
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
-	const { show: showFriendModal, close: closeFriendModal } = useMyScrollViewModal();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const filteredFriends = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
@@ -206,12 +287,12 @@ export default function PlayersScreen() {
 
 	const handleOpenFriendModal = useCallback(
 		(friendId: string) => {
-			showFriendModal({
+			showModal({
 				title: 'Freund bearbeiten',
-				children: <FriendEditContent friendId={friendId} onClose={closeFriendModal} />,
+				children: <FriendEditContent friendId={friendId} onClose={closeModal} />,
 			});
 		},
-		[showFriendModal, closeFriendModal],
+		[showModal, closeModal],
 	);
 
 	const handleAddFriend = useCallback(() => {
@@ -221,19 +302,37 @@ export default function PlayersScreen() {
 		handleOpenFriendModal(action.payload.id);
 	}, [friends.length, dispatch, handleOpenFriendModal]);
 
+	const handleOpenOptionsModal = useCallback(() => {
+		showModal({
+			title: '⚙️ Optionen',
+			children: (
+				<View style={styles.modalContent}>
+					<SettingsListGroupTitle title="Import / Export" />
+					<ExportFriendsRow
+						nativeID={ComponentIds.PLAYERS_OPTIONS_EXPORT_ALL_ROW}
+						friends={friends}
+						label="Alle Freunde exportieren"
+						groupPosition="top"
+					/>
+					<ImportFriendsRow nativeID={ComponentIds.PLAYERS_OPTIONS_IMPORT_ROW} groupPosition="bottom" />
+				</View>
+			),
+		});
+	}, [showModal, friends]);
+
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
 				<TouchableOpacity
-					nativeID={ComponentIds.PLAYERS_SCREEN_ADD_BUTTON}
-					onPress={handleAddFriend}
+					nativeID={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}
+					onPress={handleOpenOptionsModal}
 					style={styles.headerButton}
 				>
-					<Ionicons name="person-add-outline" size={22} color={theme.header.text} />
+					<Ionicons name="settings-outline" size={22} color={theme.header.text} />
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, theme.header.text, handleAddFriend]);
+	}, [navigation, theme.header.text, handleOpenOptionsModal]);
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -262,12 +361,22 @@ export default function PlayersScreen() {
 			<ScrollView
 				contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32 }]}
 			>
+				<TouchableOpacity
+					nativeID={ComponentIds.PLAYERS_SCREEN_ADD_BUTTON}
+					style={[styles.addFriendButton, { borderColor: PRIMARY_COLOR }]}
+					onPress={handleAddFriend}
+					activeOpacity={0.7}
+				>
+					<Ionicons name="person-add-outline" size={22} color={PRIMARY_COLOR} />
+					<Text style={[styles.addFriendButtonText, { color: PRIMARY_COLOR }]}>Spieler erstellen</Text>
+				</TouchableOpacity>
+
 				{friends.length === 0 ? (
 					<View style={styles.emptyContainer}>
 						<Ionicons name="people-outline" size={64} color={theme.screen.icon} />
 						<Text style={[styles.emptyText, { color: theme.screen.text }]}>Noch keine Freunde</Text>
 						<Text style={[styles.emptySubtext, { color: theme.screen.placeholder }]}>
-							Füge einen Freund über den + Button im Header hinzu
+							Lege oben deinen ersten Spieler an
 						</Text>
 					</View>
 				) : filteredFriends.length === 0 ? (
@@ -324,6 +433,21 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		padding: 10,
+	},
+	addFriendButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		borderWidth: 1.5,
+		borderStyle: 'dashed',
+		borderRadius: 12,
+		paddingVertical: 14,
+		marginBottom: 12,
+	},
+	addFriendButtonText: {
+		fontSize: 15,
+		fontWeight: '600',
 	},
 	emptyContainer: {
 		flex: 1,

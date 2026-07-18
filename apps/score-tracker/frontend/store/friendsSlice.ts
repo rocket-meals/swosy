@@ -80,6 +80,22 @@ const friendsSlice = createSlice({
 		removeFriend(state, action: PayloadAction<string>) {
 			state.friends = state.friends.filter((f) => f.id !== action.payload);
 		},
+
+		/**
+		 * Merge an imported friends list into the roster: friends whose id
+		 * already exists are overwritten with the imported data, new ids are
+		 * appended. Re-importing the same export is therefore idempotent.
+		 */
+		importFriends(state, action: PayloadAction<Friend[]>) {
+			for (const imported of action.payload) {
+				const existing = state.friends.find((f) => f.id === imported.id);
+				if (existing) {
+					Object.assign(existing, imported);
+				} else {
+					state.friends.push(imported);
+				}
+			}
+		},
 	},
 });
 
@@ -91,5 +107,6 @@ export const {
 	setFriendColor,
 	setFriendAvatar,
 	removeFriend,
+	importFriends,
 } = friendsSlice.actions;
 export default friendsSlice.reducer;

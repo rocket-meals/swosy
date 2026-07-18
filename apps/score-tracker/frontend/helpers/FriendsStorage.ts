@@ -44,3 +44,33 @@ export async function loadFriends(): Promise<Friend[]> {
 		return [];
 	}
 }
+
+// ─── Import/export ──────────────────────────────────────────────────────────
+
+function isValidFriend(value: unknown): value is Friend {
+	if (typeof value !== 'object' || value === null) return false;
+	const candidate = value as Record<string, unknown>;
+	return (
+		typeof candidate.id === 'string' &&
+		typeof candidate.name === 'string' &&
+		typeof candidate.color === 'string' &&
+		typeof candidate.createdAt === 'number'
+	);
+}
+
+/**
+ * Parse a friends-export JSON string (as produced by `JSON.stringify` on a
+ * `Friend[]`, e.g. the "Freunde exportieren" clipboard payload) for import.
+ * Returns the parsed list, or `null` if the text isn't a valid export.
+ */
+export function parseFriendsExport(text: string): Friend[] | null {
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(text);
+	} catch {
+		return null;
+	}
+	if (!Array.isArray(parsed) || parsed.length === 0) return null;
+	if (!parsed.every(isValidFriend)) return null;
+	return parsed;
+}

@@ -56,8 +56,13 @@ export const ComponentIds = {
 
 	// Players (friends) screen
 	PLAYERS_SCREEN_ADD_BUTTON: 'players-screen-add-button',
+	PLAYERS_SCREEN_OPTIONS_BUTTON: 'players-screen-options-button',
 	PLAYERS_SCREEN_SEARCH_INPUT: 'players-screen-search-input',
 	PLAYERS_SCREEN_FRIEND_ROW_PREFIX: 'players-screen-friend-row-',
+	PLAYERS_OPTIONS_EXPORT_ALL_ROW: 'players-options-export-all-row',
+	PLAYERS_OPTIONS_IMPORT_ROW: 'players-options-import-row',
+	PLAYER_DETAIL_EXPORT_ROW: 'player-detail-export-row',
+	PLAYER_DETAIL_IMPORT_ROW: 'player-detail-import-row',
 	PLAYER_DETAIL_DELETE_BUTTON: 'player-detail-delete-button',
 	PLAYER_DETAIL_ID_ROW: 'player-detail-id-row',
 
