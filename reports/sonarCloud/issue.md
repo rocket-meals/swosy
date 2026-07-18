@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 8 | 8 |
 | 🐛 Reliability | 53 | 42 |
-| 🔧 Maintainability | 1951 | 0 |
+| 🔧 Maintainability | 1952 | 0 |
 
-**Total issues:** 2012 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2013 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -31,8 +31,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/dice/index.tsx#L51
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/games/[id].tsx:39
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L39
+  apps/score-tracker/frontend/app/games/[id].tsx:40
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L40
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/app/index.tsx:75
