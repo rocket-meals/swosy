@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListGroupTitle, useTheme, type Theme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
 
 type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -42,44 +42,46 @@ const ROLL_MODES: { key: RollMode; label: string; icon: MCIName }[] = [
 
 type PoolDie = { id: string; sides: number };
 type DieResult = PoolDie & { value: number };
-type RollResult = {
-	mode: RollMode;
-	primary: DieResult[];
-	total: number;
-	altTotal?: number;
-};
+type DiceRoll = { dice: DieResult[]; total: number };
+type RollResult =
+	| { mode: 'sum'; dice: DieResult[]; total: number }
+	| { mode: 'advantage' | 'disadvantage'; rollA: DiceRoll; rollB: DiceRoll; keptRoll: 'A' | 'B'; keptTotal: number };
 
 function rollValue(sides: number): number {
 	return Math.floor(Math.random() * sides) + 1;
 }
 
-function rollPoolOnce(pool: PoolDie[]): DieResult[] {
-	return pool.map((die) => ({ ...die, value: rollValue(die.sides) }));
+function rollPoolOnce(pool: PoolDie[]): DiceRoll {
+	const dice = pool.map((die) => ({ ...die, value: rollValue(die.sides) }));
+	return { dice, total: dice.reduce((sum, die) => sum + die.value, 0) };
 }
 
-function sumResults(results: DieResult[]): number {
-	return results.reduce((sum, die) => sum + die.value, 0);
-}
-
-// For advantage/disadvantage the whole pool is rolled twice and the set with
-// the higher (advantage) or lower (disadvantage) total is kept - a natural
-// generalisation of the classic single-d20 "roll twice, keep one" rule to an
-// arbitrary dice pool.
+// Nothing is hidden or "loaded": for advantage/disadvantage the whole pool is
+// genuinely rolled twice and BOTH rolls are shown - only the roll with the
+// higher (advantage) or lower (disadvantage) total is highlighted as the one
+// that counts. A natural generalisation of the classic single-d20 "roll
+// twice, keep one" rule to an arbitrary dice pool.
 function computeRoll(pool: PoolDie[], mode: RollMode): RollResult {
-	const setA = rollPoolOnce(pool);
-	const totalA = sumResults(setA);
+	const rollA = rollPoolOnce(pool);
 	if (mode === 'sum') {
-		return { mode, primary: setA, total: totalA };
+		return { mode, dice: rollA.dice, total: rollA.total };
 	}
-	const setB = rollPoolOnce(pool);
-	const totalB = sumResults(setB);
-	const keepA = mode === 'advantage' ? totalA >= totalB : totalA <= totalB;
-	return {
-		mode,
-		primary: keepA ? setA : setB,
-		total: keepA ? totalA : totalB,
-		altTotal: keepA ? totalB : totalA,
-	};
+	const rollB = rollPoolOnce(pool);
+	const keptRoll = (mode === 'advantage' ? rollA.total >= rollB.total : rollA.total <= rollB.total) ? 'A' : 'B';
+	return { mode, rollA, rollB, keptRoll, keptTotal: keptRoll === 'A' ? rollA.total : rollB.total };
+}
+
+function DiceValueRow({ dice, theme }: { dice: DieResult[]; theme: Theme }) {
+	return (
+		<View style={styles.resultsRow}>
+			{dice.map((die) => (
+				<View key={die.id} style={[styles.resultBadge, { backgroundColor: theme.screen.iconBg }]}>
+					<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
+					<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
+				</View>
+			))}
+		</View>
+	);
 }
 
 export default function DiceScreen() {
@@ -111,7 +113,7 @@ export default function DiceScreen() {
 
 	const handleAddCustom = useCallback(() => {
 		if (pool.length >= MAX_POOL_SIZE) return;
-		const sides = parseInt(customSidesText, 10);
+		const sides = Number.parseInt(customSidesText, 10);
 		if (!Number.isFinite(sides) || sides < MIN_CUSTOM_SIDES || sides > MAX_CUSTOM_SIDES) return;
 		addDie(sides);
 		setCustomSidesText('');
@@ -119,18 +121,18 @@ export default function DiceScreen() {
 	}, [customSidesText, addDie, pool.length]);
 
 	// Shuffle the faces rapidly for a moment before settling on the final roll -
-	// cheap "animation" without needing reanimated.
+	// cheap "animation" without needing reanimated. Each tick is already a
+	// genuine full roll via computeRoll, so the very last tick before the
+	// interval clears simply becomes the final result.
 	const handleRoll = useCallback(() => {
 		if (isRolling || pool.length === 0) return;
 		setIsRolling(true);
 		const startedAt = Date.now();
 		animationRef.current = setInterval(() => {
-			const shuffled = rollPoolOnce(pool);
-			setResults({ mode: rollMode, primary: shuffled, total: sumResults(shuffled) });
+			setResults(computeRoll(pool, rollMode));
 			if (Date.now() - startedAt >= ROLL_ANIMATION_MS && animationRef.current) {
 				clearInterval(animationRef.current);
 				animationRef.current = null;
-				setResults(computeRoll(pool, rollMode));
 				setIsRolling(false);
 			}
 		}, ROLL_ANIMATION_STEP_MS);
@@ -260,19 +262,39 @@ export default function DiceScreen() {
 
 				{results && (
 					<View style={styles.resultsArea}>
-						<View style={styles.resultsRow}>
-							{results.primary.map((die) => (
-								<View key={die.id} style={[styles.resultBadge, { backgroundColor: theme.screen.iconBg }]}>
-									<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
-									<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
-								</View>
-							))}
-						</View>
-						<Text style={[styles.totalText, { color: theme.screen.text }]}>Summe: {results.total}</Text>
-						{results.altTotal !== undefined && (
-							<Text style={[styles.altText, { color: theme.screen.placeholder }]}>
-								{results.mode === 'advantage' ? 'Vorteil' : 'Nachteil'} - verworfener Wurf: {results.altTotal}
-							</Text>
+						{results.mode === 'sum' ? (
+							<>
+								<DiceValueRow dice={results.dice} theme={theme} />
+								<Text style={[styles.totalText, { color: theme.screen.text }]}>Summe: {results.total}</Text>
+							</>
+						) : (
+							<>
+								{(['A', 'B'] as const).map((rollKey, index) => {
+									const roll = rollKey === 'A' ? results.rollA : results.rollB;
+									const isKept = results.keptRoll === rollKey;
+									return (
+										<View
+											key={rollKey}
+											style={[
+												styles.rollSet,
+												{ borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: isKept ? 1 : 0.55 },
+											]}
+										>
+											<View style={styles.rollSetHeader}>
+												<Text style={[styles.rollSetLabel, { color: theme.screen.text }]}>Wurf {index + 1}</Text>
+												{isKept && (
+													<View style={styles.keptBadge}>
+														<Text style={styles.keptBadgeText}>zählt</Text>
+													</View>
+												)}
+											</View>
+											<DiceValueRow dice={roll.dice} theme={theme} />
+											<Text style={[styles.rollSetTotal, { color: theme.screen.text }]}>Summe: {roll.total}</Text>
+										</View>
+									);
+								})}
+								<Text style={[styles.totalText, { color: theme.screen.text }]}>Ergebnis: {results.keptTotal}</Text>
+							</>
 						)}
 					</View>
 				)}
@@ -407,6 +429,45 @@ const styles = StyleSheet.create({
 	resultsArea: {
 		alignItems: 'center',
 		paddingTop: 32,
+		paddingHorizontal: 16,
+	},
+	rollSet: {
+		width: '100%',
+		alignItems: 'center',
+		paddingVertical: 14,
+		paddingHorizontal: 12,
+		borderRadius: 14,
+		borderWidth: 2,
+		marginBottom: 12,
+	},
+	rollSetHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginBottom: 10,
+	},
+	rollSetLabel: {
+		fontSize: 13,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+		letterSpacing: 0.4,
+	},
+	keptBadge: {
+		paddingHorizontal: 8,
+		paddingVertical: 2,
+		borderRadius: 10,
+		backgroundColor: PRIMARY_COLOR,
+	},
+	keptBadgeText: {
+		color: '#ffffff',
+		fontSize: 11,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+	},
+	rollSetTotal: {
+		fontSize: 16,
+		fontWeight: '700',
+		marginTop: 10,
 	},
 	resultsRow: {
 		flexDirection: 'row',
@@ -433,10 +494,6 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: '700',
 		marginTop: 16,
-	},
-	altText: {
-		fontSize: 13,
-		marginTop: 4,
 	},
 	footer: {
 		borderTopWidth: StyleSheet.hairlineWidth,
