@@ -1,16 +1,16 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-18T20:20:09.135Z",
+  "report_timestamp": "2026-07-18T21:59:00.507Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1.5,
-          "maximum": 103,
-          "average": 1.553030303030303,
-          "amountSavedValuesForKeys": 4100,
-          "amountKeys": 29
+          "maximum": 104,
+          "average": 1.5535444947209653,
+          "amountSavedValuesForKeys": 4120,
+          "amountKeys": 28
         },
         "invertedParameterToMethods": {
           "median": 1.5,
@@ -21,51 +21,51 @@
         },
         "invertedParameterToClasses": {
           "median": 1,
-          "maximum": 103,
-          "average": 1.5690776884806736,
-          "amountSavedValuesForKeys": 4100,
-          "amountKeys": 29
+          "maximum": 104,
+          "average": 1.5695238095238095,
+          "amountSavedValuesForKeys": 4120,
+          "amountKeys": 28
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4768,
-        "detection_time_ms": 92,
+        "ast_generation_time_ms": 4502,
+        "detection_time_ms": 82,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 141.23,
-          "os_memory_free": 14885359616,
-          "os_memory_total": 16766423040,
+          "os_uptime": 115.56,
+          "os_memory_free": 14971547648,
+          "os_memory_total": 16766414848,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 14,
-    "amount_files_with_data_clumps": 12,
+    "amount_classes_or_interfaces_with_data_clumps": 15,
+    "amount_files_with_data_clumps": 13,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 20,
+    "fields_to_fields_data_clump": 22,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 20
+    "amount_data_clumps": 22
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "216a3d2216f2baaa628fd17e2366eaf70b15cc0b",
-    "project_commit_hash": "216a3d2216f2baaa628fd17e2366eaf70b15cc0b",
+    "project_version": "3558d3d8999ea4cf31919934cf72197c9a399ddb",
+    "project_commit_hash": "3558d3d8999ea4cf31919934cf72197c9a399ddb",
     "project_tag": null,
-    "project_commit_date": "1784405893",
+    "project_commit_date": "1784411830",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 565,
-    "number_of_classes_or_interfaces": 1185,
+    "number_of_files": 567,
+    "number_of_classes_or_interfaces": 1194,
     "number_of_methods": 1428,
-    "number_of_data_fields": 4100,
+    "number_of_data_fields": 4120,
     "number_of_method_parameters": 1562
   },
   "detector": {
@@ -532,9 +532,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 9,
+              "startLine": 10,
               "startColumn": 2,
-              "endLine": 9,
+              "endLine": 10,
               "endColumn": 13
             }
           },
@@ -557,9 +557,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 10,
+              "startLine": 11,
               "startColumn": 2,
-              "endLine": 10,
+              "endLine": 11,
               "endColumn": 15
             }
           },
@@ -582,9 +582,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 21,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 21,
               "endColumn": 20
             }
           },
@@ -917,6 +917,178 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameRules.ts-apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset-apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType-nameiconscoringModemaxRoundsmaxScorerules": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameRules.ts-apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset-apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType-nameiconscoringModemaxRoundsmaxScorerules",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameRules.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset",
+      "from_class_or_interface_name": "GamePreset",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType",
+      "to_class_or_interface_name": "GameType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 2,
+            "endLine": 65,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/icon": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/icon",
+          "name": "icon",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/icon",
+            "name": "icon",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 66,
+            "startColumn": 2,
+            "endLine": 66,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/scoringMode": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/scoringMode",
+          "name": "scoringMode",
+          "type": "ScoringMode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/scoringMode",
+            "name": "scoringMode",
+            "type": "ScoringMode",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 67,
+            "startColumn": 2,
+            "endLine": 67,
+            "endColumn": 27
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxRounds": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxRounds",
+          "name": "maxRounds",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxRounds",
+            "name": "maxRounds",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 68,
+            "startColumn": 2,
+            "endLine": 68,
+            "endColumn": 28
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxScore": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxScore",
+          "name": "maxScore",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxScore",
+            "name": "maxScore",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 69,
+            "startColumn": 2,
+            "endLine": 69,
+            "endColumn": 27
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/rules": {
+          "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/rules",
+          "name": "rules",
+          "type": "GameRules | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/rules",
+            "name": "rules",
+            "type": "GameRules | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 70,
+            "startColumn": 2,
+            "endLine": 70,
+            "endColumn": 27
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeId": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeId",
@@ -952,9 +1124,9 @@
             }
           },
           "position": {
-            "startLine": 35,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 35,
+            "endLine": 44,
             "endColumn": 20
           }
         },
@@ -977,9 +1149,9 @@
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 45,
             "endColumn": 18
           }
         },
@@ -1002,9 +1174,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 37,
+            "endLine": 46,
             "endColumn": 21
           }
         },
@@ -1027,9 +1199,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 47,
             "endColumn": 28
           }
         },
@@ -1052,9 +1224,9 @@
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 49,
             "endColumn": 22
           }
         }
@@ -1343,9 +1515,9 @@
             }
           },
           "position": {
-            "startLine": 9,
+            "startLine": 10,
             "startColumn": 2,
-            "endLine": 9,
+            "endLine": 10,
             "endColumn": 13
           }
         },
@@ -1368,9 +1540,9 @@
             }
           },
           "position": {
-            "startLine": 10,
+            "startLine": 11,
             "startColumn": 2,
-            "endLine": 10,
+            "endLine": 11,
             "endColumn": 15
           }
         },
@@ -1393,10 +1565,182 @@
             }
           },
           "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameTypesStorage.ts-apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType-apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset-nameiconscoringModemaxRoundsmaxScorerules": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameTypesStorage.ts-apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType-apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset-nameiconscoringModemaxRoundsmaxScorerules",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType",
+      "from_class_or_interface_name": "GameType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameRules.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset",
+      "to_class_or_interface_name": "GamePreset",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/name": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 2,
+              "endLine": 65,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/icon": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/icon",
+          "name": "icon",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/icon",
+            "name": "icon",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 66,
+              "startColumn": 2,
+              "endLine": 66,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 15
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/scoringMode": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/scoringMode",
+          "name": "scoringMode",
+          "type": "ScoringMode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/scoringMode",
+            "name": "scoringMode",
+            "type": "ScoringMode",
+            "modifiers": [],
+            "position": {
+              "startLine": 67,
+              "startColumn": 2,
+              "endLine": 67,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 27
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxRounds": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxRounds",
+          "name": "maxRounds",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxRounds",
+            "name": "maxRounds",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 68,
+              "startColumn": 2,
+              "endLine": 68,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 28
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxScore": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/maxScore",
+          "name": "maxScore",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/maxScore",
+            "name": "maxScore",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 69,
+              "startColumn": 2,
+              "endLine": 69,
+              "endColumn": 27
+            }
+          },
+          "position": {
             "startLine": 18,
             "startColumn": 2,
             "endLine": 18,
-            "endColumn": 20
+            "endColumn": 27
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/rules": {
+          "key": "apps/score-tracker/frontend/helpers/GameTypesStorage.ts/interface/GameType/memberField/rules",
+          "name": "rules",
+          "type": "GameRules | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameRules.ts/interface/GamePreset/memberField/rules",
+            "name": "rules",
+            "type": "GameRules | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 70,
+              "startColumn": 2,
+              "endLine": 70,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 27
           }
         }
       },
@@ -1433,9 +1777,9 @@
             "type": "Player[]",
             "modifiers": [],
             "position": {
-              "startLine": 35,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 35,
+              "endLine": 44,
               "endColumn": 20
             }
           },
@@ -1458,9 +1802,9 @@
             "type": "Round[]",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 45,
               "endColumn": 18
             }
           },
@@ -1483,9 +1827,9 @@
             "type": "GameStatus",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 37,
+              "endLine": 46,
               "endColumn": 21
             }
           },
@@ -1508,9 +1852,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 47,
               "endColumn": 28
             }
           },
@@ -1533,9 +1877,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 49,
               "endColumn": 22
             }
           },
