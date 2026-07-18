@@ -571,7 +571,10 @@ export default function GameScreen() {
 
 	const currentRound = rounds[currentRoundIndex] ?? null;
 	const currentRoundNumber = currentRoundIndex + 1;
-	const isLastPossibleRound = matchFinished || (maxRounds != null && currentRoundNumber >= maxRounds);
+	// A finished match only blocks *advancing past the end* - paging forward
+	// through already-played rounds (after having gone back) must keep working.
+	const isLastPossibleRound =
+		(matchFinished && currentRoundIndex >= rounds.length - 1) || (maxRounds != null && currentRoundNumber >= maxRounds);
 
 	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
