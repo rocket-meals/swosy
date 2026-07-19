@@ -32,18 +32,30 @@ import { computeEdgesFromRoutePoints } from './RouteDisplayHelper';
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 16;
+export const WORLD_BUILDING_ID = 17;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
 
 /**
- * H3 resolution used for the red walk-path line drawn on the map.  One step
- * finer than the displayed h10 tile resolution, giving a more accurate line.
+ * Maximum desired spacing (in metres) between consecutive red-line points.
+ * The red-line resolution below is chosen as the coarsest H3 resolution whose
+ * average edge length stays within this limit.
+ */
+export const RED_LINE_MAX_POINT_SPACING_METERS = 10;
+
+/**
+ * H3 resolution used for the red walk-path line drawn on the map.
  * This is the single authoritative definition — all red-line edge computations
  * import this constant rather than hard-coding the number.
+ *
+ * Resolution 12 is the coarsest H3 resolution whose average edge length
+ * (~9.4 m, see https://h3geo.org/docs/core-library/restable) stays within
+ * {@link RED_LINE_MAX_POINT_SPACING_METERS}; resolution 11 (previously used)
+ * averages ~24.9 m.  Legacy h11 edges stored on activities/routes are
+ * migrated lazily on load and via the {@link WORLD_BUILDING_ID} world rebuild.
  */
-export const RED_LINE_GRID_RESOLUTION = 11;
+export const RED_LINE_GRID_RESOLUTION = 12;
 
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
@@ -522,29 +534,29 @@ export function synthesizeManualActivityRoutePoints(
 		? (distanceKm * 1000) / durationSeconds
 		: 0;
 
-	// Build a fine-grained h11 path:
-	//  1. Convert every h10 tile to its h11 center-child.
-	//  2. Between consecutive h11 cells, fill in intermediate h11 cells using
-	//     gridPathCells so the synthetic route points follow the actual h11 grid
-	//     instead of jumping from h10 centre to h10 centre.
-	const h11Path: string[] = [];
+	// Build a fine-grained red-line path:
+	//  1. Convert every h10 tile to its center-child at RED_LINE_GRID_RESOLUTION.
+	//  2. Between consecutive red-line cells, fill in intermediate cells using
+	//     gridPathCells so the synthetic route points follow the actual red-line
+	//     grid instead of jumping from h10 centre to h10 centre.
+	const redLinePath: string[] = [];
 	for (let i = 0; i < hexTilesOrdered.length; i++) {
 		try {
-			const h11Cell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION) || hexTilesOrdered[i];
-			if (h11Path.length === 0) {
-				h11Path.push(h11Cell);
+			const redLineCell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION) || hexTilesOrdered[i];
+			if (redLinePath.length === 0) {
+				redLinePath.push(redLineCell);
 			} else {
-				const prev = h11Path[h11Path.length - 1];
-				if (prev === h11Cell) continue;
+				const prev = redLinePath[redLinePath.length - 1];
+				if (prev === redLineCell) continue;
 				try {
-					const pathCells = gridPathCells(prev, h11Cell);
+					const pathCells = gridPathCells(prev, redLineCell);
 					// pathCells[0] is prev (already included); add the rest.
 					for (let j = 1; j < pathCells.length; j++) {
-						h11Path.push(pathCells[j]);
+						redLinePath.push(pathCells[j]);
 					}
 				} catch {
 					// Cells on different icosahedron faces – add directly.
-					h11Path.push(h11Cell);
+					redLinePath.push(redLineCell);
 				}
 			}
 		} catch {
@@ -552,15 +564,15 @@ export function synthesizeManualActivityRoutePoints(
 		}
 	}
 
-	if (h11Path.length === 0) return [];
+	if (redLinePath.length === 0) return [];
 
 	// Distribute timestamps evenly: first point at startedAt, last at startedAt + durationMs.
-	const step = h11Path.length > 1 ? durationMs / (h11Path.length - 1) : 0;
+	const step = redLinePath.length > 1 ? durationMs / (redLinePath.length - 1) : 0;
 
 	const points: RoutePoint[] = [];
-	for (let i = 0; i < h11Path.length; i++) {
+	for (let i = 0; i < redLinePath.length; i++) {
 		try {
-			const [lat, lng] = cellToLatLng(h11Path[i]);
+			const [lat, lng] = cellToLatLng(redLinePath[i]);
 			points.push({
 				lat,
 				lng,

@@ -555,6 +555,8 @@ export const HEX_TILE_SCRIPT = `
     var ROUTE_LAYER_IDS = [
       'route-seg-border-layer',
       'route-seg-color-layer',
+      'road-match-border-layer',
+      'road-match-color-layer',
     ];
     for (var ri = 0; ri < ROUTE_LAYER_IDS.length; ri++) {
       if (map.getLayer(ROUTE_LAYER_IDS[ri])) map.moveLayer(ROUTE_LAYER_IDS[ri]);
@@ -565,6 +567,18 @@ export const HEX_TILE_SCRIPT = `
     var BILLBOARD_LAYER_REF = 'billboard-3d-layer';
     if (map.getLayer(BILLBOARD_LAYER_REF)) {
       map.moveLayer(BILLBOARD_LAYER_REF);
+    }
+    // Marker-like point layers (route start, raw GPS points, replay player)
+    // must always stay above route/road lines and billboards so the user/player
+    // marker is never covered. NOTE: ids must match the MapLibre HTML
+    // (index.html) and REPLAY_PLAYER_LAYER below.
+    var MARKER_LAYER_IDS = [
+      'route-start-layer',
+      'debug-gps-points-layer',
+      REPLAY_PLAYER_LAYER,
+    ];
+    for (var mi = 0; mi < MARKER_LAYER_IDS.length; mi++) {
+      if (map.getLayer(MARKER_LAYER_IDS[mi])) map.moveLayer(MARKER_LAYER_IDS[mi]);
     }
     notifyViewport();
   }

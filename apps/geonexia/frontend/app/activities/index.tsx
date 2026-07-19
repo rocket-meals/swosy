@@ -698,7 +698,7 @@ export default function ActivitiesScreen() {
 												dispatch(addWalkedEdges(edges));
 											}
 											// Record red-line edges using the activity's already-computed
-											// h11 route points (synthesized in handleSave).
+											// red-line route points (synthesized in handleSave).
 											const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
 											if (edgesRedLine.length > 0) {
 												dispatch(addWalkedEdgesRedLine(edgesRedLine));

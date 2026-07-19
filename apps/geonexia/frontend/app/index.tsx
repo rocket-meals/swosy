@@ -388,8 +388,10 @@ function buildWalkPathGeoJson(
 	const features: WalkPathFeature[] = [];
 	const useRedLine = (walkedEdgesRedLine && walkedEdgesRedLine.length > 0);
 	const edgesToDraw = useRedLine ? walkedEdgesRedLine : walkedEdges;
-	// Parent resolution for red-line edges: RED_LINE_GRID_RESOLUTION - 1 = 10
-	const parentRes = RED_LINE_GRID_RESOLUTION - 1;
+	// Parent resolution for the viewport check of red-line edges: the viewport
+	// tiles are rendered at h10, so red-line cells (h12, legacy h11) are mapped
+	// to their h10 parent regardless of the red-line resolution.
+	const parentRes = H3_DEFAULT_RESOLUTION;
 
 	for (const edge of edgesToDraw) {
 		const colonIdx = edge.indexOf(':');

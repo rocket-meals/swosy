@@ -32,6 +32,7 @@ import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionH
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import { computeActivityData, findEnclosedCellsFromHexTiles, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
+import { fetchRoadWaysForBounds, matchRouteToRoads } from '../../helpers/RoadMatchHelper';
 import type { AppDispatch, RootState } from '../../store/store';
 import { startRun, markVisited, markEnclosed, addWalkedEdges } from '../../store/hexTileSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -315,6 +316,8 @@ export default function RouteDetailScreen() {
 	const [addAnchorTileIndex, setAddAnchorTileIndex] = useState<number | null>(null);
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const showRoadMatch = useSelector((state: RootState) => state.displaySettings.showRoadMatch);
+	const roadMatchJunctionMode = useSelector((state: RootState) => state.displaySettings.roadMatchJunctionMode);
 	const dispatch = useDispatch<AppDispatch>();
 	const isDebugMode = useDebugMode();
 	const { showAlert } = useGeonexiaAlert();
@@ -433,10 +436,15 @@ export default function RouteDetailScreen() {
 	}, [id]);
 
 	// Migration: compute walkedEdgesRedLine from the first activity's routePoints
-	// when the field is absent (older saves that pre-date this feature).
+	// when the field is absent (older saves that pre-date this feature) or when
+	// it was computed at an outdated red-line resolution (e.g. legacy h11 edges
+	// from before the switch to RED_LINE_GRID_RESOLUTION = 12).
 	useEffect(() => {
 		if (!route || !isH3Available()) return;
-		if (route.walkedEdgesRedLine !== undefined) return;
+		if (
+			route.walkedEdgesRedLine !== undefined &&
+			route.walkedEdgesRedLineResolution === RED_LINE_GRID_RESOLUTION
+		) return;
 		// Find the oldest activity with routePoints to use as the reference path.
 		// routeActivities is sorted newest-first, so iterate backwards.
 		let reference: SavedActivity | undefined;
@@ -468,7 +476,13 @@ export default function RouteDetailScreen() {
 			const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(route, hexTileRecords);
 			mapRef.current.sendToMap({ hexRouteOutlineMode: true });
 			mapRef.current.sendToMap({ hexTileGeoJson });
-			mapRef.current.sendToMap({ hexWalkPathGeoJson });
+			// In Straßen/Wege mode the direct cell-to-cell walk path stays hidden;
+			// the road-match effect below sends the road-matched route line instead.
+			mapRef.current.sendToMap({
+				hexWalkPathGeoJson: showRoadMatch
+					? { type: 'FeatureCollection', features: [] }
+					: hexWalkPathGeoJson,
+			});
 		} catch (err) {
 			console.warn('[RouteDetailScreen] Failed to build route display GeoJSON:', err);
 		}
@@ -504,7 +518,56 @@ export default function RouteDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, route, hexTileRecords]);
+	}, [mapMounted, route, hexTileRecords, showRoadMatch]);
+
+	// ── Straßen/Wege mode: render the route snapped onto the real road/path
+	// network. The route geometry starts from the red-line (hx) cell centres:
+	// each h10 tile is mapped to its center-child at RED_LINE_GRID_RESOLUTION
+	// and gaps are filled along the red-line grid (synthesizeManualActivityRoutePoints),
+	// then the resulting polyline is matched onto the fetched road network and
+	// sent as the walk-path line in place of the direct cell-to-cell path.
+	useEffect(() => {
+		if (!showRoadMatch || !mapMounted || !route || !mapRef.current) return;
+		if (!isH3Available() || route.hexTiles.length === 0) return;
+
+		// Synthetic points along the red-line grid; only the coordinates are
+		// used here, so duration/distance are dummy values.
+		const redLinePoints = synthesizeManualActivityRoutePoints(route.hexTiles, 0, 1, 0);
+		const redLineCoords: [number, number][] = redLinePoints.map((p) => [p.lng, p.lat]);
+		if (redLineCoords.length < 2) return;
+
+		const bounds = computeHexBounds(route.hexTiles);
+		if (!bounds) return;
+
+		let cancelled = false;
+		const marginDeg = 0.01; // ~1km padding so nearby roads just outside the route's bbox are still found
+		fetchRoadWaysForBounds({
+			minLat: bounds.minLat - marginDeg,
+			minLng: bounds.minLng - marginDeg,
+			maxLat: bounds.maxLat + marginDeg,
+			maxLng: bounds.maxLng + marginDeg,
+		})
+			.then((ways) => {
+				if (cancelled || !mapRef.current) return;
+				const matched = matchRouteToRoads(redLineCoords, ways, { junctionMode: roadMatchJunctionMode });
+				if (matched.length < 2) return;
+				mapRef.current.sendToMap({
+					hexWalkPathGeoJson: {
+						type: 'FeatureCollection',
+						features: [{
+							type: 'Feature',
+							geometry: { type: 'LineString', coordinates: matched },
+							properties: {},
+						}],
+					},
+				});
+			})
+			.catch((err) => {
+				console.warn('[RouteDetailScreen] Failed to match route to roads:', err);
+			});
+
+		return () => { cancelled = true; };
+	}, [showRoadMatch, mapMounted, route, roadMatchJunctionMode]);
 
 	// ── Fetch tile features for each hex tile using TileFeatureHelper ────
 	useEffect(() => {
