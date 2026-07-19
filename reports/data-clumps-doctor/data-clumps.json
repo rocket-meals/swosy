@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-18T21:59:00.507Z",
+  "report_timestamp": "2026-07-19T04:14:26.179Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,19 +28,19 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4502,
-        "detection_time_ms": 82,
+        "ast_generation_time_ms": 4084,
+        "detection_time_ms": 77,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 115.56,
-          "os_memory_free": 14971547648,
-          "os_memory_total": 16766414848,
+          "os_uptime": 126.79,
+          "os_memory_free": 14897336320,
+          "os_memory_total": 16765386752,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+          "os_cpu_speed": 3000
         }
       }
     },
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "3558d3d8999ea4cf31919934cf72197c9a399ddb",
-    "project_commit_hash": "3558d3d8999ea4cf31919934cf72197c9a399ddb",
+    "project_version": "1c4cd5834f607fa1ae13ce8c58a3da8ea68ff5c9",
+    "project_commit_hash": "1c4cd5834f607fa1ae13ce8c58a3da8ea68ff5c9",
     "project_tag": null,
-    "project_commit_date": "1784411830",
+    "project_commit_date": "1784434349",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -952,9 +952,9 @@
             }
           },
           "position": {
-            "startLine": 65,
+            "startLine": 73,
             "startColumn": 2,
-            "endLine": 65,
+            "endLine": 73,
             "endColumn": 15
           }
         },
@@ -977,9 +977,9 @@
             }
           },
           "position": {
-            "startLine": 66,
+            "startLine": 74,
             "startColumn": 2,
-            "endLine": 66,
+            "endLine": 74,
             "endColumn": 15
           }
         },
@@ -1002,9 +1002,9 @@
             }
           },
           "position": {
-            "startLine": 67,
+            "startLine": 75,
             "startColumn": 2,
-            "endLine": 67,
+            "endLine": 75,
             "endColumn": 27
           }
         },
@@ -1027,9 +1027,9 @@
             }
           },
           "position": {
-            "startLine": 68,
+            "startLine": 76,
             "startColumn": 2,
-            "endLine": 68,
+            "endLine": 76,
             "endColumn": 28
           }
         },
@@ -1052,9 +1052,9 @@
             }
           },
           "position": {
-            "startLine": 69,
+            "startLine": 77,
             "startColumn": 2,
-            "endLine": 69,
+            "endLine": 77,
             "endColumn": 27
           }
         },
@@ -1077,9 +1077,9 @@
             }
           },
           "position": {
-            "startLine": 70,
+            "startLine": 78,
             "startColumn": 2,
-            "endLine": 70,
+            "endLine": 78,
             "endColumn": 27
           }
         }
@@ -1605,9 +1605,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 65,
+              "startLine": 73,
               "startColumn": 2,
-              "endLine": 65,
+              "endLine": 73,
               "endColumn": 15
             }
           },
@@ -1630,9 +1630,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 66,
+              "startLine": 74,
               "startColumn": 2,
-              "endLine": 66,
+              "endLine": 74,
               "endColumn": 15
             }
           },
@@ -1655,9 +1655,9 @@
             "type": "ScoringMode",
             "modifiers": [],
             "position": {
-              "startLine": 67,
+              "startLine": 75,
               "startColumn": 2,
-              "endLine": 67,
+              "endLine": 75,
               "endColumn": 27
             }
           },
@@ -1680,9 +1680,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 68,
+              "startLine": 76,
               "startColumn": 2,
-              "endLine": 68,
+              "endLine": 76,
               "endColumn": 28
             }
           },
@@ -1705,9 +1705,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 69,
+              "startLine": 77,
               "startColumn": 2,
-              "endLine": 69,
+              "endLine": 77,
               "endColumn": 27
             }
           },
@@ -1730,9 +1730,9 @@
             "type": "GameRules | null",
             "modifiers": [],
             "position": {
-              "startLine": 70,
+              "startLine": 78,
               "startColumn": 2,
-              "endLine": 70,
+              "endLine": 78,
               "endColumn": 27
             }
           },
