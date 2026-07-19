@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-19T05:30:59.630Z",
+  "report_timestamp": "2026-07-19T08:24:35.359Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 104,
-          "average": 1.553921568627451,
-          "amountSavedValuesForKeys": 4121,
+          "average": 1.5525525525525525,
+          "amountSavedValuesForKeys": 4136,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
@@ -22,24 +22,24 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 104,
-          "average": 1.569904761904762,
-          "amountSavedValuesForKeys": 4121,
+          "average": 1.5684489950701554,
+          "amountSavedValuesForKeys": 4136,
           "amountKeys": 28
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4478,
-        "detection_time_ms": 75,
+        "ast_generation_time_ms": 4514,
+        "detection_time_ms": 78,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 132.58,
-          "os_memory_free": 14982905856,
+          "os_uptime": 124.79,
+          "os_memory_free": 14889201664,
           "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "bc0e861f2fa69a68059046ab62d69184d45715ad",
-    "project_commit_hash": "bc0e861f2fa69a68059046ab62d69184d45715ad",
+    "project_version": "7072724e4852373d629cab07ec126ceada60d043",
+    "project_commit_hash": "7072724e4852373d629cab07ec126ceada60d043",
     "project_tag": null,
-    "project_commit_date": "1784438936",
+    "project_commit_date": "1784449322",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 566,
-    "number_of_classes_or_interfaces": 1192,
+    "number_of_classes_or_interfaces": 1196,
     "number_of_methods": 1428,
-    "number_of_data_fields": 4121,
+    "number_of_data_fields": 4136,
     "number_of_method_parameters": 1562
   },
   "detector": {
@@ -582,9 +582,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 25,
               "endColumn": 20
             }
           },
@@ -952,9 +952,9 @@
             }
           },
           "position": {
-            "startLine": 59,
+            "startLine": 62,
             "startColumn": 2,
-            "endLine": 59,
+            "endLine": 62,
             "endColumn": 15
           }
         },
@@ -977,9 +977,9 @@
             }
           },
           "position": {
-            "startLine": 60,
+            "startLine": 63,
             "startColumn": 2,
-            "endLine": 60,
+            "endLine": 63,
             "endColumn": 15
           }
         },
@@ -1002,9 +1002,9 @@
             }
           },
           "position": {
-            "startLine": 61,
+            "startLine": 64,
             "startColumn": 2,
-            "endLine": 61,
+            "endLine": 64,
             "endColumn": 27
           }
         },
@@ -1027,9 +1027,9 @@
             }
           },
           "position": {
-            "startLine": 62,
+            "startLine": 65,
             "startColumn": 2,
-            "endLine": 62,
+            "endLine": 65,
             "endColumn": 28
           }
         },
@@ -1052,9 +1052,9 @@
             }
           },
           "position": {
-            "startLine": 63,
+            "startLine": 66,
             "startColumn": 2,
-            "endLine": 63,
+            "endLine": 66,
             "endColumn": 27
           }
         },
@@ -1077,9 +1077,9 @@
             }
           },
           "position": {
-            "startLine": 64,
+            "startLine": 67,
             "startColumn": 2,
-            "endLine": 64,
+            "endLine": 67,
             "endColumn": 27
           }
         },
@@ -1095,16 +1095,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 24,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 71,
+            "startLine": 76,
             "startColumn": 2,
-            "endLine": 71,
+            "endLine": 76,
             "endColumn": 19
           }
         }
@@ -1114,9 +1114,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeId": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeIdplayerOrderState": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeId",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-playersroundsstatuscurrentRoundIndexgameTypeIdplayerOrderState",
       "probability": 1,
       "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
       "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
@@ -1149,9 +1149,9 @@
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 44,
+            "endLine": 46,
             "endColumn": 20
           }
         },
@@ -1174,9 +1174,9 @@
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 47,
             "endColumn": 18
           }
         },
@@ -1199,9 +1199,9 @@
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 48,
             "endColumn": 21
           }
         },
@@ -1224,9 +1224,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 49,
             "endColumn": 28
           }
         },
@@ -1249,10 +1249,35 @@
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 51,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 51,
             "endColumn": 22
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerOrderState": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerOrderState",
+          "name": "playerOrderState",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/playerOrderState",
+            "name": "playerOrderState",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 2,
+            "endLine": 53,
+            "endColumn": 28
           }
         }
       },
@@ -1590,9 +1615,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 25,
             "endColumn": 20
           }
         }
@@ -1630,9 +1655,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 59,
+              "startLine": 62,
               "startColumn": 2,
-              "endLine": 59,
+              "endLine": 62,
               "endColumn": 15
             }
           },
@@ -1655,9 +1680,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 60,
+              "startLine": 63,
               "startColumn": 2,
-              "endLine": 60,
+              "endLine": 63,
               "endColumn": 15
             }
           },
@@ -1680,9 +1705,9 @@
             "type": "ScoringMode",
             "modifiers": [],
             "position": {
-              "startLine": 61,
+              "startLine": 64,
               "startColumn": 2,
-              "endLine": 61,
+              "endLine": 64,
               "endColumn": 27
             }
           },
@@ -1705,9 +1730,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 62,
+              "startLine": 65,
               "startColumn": 2,
-              "endLine": 62,
+              "endLine": 65,
               "endColumn": 28
             }
           },
@@ -1730,9 +1755,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 63,
+              "startLine": 66,
               "startColumn": 2,
-              "endLine": 63,
+              "endLine": 66,
               "endColumn": 27
             }
           },
@@ -1755,9 +1780,9 @@
             "type": "GameRules | null",
             "modifiers": [],
             "position": {
-              "startLine": 64,
+              "startLine": 67,
               "startColumn": 2,
-              "endLine": 64,
+              "endLine": 67,
               "endColumn": 27
             }
           },
@@ -1780,16 +1805,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 71,
+              "startLine": 76,
               "startColumn": 2,
-              "endLine": 71,
+              "endLine": 76,
               "endColumn": 19
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 24,
             "endColumn": 19
           }
         }
@@ -1799,9 +1824,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndexgameTypeId": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndexgameTypeIdplayerOrderState": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndexgameTypeId",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/store/gameSlice.ts-apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-playersroundsstatuscurrentRoundIndexgameTypeIdplayerOrderState",
       "probability": 1,
       "from_file_path": "apps/score-tracker/frontend/store/gameSlice.ts",
       "from_class_or_interface_key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState",
@@ -1827,9 +1852,9 @@
             "type": "Player[]",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 46,
               "endColumn": 20
             }
           },
@@ -1852,9 +1877,9 @@
             "type": "Round[]",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 47,
               "endColumn": 18
             }
           },
@@ -1877,9 +1902,9 @@
             "type": "GameStatus",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 48,
               "endColumn": 21
             }
           },
@@ -1902,9 +1927,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 49,
               "endColumn": 28
             }
           },
@@ -1927,9 +1952,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 51,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 51,
               "endColumn": 22
             }
           },
@@ -1938,6 +1963,31 @@
             "startColumn": 2,
             "endLine": 18,
             "endColumn": 22
+          }
+        },
+        "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/playerOrderState": {
+          "key": "apps/score-tracker/frontend/store/gameSlice.ts/interface/GameSliceState/memberField/playerOrderState",
+          "name": "playerOrderState",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerOrderState",
+            "name": "playerOrderState",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 2,
+              "endLine": 53,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 28
           }
         }
       },
