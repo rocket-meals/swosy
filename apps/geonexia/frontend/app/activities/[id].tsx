@@ -905,6 +905,37 @@ export default function ActivityDetailScreen() {
 		};
 	}, []);
 
+	// Build speed-colored segments along the road-matched line so that the road
+	// rendering uses the same red/green/blue speed gradient as the raw GPS track.
+	// The matched line has a different (usually higher) point count than the raw
+	// track, so each matched point takes the speed of the raw GPS point it
+	// originated from, tracked with a monotone forward sweep (both lines follow
+	// the same path in the same order).
+	const buildRoadMatchedSegments = useCallback((matchedCoords: [number, number][], points: RoutePoint[]) => {
+		if (matchedCoords.length < 2 || points.length === 0) return [];
+		const distSq = (coord: [number, number], p: RoutePoint) => {
+			const dLng = coord[0] - p.lng;
+			const dLat = coord[1] - p.lat;
+			return dLng * dLng + dLat * dLat;
+		};
+		const speedsKmh: number[] = [];
+		let rawIdx = 0;
+		for (const coord of matchedCoords) {
+			while (rawIdx < points.length - 1 && distSq(coord, points[rawIdx + 1]) <= distSq(coord, points[rawIdx])) {
+				rawIdx++;
+			}
+			speedsKmh.push((points[rawIdx].speed ?? 0) * 3.6);
+		}
+		const segments: { coords: [[number, number], [number, number]]; speedKmh: number }[] = [];
+		for (let i = 0; i < matchedCoords.length - 1; i++) {
+			segments.push({
+				coords: [matchedCoords[i], matchedCoords[i + 1]],
+				speedKmh: (speedsKmh[i] + speedsKmh[i + 1]) / 2,
+			});
+		}
+		return segments;
+	}, []);
+
 	// Compute the bounding box of a route using a loop (avoids spread-operator stack
 	// overflow for routes with thousands of GPS points).
 	const computeRouteBounds = useCallback((points: RoutePoint[]) => {
@@ -923,8 +954,10 @@ export default function ActivityDetailScreen() {
 	}, []);
 
 	// When enabled, fetch the real road/path network around the route and snap
-	// the raw GPS points onto it, so the map can show the actual street/path
-	// that was likely walked (like a navigation route) instead of the raw track.
+	// the raw GPS points onto it, so the map shows the actual street/path that
+	// was likely walked instead of the raw track. The matched line replaces the
+	// GPS track entirely and is rendered with the same red/green/blue speed
+	// gradient as the raw track (via the routeSegments layer), not in yellow.
 	useEffect(() => {
 		if (!showRoadMatch || !mapMounted || !activity || !mapRef.current) {
 			mapRef.current?.sendToMap({ matchedRoadCoordinates: null });
@@ -947,7 +980,14 @@ export default function ActivityDetailScreen() {
 				if (cancelled) return;
 				const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
 				const matched = matchRouteToRoads(rawCoords, ways, { junctionMode: roadMatchJunctionMode });
-				mapRef.current?.sendToMap({ matchedRoadCoordinates: matched });
+				// The dedicated yellow road-match layer stays hidden; the matched
+				// line is shown speed-colored through the routeSegments layer.
+				mapRef.current?.sendToMap({ matchedRoadCoordinates: null });
+				const roadSegments = buildRoadMatchedSegments(matched, activity.routePoints);
+				const speedRange = buildRouteSegments(activity.routePoints, activity.stats)?.speedRange;
+				if (roadSegments.length > 0 && speedRange) {
+					mapRef.current?.sendToMap({ routeSegments: roadSegments, routeSpeedRange: speedRange });
+				}
 				setLastRoadWays(ways);
 				setLastMatchedRoadCoords(matched);
 			})
@@ -956,7 +996,7 @@ export default function ActivityDetailScreen() {
 			});
 
 		return () => { cancelled = true; };
-	}, [showRoadMatch, mapMounted, activity, computeRouteBounds, roadMatchJunctionMode]);
+	}, [showRoadMatch, mapMounted, activity, computeRouteBounds, roadMatchJunctionMode, buildRoadMatchedSegments, buildRouteSegments]);
 
 	// Highlight the hex tiles selected for test-case export.
 	useEffect(() => {
@@ -1029,7 +1069,12 @@ export default function ActivityDetailScreen() {
 			: rawCoords;
 
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
-		if (result && result.segments.length > 0) {
+		if (showRoadMatch) {
+			// Straßen/Wege mode: the GPS-connected track is not rendered at all.
+			// The road-match effect below sends the road-matched line as
+			// speed-colored routeSegments once the road network has been fetched.
+			mapRef.current.sendToMap({ routeSegments: null, routeCoordinates: null });
+		} else if (result && result.segments.length > 0) {
 			// Rebuild segments using the (possibly smoothed) display coordinates
 			// while preserving the speed value from each original segment.
 			const smoothedSegments = result.segments.map((seg, i) => ({
@@ -1068,7 +1113,13 @@ export default function ActivityDetailScreen() {
 					hexTileRecords,
 				);
 				mapRef.current.sendToMap({ hexTileGeoJson });
-				mapRef.current.sendToMap({ hexWalkPathGeoJson });
+				// In Straßen/Wege mode the red GPS-connected walk path is hidden as
+				// well – only the road-matched line represents the route.
+				mapRef.current.sendToMap({
+					hexWalkPathGeoJson: showRoadMatch
+						? { type: 'FeatureCollection', features: [] }
+						: hexWalkPathGeoJson,
+				});
 			} catch (err) {
 				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
 			}
@@ -1189,7 +1240,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingLevel]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingLevel, showRoadMatch]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {
