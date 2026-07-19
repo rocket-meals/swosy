@@ -18,6 +18,8 @@ export type GameType = {
 	maxScore?: number | null;
 	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
 	rules?: GameRules | null;
+	/** Content version of this game's definition. undefined defaults to 1. */
+	version?: number;
 	createdAt: number;
 };
 

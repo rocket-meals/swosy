@@ -45,6 +45,7 @@ const gameTypesSlice = createSlice({
 					maxRounds: null,
 					maxScore: null,
 					rules: null,
+					version: 1,
 					createdAt: Date.now(),
 				};
 				return { payload: gameType };
@@ -65,6 +66,7 @@ const gameTypesSlice = createSlice({
 					maxRounds: preset.maxRounds ?? null,
 					maxScore: preset.maxScore ?? null,
 					rules: preset.rules ?? null,
+					version: preset.version ?? 1,
 					createdAt: Date.now(),
 				};
 				return { payload: gameType };
@@ -101,6 +103,29 @@ const gameTypesSlice = createSlice({
 			if (gameType) gameType.rules = action.payload.rules;
 		},
 
+		setGameTypeVersion(state, action: PayloadAction<{ gameTypeId: string; version: number }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.version = action.payload.version;
+		},
+
+		/**
+		 * Overwrite an existing game type's content (everything but its id/
+		 * createdAt) from a parsed preset - used by the "Code bearbeiten" JSON
+		 * editor to apply hand-edited JSON in place.
+		 */
+		updateGameTypeFromPreset(state, action: PayloadAction<{ gameTypeId: string; preset: GamePreset }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (!gameType) return;
+			const { preset } = action.payload;
+			gameType.name = preset.name;
+			gameType.icon = preset.icon;
+			gameType.scoringMode = preset.scoringMode;
+			gameType.maxRounds = preset.maxRounds ?? null;
+			gameType.maxScore = preset.maxScore ?? null;
+			gameType.rules = preset.rules ?? null;
+			gameType.version = preset.version ?? 1;
+		},
+
 		removeGameType(state, action: PayloadAction<string>) {
 			state.gameTypes = state.gameTypes.filter((g) => g.id !== action.payload);
 		},
@@ -117,6 +142,8 @@ export const {
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
 	setGameTypeRules,
+	setGameTypeVersion,
+	updateGameTypeFromPreset,
 	removeGameType,
 } = gameTypesSlice.actions;
 export default gameTypesSlice.reducer;

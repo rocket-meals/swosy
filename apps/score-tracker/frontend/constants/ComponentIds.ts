@@ -85,6 +85,8 @@ export const ComponentIds = {
 	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
 	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',
 	GAME_DETAIL_EXPORT_ROW: 'game-detail-export-row',
+	GAME_DETAIL_VERSION_ROW: 'game-detail-version-row',
+	GAME_DETAIL_CODE_EDIT_ROW: 'game-detail-code-edit-row',
 
 	// Timer screen
 	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',

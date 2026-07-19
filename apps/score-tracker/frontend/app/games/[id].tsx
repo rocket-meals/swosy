@@ -22,6 +22,8 @@ import {
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
 	setGameTypeRules,
+	setGameTypeVersion,
+	updateGameTypeFromPreset,
 	addGameTypeFromPreset,
 	removeGameType,
 } from '../../store/gameTypesSlice';
@@ -57,6 +59,7 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 		maxRounds: gameType.maxRounds ?? null,
 		maxScore: gameType.maxScore ?? null,
 		rules: gameType.rules ?? null,
+		version: gameType.version ?? 1,
 	};
 }
 
@@ -293,6 +296,16 @@ export default function GameTypeDetailScreen() {
 		dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: null }));
 	}, [gameType, dispatch]);
 
+	const handleEditCode = useCallback(
+		(value: string) => {
+			if (!gameType) return;
+			const preset = parseGamePreset(value);
+			if (!preset) return;
+			dispatch(updateGameTypeFromPreset({ gameTypeId: gameType.id, preset }));
+		},
+		[gameType, dispatch],
+	);
+
 	if (!gameType) {
 		return (
 			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
@@ -385,6 +398,22 @@ export default function GameTypeDetailScreen() {
 					}}
 					groupPosition="middle"
 				/>
+				<SettingsListNumberInput
+					nativeID={ComponentIds.GAME_DETAIL_VERSION_ROW}
+					label="Version"
+					value={String(gameType.version ?? 1)}
+					leftIcon={<MaterialCommunityIcons name="tag-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Version"
+					placeholder="z.B. 1"
+					initialValue={gameType.version ?? 1}
+					min={1}
+					max={999999}
+					onSave={(value) => {
+						dispatch(setGameTypeVersion({ gameTypeId: gameType.id, version: value }));
+					}}
+					groupPosition="middle"
+				/>
 				<SettingsList
 					nativeID={ComponentIds.GAME_DETAIL_DELETE_BUTTON}
 					label="Spiel löschen"
@@ -412,6 +441,24 @@ export default function GameTypeDetailScreen() {
 						groupPosition="bottom"
 					/>
 				)}
+
+				<SettingsListGroupTitle title="Code" />
+				<SettingsListTextInput
+					nativeID={ComponentIds.GAME_DETAIL_CODE_EDIT_ROW}
+					label="Code bearbeiten"
+					leftIcon={<MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Code bearbeiten"
+					placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
+					initialValue={JSON.stringify(gameTypeToPreset(gameType), null, 2)}
+					saveLabel="Übernehmen"
+					multiline
+					numberOfLines={16}
+					textAlignVertical="top"
+					checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
+					onSave={handleEditCode}
+					groupPosition="single"
+				/>
 
 				<SettingsListGroupTitle title="Spiel als Vorlage teilen" />
 				<SettingsList

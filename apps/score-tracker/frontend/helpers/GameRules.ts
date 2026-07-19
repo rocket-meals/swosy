@@ -62,6 +62,13 @@ export type GamePreset = {
 	maxRounds?: number | null;
 	maxScore?: number | null;
 	rules?: GameRules | null;
+	/**
+	 * Content version of this game definition (distinct from `rules.version`,
+	 * the fixed rule-schema version). Bump this yourself when sharing an
+	 * updated JSON so recipients re-importing it can tell it changed.
+	 * Undefined/absent defaults to 1.
+	 */
+	version?: number;
 };
 
 // ─── Evaluation ───────────────────────────────────────────────────────────────
@@ -169,6 +176,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 	if (v.scoringMode !== 'highWins' && v.scoringMode !== 'lowWins') return null;
 	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return null;
 	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return null;
+	if (v.version !== undefined && typeof v.version !== 'number') return null;
 
 	let rules: GameRules | null = null;
 	if (v.rules !== undefined && v.rules !== null) {
@@ -183,6 +191,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 		maxRounds: (v.maxRounds as number | null | undefined) ?? null,
 		maxScore: (v.maxScore as number | null | undefined) ?? null,
 		rules,
+		version: (v.version as number | undefined) ?? 1,
 	};
 }
 
@@ -239,6 +248,7 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 	scoringMode: 'highWins',
 	maxRounds: null,
 	maxScore: 200,
+	version: 1,
 	rules: {
 		version: 1,
 		scoreEntry: {
