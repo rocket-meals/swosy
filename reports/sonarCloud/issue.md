@@ -35,8 +35,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L46
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/index.tsx:77
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L77
+  apps/score-tracker/frontend/app/index.tsx:78
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L78
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/store/friendsSlice.ts:19
