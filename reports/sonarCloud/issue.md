@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 8 | 8 |
 | 🐛 Reliability | 55 | 42 |
-| 🔧 Maintainability | 1957 | 0 |
+| 🔧 Maintainability | 1958 | 0 |
 
-**Total issues:** 2020 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2021 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -31,8 +31,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/dice/index.tsx#L51
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/games/[id].tsx:44
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L44
+  apps/score-tracker/frontend/app/games/[id].tsx:46
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L46
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/app/index.tsx:77
@@ -205,12 +205,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:223
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L223
+  apps/score-tracker/frontend/helpers/GameRules.ts:232
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L232
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:230
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L230
+  apps/score-tracker/frontend/helpers/GameRules.ts:239
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L239
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81

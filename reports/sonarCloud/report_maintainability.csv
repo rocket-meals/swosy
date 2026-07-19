@@ -1,7 +1,8 @@
 Key,Message,Component,Line
+"AZ94yUx5NqjKlFTKWCw-","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",165
 "AZ93QAi_4n5ZUmHbOoCs","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",73
-"AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",223
-"AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",230
+"AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",232
+"AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",239
 "AZ925T8lCc1P49Fnq6JN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",41
 "AZ925T8lCc1P49Fnq6JO","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",69
 "AZ92gkzAcUMiqJpTxgmb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",932
@@ -18,11 +19,11 @@ Key,Message,Component,Line
 "AZ90OYA2lqCs1FI_2yqt","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",110
 "AZ90OYA2lqCs1FI_2yqu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",263
 "AZ90OX_YlqCs1FI_2yqe","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",53
-"AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",65
-"AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",91
-"AZ90OYABlqCs1FI_2yqo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",123
-"AZ90OYABlqCs1FI_2yqp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",170
-"AZ90OYABlqCs1FI_2yqq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",487
+"AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",68
+"AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",94
+"AZ90OYABlqCs1FI_2yqo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",126
+"AZ90OYABlqCs1FI_2yqp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",173
+"AZ90OYABlqCs1FI_2yqq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",534
 "AZ90OX_2lqCs1FI_2yqi","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",104
 "AZ90OX_2lqCs1FI_2yqj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",160
 "AZ90OX_2lqCs1FI_2yqk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",181
