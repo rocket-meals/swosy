@@ -3,16 +3,15 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import * as Clipboard from 'expo-clipboard';
 import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
+import ModalTextInput from '../../components/ModalTextInput';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
@@ -30,6 +29,7 @@ import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 import { findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
+import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../../helpers/JsonFileTransferHelper';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -67,10 +67,12 @@ const H3_IMPORT_RESOLUTION = 10;
 
 function ImportContent({
 	onImport,
+	onImportFile,
 	onCancel,
 	theme,
 }: {
 	onImport: (code: string) => void;
+	onImportFile: () => void;
 	onCancel: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 }) {
@@ -78,9 +80,20 @@ function ImportContent({
 	return (
 		<View style={styles.importContainer}>
 			<Text style={[styles.importDescription, { color: theme.screen.text }]}>
-				Paste the export code from the "Share Activity" button of another run.
+				Select the exported .json file from the "Export" button of another device.
 			</Text>
-			<TextInput
+			<TouchableOpacity
+				style={[styles.importConfirmButton, { backgroundColor: PRIMARY_COLOR }]}
+				onPress={onImportFile}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="folder-open" size={18} color="#ffffff" />
+				<Text style={styles.importConfirmButtonText}>Import from File</Text>
+			</TouchableOpacity>
+			<Text style={[styles.importDescription, { color: theme.screen.text }]}>
+				Alternatively, paste the export code from the "Share Activity" button of another run.
+			</Text>
+			<ModalTextInput
 				style={[styles.importInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
 				placeholder="Paste export code here…"
 				placeholderTextColor={theme.screen.icon}
@@ -230,7 +243,7 @@ function ManualActivityDurationContent({
 				Dauer der Aktivität eingeben:
 			</Text>
 			<View style={styles.manualTimeRow}>
-				<TextInput
+				<ModalTextInput
 					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
 					placeholder="Std"
 					placeholderTextColor={theme.screen.icon}
@@ -240,7 +253,7 @@ function ManualActivityDurationContent({
 					maxLength={2}
 				/>
 				<Text style={[styles.manualTimeSeparator, { color: theme.screen.text }]}>:</Text>
-				<TextInput
+				<ModalTextInput
 					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
 					placeholder="Min"
 					placeholderTextColor={theme.screen.icon}
@@ -251,7 +264,7 @@ function ManualActivityDurationContent({
 					autoFocus
 				/>
 				<Text style={[styles.manualTimeSeparator, { color: theme.screen.text }]}>:</Text>
-				<TextInput
+				<ModalTextInput
 					style={[styles.manualTimeInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
 					placeholder="Sek"
 					placeholderTextColor={theme.screen.icon}
@@ -512,9 +525,14 @@ export default function ActivitiesScreen() {
 		}));
 
 		const json = JSON.stringify({ activities: exportedActivities, routes: exportedRoutes }, null, 2);
-		await Clipboard.setStringAsync(json);
-		const count = allActivities.length;
-		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+		try {
+			const result = await saveJsonToFile(json, buildJsonExportFilename('geonexia-activities'));
+			if (result === 'cancelled') return;
+			const count = allActivities.length;
+			showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} saved as JSON file.`);
+		} catch {
+			showAlert('Export Failed', 'The export file could not be saved.');
+		}
 	}, []);
 
 	const handleRebuildMap = useCallback(() => {
@@ -641,19 +659,32 @@ export default function ActivitiesScreen() {
 		);
 	}, [dispatch]);
 
+	const handleImportFromFile = useCallback(async () => {
+		let content: string | null;
+		try {
+			content = await pickJsonFromFile();
+		} catch {
+			showAlert('Import Failed', 'The selected file could not be read.');
+			return;
+		}
+		if (content == null) return;
+		await handleImport(content.trim());
+	}, [handleImport]);
+
 	const openImportModal = useCallback(() => {
 		showImportModal({
 			title: '📥 Import Run',
 			children: (
 				<ImportContent
 					onImport={handleImport}
+					onImportFile={handleImportFromFile}
 					onCancel={closeImportModal}
 					theme={theme}
 				/>
 			),
 			keyboardShouldPersistTaps: 'handled',
 		});
-	}, [showImportModal, handleImport, closeImportModal, theme]);
+	}, [showImportModal, handleImport, handleImportFromFile, closeImportModal, theme]);
 
 	const openManualActivityModal = useCallback(() => {
 		if (routes.length === 0) {

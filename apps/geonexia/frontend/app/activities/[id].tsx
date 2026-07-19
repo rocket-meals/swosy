@@ -31,6 +31,7 @@ import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, RED_LINE_GRID_RESOLUTION, MIN_TILES_FOR_ENCLOSED_POLYGON, synthesizeManualActivityRoutePoints } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+import { buildJsonExportFilename, saveJsonToFile } from '../../helpers/JsonFileTransferHelper';
 import { snapToRoad, ROUTE_SMOOTHING_WINDOWS } from '../../helpers/RouteSmootherHelper';
 import { fetchRoadWaysForBounds, matchRouteToRoads } from '../../helpers/RoadMatchHelper';
 import type { RoadWay } from '../../helpers/RoadMatchHelper';
@@ -206,6 +207,15 @@ function ShareContent({ activity, theme }: { activity: SavedActivity; theme: Ret
 	const showQr = compact.length <= QR_MAX_BYTES;
 	const { showAlert } = useGeonexiaAlert();
 
+	const handleSaveFile = useCallback(async () => {
+		try {
+			const result = await saveJsonToFile(pretty, buildJsonExportFilename('geonexia-activity'));
+			if (result === 'saved') showAlert('Exported', 'Activity data saved as JSON file.');
+		} catch {
+			showAlert('Export Failed', 'The export file could not be saved.');
+		}
+	}, [pretty]);
+
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
 		showAlert('Copied', 'Activity data copied to clipboard.');
@@ -223,6 +233,10 @@ function ShareContent({ activity, theme }: { activity: SavedActivity; theme: Ret
 					{pretty}
 				</Text>
 			</ScrollView>
+			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleSaveFile} activeOpacity={0.8}>
+				<MaterialIcons name="save-alt" size={18} color="#ffffff" />
+				<Text style={styles.shareButtonText}>Save as File</Text>
+			</TouchableOpacity>
 			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleCopy} activeOpacity={0.8}>
 				<MaterialIcons name="content-copy" size={18} color="#ffffff" />
 				<Text style={styles.shareButtonText}>Copy JSON</Text>

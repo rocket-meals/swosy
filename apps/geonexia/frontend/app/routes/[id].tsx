@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -23,6 +23,7 @@ import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
+import ModalTextInput from '../../components/ModalTextInput';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
@@ -219,7 +220,7 @@ function ManualActivityContent({
 				Dauer der Aktivität eingeben:
 			</Text>
 			<View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-				<TextInput
+				<ModalTextInput
 					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
 					placeholder="Std"
 					placeholderTextColor={theme.screen.icon}
@@ -229,7 +230,7 @@ function ManualActivityContent({
 					maxLength={2}
 				/>
 				<Text style={{ fontSize: 20, color: theme.screen.text, fontWeight: '700' }}>:</Text>
-				<TextInput
+				<ModalTextInput
 					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
 					placeholder="Min"
 					placeholderTextColor={theme.screen.icon}
@@ -240,7 +241,7 @@ function ManualActivityContent({
 					autoFocus
 				/>
 				<Text style={{ fontSize: 20, color: theme.screen.text, fontWeight: '700' }}>:</Text>
-				<TextInput
+				<ModalTextInput
 					style={{ flex: 1, borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background, textAlign: 'center' }}
 					placeholder="Sek"
 					placeholderTextColor={theme.screen.icon}

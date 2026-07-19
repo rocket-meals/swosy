@@ -9,7 +9,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -43,6 +42,7 @@ import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
 import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
+import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../helpers/JsonFileTransferHelper';
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { clearAudioQueue } from '../helpers/AudioQueueHelper';
@@ -1025,7 +1025,7 @@ type DebugInfoContentProps = {
 	onShowBillboardAnchorsChange: (val: boolean) => void;
 	onShowDebugPointsChange: (val: boolean) => void;
 	onExportMapSettings: () => void;
-	onImportMapSettings: (json: string) => void;
+	onImportMapSettings: () => void;
 	onFlyToCell: (lat: number, lng: number) => void;
 };
 
@@ -1062,8 +1062,6 @@ function DebugInfoContent({
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
 	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
-	const [showImportArea, setShowImportArea] = useState(false);
-	const [importJson, setImportJson] = useState('');
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -1299,52 +1297,17 @@ function DebugInfoContent({
 						activeOpacity={0.7}
 					>
 						<MaterialIcons name="file-upload" size={16} color={PRIMARY_COLOR} />
-						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Export</Text>
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Export File</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
-						onPress={() => { setShowImportArea((v) => !v); setImportJson(''); }}
+						onPress={onImportMapSettings}
 						activeOpacity={0.7}
 					>
 						<MaterialIcons name="file-download" size={16} color={PRIMARY_COLOR} />
-						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Import</Text>
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Import File</Text>
 					</TouchableOpacity>
 				</View>
-				{showImportArea && (
-					<View style={{ gap: 8 }}>
-						<TextInput
-							style={[styles.debugSpeedInput, { minHeight: 80, textAlignVertical: 'top', borderRadius: 8, padding: 8, fontFamily: 'monospace', fontSize: 11 }]}
-							placeholder="Paste map settings JSON here…"
-							placeholderTextColor={theme.screen.icon}
-							value={importJson}
-							onChangeText={setImportJson}
-							multiline
-							autoCapitalize="none"
-							autoCorrect={false}
-						/>
-						<View style={{ flexDirection: 'row', gap: 8 }}>
-							<TouchableOpacity
-								style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 8, opacity: importJson.trim().length === 0 ? 0.4 : 1 }]}
-								onPress={() => {
-									onImportMapSettings(importJson.trim());
-									setShowImportArea(false);
-									setImportJson('');
-								}}
-								disabled={importJson.trim().length === 0}
-								activeOpacity={0.8}
-							>
-								<Text style={[styles.debugRowLabel, { color: '#ffffff' }]}>Apply</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={[styles.resolutionButton, { flex: 1, backgroundColor: theme.screen.text + '18', borderRadius: 8, paddingVertical: 8 }]}
-								onPress={() => { setShowImportArea(false); setImportJson(''); }}
-								activeOpacity={0.8}
-							>
-								<Text style={[styles.debugRowLabel, { color: theme.screen.text }]}>Cancel</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				)}
 			</View>
 
 			{/* Pentagon tiles fly-to */}
@@ -1410,6 +1373,15 @@ function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme:
 	const showQr = compact.length <= QR_MAX_BYTES;
 	const { showAlert } = useGeonexiaAlert();
 
+	const handleSaveFile = useCallback(async () => {
+		try {
+			const result = await saveJsonToFile(pretty, buildJsonExportFilename('geonexia-run'));
+			if (result === 'saved') showAlert('Exported', 'Run data saved as JSON file.');
+		} catch {
+			showAlert('Export Failed', 'The export file could not be saved.');
+		}
+	}, [pretty]);
+
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
 		showAlert('Copied', 'Run data copied to clipboard.');
@@ -1427,6 +1399,10 @@ function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme:
 					{pretty}
 				</Text>
 			</ScrollView>
+			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleSaveFile} activeOpacity={0.8}>
+				<MaterialIcons name="save-alt" size={18} color="#ffffff" />
+				<Text style={styles.shareButtonText}>Save as File</Text>
+			</TouchableOpacity>
 			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleCopy} activeOpacity={0.8}>
 				<MaterialIcons name="content-copy" size={18} color="#ffffff" />
 				<Text style={styles.shareButtonText}>Copy JSON</Text>
@@ -4102,16 +4078,29 @@ export default function RecordScreen() {
 			}
 		}
 		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
-		await Clipboard.setStringAsync(json);
-		showAlert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
+		try {
+			const result = await saveJsonToFile(json, buildJsonExportFilename('geonexia-map-settings'));
+			if (result === 'cancelled') return;
+			showAlert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) saved as JSON file.`);
+		} catch {
+			showAlert('Export Failed', 'The export file could not be saved.');
+		}
 	}, [hexTileRecords]);
 
-	const handleImportMapSettings = useCallback((json: string) => {
+	const handleImportMapSettings = useCallback(async () => {
+		let json: string | null;
+		try {
+			json = await pickJsonFromFile();
+		} catch {
+			showAlert('Import Failed', 'The selected file could not be read.');
+			return;
+		}
+		if (json == null) return;
 		let parsed: unknown;
 		try {
 			parsed = JSON.parse(json);
 		} catch {
-			showAlert('Import Failed', 'The text is not valid JSON.');
+			showAlert('Import Failed', 'The file is not valid JSON.');
 			return;
 		}
 		const data = parsed as { version?: number; hexTiles?: Record<string, HexTileCustomizationPayload> };
@@ -5867,16 +5856,6 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 11,
 		fontWeight: '700',
-	},
-	debugSpeedInput: {
-		fontSize: 15,
-		fontWeight: '600',
-		borderWidth: 1,
-		borderRadius: 6,
-		paddingVertical: 4,
-		paddingHorizontal: 10,
-		minWidth: 72,
-		textAlign: 'center',
 	},
 	// Joystick controller overlay
 	gamepadOverlay: {
