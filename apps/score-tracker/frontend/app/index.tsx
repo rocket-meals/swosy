@@ -763,7 +763,7 @@ export default function GameScreen() {
 							items={scoreEntryRules.items}
 							scoreFormula={scoreEntryRules.scoreFormula}
 							enableBustOnDuplicateNumber={scoreEntryRules.enableBustOnDuplicateNumber}
-							autoFreezeAtNumberCount={scoreEntryRules.autoFreezeAtNumberCount}
+							bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
 							initialSelection={currentRound.cardSelections?.[playerId] ?? []}
 							onSave={(cardIds, score) => {
 								dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));

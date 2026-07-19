@@ -43,16 +43,24 @@ export type ScoreEntryRules = {
 	/** Computes the round score from the selected cards (skipped entirely - score is 0 - on a bust). */
 	scoreFormula: RuleExpr;
 	/**
-	 * When true, tapping an already-selected 'number' card is treated as
-	 * drawing a duplicate: it busts the round (score 0) unless a
-	 * not-yet-used 'secondChance' effect card is currently selected, in
-	 * which case that card and the duplicate are discarded instead.
-	 * When false/absent, tapping a selected card simply deselects it
-	 * (plain multi-select, no push-your-luck logic).
+	 * When true, tapping an already-selected 'number' card that is NOT the
+	 * most recently picked card is treated as drawing a duplicate: it busts
+	 * the round (score 0) unless a not-yet-used 'secondChance' effect card is
+	 * currently selected, in which case that card and the duplicate are
+	 * discarded instead. Re-tapping the card you just picked always undoes
+	 * that pick instead (lets a mis-tap be corrected). When false/absent,
+	 * tapping a selected card simply deselects it regardless of order (plain
+	 * multi-select, no push-your-luck logic).
 	 */
 	enableBustOnDuplicateNumber?: boolean;
-	/** Reaching this many selected 'number' cards auto-freezes (ends) the turn. */
-	autoFreezeAtNumberCount?: number;
+	/**
+	 * Reaching this many selected 'number' cards surfaces a bonus notice (the
+	 * score formula is expected to add its own bonus once this many are
+	 * selected). Does NOT lock the round - the player can still undo the
+	 * card that triggered it (see `enableBustOnDuplicateNumber`) or keep
+	 * going before choosing to save.
+	 */
+	bonusAtNumberCount?: number;
 };
 
 export type GameRules = {
@@ -144,7 +152,7 @@ function isScoreEntryRules(value: unknown): value is ScoreEntryRules {
 	if (ids.size !== v.items.length) return false;
 	if (!isRuleExpr(v.scoreFormula)) return false;
 	if (v.enableBustOnDuplicateNumber !== undefined && typeof v.enableBustOnDuplicateNumber !== 'boolean') return false;
-	if (v.autoFreezeAtNumberCount !== undefined && typeof v.autoFreezeAtNumberCount !== 'number') return false;
+	if (v.bonusAtNumberCount !== undefined && typeof v.bonusAtNumberCount !== 'number') return false;
 	return true;
 }
 
@@ -251,7 +259,7 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 			items: FLIP_SEVEN_ITEMS,
 			scoreFormula: FLIP_SEVEN_SCORE_FORMULA,
 			enableBustOnDuplicateNumber: true,
-			autoFreezeAtNumberCount: 7,
+			bonusAtNumberCount: 7,
 		},
 	},
 };

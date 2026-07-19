@@ -22,6 +22,21 @@ const CATEGORY_ORDER: CardCategory[] = ['number', 'modifier', 'multiplier', 'act
 type Phase = 'active' | 'busted' | 'frozen';
 
 /**
+ * How many more cards must still be added before the player is allowed to
+ * stop voluntarily (Flip Three forces three more reveals). Derived purely
+ * from the ordered selection so undoing a pick (see `handleTapCard`) always
+ * keeps this in sync without any separate bookkeeping.
+ */
+function computePendingForcedDraws(selectedIds: string[], itemsById: Map<string, CardItem>): number {
+	let pending = 0;
+	for (const id of selectedIds) {
+		pending = Math.max(0, pending - 1);
+		if (itemsById.get(id)?.effect === 'flipThree') pending += 3;
+	}
+	return pending;
+}
+
+/**
  * Generic card-picker score entry: tap the cards a player ended their turn
  * with. Driven entirely by the game type's `GameRules` (see
  * helpers/GameRules.ts) - the push-your-luck bust/freeze/flip-three/second-
@@ -33,14 +48,14 @@ export default function CardScoreEntryModal({
 	items,
 	scoreFormula,
 	enableBustOnDuplicateNumber,
-	autoFreezeAtNumberCount,
+	bonusAtNumberCount,
 	initialSelection,
 	onSave,
 }: {
 	items: CardItem[];
 	scoreFormula: RuleExpr;
 	enableBustOnDuplicateNumber?: boolean;
-	autoFreezeAtNumberCount?: number;
+	bonusAtNumberCount?: number;
 	initialSelection: string[];
 	onSave: (cardIds: string[], score: number) => void;
 }) {
@@ -48,8 +63,8 @@ export default function CardScoreEntryModal({
 	const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 	const [selectedIds, setSelectedIds] = useState<string[]>(() => initialSelection.filter((id) => itemsById.has(id)));
 	const [phase, setPhase] = useState<Phase>('active');
-	const [pendingForcedDraws, setPendingForcedDraws] = useState(0);
 	const [lastEvent, setLastEvent] = useState<string | null>(null);
+	const pendingForcedDraws = useMemo(() => computePendingForcedDraws(selectedIds, itemsById), [selectedIds, itemsById]);
 
 	const grouped = useMemo(() => {
 		const byCategory = new Map<CardCategory, CardItem[]>();
@@ -74,14 +89,22 @@ export default function CardScoreEntryModal({
 		(item: CardItem) => {
 			if (phase !== 'active') return;
 			const alreadySelected = selectedIds.includes(item.id);
+			const isLastPick = selectedIds.length > 0 && selectedIds[selectedIds.length - 1] === item.id;
 
 			if (alreadySelected) {
+				if (isLastPick) {
+					// Tapping the card you just picked again undoes that one pick -
+					// corrects a mis-tap (including an accidental bonus-triggering
+					// card) instead of it being treated as a duplicate draw.
+					setSelectedIds((prev) => prev.slice(0, -1));
+					setLastEvent(null);
+					return;
+				}
 				if (item.category === 'number' && enableBustOnDuplicateNumber) {
 					const secondChance = items.find((i) => i.effect === 'secondChance');
 					if (secondChance && selectedIds.includes(secondChance.id)) {
 						setSelectedIds((prev) => prev.filter((id) => id !== secondChance.id));
 						setLastEvent(`Second Chance eingesetzt - doppelte ${item.label} verworfen.`);
-						setPendingForcedDraws((n) => Math.max(0, n - 1));
 					} else {
 						setPhase('busted');
 						setLastEvent(`Bust! Doppelte ${item.label} - 0 Punkte für diese Runde.`);
@@ -95,7 +118,6 @@ export default function CardScoreEntryModal({
 
 			const next = [...selectedIds, item.id];
 			setSelectedIds(next);
-			setPendingForcedDraws((n) => Math.max(0, n - 1));
 			setLastEvent(null);
 
 			if (item.effect === 'freeze') {
@@ -103,19 +125,17 @@ export default function CardScoreEntryModal({
 				setLastEvent('Freeze - Runde für diesen Spieler beendet.');
 				return;
 			}
-			if (item.effect === 'flipThree') {
-				setPendingForcedDraws((n) => n + 3);
-			}
 
-			if (enableBustOnDuplicateNumber && autoFreezeAtNumberCount) {
+			if (enableBustOnDuplicateNumber && bonusAtNumberCount) {
 				const numberCount = next.filter((id) => itemsById.get(id)?.category === 'number').length;
-				if (numberCount >= autoFreezeAtNumberCount) {
-					setPhase('frozen');
-					setLastEvent(`🎉 ${autoFreezeAtNumberCount} einzigartige Zahlenkarten - Bonus!`);
+				if (numberCount >= bonusAtNumberCount) {
+					setLastEvent(
+						`🎉 ${bonusAtNumberCount} einzigartige Zahlenkarten - Bonus! Nochmal antippen macht die letzte Karte rückgängig, „Fertig“ speichert.`,
+					);
 				}
 			}
 		},
-		[phase, selectedIds, items, itemsById, enableBustOnDuplicateNumber, autoFreezeAtNumberCount],
+		[phase, selectedIds, items, itemsById, enableBustOnDuplicateNumber, bonusAtNumberCount],
 	);
 
 	const canSave = pendingForcedDraws === 0;
