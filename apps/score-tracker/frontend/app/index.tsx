@@ -15,6 +15,7 @@ import {
 	SettingsListGroupTitle,
 	SettingsListSelectOptionSingle,
 	SettingsListAvatar,
+	MyAvatar,
 	useMyScrollViewModal,
 	useTheme,
 	MyColorPicker,
@@ -205,11 +206,15 @@ function ScoreInputContent({
 
 // ─── Player score row (active game, scoreboard view) ──────────────────────────
 //
-// Reuses the shared SettingsListAvatar (the same building block as the player
-// edit rows and the friends screen) so avatar sizing, text wrapping/colors and
-// spacing all stay consistent: the player's color fills the whole row, name
-// and points stack on their own lines (so a long name is never lost), and the
-// leader crown replaces the row's default right icon.
+// Single column: full screen width, so the shared SettingsListAvatar row
+// (avatar left, name+score stacked to its right) has plenty of room.
+//
+// Multi-column: that same row layout squeezes the name into a narrow column
+// next to the large avatar, wrapping awkwardly (or even character-by-
+// character - see the SettingsList minWidth:0 fix). Stacking the avatar on
+// top of the name instead gives the name the tile's *full* width to wrap
+// into, so this renders a bespoke vertical "card" layout instead of going
+// through SettingsListAvatar once a tileWidth is set.
 
 const TILE_AVATAR_SIZE = 84;
 const MISSING_SCORE_BORDER = 'rgba(255,255,255,0.85)';
@@ -237,30 +242,56 @@ function PlayerTile({
 }) {
 	const { theme, isDark } = useTheme();
 	const textColor = myContrastColor(color, theme, isDark);
+	const nativeID = `${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`;
+
+	if (tileWidth === undefined) {
+		return (
+			<SettingsListAvatar
+				nativeID={nativeID}
+				config={avatarConfig}
+				onPressOverride={onPress}
+				label={name}
+				value={String(score)}
+				stackedValue
+				previewSize={TILE_AVATAR_SIZE}
+				avatarBackgroundColor="#ffffff"
+				backgroundColor={color}
+				titleColor={textColor}
+				valueColor={textColor}
+				titleFontSize={20}
+				valueFontSize={26}
+				borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
+				borderWidth={hasScore ? undefined : 2.5}
+				borderStyle="dashed"
+				rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
+				groupPosition="single"
+				showSeparator={false}
+			/>
+		);
+	}
 
 	return (
-		<SettingsListAvatar
-			nativeID={`${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`}
-			config={avatarConfig}
-			onPressOverride={onPress}
-			label={name}
-			value={String(score)}
-			stackedValue
-			previewSize={TILE_AVATAR_SIZE}
-			avatarBackgroundColor="#ffffff"
-			width={tileWidth}
-			backgroundColor={color}
-			titleColor={textColor}
-			valueColor={textColor}
-			titleFontSize={20}
-			valueFontSize={26}
-			borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
-			borderWidth={hasScore ? undefined : 2.5}
-			borderStyle="dashed"
-			rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
-			groupPosition="single"
-			showSeparator={false}
-		/>
+		<TouchableOpacity
+			nativeID={nativeID}
+			onPress={onPress}
+			activeOpacity={0.8}
+			style={[
+				styles.verticalTile,
+				{ width: tileWidth, backgroundColor: color },
+				!hasScore && styles.verticalTileMissingScore,
+			]}
+		>
+			{isLeader && (
+				<View style={styles.verticalTileTrophy}>
+					<Ionicons name="trophy" size={20} color="#fbbf24" />
+				</View>
+			)}
+			<MyAvatar style={avatarConfig?.style} options={avatarConfig?.options} size={TILE_AVATAR_SIZE} rounded backgroundColor="#ffffff" />
+			<Text style={[styles.verticalTileName, { color: textColor }]} numberOfLines={2} ellipsizeMode="tail">
+				{name}
+			</Text>
+			<Text style={[styles.verticalTileScore, { color: textColor }]}>{score}</Text>
+		</TouchableOpacity>
 	);
 }
 
@@ -971,6 +1002,33 @@ const styles = StyleSheet.create({
 	rightIconPlaceholder: {
 		width: 24,
 		height: 24,
+	},
+	verticalTile: {
+		alignItems: 'center',
+		borderRadius: 14,
+		paddingVertical: 16,
+		paddingHorizontal: 8,
+	},
+	verticalTileMissingScore: {
+		borderColor: MISSING_SCORE_BORDER,
+		borderWidth: 2.5,
+		borderStyle: 'dashed',
+	},
+	verticalTileTrophy: {
+		position: 'absolute',
+		top: 8,
+		right: 8,
+	},
+	verticalTileName: {
+		fontSize: 16,
+		fontWeight: '600',
+		textAlign: 'center',
+		marginTop: 10,
+	},
+	verticalTileScore: {
+		fontSize: 22,
+		fontWeight: '700',
+		marginTop: 2,
 	},
 	playerEditGroup: {
 		marginBottom: 4,
