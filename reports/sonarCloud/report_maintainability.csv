@@ -1,9 +1,7 @@
 Key,Message,Component,Line
-"AZ93QAi_4n5ZUmHbOoCs","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",32
-"AZ93QAi_4n5ZUmHbOoCt","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",74
-"AZ93QAi_4n5ZUmHbOoCu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",128
-"AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",229
-"AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",236
+"AZ93QAi_4n5ZUmHbOoCs","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",28
+"AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",225
+"AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",232
 "AZ925T8lCc1P49Fnq6JN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",41
 "AZ925T8lCc1P49Fnq6JO","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",69
 "AZ92gkzAcUMiqJpTxgmb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",932

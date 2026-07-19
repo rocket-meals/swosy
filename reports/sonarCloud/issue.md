@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 8 | 8 |
 | 🐛 Reliability | 55 | 42 |
-| 🔧 Maintainability | 1959 | 0 |
+| 🔧 Maintainability | 1957 | 0 |
 
-**Total issues:** 2022 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2020 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -205,12 +205,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:229
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L229
+  apps/score-tracker/frontend/helpers/GameRules.ts:225
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L225
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:236
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L236
+  apps/score-tracker/frontend/helpers/GameRules.ts:232
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L232
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81
