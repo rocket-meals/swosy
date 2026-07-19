@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
@@ -145,7 +146,7 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 		// Manual-only input mode
 		return (
 			<View style={scanStyles.container}>
-				<TextInput
+				<ModalTextInput
 					style={[
 						scanStyles.manualInput,
 						{

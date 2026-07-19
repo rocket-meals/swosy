@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { GestureResponderEvent, LayoutChangeEvent, PanResponder, StyleSheet, TextInput, View } from 'react-native';
+import { GestureResponderEvent, LayoutChangeEvent, PanResponder, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
+
+// Text inputs inside the bottom-sheet modal must use BottomSheetTextInput so the
+// sheet lifts above the keyboard (plain TextInputs are invisible to the sheet's
+// keyboard tracking). Web has no sheet keyboard handling, so it keeps TextInput.
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 
 /**
  * MyCustomColorPicker — a dependency-free custom color selector.
@@ -301,7 +307,7 @@ const MyCustomColorPicker: React.FC<MyCustomColorPickerProps> = ({ color, onColo
 
 			{/* Hex input + preview swatch */}
 			<View style={styles.hexRow}>
-				<TextInput
+				<ResolvedTextInput
 					style={[
 						styles.hexInput,
 						{

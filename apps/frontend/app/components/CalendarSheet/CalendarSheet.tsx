@@ -1,7 +1,8 @@
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { CalendarSheetProps, Direction } from './types';
 import MyScrollViewModal from '@/components/MyScrollViewModal';
 import { isWeb } from '@/constants/Constants';
@@ -107,7 +108,7 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
     return (
         <>
             <View style={styles.manualInputWrapper}>
-                <TextInput
+                <ModalTextInput
                     style={[
                         styles.manualInput,
                         {

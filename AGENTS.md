@@ -88,9 +88,9 @@ Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`)
   ```
 - **Vorhandene Helper wiederverwenden statt neu bauen:**
   - Geonexia: `apps/geonexia/frontend/components/ModalTextInput.tsx`
-  - Frontend-App: `ResolvedTextInput` in `apps/frontend/app/components/SettingsListTextInput.tsx`
+  - Frontend-App: `apps/frontend/app/components/ModalTextInput.tsx`
   - common-ui: `SettingsListTextInput`, `SettingsListNumberInput`, `SettingsListDate` folgen dem Muster bereits.
-- `TextInput` auf normalen Screens (außerhalb von Sheets) ist in Ordnung.
+- `TextInput` auf normalen Screens (außerhalb von Sheets) ist in Ordnung. **Achtung umgekehrt:** `BottomSheetTextInput` wirft auf Native außerhalb eines BottomSheet — Komponenten, die sowohl auf Screens als auch in Sheets verwendet werden, brauchen einen Opt-in-Prop (siehe `insideBottomSheet` in `apps/frontend/app/components/SingleLineInput/SingleLineInput.tsx`).
 
 ## String replacement
 

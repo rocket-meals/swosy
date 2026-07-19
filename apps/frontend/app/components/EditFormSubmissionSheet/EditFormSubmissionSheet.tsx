@@ -1,8 +1,9 @@
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { isWeb } from '@/constants/Constants';
 import { sheetProps } from './types';
 import { useDispatch } from 'react-redux';
@@ -66,7 +67,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 						...styles.inputContainer,
 					}}
 				>
-					<TextInput style={[styles.input, { color: theme.screen.text }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder="Type here..." />
+					<ModalTextInput style={[styles.input, { color: theme.screen.text }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder="Type here..." />
 				</View>
 				<View style={styles.actionContainer}>
 					<TouchableOpacity
