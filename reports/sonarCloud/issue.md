@@ -205,12 +205,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:225
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L225
+  apps/score-tracker/frontend/helpers/GameRules.ts:223
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L223
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:232
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L232
+  apps/score-tracker/frontend/helpers/GameRules.ts:230
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L230
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81
