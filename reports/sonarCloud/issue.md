@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 8 | 8 |
 | 🐛 Reliability | 55 | 42 |
-| 🔧 Maintainability | 1958 | 0 |
+| 🔧 Maintainability | 1960 | 0 |
 
-**Total issues:** 2021 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2023 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -31,12 +31,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/dice/index.tsx#L51
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/games/[id].tsx:46
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L46
+  apps/score-tracker/frontend/app/games/[id].tsx:47
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L47
 
 - **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/index.tsx:78
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L78
+  apps/score-tracker/frontend/app/index.tsx:80
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L80
 
 - **Make sure that using this pseudorandom number generator is safe here.**
   apps/score-tracker/frontend/store/friendsSlice.ts:19
@@ -205,12 +205,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:232
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L232
+  apps/score-tracker/frontend/helpers/GameRules.ts:439
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L439
 
 - **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:239
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L239
+  apps/score-tracker/frontend/helpers/GameRules.ts:446
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L446
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81
