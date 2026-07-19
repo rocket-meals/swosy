@@ -73,6 +73,25 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 
 - **Never use React Native's `Alert` in Geonexia.** Use `useMyScrollviewModal` instead for all user-facing dialogs, confirmations, and notifications.
 
+## Bottom-Sheet-Modals: Texteingaben müssen `BottomSheetTextInput` verwenden
+
+Gilt für **alle Apps** (`apps/frontend`, `apps/geonexia`, `apps/score-tracker`) und `packages/common-ui`.
+
+- **Niemals ein plain `TextInput` aus `react-native` innerhalb von Bottom-Sheet-Modal-Inhalten rendern.** Das betrifft alles, was über `useMyScrollViewModal().show({ children })` bzw. `useModal` angezeigt wird oder sonst innerhalb von `BaseBottomSheet` / `MyScrollViewModal` (aus `repo-depkit-common-ui`) landet — auch Sheet-Komponenten wie `*Sheet.tsx`.
+- **Grund:** Das Keyboard-Tracking von `@gorhom/bottom-sheet` erkennt nur `BottomSheetTextInput`. Ein plain `TextInput` ist dafür unsichtbar, das Sheet schiebt sich beim Öffnen der Tastatur **nicht** nach oben und die Tastatur verdeckt das Eingabefeld (besonders auf Android mit Edge-to-Edge; siehe Fix in `packages/common-ui/src/components/BaseBottomSheet/index.tsx`, `android_keyboardInputMode="adjustPan"`).
+- **Muster** (Web kennt kein Sheet-Keyboard-Handling, daher Fallback):
+  ```tsx
+  import { Platform, TextInput } from 'react-native';
+  import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+
+  const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+  ```
+- **Vorhandene Helper wiederverwenden statt neu bauen:**
+  - Geonexia: `apps/geonexia/frontend/components/ModalTextInput.tsx`
+  - Frontend-App: `ResolvedTextInput` in `apps/frontend/app/components/SettingsListTextInput.tsx`
+  - common-ui: `SettingsListTextInput`, `SettingsListNumberInput`, `SettingsListDate` folgen dem Muster bereits.
+- `TextInput` auf normalen Screens (außerhalb von Sheets) ist in Ordnung.
+
 ## String replacement
 
 - **Never use `String.prototype.replaceAll()` or `String.prototype.replace()` for simple substitutions.** Use `StringHelper` from `repo-depkit-common` instead:
