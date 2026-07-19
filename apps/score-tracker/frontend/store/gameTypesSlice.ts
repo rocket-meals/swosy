@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { GameType, ScoringMode } from '../helpers/GameTypesStorage';
 import { DEFAULT_GAME_TYPE_ICON } from '../helpers/GameTypesStorage';
-import type { GamePreset, GameRules } from '../helpers/GameRules';
+import type { GamePreset, GameRules, StartingPlayerMode } from '../helpers/GameRules';
 export type { GameType, ScoringMode };
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -45,6 +45,7 @@ const gameTypesSlice = createSlice({
 					maxRounds: null,
 					maxScore: null,
 					rules: null,
+					startingPlayerMode: 'fixed',
 					version: 1,
 					createdAt: Date.now(),
 				};
@@ -66,6 +67,7 @@ const gameTypesSlice = createSlice({
 					maxRounds: preset.maxRounds ?? null,
 					maxScore: preset.maxScore ?? null,
 					rules: preset.rules ?? null,
+					startingPlayerMode: preset.startingPlayerMode ?? 'fixed',
 					version: preset.version ?? 1,
 					createdAt: Date.now(),
 				};
@@ -103,6 +105,14 @@ const gameTypesSlice = createSlice({
 			if (gameType) gameType.rules = action.payload.rules;
 		},
 
+		setGameTypeStartingPlayerMode(
+			state,
+			action: PayloadAction<{ gameTypeId: string; startingPlayerMode: StartingPlayerMode }>,
+		) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.startingPlayerMode = action.payload.startingPlayerMode;
+		},
+
 		setGameTypeVersion(state, action: PayloadAction<{ gameTypeId: string; version: number }>) {
 			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
 			if (gameType) gameType.version = action.payload.version;
@@ -123,6 +133,7 @@ const gameTypesSlice = createSlice({
 			gameType.maxRounds = preset.maxRounds ?? null;
 			gameType.maxScore = preset.maxScore ?? null;
 			gameType.rules = preset.rules ?? null;
+			gameType.startingPlayerMode = preset.startingPlayerMode ?? 'fixed';
 			gameType.version = preset.version ?? 1;
 		},
 
@@ -142,6 +153,7 @@ export const {
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
 	setGameTypeRules,
+	setGameTypeStartingPlayerMode,
 	setGameTypeVersion,
 	updateGameTypeFromPreset,
 	removeGameType,

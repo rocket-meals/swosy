@@ -51,7 +51,10 @@ export type ScoreEntryRules = {
 
 export type GameRules = {
 	version: 1;
-	scoreEntry: ScoreEntryRules;
+	/** Custom score-entry rules (e.g. a card picker instead of a plain number). Absent = plain numeric entry. */
+	scoreEntry?: ScoreEntryRules;
+	/** Custom starting-player rule, only read when `GameType.startingPlayerMode === 'custom'`. */
+	playerOrder?: PlayerOrderRule | null;
 };
 
 /** A shareable game template: everything needed to create a new game type. */
@@ -62,6 +65,8 @@ export type GamePreset = {
 	maxRounds?: number | null;
 	maxScore?: number | null;
 	rules?: GameRules | null;
+	/** How the starting player rotates each round. undefined/absent defaults to 'fixed'. */
+	startingPlayerMode?: StartingPlayerMode;
 	/**
 	 * Content version of this game definition (distinct from `rules.version`,
 	 * the fixed rule-schema version). Bump this yourself when sharing an
@@ -99,6 +104,155 @@ export function evaluateRuleExpr(expr: RuleExpr, ctx: RuleEvalContext): number {
 			return evaluateRuleExpr(expr.cond, ctx) !== 0 ? evaluateRuleExpr(expr.then, ctx) : evaluateRuleExpr(expr.else, ctx);
 		case 'gte':
 			return evaluateRuleExpr(expr.a, ctx) >= evaluateRuleExpr(expr.b, ctx) ? 1 : 0;
+	}
+}
+
+// ─── Player order (starting-player rotation) ───────────────────────────────────
+//
+// Three built-in modes cover the common cases (seating order never changes,
+// last round's best score starts next, simple round-robin). `custom` hands
+// the decision to a small whitelisted expression tree evaluated against the
+// previous round's per-seat scores and a carried-over numeric state - same
+// "JSON only, no executable code" approach as `scoreFormula` above - for
+// games with unusual dealer rules.
+//
+// "Seat"/index always refers to a position in the current, table-ordered
+// player list (the same order shown/edited in the setup screen), not a
+// player id - reordering players is a separate, purely manual action.
+
+export type StartingPlayerMode = 'fixed' | 'previousWinner' | 'rotate' | 'custom';
+
+export const STARTING_PLAYER_MODES: StartingPlayerMode[] = ['fixed', 'previousWinner', 'rotate', 'custom'];
+
+export type PlayerOrderRuleExpr =
+	| { op: 'const'; value: number }
+	| { op: 'playerCount' }
+	| { op: 'previousStartIndex' }
+	| { op: 'state' }
+	| { op: 'roundWinnerIndex' }
+	| { op: 'add'; args: PlayerOrderRuleExpr[] }
+	| { op: 'mod'; a: PlayerOrderRuleExpr; b: PlayerOrderRuleExpr }
+	| { op: 'if'; cond: PlayerOrderRuleExpr; then: PlayerOrderRuleExpr; else: PlayerOrderRuleExpr }
+	| { op: 'gte'; a: PlayerOrderRuleExpr; b: PlayerOrderRuleExpr };
+
+/**
+ * A dynamic "who starts the next round" rule, evaluated once after each
+ * round. `startIndex` picks the next starting seat; `nextState` becomes
+ * `state` for the following round's evaluation (e.g. a dealer counter).
+ */
+export type PlayerOrderRule = {
+	version: 1;
+	startIndex: PlayerOrderRuleExpr;
+	nextState: PlayerOrderRuleExpr;
+	initialState: number;
+};
+
+export type PlayerOrderEvalContext = {
+	/** Number of seats (players in table order). */
+	playerCount: number;
+	/** Seat index of whoever started the round just finished, or -1 if unknown (before round 1, or that seat no longer exists). */
+	previousStartIndex: number;
+	/** That round's own per-seat score (table order), null where not entered. */
+	previousRoundScores: (number | null)[];
+	scoringMode: ScoringMode;
+	/** Carried-over numeric state from the previous evaluation (see `PlayerOrderRule.initialState`). */
+	state: number;
+};
+
+function roundWinnerIndex(scores: (number | null)[], scoringMode: ScoringMode, fallback: number): number {
+	let bestIndex = -1;
+	let bestScore = scoringMode === 'lowWins' ? Infinity : -Infinity;
+	for (let i = 0; i < scores.length; i++) {
+		const score = scores[i];
+		if (score == null) continue;
+		const isBetter = scoringMode === 'lowWins' ? score < bestScore : score > bestScore;
+		if (isBetter) {
+			bestScore = score;
+			bestIndex = i;
+		}
+	}
+	return bestIndex >= 0 ? bestIndex : fallback;
+}
+
+export function evaluatePlayerOrderExpr(expr: PlayerOrderRuleExpr, ctx: PlayerOrderEvalContext): number {
+	switch (expr.op) {
+		case 'const':
+			return expr.value;
+		case 'playerCount':
+			return ctx.playerCount;
+		case 'previousStartIndex':
+			return ctx.previousStartIndex;
+		case 'state':
+			return ctx.state;
+		case 'roundWinnerIndex':
+			return roundWinnerIndex(ctx.previousRoundScores, ctx.scoringMode, Math.max(0, ctx.previousStartIndex));
+		case 'add':
+			return expr.args.reduce((sum, arg) => sum + evaluatePlayerOrderExpr(arg, ctx), 0);
+		case 'mod': {
+			const b = evaluatePlayerOrderExpr(expr.b, ctx);
+			if (b === 0) return 0;
+			const a = evaluatePlayerOrderExpr(expr.a, ctx);
+			return ((a % b) + b) % b;
+		}
+		case 'if':
+			return evaluatePlayerOrderExpr(expr.cond, ctx) !== 0
+				? evaluatePlayerOrderExpr(expr.then, ctx)
+				: evaluatePlayerOrderExpr(expr.else, ctx);
+		case 'gte':
+			return evaluatePlayerOrderExpr(expr.a, ctx) >= evaluatePlayerOrderExpr(expr.b, ctx) ? 1 : 0;
+	}
+}
+
+/** Built-in "rotate" behavior expressed as a `PlayerOrderRule`, seeded when a game type first switches to `custom`. */
+export const ROTATE_PLAYER_ORDER_RULE: PlayerOrderRule = {
+	version: 1,
+	startIndex: {
+		op: 'mod',
+		a: { op: 'add', args: [{ op: 'previousStartIndex' }, { op: 'const', value: 1 }] },
+		b: { op: 'playerCount' },
+	},
+	nextState: { op: 'const', value: 0 },
+	initialState: 0,
+};
+
+/**
+ * Compute which seat (index into the current, table-ordered player list)
+ * starts the next round, plus the numeric state to carry into the following
+ * evaluation. `previousStartIndex`/`previousRoundScores` describe the round
+ * just finished; pass `previousStartIndex: -1` before round 1 has been played.
+ */
+export function computeNextStartingPlayerIndex(params: {
+	mode: StartingPlayerMode;
+	customRule?: PlayerOrderRule | null;
+	playerCount: number;
+	previousStartIndex: number;
+	previousRoundScores: (number | null)[];
+	scoringMode: ScoringMode;
+	state: number;
+}): { startIndex: number; nextState: number } {
+	const { mode, customRule, playerCount, previousStartIndex, previousRoundScores, scoringMode, state } = params;
+	if (playerCount <= 0) return { startIndex: 0, nextState: state };
+
+	switch (mode) {
+		case 'fixed':
+			return { startIndex: 0, nextState: state };
+		case 'rotate': {
+			const prev = Math.max(0, previousStartIndex);
+			return { startIndex: (prev + 1) % playerCount, nextState: state };
+		}
+		case 'previousWinner':
+			return {
+				startIndex: roundWinnerIndex(previousRoundScores, scoringMode, Math.max(0, previousStartIndex)),
+				nextState: state,
+			};
+		case 'custom': {
+			if (!customRule) return { startIndex: 0, nextState: state };
+			const ctx: PlayerOrderEvalContext = { playerCount, previousStartIndex, previousRoundScores, scoringMode, state };
+			const rawIndex = Math.trunc(evaluatePlayerOrderExpr(customRule.startIndex, ctx));
+			const nextState = evaluatePlayerOrderExpr(customRule.nextState, ctx);
+			const startIndex = ((rawIndex % playerCount) + playerCount) % playerCount;
+			return { startIndex, nextState };
+		}
 	}
 }
 
@@ -148,13 +302,64 @@ function isScoreEntryRules(value: unknown): value is ScoreEntryRules {
 	return true;
 }
 
+function isPlayerOrderRuleExpr(value: unknown): value is PlayerOrderRuleExpr {
+	if (typeof value !== 'object' || value === null) return false;
+	const v = value as Record<string, unknown>;
+	switch (v.op) {
+		case 'const':
+			return typeof v.value === 'number';
+		case 'playerCount':
+		case 'previousStartIndex':
+		case 'state':
+		case 'roundWinnerIndex':
+			return true;
+		case 'add':
+			return Array.isArray(v.args) && v.args.length > 0 && v.args.every(isPlayerOrderRuleExpr);
+		case 'mod':
+			return isPlayerOrderRuleExpr(v.a) && isPlayerOrderRuleExpr(v.b);
+		case 'if':
+			return isPlayerOrderRuleExpr(v.cond) && isPlayerOrderRuleExpr(v.then) && isPlayerOrderRuleExpr(v.else);
+		case 'gte':
+			return isPlayerOrderRuleExpr(v.a) && isPlayerOrderRuleExpr(v.b);
+		default:
+			return false;
+	}
+}
+
+function isPlayerOrderRule(value: unknown): value is PlayerOrderRule {
+	if (typeof value !== 'object' || value === null) return false;
+	const v = value as Record<string, unknown>;
+	if (v.version !== 1) return false;
+	if (!isPlayerOrderRuleExpr(v.startIndex)) return false;
+	if (!isPlayerOrderRuleExpr(v.nextState)) return false;
+	if (typeof v.initialState !== 'number') return false;
+	return true;
+}
+
+/** Validate an imported player-order rule. Returns it typed, or `null` if malformed. */
+export function validatePlayerOrderRule(value: unknown): PlayerOrderRule | null {
+	return isPlayerOrderRule(value) ? (value as PlayerOrderRule) : null;
+}
+
 /** Validate an imported rules object. Returns it typed, or `null` if malformed. */
 export function validateGameRules(value: unknown): GameRules | null {
 	if (typeof value !== 'object' || value === null) return null;
 	const v = value as Record<string, unknown>;
 	if (v.version !== 1) return null;
-	if (!isScoreEntryRules(v.scoreEntry)) return null;
-	return { version: 1, scoreEntry: v.scoreEntry as ScoreEntryRules };
+
+	let scoreEntry: ScoreEntryRules | undefined;
+	if (v.scoreEntry !== undefined && v.scoreEntry !== null) {
+		if (!isScoreEntryRules(v.scoreEntry)) return null;
+		scoreEntry = v.scoreEntry as ScoreEntryRules;
+	}
+
+	let playerOrder: PlayerOrderRule | null | undefined;
+	if (v.playerOrder !== undefined && v.playerOrder !== null) {
+		playerOrder = validatePlayerOrderRule(v.playerOrder);
+		if (!playerOrder) return null;
+	}
+
+	return { version: 1, scoreEntry, playerOrder };
 }
 
 /**
@@ -177,6 +382,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return null;
 	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return null;
 	if (v.version !== undefined && typeof v.version !== 'number') return null;
+	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return null;
 
 	let rules: GameRules | null = null;
 	if (v.rules !== undefined && v.rules !== null) {
@@ -191,6 +397,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 		maxRounds: (v.maxRounds as number | null | undefined) ?? null,
 		maxScore: (v.maxScore as number | null | undefined) ?? null,
 		rules,
+		startingPlayerMode: (v.startingPlayerMode as StartingPlayerMode | undefined) ?? 'fixed',
 		version: (v.version as number | undefined) ?? 1,
 	};
 }

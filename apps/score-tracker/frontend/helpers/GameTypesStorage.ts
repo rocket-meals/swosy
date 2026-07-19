@@ -1,5 +1,5 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
-import type { GameRules } from './GameRules';
+import type { GameRules, StartingPlayerMode } from './GameRules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +18,8 @@ export type GameType = {
 	maxScore?: number | null;
 	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
 	rules?: GameRules | null;
+	/** How the starting player rotates each round. undefined/null = 'fixed' (seat 0 always starts). */
+	startingPlayerMode?: StartingPlayerMode | null;
 	/** Content version of this game's definition. undefined defaults to 1. */
 	version?: number;
 	createdAt: number;

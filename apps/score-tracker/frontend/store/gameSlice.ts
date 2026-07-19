@@ -16,6 +16,8 @@ export type GameSliceState = {
 	currentRoundIndex: number;
 	/** Set when the current match is played as a specific game type. */
 	gameTypeId?: string;
+	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
+	playerOrderState?: number;
 };
 
 const initialState: GameSliceState = {
@@ -24,6 +26,7 @@ const initialState: GameSliceState = {
 	status: 'setup',
 	currentRoundIndex: 0,
 	gameTypeId: undefined,
+	playerOrderState: undefined,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -58,6 +61,7 @@ const gameSlice = createSlice({
 				status: action.payload.status,
 				currentRoundIndex: action.payload.currentRoundIndex,
 				gameTypeId: action.payload.gameTypeId,
+				playerOrderState: action.payload.playerOrderState,
 			};
 		},
 
@@ -128,6 +132,17 @@ const gameSlice = createSlice({
 			state.gameTypeId = action.payload;
 		},
 
+		/** Move a player one seat up/down in the table order (manual seating adjustment). No-op at either edge. */
+		movePlayer(state, action: PayloadAction<{ playerId: string; direction: 'up' | 'down' }>) {
+			const { playerId, direction } = action.payload;
+			const index = state.players.findIndex((p) => p.id === playerId);
+			if (index === -1) return;
+			const targetIndex = direction === 'up' ? index - 1 : index + 1;
+			if (targetIndex < 0 || targetIndex >= state.players.length) return;
+			const [player] = state.players.splice(index, 1);
+			state.players.splice(targetIndex, 0, player);
+		},
+
 		/** Remove a player and their scores from all rounds. */
 		removePlayer(state, action: PayloadAction<string>) {
 			state.players = state.players.filter((p) => p.id !== action.payload);
@@ -161,12 +176,13 @@ const gameSlice = createSlice({
 			round.cardSelections[action.payload.playerId] = action.payload.cardIds;
 		},
 
-		/** Leave the setup phase (round 0) and start round 1. */
+		/** Leave the setup phase (round 0) and start round 1. Round 1 always starts with the first seat. */
 		startGame(state) {
 			if (state.status === 'active') return;
 			state.status = 'active';
-			state.rounds = [{ id: generateId(), scores: emptyScoresFor(state.players) }];
+			state.rounds = [{ id: generateId(), scores: emptyScoresFor(state.players), startingPlayerId: state.players[0]?.id }];
 			state.currentRoundIndex = 0;
+			state.playerOrderState = undefined;
 		},
 
 		/** Move to the previous round (view/edit its scores). No-op at round 1. */
@@ -174,10 +190,20 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = Math.max(0, state.currentRoundIndex - 1);
 		},
 
-		/** Move to the next round, creating it first if it doesn't exist yet. */
-		goToNextRound(state) {
+		/**
+		 * Move to the next round, creating it first if it doesn't exist yet. When
+		 * creating a new round, the caller (which alone knows the selected game
+		 * type's `startingPlayerMode`) supplies who starts it and the resulting
+		 * custom-rule state - see `computeNextStartingPlayerIndex` in GameRules.
+		 */
+		goToNextRound(state, action: PayloadAction<{ startingPlayerId?: string; nextOrderState?: number } | undefined>) {
 			if (state.currentRoundIndex >= state.rounds.length - 1) {
-				state.rounds.push({ id: generateId(), scores: emptyScoresFor(state.players) });
+				state.rounds.push({
+					id: generateId(),
+					scores: emptyScoresFor(state.players),
+					startingPlayerId: action.payload?.startingPlayerId,
+				});
+				state.playerOrderState = action.payload?.nextOrderState;
 			}
 			state.currentRoundIndex = Math.min(state.rounds.length - 1, state.currentRoundIndex + 1);
 		},
@@ -187,6 +213,7 @@ const gameSlice = createSlice({
 			state.rounds = [];
 			state.status = 'setup';
 			state.currentRoundIndex = 0;
+			state.playerOrderState = undefined;
 		},
 
 		/** Delete everything (players and rounds) and return to the setup phase. */
@@ -239,6 +266,7 @@ export const {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	movePlayer,
 	removePlayer,
 	setScore,
 	setCardSelection,

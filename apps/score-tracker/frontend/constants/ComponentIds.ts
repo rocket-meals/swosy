@@ -39,6 +39,8 @@ export const ComponentIds = {
 	GAME_PLAYER_ROW_PREFIX: 'game-player-row-',
 	GAME_PLAYER_ROW_DELETE_PREFIX: 'game-player-row-delete-',
 	GAME_PLAYER_ROW_SAVE_FRIEND_PREFIX: 'game-player-row-save-friend-',
+	GAME_PLAYER_ROW_MOVE_UP_PREFIX: 'game-player-row-move-up-',
+	GAME_PLAYER_ROW_MOVE_DOWN_PREFIX: 'game-player-row-move-down-',
 	GAME_ADD_PLAYER_BUTTON: 'game-add-player-button',
 	GAME_ADD_PLAYER_GUEST_BUTTON: 'game-add-player-guest-button',
 	GAME_ADD_PLAYER_FRIEND_ROW_PREFIX: 'game-add-player-friend-row-',
@@ -87,6 +89,8 @@ export const ComponentIds = {
 	GAME_DETAIL_EXPORT_ROW: 'game-detail-export-row',
 	GAME_DETAIL_VERSION_ROW: 'game-detail-version-row',
 	GAME_DETAIL_CODE_EDIT_ROW: 'game-detail-code-edit-row',
+	GAME_DETAIL_STARTING_PLAYER_ROW: 'game-detail-starting-player-row',
+	GAME_STARTING_PLAYER_MODE_ROW_PREFIX: 'game-starting-player-mode-row-',
 
 	// Timer screen
 	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',

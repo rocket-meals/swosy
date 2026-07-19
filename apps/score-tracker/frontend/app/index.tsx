@@ -33,6 +33,7 @@ import {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	movePlayer,
 	removePlayer,
 	setScore,
 	setCardSelection,
@@ -55,6 +56,7 @@ import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
 import GameTypeIcon from '../components/GameTypeIcon';
 import CardScoreEntryModal from '../components/CardScoreEntryModal';
+import { computeNextStartingPlayerIndex } from '../helpers/GameRules';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -226,6 +228,7 @@ function PlayerTile({
 	color,
 	avatarConfig,
 	isLeader,
+	isRoundStarter,
 	hasScore,
 	onPress,
 	tileWidth,
@@ -236,6 +239,8 @@ function PlayerTile({
 	color: string;
 	avatarConfig?: AvatarConfig;
 	isLeader: boolean;
+	/** Whether this player starts the currently viewed round (see GameRules `startingPlayerMode`). */
+	isRoundStarter: boolean;
 	hasScore: boolean;
 	onPress: () => void;
 	tileWidth?: number;
@@ -246,27 +251,34 @@ function PlayerTile({
 
 	if (tileWidth === undefined) {
 		return (
-			<SettingsListAvatar
-				nativeID={nativeID}
-				config={avatarConfig}
-				onPressOverride={onPress}
-				label={name}
-				value={String(score)}
-				stackedValue
-				previewSize={TILE_AVATAR_SIZE}
-				avatarBackgroundColor="#ffffff"
-				backgroundColor={color}
-				titleColor={textColor}
-				valueColor={textColor}
-				titleFontSize={20}
-				valueFontSize={26}
-				borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
-				borderWidth={hasScore ? undefined : 2.5}
-				borderStyle="dashed"
-				rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
-				groupPosition="single"
-				showSeparator={false}
-			/>
+			<View style={styles.tileWrapper}>
+				<SettingsListAvatar
+					nativeID={nativeID}
+					config={avatarConfig}
+					onPressOverride={onPress}
+					label={name}
+					value={String(score)}
+					stackedValue
+					previewSize={TILE_AVATAR_SIZE}
+					avatarBackgroundColor="#ffffff"
+					backgroundColor={color}
+					titleColor={textColor}
+					valueColor={textColor}
+					titleFontSize={20}
+					valueFontSize={26}
+					borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
+					borderWidth={hasScore ? undefined : 2.5}
+					borderStyle="dashed"
+					rightIcon={isLeader ? <Ionicons name="trophy" size={24} color="#fbbf24" /> : <View style={styles.rightIconPlaceholder} />}
+					groupPosition="single"
+					showSeparator={false}
+				/>
+				{isRoundStarter && (
+					<View style={styles.starterBadge}>
+						<Ionicons name="play" size={12} color="#ffffff" />
+					</View>
+				)}
+			</View>
 		);
 	}
 
@@ -284,6 +296,11 @@ function PlayerTile({
 			{isLeader && (
 				<View style={styles.verticalTileTrophy}>
 					<Ionicons name="trophy" size={20} color="#fbbf24" />
+				</View>
+			)}
+			{isRoundStarter && (
+				<View style={styles.starterBadge}>
+					<Ionicons name="play" size={12} color="#ffffff" />
 				</View>
 			)}
 			<MyAvatar style={avatarConfig?.style} options={avatarConfig?.options} size={TILE_AVATAR_SIZE} rounded backgroundColor="#ffffff" />
@@ -304,6 +321,10 @@ function PlayerEditGroup({
 	onAvatarChange,
 	onSaveAsFriend,
 	onDelete,
+	onMoveUp,
+	onMoveDown,
+	canMoveUp,
+	canMoveDown,
 }: {
 	player: Player;
 	onRename: (name: string) => void;
@@ -312,7 +333,13 @@ function PlayerEditGroup({
 	/** Only set for guest players (no friendId yet): saves them to the friends roster. */
 	onSaveAsFriend?: () => void;
 	onDelete: () => void;
+	/** Manual seating-order adjustment (see GameRules `startingPlayerMode`). */
+	onMoveUp: () => void;
+	onMoveDown: () => void;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
 }) {
+	const { theme } = useTheme();
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 
@@ -334,6 +361,34 @@ function PlayerEditGroup({
 
 	return (
 		<View style={styles.playerEditGroup} nativeID={`${ComponentIds.GAME_PLAYER_ROW_PREFIX}${player.id}`}>
+			<SettingsList
+				label="Reihenfolge"
+				leftIcon={<Ionicons name="swap-vertical-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				rightElement={
+					<View style={styles.reorderButtons}>
+						<TouchableOpacity
+							nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_UP_PREFIX}${player.id}`}
+							onPress={onMoveUp}
+							disabled={!canMoveUp}
+							hitSlop={8}
+							style={styles.reorderButton}
+						>
+							<Ionicons name="chevron-up" size={20} color={canMoveUp ? theme.screen.text : theme.screen.border} />
+						</TouchableOpacity>
+						<TouchableOpacity
+							nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_DOWN_PREFIX}${player.id}`}
+							onPress={onMoveDown}
+							disabled={!canMoveDown}
+							hitSlop={8}
+							style={styles.reorderButton}
+						>
+							<Ionicons name="chevron-down" size={20} color={canMoveDown ? theme.screen.text : theme.screen.border} />
+						</TouchableOpacity>
+					</View>
+				}
+				groupPosition="top"
+			/>
 			<SettingsListAvatar
 				config={player.avatarConfig}
 				onChange={(config) => {
@@ -343,7 +398,7 @@ function PlayerEditGroup({
 				label={player.name}
 				previewSize={EDIT_AVATAR_SIZE}
 				avatarBackgroundColor={player.color}
-				groupPosition="top"
+				groupPosition="middle"
 				editorOptions={{
 					title: 'Avatar',
 					allowedStyles: [AvatarStyle.AVATAAARS],
@@ -522,6 +577,7 @@ export default function GameScreen() {
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);
+	const playerOrderState = useSelector((state: RootState) => state.game.playerOrderState);
 	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
 	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
 
@@ -822,7 +878,26 @@ export default function GameScreen() {
 	);
 
 	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);
-	const handleNextRound = useCallback(() => dispatch(goToNextRound()), [dispatch]);
+
+	// Only a brand-new round needs a computed starting player - paging forward
+	// through already-played rounds must keep their originally recorded one.
+	const handleNextRound = useCallback(() => {
+		const isCreatingNewRound = currentRoundIndex >= rounds.length - 1;
+		if (!isCreatingNewRound || !currentRound) {
+			dispatch(goToNextRound());
+			return;
+		}
+		const { startIndex, nextState } = computeNextStartingPlayerIndex({
+			mode: selectedGameType?.startingPlayerMode ?? 'fixed',
+			customRule: selectedGameType?.rules?.playerOrder,
+			playerCount: players.length,
+			previousStartIndex: players.findIndex((p) => p.id === currentRound.startingPlayerId),
+			previousRoundScores: players.map((p) => currentRound.scores[p.id] ?? null),
+			scoringMode,
+			state: playerOrderState ?? selectedGameType?.rules?.playerOrder?.initialState ?? 0,
+		});
+		dispatch(goToNextRound({ startingPlayerId: players[startIndex]?.id, nextOrderState: nextState }));
+	}, [currentRoundIndex, rounds.length, currentRound, selectedGameType, players, scoringMode, playerOrderState, dispatch]);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -862,7 +937,7 @@ export default function GameScreen() {
 								/>
 							</View>
 						)}
-						{players.map((player) => (
+						{players.map((player, index) => (
 							<PlayerEditGroup
 								key={player.id}
 								player={player}
@@ -871,6 +946,10 @@ export default function GameScreen() {
 								onAvatarChange={(config) => dispatch(setPlayerAvatar({ playerId: player.id, avatarConfig: config }))}
 								onSaveAsFriend={player.friendId ? undefined : () => handleSaveGuestAsFriend(player)}
 								onDelete={() => dispatch(removePlayer(player.id))}
+								onMoveUp={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
+								onMoveDown={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
+								canMoveUp={index > 0}
+								canMoveDown={index < players.length - 1}
 							/>
 						))}
 						<TouchableOpacity
@@ -908,6 +987,7 @@ export default function GameScreen() {
 								color={player.color}
 								avatarConfig={player.avatarConfig}
 								isLeader={player.id === leaderId}
+								isRoundStarter={currentRound?.startingPlayerId === player.id}
 								hasScore={currentRound ? currentRound.scores[player.id] != null : false}
 								onPress={() => handleTilePress(player.id)}
 								tileWidth={tileWidth}
@@ -1003,6 +1083,21 @@ const styles = StyleSheet.create({
 		width: 24,
 		height: 24,
 	},
+	tileWrapper: {
+		position: 'relative',
+	},
+	starterBadge: {
+		position: 'absolute',
+		top: 8,
+		left: 8,
+		width: 22,
+		height: 22,
+		borderRadius: 11,
+		backgroundColor: 'rgba(0,0,0,0.55)',
+		justifyContent: 'center',
+		alignItems: 'center',
+		zIndex: 2,
+	},
 	verticalTile: {
 		alignItems: 'center',
 		borderRadius: 14,
@@ -1032,6 +1127,16 @@ const styles = StyleSheet.create({
 	},
 	playerEditGroup: {
 		marginBottom: 4,
+	},
+	reorderButtons: {
+		flexDirection: 'row',
+		gap: 4,
+	},
+	reorderButton: {
+		width: 32,
+		height: 32,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	gameTypeRow: {
 		marginBottom: 8,

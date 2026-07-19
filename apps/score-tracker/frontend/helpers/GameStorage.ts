@@ -36,6 +36,8 @@ export type Round = {
 	 * be re-opened and edited later.
 	 */
 	cardSelections?: Record<string, string[]>;
+	/** Player id of whoever starts this round, per the game type's `startingPlayerMode`. */
+	startingPlayerId?: string;
 };
 
 export type GameStatus = 'setup' | 'active';
@@ -47,6 +49,8 @@ export type GameState = {
 	currentRoundIndex: number;
 	/** Set when the current match is played as a specific game (see GameTypesStorage). */
 	gameTypeId?: string;
+	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
+	playerOrderState?: number;
 };
 
 // ─── Storage access ───────────────────────────────────────────────────────────
@@ -84,7 +88,14 @@ export async function loadGameState(): Promise<GameState> {
 			const rounds = parsed.rounds;
 			const status: GameStatus = parsed.status ?? (rounds.length > 0 ? 'active' : 'setup');
 			const currentRoundIndex = parsed.currentRoundIndex ?? Math.max(0, rounds.length - 1);
-			return { players: parsed.players, rounds, status, currentRoundIndex, gameTypeId: parsed.gameTypeId };
+			return {
+				players: parsed.players,
+				rounds,
+				status,
+				currentRoundIndex,
+				gameTypeId: parsed.gameTypeId,
+				playerOrderState: parsed.playerOrderState,
+			};
 		}
 		return emptyGameState();
 	} catch {

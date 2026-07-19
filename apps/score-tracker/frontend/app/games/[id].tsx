@@ -22,6 +22,7 @@ import {
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
 	setGameTypeRules,
+	setGameTypeStartingPlayerMode,
 	setGameTypeVersion,
 	updateGameTypeFromPreset,
 	addGameTypeFromPreset,
@@ -33,8 +34,8 @@ import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
 import { GAME_TYPE_ICONS } from '../../helpers/GameTypesStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
-import type { GamePreset } from '../../helpers/GameRules';
-import { parseGamePreset } from '../../helpers/GameRules';
+import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
+import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
@@ -59,6 +60,7 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 		maxRounds: gameType.maxRounds ?? null,
 		maxScore: gameType.maxScore ?? null,
 		rules: gameType.rules ?? null,
+		startingPlayerMode: gameType.startingPlayerMode ?? 'fixed',
 		version: gameType.version ?? 1,
 	};
 }
@@ -114,6 +116,72 @@ function ScoringModeSection({ gameTypeId }: { gameTypeId: string }) {
 					groupPosition={index === 0 ? 'top' : 'bottom'}
 				/>
 			))}
+		</View>
+	);
+}
+
+// ─── Starting-player mode modal content (live-updating, subscribes to the store) ──
+//
+// Three built-in modes (see GameRules `computeNextStartingPlayerIndex`) plus a
+// "custom" escape hatch that hands the decision to `rules.playerOrder`, a
+// small JSON expression tree edited via the "Code bearbeiten" field below -
+// same reasoning as the score-entry rules above.
+
+const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; icon: React.ReactNode }> = {
+	fixed: {
+		label: 'Reihenfolge bleibt gleich',
+		icon: <Ionicons name="reorder-three-outline" size={20} color="#ffffff" />,
+	},
+	previousWinner: {
+		label: 'Bester der letzten Runde beginnt',
+		icon: <Ionicons name="trophy-outline" size={20} color="#ffffff" />,
+	},
+	rotate: {
+		label: 'Startspieler rotiert reihum',
+		icon: <Ionicons name="sync-outline" size={20} color="#ffffff" />,
+	},
+	custom: {
+		label: 'Benutzerdefiniert (JSON-Regel)',
+		icon: <MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />,
+	},
+};
+
+function StartingPlayerModeSection({ gameTypeId }: { gameTypeId: string }) {
+	const dispatch = useDispatch<AppDispatch>();
+	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === gameTypeId));
+	if (!gameType) return null;
+	const mode: StartingPlayerMode = gameType.startingPlayerMode ?? 'fixed';
+
+	return (
+		<View style={styles.modalContent}>
+			{STARTING_PLAYER_MODES.map((candidate, index) => (
+				<SettingsListSelectOptionSingle
+					key={candidate}
+					nativeID={`${ComponentIds.GAME_STARTING_PLAYER_MODE_ROW_PREFIX}${candidate}`}
+					label={STARTING_PLAYER_MODE_INFO[candidate].label}
+					leftIcon={STARTING_PLAYER_MODE_INFO[candidate].icon}
+					iconBgColor={PRIMARY_COLOR}
+					isSelected={mode === candidate}
+					onPress={() => {
+						dispatch(setGameTypeStartingPlayerMode({ gameTypeId, startingPlayerMode: candidate }));
+						// Seed a working default so "custom" is never left without a rule to evaluate.
+						if (candidate === 'custom' && !gameType.rules?.playerOrder) {
+							dispatch(
+								setGameTypeRules({
+									gameTypeId,
+									rules: { version: 1, scoreEntry: gameType.rules?.scoreEntry, playerOrder: ROTATE_PLAYER_ORDER_RULE },
+								}),
+							);
+						}
+					}}
+					groupPosition={index === 0 ? 'top' : index === STARTING_PLAYER_MODES.length - 1 ? 'bottom' : 'middle'}
+				/>
+			))}
+			{mode === 'custom' && (
+				<Text style={styles.startingPlayerHint}>
+					Die Regel wird als „playerOrder“ im JSON unter „Code bearbeiten“ gepflegt (Felder: startIndex, nextState, initialState).
+				</Text>
+			)}
 		</View>
 	);
 }
@@ -229,6 +297,14 @@ export default function GameTypeDetailScreen() {
 		});
 	}, [showModal, gameType]);
 
+	const handleOpenStartingPlayerModal = useCallback(() => {
+		if (!gameType) return;
+		showModal({
+			title: 'Startspieler',
+			children: <StartingPlayerModeSection gameTypeId={gameType.id} />,
+		});
+	}, [showModal, gameType]);
+
 	const handleDelete = useCallback(() => {
 		if (!gameType) return;
 		dispatch(removeGameType(gameType.id));
@@ -291,9 +367,15 @@ export default function GameTypeDetailScreen() {
 		[dispatch],
 	);
 
+	// Only clears the score-entry rules (card picker) - a custom player-order
+	// rule living in the same `rules` object, if any, is kept intact.
 	const handleRemoveRules = useCallback(() => {
 		if (!gameType) return;
-		dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: null }));
+		if (gameType.rules?.playerOrder) {
+			dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: { version: 1, playerOrder: gameType.rules.playerOrder } }));
+		} else {
+			dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: null }));
+		}
 	}, [gameType, dispatch]);
 
 	const handleEditCode = useCallback(
@@ -426,12 +508,22 @@ export default function GameTypeDetailScreen() {
 				<SettingsListGroupTitle title="Spielregeln" />
 				<SettingsList
 					label="Punkte-Eingabe"
-					value={gameType.rules ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
-					leftIcon={<MaterialCommunityIcons name={gameType.rules ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
+					value={gameType.rules?.scoreEntry ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
+					leftIcon={<MaterialCommunityIcons name={gameType.rules?.scoreEntry ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
 					iconBgColor={PRIMARY_COLOR}
-					groupPosition={gameType.rules ? 'top' : 'single'}
+					groupPosition="top"
 				/>
-				{gameType.rules && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_DETAIL_STARTING_PLAYER_ROW}
+					label="Startspieler"
+					value={STARTING_PLAYER_MODE_INFO[gameType.startingPlayerMode ?? 'fixed'].label}
+					leftIcon={<Ionicons name="person-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenStartingPlayerModal}
+					groupPosition={gameType.rules?.scoreEntry ? 'middle' : 'bottom'}
+				/>
+				{gameType.rules?.scoreEntry && (
 					<SettingsList
 						label="Regeln entfernen"
 						value="Zurück zur Zahleneingabe"
@@ -568,6 +660,12 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		padding: 10,
+	},
+	startingPlayerHint: {
+		fontSize: 12,
+		color: '#9ca3af',
+		paddingHorizontal: 10,
+		paddingTop: 10,
 	},
 	iconGrid: {
 		flexDirection: 'row',
