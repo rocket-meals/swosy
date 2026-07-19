@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		alignItems: 'flex-start',
 		flex: 1,
+		minWidth: 0,
 	},
 	title: {
 		fontSize: 15,
@@ -238,6 +239,8 @@ const styles = StyleSheet.create({
 	},
 	titleContainerStacked: {
 		width: '100%',
+		flexShrink: 1,
+		minWidth: 0,
 	},
 	valueContainer: {
 		flexShrink: 1,
@@ -248,6 +251,8 @@ const styles = StyleSheet.create({
 	valueContainerStacked: {
 		width: '100%',
 		alignItems: 'flex-start',
+		flexShrink: 1,
+		minWidth: 0,
 	},
 	valueStacked: {
 		textAlign: 'left',
