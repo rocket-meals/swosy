@@ -1,8 +1,9 @@
-import { Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { ManagementFoodCategorySheetProps } from './types';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -111,7 +112,7 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 			</View>
 			{isCustom ? (
 				<View style={styles.modalContent}>
-					<TextInput
+					<ModalTextInput
 						style={{
 							...styles.input,
 							color: 'black',

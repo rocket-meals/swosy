@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { days } from '../../constants/SettingData';
@@ -8,6 +8,7 @@ import { BaseCourseTimetableEvent, CourseBottomSheetProps } from './types';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { colorData } from './constant';
@@ -325,7 +326,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						</View>
 					) : (
 						<View style={styles.titleBt}>
-							<TextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
+							<ModalTextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
 
 							<View style={[styles.buttonContainer]}>
 								<TouchableOpacity

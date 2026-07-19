@@ -138,6 +138,7 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
                 error={error || ''}
                 isDisabled={!!isDisabled}
                 custom_type="string"
+                insideBottomSheet
                 prefix={prefix}
                 suffix={suffix}
                 autoFocus

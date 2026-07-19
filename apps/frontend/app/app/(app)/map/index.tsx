@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -243,7 +244,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				title="Cluster-Abstand (px)"
 				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} color={theme.screen.icon} />}
 				rightElement={
-					<TextInput
+					<ModalTextInput
 						value={localClusterDistance}
 						onChangeText={(text) => {
 							setLocalClusterDistance(text);
@@ -371,7 +372,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 					title="Anzahl simulierter Menschen"
 					leftIcon={<MaterialIcons name="person-add" size={20} color={theme.screen.icon} />}
 					rightElement={
-						<TextInput
+						<ModalTextInput
 							value={localPeopleCount}
 							onChangeText={(text) => {
 								setLocalPeopleCount(text);

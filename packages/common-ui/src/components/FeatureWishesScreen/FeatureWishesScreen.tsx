@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
@@ -361,6 +362,11 @@ interface CreateWishContentProps {
 	onConfirm: (description: string) => void;
 }
 
+// Text inputs inside the bottom-sheet modal must use BottomSheetTextInput so the
+// sheet lifts above the keyboard (plain TextInputs are invisible to the sheet's
+// keyboard tracking). Web has no sheet keyboard handling, so it keeps TextInput.
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+
 const CreateWishContent: React.FC<CreateWishContentProps> = ({
 	descriptionPlaceholder,
 	createConfirmLabel,
@@ -374,7 +380,7 @@ const CreateWishContent: React.FC<CreateWishContentProps> = ({
 
 	return (
 		<View style={createStyles.container}>
-			<TextInput
+			<ResolvedTextInput
 				style={[
 					createStyles.descriptionInput,
 					{

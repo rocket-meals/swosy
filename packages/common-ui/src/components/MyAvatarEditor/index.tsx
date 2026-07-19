@@ -125,7 +125,8 @@
  *   own BottomSheetScrollView — that is fine.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
@@ -1009,6 +1010,11 @@ type DebugJsonInputProps = {
 	theme: any;
 };
 
+// Text inputs inside the bottom-sheet modal must use BottomSheetTextInput so the
+// sheet lifts above the keyboard (plain TextInputs are invisible to the sheet's
+// keyboard tracking). Web has no sheet keyboard handling, so it keeps TextInput.
+const ResolvedTextInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
+
 const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accentColor, theme }) => {
 	const [jsonText, setJsonText] = useState<string>(JSON.stringify(config, null, 2));
 	const [error, setError] = useState<string | null>(null);
@@ -1045,7 +1051,7 @@ const DebugJsonInput: React.FC<DebugJsonInputProps> = ({ config, onApply, accent
 			<Text style={[styles.debugJson, { color: theme.screen.text }]}>
 				{JSON.stringify(config, null, 2)}
 			</Text>
-			<TextInput
+			<ResolvedTextInput
 				style={[styles.debugJsonInput, { color: theme.screen.text, borderColor: theme.screen.text + '33' }]}
 				multiline
 				value={jsonText}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import ModalTextInput from '@/components/ModalTextInput';
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import styles from './styles';
@@ -117,7 +118,7 @@ const Index = () => {
 			title: intervalLabel,
 			children: (
 				<View style={[styles.modalContent, { paddingHorizontal: windowWidth < 600 ? 5 : 30 }]}>
-					<TextInput
+					<ModalTextInput
 						style={{
 							...styles.input,
 							color: 'black',
