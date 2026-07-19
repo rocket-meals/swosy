@@ -48,6 +48,7 @@ export const ComponentIds = {
 
 	// Card-based score entry modal (custom game rules, see GameRules)
 	GAME_CARD_SCORE_CARD_PREFIX: 'game-card-score-card-',
+	GAME_CARD_SCORE_BUST_TOGGLE: 'game-card-score-bust-toggle',
 	GAME_CARD_SCORE_SAVE_BUTTON: 'game-card-score-save-button',
 
 	// Settings modal (header gear)

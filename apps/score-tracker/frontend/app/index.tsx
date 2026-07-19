@@ -762,7 +762,7 @@ export default function GameScreen() {
 						<CardScoreEntryModal
 							items={scoreEntryRules.items}
 							scoreFormula={scoreEntryRules.scoreFormula}
-							enableBustOnDuplicateNumber={scoreEntryRules.enableBustOnDuplicateNumber}
+							bustLabel={scoreEntryRules.bustLabel}
 							bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
 							initialSelection={currentRound.cardSelections?.[playerId] ?? []}
 							onSave={(cardIds, score) => {

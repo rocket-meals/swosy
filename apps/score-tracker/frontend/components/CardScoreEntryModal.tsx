@@ -8,7 +8,6 @@ import { ComponentIds } from '../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
-const SUCCESS_COLOR = '#16a34a';
 
 const CATEGORY_TITLES: Record<CardCategory, string> = {
 	number: 'Zahlenkarten',
@@ -19,42 +18,24 @@ const CATEGORY_TITLES: Record<CardCategory, string> = {
 
 const CATEGORY_ORDER: CardCategory[] = ['number', 'modifier', 'multiplier', 'action'];
 
-type Phase = 'active' | 'busted' | 'frozen';
-
 /**
- * How many more cards must still be added before the player is allowed to
- * stop voluntarily (Flip Three forces three more reveals). Derived purely
- * from the ordered selection so undoing a pick (see `handleTapCard`) always
- * keeps this in sync without any separate bookkeeping.
- */
-function computePendingForcedDraws(selectedIds: string[], itemsById: Map<string, CardItem>): number {
-	let pending = 0;
-	for (const id of selectedIds) {
-		pending = Math.max(0, pending - 1);
-		if (itemsById.get(id)?.effect === 'flipThree') pending += 3;
-	}
-	return pending;
-}
-
-/**
- * Generic card-picker score entry: tap the cards a player ended their turn
- * with. Driven entirely by the game type's `GameRules` (see
- * helpers/GameRules.ts) - the push-your-luck bust/freeze/flip-three/second-
- * chance behavior below only activates for card items tagged accordingly, so
- * this same component serves both a plain "pick your cards" game and a full
- * Flip Seven-style round.
+ * Generic card-picker score entry: tap the cards a player ended their round
+ * with (a plain multi-select toggle, nothing is ever locked or auto-removed)
+ * and, for games with a bust concept, explicitly mark the round as busted
+ * with a dedicated toggle. Driven entirely by the game type's `GameRules`
+ * (see helpers/GameRules.ts).
  */
 export default function CardScoreEntryModal({
 	items,
 	scoreFormula,
-	enableBustOnDuplicateNumber,
+	bustLabel,
 	bonusAtNumberCount,
 	initialSelection,
 	onSave,
 }: {
 	items: CardItem[];
 	scoreFormula: RuleExpr;
-	enableBustOnDuplicateNumber?: boolean;
+	bustLabel?: string;
 	bonusAtNumberCount?: number;
 	initialSelection: string[];
 	onSave: (cardIds: string[], score: number) => void;
@@ -62,9 +43,7 @@ export default function CardScoreEntryModal({
 	const { theme } = useTheme();
 	const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 	const [selectedIds, setSelectedIds] = useState<string[]>(() => initialSelection.filter((id) => itemsById.has(id)));
-	const [phase, setPhase] = useState<Phase>('active');
-	const [lastEvent, setLastEvent] = useState<string | null>(null);
-	const pendingForcedDraws = useMemo(() => computePendingForcedDraws(selectedIds, itemsById), [selectedIds, itemsById]);
+	const [busted, setBusted] = useState(false);
 
 	const grouped = useMemo(() => {
 		const byCategory = new Map<CardCategory, CardItem[]>();
@@ -83,69 +62,26 @@ export default function CardScoreEntryModal({
 		itemsById,
 	]);
 
-	const previewScore = phase === 'busted' ? 0 : evaluateRuleExpr(scoreFormula, { selectedItems });
+	const previewScore = busted ? 0 : evaluateRuleExpr(scoreFormula, { selectedItems });
 
-	const handleTapCard = useCallback(
-		(item: CardItem) => {
-			if (phase !== 'active') return;
-			const alreadySelected = selectedIds.includes(item.id);
-			const isLastPick = selectedIds.length > 0 && selectedIds[selectedIds.length - 1] === item.id;
+	const bonusReached = useMemo(() => {
+		if (!bonusAtNumberCount) return false;
+		return selectedItems.filter((item) => item.category === 'number').length >= bonusAtNumberCount;
+	}, [selectedItems, bonusAtNumberCount]);
 
-			if (alreadySelected) {
-				if (isLastPick) {
-					// Tapping the card you just picked again undoes that one pick -
-					// corrects a mis-tap (including an accidental bonus-triggering
-					// card) instead of it being treated as a duplicate draw.
-					setSelectedIds((prev) => prev.slice(0, -1));
-					setLastEvent(null);
-					return;
-				}
-				if (item.category === 'number' && enableBustOnDuplicateNumber) {
-					const secondChance = items.find((i) => i.effect === 'secondChance');
-					if (secondChance && selectedIds.includes(secondChance.id)) {
-						setSelectedIds((prev) => prev.filter((id) => id !== secondChance.id));
-						setLastEvent(`Second Chance eingesetzt - doppelte ${item.label} verworfen.`);
-					} else {
-						setPhase('busted');
-						setLastEvent(`Bust! Doppelte ${item.label} - 0 Punkte für diese Runde.`);
-					}
-					return;
-				}
-				// Plain multi-select games (no bust rule): tapping again deselects.
-				setSelectedIds((prev) => prev.filter((id) => id !== item.id));
-				return;
-			}
+	const handleTapCard = useCallback((item: CardItem) => {
+		setSelectedIds((prev) => (prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]));
+	}, []);
 
-			const next = [...selectedIds, item.id];
-			setSelectedIds(next);
-			setLastEvent(null);
-
-			if (item.effect === 'freeze') {
-				setPhase('frozen');
-				setLastEvent('Freeze - Runde für diesen Spieler beendet.');
-				return;
-			}
-
-			if (enableBustOnDuplicateNumber && bonusAtNumberCount) {
-				const numberCount = next.filter((id) => itemsById.get(id)?.category === 'number').length;
-				if (numberCount >= bonusAtNumberCount) {
-					setLastEvent(
-						`🎉 ${bonusAtNumberCount} einzigartige Zahlenkarten - Bonus! Nochmal antippen macht die letzte Karte rückgängig, „Fertig“ speichert.`,
-					);
-				}
-			}
-		},
-		[phase, selectedIds, items, itemsById, enableBustOnDuplicateNumber, bonusAtNumberCount],
-	);
-
-	const canSave = pendingForcedDraws === 0;
+	const handleToggleBust = useCallback(() => {
+		setBusted((prev) => !prev);
+	}, []);
 
 	const handleSave = useCallback(() => {
-		if (!canSave) return;
 		onSave(selectedIds, previewScore);
-	}, [canSave, onSave, selectedIds, previewScore]);
+	}, [onSave, selectedIds, previewScore]);
 
-	const statusColor = phase === 'busted' ? DANGER_COLOR : phase === 'frozen' ? SUCCESS_COLOR : theme.screen.text;
+	const statusColor = busted ? DANGER_COLOR : theme.screen.text;
 
 	return (
 		<View style={styles.container}>
@@ -154,10 +90,10 @@ export default function CardScoreEntryModal({
 				<Text style={[styles.scoreValue, { color: statusColor }]}>{previewScore}</Text>
 			</View>
 
-			{(lastEvent || phase !== 'active' || pendingForcedDraws > 0) && (
+			{(busted || bonusReached) && (
 				<View style={[styles.statusBanner, { backgroundColor: statusColor + '20' }]}>
 					<Text style={[styles.statusBannerText, { color: statusColor }]}>
-						{lastEvent ?? (pendingForcedDraws > 0 ? `Flip Three - noch ${pendingForcedDraws} Pflicht-Karten` : '')}
+						{busted ? `${bustLabel} - aktiv` : `🎉 ${bonusAtNumberCount} einzigartige Zahlenkarten - Bonus!`}
 					</Text>
 				</View>
 			)}
@@ -168,21 +104,15 @@ export default function CardScoreEntryModal({
 					<View style={styles.cardRow}>
 						{groupItems.map((item) => {
 							const selected = selectedIds.includes(item.id);
-							const locked = phase !== 'active';
 							return (
 								<TouchableOpacity
 									key={item.id}
 									nativeID={`${ComponentIds.GAME_CARD_SCORE_CARD_PREFIX}${item.id}`}
 									style={[
 										styles.card,
-										{
-											borderColor: PRIMARY_COLOR,
-											backgroundColor: selected ? PRIMARY_COLOR : 'transparent',
-											opacity: locked && !selected ? 0.4 : 1,
-										},
+										{ borderColor: PRIMARY_COLOR, backgroundColor: selected ? PRIMARY_COLOR : 'transparent' },
 									]}
 									onPress={() => handleTapCard(item)}
-									disabled={locked}
 									activeOpacity={0.7}
 								>
 									<Text style={[styles.cardText, { color: selected ? '#ffffff' : PRIMARY_COLOR }]}>{item.label}</Text>
@@ -193,18 +123,25 @@ export default function CardScoreEntryModal({
 				</View>
 			))}
 
+			{bustLabel && (
+				<TouchableOpacity
+					nativeID={ComponentIds.GAME_CARD_SCORE_BUST_TOGGLE}
+					style={[styles.bustToggle, { borderColor: DANGER_COLOR, backgroundColor: busted ? DANGER_COLOR : 'transparent' }]}
+					onPress={handleToggleBust}
+					activeOpacity={0.7}
+				>
+					<MaterialCommunityIcons name="skull-outline" size={18} color={busted ? '#ffffff' : DANGER_COLOR} />
+					<Text style={[styles.bustToggleText, { color: busted ? '#ffffff' : DANGER_COLOR }]}>{bustLabel}</Text>
+				</TouchableOpacity>
+			)}
+
 			<TouchableOpacity
 				nativeID={ComponentIds.GAME_CARD_SCORE_SAVE_BUTTON}
-				style={[styles.saveButton, { backgroundColor: PRIMARY_COLOR, opacity: canSave ? 1 : 0.5 }]}
+				style={[styles.saveButton, { backgroundColor: PRIMARY_COLOR }]}
 				onPress={handleSave}
-				disabled={!canSave}
 				activeOpacity={0.8}
 			>
-				{phase === 'busted' ? (
-					<MaterialCommunityIcons name="skull-outline" size={20} color="#ffffff" />
-				) : (
-					<Ionicons name="checkmark-circle-outline" size={20} color="#ffffff" />
-				)}
+				<Ionicons name="checkmark-circle-outline" size={20} color="#ffffff" />
 				<Text style={styles.saveButtonText}>Fertig - {previewScore} Punkte speichern</Text>
 			</TouchableOpacity>
 		</View>
@@ -266,6 +203,20 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '700',
 	},
+	bustToggle: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 8,
+		height: 48,
+		borderWidth: 1.5,
+		borderRadius: 12,
+		marginTop: 8,
+	},
+	bustToggleText: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
 	saveButton: {
 		flexDirection: 'row',
 		justifyContent: 'center',
@@ -273,7 +224,7 @@ const styles = StyleSheet.create({
 		gap: 8,
 		height: 52,
 		borderRadius: 12,
-		marginTop: 8,
+		marginTop: 12,
 	},
 	saveButtonText: {
 		color: '#ffffff',
