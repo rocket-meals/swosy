@@ -32,21 +32,21 @@ export type RuleExpr =
 
 export type ScoreEntryRules = {
 	/** The palette of selectable cards shown when entering a score. Tapping a
-	 *  card always just toggles it on/off - a plain multi-select, no
-	 *  automatic duplicate/bust detection or play-flow simulation. */
+	 *  card always just toggles it on/off - a plain multi-select. Tapping an
+	 *  already-selected card again (e.g. a mis-tapped duplicate number) simply
+	 *  deselects it; there is no separate bust concept in the UI. */
 	items: CardItem[];
-	/** Computes the round score from the selected cards (skipped entirely - score is 0 - while busted). */
+	/** Computes the round score from the selected cards. */
 	scoreFormula: RuleExpr;
 	/**
-	 * Label for an explicit "I busted" toggle (e.g. "0 Punkte - doppelte Zahl
-	 * gezogen"), shown as its own button below the cards. Activating it
-	 * forces the round score to 0 regardless of the card selection; it can be
-	 * toggled back off just as freely if tapped by mistake. Undefined/absent
-	 * = no such button (plain card-tally games with no bust concept).
+	 * Reaching this many selected 'number' cards activates a bonus indicator
+	 * (the score formula is expected to add `bonusPoints` itself once this
+	 * many are selected - these two fields only drive the display, the
+	 * formula's own result always stays authoritative for the actual score).
 	 */
-	bustLabel?: string;
-	/** Reaching this many selected 'number' cards surfaces an informational bonus notice (the score formula is expected to add its own bonus). */
 	bonusAtNumberCount?: number;
+	/** Point value shown next to the bonus indicator/breakdown once `bonusAtNumberCount` is reached. */
+	bonusPoints?: number;
 };
 
 export type GameRules = {
@@ -136,8 +136,8 @@ function isScoreEntryRules(value: unknown): value is ScoreEntryRules {
 	const ids = new Set((v.items as CardItem[]).map((item) => item.id));
 	if (ids.size !== v.items.length) return false;
 	if (!isRuleExpr(v.scoreFormula)) return false;
-	if (v.bustLabel !== undefined && (typeof v.bustLabel !== 'string' || v.bustLabel === '')) return false;
 	if (v.bonusAtNumberCount !== undefined && typeof v.bonusAtNumberCount !== 'number') return false;
+	if (v.bonusPoints !== undefined && typeof v.bonusPoints !== 'number') return false;
 	return true;
 }
 
@@ -189,16 +189,15 @@ export function parseGamePreset(text: string): GamePreset | null {
 // ─── Built-in Flip Seven preset ────────────────────────────────────────────────
 //
 // Official rules: number cards 0-12 scored at face value, +2/+4/+6/+8/+10 flat
-// modifiers, a single x2 multiplier applied to the number-card sum only,
-// collecting 7 unique number cards ends the round instantly with a +15 bonus,
-// and a duplicate number card busts the round to 0 (unless saved with a
-// Second Chance). First to 200 total points wins.
+// modifiers, a single x2 multiplier applied to the number-card sum only, and
+// collecting 7 unique number cards ends the round instantly with a +15
+// bonus. First to 200 total points wins.
 //
 // This app only records the outcome of a round played at the table, not a
-// live turn-by-turn simulation - so busting is an explicit "0 Punkte" toggle
-// the player sets themselves (see `bustLabel`) rather than something inferred
-// from tapping a card twice, and there's no Freeze/Flip Three automation:
-// those only affect who draws next during live play, not the final score.
+// live turn-by-turn simulation: there's no Freeze/Flip Three/Second Chance
+// automation (those only affect who draws next during live play, not the
+// final score), and no separate "bust" concept - tapping a card is always a
+// plain select/deselect, so a mis-tapped duplicate number just deselects.
 
 function numberCard(n: number): CardItem {
 	return { id: `n${n}`, label: String(n), category: 'number', value: n };
@@ -212,7 +211,6 @@ const FLIP_SEVEN_ITEMS: CardItem[] = [
 	{ id: 'mod8', label: '+8', category: 'modifier', value: 8 },
 	{ id: 'mod10', label: '+10', category: 'modifier', value: 10 },
 	{ id: 'x2', label: 'x2', category: 'multiplier', value: 2 },
-	{ id: 'secondChance', label: 'Second Chance', category: 'action' },
 ];
 
 const FLIP_SEVEN_SCORE_FORMULA: RuleExpr = {
@@ -246,8 +244,8 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 		scoreEntry: {
 			items: FLIP_SEVEN_ITEMS,
 			scoreFormula: FLIP_SEVEN_SCORE_FORMULA,
-			bustLabel: '0 Punkte - doppelte Zahl gezogen',
 			bonusAtNumberCount: 7,
+			bonusPoints: 15,
 		},
 	},
 };

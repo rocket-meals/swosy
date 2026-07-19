@@ -762,8 +762,8 @@ export default function GameScreen() {
 						<CardScoreEntryModal
 							items={scoreEntryRules.items}
 							scoreFormula={scoreEntryRules.scoreFormula}
-							bustLabel={scoreEntryRules.bustLabel}
 							bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
+							bonusPoints={scoreEntryRules.bonusPoints}
 							initialSelection={currentRound.cardSelections?.[playerId] ?? []}
 							onSave={(cardIds, score) => {
 								dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));

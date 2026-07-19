@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'repo-depkit-common-ui';
 import type { CardCategory, CardItem, RuleExpr } from '../helpers/GameRules';
 import { evaluateRuleExpr } from '../helpers/GameRules';
 import { ComponentIds } from '../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
-const DANGER_COLOR = '#dc2626';
+const SUCCESS_COLOR = '#16a34a';
 
 const CATEGORY_TITLES: Record<CardCategory, string> = {
 	number: 'Zahlenkarten',
@@ -19,31 +19,75 @@ const CATEGORY_TITLES: Record<CardCategory, string> = {
 const CATEGORY_ORDER: CardCategory[] = ['number', 'modifier', 'multiplier', 'action'];
 
 /**
+ * Human-readable step-by-step breakdown of the score, assuming the common
+ * "sum number cards, optionally multiply, add modifiers, optionally add a
+ * threshold bonus" shape (matches Flip Seven and similar card-tally games).
+ * `scoreFormula`'s own result via `evaluateRuleExpr` always stays the
+ * authoritative score - this is purely a readable explanation of it, most
+ * useful for clarifying when a multiplier card is actually being applied.
+ */
+function buildCalculationSteps(
+	selectedItems: CardItem[],
+	bonusAtNumberCount: number | undefined,
+	bonusPoints: number | undefined,
+): string[] {
+	if (selectedItems.length === 0) return [];
+	const numberItems = selectedItems.filter((item) => item.category === 'number');
+	const modifierItems = selectedItems.filter((item) => item.category === 'modifier');
+	const multiplierItem = selectedItems.find((item) => item.category === 'multiplier');
+
+	const numberSum = numberItems.reduce((sum, item) => sum + (item.value ?? 0), 0);
+	const steps: string[] = [];
+	let running = numberSum;
+	steps.push(numberItems.length > 0 ? `Zahlenkarten: ${numberItems.map((item) => item.label).join(' + ')} = ${numberSum}` : 'Zahlenkarten: 0');
+
+	if (multiplierItem) {
+		const multiplierValue = multiplierItem.value ?? 1;
+		running *= multiplierValue;
+		steps.push(`× ${multiplierValue} (${multiplierItem.label}) = ${running}`);
+	}
+
+	if (modifierItems.length > 0) {
+		const modifierSum = modifierItems.reduce((sum, item) => sum + (item.value ?? 0), 0);
+		running += modifierSum;
+		// Modifier labels already carry their own sign (e.g. "+4"), so joining
+		// them directly reads naturally without a redundant leading "+".
+		steps.push(`Bonuskarten: ${modifierItems.map((item) => item.label).join(' ')} = ${running}`);
+	}
+
+	if (bonusAtNumberCount && bonusPoints && numberItems.length >= bonusAtNumberCount) {
+		running += bonusPoints;
+		steps.push(`+ ${bonusPoints} (${bonusAtNumberCount}er-Bonus) = ${running}`);
+	}
+
+	return steps;
+}
+
+/**
  * Generic card-picker score entry: tap the cards a player ended their round
- * with (a plain multi-select toggle, nothing is ever locked or auto-removed)
- * and, for games with a bust concept, explicitly mark the round as busted
- * with a dedicated toggle. Driven entirely by the game type's `GameRules`
- * (see helpers/GameRules.ts).
+ * with. A plain multi-select toggle - tapping an already-selected card
+ * (e.g. a mis-tapped duplicate number) simply deselects it again, nothing is
+ * ever locked or auto-removed. Driven entirely by the game type's
+ * `GameRules` (see helpers/GameRules.ts).
  */
 export default function CardScoreEntryModal({
 	items,
 	scoreFormula,
-	bustLabel,
 	bonusAtNumberCount,
+	bonusPoints,
 	initialSelection,
 	onSave,
 }: {
 	items: CardItem[];
 	scoreFormula: RuleExpr;
-	bustLabel?: string;
 	bonusAtNumberCount?: number;
+	bonusPoints?: number;
 	initialSelection: string[];
 	onSave: (cardIds: string[], score: number) => void;
 }) {
 	const { theme } = useTheme();
 	const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 	const [selectedIds, setSelectedIds] = useState<string[]>(() => initialSelection.filter((id) => itemsById.has(id)));
-	const [busted, setBusted] = useState(false);
 
 	const grouped = useMemo(() => {
 		const byCategory = new Map<CardCategory, CardItem[]>();
@@ -62,41 +106,32 @@ export default function CardScoreEntryModal({
 		itemsById,
 	]);
 
-	const previewScore = busted ? 0 : evaluateRuleExpr(scoreFormula, { selectedItems });
+	const previewScore = evaluateRuleExpr(scoreFormula, { selectedItems });
 
-	const bonusReached = useMemo(() => {
+	const bonusActive = useMemo(() => {
 		if (!bonusAtNumberCount) return false;
 		return selectedItems.filter((item) => item.category === 'number').length >= bonusAtNumberCount;
 	}, [selectedItems, bonusAtNumberCount]);
 
+	const calculationSteps = useMemo(
+		() => buildCalculationSteps(selectedItems, bonusAtNumberCount, bonusPoints),
+		[selectedItems, bonusAtNumberCount, bonusPoints],
+	);
+
 	const handleTapCard = useCallback((item: CardItem) => {
 		setSelectedIds((prev) => (prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]));
-	}, []);
-
-	const handleToggleBust = useCallback(() => {
-		setBusted((prev) => !prev);
 	}, []);
 
 	const handleSave = useCallback(() => {
 		onSave(selectedIds, previewScore);
 	}, [onSave, selectedIds, previewScore]);
 
-	const statusColor = busted ? DANGER_COLOR : theme.screen.text;
-
 	return (
 		<View style={styles.container}>
 			<View style={styles.scoreRow}>
 				<Text style={[styles.scoreLabel, { color: theme.screen.placeholder }]}>Rundenpunktzahl</Text>
-				<Text style={[styles.scoreValue, { color: statusColor }]}>{previewScore}</Text>
+				<Text style={[styles.scoreValue, { color: theme.screen.text }]}>{previewScore}</Text>
 			</View>
-
-			{(busted || bonusReached) && (
-				<View style={[styles.statusBanner, { backgroundColor: statusColor + '20' }]}>
-					<Text style={[styles.statusBannerText, { color: statusColor }]}>
-						{busted ? `${bustLabel} - aktiv` : `🎉 ${bonusAtNumberCount} einzigartige Zahlenkarten - Bonus!`}
-					</Text>
-				</View>
-			)}
 
 			{grouped.map(({ category, items: groupItems }) => (
 				<View key={category} style={styles.group}>
@@ -123,16 +158,19 @@ export default function CardScoreEntryModal({
 				</View>
 			))}
 
-			{bustLabel && (
-				<TouchableOpacity
-					nativeID={ComponentIds.GAME_CARD_SCORE_BUST_TOGGLE}
-					style={[styles.bustToggle, { borderColor: DANGER_COLOR, backgroundColor: busted ? DANGER_COLOR : 'transparent' }]}
-					onPress={handleToggleBust}
-					activeOpacity={0.7}
+			{!!bonusAtNumberCount && (
+				<View
+					nativeID={ComponentIds.GAME_CARD_SCORE_BONUS_BADGE}
+					style={[
+						styles.bonusBadge,
+						{ borderColor: SUCCESS_COLOR, backgroundColor: bonusActive ? SUCCESS_COLOR : 'transparent' },
+					]}
 				>
-					<MaterialCommunityIcons name="skull-outline" size={18} color={busted ? '#ffffff' : DANGER_COLOR} />
-					<Text style={[styles.bustToggleText, { color: busted ? '#ffffff' : DANGER_COLOR }]}>{bustLabel}</Text>
-				</TouchableOpacity>
+					<Ionicons name="trophy-outline" size={18} color={bonusActive ? '#ffffff' : SUCCESS_COLOR} />
+					<Text style={[styles.bonusBadgeText, { color: bonusActive ? '#ffffff' : SUCCESS_COLOR }]}>
+						{bonusPoints ? `+${bonusPoints}` : ''} Bonus ab {bonusAtNumberCount} Zahlenkarten
+					</Text>
+				</View>
 			)}
 
 			<TouchableOpacity
@@ -144,6 +182,18 @@ export default function CardScoreEntryModal({
 				<Ionicons name="checkmark-circle-outline" size={20} color="#ffffff" />
 				<Text style={styles.saveButtonText}>Fertig - {previewScore} Punkte speichern</Text>
 			</TouchableOpacity>
+
+			{calculationSteps.length > 0 && (
+				<View style={[styles.calculationBox, { borderColor: theme.screen.border }]}>
+					<Text style={[styles.calculationTitle, { color: theme.screen.placeholder }]}>Rechnung</Text>
+					{calculationSteps.map((step, index) => (
+						// eslint-disable-next-line react/no-array-index-key
+						<Text key={index} style={[styles.calculationStep, { color: theme.screen.text }]}>
+							{step}
+						</Text>
+					))}
+				</View>
+			)}
 		</View>
 	);
 }
@@ -164,17 +214,6 @@ const styles = StyleSheet.create({
 	scoreValue: {
 		fontSize: 40,
 		fontWeight: '700',
-	},
-	statusBanner: {
-		borderRadius: 10,
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		marginBottom: 12,
-	},
-	statusBannerText: {
-		fontSize: 13,
-		fontWeight: '600',
-		textAlign: 'center',
 	},
 	group: {
 		marginBottom: 14,
@@ -203,7 +242,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '700',
 	},
-	bustToggle: {
+	bonusBadge: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -213,7 +252,7 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		marginTop: 8,
 	},
-	bustToggleText: {
+	bonusBadgeText: {
 		fontSize: 14,
 		fontWeight: '600',
 	},
@@ -230,5 +269,23 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	calculationBox: {
+		marginTop: 16,
+		padding: 12,
+		borderWidth: 1,
+		borderRadius: 10,
+		gap: 4,
+	},
+	calculationTitle: {
+		fontSize: 11,
+		fontWeight: '600',
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
+		marginBottom: 2,
+	},
+	calculationStep: {
+		fontSize: 13,
+		fontVariant: ['tabular-nums'],
 	},
 });
