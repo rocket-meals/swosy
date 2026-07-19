@@ -9,8 +9,8 @@ Key,Message,Component,Line
 "AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",400
 "AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",424
 "AZ9lpRU4KqeTrVO2SpWQ","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",586
-"AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3474
-"AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5022
+"AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3509
+"AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5099
 "AZ9lpRQkKqeTrVO2SpWM","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",606
 "AZ9lpRQkKqeTrVO2SpWN","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",1206
 "AZ9lpRVqKqeTrVO2SpWR","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",484

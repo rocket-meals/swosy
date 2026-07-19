@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 8 | 8 |
 | 🐛 Reliability | 55 | 42 |
-| 🔧 Maintainability | 1960 | 0 |
+| 🔧 Maintainability | 1961 | 0 |
 
-**Total issues:** 2023 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2024 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -165,12 +165,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/index.tsx:3474
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L3474
+  apps/geonexia/frontend/app/index.tsx:3509
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L3509
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/index.tsx:5022
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5022
+  apps/geonexia/frontend/app/index.tsx:5099
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5099
 
 - **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
   apps/geonexia/frontend/app/routes/[id].tsx:606
