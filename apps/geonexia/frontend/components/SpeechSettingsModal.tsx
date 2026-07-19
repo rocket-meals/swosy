@@ -5,7 +5,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	Vibration,
 	View,
@@ -23,6 +22,7 @@ import type { SettingsListItemBaseProps } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
+import ModalTextInput from './ModalTextInput';
 import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
 import type { SpeechRate } from '../store/speechSettingsSlice';
 import { speakAnnouncement, buildPeriodicAnnouncement, speechRateToNumber } from '../helpers/TTSHelper';
@@ -128,7 +128,7 @@ function PaceMinSecModal({
 						>
 							<Ionicons name="remove" size={18} color={primaryColor} />
 						</TouchableOpacity>
-						<TextInput
+						<ModalTextInput
 							style={[
 								styles.paceInput,
 								{
@@ -167,7 +167,7 @@ function PaceMinSecModal({
 						>
 							<Ionicons name="remove" size={18} color={primaryColor} />
 						</TouchableOpacity>
-						<TextInput
+						<ModalTextInput
 							style={[
 								styles.paceInput,
 								{

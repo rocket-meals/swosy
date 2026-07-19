@@ -4,7 +4,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -26,6 +25,7 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundar
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints, computeEdgesFromHexTiles, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
+import ModalTextInput from '../../components/ModalTextInput';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -305,7 +305,7 @@ function TemperatureInputContent({
 			<Text style={{ fontSize: 14, lineHeight: 20, color: theme.screen.text }}>
 				Temperatur in °C eingeben (leer lassen zum Entfernen):
 			</Text>
-			<TextInput
+			<ModalTextInput
 				style={{ borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 16, color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }}
 				placeholder="z.B. 18"
 				placeholderTextColor={theme.screen.icon}
@@ -488,7 +488,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 
 			<SettingsListGroupTitle title="Neue Route erstellen" />
 			<View style={routeAssignStyles.newRouteInputContainer}>
-				<TextInput
+				<ModalTextInput
 					style={[routeAssignStyles.newRouteInput, { color: theme.sheet.text, backgroundColor: theme.sheet.inputBg, borderColor: theme.sheet.inputBorder }]}
 					placeholder="Route Name"
 					placeholderTextColor={theme.sheet.placeholder}
