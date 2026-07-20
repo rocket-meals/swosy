@@ -4,15 +4,21 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 44 | 44 |
-| 🔧 Maintainability | 1958 | 6 |
+| 🔒 Security | 1 | 1 |
+| 🐛 Reliability | 45 | 45 |
+| 🔧 Maintainability | 1684 | 4 |
 
-**Total issues:** 2002 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1730 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (44/44)
+## 🔒 Security (1/1)
+
+- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
+  scripts/count-sonar-maintainability-issues.js:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L49
+
+## 🐛 Reliability (45/45)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -190,7 +196,11 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (6/1958)
+- **Prefer `Number.parseInt` over `parseInt`.**
+  scripts/count-sonar-maintainability-issues.js:13
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L13
+
+## 🔧 Maintainability (4/1684)
 
 - **Prefer `node:path` over `path`.**
   apps/accessibilityTester/src/index.ts:1
@@ -207,12 +217,4 @@
 - **'fs' imported multiple times.**
   apps/accessibilityTester/src/report.ts:2
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
-
-- **Prefer `node:fs` over `fs`.**
-  apps/accessibilityTester/src/report.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
-
-- **Prefer `node:path` over `path`.**
-  apps/accessibilityTester/src/report.ts:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L3
 
