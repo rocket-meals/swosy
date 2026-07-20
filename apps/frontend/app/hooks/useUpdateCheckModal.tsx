@@ -60,14 +60,12 @@ const UpdateCheckModalContent: React.FC = () => {
 		}
 	}, []);
 
-	const checkValue =
-		step === 'checking'
-			? undefined
-			: step === 'unavailable'
-				? translate(TranslationKeys.update_not_available_on_platform)
-				: step === 'no_update'
-					? translate(TranslationKeys.update_current_version)
-					: undefined;
+	let checkValue: string | undefined = undefined;
+	if (step === 'unavailable') {
+		checkValue = translate(TranslationKeys.update_not_available_on_platform);
+	} else if (step === 'no_update') {
+		checkValue = translate(TranslationKeys.update_current_version);
+	}
 
 	return (
 		<View style={{ width: '100%', gap: 0 }}>

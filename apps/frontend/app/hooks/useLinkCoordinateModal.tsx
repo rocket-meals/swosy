@@ -84,14 +84,16 @@ const useLinkCoordinateModal = () => {
 					<View style={{ gap: 12 }}>
 						<View>
 							{options.map((option, index) => {
-								const groupPosition =
-									options.length === 1
-										? 'single'
-										: index === 0
-											? 'top'
-											: index === options.length - 1
-												? 'bottom'
-												: 'middle';
+								let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+								if (options.length === 1) {
+									groupPosition = 'single';
+								} else if (index === 0) {
+									groupPosition = 'top';
+								} else if (index === options.length - 1) {
+									groupPosition = 'bottom';
+								} else {
+									groupPosition = 'middle';
+								}
 
 								return (
 									<SettingsList

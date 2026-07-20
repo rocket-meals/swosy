@@ -315,18 +315,23 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 
 	const actionItems = useMemo(() => {
 		const withGrouping = (items: Omit<ActionItem, 'groupPosition' | 'showSeparator'>[]): ActionItem[] =>
-			items.map((item, index) => ({
-				...item,
-				groupPosition:
-					items.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === items.length - 1
-								? 'bottom'
-								: 'middle',
-				showSeparator: index !== items.length - 1,
-			}));
+			items.map((item, index) => {
+				let groupPosition: ActionItem['groupPosition'];
+				if (items.length === 1) {
+					groupPosition = 'single';
+				} else if (index === 0) {
+					groupPosition = 'top';
+				} else if (index === items.length - 1) {
+					groupPosition = 'bottom';
+				} else {
+					groupPosition = 'middle';
+				}
+				return {
+					...item,
+					groupPosition,
+					showSeparator: index !== items.length - 1,
+				};
+			});
 
 		const cancelItem: ActionItem = {
 			key: isDelete ? 'delete-cancel' : 'cancel',

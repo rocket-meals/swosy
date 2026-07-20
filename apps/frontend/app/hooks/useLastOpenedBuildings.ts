@@ -40,7 +40,12 @@ const useLastOpenedBuildings = () => {
 			// Remove duplicate, then prepend, then limit to MAX_LAST_OPENED
 			const filtered = current.filter(entry => {
 				const id = typeof entry === 'string' ? entry : (entry as DatabaseTypes.ProfilesBuildingsLastOpened)?.buildings_id;
-				const resolvedId = typeof id === 'string' ? id : typeof id === 'object' && id !== null ? String((id as any)?.id ?? '') : '';
+				let resolvedId = '';
+				if (typeof id === 'string') {
+					resolvedId = id;
+				} else if (typeof id === 'object' && id !== null) {
+					resolvedId = String((id as any)?.id ?? '');
+				}
 				return resolvedId !== buildingId;
 			});
 
