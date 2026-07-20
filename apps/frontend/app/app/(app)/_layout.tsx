@@ -447,7 +447,14 @@ export default function Layout() {
 				return;
 			}
                         if (response) {
-                                const platformKey = Platform.OS === 'ios' ? 'show_on_ios' : Platform.OS === 'android' ? 'show_on_android' : 'show_on_web';
+                                let platformKey: 'show_on_ios' | 'show_on_android' | 'show_on_web';
+                                if (Platform.OS === 'ios') {
+                                        platformKey = 'show_on_ios';
+                                } else if (Platform.OS === 'android') {
+                                        platformKey = 'show_on_android';
+                                } else {
+                                        platformKey = 'show_on_web';
+                                }
 
                                 // Keep each event's already-seen/closed state across refetches - only default
                                 // to unseen for events we haven't stored before. Without this, refetching

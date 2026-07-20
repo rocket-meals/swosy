@@ -109,14 +109,16 @@ const FoodWishlist = () => {
 	);
 
 	const renderFoodItem = (food: DatabaseTypes.Foods, index: number, totalItems: number) => {
-		const groupPosition =
-			totalItems === 1
-				? 'single'
-				: index === 0
-				? 'top'
-				: index === totalItems - 1
-				? 'bottom'
-				: 'middle';
+		let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+		if (totalItems === 1) {
+			groupPosition = 'single';
+		} else if (index === 0) {
+			groupPosition = 'top';
+		} else if (index === totalItems - 1) {
+			groupPosition = 'bottom';
+		} else {
+			groupPosition = 'middle';
+		}
 
 		const imageUri =
 			food.image_remote_url || getImageUrl(food.image as string) || undefined;

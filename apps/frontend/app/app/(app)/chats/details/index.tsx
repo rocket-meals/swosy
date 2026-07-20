@@ -365,14 +365,16 @@ const ChatDetailsScreen = () => {
                 const fallbackName = alias ? alias.charAt(0).toUpperCase() + alias.slice(1) : undefined;
                 const foodName =
                         getFoodName(food, language) || fallbackName || translate(TranslationKeys.unknown);
-                const imageSource =
-                        food?.image_remote_url
-                                ? { uri: food.image_remote_url }
-                                : food?.image
-                                ? { uri: getImageUrl(String(food.image)) }
-                                : defaultFoodImage
-                                ? { uri: defaultFoodImage }
-                                : undefined;
+                let imageSource: { uri: string } | undefined;
+                if (food?.image_remote_url) {
+                        imageSource = { uri: food.image_remote_url };
+                } else if (food?.image) {
+                        imageSource = { uri: getImageUrl(String(food.image)) };
+                } else if (defaultFoodImage) {
+                        imageSource = { uri: defaultFoodImage };
+                } else {
+                        imageSource = undefined;
+                }
 
                 const handleFoodPress = () => {
                         if (food?.id) {

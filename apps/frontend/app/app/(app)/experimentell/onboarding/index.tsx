@@ -491,7 +491,14 @@ const OnboardingScreen = () => {
 		},
 	], [translate, theme.screen.icon, customerConfigValueLabel]);
 
-	const currentMarkingsBreakdownId = seperatedMarkingsValue === true ? 'true' : seperatedMarkingsValue === false ? 'false' : 'null';
+	let currentMarkingsBreakdownId: 'true' | 'false' | 'null';
+	if (seperatedMarkingsValue === true) {
+		currentMarkingsBreakdownId = 'true';
+	} else if (seperatedMarkingsValue === false) {
+		currentMarkingsBreakdownId = 'false';
+	} else {
+		currentMarkingsBreakdownId = 'null';
+	}
 
 	const markingsBreakdownLabel = useMemo(
 		() => markingsBreakdownOptions.find(o => o.id === currentMarkingsBreakdownId)?.label ?? '',
@@ -507,7 +514,14 @@ const OnboardingScreen = () => {
 						options={markingsBreakdownOptions}
 						selectedOption={currentMarkingsBreakdownId}
 						onSelect={(option) => {
-							const newValue = option.id === 'true' ? true : option.id === 'false' ? false : null;
+							let newValue: boolean | null;
+							if (option.id === 'true') {
+								newValue = true;
+							} else if (option.id === 'false') {
+								newValue = false;
+							} else {
+								newValue = null;
+							}
 							dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: newValue });
 							closeModal();
 						}}
@@ -754,6 +768,29 @@ const OnboardingScreen = () => {
 		</View>
 	);
 
+	const nextOrStartButton = !isLastStep ? (
+		<TouchableOpacity
+			onPress={handleNext}
+			style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+		>
+			<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+				{translate(TranslationKeys.onboarding_next)}
+			</Text>
+			<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
+		</TouchableOpacity>
+	) : (
+		<TouchableOpacity
+			onPress={handleStart}
+			style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
+			activeOpacity={0.8}
+		>
+			<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
+			<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
+				{translate(TranslationKeys.onboarding_start)}
+			</Text>
+		</TouchableOpacity>
+	);
+
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView
@@ -797,28 +834,7 @@ const OnboardingScreen = () => {
 								{translate(TranslationKeys.onboarding_back)}
 							</Text>
 						</TouchableOpacity>
-						{!isLastStep ? (
-							<TouchableOpacity
-								onPress={handleNext}
-								style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
-							>
-								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
-									{translate(TranslationKeys.onboarding_next)}
-								</Text>
-								<MaterialCommunityIcons name="chevron-right" size={24} color={contrastColor} />
-							</TouchableOpacity>
-						) : (
-							<TouchableOpacity
-								onPress={handleStart}
-								style={[styles.navButtonPrimary, { backgroundColor: primaryColor }]}
-								activeOpacity={0.8}
-							>
-								<MaterialCommunityIcons name="rocket-launch" size={24} color={contrastColor} />
-								<Text style={[styles.navButtonPrimaryText, { color: contrastColor }]}>
-									{translate(TranslationKeys.onboarding_start)}
-								</Text>
-							</TouchableOpacity>
-						)}
+						{nextOrStartButton}
 					</>
 				)}
 			</View>

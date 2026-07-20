@@ -97,7 +97,14 @@ const FeedbackScreen = () => {
 		const isSimulator = !DeviceInfo.isDevice;
 		const isTablet = DeviceInfo.deviceType === DeviceInfo.DeviceType.TABLET;
 		const brand = DeviceInfo.brand;
-		const platform = Platform.OS === 'web' ? 'Web' : Platform.OS === 'ios' ? 'iOS' : 'Android';
+		let platform: string;
+		if (Platform.OS === 'web') {
+			platform = 'Web';
+		} else if (Platform.OS === 'ios') {
+			platform = 'iOS';
+		} else {
+			platform = 'Android';
+		}
 		const systemVersion = DeviceInfo.osVersion;
 		let isLandscape = getIsLandScape();
 
@@ -308,6 +315,33 @@ const FeedbackScreen = () => {
 		}
 	};
 
+	const webHeadingFontSize = isWeb ? 20 : 24;
+	const requestHeadingFontSize = windowWidth > 600 ? webHeadingFontSize : 24;
+	const webWarningFontSize = isWeb ? 17 : 20;
+	const warningFontSize = windowWidth > 600 ? webWarningFontSize : 20;
+	const webLinkFontSize = isWeb ? 18 : 16;
+	const linkFontSize = windowWidth > 600 ? webLinkFontSize : 16;
+
+	const getGroupPosition = (index: number, total: number) => {
+		if (index === 0) {
+			return 'top';
+		}
+		if (index === total - 1) {
+			return 'bottom';
+		}
+		return 'middle';
+	};
+
+	const getDeviceItemValue = (key: string) => {
+		if (key === 'device_brand') {
+			return inputValues[key] ? inputValues[key] : translate(TranslationKeys.unknown);
+		}
+		return inputValues[key] || '';
+	};
+
+	const submitButtonLabel = app_feedbacks_id ? translate(TranslationKeys.to_update) : translate(TranslationKeys.send);
+	const submitButtonIcon = app_feedbacks_id ? <FontAwesome5 name="save" size={24} color={contrastColor} /> : <MaterialCommunityIcons name="plus" size={24} color={contrastColor} />;
+
 	return (
 		<View
 			style={{
@@ -321,7 +355,7 @@ const FeedbackScreen = () => {
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '100%' }]}>
 						<Text
 							style={{
-								fontSize: windowWidth > 600 ? (isWeb ? 20 : 24) : 24,
+								fontSize: requestHeadingFontSize,
 								color: theme.screen.text,
 								padding: 15,
 							}}
@@ -343,7 +377,7 @@ const FeedbackScreen = () => {
 										keyboardType: item.keyboardType,
 									});
 								}}
-								groupPosition={index === 0 ? 'top' : index === feedbackSettingsItems.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(index, feedbackSettingsItems.length)}
 							/>
 						))}
 						{feedbackData
@@ -377,7 +411,7 @@ const FeedbackScreen = () => {
 						{!profile?.id && (
 							<Text
 								style={{
-									fontSize: windowWidth > 600 ? (isWeb ? 17 : 20) : 20,
+									fontSize: warningFontSize,
 									color: theme.screen.text,
 									padding: 15,
 								}}
@@ -419,14 +453,14 @@ const FeedbackScreen = () => {
 												styles.linkText,
 												{
 													color: contrastColor,
-													fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+													fontSize: linkFontSize,
 												},
 											]}
 										>
-											{app_feedbacks_id ? translate(TranslationKeys.to_update) : translate(TranslationKeys.send)}
+											{submitButtonLabel}
 										</Text>
 									</View>
-									<View>{app_feedbacks_id ? <FontAwesome5 name="save" size={24} color={contrastColor} /> : <MaterialCommunityIcons name="plus" size={24} color={contrastColor} />}</View>
+									<View>{submitButtonIcon}</View>
 								</>
 							)}
 						</TouchableOpacity>
@@ -448,7 +482,7 @@ const FeedbackScreen = () => {
 											styles.linkText,
 											{
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: linkFontSize,
 											},
 										]}
 									>
@@ -462,7 +496,7 @@ const FeedbackScreen = () => {
 											styles.linkText,
 											{
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: linkFontSize,
 											},
 										]}
 									>
@@ -487,7 +521,7 @@ const FeedbackScreen = () => {
 											styles.linkText,
 											{
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: linkFontSize,
 											},
 										]}
 									>
@@ -501,7 +535,7 @@ const FeedbackScreen = () => {
 											styles.linkText,
 											{
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: linkFontSize,
 											},
 										]}
 									>
@@ -518,7 +552,7 @@ const FeedbackScreen = () => {
 								key={item.key}
 								iconBgColor={primaryColor}
 								label={translate(item.title as any)}
-								value={excerpt(String(item.key === 'device_brand' ? (inputValues[item.key] ? inputValues[item.key] : translate(TranslationKeys.unknown)) : inputValues[item.key] || ''), windowWidth > 850 ? 50 : 20)}
+								value={excerpt(String(getDeviceItemValue(item.key)), windowWidth > 850 ? 50 : 20)}
 								rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
 								handleFunction={() => {
 									openFeedbackSheet({
@@ -527,7 +561,7 @@ const FeedbackScreen = () => {
 										keyboardType: item.keyboardType,
 									});
 								}}
-								groupPosition={index === 0 ? 'top' : index === deviceSettingsItems.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(index, deviceSettingsItems.length)}
 								noIconIndent
 							/>
 						))}
@@ -564,7 +598,7 @@ const FeedbackScreen = () => {
 											styles.linkText,
 											{
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: linkFontSize,
 											},
 										]}
 									>
