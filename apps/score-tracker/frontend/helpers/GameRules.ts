@@ -27,8 +27,18 @@ export type RuleExpr =
 	| { op: 'hasItem'; itemId: string }
 	| { op: 'add'; args: RuleExpr[] }
 	| { op: 'multiply'; args: RuleExpr[] }
-	| { op: 'if'; cond: RuleExpr; then: RuleExpr; else: RuleExpr }
+	| { op: 'if'; cond: RuleExpr; thenExpr: RuleExpr; elseExpr: RuleExpr }
 	| { op: 'gte'; a: RuleExpr; b: RuleExpr };
+
+// The `if` branches used to be called `then`/`else`. A `then` property makes an
+// object a thenable, which `await`/Promise chains treat specially, so new rules
+// are written with `thenExpr`/`elseExpr` - but persisted game types and shared
+// preset JSON from older app versions still carry the legacy keys, so every
+// reader below accepts both.
+function getIfBranches<T>(expr: { thenExpr?: T; elseExpr?: T }): { thenBranch: T | undefined; elseBranch: T | undefined } {
+	const legacy = expr as { then?: T; else?: T };
+	return { thenBranch: expr.thenExpr ?? legacy.then, elseBranch: expr.elseExpr ?? legacy.else };
+}
 
 export type ScoreEntryRules = {
 	/** The palette of selectable cards shown when entering a score. Tapping a
@@ -100,8 +110,10 @@ export function evaluateRuleExpr(expr: RuleExpr, ctx: RuleEvalContext): number {
 			return expr.args.reduce((sum, arg) => sum + evaluateRuleExpr(arg, ctx), 0);
 		case 'multiply':
 			return expr.args.reduce((product, arg) => product * evaluateRuleExpr(arg, ctx), 1);
-		case 'if':
-			return evaluateRuleExpr(expr.cond, ctx) !== 0 ? evaluateRuleExpr(expr.then, ctx) : evaluateRuleExpr(expr.else, ctx);
+		case 'if': {
+			const { thenBranch, elseBranch } = getIfBranches(expr);
+			return evaluateRuleExpr(expr.cond, ctx) !== 0 ? evaluateRuleExpr(thenBranch!, ctx) : evaluateRuleExpr(elseBranch!, ctx);
+		}
 		case 'gte':
 			return evaluateRuleExpr(expr.a, ctx) >= evaluateRuleExpr(expr.b, ctx) ? 1 : 0;
 	}
@@ -132,7 +144,7 @@ export type PlayerOrderRuleExpr =
 	| { op: 'roundWinnerIndex' }
 	| { op: 'add'; args: PlayerOrderRuleExpr[] }
 	| { op: 'mod'; a: PlayerOrderRuleExpr; b: PlayerOrderRuleExpr }
-	| { op: 'if'; cond: PlayerOrderRuleExpr; then: PlayerOrderRuleExpr; else: PlayerOrderRuleExpr }
+	| { op: 'if'; cond: PlayerOrderRuleExpr; thenExpr: PlayerOrderRuleExpr; elseExpr: PlayerOrderRuleExpr }
 	| { op: 'gte'; a: PlayerOrderRuleExpr; b: PlayerOrderRuleExpr };
 
 /**
@@ -194,10 +206,12 @@ export function evaluatePlayerOrderExpr(expr: PlayerOrderRuleExpr, ctx: PlayerOr
 			const a = evaluatePlayerOrderExpr(expr.a, ctx);
 			return ((a % b) + b) % b;
 		}
-		case 'if':
+		case 'if': {
+			const { thenBranch, elseBranch } = getIfBranches(expr);
 			return evaluatePlayerOrderExpr(expr.cond, ctx) !== 0
-				? evaluatePlayerOrderExpr(expr.then, ctx)
-				: evaluatePlayerOrderExpr(expr.else, ctx);
+				? evaluatePlayerOrderExpr(thenBranch!, ctx)
+				: evaluatePlayerOrderExpr(elseBranch!, ctx);
+		}
 		case 'gte':
 			return evaluatePlayerOrderExpr(expr.a, ctx) >= evaluatePlayerOrderExpr(expr.b, ctx) ? 1 : 0;
 	}
@@ -272,8 +286,10 @@ function isRuleExpr(value: unknown): value is RuleExpr {
 		case 'add':
 		case 'multiply':
 			return Array.isArray(v.args) && v.args.length > 0 && v.args.every(isRuleExpr);
-		case 'if':
-			return isRuleExpr(v.cond) && isRuleExpr(v.then) && isRuleExpr(v.else);
+		case 'if': {
+			const { thenBranch, elseBranch } = getIfBranches(v as { thenExpr?: unknown; elseExpr?: unknown });
+			return isRuleExpr(v.cond) && isRuleExpr(thenBranch) && isRuleExpr(elseBranch);
+		}
 		case 'gte':
 			return isRuleExpr(v.a) && isRuleExpr(v.b);
 		default:
@@ -317,8 +333,10 @@ function isPlayerOrderRuleExpr(value: unknown): value is PlayerOrderRuleExpr {
 			return Array.isArray(v.args) && v.args.length > 0 && v.args.every(isPlayerOrderRuleExpr);
 		case 'mod':
 			return isPlayerOrderRuleExpr(v.a) && isPlayerOrderRuleExpr(v.b);
-		case 'if':
-			return isPlayerOrderRuleExpr(v.cond) && isPlayerOrderRuleExpr(v.then) && isPlayerOrderRuleExpr(v.else);
+		case 'if': {
+			const { thenBranch, elseBranch } = getIfBranches(v as { thenExpr?: unknown; elseExpr?: unknown });
+			return isPlayerOrderRuleExpr(v.cond) && isPlayerOrderRuleExpr(thenBranch) && isPlayerOrderRuleExpr(elseBranch);
+		}
 		case 'gte':
 			return isPlayerOrderRuleExpr(v.a) && isPlayerOrderRuleExpr(v.b);
 		default:
@@ -436,15 +454,15 @@ const FLIP_SEVEN_SCORE_FORMULA: RuleExpr = {
 			op: 'multiply',
 			args: [
 				{ op: 'sumValues', category: 'number' },
-				{ op: 'if', cond: { op: 'hasItem', itemId: 'x2' }, then: { op: 'const', value: 2 }, else: { op: 'const', value: 1 } },
+				{ op: 'if', cond: { op: 'hasItem', itemId: 'x2' }, thenExpr: { op: 'const', value: 2 }, elseExpr: { op: 'const', value: 1 } },
 			],
 		},
 		{ op: 'sumValues', category: 'modifier' },
 		{
 			op: 'if',
 			cond: { op: 'gte', a: { op: 'countItems', category: 'number' }, b: { op: 'const', value: 7 } },
-			then: { op: 'const', value: 15 },
-			else: { op: 'const', value: 0 },
+			thenExpr: { op: 'const', value: 15 },
+			elseExpr: { op: 'const', value: 0 },
 		},
 	],
 };

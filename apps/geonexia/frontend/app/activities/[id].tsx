@@ -392,7 +392,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 				const oldRoute = await loadRoute(activity.routeId);
 				if (oldRoute) {
 					const updatedIds = (oldRoute.activityIds ?? []).filter((activityId) => activityId !== activity.id);
-					saveRoute({ ...oldRoute, activityIds: updatedIds });
+					await saveRoute({ ...oldRoute, activityIds: updatedIds });
 				}
 			} catch (err) {
 				console.warn('[RouteAssignment] Failed to update old route activityIds:', err);
@@ -404,7 +404,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 				const newRoute = await loadRoute(routeId);
 				if (newRoute) {
 					const updatedIds = [...new Set([...(newRoute.activityIds ?? []), activity.id])];
-					saveRoute({ ...newRoute, activityIds: updatedIds });
+					await saveRoute({ ...newRoute, activityIds: updatedIds });
 				}
 			} catch (err) {
 				console.warn('[RouteAssignment] Failed to update new route activityIds:', err);
@@ -412,7 +412,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		}
 		const updated: SavedActivity = { ...activity, routeId };
 		try {
-			saveActivity(updated);
+			await saveActivity(updated);
 		} catch {
 			showAlert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
 			return;
@@ -436,7 +436,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 		};
 		try {
-			saveRoute(newRoute);
+			await saveRoute(newRoute);
 		} catch {
 			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 			return;
