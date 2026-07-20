@@ -17,7 +17,7 @@ import { FormQueueEntry } from '@/redux/Types/stateTypes';
 import useToast from '@/hooks/useToast';
 import { format, isValid, parse } from 'date-fns';
 import { uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
-import { Buffer } from 'node:buffer';
+import { Buffer } from 'buffer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 
 const Index = () => {

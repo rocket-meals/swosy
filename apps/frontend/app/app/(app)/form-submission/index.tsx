@@ -39,7 +39,7 @@ import { deleteDirectusFile, excerpt, getFileFromDirectus, getFormValueImageUrl,
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
-import { Buffer } from 'node:buffer';
+import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';

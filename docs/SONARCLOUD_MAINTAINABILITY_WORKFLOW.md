@@ -60,7 +60,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Do not call `Array#push()` multiple times. | 60 von 60 (AST-Codemod, Kommentare zwischen pushes bleiben erhalten) | #3946 |
 | 2026-07-20 | Mark the props of the component as read-only. | 58 von 58 (`Readonly<Props>`) | #3946 |
 | 2026-07-20 | The empty object is useless. | 53 von 53 (`...(x ?? {})` → `...x`) | #3946 |
-| 2026-07-20 | Prefer `node:X` over `X`. | 51 von 51 | #3946 |
+| 2026-07-20 | Prefer `node:X` over `X`. | 49 von 51 (2x `node:buffer` im Expo-Frontend zurückgenommen — Metro kann `node:`-Imports nicht auflösen) | #3946 |
 | 2026-07-20 | 'X' imported multiple times. | 32 von 32 (Import-Merges) | #3946 |
 | 2026-07-20 | `String.raw` should be used. | 24 von 24 | #3946 |
 | 2026-07-20 | Prefer `.at(…)` over `[….length - N]`. | 24 von 24 (an strikt typisierten Stellen mit `!`) | #3946 |
