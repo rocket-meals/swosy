@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
-| 🐛 Reliability | 45 | 45 |
-| 🔧 Maintainability | 1300 | 4 |
+| 🐛 Reliability | 42 | 42 |
+| 🔧 Maintainability | 787 | 7 |
 
-**Total issues:** 1346 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 830 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -18,15 +18,15 @@
   scripts/count-sonar-maintainability-issues.js:49
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L49
 
-## 🐛 Reliability (45/45)
+## 🐛 Reliability (42/42)
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
+- **This pattern can be replaced with '|'.**
+  apps/accessibilityTester/src/report.ts:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/accessibilityTester/src/report.ts:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L108
+- **This pattern can be replaced with '\n'.**
+  apps/accessibilityTester/src/report.ts:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -53,8 +53,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/index.tsx:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L16
+  apps/frontend/app/app/index.tsx:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:21
@@ -108,27 +108,27 @@
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:114
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:487
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L487
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:108
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L108
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L64
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '"'.**
   apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
 
@@ -168,11 +168,11 @@
   apps/score-tracker/run-maestro-web-test.sh:170
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L170
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '+'.**
   apps/scripts/submit-ios-review.ts:26
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
+- **This pattern can be replaced with '/'.**
   apps/scripts/submit-ios-review.ts:26
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
 
@@ -184,37 +184,37 @@
   packages/common/src/EmailHelper.ts:2
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EmailHelper.ts#L2
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  packages/common/src/EventHelper.ts:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L30
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  packages/common/src/EventHelper.ts:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L31
-
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  scripts/count-sonar-maintainability-issues.js:13
-  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L13
+## 🔧 Maintainability (7/787)
 
-## 🔧 Maintainability (4/1300)
+- **This pattern can be replaced with '|'.**
+  apps/accessibilityTester/src/report.ts:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
 
-- **Prefer `node:path` over `path`.**
-  apps/accessibilityTester/src/index.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L1
+- **This pattern can be replaced with '\n'.**
+  apps/accessibilityTester/src/report.ts:107
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
 
-- **'fs' imported multiple times.**
-  apps/accessibilityTester/src/report.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
+- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
+  apps/accessibilityTester/src/report.ts:110
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L110
 
-- **Prefer `node:fs` over `fs`.**
-  apps/accessibilityTester/src/report.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+- **Remove duplicates in this character class.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:244
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L244
 
-- **'fs' imported multiple times.**
-  apps/accessibilityTester/src/report.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+- **Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts:19
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts#L19
+
+- **Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:298
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L298
+
+- **`FILE_FIELD_SPECIALS` should be a `Set`, and use `FILE_FIELD_SPECIALS.has()` to check existence or non-existence.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts#L15
 
