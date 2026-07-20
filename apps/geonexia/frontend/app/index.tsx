@@ -2749,7 +2749,7 @@ export default function RecordScreen() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
-	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
+	const [, setLiveSpeedKmh] = useState<number | null>(null);
 	// Incrementally accumulated route distance (km) of the current recording.
 	// Kept in a ref so each GPS fix only adds the latest segment instead of
 	// re-summing the whole route, and so the value stays available while the
@@ -2762,7 +2762,6 @@ export default function RecordScreen() {
 	const measureWaypointsRef = useRef<Array<{ lat: number; lng: number }>>([]);
 
 	// Magnify mode (debug only): show detailed map info when tapping a hex tile
-	const [isMagnifyMode, setIsMagnifyMode] = useState(false);
 	const isMagnifyModeRef = useRef(false);
 
 	// Search highlight (debug only): track viewport cells and cached features for red-border overlay
@@ -2838,9 +2837,9 @@ export default function RecordScreen() {
 
 	// H3 grid settings (refs for synchronous access in callbacks)
 	const showGridAlwaysRef = useRef(false);
-	const [showGridAlways, setShowGridAlways] = useState(false);
+	const [, setShowGridAlways] = useState(false);
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
-	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
+	const [, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
 	const h3MinZoomRef = useRef(H3_MIN_ZOOM_DEFAULT);
 
 	// Heading mode: when active during recording, the map rotates to face the
@@ -3789,18 +3788,6 @@ export default function RecordScreen() {
 		setIsMeasureMode(false);
 		measureWaypointsRef.current = [];
 		mapRef.current?.sendToMap({ measureMode: false });
-	}, []);
-
-	// ── Magnify mode (debug only) ───────────────────────────────────────────────
-
-	const startMagnifyMode = useCallback(() => {
-		isMagnifyModeRef.current = true;
-		setIsMagnifyMode(true);
-	}, []);
-
-	const cancelMagnifyMode = useCallback(() => {
-		isMagnifyModeRef.current = false;
-		setIsMagnifyMode(false);
 	}, []);
 
 	const openSearchModal = useCallback(async () => {

@@ -11,7 +11,6 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislikeFast from '@/components/SettingsListLikeDislikeFast';
-import { useLanguage } from '@/hooks/useLanguage';
 import { createSelector } from 'reselect';
 import { RootState } from '@/redux/reducer';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
@@ -39,7 +38,6 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	groupPosition,
 }) => {
 	const dispatch = useDispatch();
-	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
 	const user = useAppSelector(state => state.authReducer.user);

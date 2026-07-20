@@ -1167,14 +1167,6 @@ const OsmVectorMapScreen: React.FC = () => {
 		setAutoRotateSpeed((s) => s + AUTO_ROTATE_SPEED_STEP);
 	}, []);
 
-	const handleManualRotateLeft1 = useCallback(() => {
-		sendToMapRef.current({ bearingDelta: -1, easeAnimation: true, easeDuration: 200 });
-	}, []);
-
-	const handleManualRotateRight1 = useCallback(() => {
-		sendToMapRef.current({ bearingDelta: 1, easeAnimation: true, easeDuration: 200 });
-	}, []);
-
 	const handleToggleFullscreen = useCallback(() => {
 		setIsFullscreen((prev) => !prev);
 	}, []);

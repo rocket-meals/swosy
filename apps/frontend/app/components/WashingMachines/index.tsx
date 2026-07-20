@@ -91,7 +91,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 		const now = new Date();
 
 		for (const machine of washingMachines) {
-			const { date_finished, alias, id } = machine;
+			const { date_finished, alias } = machine;
 
 			if (date_finished) {
 				const finishDate = new Date(date_finished);

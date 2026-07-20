@@ -56,7 +56,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
-	const { profile, user, isDevMode } = useAppSelector((state) => state.authReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;

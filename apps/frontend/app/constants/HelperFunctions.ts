@@ -9,7 +9,6 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 
 export const generateCodeVerifier = async () => {
 	const bytesMinAmount = 32;
-	const bytesMaxAmount = 96;
 	const bytesAmount = bytesMinAmount;
 	const printableAsciiStart = 33; // ASCII value of '!'
 	const printableAsciiEnd = 126; // ASCII value of '~'

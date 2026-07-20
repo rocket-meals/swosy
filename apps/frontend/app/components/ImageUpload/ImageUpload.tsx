@@ -18,7 +18,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offl
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const formAnswersHelper = new FormAnswersHelper();
-	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const [authToken, setAuthToken] = useState<string | null | undefined>(undefined);
 
 	useEffect(() => {

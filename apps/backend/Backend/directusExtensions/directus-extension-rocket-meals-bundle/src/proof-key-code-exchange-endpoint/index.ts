@@ -267,14 +267,12 @@ function checkIfProviderRegistered(provider: string) {
 
 function generateAuthorizationCode(amountBytes?: number) {
   const bytesMinAmount = 32;
-  const bytesMaxAmount = 96;
   const usedAmountBytes = amountBytes || bytesMinAmount;
   const authorization_code = crypto.randomBytes(usedAmountBytes).toString('hex');
   return authorization_code;
 }
 
 function generateStateCode() {
-  const bytesMinAmount = 16;
   const bytesDefaultAmount = 32;
   return crypto.randomBytes(bytesDefaultAmount).toString('hex');
 }
@@ -282,7 +280,7 @@ function generateStateCode() {
 export default defineEndpoint({
   id: EndpointTopName,
   handler: (router, apiContext) => {
-    const { services, database, getSchema, env, logger } = apiContext;
+    const { database, env } = apiContext;
 
     const redisUrl = env?.['REDIS'];
     let validRedisUrl: string | null = null;

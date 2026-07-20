@@ -177,7 +177,7 @@ export default defineEndpoint({
       }
       // REFERER: https://accounts.google.com/
 
-      const { services, database, getSchema, env, logger } = apiContext;
+      const { database, env } = apiContext;
 
       const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 

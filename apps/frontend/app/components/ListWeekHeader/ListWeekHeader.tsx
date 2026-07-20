@@ -3,14 +3,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAppSelector } from '@/redux/hooks';
-import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const { weekPlan } = useAppSelector((state) => state.management);
 	const [headerVisible, setHeaderVisible] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const isMobile = screenWidth < 800;
@@ -19,10 +15,6 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 
 	const handleScanHelpClick = () => {
 		setHeaderVisible(false);
-	};
-
-	const handleSecondaryClick = () => {
-		setHeaderVisible(true);
 	};
 
 	useEffect(() => {

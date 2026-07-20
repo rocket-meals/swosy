@@ -13,8 +13,12 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
    ```
 
    Das Script liest `reports/sonarCloud/report_maintainability.csv`, gruppiert die
-   Issues nach Meldungstyp (Zahlen in Meldungen werden normalisiert) und gibt die
-   Top 10 mit Anzahl aus.
+   Issues nach Meldungstyp und gibt die Top 10 mit Anzahl aus. Zur Gruppierung
+   werden Zahlen sowie zitierte Bezeichner in den Meldungen normalisiert (z. B.
+   zählt `Remove this useless assignment to variable "setNickname"` als
+   `... to variable "X"`). Keyword-Zitate, die die Regel selbst ausmachen (z. B.
+   `` `Set` ``, `` `.some(…)` ``, `` `readonly` ``), bleiben erhalten — Liste
+   `KEYWORD_QUOTES` im Script bei Bedarf ergänzen.
 
 2. **Top 10 dem Nutzer nennen** — immer mit Anzahl pro Typ.
 
@@ -74,6 +78,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Expected a `for-of` loop instead of a `for` loop with this simple iteration. | 12 von 12 (Cheerio-Objekt per `.toArray()` iteriert) | #3953 |
 | 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (wo möglich sprechende Typen wie `Partial<...>` statt `any`; sonst redundante Union-Member entfernt) | #3953 |
 | 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | #3953 |
+| 2026-07-20 | Remove this useless assignment to variable "X". | 97 von 97 (ungenutzte useState-Werte per Array-Elision, tote Deklarationen/Handler samt ungenutzt gewordener Imports entfernt; Seiteneffekt-Aufrufe als nacktes `await` behalten) | #3958 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 

@@ -101,7 +101,7 @@ export default function Layout() {
 	useEffect(() => {
 		loggedInRef.current = loggedIn;
 	}, [loggedIn]);
-	const { canteens, selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
+	const { selectedCanteen: persistedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	useEffect(() => {

@@ -41,7 +41,6 @@ export class MarkingTL1Parser implements MarkingParserInterface {
   private static getMarkingJSONFromRawMarking(rawMarking: { [p: string]: string }): MarkingsTypeForParser | null {
     let id = rawMarking['ID'];
     let name = rawMarking['BESCHREIBUNG'];
-    let hint = rawMarking['HINWEISE'];
     let short = rawMarking['KUERZEL'];
 
     let external_identifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);

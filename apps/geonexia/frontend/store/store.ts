@@ -94,7 +94,7 @@ let _lastSavedPlayerInformation: PlayerInformation | null = null;
 store.subscribe(() => {
 	const state = store.getState();
 
-	const { records, isDevMode } = state.hexTiles;
+	const { records } = state.hexTiles;
 	if (records !== _lastSavedRecords) {
 		_lastSavedRecords = records;
 		if (_saveTimer) clearTimeout(_saveTimer);

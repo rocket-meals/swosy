@@ -1386,8 +1386,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		...visibleAttributeKeys,
 	];
 
-	const diceButtonBg = accentColor ?? theme.screen.text;
-	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
 	const hasHiddenProps = !!(hiddenProps && Object.keys(hiddenProps).length > 0);
 
 	return (

@@ -170,7 +170,7 @@ export class NotifySchedule {
       date: Date;
     }
   ) {
-    const { expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date } = params;
+    const { expoPushToken, foodWithTranslations, language, aboutMealsInDays, date } = params;
     // Create a new push_notification entry in the database
     let pushNotificationService = this.context.myDatabaseHelper.getPushNotificationsHelper();
     /**

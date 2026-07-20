@@ -74,9 +74,7 @@ function getSmallestToLargestBreakPointList(): BreakPoint[] {
  */
 export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T {
 	const dimensions = useWindowDimensions();
-	const scale = dimensions.scale;
 	const widthUnscaled = dimensions.width; // the unscaled width is our reference how "big" the screen is, for fingers size
-	const widthScaled = widthUnscaled * scale; // the scaled width is how fine and detailed the screen is to the eye
 
 	const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
 

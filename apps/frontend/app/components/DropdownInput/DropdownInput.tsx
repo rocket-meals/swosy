@@ -7,7 +7,6 @@ import { TranslationKeys } from '@/locales/keys';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAppSelector } from '@/redux/hooks';
 import type { FormInputBaseProps } from './types';
 
 const ensureStringArray = (options: string[]): string[] => {
@@ -32,7 +31,6 @@ type DropdownInputProps = Omit<FormInputBaseProps, 'isDisabled'> & {
 const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector(state => state.settings);
 
 	const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);
 

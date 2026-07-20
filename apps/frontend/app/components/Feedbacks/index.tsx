@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -13,7 +13,6 @@ import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks'
 import useToast from '@/hooks/useToast';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
-import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
@@ -44,13 +43,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const foodOfferCanteenId = canteenId;
-	const { width: screenWidth } = useWindowDimensions();
 	
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
-	const mode = useAppSelector((state) => state.settings.selectedTheme);
 
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
@@ -70,7 +67,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 	}, [ownFoodFeedbacks, foodId]);
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
 	useEffect(() => {
 		if (appSettings?.foods_feedbacks_comments_type) {
@@ -135,21 +131,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 		}
 	}, [previousFeedback]);
 
-	const handleTextChange = (text: string) => {
-		if (!user?.id) {
-			openAccountRequiredModal();
-			return;
-		}
-
-		if (text.length > 120) {
-			toast('Comment should be less than 500 characters', 'error');
-			return;
-		}
-		setComment(text);
-	};
-
-	const resp = screenWidth > 800;
-	
     const ratingSummaryItems = useMemo(() => {
         const rating = foodDetails?.rating_average ?? foodDetails?.rating_average_legacy;
         const ratingAmount = foodDetails?.rating_amount ?? foodDetails?.rating_amount_legacy;

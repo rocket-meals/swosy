@@ -200,23 +200,15 @@ export const HoursSheetContent: React.FC = () => {
 							if (currentRange?.time_start == null || currentRange.time_end == null) {
 								currentRange = { time_start, time_end };
 							} else {
-								let isSame = false;
-								let isBetween = false;
-								let isExtending = false;
-								let isOutside = false;
 								if (time_start === currentRange.time_start && time_end === currentRange.time_end) {
-									isSame = true;
 									// do nothing
 								} else if (time_start === null || time_end === null) {
 									// do nothing
 								} else if (time_start >= currentRange.time_start && time_end <= currentRange.time_end) {
-									isBetween = true;
 									// do nothing
 								} else if (time_start < currentRange.time_end && time_end > currentRange.time_end) {
-									isExtending = true;
 									currentRange.time_end = time_end;
 								} else if (time_start > currentRange.time_end) {
-									isOutside = true;
 									consecutiveRanges.push(currentRange); // push the current range to the consecutive ranges
 									currentRange = { time_start, time_end }; // start a new range
 								}

@@ -262,7 +262,7 @@ export const useSheetHandling = (
     const [selectedSheet, setSelectedSheet] = useState<string | null>(null);
     const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
     // Optimization: Keep sheet active to prevent unmount/remount on navigation
-    const [isActive, setIsActive] = useState(true);
+    const [isActive] = useState(true);
 
     const openSheet = useCallback((sheet: 'menu' | 'sort' | string, props = {}) => {
         if (sheet === 'sort') {
