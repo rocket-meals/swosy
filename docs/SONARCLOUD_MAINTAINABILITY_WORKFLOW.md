@@ -54,8 +54,15 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | Datum | Issue-Typ | Anzahl | PR |
 |---|---|---|---|
 | 2026-07-20 | Make this public static property readonly. | 242 von 242 (234 per `readonly`; 8 neu zugewiesene Properties auf `private static` bzw. Getter/Setter umgestellt) | #3938 |
+| 2026-07-20 | Prefer using an optional chain expression instead. | 81 von 81 (per Codemod + manuelle Fixes für mehrzeilige JSX-Guards und `!a \|\| a.x !== y`-Muster) | #3942 |
+| 2026-07-20 | Redundant double negation. | 62 von 62 (per Codemod) | #3942 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
+
+**Übersprungen (Stand 2026-07-20):** „Cognitive Complexity" (113x) und
+„Move this component definition out of the parent component" (97x) sind keine
+mechanischen Fixes — pro Vorkommen ist ein individuelles Refactoring nötig.
+Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
 
 ## Hinweise
 
