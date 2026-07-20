@@ -10,7 +10,12 @@ const ProjectButton: React.FC<ProjectButtonProps> = ({ text, onPress, iconLeft, 
 	const { primaryColor, selectedTheme } = useAppSelector(state => state.settings);
 
 	const colorScheme = Appearance.getColorScheme();
-	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
+	let theme = lightTheme;
+	if (selectedTheme === 'systematic') {
+		theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+	} else if (selectedTheme === 'dark') {
+		theme = darkTheme;
+	}
 
 	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 

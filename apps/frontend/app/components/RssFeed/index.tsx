@@ -26,11 +26,17 @@ const parseFeed = (xml: string) => {
 		const enclosureMatch = itemXml.match(/<enclosure[^>]*url=['"](.*?)['"]/);
 		const htmlContent = (contentEncodedMatch ? contentEncodedMatch[1] : '') || (descMatch ? descMatch[1] : '');
 		const imageMatch = htmlContent.match(/<img[^>]*src=['"]([^'"]+)['"]/);
+		let image = '';
+		if (enclosureMatch) {
+			image = enclosureMatch[1];
+		} else if (imageMatch) {
+			image = imageMatch[1];
+		}
 		items.push({
 			title: titleMatch ? titleMatch[1] : '',
 			link: linkMatch ? linkMatch[1] : '',
 			content: descMatch ? descMatch[1] : '',
-			image: enclosureMatch ? enclosureMatch[1] : imageMatch ? imageMatch[1] : '',
+			image,
 		});
 	}
 	return items;

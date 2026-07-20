@@ -2,6 +2,15 @@ import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
 import { DatabaseTypes } from 'repo-depkit-common';
 
 const CACHE_KEY_PREFIX = 'food_offers_cache_';
+
+/**
+ * Deterministic UTF-16 code unit comparator, independent of the runtime locale.
+ */
+function compareCodeUnits(a: string, b: string): number {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+}
 const TRACKER_KEY = 'food_offers_cache_tracker';
 const META_KEY = 'food_offers_cache_meta';
 
@@ -15,7 +24,7 @@ export function computeFoodOffersHash(offers: DatabaseTypes.Foodoffers[]): strin
     const parts = offers.map(o => `${o.id}:${o.result_hash || o.date_updated || ''}`);
     // Deterministic UTF-16 code unit comparison - fingerprint parts are technical IDs,
     // so the order must not depend on the runtime locale.
-    parts.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    parts.sort(compareCodeUnits);
     return parts.join('|');
 }
 
@@ -145,7 +154,7 @@ export async function cacheFoodOffers(
         if (!dates.includes(date)) {
             dates.push(date);
             // ISO date strings - deterministic code unit comparison sorts them chronologically
-            dates.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+            dates.sort(compareCodeUnits);
             tracker[canteenId] = dates;
         }
         await setTracker(tracker);

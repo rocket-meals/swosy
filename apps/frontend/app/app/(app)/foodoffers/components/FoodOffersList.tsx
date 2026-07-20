@@ -75,7 +75,10 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
         // Optimization: Lookup feedback directly from the map passed as prop
         // Use food.id for lookup as feedbackMap is keyed by food ID
         const food = item.foodoffer?.food;
-        const foodId = food ? (typeof food === 'string' ? food : food.id) : undefined;
+        let foodId: string | undefined;
+        if (food) {
+            foodId = typeof food === 'string' ? food : food.id;
+        }
         const previousFeedback = foodId ? feedbackMap.get(foodId) : undefined;
 
         return (

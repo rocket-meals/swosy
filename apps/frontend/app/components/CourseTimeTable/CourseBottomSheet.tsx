@@ -270,6 +270,11 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 		}
 	};
 
+	const eventModeHeading = isUpdate ? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}` : `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`;
+	const sheetHeading = selectedItem ? selectedItem.label : eventModeHeading;
+	const isColorSheet = selectedItem?.label === 'color';
+	const isWeekdaySheet = selectedItem?.label === 'weekday';
+
 	return (
 		<View style={{ flex: 1 }}>
 			<View
@@ -287,70 +292,71 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						color: theme.sheet.text,
 					}}
 				>
-					{selectedItem ? selectedItem.label : isUpdate ? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}` : `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`}
+					{sheetHeading}
 				</Text>
 			</View>
 
 			<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg, ...styles.contentContainer }}>
-				{selectedItem ? (
-					selectedItem.label === 'color' ? (
-						<View
-							style={{
-								width: '90%',
-								display: 'flex',
-								justifyContent: 'center',
-								alignSelf: 'center',
-							}}				
-							>
-							<View style={styles.weekdayView}>
-								{colorData.map((color, index) => (
-									<TouchableOpacity
-										key={index}
-										onPress={() => handleColorPress(color)}
-										style={[
-											styles.box,
-											{
-												width: isWeb ? 200 : '30%',
-												backgroundColor: color,
-											},
-										]}
-									></TouchableOpacity>
-								))}
-							</View>
-						</View>
-					) : selectedItem.label === 'weekday' ? (
-						<View style={styles.languageContainer}>
-							{days.map(firstDay => (
-								<FirstDayOfWeek key={firstDay.id} position={firstDay} isSelected={selectedFirstDay.name === firstDay.name} onPress={() => handleDaySelect(firstDay.id, firstDay.name)} />
+				{isColorSheet && (
+					<View
+						style={{
+							width: '90%',
+							display: 'flex',
+							justifyContent: 'center',
+							alignSelf: 'center',
+						}}				
+						>
+						<View style={styles.weekdayView}>
+							{colorData.map((color, index) => (
+								<TouchableOpacity
+									key={index}
+									onPress={() => handleColorPress(color)}
+									style={[
+										styles.box,
+										{
+											width: isWeb ? 200 : '30%',
+											backgroundColor: color,
+										},
+									]}
+								></TouchableOpacity>
 							))}
 						</View>
-					) : (
-						<View style={styles.titleBt}>
-							<ModalTextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
+					</View>
+				)}
+				{isWeekdaySheet && (
+					<View style={styles.languageContainer}>
+						{days.map(firstDay => (
+							<FirstDayOfWeek key={firstDay.id} position={firstDay} isSelected={selectedFirstDay.name === firstDay.name} onPress={() => handleDaySelect(firstDay.id, firstDay.name)} />
+						))}
+					</View>
+				)}
+				{selectedItem && !isColorSheet && !isWeekdaySheet && (
+					<View style={styles.titleBt}>
+						<ModalTextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
 
-							<View style={[styles.buttonContainer]}>
-								<TouchableOpacity
-									onPress={cancleSheet}
-									style={{
-										...styles.cancelButton,
-										borderColor: course_timetable_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={handleSavePress}
-									style={{
-										...styles.saveButton,
-										backgroundColor: course_timetable_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>{translate(TranslationKeys.save)}</Text>
-								</TouchableOpacity>
-							</View>
+						<View style={[styles.buttonContainer]}>
+							<TouchableOpacity
+								onPress={cancleSheet}
+								style={{
+									...styles.cancelButton,
+									borderColor: course_timetable_area_color,
+								}}
+							>
+								<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={handleSavePress}
+								style={{
+									...styles.saveButton,
+									backgroundColor: course_timetable_area_color,
+								}}
+							>
+								<Text style={[styles.buttonText, { color: contrastColor }]}>{translate(TranslationKeys.save)}</Text>
+							</TouchableOpacity>
 						</View>
-					)
-				) : (
+					</View>
+				)}
+				{!selectedItem && (
 					<View>
 						{data.map(item => (
 							<TouchableOpacity

@@ -205,6 +205,10 @@ export default function TTSTestScreen() {
 		: 'System Default';
 	const rateLabel = rate.toFixed(1) + '×';
 	const pitchLabel = pitch.toFixed(1);
+	let availableVoicesLabel: string;
+	if (voicesAvailable === null) availableVoicesLabel = 'Loading…';
+	else if (voicesAvailable === false) availableVoicesLabel = 'Not supported';
+	else availableVoicesLabel = `${availableVoices.length} voice${availableVoices.length !== 1 ? 's' : ''}`;
 
 	return (
 		<ScrollView
@@ -309,7 +313,11 @@ export default function TTSTestScreen() {
 				const text = buildKmAnnouncement(km, pace, locale);
 				const isFirst = index === 0;
 				const isLast = index === KM_EXAMPLES.length - 1;
-				const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+				let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+				if (isFirst && isLast) groupPosition = 'single';
+				else if (isFirst) groupPosition = 'top';
+				else if (isLast) groupPosition = 'bottom';
+				else groupPosition = 'middle';
 				return (
 					<SettingsList
 						key={km}
@@ -377,13 +385,7 @@ export default function TTSTestScreen() {
 				iconBgColor="#6b7280"
 				leftIcon={<MaterialCommunityIcons name="microphone" size={22} color="#ffffff" />}
 				label="Available Voices"
-				value={
-					voicesAvailable === null
-						? 'Loading…'
-						: voicesAvailable === false
-						? 'Not supported'
-						: `${availableVoices.length} voice${availableVoices.length !== 1 ? 's' : ''}`
-				}
+				value={availableVoicesLabel}
 				groupPosition="bottom"
 			/>
 
@@ -394,8 +396,11 @@ export default function TTSTestScreen() {
 					{availableVoices.map((v, index) => {
 						const isFirst = index === 0;
 						const isLast = index === availableVoices.length - 1;
-						const groupPosition =
-							isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+						let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+						if (isFirst && isLast) groupPosition = 'single';
+						else if (isFirst) groupPosition = 'top';
+						else if (isLast) groupPosition = 'bottom';
+						else groupPosition = 'middle';
 						return (
 							<SettingsList
 								key={v.identifier}

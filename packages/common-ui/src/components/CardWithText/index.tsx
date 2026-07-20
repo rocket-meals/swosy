@@ -105,6 +105,20 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 		? [styles.imageContainer, ...(imageContainerStyle as StyleProp<ViewStyle>[])]
 		: [styles.imageContainer, imageContainerStyle as StyleProp<ViewStyle>];
 
+	let resolvedAspectRatio: number | undefined = 1;
+	if (aspectRatio === false) {
+		resolvedAspectRatio = undefined;
+	} else if (typeof aspectRatio === 'number') {
+		resolvedAspectRatio = aspectRatio;
+	}
+
+	let imageContent: React.ReactNode = null;
+	if (imageSource) {
+		imageContent = renderImage
+			? renderImage(imageSource, [styles.image, imageStyle], imageAccessibilityLabel)
+			: <Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" accessible={!!imageAccessibilityLabel} accessibilityLabel={imageAccessibilityLabel} />;
+	}
+
 	return (
 		<TouchableOpacity
 			activeOpacity={0.9}
@@ -116,15 +130,11 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 				style={[
 					styles.squareWrapper,
 					{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius },
-					{ aspectRatio: aspectRatio === false ? undefined : (typeof aspectRatio === 'number' ? aspectRatio : 1) },
+					{ aspectRatio: resolvedAspectRatio },
 				]}
 			>
 				<View style={[{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, ...resolvedImageContainerStyle]}>
-					{imageSource ? (
-						renderImage
-							? renderImage(imageSource, [styles.image, imageStyle], imageAccessibilityLabel)
-							: <Image source={imageSource} style={[styles.image, imageStyle]} resizeMode="cover" accessible={!!imageAccessibilityLabel} accessibilityLabel={imageAccessibilityLabel} />
-					) : null}
+					{imageContent}
 					{imageChildren}
 				</View>
 			</View>

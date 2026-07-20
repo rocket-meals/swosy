@@ -178,7 +178,14 @@ const Index = () => {
 		];
 	}, [translate, theme.screen.icon, customerConfigValueLabel]);
 
-	const currentMarkingsBreakdownId = seperatedMarkingsValue === true ? 'true' : seperatedMarkingsValue === false ? 'false' : 'null';
+	let currentMarkingsBreakdownId: 'true' | 'false' | 'null';
+	if (seperatedMarkingsValue === true) {
+		currentMarkingsBreakdownId = 'true';
+	} else if (seperatedMarkingsValue === false) {
+		currentMarkingsBreakdownId = 'false';
+	} else {
+		currentMarkingsBreakdownId = 'null';
+	}
 
 	const markingsBreakdownLabel = useMemo(
 		() => markingsBreakdownOptions.find(o => o.id === currentMarkingsBreakdownId)?.label ?? '',
@@ -194,7 +201,14 @@ const Index = () => {
 						options={markingsBreakdownOptions}
 						selectedOption={currentMarkingsBreakdownId}
 						onSelect={(option) => {
-							const newValue = option.id === 'true' ? true : option.id === 'false' ? false : null;
+							let newValue: boolean | null;
+							if (option.id === 'true') {
+								newValue = true;
+							} else if (option.id === 'false') {
+								newValue = false;
+							} else {
+								newValue = null;
+							}
 							dispatch({ type: SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN, payload: newValue });
 							closeModal();
 						}}
@@ -208,18 +222,28 @@ const Index = () => {
 
 	const renderItem = useCallback(({ item, index }: { item: string; index: number }) => {
 		const total = markingIds.length;
-		const groupPosition: SettingsListProps['groupPosition'] =
-			total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+		let groupPosition: SettingsListProps['groupPosition'];
+		if (total === 1) {
+			groupPosition = 'single';
+		} else if (index === 0) {
+			groupPosition = 'top';
+		} else if (index === total - 1) {
+			groupPosition = 'bottom';
+		} else {
+			groupPosition = 'middle';
+		}
 		return <SettingsListMarkingLabelFast markingId={item} groupPosition={groupPosition} handleMenuSheet={openMenuSheet} />;
 	}, [markingIds.length, openMenuSheet]);
 
 	const keyExtractor = useCallback((id: string) => id, []);
 
-	const ListHeaderComponent = useMemo(() => (
+	const ListHeaderComponent = useMemo(() => {
+		const webHeaderWidth = screenWidth > 600 ? '80%' : '100%';
+		return (
 		<View
 			style={{
 				...styles.eatingHabitsContainer,
-				width: isWeb ? (screenWidth > 600 ? '80%' : '100%') : '100%',
+				width: isWeb ? webHeaderWidth : '100%',
 				alignSelf: 'center',
 			}}
 		>
@@ -255,7 +279,8 @@ const Index = () => {
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
+		);
+	}, [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkingsWithConfirmation, markingsBreakdownLabel, openMarkingsBreakdownModal]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />

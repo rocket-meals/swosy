@@ -78,14 +78,14 @@ const PriceGroupSettingsList = ({ onSelect }: PriceGroupSettingsListProps) => {
 		<View style={{ width: '100%' }}>
 			{options.map((option, index) => {
 				const isSelected = selectedOption === option.id;
-				const groupPosition =
-					options.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === options.length - 1
-								? 'bottom'
-								: 'middle';
+				let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+				if (options.length === 1) {
+					groupPosition = 'single';
+				} else if (index === 0) {
+					groupPosition = 'top';
+				} else if (index === options.length - 1) {
+					groupPosition = 'bottom';
+				}
 
 				return (
 					<SettingsList

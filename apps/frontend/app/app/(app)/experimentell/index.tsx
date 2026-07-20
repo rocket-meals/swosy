@@ -171,7 +171,16 @@ const Index = () => {
 				)}
 				{listItems.map((item, index) => {
 					const totalItems = listItems.length;
-					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
+					let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+					if (totalItems === 1) {
+						groupPosition = 'single';
+					} else if (index === 0) {
+						groupPosition = 'top';
+					} else if (index === totalItems - 1) {
+						groupPosition = 'bottom';
+					} else {
+						groupPosition = 'middle';
+					}
 
 					return <SettingsList key={item.key} iconBgColor={primaryColor} leftIcon={item.leftIcon} label={item.label} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} handleFunction={item.onPress} groupPosition={groupPosition} />;
 				})}

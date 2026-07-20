@@ -102,9 +102,11 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 	const customLabel = translate(TranslationKeys.enter_custom_value);
 
 	const trimmedValue = currentValue.trim();
-	const displayValue = showCustomInput ? trimmedValue : valueMatchesOption ? currentValue : trimmedValue;
+	const selectedOptionValue = valueMatchesOption ? currentValue : trimmedValue;
+	const displayValue = showCustomInput ? trimmedValue : selectedOptionValue;
 	console.log('[DropdownInput] render with currentValue=', currentValue, ' displayValue=', displayValue, ' showCustomInput=', showCustomInput, ' valueMatchesOption=', valueMatchesOption);
-	const labelToShow = displayValue.length > 0 ? displayValue : showCustomInput ? customLabel : placeholderLabel;
+	const emptyValueLabel = showCustomInput ? customLabel : placeholderLabel;
+	const labelToShow = displayValue.length > 0 ? displayValue : emptyValueLabel;
 	const isPlaceholderDisplay = displayValue.length === 0;
 
 	return (

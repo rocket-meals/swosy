@@ -97,6 +97,10 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 
 		return () => subscription?.remove();
 	}, []);
+
+	const sheetHeadingFontSize = isWeb() && screenWidth > 800 ? 40 : 28;
+	const bodyFontSize = isWeb() && screenWidth > 800 ? 18 : 16;
+
 	return (
 		<View style={[{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }, styles.contentContainer]}>
 			<View
@@ -110,7 +114,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 				<Text
 					style={{
 						...styles.sheetHeading,
-						fontSize: isWeb() ? (screenWidth > 800 ? 40 : 28) : 28,
+						fontSize: sheetHeadingFontSize,
 						color: theme.sheet.text,
 					}}
 				>
@@ -123,7 +127,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 					style={{
 						...styles.body,
 						color: theme.screen.text,
-						fontSize: isWeb() ? (screenWidth > 800 ? 18 : 16) : 16,
+						fontSize: bodyFontSize,
 					}}
 				>
 					{translate(TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified)}

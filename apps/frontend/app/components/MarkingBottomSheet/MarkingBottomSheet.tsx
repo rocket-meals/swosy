@@ -24,6 +24,13 @@ export const MarkingContent: React.FC = () => {
 	const { language } = useAppSelector((state: RootState) => state.settings);
 	const description = getDescriptionFromTranslation(markingDetails?.translations, language);
 
+	let markingImageBorderRadius = 0;
+	if (markingDetails?.background_color) {
+		markingImageBorderRadius = 8;
+	} else if (markingDetails?.hide_border) {
+		markingImageBorderRadius = 5;
+	}
+
 	return (
 		<>
 			<View
@@ -54,7 +61,7 @@ export const MarkingContent: React.FC = () => {
 						style={{
 							...styles.image,
 							backgroundColor: markingDetails?.background_color ? markingDetails?.background_color : 'transparent',
-							borderRadius: markingDetails?.background_color ? 8 : markingDetails?.hide_border ? 5 : 0,
+							borderRadius: markingImageBorderRadius,
 						}}
 					/>
 				</View>

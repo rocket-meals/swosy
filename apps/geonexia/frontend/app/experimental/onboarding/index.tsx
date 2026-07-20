@@ -69,15 +69,12 @@ function GpsStep({
 	status: PermStatus;
 	onRequest: () => void;
 }) {
-	const statusColor = status === 'granted' ? COLOR_PRIMARY : status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
-	const statusLabel =
-		status === 'granted'
-			? '✅ Berechtigung erteilt'
-			: status === 'denied'
-			? '❌ Berechtigung verweigert'
-			: status === 'loading'
-			? '⏳ Wird angefragt…'
-			: null;
+	const statusColor = status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
+	let statusLabel: string | null;
+	if (status === 'granted') statusLabel = '✅ Berechtigung erteilt';
+	else if (status === 'denied') statusLabel = '❌ Berechtigung verweigert';
+	else if (status === 'loading') statusLabel = '⏳ Wird angefragt…';
+	else statusLabel = null;
 
 	return (
 		<View style={styles.stepContent}>
@@ -126,15 +123,12 @@ function NotificationsStep({
 	status: PermStatus;
 	onRequest: () => void;
 }) {
-	const statusColor = status === 'granted' ? COLOR_PRIMARY : status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
-	const statusLabel =
-		status === 'granted'
-			? '✅ Benachrichtigungen aktiviert'
-			: status === 'denied'
-			? '❌ Berechtigung verweigert'
-			: status === 'loading'
-			? '⏳ Wird angefragt…'
-			: null;
+	const statusColor = status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
+	let statusLabel: string | null;
+	if (status === 'granted') statusLabel = '✅ Benachrichtigungen aktiviert';
+	else if (status === 'denied') statusLabel = '❌ Berechtigung verweigert';
+	else if (status === 'loading') statusLabel = '⏳ Wird angefragt…';
+	else statusLabel = null;
 
 	return (
 		<View style={styles.stepContent}>

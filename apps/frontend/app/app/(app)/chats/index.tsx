@@ -131,7 +131,16 @@ const ChatsScreen = () => {
         const renderItem = ({ item, index }: { item: DatabaseTypes.Chats; index: number }) => {
                 const last = index === sortedChats.length - 1;
                 const first = index === 0;
-                const groupPosition = sortedChats.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
+                let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+                if (sortedChats.length === 1) {
+                        groupPosition = 'single';
+                } else if (first) {
+                        groupPosition = 'top';
+                } else if (last) {
+                        groupPosition = 'bottom';
+                } else {
+                        groupPosition = 'middle';
+                }
                 const isUnread = isChatUnread(item);
 
                 const rightElement = (

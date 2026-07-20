@@ -324,7 +324,11 @@ function RouteSelectionContent({
 			<View>
 				{routes.map((route, idx) => {
 					const count = routes.length;
-					const groupPosition = count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+					let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+					if (count === 1) groupPosition = 'single';
+					else if (idx === 0) groupPosition = 'top';
+					else if (idx === count - 1) groupPosition = 'bottom';
+					else groupPosition = 'middle';
 					return (
 						<SettingsList
 							key={route.id}
@@ -836,8 +840,11 @@ export default function ActivitiesScreen() {
 						<SettingsListGroupTitle title={routeName} />
 						{groupActivities.map((item, idx) => {
 							const count = groupActivities.length;
-							const groupPosition =
-								count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+							let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+							if (count === 1) groupPosition = 'single';
+							else if (idx === 0) groupPosition = 'top';
+							else if (idx === count - 1) groupPosition = 'bottom';
+							else groupPosition = 'middle';
 							return (
 								<SettingsListActivity
 									key={item.id}

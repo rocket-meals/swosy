@@ -242,7 +242,13 @@ export function sortByPrice(foodOffers: DatabaseTypes.Foodoffers[], priceGroup?:
 
   foodOffers.sort((a, b) => {
     const getPrice = (offer: DatabaseTypes.Foodoffers) => {
-      return priceGroup === 'guest' ? (offer?.price_guest ?? 0) : priceGroup === 'employee' ? (offer?.price_employee ?? 0) : (offer?.price_student ?? 0);
+      if (priceGroup === 'guest') {
+        return offer?.price_guest ?? 0;
+      }
+      if (priceGroup === 'employee') {
+        return offer?.price_employee ?? 0;
+      }
+      return offer?.price_student ?? 0;
     };
 
     const priceA = getPrice(a);

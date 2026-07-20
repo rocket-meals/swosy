@@ -85,12 +85,12 @@ function computeStats(points: RoutePoint[]): RunStats {
 		// Speed: prefer GPS speed, fall back to distance/time
 		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
 		const gpsSpeed = points[i].speed;
-		const segSpeedKmh =
-			gpsSpeed != null && gpsSpeed >= 0
-				? gpsSpeed * 3.6
-				: dtSec > 0
-				? (segKm / dtSec) * 3600
-				: 0;
+		let segSpeedKmh = 0;
+		if (gpsSpeed != null && gpsSpeed >= 0) {
+			segSpeedKmh = gpsSpeed * 3.6;
+		} else if (dtSec > 0) {
+			segSpeedKmh = (segKm / dtSec) * 3600;
+		}
 		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
 	}
 

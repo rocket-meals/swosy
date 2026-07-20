@@ -83,8 +83,11 @@ export default function RoutesScreen() {
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<SettingsListGroupTitle title="Gespeicherte Routen" />
 			{routes.map((route, idx) => {
-				const groupPosition =
-					routes.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routes.length - 1 ? 'bottom' : 'middle';
+				let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+				if (routes.length === 1) groupPosition = 'single';
+				else if (idx === 0) groupPosition = 'top';
+				else if (idx === routes.length - 1) groupPosition = 'bottom';
+				else groupPosition = 'middle';
 				return (
 					<SettingsListRoute
 						key={route.id}

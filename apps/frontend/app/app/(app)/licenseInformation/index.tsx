@@ -36,6 +36,15 @@ const LicenseInformation = () => {
 		return <Text>Packages data not available.</Text>;
 	}
 
+	let sectionFontSize = 16;
+	if (windowWidth > 600) {
+		sectionFontSize = isWeb ? 18 : 16;
+	}
+	let detailFontSize = 12;
+	if (windowWidth > 600) {
+		detailFontSize = isWeb ? 14 : 12;
+	}
+
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<ScrollView>
@@ -54,7 +63,7 @@ const LicenseInformation = () => {
 										style={{
 											width: '70%',
 											color: theme.screen.text,
-											fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+											fontSize: sectionFontSize,
 										}}
 									>
 										{pkg.name}
@@ -64,7 +73,7 @@ const LicenseInformation = () => {
 											style={{
 												marginRight: 10,
 												color: theme.screen.text,
-												fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+												fontSize: sectionFontSize,
 											}}
 										>
 											{pkg.version}
@@ -78,7 +87,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												Package
@@ -86,7 +95,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												{pkg.name}
@@ -96,7 +105,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												Version
@@ -104,7 +113,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												{pkg.version}
@@ -114,7 +123,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												License
@@ -122,7 +131,7 @@ const LicenseInformation = () => {
 											<Text
 												style={{
 													color: theme.screen.text,
-													fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+													fontSize: detailFontSize,
 												}}
 											>
 												{pkg.license}
@@ -137,7 +146,7 @@ const LicenseInformation = () => {
 												<Text
 													style={{
 														color: theme.screen.text,
-														fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+														fontSize: detailFontSize,
 													}}
 												>
 													Repository
@@ -162,7 +171,7 @@ const LicenseInformation = () => {
 												<Text
 													style={{
 														color: theme.screen.text,
-														fontSize: windowWidth > 600 ? (isWeb ? 14 : 12) : 12,
+														fontSize: detailFontSize,
 													}}
 												>
 													License URL:

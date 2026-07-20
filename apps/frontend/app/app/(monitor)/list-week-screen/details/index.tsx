@@ -357,12 +357,14 @@ const Index = () => {
 		}
 	};
 
+	const noOffersFound = Object.entries(categories)?.length < 1;
+
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
 			<ListWeekHeader handlePrint={handlePrint} />
 
 			<View style={{ flex: 1 }}>
-				{loading ? (
+				{loading && (
 					<View
 						style={{
 							height: 200,
@@ -373,7 +375,8 @@ const Index = () => {
 					>
 						<ActivityIndicator size={30} color={foods_area_color} />
 					</View>
-				) : Object.entries(categories)?.length < 1 ? (
+				)}
+				{!loading && noOffersFound && (
 					<View
 						style={{
 							height: 200,
@@ -384,7 +387,8 @@ const Index = () => {
 					>
 						<Text style={{ ...styles.noDataFound, color: theme.screen.text }}>Keine Angebote an diesem Tag gefunden.</Text>
 					</View>
-				) : (
+				)}
+				{!loading && !noOffersFound && (
 					<ScrollView
 						style={{ flex: 1 }}
 						contentContainerStyle={[
@@ -432,6 +436,7 @@ const Index = () => {
 
 								const columns = getColumns();
 								const totalFlex = columns.reduce((sum, c) => sum + c.flex, 0);
+								const dayLabelFontFamily = isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold';
 
 								// Check if any column for this day has food items
 								const hasAnyFood = columns.some(col => {
@@ -508,57 +513,68 @@ const Index = () => {
 																					const iconParts = marking?.icon?.split(':') || [];
 																					const [library, name] = iconParts;
 																					const Icon = library && iconLibraries[library];
-																					return marking?.icon ? (
-																						<View
-																							key={idx}
-																							style={{
-																								...styles.iconMarking,
-																								backgroundColor: marking?.bgColor,
-																								marginRight: 5,
-																								borderRadius: 5,
-																							}}
-																						>
-																							<Icon name={name} size={14} color={marking.color} />
-																						</View>
-																					) : !marking?.image?.uri && marking?.shortCode ? (
-																						<View
-																							key={idx}
-																							style={{
-																								...styles.shortCode,
-																								backgroundColor: marking?.bgColor,
-																								marginRight: 5,
-																								padding: 2,
-																								borderRadius: 5,
-																							}}
-																						>
-																							<Text
+																					if (marking?.icon) {
+																						return (
+																							<View
+																								key={idx}
 																								style={{
-																									color: marking.color,
-																									fontSize: fontSize,
+																									...styles.iconMarking,
+																									backgroundColor: marking?.bgColor,
+																									marginRight: 5,
+																									borderRadius: 5,
 																								}}
 																							>
-																								{marking?.shortCode}
-																							</Text>
-																						</View>
-																					) : marking?.image?.uri ? (
-																						<Image
-																							key={idx}
-																							source={marking.image.uri}
-																							style={{
-																								backgroundColor: marking?.bgColor,
-																								width: 15,
-																								height: 15,
-																								marginRight: 2,
-																								borderRadius: 5,
-																							}}
-																						/>
-																					) : null;
+																								<Icon name={name} size={14} color={marking.color} />
+																							</View>
+																						);
+																					}
+																					if (!marking?.image?.uri && marking?.shortCode) {
+																						return (
+																							<View
+																								key={idx}
+																								style={{
+																									...styles.shortCode,
+																									backgroundColor: marking?.bgColor,
+																									marginRight: 5,
+																									padding: 2,
+																									borderRadius: 5,
+																								}}
+																							>
+																								<Text
+																									style={{
+																										color: marking.color,
+																										fontSize: fontSize,
+																									}}
+																								>
+																									{marking?.shortCode}
+																								</Text>
+																							</View>
+																						);
+																					}
+																					if (marking?.image?.uri) {
+																						return (
+																							<Image
+																								key={idx}
+																								source={marking.image.uri}
+																								style={{
+																									backgroundColor: marking?.bgColor,
+																									width: 15,
+																									height: 15,
+																									marginRight: 2,
+																									borderRadius: 5,
+																								}}
+																							/>
+																						);
+																					}
+																					return null;
 																				})}
 																		</View>
 																	)}
 																</View>
 															);
 														});
+
+													const foodItemsContent = foodItems?.length > 0 ? foodItems : <Text style={{ color: theme.screen.text }}>-</Text>;
 
 													return (
 														<View
@@ -581,7 +597,7 @@ const Index = () => {
 																			styles.itemText,
 																			{
 																				fontSize: fontSize,
-																				fontFamily: isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold',
+																				fontFamily: dayLabelFontFamily,
 																				textAlign: 'center',
 																				color: theme.screen.text,
 																			},
@@ -594,7 +610,7 @@ const Index = () => {
 																			styles.itemText,
 																			{
 																				fontSize: fontSize,
-																				fontFamily: isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold',
+																				fontFamily: dayLabelFontFamily,
 																				textAlign: 'center',
 																				color: theme.screen.text,
 																			},
@@ -604,7 +620,7 @@ const Index = () => {
 																	</Text>
 																</View>
 															) : (
-																<View style={{ flexDirection: 'column' }}>{foodItems?.length > 0 ? foodItems : <Text style={{ color: theme.screen.text }}>-</Text>}</View>
+																<View style={{ flexDirection: 'column' }}>{foodItemsContent}</View>
 															)}
 														</View>
 													);
@@ -629,7 +645,7 @@ const Index = () => {
 																	styles.itemText,
 																	{
 																		fontSize: fontSize,
-																		fontFamily: isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold',
+																		fontFamily: dayLabelFontFamily,
 																		textAlign: 'center',
 																		color: theme.screen.text,
 																	},
@@ -642,7 +658,7 @@ const Index = () => {
 																	styles.itemText,
 																	{
 																		fontSize: fontSize,
-																		fontFamily: isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold',
+																		fontFamily: dayLabelFontFamily,
 																		textAlign: 'center',
 																		color: theme.screen.text,
 																	},

@@ -117,14 +117,16 @@ const FoodOffersOptionsContent: React.FC<FoodOffersOptionsContentProps> = ({
 	return (
 		<View style={styles.container}>
 			{options.map((option, index) => {
-				const groupPosition =
-					options.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === options.length - 1
-								? 'bottom'
-								: 'middle';
+				let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+				if (options.length === 1) {
+					groupPosition = 'single';
+				} else if (index === 0) {
+					groupPosition = 'top';
+				} else if (index === options.length - 1) {
+					groupPosition = 'bottom';
+				} else {
+					groupPosition = 'middle';
+				}
 				const showSeparator = index !== options.length - 1;
 
 				if (option.kind === 'boolean') {

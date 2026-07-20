@@ -28,7 +28,14 @@ export default class CardDimensionHelper {
 	}
 
 	static getCardWidth(screenWidth: number, columns: number): number {
-		const offset = screenWidth < 500 ? 10 : screenWidth < 900 ? 25 : 35;
+		let offset: number;
+		if (screenWidth < 500) {
+			offset = 10;
+		} else if (screenWidth < 900) {
+			offset = 25;
+		} else {
+			offset = 35;
+		}
 		return screenWidth / columns - offset;
 	}
 

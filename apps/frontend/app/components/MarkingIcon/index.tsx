@@ -25,11 +25,12 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color, co
 
 	if (!marking) return null;
 
-	const markingImage = marking.image_remote_url
-		? { uri: marking.image_remote_url }
-		: marking.image
-		? { uri: getImageUrl(String(marking.image)) || undefined }
-		: null;
+	let markingImage: { uri: string | undefined } | null = null;
+	if (marking.image_remote_url) {
+		markingImage = { uri: marking.image_remote_url };
+	} else if (marking.image) {
+		markingImage = { uri: getImageUrl(String(marking.image)) || undefined };
+	}
 	const textColor = color || contrast;
 
 	const iconParts = marking.icon?.split(':') || [];

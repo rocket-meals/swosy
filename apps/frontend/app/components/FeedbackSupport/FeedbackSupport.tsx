@@ -61,7 +61,11 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 				>
 					{excerpt(String(value), windowWidth > 850 ? 50 : 20)}
 				</Text>
-				{extraIcons.map((iconName, idx) => (
+				{extraIcons.map((iconName, idx) => {
+					const isThumbUpActive = iconName === 'thumb-up-outline' && inputValues?.positive === true;
+					const isThumbDownActive = iconName === 'thumb-down-outline' && inputValues?.positive === false;
+					const likeButtonBackgroundColor = isThumbUpActive || isThumbDownActive ? primaryColor : 'transparent';
+					return (
 					<TouchableOpacity
 						style={{
 							...styles.likeButton,
@@ -70,7 +74,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 							borderBottomLeftRadius: iconName === 'thumb-up-outline' ? 5 : 0,
 							borderBottomRightRadius: iconName === 'thumb-down-outline' ? 5 : 0,
 							borderTopRightRadius: iconName === 'thumb-down-outline' ? 5 : 0,
-							backgroundColor: iconName === 'thumb-up-outline' && inputValues?.positive === true ? primaryColor : iconName === 'thumb-down-outline' && inputValues?.positive === false ? primaryColor : 'transparent',
+							backgroundColor: likeButtonBackgroundColor,
 						}}
 						onPress={() => {
 							if (iconName === 'thumb-up-outline') {
@@ -89,7 +93,8 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 					>
 						<MaterialCommunityIcons key={idx} name={iconName as any} size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
 					</TouchableOpacity>
-				))}
+					);
+				})}
 				{title !== 'like_status' && <MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />}
 			</View>
 		</TouchableOpacity>

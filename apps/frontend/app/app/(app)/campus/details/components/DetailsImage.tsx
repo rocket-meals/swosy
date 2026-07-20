@@ -9,7 +9,14 @@ interface DetailsImageProps {
 }
 
 const DetailsImage: React.FC<DetailsImageProps> = ({ imageSource, screenWidth }) => {
-    const size = screenWidth > 1000 ? 400 : screenWidth > 900 ? 350 : screenWidth - 20;
+    let size: number;
+    if (screenWidth > 1000) {
+        size = 400;
+    } else if (screenWidth > 900) {
+        size = 350;
+    } else {
+        size = screenWidth - 20;
+    }
 
     return (
         <View

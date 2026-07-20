@@ -402,7 +402,13 @@ const Index = () => {
 				} else if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
 					value = defaultValue ? String(defaultValue)?.replace('.', ',') : null;
 				} else if (custom_type === 'value_boolean') {
-					value = defaultValue === false ? 0 : defaultValue === true ? 1 : null;
+					if (defaultValue === false) {
+						value = 0;
+					} else if (defaultValue === true) {
+						value = 1;
+					} else {
+						value = null;
+					}
 				} else if (FormHelperCommon.isDateFieldType(fieldType)) {
 					value = parseDateForEdit(fieldType, defaultValue);
 				} else if (custom_type === 'value_files') {
@@ -614,7 +620,10 @@ const Index = () => {
 
 	const handleAddToQueue = () => {
 		const rawFormId = (formSubmission as any)?.form;
-		const form_id = rawFormId ? (typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId)) : '';
+		let form_id = '';
+		if (rawFormId) {
+			form_id = typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
+		}
 		const alias = String(formSubmission?.alias || form_submission_id || '');
 		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 		const entry = {
@@ -696,8 +705,14 @@ const Index = () => {
 						value_number: value ? value.replace(',', '.') : null,
 					};
 				} else if (custom_type === 'value_boolean') {
+					let booleanValue: boolean | null = null;
+					if (value === 0) {
+						booleanValue = false;
+					} else if (value === 1) {
+						booleanValue = true;
+					}
 					updatedValueFields = {
-						value_boolean: value === 0 ? false : value === 1 ? true : null,
+						value_boolean: booleanValue,
 					};
 				} else if (custom_type === 'value_custom') {
 					updatedValueFields = { value_custom: value };
@@ -869,6 +884,15 @@ const Index = () => {
 		fetchFolderIds();
 	}, []);
 
+	let aliasExcerptLength = 22;
+	if (screenWidth > 900) {
+		aliasExcerptLength = 100;
+	} else if (screenWidth > 700) {
+		aliasExcerptLength = 80;
+	}
+	const headerTitle = formSubmission ? excerpt(formSubmission?.alias as string, aliasExcerptLength) : '';
+	const formSubmissionIdText = formSubmission ? formSubmission?.id : '';
+
 	return (
 		<View
 			style={{
@@ -916,7 +940,7 @@ const Index = () => {
 						}} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
 						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
+						<Text style={{ ...styles.heading, color: theme.header.text }}>{headerTitle}</Text>
 					</View>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openEditSheet} style={{ padding: 10 }}>
@@ -946,7 +970,7 @@ const Index = () => {
 									backgroundColor: theme.screen.iconBg,
 								}}
 							>
-								<Text style={{ ...styles.body, color: theme.screen.text }}>{formSubmission ? formSubmission?.id : ''}</Text>
+								<Text style={{ ...styles.body, color: theme.screen.text }}>{formSubmissionIdText}</Text>
 							</View>
 							{formAnswers &&
 								formAnswers.map((answer, index) => {

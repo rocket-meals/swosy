@@ -68,7 +68,8 @@ function computeRoll(pool: PoolDie[], mode: RollMode): RollResult {
 		return { mode, dice: rollA.dice, total: rollA.total };
 	}
 	const rollB = rollPoolOnce(pool);
-	const keptRoll = (mode === 'advantage' ? rollA.total >= rollB.total : rollA.total <= rollB.total) ? 'A' : 'B';
+	const rollAWins = mode === 'advantage' ? rollA.total >= rollB.total : rollA.total <= rollB.total;
+	const keptRoll = rollAWins ? 'A' : 'B';
 	return { mode, rollA, rollB, keptRoll, keptTotal: keptRoll === 'A' ? rollA.total : rollB.total };
 }
 
@@ -144,6 +145,13 @@ export default function DiceScreen() {
 			if (animationRef.current) clearInterval(animationRef.current);
 		};
 	}, []);
+
+	let rollButtonLabel = 'Würfeln';
+	if (isRolling) {
+		rollButtonLabel = 'Würfeln...';
+	} else if (pool.length === 0) {
+		rollButtonLabel = 'Wähle zuerst Würfel';
+	}
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -314,7 +322,7 @@ export default function DiceScreen() {
 				>
 					<MaterialCommunityIcons name={FALLBACK_ICON} size={24} color="#ffffff" />
 					<Text style={styles.rollButtonText}>
-						{isRolling ? 'Würfeln...' : pool.length === 0 ? 'Wähle zuerst Würfel' : 'Würfeln'}
+						{rollButtonLabel}
 					</Text>
 				</TouchableOpacity>
 			</View>

@@ -141,6 +141,53 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ forDate, canteen }) => {
             debugInformationInTitle = `all_time_high ${currentUtilizationGroup?.all_time_high ?? 'N/A'}, threshold_until_max ${currentUtilizationGroup?.threshold_until_max ?? 'N/A'}`;
         }
 
+        let forecastContent: React.ReactNode;
+        if (loading) {
+                forecastContent = (
+                        <View style={styles.loadingContainer}>
+                                <ActivityIndicator size={40} color={theme.screen.icon} />
+                        </View>
+                );
+        } else if (forecastEntries.length > 0) {
+                forecastContent = forecastEntries.map((entry, index) => {
+                        const isSingle = forecastEntries.length === 1;
+                        const isFirst = index === 0;
+                        const isLast = index === forecastEntries.length - 1;
+
+                        let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+                        if (isSingle) {
+                                groupPosition = 'single';
+                        } else if (isFirst) {
+                                groupPosition = 'top';
+                        } else if (isLast) {
+                                groupPosition = 'bottom';
+                        }
+
+                        let valueToShow = entry.percentage+'%'
+                        if(showDebugInformation) {
+                            valueToShow += " (" + (entry.value_real ?? entry.value_forecast_current) + ")";
+                        }
+
+                        return (
+                                <SettingsList
+                                        key={`${entry.time}-${index}`}
+                                        leftIcon={<View style={[styles.colorIndicator, { backgroundColor: entry.color }]} />}
+                                        title={entry.time}
+                                        value={valueToShow}
+                                        showSeparator={!isLast}
+                                        groupPosition={groupPosition}
+                                        iconBackgroundColor={theme.sheet.sheetBg}
+                                />
+                        );
+                });
+        } else {
+                forecastContent = (
+                        <Text style={[styles.noDataText, { color: theme.sheet.text }]}>
+                                {translate(TranslationKeys.no_data_found)}
+                        </Text>
+                );
+        }
+
         return (
                 <View style={styles.container}>
                         {showDebugInformation && (
@@ -149,46 +196,7 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ forDate, canteen }) => {
                                 </Text>
                         )}
                         <View style={styles.forecastContainer}>
-                                {loading ? (
-                                        <View style={styles.loadingContainer}>
-                                                <ActivityIndicator size={40} color={theme.screen.icon} />
-                                        </View>
-                                ) : forecastEntries.length > 0 ? (
-                                        forecastEntries.map((entry, index) => {
-                                                const isSingle = forecastEntries.length === 1;
-                                                const isFirst = index === 0;
-                                                const isLast = index === forecastEntries.length - 1;
-
-                                                const groupPosition = isSingle
-                                                        ? 'single'
-                                                        : isFirst
-                                                        ? 'top'
-                                                        : isLast
-                                                        ? 'bottom'
-                                                        : 'middle';
-
-                                                let valueToShow = entry.percentage+'%'
-                                                if(showDebugInformation) {
-                                                    valueToShow += " (" + (entry.value_real ?? entry.value_forecast_current) + ")";
-                                                }
-
-                                                return (
-                                                        <SettingsList
-                                                                key={`${entry.time}-${index}`}
-                                                                leftIcon={<View style={[styles.colorIndicator, { backgroundColor: entry.color }]} />}
-                                                                title={entry.time}
-                                                                value={valueToShow}
-                                                                showSeparator={!isLast}
-                                                                groupPosition={groupPosition}
-                                                                iconBackgroundColor={theme.sheet.sheetBg}
-                                                        />
-                                                );
-                                        })
-                                ) : (
-                                        <Text style={[styles.noDataText, { color: theme.sheet.text }]}>
-                                                {translate(TranslationKeys.no_data_found)}
-                                        </Text>
-                                )}
+                                {forecastContent}
                         </View>
                 </View>
         );

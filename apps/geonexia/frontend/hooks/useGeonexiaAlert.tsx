@@ -27,7 +27,10 @@ export const useGeonexiaAlert = () => {
 					{effectiveButtons.map((btn, idx) => {
 						const isDestructive = btn.style === 'destructive';
 						const isCancel = btn.style === 'cancel';
-						const textColor = isDestructive ? '#ef4444' : isCancel ? theme.screen.icon : '#2563eb';
+						let textColor: string;
+						if (isDestructive) textColor = '#ef4444';
+						else if (isCancel) textColor = theme.screen.icon;
+						else textColor = '#2563eb';
 						return (
 							<TouchableOpacity
 								key={idx}

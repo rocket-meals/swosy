@@ -73,6 +73,9 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 		return () => subscription?.remove();
 	}, []);
 
+	const mediumScreenHeadingLength = screenWidth > 700 ? 80 : 22;
+	const headingMaxLength = screenWidth > 900 ? 100 : mediumScreenHeadingLength;
+
 	return (
 		<View
 			style={{
@@ -98,7 +101,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 						</TooltipContent>
 					</CustomTooltip>
 
-					<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(label, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
+					<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(label, headingMaxLength)}</Text>
                                 </View>
                                 {rightElement ? <View style={styles.col2}>{rightElement}</View> : null}
                         </View>

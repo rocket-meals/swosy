@@ -52,6 +52,13 @@ function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+// Helper to determine groupPosition for list items
+function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
+
 /** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
 function gameTypeToPreset(gameType: GameType): GamePreset {
 	return {
@@ -175,7 +182,7 @@ function StartingPlayerModeSection({ gameTypeId }: { gameTypeId: string }) {
 							);
 						}
 					}}
-					groupPosition={index === 0 ? 'top' : index === STARTING_PLAYER_MODES.length - 1 ? 'bottom' : 'middle'}
+					groupPosition={getGroupPosition(index, STARTING_PLAYER_MODES.length)}
 				/>
 			))}
 			{mode === 'custom' && (
@@ -624,7 +631,7 @@ export default function GameTypeDetailScreen() {
 							leftIcon={<Ionicons name="calendar-outline" size={20} color="#ffffff" />}
 							iconBgColor={PRIMARY_COLOR}
 							rightElement={<MatchParticipants players={match.players} />}
-							groupPosition={index === 0 ? 'top' : index === matches.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getGroupPosition(index, matches.length)}
 						/>
 					))
 				)}

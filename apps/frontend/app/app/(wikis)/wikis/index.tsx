@@ -54,6 +54,8 @@ const Index = () => {
 			.finally(() => setLoading(false));
 	}, [wikis, custom_id, id]);
 
+	const hasWikiContent = Boolean(wiki?.translations && getTextFromTranslation(wiki.translations, language)?.trim());
+
 	return (
 		<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }}>
 			{deviceMock && deviceMock === 'iphone' && isWeb && <DeviceMock />}
@@ -74,7 +76,7 @@ const Index = () => {
 				</View>
 			</View>
 			<View style={styles.content}>
-				{loading ? (
+				{loading && (
 					<View
 						style={{
 							height: 200,
@@ -85,9 +87,11 @@ const Index = () => {
 					>
 						<ActivityIndicator size={30} color={theme.screen.text} />
 					</View>
-				) : wiki?.translations && getTextFromTranslation(wiki.translations, language)?.trim() ? (
+				)}
+				{!loading && hasWikiContent && wiki?.translations && (
 					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} backgroundColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} />
-				) : (
+				)}
+				{!loading && !hasWikiContent && (
 					<Text style={{ color: theme.screen.text, padding: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
 				)}
 			</View>

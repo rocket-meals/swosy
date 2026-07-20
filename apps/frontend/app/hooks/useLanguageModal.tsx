@@ -121,14 +121,16 @@ export const useLanguageModal = () => {
                 ({ languageCode, index }: { languageCode: LanguageCode; index: number }) => {
                         const languageOption = languageDict[languageCode];
                         const isSelected = language === languageCode;
-                        const groupPosition =
-                                languageOrder.length === 1
-                                        ? 'single'
-                                        : index === 0
-                                                        ? 'top'
-                                                        : index === languageOrder.length - 1
-                                                        ? 'bottom'
-                                                        : 'middle';
+                        let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+                        if (languageOrder.length === 1) {
+                                groupPosition = 'single';
+                        } else if (index === 0) {
+                                groupPosition = 'top';
+                        } else if (index === languageOrder.length - 1) {
+                                groupPosition = 'bottom';
+                        } else {
+                                groupPosition = 'middle';
+                        }
 
                         return (
                                 <SettingsList

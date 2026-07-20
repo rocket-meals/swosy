@@ -348,7 +348,11 @@ export default function KyleTest3DScreen() {
 			{MODELS.map((entry, idx) => {
 				const isFirst = idx === 0;
 				const isLast = idx === MODELS.length - 1;
-				const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+				let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+				if (isFirst && isLast) groupPosition = 'single';
+				else if (isFirst) groupPosition = 'top';
+				else if (isLast) groupPosition = 'bottom';
+				else groupPosition = 'middle';
 				return (
 					<SettingsListSelectOptionSingle
 						key={entry.key}
@@ -401,7 +405,11 @@ export default function KyleTest3DScreen() {
 				debugLog.map((entry, idx) => {
 					const isFirst = idx === 0;
 					const isLast = idx === debugLog.length - 1;
-					const groupPosition = isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+					let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+					if (isFirst && isLast) groupPosition = 'single';
+					else if (isFirst) groupPosition = 'top';
+					else if (isLast) groupPosition = 'bottom';
+					else groupPosition = 'middle';
 					return (
 						<SettingsList
 							key={idx}

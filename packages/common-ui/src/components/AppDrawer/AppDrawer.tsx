@@ -78,15 +78,15 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 		);
 	};
 
+	const fallbackLogo = logoSource ? (
+		<View style={[styles.logoContainer, { backgroundColor: theme.drawer.logoBg }]}>
+			<Image source={logoSource} style={styles.logo} />
+		</View>
+	) : null;
+
 	const headerContent = (
 		<>
-			{renderLogo ? (
-				renderLogo()
-			) : logoSource ? (
-				<View style={[styles.logoContainer, { backgroundColor: theme.drawer.logoBg }]}>
-					<Image source={logoSource} style={styles.logo} />
-				</View>
-			) : null}
+			{renderLogo ? renderLogo() : fallbackLogo}
 			{title ? (
 				<Text style={[styles.heading, { color: theme.drawerHeading }]}>{title}</Text>
 			) : null}

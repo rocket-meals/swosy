@@ -100,6 +100,13 @@ function formatDate(timestamp: number): string {
 	});
 }
 
+function getGroupPosition(idx: number, count: number): 'single' | 'top' | 'bottom' | 'middle' {
+	if (count === 1) return 'single';
+	if (idx === 0) return 'top';
+	if (idx === count - 1) return 'bottom';
+	return 'middle';
+}
+
 // ─── Manual Activity Modal Content ───────────────────────────────────────────
 
 function ManualActivityContent({
@@ -1310,7 +1317,7 @@ export default function RouteDetailScreen() {
 											<SettingsListActivity
 												key={act.id}
 												activity={act}
-												groupPosition={routeActivities.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routeActivities.length - 1 ? 'bottom' : 'middle'}
+												groupPosition={getGroupPosition(idx, routeActivities.length)}
 												showSeparator={idx < routeActivities.length - 1}
 												onPress={() => { closeActivitiesModal(); router.navigate(`/activities/${act.id}`); }}
 											/>
@@ -1357,7 +1364,7 @@ export default function RouteDetailScreen() {
 									title={hexId}
 									value={String(features.length)}
 									showSeparator={idx < route.hexTiles.length - 1}
-									groupPosition={route.hexTiles.length === 1 ? 'single' : idx === 0 ? 'top' : idx === route.hexTiles.length - 1 ? 'bottom' : 'middle'}
+									groupPosition={getGroupPosition(idx, route.hexTiles.length)}
 									onPress={() => {
 										showHexTileModal({
 											title: `⬡ ${hexId}`,
@@ -1392,7 +1399,7 @@ export default function RouteDetailScreen() {
 								feature={entry.feature}
 								count={entry.count}
 								showSeparator={idx < entries.length - 1}
-								groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, entries.length)}
 								iconBackgroundColor="#7c3aed"
 								onPress={() => {
 									showAggregatedModal({
@@ -1430,7 +1437,7 @@ export default function RouteDetailScreen() {
 								feature={entry.feature}
 								count={entry.count}
 								showSeparator={idx < entries.length - 1}
-								groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, entries.length)}
 								iconBackgroundColor="#059669"
 								onPress={() => {
 									showEnclosedAggregatedModal({

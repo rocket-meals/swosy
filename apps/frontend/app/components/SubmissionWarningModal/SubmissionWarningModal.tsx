@@ -45,6 +45,13 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({ isVisib
 		return () => subscription?.remove();
 	}, []);
 
+	let modalWidth: '90%' | 700 | 600 = 600;
+	if (screenWidth < 800) {
+		modalWidth = '90%';
+	} else if (screenWidth < 1200) {
+		modalWidth = 700;
+	}
+
 	return (
 		<Modal
 			isVisible={isVisible}
@@ -62,7 +69,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({ isVisib
 				style={{
 					...styles.modalView,
 					backgroundColor: theme.modal.modalBg,
-					width: screenWidth < 800 ? '90%' : screenWidth < 1200 ? 700 : 600,
+					width: modalWidth,
 				}}
 			>
 				<View style={styles.modalHeader}>

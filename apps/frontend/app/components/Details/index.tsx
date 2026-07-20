@@ -54,14 +54,16 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 							{title ? <SettingsGroupTitle>{title}</SettingsGroupTitle> : null}
 							<View style={styles.attributeList}>
 								{attributeItems.map((attribute: any, index: number) => {
-									const groupPosition =
-										attributeItems.length === 1
-											? 'single'
-											: index === 0
-												? 'top'
-												: index === attributeItems.length - 1
-													? 'bottom'
-													: 'middle';
+									let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+									if (attributeItems.length === 1) {
+										groupPosition = 'single';
+									} else if (index === 0) {
+										groupPosition = 'top';
+									} else if (index === attributeItems.length - 1) {
+										groupPosition = 'bottom';
+									} else {
+										groupPosition = 'middle';
+									}
 									return (
 										<AttributeItem
 											key={attribute?.id ?? `${item?.id}-${index}`}

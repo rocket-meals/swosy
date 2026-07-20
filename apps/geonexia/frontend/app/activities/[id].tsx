@@ -127,12 +127,11 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		}
 		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
 		const gpsSpeed = points[i].speed;
+		const derivedSpeedKmh = dtSec > 0 ? (segKm / dtSec) * 3600 : 0;
 		const segSpeedKmh =
 			gpsSpeed != null && gpsSpeed >= 0
 				? gpsSpeed * 3.6
-				: dtSec > 0
-				? (segKm / dtSec) * 3600
-				: 0;
+				: derivedSpeedKmh;
 		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS && segSpeedKmh > 0) {
 			speedsKmh.push(segSpeedKmh);
 		}
@@ -1335,10 +1334,11 @@ export default function ActivityDetailScreen() {
 						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
 						saveActivity(updated);
 						setActivity(updated);
+						const pointsSuffix = removedCount !== 1 ? 's' : '';
 						showAlert(
 							'Done',
 							removedCount > 0
-								? `Removed ${removedCount} unrealistic point${removedCount !== 1 ? 's' : ''}.`
+								? `Removed ${removedCount} unrealistic point${pointsSuffix}.`
 								: 'No unrealistic points found.',
 						);
 					},
@@ -1463,11 +1463,8 @@ export default function ActivityDetailScreen() {
 
 	const { stats } = activity;
 
-	const routeDisplayValue = assignedRoute
-		? assignedRoute.name
-		: activity.routeId === null
-		? 'Keine'
-		: '—';
+	const noRouteDisplayValue = activity.routeId === null ? 'Keine' : '—';
+	const routeDisplayValue = assignedRoute ? assignedRoute.name : noRouteDisplayValue;
 
 	const currentWeatherDef = activity.weatherType ? WEATHER_TYPES.find(w => w.type === activity.weatherType) : null;
 

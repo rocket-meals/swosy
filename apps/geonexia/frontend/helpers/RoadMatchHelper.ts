@@ -72,10 +72,10 @@ async function fetchRoadWaysForTile(
 			if (feat.type !== GEOMETRY_TYPE_LINE) continue;
 
 			const geometry = feat.toGeoJSON(x, y, z).geometry;
-			const lines: [number, number][][] =
-				geometry.type === 'MultiLineString' ? geometry.coordinates
-					: geometry.type === 'LineString' ? [geometry.coordinates]
-					: [];
+			let lines: [number, number][][];
+			if (geometry.type === 'MultiLineString') lines = geometry.coordinates;
+			else if (geometry.type === 'LineString') lines = [geometry.coordinates];
+			else lines = [];
 
 			for (const line of lines) {
 				if (line.length >= 2) ways.push({ points: line });

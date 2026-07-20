@@ -136,17 +136,23 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 		[marking?.translations, language]
 	);
 
-	const leftIconComponent = useMemo(() => (
-		<View style={styles.leftIconWrapper}>
-			{handleMenuSheet && marking ? (
+	const leftIconComponent = useMemo(() => {
+		let markingIconContent: React.ReactNode = null;
+		if (handleMenuSheet && marking) {
+			markingIconContent = (
 				<Pressable onPress={() => openMarkingLabel(marking)}>
 					<MarkingIcon marking={marking} size={size} />
 				</Pressable>
-			) : marking ? (
-				<MarkingIcon marking={marking} size={size} />
-			) : null}
-		</View>
-	), [marking, size, handleMenuSheet, openMarkingLabel]);
+			);
+		} else if (marking) {
+			markingIconContent = <MarkingIcon marking={marking} size={size} />;
+		}
+		return (
+			<View style={styles.leftIconWrapper}>
+				{markingIconContent}
+			</View>
+		);
+	}, [marking, size, handleMenuSheet, openMarkingLabel]);
 
 	const rightElement = useMemo(() => (
 		<View style={styles.rightRow}>

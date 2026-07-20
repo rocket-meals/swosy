@@ -28,7 +28,14 @@ const TriStateCheckbox = ({
 
 	// If onlyTwo === true we normalize any non-1 value to 0 (false).
 	// Otherwise keep tri-state semantics where value can be 1, 0 or null/undefined.
-	const currentValue: number | null | undefined = onlyTwo ? (value === 1 ? 1 : 0) : value === 2 ? null : value;
+	let currentValue: number | null | undefined;
+	if (onlyTwo) {
+		currentValue = value === 1 ? 1 : 0;
+	} else if (value === 2) {
+		currentValue = null;
+	} else {
+		currentValue = value;
+	}
 
 	const translation_yes = translate(TranslationKeys.yes);
 	const translation_no = translate(TranslationKeys.no);

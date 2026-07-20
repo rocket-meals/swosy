@@ -650,6 +650,14 @@ function stripHashPrefix(color: string): string {
 	return color.startsWith('#') ? color.slice(1) : color;
 }
 
+/** Position of an item within a visually grouped settings list. */
+function getGroupPosition(length: number, index: number): 'single' | 'top' | 'bottom' | 'middle' {
+	if (length === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === length - 1) return 'bottom';
+	return 'middle';
+}
+
 /** Size used for avatar previews inside selection modals. */
 const PREVIEW_AVATAR_SIZE = 100;
 
@@ -828,14 +836,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 			)}
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_preset_colors') : 'Presets'} />
 			{colors.map((color, index) => {
-				const groupPosition =
-					colors.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === colors.length - 1
-								? 'bottom'
-								: 'middle';
+				const groupPosition = getGroupPosition(colors.length, index);
 				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
 				const borderColor = myContrastColor(color, theme, isDark);
 				const colorCircle = (
@@ -900,14 +901,7 @@ const StylePickerModalContent: React.FC<StylePickerModalContentProps> = ({
 	return (
 		<>
 			{allStyles.map((style, index) => {
-				const groupPosition =
-					allStyles.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === allStyles.length - 1
-								? 'bottom'
-								: 'middle';
+				const groupPosition = getGroupPosition(allStyles.length, index);
 				return (
 					<SettingsListSelectOptionSingle
 						key={style}
@@ -957,14 +951,7 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 	return (
 		<>
 			{values.map((value, index) => {
-				const groupPosition =
-					values.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === values.length - 1
-								? 'bottom'
-								: 'middle';
+				const groupPosition = getGroupPosition(values.length, index);
 				const isNone = value === NONE_OPTION;
 				const previewOptions = { ...(config.options ?? {}) };
 				if (isNone) {
@@ -1421,14 +1408,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_category') : 'Category'} />
 			{allCategories.map((cat, index) => {
-				const groupPosition =
-					allCategories.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === allCategories.length - 1
-								? 'bottom'
-								: 'middle';
+				const groupPosition = getGroupPosition(allCategories.length, index);
 				const rawColor = colorKeys.includes(cat) ? config.options?.[cat] : null;
 				const colorKey = Array.isArray(rawColor) ? rawColor[0] ?? null : null;
 				const swatchColor = colorKey ? '#' + colorKey : undefined;
@@ -1581,10 +1561,12 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						/>
 						{(() => {
 							const rawFlip = config.options?.flip;
-							const isFlipEnabled =
-								typeof rawFlip === 'boolean' ? rawFlip :
-								Array.isArray(rawFlip) ? rawFlip[0] === 'true' :
-								false;
+							let isFlipEnabled = false;
+							if (typeof rawFlip === 'boolean') {
+								isFlipEnabled = rawFlip;
+							} else if (Array.isArray(rawFlip)) {
+								isFlipEnabled = rawFlip[0] === 'true';
+							}
 							return (
 								<SettingsListBoolean
 									title="flip"
@@ -1604,10 +1586,12 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						})()}
 						{(() => {
 							const rawClip = config.options?.clip;
-							const isClipEnabled =
-								typeof rawClip === 'boolean' ? rawClip :
-								Array.isArray(rawClip) ? rawClip[0] === 'true' :
-								false;
+							let isClipEnabled = false;
+							if (typeof rawClip === 'boolean') {
+								isClipEnabled = rawClip;
+							} else if (Array.isArray(rawClip)) {
+								isClipEnabled = rawClip[0] === 'true';
+							}
 							return (
 								<SettingsListBoolean
 									title="clip"
@@ -1627,14 +1611,18 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						})()}
 						{hasHiddenProps &&
 							Object.entries(hiddenProps ?? {}).map(([key, value], index, arr) => {
-								const groupPosition =
-									arr.length === 1
-										? 'bottom'
-										: index === 0
-											? 'middle'
-											: index === arr.length - 1
-												? 'bottom'
-												: 'middle';
+								// These rows continue the group started by the rows above, so the
+								// first (and a single) hidden prop is never 'top'/'single'.
+								let groupPosition: 'bottom' | 'middle';
+								if (arr.length === 1) {
+									groupPosition = 'bottom';
+								} else if (index === 0) {
+									groupPosition = 'middle';
+								} else if (index === arr.length - 1) {
+									groupPosition = 'bottom';
+								} else {
+									groupPosition = 'middle';
+								}
 								if (key === AvatarPropKey.OpenPeeps.SCALE) {
 									const scaleVal = config.options?.scale;
 									const scaleArr = Array.isArray(scaleVal) ? scaleVal : null;
