@@ -51,7 +51,7 @@ export function MapLocationButton({
 	zoom,
 }: Readonly<MapLocationButtonProps>) {
 	const [internalActive, setInternalActive] = useState(false);
-	const showActive = isFollowing !== undefined ? isFollowing : internalActive;
+	const showActive = isFollowing ?? internalActive;
 
 	const handlePress = useCallback(async () => {
 		try {

@@ -97,15 +97,13 @@ function parseCsvLine(line: string): string[] {
       } else {
         current += char;
       }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === ',') {
+      fields.push(current);
+      current = '';
     } else {
-      if (char === '"') {
-        inQuotes = true;
-      } else if (char === ',') {
-        fields.push(current);
-        current = '';
-      } else {
-        current += char;
-      }
+      current += char;
     }
   }
   fields.push(current);

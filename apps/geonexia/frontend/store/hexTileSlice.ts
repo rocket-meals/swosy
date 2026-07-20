@@ -196,7 +196,7 @@ const hexTileSlice = createSlice({
 		) {
 			const { h3Index, anchorColor, flat } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);
-			if (!rec.billboardsFlat) rec.billboardsFlat = {};
+			rec.billboardsFlat ??= {};
 			if (!flat) {
 				delete rec.billboardsFlat[anchorColor];
 			} else {
@@ -216,7 +216,7 @@ const hexTileSlice = createSlice({
 		) {
 			const { h3Index, anchorColor, billboard } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);
-			if (!rec.billboardsTexture) rec.billboardsTexture = {};
+			rec.billboardsTexture ??= {};
 			if (billboard === null) {
 				delete rec.billboardsTexture[anchorColor];
 			} else {

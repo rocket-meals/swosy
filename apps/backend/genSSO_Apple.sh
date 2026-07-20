@@ -77,7 +77,7 @@ fi
 # Read the EC key
 if [[ -n "$KEY_FILE_PATH" ]]; then
     if [[ ! -f "$KEY_FILE_PATH" ]]; then
-        echo "Error: Key file '$KEY_FILE_PATH' not found."
+        echo "Error: Key file '$KEY_FILE_PATH' not found." >&2
         exit 1
     fi
     ECDSA_KEY=$(cat "$KEY_FILE_PATH")

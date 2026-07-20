@@ -122,12 +122,10 @@ async function ensureAsyncStorageMigrated(db: KvDatabase): Promise<void> {
 // Exported so the debug storage-usage settings screen (SettingsListSqliteStorage, dbName
 // "redux_persist.db") can query the same kv table without opening a second connection.
 export function getSqliteDb(): Promise<KvDatabase> {
-	if (!migratedDbPromise) {
-		migratedDbPromise = getKvDatabase(DB_NAME).then(async (db) => {
-			await ensureAsyncStorageMigrated(db);
-			return db;
-		});
-	}
+	migratedDbPromise ??= getKvDatabase(DB_NAME).then(async (db) => {
+		await ensureAsyncStorageMigrated(db);
+		return db;
+	});
 	return migratedDbPromise;
 }
 

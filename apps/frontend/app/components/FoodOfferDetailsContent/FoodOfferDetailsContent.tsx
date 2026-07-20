@@ -324,20 +324,16 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             if (isAndroid()) {
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
-                } else {
-                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                        requestDeviceNotificationPermission();
-                    }
+                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                    requestDeviceNotificationPermission();
                 }
             }
             if (isIOS()) {
                 const result = await NotificationHelper.requestDeviceNotificationPermission();
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
-                } else {
-                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                        requestDeviceNotificationPermission();
-                    }
+                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                    requestDeviceNotificationPermission();
                 }
             }
         } else {

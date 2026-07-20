@@ -68,6 +68,9 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Use the "RegExp.exec()" method instead. | 20 von 20 (nur Regexe ohne `g`-Flag) | #3946 |
 | 2026-07-20 | Prefer `String#replaceAll()`. | 10 von 10 | #3946 |
 | 2026-07-20 | Kleintypen: Fragment (7), case-Block (7), useless constructor (6), redundantes `\| undefined` (6), unnötige Escapes (6), Boolean-Literal-Ternary (5), `Math.hypot` (5), `Number.parseInt` (3), `Date.now()` (3) | 48 von 48 | #3946 |
+| 2026-07-20 | Prefer using nullish coalescing operator (`??=` / `??`). | 18 von 18 (Codemod mit Zeilenverifikation; alle Ziel-Typen `X \| null` bzw. `boolean \| undefined`) | – |
+| 2026-07-20 | Redirect this error message to stderr (>&2). | 14 von 14 (nur Shell-Skripte, `bash -n` geprüft) | – |
+| 2026-07-20 | 'If' statement should not be the only statement in 'else' block. | 10 von 10 (`else { if }` → `else if`) | – |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
@@ -75,7 +78,7 @@ Neu abgearbeitete Typen bitte hier ergänzen.
 „Cognitive Complexity" (113x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
 (39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
-should be last" (20x, ändert Aufrufer), „Add an explicit return" (20x), `??=` (18x),
+should be last" (20x, ändert Aufrufer), „Add an explicit return" (20x),
 `await` auf Non-Promise (16x), Parameter-Reihenfolge (16x), for-of (12x).
 Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
 

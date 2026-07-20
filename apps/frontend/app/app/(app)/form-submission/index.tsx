@@ -327,12 +327,10 @@ const Index = () => {
 					// update fails silently on network error
 				}
 			}
+		} else if (offlineMode) {
+			toast(translate(TranslationKeys.form_submission_not_found_offline), 'error');
 		} else {
-			if (offlineMode) {
-				toast(translate(TranslationKeys.form_submission_not_found_offline), 'error');
-			} else {
-				toast(translate(TranslationKeys.form_submission_not_found), 'error');
-			}
+			toast(translate(TranslationKeys.form_submission_not_found), 'error');
 		}
 		return result;
 	};

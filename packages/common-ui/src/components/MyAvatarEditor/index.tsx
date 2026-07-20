@@ -231,13 +231,11 @@ const DEFAULT_AVATAR_STYLE = AvatarStyle.AVATAAARS;
 
 let _defaultAvatarConfig: AvatarConfig | null = null;
 function getDefaultAvatarConfig(): AvatarConfig {
-	if (!_defaultAvatarConfig) {
-		_defaultAvatarConfig = {
-			style: DEFAULT_AVATAR_STYLE,
-			size: AvatarSize.LARGE,
-			options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
-		};
-	}
+	_defaultAvatarConfig ??= {
+		style: DEFAULT_AVATAR_STYLE,
+		size: AvatarSize.LARGE,
+		options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
+	};
 	return _defaultAvatarConfig;
 }
 

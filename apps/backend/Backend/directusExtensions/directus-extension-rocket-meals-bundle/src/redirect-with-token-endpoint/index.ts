@@ -84,59 +84,57 @@ function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string 
     let redirect_allowed_http = isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_http, redirectUrl);
     let redirect_allowed_https = isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_https, redirectUrl);
     return redirect_allowed_http || redirect_allowed_https;
-  } else {
+  } else if (redirectUrlProtocol.includes(WILDCARD_REPLACEMENT)) {
     // okay we have a protocol which could be http, https, myapp, or a wildcard like *
     // we need to check if the protocol matches
     // if the redirectURL contains our WILDCARD_REPLACEMENT, then we reject it
-    if (redirectUrlProtocol.includes(WILDCARD_REPLACEMENT)) {
-      //console.log("redirectUrlProtocol contains WILDCARD_REPLACEMENT, this is not allowed")
+    //console.log("redirectUrlProtocol contains WILDCARD_REPLACEMENT, this is not allowed")
+    return false;
+  } else {
+    //console.log("redirectUrl seems to be valid")
+    // replace all * with WILDCARD_REPLACEMENT
+    //console.log("Replace whitelist entry all wildcards with WILDCARD_REPLACEMENT")
+    let replacedRedirect_whitelist_entry = StringHelper.replaceAllWithOptions({
+      str: redirect_whitelist_entry,
+      find: WILDCARD,
+      replace: WILDCARD_REPLACEMENT,
+    });
+    // create a new URL from the replaced string
+    //console.log("replacedRedirect_whitelist_entry: " + replacedRedirect_whitelist_entry)
+    let replacedRedirect_whitelist_entry_URL = new URL(replacedRedirect_whitelist_entry);
+    //console.log("replacedRedirect_whitelist_entry_URL: " + replacedRedirect_whitelist_entry_URL)
+
+    const replacedRedirect_whitelist_entry_URLProtocol = replacedRedirect_whitelist_entry_URL.protocol;
+    const replacedRedirect_whitelist_entry_URLHost = replacedRedirect_whitelist_entry_URL.host;
+    const replacedRedirect_whitelist_entry_URLPathname = replacedRedirect_whitelist_entry_URL.pathname;
+    const replacedRedirect_whitelist_entry_URLSearch = replacedRedirect_whitelist_entry_URL.search;
+
+    // check if the protocol matches
+    const protocolMatches = startsWithUntilWildcardReplacement(redirectUrlProtocol, replacedRedirect_whitelist_entry_URLProtocol);
+    if (!protocolMatches) {
       return false;
-    } else {
-      //console.log("redirectUrl seems to be valid")
-      // replace all * with WILDCARD_REPLACEMENT
-      //console.log("Replace whitelist entry all wildcards with WILDCARD_REPLACEMENT")
-      let replacedRedirect_whitelist_entry = StringHelper.replaceAllWithOptions({
-        str: redirect_whitelist_entry,
-        find: WILDCARD,
-        replace: WILDCARD_REPLACEMENT,
-      });
-      // create a new URL from the replaced string
-      //console.log("replacedRedirect_whitelist_entry: " + replacedRedirect_whitelist_entry)
-      let replacedRedirect_whitelist_entry_URL = new URL(replacedRedirect_whitelist_entry);
-      //console.log("replacedRedirect_whitelist_entry_URL: " + replacedRedirect_whitelist_entry_URL)
-
-      const replacedRedirect_whitelist_entry_URLProtocol = replacedRedirect_whitelist_entry_URL.protocol;
-      const replacedRedirect_whitelist_entry_URLHost = replacedRedirect_whitelist_entry_URL.host;
-      const replacedRedirect_whitelist_entry_URLPathname = replacedRedirect_whitelist_entry_URL.pathname;
-      const replacedRedirect_whitelist_entry_URLSearch = replacedRedirect_whitelist_entry_URL.search;
-
-      // check if the protocol matches
-      const protocolMatches = startsWithUntilWildcardReplacement(redirectUrlProtocol, replacedRedirect_whitelist_entry_URLProtocol);
-      if (!protocolMatches) {
-        return false;
-      }
-
-      // check if the host matches
-      const hostMatches = startsWithUntilWildcardReplacement(redirectUrlHost, replacedRedirect_whitelist_entry_URLHost);
-      if (!hostMatches) {
-        return false;
-      }
-
-      // check if the pathname matches
-      const pathnameMatches = startsWithUntilWildcardReplacement(redirectUrlPathname, replacedRedirect_whitelist_entry_URLPathname);
-      if (!pathnameMatches) {
-        return false;
-      }
-
-      // check if the search matches
-      const searchMatches = startsWithUntilWildcardReplacement(redirectUrlSearch, replacedRedirect_whitelist_entry_URLSearch);
-      if (!searchMatches) {
-        return false;
-      }
-
-      // if all checks passed, then the redirect URL is allowed
-      return true;
     }
+
+    // check if the host matches
+    const hostMatches = startsWithUntilWildcardReplacement(redirectUrlHost, replacedRedirect_whitelist_entry_URLHost);
+    if (!hostMatches) {
+      return false;
+    }
+
+    // check if the pathname matches
+    const pathnameMatches = startsWithUntilWildcardReplacement(redirectUrlPathname, replacedRedirect_whitelist_entry_URLPathname);
+    if (!pathnameMatches) {
+      return false;
+    }
+
+    // check if the search matches
+    const searchMatches = startsWithUntilWildcardReplacement(redirectUrlSearch, replacedRedirect_whitelist_entry_URLSearch);
+    if (!searchMatches) {
+      return false;
+    }
+
+    // if all checks passed, then the redirect URL is allowed
+    return true;
   }
 }
 
