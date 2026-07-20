@@ -792,7 +792,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 	// Custom color chosen via the free color picker (hex input / hue slider / SV surface).
 	const [customColor, setCustomColor] = useState<string | null>(initialSelectedColor);
 	const customPreviewOptions = customColor
-		? { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(customColor)] }
+		? { ...config.options, [colorKey]: [stripHashPrefix(customColor)] }
 		: config.options;
 	const isCustomSelected =
 		!!customColor && initialSelectedColor?.toLowerCase() === customColor.toLowerCase();
@@ -837,7 +837,7 @@ const ColorPickerModalContent: React.FC<ColorPickerModalContentProps> = ({
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_preset_colors') : 'Presets'} />
 			{colors.map((color, index) => {
 				const groupPosition = getGroupPosition(colors.length, index);
-				const previewOptions = { ...(config.options ?? {}), [colorKey]: [stripHashPrefix(color)] };
+				const previewOptions = { ...config.options, [colorKey]: [stripHashPrefix(color)] };
 				const borderColor = myContrastColor(color, theme, isDark);
 				const colorCircle = (
 					<View
@@ -953,7 +953,7 @@ const ComponentPickerModalContent: React.FC<ComponentPickerModalContentProps> = 
 			{values.map((value, index) => {
 				const groupPosition = getGroupPosition(values.length, index);
 				const isNone = value === NONE_OPTION;
-				const previewOptions = { ...(config.options ?? {}) };
+				const previewOptions = { ...config.options };
 				if (isNone) {
 					// Remove the component key so the renderer sets probability=0 (hidden).
 					delete previewOptions[categoryKey];
@@ -1094,7 +1094,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			// In debug mode, skip applying hidden props so users can view and edit them freely.
 			if (debugMode) return cfg;
 			if (!hiddenProps || Object.keys(hiddenProps).length === 0) return cfg;
-			const newOptions = { ...(cfg.options ?? {}) };
+			const newOptions = { ...cfg.options };
 			for (const [key, value] of Object.entries(hiddenProps)) {
 				if (value !== undefined) {
 					newOptions[key] = [value];
@@ -1133,7 +1133,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	const probabilityKeys = useMemo(() => getStyleProbabilityKeys(config.style), [config.style]);
 
 	const handleOptionChange = (key: string, value: string) => {
-		const newOptions = { ...(config.options ?? {}) };
+		const newOptions = { ...config.options };
 		if (value === NONE_OPTION) {
 			// Remove the component key; the renderer will set probability=0 since key is absent.
 			delete newOptions[key];
@@ -1395,7 +1395,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 	return (
 		<View style={styles.content}>
 			{showApplyButton && onApply && (
-				<>
 					<SettingsList
 						title={translate ? translate('avatar_apply') : 'Apply'}
 						onPress={onApply}
@@ -1403,7 +1402,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 						iconBgColor={accentColor}
 						groupPosition="single"
 					/>
-				</>
 			)}
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_category') : 'Category'} />
@@ -1486,14 +1484,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							allowDisable={true}
 							disableLabel="Reset (undefined)"
 							onDisable={() => {
-								const newOptions = { ...(config.options ?? {}) };
+								const newOptions = { ...config.options };
 								delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_X];
 								handleChange({ ...config, options: newOptions });
 							}}
 							onSave={(newValue) => {
 								handleChange({
 									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(newValue)] },
+									options: { ...config.options, [AvatarPropKey.OpenPeeps.TRANSLATE_X]: [String(newValue)] },
 								});
 							}}
 						/>
@@ -1517,14 +1515,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							allowDisable={true}
 							disableLabel="Reset (undefined)"
 							onDisable={() => {
-								const newOptions = { ...(config.options ?? {}) };
+								const newOptions = { ...config.options };
 								delete newOptions[AvatarPropKey.OpenPeeps.TRANSLATE_Y];
 								handleChange({ ...config, options: newOptions });
 							}}
 							onSave={(newValue) => {
 								handleChange({
 									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.TRANSLATE_Y]: [String(newValue)] },
+									options: { ...config.options, [AvatarPropKey.OpenPeeps.TRANSLATE_Y]: [String(newValue)] },
 								});
 							}}
 						/>
@@ -1548,14 +1546,14 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 							allowDisable={true}
 							disableLabel="Reset (undefined)"
 							onDisable={() => {
-								const newOptions = { ...(config.options ?? {}) };
+								const newOptions = { ...config.options };
 								delete newOptions[AvatarPropKey.OpenPeeps.ROTATE];
 								handleChange({ ...config, options: newOptions });
 							}}
 							onSave={(newValue) => {
 								handleChange({
 									...config,
-									options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.ROTATE]: [String(newValue)] },
+									options: { ...config.options, [AvatarPropKey.OpenPeeps.ROTATE]: [String(newValue)] },
 								});
 							}}
 						/>
@@ -1578,7 +1576,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 									onToggle={() => {
 										handleChange({
 											...config,
-											options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.FLIP]: !isFlipEnabled },
+											options: { ...config.options, [AvatarPropKey.OpenPeeps.FLIP]: !isFlipEnabled },
 										});
 									}}
 								/>
@@ -1603,7 +1601,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 									onToggle={() => {
 										handleChange({
 											...config,
-											options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.CLIP]: !isClipEnabled },
+											options: { ...config.options, [AvatarPropKey.OpenPeeps.CLIP]: !isClipEnabled },
 										});
 									}}
 								/>
@@ -1650,7 +1648,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 											onSave={(newValue) => {
 												handleChange({
 													...config,
-													options: { ...(config.options ?? {}), [AvatarPropKey.OpenPeeps.SCALE]: [String(newValue)] },
+													options: { ...config.options, [AvatarPropKey.OpenPeeps.SCALE]: [String(newValue)] },
 												});
 											}}
 										/>
@@ -2855,7 +2853,7 @@ export const useAvatarEditorModal = () => {
 
 			// Apply hidden props to the initial config so forced values are enforced from the start.
 			if (!options?.debugMode && options?.hiddenProps) {
-				const newOptions = { ...(initialConfig.options ?? {}) };
+				const newOptions = { ...initialConfig.options };
 				for (const [key, value] of Object.entries(options.hiddenProps)) {
 					newOptions[key] = [value];
 				}

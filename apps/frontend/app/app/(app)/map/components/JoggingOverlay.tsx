@@ -94,7 +94,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
 	}
 
-	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+	const durationSeconds = (points.at(-1).timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;

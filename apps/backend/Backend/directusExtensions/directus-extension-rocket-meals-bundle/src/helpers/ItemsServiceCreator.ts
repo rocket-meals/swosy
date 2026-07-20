@@ -15,8 +15,8 @@ export type FileServiceFileStream = Partial<DatabaseTypes.DirectusFiles> & {
 };
 
 export type AbstractServiceOptions = {
-  knex?: Knex | undefined;
-  accountability?: Accountability | null | undefined;
+  knex?: Knex;
+  accountability?: Accountability | null;
   schema: SchemaOverview;
 };
 

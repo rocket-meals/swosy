@@ -16,7 +16,7 @@ interface CloudLayerProps {
 	opacity: number;
 }
 
-function CloudLayer({ fontSize, left, startFraction, duration, opacity }: CloudLayerProps) {
+function CloudLayer({ fontSize, left, startFraction, duration, opacity }: Readonly<CloudLayerProps>) {
 	const endY = -(fontSize + 40);
 	const startY = SCREEN_HEIGHT + fontSize;
 	// Initial position: somewhere within the screen based on startFraction

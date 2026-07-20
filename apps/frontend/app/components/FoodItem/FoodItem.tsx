@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -13,7 +13,6 @@ import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
-import { router } from 'expo-router';
 import { createSelector } from 'reselect';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import translations from '@/locales/translations.json';
@@ -320,7 +319,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
 
     return (
-      <>
         <CustomTooltip
           placement="top"
           trigger={triggerProps => (
@@ -485,7 +483,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
             </TooltipText>
           </TooltipContent>
         </CustomTooltip>
-      </>
     );
   },
   (prev, next) => 

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
 import { FoodOfferInfoItemProps } from './types';
@@ -9,7 +9,6 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import useFoodCard from '@/hooks/useFoodCard';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { useAppSelector } from '@/redux/hooks';
-import { View } from 'react-native';
 
 const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content, cardWidth, screenWidth }) => {
   const { theme } = useTheme();

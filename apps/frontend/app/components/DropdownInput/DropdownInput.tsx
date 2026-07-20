@@ -4,7 +4,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

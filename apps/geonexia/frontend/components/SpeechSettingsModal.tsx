@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
 import ModalTextInput from './ModalTextInput';
-import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
+import { updateSpeechSettings, SpeechSettingsState } from '../store/speechSettingsSlice';
 import type { SpeechRate } from '../store/speechSettingsSlice';
 import { speakAnnouncement, buildPeriodicAnnouncement, speechRateToNumber } from '../helpers/TTSHelper';
 import type { AppDispatch, RootState } from '../store/store';
@@ -85,7 +85,7 @@ function PaceMinSecModal({
 	primaryColor,
 	saveLabel = 'Speichern',
 	minTotalSeconds = 0,
-}: PaceMinSecModalProps) {
+}: Readonly<PaceMinSecModalProps>) {
 	const { theme } = useTheme();
 	const [mins, setMins] = useState(minutes);
 	const [secs, setSecs] = useState(seconds);
@@ -234,7 +234,7 @@ function PaceMinSecInput({
 	groupPosition,
 	primaryColor = HINT_COLOR,
 	minTotalSeconds = 0,
-}: PaceMinSecInputProps) {
+}: Readonly<PaceMinSecInputProps>) {
 	const { theme } = useTheme();
 	const { show, close } = useMyScrollViewModal();
 

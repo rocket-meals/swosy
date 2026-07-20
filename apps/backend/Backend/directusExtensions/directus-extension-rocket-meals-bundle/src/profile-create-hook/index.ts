@@ -1,6 +1,4 @@
-import { defineHook } from '@directus/extensions-sdk';
 import { EventHelper } from '../helpers/EventHelper';
-import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { CollectionNames } from 'repo-depkit-common';
 import {MyDefineHook} from "../helpers/MyDefineHook";

@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatisticsCardProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet, setSelectedFoodId }) => {
 	const { theme } = useTheme();

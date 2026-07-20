@@ -5,7 +5,7 @@
 // html2pdf.js only works in the browser
 
 import { PuppeteerGenerator } from './PuppeteerGenerator';
-import { PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
+import { PdfGeneratorOptions } from './PdfGeneratorInterfaces';
 import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
 
 export class PdfGeneratorHelper implements HtmlPdfGeneratorInterface {

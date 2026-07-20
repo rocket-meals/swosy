@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, Platform, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -18,7 +18,6 @@ import SettingsList from '@/components/SettingsList';
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
-import { RootState } from '@/redux/reducer';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const loadingState = {

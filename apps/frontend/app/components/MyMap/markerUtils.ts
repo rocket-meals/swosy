@@ -19,7 +19,7 @@ export function getMarkerLabelFromBuildingAlias(alias?: string | null): string {
 	const trimmed = alias.trim();
 	if (!trimmed) return '?';
 	if (trimmed.length <= 4) return trimmed;
-	const numberMatch = trimmed.match(/\d+[A-Za-z]*/);
+	const numberMatch = /\d+[A-Za-z]*/.exec(trimmed);
 	if (numberMatch) return numberMatch[0];
 	const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
 	if (words.length > 1) return words.map((w) => w[0].toUpperCase()).join('');

@@ -1,4 +1,4 @@
-import fs, { readFileSync } from 'fs';
+import fs, { readFileSync } from 'node:fs';
 import chardet from 'chardet';
 import { CSVExportParser } from '../../../food-sync-hook/CSVExportParser';
 import { HashHelper } from '../../../helpers/HashHelper';

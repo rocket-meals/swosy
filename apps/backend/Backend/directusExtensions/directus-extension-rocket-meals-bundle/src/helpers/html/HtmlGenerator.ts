@@ -1,5 +1,5 @@
 import { Liquid } from 'liquidjs';
-import path from 'path';
+import path from 'node:path';
 import fse from 'fs-extra';
 import { PathHelper } from '../PathHelper';
 import { MarkdownHelper } from './MarkdownHelper';

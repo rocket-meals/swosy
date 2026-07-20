@@ -1,4 +1,3 @@
-import { PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
 import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
 import { default as puppeteerCore } from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';

@@ -1,7 +1,7 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
 import Redis from 'ioredis';
 import ms from 'ms';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { Knex } from 'knex';
 import { RedirectWhitelistHelper } from '../helpers/RedirectWhitelistHelper';
 import { ApiContext } from '../helpers/ApiContext'; // Use Node.js crypto module for secure comparisons

@@ -5,7 +5,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import type { FormFieldStatusProps, AffixProps } from 'repo-depkit-common-ui';

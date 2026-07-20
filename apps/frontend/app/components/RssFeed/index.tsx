@@ -19,13 +19,13 @@ const parseFeed = (xml: string) => {
 	let match;
 	while ((match = itemRegex.exec(xml))) {
 		const itemXml = match[1];
-		const titleMatch = itemXml.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || itemXml.match(/<title>(.*?)<\/title>/);
-		const linkMatch = itemXml.match(/<link>(.*?)<\/link>/);
-		const descMatch = itemXml.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/) || itemXml.match(/<description>(.*?)<\/description>/);
-		const contentEncodedMatch = itemXml.match(/<content:encoded><!\[CDATA\[(.*?)\]\]><\/content:encoded>/) || itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/);
-		const enclosureMatch = itemXml.match(/<enclosure[^>]*url=['"](.*?)['"]/);
+		const titleMatch = /<title><!\[CDATA\[(.*?)\]\]><\/title>/.exec(itemXml) || /<title>(.*?)<\/title>/.exec(itemXml);
+		const linkMatch = /<link>(.*?)<\/link>/.exec(itemXml);
+		const descMatch = /<description><!\[CDATA\[(.*?)\]\]><\/description>/.exec(itemXml) || /<description>(.*?)<\/description>/.exec(itemXml);
+		const contentEncodedMatch = /<content:encoded><!\[CDATA\[(.*?)\]\]><\/content:encoded>/.exec(itemXml) || /<content:encoded>([\s\S]*?)<\/content:encoded>/.exec(itemXml);
+		const enclosureMatch = /<enclosure[^>]*url=['"](.*?)['"]/.exec(itemXml);
 		const htmlContent = (contentEncodedMatch ? contentEncodedMatch[1] : '') || (descMatch ? descMatch[1] : '');
-		const imageMatch = htmlContent.match(/<img[^>]*src=['"]([^'"]+)['"]/);
+		const imageMatch = /<img[^>]*src=['"]([^'"]+)['"]/.exec(htmlContent);
 		let image = '';
 		if (enclosureMatch) {
 			image = enclosureMatch[1];

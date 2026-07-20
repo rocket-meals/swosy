@@ -4,7 +4,6 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../workflows-runs-hook/WorkflowRunJobInterface';
 
 export class DemoNews_Parser implements NewsParserInterface {
-  constructor() {}
 
   async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
     return [this.getDemoNewsItem('1'), this.getDemoNewsItem('2'), this.getDemoNewsItem('3')];

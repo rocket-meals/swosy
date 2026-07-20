@@ -34,7 +34,7 @@ const collectibleEventsReducer = (state: CollectibleEventsState = initialState, 
                                 collectibleEventsDict: {
                                         ...state.collectibleEventsDict,
                                         [eventId]: {
-                                                ...(state.collectibleEventsDict?.[eventId] || {}),
+                                                ...state.collectibleEventsDict?.[eventId],
                                                 [key]: value,
                                         },
                                 },

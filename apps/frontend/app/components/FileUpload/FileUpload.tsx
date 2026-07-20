@@ -11,7 +11,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FileRelation, FormAnswer } from './types';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 
 /**
  *  "images" | "videos" | "livePhotos"

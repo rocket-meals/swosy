@@ -6,8 +6,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from 'expo-router';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
@@ -70,12 +69,12 @@ function ImportContent({
 	onImportFile,
 	onCancel,
 	theme,
-}: {
+}: Readonly<{
 	onImport: (code: string) => void;
 	onImportFile: () => void;
 	onCancel: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	const [code, setCode] = useState('');
 	return (
 		<View style={styles.importContainer}>
@@ -127,12 +126,12 @@ function ManualActivityDurationContent({
 	onSave,
 	onClose,
 	theme,
-}: {
+}: Readonly<{
 	route: SavedRoute;
 	onSave: (activity: SavedActivity) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	const [hours, setHours] = useState('');
 	const [minutes, setMinutes] = useState('');
 	const [seconds, setSeconds] = useState('');
@@ -297,12 +296,12 @@ function RouteSelectionContent({
 	onSelect,
 	onClose,
 	theme,
-}: {
+}: Readonly<{
 	routes: SavedRoute[];
 	onSelect: (route: SavedRoute) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	if (routes.length === 0) {
 		return (
 			<View style={styles.manualContainer}>

@@ -6,8 +6,7 @@ import {
 	SettingsListGroupTitle,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
 import { loadActivities } from '../../helpers/ActivityStorage';
 import SettingsListRoute from '../../components/SettingsListRoute';

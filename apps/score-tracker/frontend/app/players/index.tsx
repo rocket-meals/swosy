@@ -50,12 +50,12 @@ function ExportFriendsRow({
 	label,
 	nativeID,
 	groupPosition,
-}: {
+}: Readonly<{
 	friends: Friend[];
 	label: string;
 	nativeID?: string;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-}) {
+}>) {
 	const handleExport = useCallback(async () => {
 		await Clipboard.setStringAsync(JSON.stringify(friends, null, 2));
 	}, [friends]);
@@ -76,10 +76,10 @@ function ExportFriendsRow({
 function ImportFriendsRow({
 	nativeID,
 	groupPosition,
-}: {
+}: Readonly<{
 	nativeID?: string;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
-}) {
+}>) {
 	const dispatch = useDispatch<AppDispatch>();
 
 	return (
@@ -114,7 +114,7 @@ function formatDate(timestamp: number): string {
 // leaves the friends list. Rendered as its own component so it re-renders
 // from its own `useSelector` subscriptions while the modal stays open.
 
-function FriendEditContent({ friendId, onClose }: { friendId: string; onClose: () => void }) {
+function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; onClose: () => void }>) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const friend = useSelector((state: RootState) => state.friends.friends.find((f) => f.id === friendId));

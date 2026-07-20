@@ -9,7 +9,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FORM_FILTER } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { myContrastColor } from '@/helper/ColorHelper';
 

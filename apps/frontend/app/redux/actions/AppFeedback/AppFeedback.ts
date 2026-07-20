@@ -1,6 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 	constructor(client?: any) {
@@ -17,7 +16,7 @@ export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 			limit: 100,
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -26,7 +25,7 @@ export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 

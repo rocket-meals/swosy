@@ -24,7 +24,6 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { TranslationKeys } from '@/locales/keys';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';

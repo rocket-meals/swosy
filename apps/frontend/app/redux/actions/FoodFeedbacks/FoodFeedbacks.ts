@@ -1,6 +1,6 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
+ // API client
 
 export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeedbacks> {
 	constructor(client?: any) {
@@ -14,7 +14,7 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			limit: -1, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 	// Fetch all food feedbacks with optional query overrides
@@ -33,7 +33,7 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			},
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -43,7 +43,7 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 
@@ -68,7 +68,7 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			},
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 

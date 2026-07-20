@@ -13,7 +13,6 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
-import { RootState } from '@/redux/reducer';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	const { translate } = useLanguage();

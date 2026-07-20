@@ -21,7 +21,7 @@ import { CollectibleAt, StringHelper } from 'repo-depkit-common';
 
 const extractTextAndLink = (description: string) => {
 	// Remove unintended spaces between `]` and `(`
-	const cleanedDescription = StringHelper.replaceAllWithOptions({ str: description, find: ']\\s+\\(', replace: '](' });
+	const cleanedDescription = StringHelper.replaceAllWithOptions({ str: description, find: String.raw`]\s+\(`, replace: '](' });
 
 	const regex = /\[(.*?)\]\((.*?)\)/g;
 	const match = regex.exec(cleanedDescription);

@@ -43,7 +43,6 @@ const Index = () => {
 	}, []);
 
 	return (
-		<>
 			<ScrollView
 				style={{
 					...styles.container,
@@ -101,7 +100,7 @@ const Index = () => {
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						opacity: weekPlan?.selectedCanteen?.alias ? 1 : 0.5,
 					}}
-					disabled={weekPlan?.selectedCanteen?.alias ? false : true}
+					disabled={!weekPlan?.selectedCanteen?.alias}
 					onPress={() => {
 						if (weekPlan?.selectedCanteen?.alias) {
 							router.navigate('/list-week-screen');
@@ -116,7 +115,6 @@ const Index = () => {
 					</View>
 				</TouchableOpacity>
 			</ScrollView>
-		</>
 	);
 };
 

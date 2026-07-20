@@ -1,6 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class FoodAttributesHelper extends CollectionHelper<DatabaseTypes.FoodsAttributes> {
 	constructor(client?: any) {
@@ -13,7 +12,7 @@ export class FoodAttributesHelper extends CollectionHelper<DatabaseTypes.FoodsAt
 			limit: -1,
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -22,7 +21,7 @@ export class FoodAttributesHelper extends CollectionHelper<DatabaseTypes.FoodsAt
 			fields: ['*, translations.*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 }

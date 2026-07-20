@@ -1,5 +1,5 @@
 // https://docs.directus.io/extensions/hooks.html#available-events
-import path from 'path';
+import path from 'node:path';
 import fse from 'fs-extra';
 
 export class TestArtifacts {

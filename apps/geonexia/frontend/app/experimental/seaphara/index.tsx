@@ -293,7 +293,7 @@ export default function SeapharaScreen() {
 				joystickIntervalRef.current = setInterval(() => {
 					const pos = boatPositionRef.current;
 					const { x, y } = knobOffsetRef.current;
-					const dist = Math.sqrt(x * x + y * y);
+					const dist = Math.hypot(x, y);
 					if (dist < JOYSTICK_MIN_DISPLACEMENT) return;
 
 					const ratio = Math.min(dist / JOYSTICK_MAX_DISPLACEMENT, 1.0);
@@ -332,7 +332,7 @@ export default function SeapharaScreen() {
 				}, MOVE_INTERVAL_MS);
 			},
 			onPanResponderMove: (_, gestureState) => {
-				const dist = Math.sqrt(gestureState.dx ** 2 + gestureState.dy ** 2);
+				const dist = Math.hypot(gestureState.dx, gestureState.dy);
 				let cx = gestureState.dx;
 				let cy = gestureState.dy;
 				if (dist > JOYSTICK_MAX_DISPLACEMENT) {

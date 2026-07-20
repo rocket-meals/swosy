@@ -12,7 +12,7 @@ export class OrganizationsHelper extends CollectionHelper<DatabaseTypes.Organiza
 			limit: -1,
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 }

@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
 import * as Haptics from 'expo-haptics';
 
 import { RootState } from '@/redux/reducer';

@@ -9,7 +9,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { DetailsProps } from './types';
 import AttributeItem from './AttributeItem';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';

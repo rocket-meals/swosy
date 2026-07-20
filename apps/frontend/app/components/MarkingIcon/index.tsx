@@ -6,7 +6,6 @@ import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import styles from './styles';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { RootState } from '@/redux/reducer';
 import { useAppSelector } from '@/redux/hooks';
 
 interface MarkingIconProps {

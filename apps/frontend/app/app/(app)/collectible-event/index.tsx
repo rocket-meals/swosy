@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes, DateHelper } from 'repo-depkit-common';
+import { COLLECTABLE_AT_FIELDS, DatabaseTypes, DateHelper } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { getDescriptionFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';

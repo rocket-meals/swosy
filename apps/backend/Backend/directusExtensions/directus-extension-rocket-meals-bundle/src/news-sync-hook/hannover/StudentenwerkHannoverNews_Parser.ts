@@ -15,7 +15,6 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
   static readonly newsUrl = `${StudentenwerkHannoverNews_Parser.baseUrl}/unternehmen/news`;
   static readonly newsDetailArticleUrlStart = '/unternehmen/news';
 
-  constructor() {}
 
   async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
     let realNewsItems = await this.getRealNewsItems(logger, limitAmountNews);
@@ -88,7 +87,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
       data.push({
         basicNews: {
-          external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: '\\W+', replace: '_' }),
+          external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: String.raw`\W+`, replace: '_' }),
           image_remote_url: imageUrl,
           alias: header,
           date: date,

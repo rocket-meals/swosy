@@ -57,7 +57,7 @@ const formReducer = (state = initialState, actions: any) => {
 			return {
 				...state,
 				cachedFormData: {
-					...(state.cachedFormData || {}),
+					...state.cachedFormData,
 					[form_id]: { form, submissions, answers },
 				},
 			};
@@ -73,7 +73,7 @@ const formReducer = (state = initialState, actions: any) => {
 			return {
 				...state,
 				cachedForms: {
-					...(state.cachedForms || {}),
+					...state.cachedForms,
 					[category_id]: forms,
 				},
 			};

@@ -18,8 +18,8 @@
  *   so full ImageMagick processing is not required here.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '..');
 

@@ -10,7 +10,6 @@ import { useRouter } from 'expo-router';
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 
 const Index = () => {
 	useSetPageTitle('FoodPlan:Week');

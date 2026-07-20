@@ -7,11 +7,11 @@ type ContentPatterns = {
 	heading: RegExp;
 };
 
-const LINK_SCHEME_PATTERN = `(?:https?:\\/\\/|${UriScheme.GEO}|${UriScheme.MAPS}|${UriScheme.TEL})`;
+const LINK_SCHEME_PATTERN = String.raw`(?:https?:\/\/|${UriScheme.GEO}|${UriScheme.MAPS}|${UriScheme.TEL})`;
 
 export const markdownContentPatterns: ContentPatterns = {
-	email: new RegExp(`\\[([^\\]]+)]\\((${UriScheme.MAILTO}[^\\)]+)\\)`),
-	link: new RegExp(`\\[([^\\]]+)]\\((${LINK_SCHEME_PATTERN}[^\\)]+)\\)`),
+	email: new RegExp(String.raw`\[([^\]]+)]\((${UriScheme.MAILTO}[^\)]+)\)`),
+	link: new RegExp(String.raw`\[([^\]]+)]\((${LINK_SCHEME_PATTERN}[^\)]+)\)`),
 	image: /!\[([^\]]*)]\(([^)]+)\)/,
 	heading: /^#{1,6}\s*(.*)$/,
 };

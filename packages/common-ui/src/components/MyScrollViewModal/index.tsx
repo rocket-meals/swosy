@@ -160,8 +160,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 	if (ListHeaderComponent) {
 		scrollParts.push(<View key="__listHeader">{ListHeaderComponent}</View>);
 	}
-	scrollParts.push(<View key="__children">{children}</View>);
-	scrollParts.push(<View key="__footer">{footerComponent}</View>);
+	scrollParts.push(<View key="__children">{children}</View>, <View key="__footer">{footerComponent}</View>);
 
 	return (
 		<View style={[containerStyle, webFlex]}>

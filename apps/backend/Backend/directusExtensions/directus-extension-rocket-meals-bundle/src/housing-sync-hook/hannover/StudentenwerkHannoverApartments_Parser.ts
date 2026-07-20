@@ -9,7 +9,6 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
   // https://www.studentenwerk-hannover.de/wohnen/wohnhaeuser
   static readonly apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
 
-  constructor() {}
 
   async getApartmentList(): Promise<ApartmentsForParser[]> {
     return await this.getRealItems();
@@ -166,14 +165,14 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
 
         data.push({
           basicData: {
-            external_identifier: 'apartment_' + StringHelper.replaceAllWithOptions({ str: name, find: '\\W+', replace: '_' }),
+            external_identifier: 'apartment_' + StringHelper.replaceAllWithOptions({ str: name, find: String.raw`\W+`, replace: '_' }),
             available_from: null,
             handicapped_accessible: false,
             family_friendly: false,
             singleflat: false,
           },
           buildingData: {
-            external_identifier: 'building_' + StringHelper.replaceAllWithOptions({ str: name, find: '\\W+', replace: '_' }),
+            external_identifier: 'building_' + StringHelper.replaceAllWithOptions({ str: name, find: String.raw`\W+`, replace: '_' }),
             url: apartmentUrl,
             alias: name,
             image_remote_url: imageUrl,

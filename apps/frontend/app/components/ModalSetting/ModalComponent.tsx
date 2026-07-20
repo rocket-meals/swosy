@@ -6,7 +6,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { useAppSelector } from '@/redux/hooks';
 import { OverlayBaseProps } from '@/components/DebugView';
 

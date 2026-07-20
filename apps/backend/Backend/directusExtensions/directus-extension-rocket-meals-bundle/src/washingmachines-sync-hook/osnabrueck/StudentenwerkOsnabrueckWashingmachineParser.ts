@@ -15,7 +15,6 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
   static readonly url = 'https://swic.sw-os.de/smartWASH-SimpleWebClient/';
   static readonly getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + 'allTerminals';
 
-  constructor() {}
 
   static getWasherExternalIdentifier(terminalNr: number, automateNr: number): string {
     return 'osnabrueck_' + terminalNr + '_' + automateNr;
@@ -148,7 +147,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
           let statusText = parsedHtml(columns[2]).text().toLowerCase(); // Frei / Belegt
           let expectedFreeTime = Number.parseInt(parsedHtml(columns[3]).text());
 
-          let intercardStatus: boolean = statusText === 'belegt' ? true : false;
+          let intercardStatus: boolean = statusText === 'belegt';
 
           // Add washer info to the answer array
           let washer: IntercardWasher = {

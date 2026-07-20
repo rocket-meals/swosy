@@ -1,7 +1,6 @@
 import { itemStatus } from '@/constants/Constants';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class PopupEventsHelper extends CollectionHelper<DatabaseTypes.PopupEvents> {
 	constructor(client?: any) {

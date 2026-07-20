@@ -5,7 +5,6 @@ import MarkdownIt from 'markdown-it';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import RenderHtml, { CustomBlockRenderer, CustomMixedRenderer, CustomTextualRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
 import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
@@ -23,7 +22,7 @@ export interface MyMarkdownProps {
 // parse as a link and falls through as literal text. Location links are the
 // only ones content authors realistically write with a space in the
 // coordinates, so strip whitespace from just those destinations before parsing.
-const LOCATION_LINK_DESTINATION_PATTERN = new RegExp(`\\((${UriScheme.GEO}|${UriScheme.MAPS}|latlon:)([^)]*)\\)`, 'gi');
+const LOCATION_LINK_DESTINATION_PATTERN = new RegExp(String.raw`\((${UriScheme.GEO}|${UriScheme.MAPS}|latlon:)([^)]*)\)`, 'gi');
 
 export const sanitizeLocationLinkWhitespace = (sourceContent: string) =>
 	sourceContent.replace(LOCATION_LINK_DESTINATION_PATTERN, (_match, scheme, coordinates) => `(${scheme}${coordinates.replace(/\s+/g, '')})`);
@@ -31,8 +30,8 @@ export const sanitizeLocationLinkWhitespace = (sourceContent: string) =>
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
-		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '\\n', replace: '\n' });
-		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '\\r\\n', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: String.raw`\n`, replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: String.raw`\r\n`, replace: '\n' });
 		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<br/>', replace: '\n' });
 		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '</br>', replace: '\n' });
 		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<br>', replace: '\n' });

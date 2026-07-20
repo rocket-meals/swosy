@@ -57,7 +57,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			getLabelEntries(label?.id);
 			dispatch({
 				type: result ? UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES : DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
-				payload: result ? result : labelData.id,
+				payload: result || labelData.id,
 			});
 		} catch (error) {
 			if ((error as any)?.status === 403) {

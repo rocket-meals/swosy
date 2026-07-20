@@ -1,5 +1,4 @@
 import { ApartmentParserInterface, ApartmentsForParser } from './ApartmentParserInterface';
-import { DatabaseTypes } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 

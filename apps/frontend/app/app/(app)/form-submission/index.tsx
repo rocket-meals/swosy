@@ -398,7 +398,7 @@ const Index = () => {
 				let value;
 
 				if (custom_type === 'value_custom') {
-					value = defaultValue ? defaultValue : null;
+					value = defaultValue || null;
 				} else if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
 					value = defaultValue ? String(defaultValue)?.replace('.', ',') : null;
 				} else if (custom_type === 'value_boolean') {
@@ -500,10 +500,12 @@ const Index = () => {
 					dateObj = parse(value, 'dd.MM.yyyy', new Date());
 					break;
 
-				case FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM: // Convert HH:MM → ISO (Assuming today's date)
+				case FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM: {
+					// Convert HH:MM → ISO (Assuming today's date)
 					const today = format(new Date(), 'yyyy-MM-dd');
 					dateObj = parse(`${today} ${value}`, 'yyyy-MM-dd HH:mm', new Date());
 					break;
+				}
 
 				case FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP: // Convert DD.MM.YYYY HH:MM:SS → ISO
 					dateObj = parse(value, 'dd.MM.yyyy HH:mm:ss', new Date());

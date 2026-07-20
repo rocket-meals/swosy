@@ -56,12 +56,27 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Make this public static property readonly. | 242 von 242 (234 per `readonly`; 8 neu zugewiesene Properties auf `private static` bzw. Getter/Setter umgestellt) | #3938 |
 | 2026-07-20 | Prefer using an optional chain expression instead. | 81 von 81 (per Codemod + manuelle Fixes für mehrzeilige JSX-Guards und `!a \|\| a.x !== y`-Muster) | #3942 |
 | 2026-07-20 | Redundant double negation. | 62 von 62 (per Codemod) | #3942 |
+| 2026-07-20 | Remove this unused import of 'X'. | 124 von 124 | #3946 |
+| 2026-07-20 | Do not call `Array#push()` multiple times. | 60 von 60 (AST-Codemod, Kommentare zwischen pushes bleiben erhalten) | #3946 |
+| 2026-07-20 | Mark the props of the component as read-only. | 58 von 58 (`Readonly<Props>`) | #3946 |
+| 2026-07-20 | The empty object is useless. | 53 von 53 (`...(x ?? {})` → `...x`) | #3946 |
+| 2026-07-20 | Prefer `node:X` over `X`. | 49 von 51 (2x `node:buffer` im Expo-Frontend zurückgenommen — Metro kann `node:`-Imports nicht auflösen) | #3946 |
+| 2026-07-20 | 'X' imported multiple times. | 32 von 32 (Import-Merges) | #3946 |
+| 2026-07-20 | `String.raw` should be used. | 24 von 24 | #3946 |
+| 2026-07-20 | Prefer `.at(…)` over `[….length - N]`. | 24 von 24 (an strikt typisierten Stellen mit `!`) | #3946 |
+| 2026-07-20 | Unnecessary conditional for default assignment. | 21 von 21 (`a ? a : b` → `a \|\| b`) | #3946 |
+| 2026-07-20 | Use the "RegExp.exec()" method instead. | 20 von 20 (nur Regexe ohne `g`-Flag) | #3946 |
+| 2026-07-20 | Prefer `String#replaceAll()`. | 10 von 10 | #3946 |
+| 2026-07-20 | Kleintypen: Fragment (7), case-Block (7), useless constructor (6), redundantes `\| undefined` (6), unnötige Escapes (6), Boolean-Literal-Ternary (5), `Math.hypot` (5), `Number.parseInt` (3), `Date.now()` (3) | 48 von 48 | #3946 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
-**Übersprungen (Stand 2026-07-20):** „Cognitive Complexity" (113x) und
-„Move this component definition out of the parent component" (97x) sind keine
-mechanischen Fixes — pro Vorkommen ist ein individuelles Refactoring nötig.
+**Übersprungen (Stand 2026-07-20, individuelle Refactorings statt mechanischer Fixes):**
+„Cognitive Complexity" (113x), „Move this component definition out of the parent
+component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
+(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
+should be last" (20x, ändert Aufrufer), „Add an explicit return" (20x), `??=` (18x),
+`await` auf Non-Promise (16x), Parameter-Reihenfolge (16x), for-of (12x).
 Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
 
 ## Hinweise

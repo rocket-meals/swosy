@@ -6,7 +6,7 @@
  *   yarn maestro:generate
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import { generateMaestroTests } from 'repo-depkit-maestro-framework';
 
 generateMaestroTests(

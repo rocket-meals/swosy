@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { CollectibleAt, CollectibleAtType } from 'repo-depkit-common';
+import { CollectibleAtType } from 'repo-depkit-common';
 
 import CollectibleItem from './index';
 

@@ -23,7 +23,7 @@ import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
-import { computeEdgesFromRoutePoints, computeEdgesFromHexTiles, computeHexBounds } from '../../helpers/RouteDisplayHelper';
+import { computeEdgesFromRoutePoints, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import ModalTextInput from '../../components/ModalTextInput';
 import type { RootState, AppDispatch } from '../../store/store';
@@ -136,7 +136,7 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 			speedsKmh.push(segSpeedKmh);
 		}
 	}
-	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const windowedSpeeds: number[] = [];
 	let windowSum = 0;
@@ -200,7 +200,7 @@ function formatSpeedValue(kmh: number): string {
 
 const QR_MAX_BYTES = 2953;
 
-function ShareContent({ activity, theme }: { activity: SavedActivity; theme: ReturnType<typeof useTheme>['theme'] }) {
+function ShareContent({ activity, theme }: Readonly<{ activity: SavedActivity; theme: ReturnType<typeof useTheme>['theme'] }>) {
 	const compact = JSON.stringify(activity);
 	const pretty = JSON.stringify(activity, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
@@ -260,11 +260,11 @@ function DeleteConfirmContent({
 	onConfirm,
 	onCancel,
 	theme,
-}: {
+}: Readonly<{
 	onConfirm: () => void;
 	onCancel: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	return (
 		<View style={styles.deleteConfirmContainer}>
 			<Text style={[styles.deleteConfirmText, { color: theme.screen.text }]}>
@@ -292,12 +292,12 @@ function TemperatureInputContent({
 	onSave,
 	onClose,
 	theme,
-}: {
+}: Readonly<{
 	currentValue: number | null;
 	onSave: (value: string) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	const [text, setText] = useState(currentValue != null ? String(currentValue) : '');
 	return (
 		<View style={{ paddingTop: 4, gap: 12 }}>
@@ -335,12 +335,12 @@ function WeatherTypePickerContent({
 	onSelect,
 	onClose,
 	theme,
-}: {
+}: Readonly<{
 	currentValue: WeatherType | null;
 	onSelect: (type: WeatherType | null) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	return (
 		<View style={{ paddingTop: 4, gap: 8 }}>
 			{WEATHER_TYPES.map((w) => (
@@ -379,7 +379,7 @@ type RouteAssignmentProps = {
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
-function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
+function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: Readonly<RouteAssignmentProps>) {
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 	const [routeName, setRouteName] = useState('');
 	const { showAlert } = useGeonexiaAlert();

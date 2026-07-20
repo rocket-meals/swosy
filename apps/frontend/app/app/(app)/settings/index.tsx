@@ -21,15 +21,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_CONSENT } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
-import { sqliteKeyValueStorage } from '@/redux/storage/sqliteStorage';
+import { sqliteKeyValueStorage, migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
-import { RootState } from '@/redux/reducer';
+import { CollectibleAt, DatabaseTypes, ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -54,10 +53,8 @@ import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollvie
 import useCanteenVisitsVisibilityModal from '@/hooks/useCanteenVisitsVisibilityModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
-import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MyAvatar, SettingsListSqliteStorage } from 'repo-depkit-common-ui';
 import { formatBytes, getAsyncStorageUsage, clearAsyncStorage, AsyncStorageKeyUsage } from '@/helper/AsyncStorageUsageHelper';
-import { migrateAsyncStorageToSqlite } from '@/redux/storage/sqliteStorage';
 import { FriendsContent } from '@/components/FriendsContent';
 import { ComponentIds } from '@/constants/ComponentIds';
 import { useAvatarProfileEditor, AVATAR_BACKGROUND, AVATAR_SETTINGS_ROW_SIZE } from '@/hooks/useAvatarProfileEditor';
@@ -604,7 +601,8 @@ const Settings = () => {
 		const groupStyle = { gap: 0 } as const;
 
 		// === Personalization ===
-		rows.push({
+		rows.push(
+			{
 			key: 'section-account',
 			element: (
 				<View style={sectionStyle}>
@@ -658,10 +656,9 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
-
-		// === Canteen Usage ===
-		rows.push({
+		},
+			// === Canteen Usage ===
+			{
 			key: 'section-canteen',
 			element: (
 				<View style={sectionStyle}>
@@ -694,7 +691,8 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
+		},
+		);
 
 		// === App Settings ===
 		let colorSchemeValue: string;
@@ -713,7 +711,8 @@ const Settings = () => {
 		} else {
 			drawerPositionValue = translate(TranslationKeys.drawer_config_position_system);
 		}
-		rows.push({
+		rows.push(
+			{
 			key: 'section-app-settings',
 			element: (
 				<View style={sectionStyle}>
@@ -726,10 +725,9 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
-
-		// === Map settings ===
-		rows.push({
+		},
+			// === Map settings ===
+			{
 			key: 'section-map-settings',
 			element: (
 				<View style={sectionStyle}>
@@ -750,7 +748,8 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
+		},
+		);
 
 		// === Housing (conditional) ===
 		if (appSettings?.housing_enabled) {
@@ -799,7 +798,8 @@ const Settings = () => {
 		}
 
 		// === App Management ===
-		rows.push({
+		rows.push(
+			{
 			key: 'section-management',
 			element: (
 				<View style={sectionStyle}>
@@ -831,10 +831,9 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
-
-		// === Account (Login/Logout, Delete) ===
-		rows.push({
+		},
+			// === Account (Login/Logout, Delete) ===
+			{
 			key: 'section-account-actions',
 			element: (
 				<View style={sectionStyle}>
@@ -847,10 +846,9 @@ const Settings = () => {
 					</View>
 				</View>
 			),
-		});
-
-		// === Footer ===
-		rows.push({
+		},
+			// === Footer ===
+			{
 			key: 'footer',
 			element: (
 				<TouchableOpacity
@@ -874,10 +872,9 @@ const Settings = () => {
 					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo, customerConfig)}</Text>
 				</TouchableOpacity>
 			),
-		});
-
-		// === Debug View ===
-		rows.push({
+		},
+			// === Debug View ===
+			{
 			key: 'debug-view',
 			element: (
 				<DebugView
@@ -1000,10 +997,9 @@ const Settings = () => {
 					</View>
 				</DebugView>
 			),
-		});
-
-		// === Version ===
-		rows.push({
+		},
+			// === Version ===
+			{
 			key: 'version',
 			element: (
 				<SettingsList
@@ -1015,13 +1011,13 @@ const Settings = () => {
 					groupPosition="single"
 				/>
 			),
-		});
-
-		// === Collectible Spot ===
-		rows.push({
+		},
+			// === Collectible Spot ===
+			{
 			key: 'collectible-spot',
 			element: <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings} />,
-		});
+		},
+		);
 
 		return rows;
 	}, [

@@ -1,6 +1,5 @@
 import { Accountability } from '@directus/types';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { MyDatabaseHelper } from './MyDatabaseHelper';
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
 
 const HELPER_NAME = 'UserHelper';

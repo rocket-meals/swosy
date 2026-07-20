@@ -1,4 +1,3 @@
-import { defineHook } from '@directus/extensions-sdk';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
 import { FormSyncHannover } from './customers/hannover/FormSyncHannover';
 import { registerHookToCreateFormAnswersForFormSubmission } from './RegisterHookCreateFormSubmissionsFormAnswers';

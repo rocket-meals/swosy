@@ -73,10 +73,10 @@ const Index = () => {
 					const title = attr?.translations ? getFoodAttributesTranslation(attr?.translations, language) : '';
 					return {
 						id: attr?.id,
-						alias: title ? title : attr?.alias,
+						alias: title || attr?.alias,
 						sort: attr.sort || index + 1,
 						manualSort: undefined,
-						selected: attr.status === 'published' ? true : false,
+						selected: attr.status === 'published',
 					};
 				})
 			);
@@ -197,7 +197,6 @@ const Index = () => {
 	}, []);
 
 	return (
-		<>
 			<ScrollView
 				style={{
 					...styles.container,
@@ -330,7 +329,7 @@ const Index = () => {
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						opacity: foodPlan?.selectedCanteen?.alias ? 1 : 0.5,
 					}}
-					disabled={foodPlan?.selectedCanteen?.alias ? false : true}
+					disabled={!foodPlan?.selectedCanteen?.alias}
 					onPress={() => {
 						if (foodPlan?.selectedCanteen?.alias) {
 							const selectedAttributes = foodAttributes
@@ -369,7 +368,6 @@ const Index = () => {
 					</View>
 				</TouchableOpacity>
 			</ScrollView>
-		</>
 	);
 };
 

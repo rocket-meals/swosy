@@ -4,7 +4,6 @@
 import { configureStore } from '@/redux/store';
 // import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 // import {useSynchedRolesDict} from "@/states/SynchedRoles";
 // import {useIsDemo} from "@/states/SynchedDemo";
 // import {RoleHelper} from "@/helper/role/RoleHelper";

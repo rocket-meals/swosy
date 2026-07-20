@@ -8,7 +8,7 @@ const defaultMaxManagerConnectorConfig: MaxManagerConnectorConfig = {
 export class FoodAndMarkingWebParserMuenster extends MaxManagerConnector {
 
   constructor(customMaxManagerConnectorConfig?: MaxManagerConnectorConfig) {
-    super(customMaxManagerConnectorConfig ? customMaxManagerConnectorConfig : defaultMaxManagerConnectorConfig);
+    super(customMaxManagerConnectorConfig || defaultMaxManagerConnectorConfig);
   }
 
 }

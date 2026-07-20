@@ -1,7 +1,7 @@
 import { itemStatus } from '@/constants/Constants';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
+ // API client
 
 export class FoodOffersCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodoffersCategories> {
 	constructor(client?: any) {
@@ -19,7 +19,7 @@ export class FoodOffersCategoriesHelper extends CollectionHelper<DatabaseTypes.F
 			},
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -28,7 +28,7 @@ export class FoodOffersCategoriesHelper extends CollectionHelper<DatabaseTypes.F
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 

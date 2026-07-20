@@ -14,7 +14,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet, selectedFoodId, handleFetch, fileName }) => {

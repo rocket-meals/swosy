@@ -189,7 +189,7 @@ export default function Login() {
 		if (!content) return ['', ''];
 
 		const imageRegex = /!\[.*?\]\((.*?)\)/;
-		const imageMatch = content.match(imageRegex);
+		const imageMatch = imageRegex.exec(content);
 		const imageUrl = imageMatch ? imageMatch[1] : '';
 
 		const description = content.replace(imageRegex, '').trim();

@@ -61,7 +61,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 	const isFavorite = isBuildingFavorite(campus?.id ?? '');
 
 	const defaultImage = useMemo(() => getImageUrl(projectLogo ?? ''), [projectLogo]);
-	const campus_area_color = campusAreaColor ? campusAreaColor : primaryColor;
+	const campus_area_color = campusAreaColor || primaryColor;
 	const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
 
 	const handleNavigation = useCallback(

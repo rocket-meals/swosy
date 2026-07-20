@@ -217,7 +217,7 @@ interface WeekRowProps {
   isPast?: boolean;
 }
 
-function WeekRow({ weekNum, challenge, groupPosition, showSeparator, isDebug, isPast }: WeekRowProps) {
+function WeekRow({ weekNum, challenge, groupPosition, showSeparator, isDebug, isPast }: Readonly<WeekRowProps>) {
   const { label, iconName, color } = challengeConfig(challenge.type);
   const iconColor = isPast ? COLOR_PAST : color;
   const titleText = isDebug

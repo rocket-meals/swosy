@@ -1320,7 +1320,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
 				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
 				Object.entries(GROUP_MAP).forEach(([key, group]) => {
-					if (!(showSettingsRef.current[key] ?? (key === 'barriers' ? false : true))) {
+					if (!(showSettingsRef.current[key] ?? key !== 'barriers')) {
 						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
 					}
 				});

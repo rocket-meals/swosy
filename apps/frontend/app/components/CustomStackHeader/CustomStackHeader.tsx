@@ -13,7 +13,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
 import { AppScreens } from 'repo-depkit-common';
-import IconButton from '../UI/IconButton';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();

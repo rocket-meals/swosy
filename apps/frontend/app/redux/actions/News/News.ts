@@ -1,6 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class NewsHelper extends CollectionHelper<DatabaseTypes.News> {
 	constructor(client?: any) {
@@ -16,7 +15,7 @@ export class NewsHelper extends CollectionHelper<DatabaseTypes.News> {
 			limit: 100, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -26,7 +25,7 @@ export class NewsHelper extends CollectionHelper<DatabaseTypes.News> {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 }

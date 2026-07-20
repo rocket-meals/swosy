@@ -196,7 +196,7 @@ const FeedbackScreen = () => {
 				inputStyle: multiline ? { height: 150 } : undefined,
 				checkTextInput: isEmailField
 					? value => {
-							const cleanedEmail = StringHelper.replaceAllWithOptions({ str: value, find: '\\s+', replace: '' });
+							const cleanedEmail = StringHelper.replaceAllWithOptions({ str: value, find: String.raw`\s+`, replace: '' });
 							if (cleanedEmail.trim().length === 0) {
 								return { isValid: true, value: '' };
 							}

@@ -1,7 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { getImageUrl } from '@/constants/HelperFunctions';
 import MyImage from '@/components/MyImage';
 import styles from '../styles';
 

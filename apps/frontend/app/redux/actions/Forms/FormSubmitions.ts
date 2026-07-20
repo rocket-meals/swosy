@@ -1,6 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
-import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class FormsSubmissionsHelper extends CollectionHelper<DatabaseTypes.FormSubmissions> {
 	constructor(client?: any) {
