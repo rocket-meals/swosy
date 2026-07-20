@@ -104,54 +104,63 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		return () => subscription?.remove();
 	}, []);
 
+	let signatureContent: React.ReactNode;
+	if (value && typeof value === 'string' && value?.startsWith('https')) {
+		signatureContent = (
+			<View style={styles.fileContainer}>
+				{authToken !== undefined && (
+					<Image
+						key={authToken || 'no-auth'}
+						source={getImageSource(value)}
+						style={{
+							...styles.filePreview,
+							width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
+						}}
+					/>
+				)}
+			</View>
+		);
+	} else if (isWeb) {
+		signatureContent = (
+			<SignatureCanvas
+				ref={signatureRef}
+				onEnd={handleSave}
+				descriptionText="Sign here"
+				penColor={'#000000'}
+				clearText="Clear"
+				confirmText="Save"
+				backgroundColor={'#ffffff'}
+				webStyle={styles.signaturePad}
+				autoClear={false}
+				canvasProps={{
+					width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
+					height: 250,
+				}}
+				disabled={isDisabled}
+			/>
+		);
+	} else {
+		signatureContent = (
+			<SignatureScreen
+				ref={signatureRef}
+				onBegin={handleBegin}
+				onEnd={handleEnd}
+				onOK={handleSignature}
+				autoClear={false}
+				descriptionText="Sign here"
+				backgroundColor="#ffffff"
+				penColor="#000000"
+				style={{
+					width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
+					height: 250,
+				}}
+			/>
+		);
+	}
+
 	return (
 		<View style={{ ...styles.container, backgroundColor: theme.screen.iconBg }}>
-			{value && typeof value === 'string' && value?.startsWith('https') ? (
-				<View style={styles.fileContainer}>
-					{authToken !== undefined && (
-						<Image
-							key={authToken || 'no-auth'}
-							source={getImageSource(value)}
-							style={{
-								...styles.filePreview,
-								width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
-							}}
-						/>
-					)}
-				</View>
-			) : isWeb ? (
-				<SignatureCanvas
-					ref={signatureRef}
-					onEnd={handleSave}
-					descriptionText="Sign here"
-					penColor={'#000000'}
-					clearText="Clear"
-					confirmText="Save"
-					backgroundColor={'#ffffff'}
-					webStyle={styles.signaturePad}
-					autoClear={false}
-					canvasProps={{
-						width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
-						height: 250,
-					}}
-					disabled={isDisabled}
-				/>
-			) : (
-				<SignatureScreen
-					ref={signatureRef}
-					onBegin={handleBegin}
-					onEnd={handleEnd}
-					onOK={handleSignature}
-					autoClear={false}
-					descriptionText="Sign here"
-					backgroundColor="#ffffff"
-					penColor="#000000"
-					style={{
-						width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
-						height: 250,
-					}}
-				/>
-			)}
+			{signatureContent}
 
 			<View style={{ ...styles.buttonContainer }}>
 				<TouchableOpacity style={{ ...styles.button, backgroundColor: primaryColor }} onPress={handleClear} activeOpacity={0.7}>

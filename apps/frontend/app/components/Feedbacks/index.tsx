@@ -26,6 +26,19 @@ const loadingState = {
 	deleteLoading: false,
 };
 
+const getGroupPosition = (index: number, total: number): 'single' | 'top' | 'bottom' | 'middle' => {
+	if (total === 1) {
+		return 'single';
+	}
+	if (index === 0) {
+		return 'top';
+	}
+	if (index === total - 1) {
+		return 'bottom';
+	}
+	return 'middle';
+};
+
 const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, isManagement }) => {
 	const toast = useToast();
 	const { theme } = useTheme();
@@ -195,8 +208,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			{ratingSummaryItems.length > 0 && (
 				<View style={styles.ratingSummaryContainer}>
 					{ratingSummaryItems.map((item, index) => {
-						const groupPosition =
-							ratingSummaryItems.length === 1 ? 'single' : index === 0 ? 'top' : index === ratingSummaryItems.length - 1 ? 'bottom' : 'middle';
+						const groupPosition = getGroupPosition(index, ratingSummaryItems.length);
 						return (
 							<SettingsList
 								key={item.key}
@@ -222,7 +234,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			</Text>
 			{labels.map((label: any, index: number) => {
 				const total = labels.length;
-				const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				const groupPosition = getGroupPosition(index, total);
 				return (
 					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} isAccountRequired={!user?.id} />
 				);

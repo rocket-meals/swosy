@@ -97,6 +97,11 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 		return () => subscription?.remove();
 	}, []);
 
+	let canteensContainerGap = 5;
+	if (isWeb) {
+		canteensContainerGap = screenWidth < 500 ? 10 : 20;
+	}
+
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
 			<View
@@ -119,7 +124,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 				style={{
 					...styles.canteensContainer,
 					width: '100%',
-					gap: isWeb ? (screenWidth < 500 ? 10 : 20) : 5,
+					gap: canteensContainerGap,
 					marginTop: isWeb ? 40 : 20,
 				}}
 			>

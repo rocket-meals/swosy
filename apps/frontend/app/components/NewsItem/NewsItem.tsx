@@ -48,6 +48,16 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			}
 		}
 	};
+
+	let imageContainerWidth: '20%' | '30%' | '100%' = '100%';
+	if (screenWidth > 768) {
+		imageContainerWidth = screenWidth > 900 ? '20%' : '30%';
+	}
+	let newsContentWidth: '79%' | '69%' | '100%' = '100%';
+	if (screenWidth > 768) {
+		newsContentWidth = screenWidth > 900 ? '79%' : '69%';
+	}
+
 	return (
 		<View
 			style={{
@@ -59,7 +69,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			<View
 				style={{
 					...styles.imageContainer,
-					width: screenWidth > 768 ? (screenWidth > 900 ? '20%' : '30%') : '100%',
+					width: imageContainerWidth,
 					height: screenWidth > 768 ? 220 : 180,
 				}}
 			>
@@ -72,7 +82,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			</View>
 			<View
 				style={{
-					width: screenWidth > 768 ? (screenWidth > 900 ? '79%' : '69%') : '100%',
+					width: newsContentWidth,
 					justifyContent: screenWidth > 768 ? 'space-between' : 'flex-start',
 					padding: screenWidth > 768 ? 10 : 0,
 				}}

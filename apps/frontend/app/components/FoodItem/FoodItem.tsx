@@ -148,7 +148,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       return numToOneDecimal(avg);
     }, [showAverageOnCard, foodItem?.rating_average, foodItem?.rating_average_legacy]);
 
-    const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
+    const hasMarkingBorder = dislikedMarkings.length > 0 || isLiked;
+    const borderWidth = hasMarkingBorder ? 3 : 0;
     const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
 
     
@@ -275,9 +276,17 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
     const foodName = useMemo(
       () => {
+        let excerptLength = 40;
+        if (screenWidth > 1000) {
+          excerptLength = 120;
+        } else if (screenWidth > 700) {
+          excerptLength = 80;
+        } else if (screenWidth > 460) {
+          excerptLength = 60;
+        }
         const name = excerpt(
           getTextFromTranslation(foodItem?.translations, language || 'de'),
-          screenWidth > 1000 ? 120 : screenWidth > 700 ? 80 : screenWidth > 460 ? 60 : 40
+          excerptLength
         );
         if (!name) return name;
         let result = name;
@@ -417,8 +426,17 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                   </View>
 
                   <View style={styles.categoriesContainer}>
-                    {markingsData?.map(mark =>
-                      (mark?.image_remote_url || mark?.image) && mark?.show_on_card ? (
+                    {markingsData?.map(mark => {
+                      if (!((mark?.image_remote_url || mark?.image) && mark?.show_on_card)) {
+                        return null;
+                      }
+                      let markBorderRadius = 0;
+                      if (mark?.background_color) {
+                        markBorderRadius = 8;
+                      } else if (mark.hide_border) {
+                        markBorderRadius = 5;
+                      }
+                      return (
                         <TouchableOpacity key={mark.id} onPress={() => openMarkingLabel(mark)}>
                           <MyImage
                             remote_image_url={mark?.image_remote_url || getImageUrl(mark?.image as string)}
@@ -427,13 +445,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                               styles.categoryLogo,
                               {
                                 backgroundColor: mark?.background_color || undefined,
-                                borderRadius: mark?.background_color ? 8 : mark.hide_border ? 5 : 0,
+                                borderRadius: markBorderRadius,
                               }
                             ]}
                           />
                         </TouchableOpacity>
-                      ) : null
-                    )}
+                      );
+                    })}
                   </View>
 
                   <TouchableOpacity style={styles.priceTag} onPress={handlePriceChange}>
@@ -532,7 +550,10 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const previousFeedback = useMemo(() => {
         if (props.previousFeedback) return props.previousFeedback;
         const food = item?.food as any;
-        const foodId = food ? (typeof food === 'string' ? food : food.id) : undefined;
+        let foodId: string | undefined;
+        if (food) {
+            foodId = typeof food === 'string' ? food : food.id;
+        }
         if (!foodId) return undefined;
         return getpreviousFeedback(ownFoodFeedbacks as any, foodId);
     }, [props.previousFeedback, item, ownFoodFeedbacks]);

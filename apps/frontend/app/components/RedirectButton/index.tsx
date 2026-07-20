@@ -32,6 +32,15 @@ const RedirectButton: React.FC<RedirectButtonProps> = ({ type, label, background
 		containerWidth = '100%';
 	}
 
+	let typeIcon: React.ReactNode;
+	if (type === 'email') {
+		typeIcon = <MaterialCommunityIcons name="email" size={24} color={color || contrastColor} />;
+	} else if (type === 'location') {
+		typeIcon = <Ionicons name="navigate" size={24} color={color || contrastColor} />;
+	} else {
+		typeIcon = <FontAwesome6 name="arrow-up-right-from-square" size={20} color={color || contrastColor} />;
+	}
+
 	return (
 		<TouchableOpacity
 			style={{
@@ -43,13 +52,7 @@ const RedirectButton: React.FC<RedirectButtonProps> = ({ type, label, background
 			}}
 			onPress={onClick}
 		>
-			{type === 'email' ? (
-				<MaterialCommunityIcons name="email" size={24} color={color || contrastColor} />
-			) : type === 'location' ? (
-				<Ionicons name="navigate" size={24} color={color || contrastColor} />
-			) : (
-				<FontAwesome6 name="arrow-up-right-from-square" size={20} color={color || contrastColor} />
-			)}
+			{typeIcon}
 			<Text style={{ ...styles.label, color: color || contrastColor, fontSize }}>{label}</Text>
 		</TouchableOpacity>
 	);

@@ -394,7 +394,14 @@ export const HoursSheetContent: React.FC = () => {
                         const isFirst = index === 0;
                         const isLast = index === hoursData.length - 1;
                         const isSingle = hoursData.length === 1;
-                        const groupPosition = isSingle ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+                        let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+                        if (isSingle) {
+                                groupPosition = 'single';
+                        } else if (isFirst) {
+                                groupPosition = 'top';
+                        } else if (isLast) {
+                                groupPosition = 'bottom';
+                        }
 
                         return (
                                 <SettingsList
@@ -408,6 +415,43 @@ export const HoursSheetContent: React.FC = () => {
                         );
                 });
         };
+
+	let hoursContent: React.ReactNode;
+	if (hours && Object.keys(hours).length > 0) {
+		hoursContent = (
+			<View
+				style={{
+					...styles.hoursContainer,
+					width: '100%',
+				}}
+			>
+				{getSortedBusinessHoursGroups(businessHoursGroups)
+					.filter(group => hours[group.id])
+					.map(group => {
+						const { name, entries } = hours[group.id];
+						return (
+							<View key={group.id} style={{ marginBottom: 20 }}>
+								<SettingsGroupTitle>{name}</SettingsGroupTitle>
+								{renderHours(group.id, entries)}
+							</View>
+						);
+					})}
+			</View>
+		);
+	} else {
+		hoursContent = (
+			<View
+				style={{
+					height: 200,
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<Text style={{ ...styles.empty, color: theme.screen.text }}>{translate(TranslationKeys.no_business_hours_available)}</Text>
+			</View>
+		);
+	}
 
 	return (
 		<>
@@ -429,37 +473,7 @@ export const HoursSheetContent: React.FC = () => {
 						width: '100%',
 					}}
 				>
-					{hours && Object.keys(hours).length > 0 ? (
-						<View
-							style={{
-								...styles.hoursContainer,
-								width: '100%',
-							}}
-						>
-							{getSortedBusinessHoursGroups(businessHoursGroups)
-								.filter(group => hours[group.id])
-								.map(group => {
-									const { name, entries } = hours[group.id];
-									return (
-										<View key={group.id} style={{ marginBottom: 20 }}>
-											<SettingsGroupTitle>{name}</SettingsGroupTitle>
-											{renderHours(group.id, entries)}
-										</View>
-									);
-								})}
-						</View>
-					) : (
-						<View
-							style={{
-								height: 200,
-								width: '100%',
-								justifyContent: 'center',
-								alignItems: 'center',
-							}}
-						>
-							<Text style={{ ...styles.empty, color: theme.screen.text }}>{translate(TranslationKeys.no_business_hours_available)}</Text>
-						</View>
-					)}
+					{hoursContent}
 				</View>
 			)}
 		</>

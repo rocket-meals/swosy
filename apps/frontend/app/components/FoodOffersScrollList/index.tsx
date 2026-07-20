@@ -438,7 +438,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => {
 			const total = canteenFeedbackLabels.length;
-			const groupPosition = total === 1 ? 'single' : idx === 0 ? 'top' : idx === total - 1 ? 'bottom' : 'middle';
+			let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+			if (total === 1) {
+				groupPosition = 'single';
+			} else if (idx === 0) {
+				groupPosition = 'top';
+			} else if (idx === total - 1) {
+				groupPosition = 'bottom';
+			}
 			return <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} groupPosition={groupPosition} isAccountRequired={!user?.id} />;
 		});
 		const dayItems = buildDayItems(item.offers, item.date);

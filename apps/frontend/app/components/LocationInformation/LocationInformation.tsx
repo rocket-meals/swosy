@@ -59,8 +59,14 @@ const LocationInformation: React.FC<any> = ({ campusDetails }) => {
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.information)}</Text>
 			<View style={{ gap: 0 }}>
 				{infoItems.map((item, index) => {
-					const groupPosition =
-						infoItems.length === 1 ? 'single' : index === 0 ? 'top' : index === infoItems.length - 1 ? 'bottom' : 'middle';
+					let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+					if (infoItems.length === 1) {
+						groupPosition = 'single';
+					} else if (index === 0) {
+						groupPosition = 'top';
+					} else if (index === infoItems.length - 1) {
+						groupPosition = 'bottom';
+					}
 					const showSeparator = index !== infoItems.length - 1;
 					if (item.type === 'location') {
 						return (

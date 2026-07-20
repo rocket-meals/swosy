@@ -174,24 +174,31 @@ const ScanModalContent: React.FC<ScanModalContentProps> = ({ onSubmit, checkAlre
 		);
 	}
 
+	let cameraSectionContent: React.ReactNode = null;
+	if (showCamera) {
+		cameraSectionContent = (
+			<View style={scanStyles.cameraWrapper}>
+				<CameraView
+					style={scanStyles.camera}
+					facing="back"
+					barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+					onBarcodeScanned={handleBarCodeScanned}
+				/>
+			</View>
+		);
+	} else if (canRequestPermission) {
+		cameraSectionContent = (
+			<TouchableOpacity style={[scanStyles.permissionButton, { backgroundColor: primaryColor }]} onPress={requestPermission}>
+				<MaterialCommunityIcons name="camera" size={24} color={contrastColor} />
+				<Text style={[scanStyles.permissionText, { color: contrastColor }]}>{translate(TranslationKeys.friendships_allow_camera)}</Text>
+			</TouchableOpacity>
+		);
+	}
+
 	return (
 		<View style={scanStyles.container}>
 			<View style={scanStyles.cameraSection}>
-				{showCamera ? (
-					<View style={scanStyles.cameraWrapper}>
-						<CameraView
-							style={scanStyles.camera}
-							facing="back"
-							barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-							onBarcodeScanned={handleBarCodeScanned}
-						/>
-					</View>
-				) : canRequestPermission ? (
-					<TouchableOpacity style={[scanStyles.permissionButton, { backgroundColor: primaryColor }]} onPress={requestPermission}>
-						<MaterialCommunityIcons name="camera" size={24} color={contrastColor} />
-						<Text style={[scanStyles.permissionText, { color: contrastColor }]}>{translate(TranslationKeys.friendships_allow_camera)}</Text>
-					</TouchableOpacity>
-				) : null}
+				{cameraSectionContent}
 			</View>
 		</View>
 	);
@@ -685,7 +692,14 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 			const displayLabel = otherNickname || otherProfileId;
 			const statusColor = friendshipStatusColor(friendship.friendship_status);
 			const totalItems = items.length;
-			const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
+			let groupPosition: 'single' | 'top' | 'bottom' | 'middle' = 'middle';
+			if (totalItems === 1) {
+				groupPosition = 'single';
+			} else if (index === 0) {
+				groupPosition = 'top';
+			} else if (index === totalItems - 1) {
+				groupPosition = 'bottom';
+			}
 
 			return (
 				<SettingsList
