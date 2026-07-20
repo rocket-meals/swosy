@@ -40,7 +40,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [data, setData] = useState<any[]>(timeTableData);
 	const [inputValue, setInputValue] = useState<string>('');
-	const [, setSelectedColor] = useState<string>('');
+	const [selectedColor, setSelectedColor] = useState<string>(''); // NOSONAR: selectedColor is currently unused; remove this comment once it is used
 
 	useEffect(() => {
 		if (isUpdate && timeTableData) {

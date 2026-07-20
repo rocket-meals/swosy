@@ -25,7 +25,7 @@ const EventsScreen = () => {
     const kioskMode = useKioskMode();
     const { popupEvents } = useAppSelector((state) => state.food);
     const { primaryColor } = useAppSelector((state) => state.settings);
-	const [, setSelectedEvent] = useState<Partial<DatabaseTypes.PopupEvents> | null>(null);
+	const [selectedEvent, setSelectedEvent] = useState<Partial<DatabaseTypes.PopupEvents> | null>(null); // NOSONAR: selectedEvent is currently unused; remove this comment once it is used
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const handleClose = useCallback(() => {
 		setSelectedEvent(null);

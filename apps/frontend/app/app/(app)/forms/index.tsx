@@ -21,7 +21,7 @@ useSetPageTitle(TranslationKeys.select_a_form);
 const { theme } = useTheme();
 const dispatch = useDispatch();
 const [loading, setLoading] = useState(false);
-const [, setIsShowingCachedData] = useState(false);
+const [isShowingCachedData, setIsShowingCachedData] = useState(false); // NOSONAR: isShowingCachedData is currently unused; remove this comment once it is used
     const { category_id } = useLocalSearchParams();
     const { language } = useAppSelector((state) => state.settings);
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);

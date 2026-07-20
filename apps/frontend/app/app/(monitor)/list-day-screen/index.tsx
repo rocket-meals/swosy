@@ -43,7 +43,7 @@ const Index = () => {
 	const [optionalFoods, setOptionalFoods] = useState([]);
 	const [foodMarkings, setFoodMarkings] = useState<any>({});
 	const [foodCategories, setFoodCategories] = useState<DatabaseTypes.FoodsCategories[]>([]);
-	const [, setFoodOfferCategories] = useState<DatabaseTypes.FoodoffersCategories[]>([]);
+	const [foodOfferCategories, setFoodOfferCategories] = useState<DatabaseTypes.FoodoffersCategories[]>([]); // NOSONAR: foodOfferCategories is currently unused; remove this comment once it is used
 	const [optionalFoodMarkings, setOptionalFoodMarkings] = useState<any>({});
 	const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
 	const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});

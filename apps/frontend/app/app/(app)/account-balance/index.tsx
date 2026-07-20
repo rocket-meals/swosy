@@ -68,7 +68,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
         const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
         const animationRef = useRef<LottieView>(null);
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-        const [animationJson, setAmimationJson] = useState<any>(null);
+        const [animationJson, setAnimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
         // The NFC "hold your card" instruction (Android only - iOS has its own
         // system sheet, see MyNativeCardReader) used to be pushed as its own item
@@ -108,17 +108,17 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 		useCallback(() => {
 			if (profile?.credit_balance) {
 				if (Number(profile?.credit_balance) >= BalanceStateLowerBound.CONFIDENT) {
-					setAmimationJson(replaceLottieColors(moneyConfident, balance_area_color));
+					setAnimationJson(replaceLottieColors(moneyConfident, balance_area_color));
 				} else if (Number(profile?.credit_balance) >= BalanceStateLowerBound.FITNESS) {
-					setAmimationJson(replaceLottieColors(moneyFitness, balance_area_color));
+					setAnimationJson(replaceLottieColors(moneyFitness, balance_area_color));
 				} else if (Number(profile?.credit_balance) >= BalanceStateLowerBound.SAD) {
-					setAmimationJson(replaceLottieColors(moneySad, balance_area_color));
+					setAnimationJson(replaceLottieColors(moneySad, balance_area_color));
 				}
 			} else {
-				setAmimationJson(replaceLottieColors(moneyConfused, balance_area_color));
+				setAnimationJson(replaceLottieColors(moneyConfused, balance_area_color));
 			}
 			return () => {
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [profile?.credit_balance])
 	);
@@ -325,7 +325,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);

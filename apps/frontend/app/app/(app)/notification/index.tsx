@@ -32,15 +32,15 @@ const NotificationScreen = () => {
 	const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
-	const [animationJson, setAmimationJson] = useState<any>(null);
+	const [animationJson, setAnimationJson] = useState<any>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks);
 
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(animation, primaryColor));
+			setAnimationJson(replaceLottieColors(animation, primaryColor));
 			return () => {
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [])
 	);
@@ -51,7 +51,7 @@ const NotificationScreen = () => {
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);

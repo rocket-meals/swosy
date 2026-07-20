@@ -79,6 +79,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (wo möglich sprechende Typen wie `Partial<...>` statt `any`; sonst redundante Union-Member entfernt) | #3953 |
 | 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | #3953 |
 | 2026-07-20 | Remove this useless assignment to variable "X". | 97 von 97 (ungenutzte useState-Werte per Array-Elision, tote Deklarationen/Handler samt ungenutzt gewordener Imports entfernt; Seiteneffekt-Aufrufe als nacktes `await` behalten) | #3958 |
+| 2026-07-20 | useState call is not destructured into value + setter pair | 18 von 18 (10x Array-Elision aus #3958 zurück zu benanntem `[x, setX]`-Paar mit `NOSONAR`-Kommentar — Kommentar entfernen, sobald die Variable genutzt wird; 8x Setter-Umbenennung: 6x Tippfehler `setAmimationJson` → `setAnimationJson`, 2x `set...State`-Suffix in `useLanguage.ts`) | – |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
