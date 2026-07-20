@@ -310,7 +310,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
         id: workflowId,
         alias: workflowId,
       };
-      let workflow = await myDatabaseHelper.getWorkflowsHelper().upsertOne(searchAndUpdate);
+      await myDatabaseHelper.getWorkflowsHelper().upsertOne(searchAndUpdate);
     }
   });
 

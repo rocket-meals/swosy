@@ -114,7 +114,7 @@ class WashingmachinesWorkflow extends SingleWorkflowRun {
 }
 
 export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions: RegisterFunctions, apiContext) => {
-  const { action, filter, schedule } = registerFunctions;
+  const { schedule } = registerFunctions;
 
   registerWashingmachinesFilterUpdate(apiContext, registerFunctions);
 

@@ -14,7 +14,7 @@ import {CollectionNames, DatabaseTypes, DateHelper, DirectusItemStatus} from 're
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
 import {DictMarkingsExclusions, MarkingFilterHelper} from '../helpers/MarkingFilterHelper';
-import {MyTimer, MyTimers} from '../helpers/MyTimer';
+import {MyTimer} from '../helpers/MyTimer';
 import {HashHelper} from '../helpers/HashHelper';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {WorkflowResultHash} from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
@@ -1101,7 +1101,6 @@ export class ParseSchedule {
 
     const myTimer = new MyTimer(SCHEDULE_NAME + ' - Create Food Offers (' + canteenInfo + ', ' + dateInfo + ')');
     await this.context.logger.appendLog('Amount of food offers to create: ' + foodoffersToCreate.length)
-    const myTimersEmitEvents = new MyTimers('disableEventEmit_TRUE', 'disableEventEmit_FALSE');
 
     let batchIndex = 1;
     const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
