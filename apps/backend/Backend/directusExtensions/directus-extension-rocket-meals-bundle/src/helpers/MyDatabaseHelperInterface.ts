@@ -14,7 +14,7 @@ export interface MyDatabaseTestableHelperInterface {
 
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
   private cachedServerInfo: ServerInfo | undefined = undefined;
-  private cachedClient: any | undefined = undefined;
+  private cachedClient: any = undefined;
   public useOfflineServerInfo: boolean = true;
 
   getServerUrl(): string {

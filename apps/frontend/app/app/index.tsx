@@ -16,7 +16,7 @@ const extractRawExpoToken = (token: string | null) => {
 	return m ? m[1] : token;
 };
 
-async function savePushTokenToAPI(opts: { token: string | null; profile: DatabaseTypes.Profiles | any; dispatch: any }) {
+async function savePushTokenToAPI(opts: { token: string | null; profile: any; dispatch: any }) {
 	const { token, profile, dispatch } = opts;
 	if (!token) {
 		return;

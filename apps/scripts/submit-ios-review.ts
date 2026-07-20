@@ -125,7 +125,8 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
   const result = await ascRequest(token, 'GET', `/apps/${appId}/appStoreVersions?${query}`);
   const versions = asArray(result.data);
 
-  console.log(`   Vorhandene App Store Versions (${versions.length}): ${versions.map(v => `${v.attributes?.versionString}=${v.attributes?.appStoreState}`).join(', ') || '(keine)'}`);
+  const versionsSummary = versions.map(v => `${v.attributes?.versionString}=${v.attributes?.appStoreState}`).join(', ') || '(keine)';
+  console.log(`   Vorhandene App Store Versions (${versions.length}): ${versionsSummary}`);
 
   const exactMatch = versions.find(v => v.attributes?.versionString === versionString);
   if (exactMatch) {

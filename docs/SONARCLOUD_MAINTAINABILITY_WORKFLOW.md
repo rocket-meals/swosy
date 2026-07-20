@@ -71,6 +71,9 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Prefer using nullish coalescing operator (`??=` / `??`). | 18 von 18 (Codemod mit Zeilenverifikation; alle Ziel-Typen `X \| null` bzw. `boolean \| undefined`) | – |
 | 2026-07-20 | Redirect this error message to stderr (>&2). | 14 von 14 (nur Shell-Skripte, `bash -n` geprüft) | – |
 | 2026-07-20 | 'If' statement should not be the only statement in 'else' block. | 10 von 10 (`else { if }` → `else if`) | – |
+| 2026-07-20 | Expected a `for-of` loop instead of a `for` loop with this simple iteration. | 12 von 12 (Cheerio-Objekt per `.toArray()` iteriert) | – |
+| 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (redundante Union-Member entfernt, `any` beibehalten — keine Typ-Semantik geändert) | – |
+| 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | – |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
@@ -79,7 +82,7 @@ Neu abgearbeitete Typen bitte hier ergänzen.
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
 (39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
 should be last" (20x, ändert Aufrufer), „Add an explicit return" (20x),
-`await` auf Non-Promise (16x), Parameter-Reihenfolge (16x), for-of (12x).
+`await` auf Non-Promise (16x), Parameter-Reihenfolge (16x).
 Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
 
 ## Hinweise

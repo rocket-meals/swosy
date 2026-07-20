@@ -169,8 +169,7 @@ export class FormHelper {
 
     let sizes = [200, 400, 800, 1600];
     let images: string[] = [];
-    for (let i = 0; i < sizes.length; i++) {
-      let size = sizes[i];
+    for (const size of sizes) {
       let imageUrl = `https://picsum.photos/${size}/${size}`;
       images.push(imageUrl);
     }

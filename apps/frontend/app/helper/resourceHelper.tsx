@@ -34,7 +34,7 @@ interface Translation {
 	title?: string;
 }
 
-const getTextFromTranslation = (translations: Array<Translation | any>, languageCode: string): string => {
+const getTextFromTranslation = (translations: Array<any>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
 	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
 	return translation?.text || translation?.name || translation?.content || '';
@@ -58,7 +58,7 @@ export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.For
 	return translation?.name || '';
 };
 
-export const getFoodAttributesTranslation = (translations: Array<DatabaseTypes.FoodsAttributesTranslations | Translation | any>, languageCode: string): string => {
+export const getFoodAttributesTranslation = (translations: Array<any>, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
 	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
 	return translation?.name || '';

@@ -545,9 +545,9 @@ export function synthesizeManualActivityRoutePoints(
 	//     gridPathCells so the synthetic route points follow the actual red-line
 	//     grid instead of jumping from h10 centre to h10 centre.
 	const redLinePath: string[] = [];
-	for (let i = 0; i < hexTilesOrdered.length; i++) {
+	for (const hexTile of hexTilesOrdered) {
 		try {
-			const redLineCell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION) || hexTilesOrdered[i];
+			const redLineCell = cellToCenterChild(hexTile, RED_LINE_GRID_RESOLUTION) || hexTile;
 			if (redLinePath.length === 0) {
 				redLinePath.push(redLineCell);
 			} else {

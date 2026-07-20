@@ -13,7 +13,7 @@ const usePopupEventModal = () => {
 	const popupEvents = useAppSelector((state) => state.food.popupEvents, shallowEqual);
 	const { showAndDiscardOthers: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
-	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
+	const [currentPopupEvent, setCurrentPopupEvent] = useState<any>(null);
 
 	// Events the user closed only via the header X button, backdrop tap or swipe-down
 	// in THIS app session. Those closes are deliberately NOT persisted as "seen"

@@ -24,7 +24,7 @@ const EventsScreen = () => {
     const kioskMode = useKioskMode();
     const { popupEvents } = useAppSelector((state) => state.food);
     const { primaryColor } = useAppSelector((state) => state.settings);
-	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+	const [selectedEvent, setSelectedEvent] = useState<any>(null);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const handleClose = useCallback(() => {
 		setSelectedEvent(null);

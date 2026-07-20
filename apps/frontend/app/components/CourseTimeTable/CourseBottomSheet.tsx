@@ -37,7 +37,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 		name: 'Mon',
 	});
 	const [windowWidth, setWindowWidth] = useState<number>(Dimensions.get('window').width);
-	const [selectedItem, setSelectedItem] = useState<any | null>(null);
+	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [data, setData] = useState<any[]>(timeTableData);
 	const [inputValue, setInputValue] = useState<string>('');
 	const [selectedColor, setSelectedColor] = useState<string>('');

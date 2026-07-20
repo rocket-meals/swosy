@@ -1279,7 +1279,8 @@ const OsmVectorMapScreen: React.FC = () => {
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
-			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+			const coordsText = lat !== null ? ` (${lat}, ${lng})` : '';
+			addLog(`Marker clicked: ${title}${coordsText}`);
 
 			if (coords?.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });

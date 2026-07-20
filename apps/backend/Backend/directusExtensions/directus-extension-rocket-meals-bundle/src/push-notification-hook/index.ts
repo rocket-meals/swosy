@@ -33,8 +33,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       throw new Error('No keys provided for update');
     }
 
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
+    for (const key of keys) {
       const currentItemId = key; // Assuming only one item is being updated
       const currentItems = await itemService.readByQuery({
         filter: { id: currentItemId },
@@ -106,7 +105,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       body = payload.message_body;
     }
 
-    let data: any | undefined = undefined; // can't be null, otherwise it will result in an error from expo
+    let data: any = undefined; // can't be null, otherwise it will result in an error from expo
     if (payload.message_data) {
       // check if message_data is set
       data = payload.message_data;
@@ -115,7 +114,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     // Every token should be: "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]" (with the ExponentPushToken prefix and square brackets)
 
     // https://github.com/expo/expo/discussions/27980
-    let richContent: any | undefined = undefined; // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
+    let richContent: any = undefined; // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
 
     let payload_image_url = payload.image_url;
     if (payload_image_url) {
