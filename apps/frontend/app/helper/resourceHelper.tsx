@@ -26,17 +26,17 @@ const getIconComponent = (iconString: string, iconColor: string): JSX.Element | 
 };
 
 interface Translation {
-	languages_code: string;
-	text?: string;
-	name?: string;
-	content?: string;
-	description?: string;
-	title?: string;
+	languages_code: string | DatabaseTypes.Languages | null;
+	text?: string | null;
+	name?: string | null;
+	content?: string | null;
+	description?: string | null;
+	title?: string | null;
 }
 
-const getTextFromTranslation = (translations: Array<any>, languageCode: string): string => {
+const getTextFromTranslation = (translations: Array<Partial<Translation>> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
+	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
 	return translation?.text || translation?.name || translation?.content || '';
 };
 
@@ -58,9 +58,9 @@ export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.For
 	return translation?.name || '';
 };
 
-export const getFoodAttributesTranslation = (translations: Array<any>, languageCode: string): string => {
+export const getFoodAttributesTranslation = (translations: Array<Partial<DatabaseTypes.FoodsAttributesTranslations> | Partial<Translation>> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
+	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
 	return translation?.name || '';
 };
 

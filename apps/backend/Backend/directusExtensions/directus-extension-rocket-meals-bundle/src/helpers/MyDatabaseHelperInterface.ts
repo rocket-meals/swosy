@@ -3,7 +3,7 @@ import { EventContext as ExtentContextDirectusTypes } from '@directus/types';
 import { ItemsServiceHelper } from './ItemsServiceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { ServerInfo } from './ItemsServiceCreator';
-import { createDirectus, rest, serverInfo } from '@directus/sdk';
+import { createDirectus, DirectusClient, rest, RestClient, serverInfo } from '@directus/sdk';
 
 export interface MyDatabaseTestableHelperInterface {
   getServerInfo(): Promise<ServerInfo>;
@@ -14,7 +14,7 @@ export interface MyDatabaseTestableHelperInterface {
 
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
   private cachedServerInfo: ServerInfo | undefined = undefined;
-  private cachedClient: any = undefined;
+  private cachedClient: (DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) | undefined = undefined;
   public useOfflineServerInfo: boolean = true;
 
   getServerUrl(): string {
@@ -55,7 +55,9 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
   }
 
   async downloadServerInfo(): Promise<ServerInfo> {
-    return await this.getPublicClient().request(serverInfo());
+    // The SDK's ServerInfoOutput type does not declare all fields (e.g. project_color)
+    // which the Directus server actually returns and our local ServerInfo type expects.
+    return (await this.getPublicClient().request(serverInfo())) as unknown as ServerInfo;
   }
 
   async getAdminBearerToken(): Promise<string | undefined> {

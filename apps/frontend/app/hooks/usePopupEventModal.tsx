@@ -6,6 +6,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
 import useKioskMode from '@/hooks/useKioskMode';
 import type { ModalCloseReason } from 'repo-depkit-common-ui';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 const usePopupEventModal = () => {
 	const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const usePopupEventModal = () => {
 	const popupEvents = useAppSelector((state) => state.food.popupEvents, shallowEqual);
 	const { showAndDiscardOthers: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
-	const [currentPopupEvent, setCurrentPopupEvent] = useState<any>(null);
+	const [currentPopupEvent, setCurrentPopupEvent] = useState<Partial<DatabaseTypes.PopupEvents> | null>(null);
 
 	// Events the user closed only via the header X button, backdrop tap or swipe-down
 	// in THIS app session. Those closes are deliberately NOT persisted as "seen"
