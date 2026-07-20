@@ -4,49 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 8 | 8 |
-| 🐛 Reliability | 55 | 42 |
+| 🔒 Security | 0 | 0 |
+| 🐛 Reliability | 55 | 50 |
 | 🔧 Maintainability | 1960 | 0 |
 
-**Total issues:** 2023 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2015 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (8/8)
-
-- **Lifecycle scripts are enabled by default in Yarn v2+.**
-  .github/workflows/ios-submit-review-geonexia.yml:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-geonexia.yml#L30
-
-- **Lifecycle scripts are enabled by default in Yarn v2+.**
-  .github/workflows/ios-submit-review-rocket-meals.yml:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-rocket-meals.yml#L30
-
-- **Lifecycle scripts are enabled by default in Yarn v2+.**
-  .github/workflows/ios-submit-review-score-tracker.yml:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L30
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/dice/index.tsx:51
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/dice/index.tsx#L51
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/games/[id].tsx:47
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L47
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/app/index.tsx:80
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L80
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/store/friendsSlice.ts:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/friendsSlice.ts#L19
-
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/score-tracker/frontend/store/gameTypesSlice.ts:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L20
-
-## 🐛 Reliability (42/55)
+## 🐛 Reliability (50/55)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -215,4 +181,36 @@
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L81
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:97
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L97
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:122
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L122
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:146
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L146
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:154
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L154
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:163
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L163
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/score-tracker/run-maestro-web-test.sh:170
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L170
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/scripts/submit-ios-review.ts:26
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/scripts/submit-ios-review.ts:26
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
 

@@ -1,33 +1,33 @@
 Key,Message,Component,Line
 "AZ97CL-jghuOJKVulqNq","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",549
 "AZ96ERVh_XOdrlpTbRCK","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4393
-"AZ95e9F3GC2MEnW6rZFN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",149
-"AZ95e9F3GC2MEnW6rZFO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",177
+"AZ95e9F3GC2MEnW6rZFN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",150
+"AZ95e9F3GC2MEnW6rZFO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",178
 "AZ94yUx5NqjKlFTKWCw-","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",370
 "AZ93QAi_4n5ZUmHbOoCs","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CardScoreEntryModal.tsx",73
 "AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",439
 "AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",446
 "AZ925T8lCc1P49Fnq6JN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",41
 "AZ925T8lCc1P49Fnq6JO","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",69
-"AZ92gkzAcUMiqJpTxgmb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1043
-"AZ92LuSOucyJk4EgwJln","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",70
-"AZ92LuSOucyJk4EgwJlo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",74
-"AZ92EgyuNqjKlFTKHx5E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",316
+"AZ92gkzAcUMiqJpTxgmb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1044
+"AZ92LuSOucyJk4EgwJln","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",71
+"AZ92LuSOucyJk4EgwJlo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",75
+"AZ92EgyuNqjKlFTKHx5E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/dice/index.tsx",317
 "AZ90Pca37VSiD7VvJZTH","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",72
 "AZ90Pca37VSiD7VvJZTI","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/SqliteKeyValueStorage.web.ts",90
 "AZ90OX_olqCs1FI_2yqf","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",82
 "AZ90OX_olqCs1FI_2yqg","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",107
 "AZ90OX_plqCs1FI_2yqh","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",116
-"AZ90OYAhlqCs1FI_2yqr","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",510
-"AZ90OYAhlqCs1FI_2yqs","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",569
+"AZ90OYAhlqCs1FI_2yqr","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",511
+"AZ90OYAhlqCs1FI_2yqs","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",570
 "AZ90OYA2lqCs1FI_2yqt","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",110
 "AZ90OYA2lqCs1FI_2yqu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",263
 "AZ90OX_YlqCs1FI_2yqe","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",53
-"AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",70
-"AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",96
-"AZ90OYABlqCs1FI_2yqo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",194
-"AZ90OYABlqCs1FI_2yqp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",241
-"AZ90OYABlqCs1FI_2yqq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",626
+"AZ90OYABlqCs1FI_2yqm","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",71
+"AZ90OYABlqCs1FI_2yqn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",97
+"AZ90OYABlqCs1FI_2yqo","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",195
+"AZ90OYABlqCs1FI_2yqp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",242
+"AZ90OYABlqCs1FI_2yqq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",627
 "AZ90OX_2lqCs1FI_2yqi","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",104
 "AZ90OX_2lqCs1FI_2yqj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",160
 "AZ90OX_2lqCs1FI_2yqk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",181
@@ -64,8 +64,8 @@ Key,Message,Component,Line
 "AZ9i7pHIxQC8bk9G8ao_","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/helper/FoodOffersCacheHelper.ts",136
 "AZ9iElsVctCaOeGEpiJt","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodOffersReducer.ts",13
 "AZ9gjKBEzJugdJpoBVO1","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",98
-"AZ9gjKFPzJugdJpoBVO7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",317
-"AZ9gjKFPzJugdJpoBVO8","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",817
+"AZ9gjKFPzJugdJpoBVO7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",318
+"AZ9gjKFPzJugdJpoBVO8","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",818
 "AZ9gjKMCzJugdJpoBVPL","The empty object is useless.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",787
 "AZ9gKdXunQ6LQh7VFNhX","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",215
 "AZ9gKdXunQ6LQh7VFNhY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",567
@@ -245,7 +245,7 @@ Key,Message,Component,Line
 "AZ3qQNEoWw6vxPu01kuS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",836
 "AZ3qQNEoWw6vxPu01kuR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",1633
 "AZ3oau6RXYbs7Obc7Vpu","'accentColor' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListLeftRight/SettingsListLeftRight.tsx",22
-"AZ3lqYUi8DXjeodrPW-w","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",224
+"AZ3lqYUi8DXjeodrPW-w","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",225
 "AZ3gUBzOs6Hfl3oGA0Jt","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",377
 "AZ3bEWfNcWSvB331ANRG","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/GooglePlayHelper.ts",106
 "AZ3WFd_dG3_GkEIK0Hgj","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts",19
@@ -281,16 +281,16 @@ Key,Message,Component,Line
 "AZ2YIf6SHOaBv7t4lshE","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",151
 "AZ2W7CCgTHU3-S5Qxqnd","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",181
 "AZ2WWRI_Zst1sdfeh-vh","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",197
-"AZ2VVwXtKeq6qkQs4bIW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",192
-"AZ2VVwXtKeq6qkQs4bIX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",193
-"AZ2VVwXtKeq6qkQs4bIY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",199
+"AZ2VVwXtKeq6qkQs4bIW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",193
+"AZ2VVwXtKeq6qkQs4bIX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",194
+"AZ2VVwXtKeq6qkQs4bIY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",200
 "AZ2U4NYB2EVQqD_aZxzi","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/score-tracker/scripts/generate-eas-config.ts",75
 "AZ2Tk1227OEcDMWQizd8","The function should be named.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app.config.ts",15
 "AZ2Tk12T7OEcDMWQizdv","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",58
 "AZ2Tk12T7OEcDMWQizdw","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",73
 "AZ2Tk12T7OEcDMWQizdx","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/_layout.tsx",125
-"AZ2Tk12f7OEcDMWQizd0","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",87
-"AZ2Tk12f7OEcDMWQizd5","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",812
+"AZ2Tk12f7OEcDMWQizd0","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",88
+"AZ2Tk12f7OEcDMWQizd5","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",813
 "AZ2Tk12r7OEcDMWQizd7","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/metro.config.js",2
 "AZ2SW7uaqLdx4W_f3orA","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",642
 "AZ2QEOo8AG2S4uDQLSjb","`markingIds` should be a `Set`, and use `markingIds.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",468
