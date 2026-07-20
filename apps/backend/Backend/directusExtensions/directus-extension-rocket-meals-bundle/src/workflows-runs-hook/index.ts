@@ -58,7 +58,7 @@ export class WorkflowScheduler {
 
   static registerWorkflow(workflowRunJobInterface: WorkflowRunJobInterface): void {
     let workflowId = workflowRunJobInterface.getWorkflowId();
-    if (!!WorkflowScheduler.registeredWorkflows[workflowId]) {
+    if (WorkflowScheduler.registeredWorkflows[workflowId]) {
       throw new Error('Workflow with id: ' + workflowId + ' is already registered.');
     }
     WorkflowScheduler.registeredWorkflows[workflowRunJobInterface.getWorkflowId()] = workflowRunJobInterface;
@@ -101,7 +101,7 @@ async function getAlreadyRunningWorkflowruns(workflowId: string, myDatabaseHelpe
 
 function getWorkflowIdFromInputWorkflowsRuns(input: Partial<DatabaseTypes.WorkflowsRuns>) {
   let workflowId: string | undefined = undefined;
-  if (!!input.workflow) {
+  if (input.workflow) {
     if (typeof input.workflow === 'string') {
       workflowId = input.workflow;
     } else if (typeof input.workflow === 'object') {
@@ -118,7 +118,7 @@ function getDictWorkflowIdToWorkflowRuns(workflowRuns: Partial<DatabaseTypes.Wor
 
   for (let workflowRun of workflowRuns) {
     let workflowId = getWorkflowIdFromInputWorkflowsRuns(workflowRun);
-    if (!!workflowId) {
+    if (workflowId) {
       let workflowRunsForWorkflow = dictWorkflowIdToWorkflowRuns[workflowId] || [];
       workflowRunsForWorkflow.push(workflowRun);
       dictWorkflowIdToWorkflowRuns[workflowId] = workflowRunsForWorkflow;

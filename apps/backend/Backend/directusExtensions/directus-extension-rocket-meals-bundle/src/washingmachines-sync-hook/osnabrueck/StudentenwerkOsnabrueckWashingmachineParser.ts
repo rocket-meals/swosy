@@ -26,7 +26,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
     let intercardWashers = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalFromIntercard();
     for (let i = 0; i < intercardWashers.length; i++) {
       let washer = intercardWashers[i];
-      if (!!washer) {
+      if (washer) {
         let external_identifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(washer.terminalNr, washer.automateNr);
         let date_finished: string | null = null;
         if (washer.intercardStatus && washer.expectedFreeTimeInMinutes > 0) {
@@ -63,11 +63,11 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
     let map: Map<string, WashingmachinesTypeForParser> = new Map<string, WashingmachinesTypeForParser>();
     for (let i = 0; i < washingmachines.length; i++) {
       let washingmachine = washingmachines[i];
-      if (!!washingmachine) {
+      if (washingmachine) {
         let external_identifier = washingmachine.basicData.external_identifier;
         let existing = map.get(external_identifier);
-        if (!!existing) {
-          if (!!washingmachine.basicData.date_finished) {
+        if (existing) {
+          if (washingmachine.basicData.date_finished) {
             map.set(external_identifier, washingmachine);
           }
         } else {

@@ -50,7 +50,7 @@ export function Icon({ name, size, family, ...props }: IconProps) {
 		useSize = size;
 	}
 	let usedFamily = family;
-	if (!!name) {
+	if (name) {
 		const parts = name.split(IconParseDelimeter);
 		if (parts.length === 1) {
 			name = parts[0];

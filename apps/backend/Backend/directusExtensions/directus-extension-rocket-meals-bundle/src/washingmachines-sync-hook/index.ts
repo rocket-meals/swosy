@@ -30,7 +30,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
 
     if (hasWashingmachineNewPropertyDateFinished && new_date_finished === null) {
       let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-      if (!!washingmachines_ids) {
+      if (washingmachines_ids) {
         for (let washingmachine_id of washingmachines_ids) {
           let washingmachine_curent = await myDatabaseHelper.getWashingmachinesHelper().readOne(washingmachine_id);
 

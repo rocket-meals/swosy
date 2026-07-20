@@ -29,9 +29,9 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     let markings: MarkingsTypeForParser[] = [];
     for (let i = 0; i < this.parsedReport.length; i++) {
       let parsedLineObject = this.parsedReport[i];
-      if (!!parsedLineObject) {
+      if (parsedLineObject) {
         let marking = MarkingTL1Parser.getMarkingJSONFromRawMarking(parsedLineObject);
-        if (!!marking) {
+        if (marking) {
           markings.push(marking);
         }
       }

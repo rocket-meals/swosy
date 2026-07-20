@@ -186,7 +186,7 @@ const Index = () => {
 
 	const isCategoryCached = (categoryId: string | number) => {
 		const key = String(categoryId);
-		return !!(cachedForms && cachedForms[key] && cachedForms[key].length > 0);
+		return !!cachedForms?.[key]?.length;
 	};
 
 	return (
@@ -283,8 +283,7 @@ const Index = () => {
 					</View>
 				) : (
 					<>
-						{formCategories &&
-							formCategories?.map((category) => {
+						{formCategories?.map((category) => {
 								let IconComponent: any = null;
 								let iconName = '';
 								if (category?.icon_expo) {

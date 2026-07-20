@@ -239,7 +239,7 @@ const PendingFriendshipContent: React.FC<PendingFriendshipContentProps> = ({ fri
 		pollingRef.current = setInterval(async () => {
 			try {
 				const updated = await friendshipsHelper.readFriendship(friendship.id);
-				if (updated && updated.friendship_status === 'accepted') {
+				if (updated?.friendship_status === 'accepted') {
 					stopPolling();
 					onAccepted(updated);
 					showToast(translate(TranslationKeys.friendships_confirmed));

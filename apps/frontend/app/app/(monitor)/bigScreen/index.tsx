@@ -529,8 +529,7 @@ const Index = () => {
 									{`${translate(TranslationKeys.markings)}:`}
 								</Text>
 								<View style={styles.labelsContainer}>
-									{currentMarking &&
-										currentMarking?.map((item: DatabaseTypes.Markings) => (
+									{currentMarking?.map((item: DatabaseTypes.Markings) => (
 											<MarkingIcon key={item.id} marking={item} size={30} />
 										))}
 								</View>

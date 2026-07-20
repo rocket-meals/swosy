@@ -122,7 +122,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 					fields: ['id', 'value_files.id', 'value_files.directus_files_id'],
 				})) as FormAnswer;
 
-				if (!formAnswer || !formAnswer.value_files || formAnswer.value_files.length === 0) {
+				if (!formAnswer?.value_files || formAnswer.value_files.length === 0) {
 					console.error('No form answer found or no files associated');
 					return;
 				}

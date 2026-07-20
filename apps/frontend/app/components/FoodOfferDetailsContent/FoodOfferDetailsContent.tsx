@@ -114,14 +114,14 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
         try {
             if (offerId) {
                 const foodData = await fetchFoodOffersDetailsById(offerId.toString());
-                if (foodData && foodData.data) {
+                if (foodData?.data) {
                     setFoodOfferDetails(foodData.data);
                 } else {
                     console.log('No food data found');
                 }
             } else if (initialFoodId) {
                 const foodData = await fetchFoodDetailsById(initialFoodId.toString());
-                if (foodData && foodData.data) {
+                if (foodData?.data) {
                     setFoodOfferDetails(null);
                 } else {
                     console.log('No food data found');

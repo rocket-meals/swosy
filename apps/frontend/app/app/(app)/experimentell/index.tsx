@@ -23,7 +23,7 @@ const Index = () => {
 		if (selectedCanteen?.building) {
 			const building = buildingsDict[String(selectedCanteen.building)];
 			const coords = (building as any)?.coordinates?.coordinates;
-			if (coords && coords.length === 2) {
+			if (coords?.length === 2) {
 				return { lat: Number(coords[1]), lng: Number(coords[0]) };
 			}
 		}

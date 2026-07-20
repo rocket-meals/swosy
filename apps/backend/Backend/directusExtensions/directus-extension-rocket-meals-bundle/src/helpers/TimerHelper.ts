@@ -79,7 +79,7 @@ export class TimerHelper {
     // Calculate average time per count since last print
     let averageTimePerCount: number | undefined = undefined;
     let averageTimePerCountFormatted: string | undefined = undefined;
-    if (!!this.lastTime) {
+    if (this.lastTime) {
       let timeSinceLastPrint = (now - this.lastTime) / 1000; // Time in seconds
       averageTimePerCount = timeSinceLastPrint / this.print_every_x_count;
       averageTimePerCountFormatted = this.formatSecondsIntoHHMMSS(averageTimePerCount);

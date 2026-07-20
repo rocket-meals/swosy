@@ -87,7 +87,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 
 	const handleOpenNavigation = useCallback(() => {
 		const coordinates = campus?.coordinates?.coordinates;
-		if (!coordinates || coordinates.length !== 2) {
+		if (coordinates?.length !== 2) {
 			console.error('Invalid coordinates');
 			return;
 		}

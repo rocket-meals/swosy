@@ -22,7 +22,7 @@ export class DatabaseInitializedCheck {
       let tableNamesDict: any = {};
       for (let collectionKey of collectionKeys) {
         let collection = schema.collections[collectionKey];
-        if (!!collection) {
+        if (collection) {
           tableNamesDict[collection.collection] = collection.collection;
         }
       }

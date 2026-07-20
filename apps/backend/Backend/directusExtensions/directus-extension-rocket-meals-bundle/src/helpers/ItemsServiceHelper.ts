@@ -117,7 +117,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     //console.log("Answer: " + JSON.stringify(answer, null, 2));
 
     // Parse and return the average result
-    if (answer && answer[0] && answer[0].avg && answer[0].avg?.[fieldName]) {
+    if (answer?.[0]?.avg?.[fieldName]) {
       return Number.parseFloat(answer[0].avg?.[fieldName]); // Parse the average to a float
     } else {
       return undefined; // Return 0 if no data is found

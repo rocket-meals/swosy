@@ -361,7 +361,7 @@ const Index = () => {
 
 		if (offlineMode) {
 			result = Object.values(cachedFormData || {})
-				.map(entry => (entry.answers || {})[String(form_submission_id)])
+				.map(entry => entry.answers?.[String(form_submission_id)])
 				.find(answers => answers && answers.length > 0) || null;
 		} else {
 			try {
@@ -371,7 +371,7 @@ const Index = () => {
 			} catch {
 				// Fall back to cache on network error
 				result = Object.values(cachedFormData || {})
-					.map(entry => (entry.answers || {})[String(form_submission_id)])
+					.map(entry => entry.answers?.[String(form_submission_id)])
 					.find(answers => answers && answers.length > 0) || null;
 			}
 		}
@@ -972,8 +972,7 @@ const Index = () => {
 							>
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{formSubmissionIdText}</Text>
 							</View>
-							{formAnswers &&
-								formAnswers.map((answer, index) => {
+							{formAnswers?.map((answer, index) => {
 									const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
 									const fieldType = formField?.field_type || '';
 									const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix;

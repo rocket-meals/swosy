@@ -281,8 +281,7 @@ const Index = () => {
 				<View style={{ width: '100%' }}>
 					<CustomCollapsible headerText={translate(TranslationKeys.food_attributes)} customColor={theme.screen.iconBg}>
 						<ScrollView style={styles.attributeListContainer} contentContainerStyle={styles.attributeListContent}>
-							{foodAttributes &&
-								foodAttributes?.map((attribute: any) => {
+							{foodAttributes?.map((attribute: any) => {
 									return (
 										<View style={styles.attributeContainer} key={attribute?.id}>
 											<TextInput

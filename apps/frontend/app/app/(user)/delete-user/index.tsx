@@ -72,7 +72,7 @@ const Index = () => {
 	}, [autoPlay, animationJson]);
 
 	useEffect(() => {
-		if (serverInfo && serverInfo?.info) {
+		if (serverInfo?.info) {
 			setProjectName(serverInfo?.info?.project?.project_name);
 		}
 	}, [serverInfo]);

@@ -161,7 +161,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
         if (attachments_create) {
           for (let attachment of attachments_create) {
             let directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
-            if (!!directus_files_id_raw) {
+            if (directus_files_id_raw) {
               if (typeof directus_files_id_raw === 'string') {
                 directus_files_ids.push(directus_files_id_raw);
               } else {

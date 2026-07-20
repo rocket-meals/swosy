@@ -82,7 +82,7 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                 key={item.foodofferInfoItem.id || `info-item-${index}`}
                 item={item.foodofferInfoItem}
                 content={
-                    (getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
+                    getInfoItemContent(item.foodofferInfoItem)?.content || ''
                 }
                 cardWidth={cardWidth}
                 screenWidth={screenWidth}

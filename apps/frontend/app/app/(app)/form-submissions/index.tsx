@@ -245,7 +245,7 @@ const Index = () => {
 
 		// When offline mode is active, use cache directly without attempting API call
 		if (offlineMode) {
-			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			const filterState = selectedOption || 'draft';
 			const filterQuery = query ? query.trim().toLowerCase() : '';
 			const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
@@ -284,7 +284,7 @@ const Index = () => {
 			}
 		} catch (error) {
 			// Network failed – fall back to locally cached submissions for this form
-			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			if (cached.length > 0) {
 				const filterState = selectedOption || 'draft';
 				const filterQuery = query ? query.trim().toLowerCase() : '';

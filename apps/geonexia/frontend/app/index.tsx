@@ -2134,7 +2134,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					))}
 				</>
 			)}
-			{!featuresLoading && mapFeatures && mapFeatures.length === 0 && (
+			{!featuresLoading && mapFeatures?.length === 0 && (
 				<SettingsList
 					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
 					iconBackgroundColor="#6b7280"
@@ -2205,10 +2205,10 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 		f.highway || (f.layerId && (f.layerId.includes('road') || f.layerId.includes('highway') || f.layerId.includes('transportation')))
 	) ?? [];
 	const waterways = features?.filter((f) =>
-		f.waterway || (f.layerId && f.layerId.includes('water'))
+		f.waterway || (f.layerId?.includes('water'))
 	) ?? [];
 	const buildings = features?.filter((f) =>
-		f.building || (f.layerId && f.layerId.includes('building'))
+		f.building || (f.layerId?.includes('building'))
 	) ?? [];
 	const pois = features?.filter((f) =>
 		f.amenity || f.natural || f.landuse ||
@@ -2276,7 +2276,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 				</View>
 			)}
 
-			{features && features.length === 0 && !loading && (
+			{features?.length === 0 && !loading && (
 				<SettingsList
 					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
 					iconBackgroundColor="#6b7280"

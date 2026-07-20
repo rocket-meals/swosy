@@ -21,7 +21,7 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
     console.log(JSON.stringify(input?.form_answers, null, 2));
 
     // Check if the form is set
-    if (!!input.form) {
+    if (input.form) {
       if (typeof input.form === 'string') {
         form_id = input.form;
       } else {
@@ -46,7 +46,7 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
       } else if (formFieldOfFormAnswer && typeof formFieldOfFormAnswer === 'object') {
         formFieldIdOfFormAnswer = formFieldOfFormAnswer.id;
       }
-      if (!!formFieldIdOfFormAnswer) {
+      if (formFieldIdOfFormAnswer) {
         passedCreateFormAnswerFieldIdsDict[formFieldIdOfFormAnswer] = formAnswer;
       }
     }

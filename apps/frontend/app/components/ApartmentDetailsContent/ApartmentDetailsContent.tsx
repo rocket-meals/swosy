@@ -79,7 +79,7 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
         if (!apartmentDetails) return;
         const coordinates = (apartmentDetails as any).coordinates?.coordinates;
 
-        if (!coordinates || coordinates.length !== 2) {
+        if (coordinates?.length !== 2) {
             console.error('Invalid coordinates');
             return;
         }

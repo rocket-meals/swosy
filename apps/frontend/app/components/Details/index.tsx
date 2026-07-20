@@ -31,7 +31,6 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 					<ActivityIndicator size={30} color={theme.screen.text} />
 				</View>
 			) : (
-				groupedAttributes &&
 				groupedAttributes?.map((item: any) => {
 					const title = item?.translations ? getFoodAttributesTranslation(item?.translations, language) : '';
 					const attributeItems =

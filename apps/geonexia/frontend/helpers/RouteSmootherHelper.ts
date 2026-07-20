@@ -94,7 +94,7 @@ export function snapToRoad(
 	const smoothed = movingAverage(coords, window);
 
 	return coords.map((pt, i) => {
-		if (interpolatedMask && interpolatedMask.length === coords.length && interpolatedMask[i])
+		if (interpolatedMask?.length === coords.length && interpolatedMask[i])
 			return pt;
 		let bestDistSq = Infinity;
 		let bestPt: [number, number] = pt;

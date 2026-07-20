@@ -52,7 +52,7 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<DatabaseTypes.Workflo
     // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
     // if there is no successful run, we return null
     let workflowId: string | undefined;
-    if (!!workflowRun) {
+    if (workflowRun) {
       if (typeof workflowRun.workflow === 'string') {
         workflowId = workflowRun.workflow;
       } else {

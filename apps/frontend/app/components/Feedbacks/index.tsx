@@ -261,7 +261,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId, 
 			)}
 			{commentType !== 'disabled' && (
 				<>
-					{previousFeedback && previousFeedback.comment && (
+					{previousFeedback?.comment && (
 						<View style={styles.commentsContainer}>
 							<View style={styles.commentsHeader}>
 								<Text

@@ -43,7 +43,7 @@ setForms(result);
 dispatch({ type: SET_CACHED_FORMS, payload: { category_id: String(category_id), forms: result } });
 }
 } catch {
-const cached = (cachedForms || {})[String(category_id)] || [];
+const cached = cachedForms?.[String(category_id)] || [];
 if (cached.length > 0) {
 setForms(cached);
 setIsShowingCachedData(true);
@@ -89,8 +89,7 @@ alignItems: 'center',
 </View>
 ) : (
 <>
-{forms &&
-forms?.map((form, index) => {
+{forms?.map((form, index) => {
 let IconComponent: any = null;
 let iconName = '';
 if (form?.icon_expo) {
@@ -101,7 +100,7 @@ iconName = name;
 }
 }
 const formId = String(form?.id);
-const isCached = !!(cachedFormData && cachedFormData[formId]);
+const isCached = !!(cachedFormData?.[formId]);
 return (
 <TouchableOpacity
 style={{
