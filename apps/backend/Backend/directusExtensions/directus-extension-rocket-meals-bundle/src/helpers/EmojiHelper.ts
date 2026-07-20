@@ -24,9 +24,9 @@ enum EmojiFileNames {
 }
 
 export class EmojiHelper {
-  public static DivTextSize = DivTextSize;
-  public static EmojiPixelSize = EmojiPixelSize;
-  public static EmojiFileNames = EmojiFileNames;
+  public static readonly DivTextSize = DivTextSize;
+  public static readonly EmojiPixelSize = EmojiPixelSize;
+  public static readonly EmojiFileNames = EmojiFileNames;
 
   private static getEmojiImageURL(filename: EmojiFileNames, size: EmojiPixelSize): string {
     return 'https://raw.githubusercontent.com/rocket-meals/noto-emoji/refs/heads/main/png/' + size + '/' + filename + '.png';

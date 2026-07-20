@@ -6,7 +6,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../../../workflows-runs-hook/WorkflowRunJobInterface';
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
-  static FORM_INTERNAL_ID = 'housing-contract-sync-hannover';
+  static readonly FORM_INTERNAL_ID = 'housing-contract-sync-hannover';
 
   private readonly reader: HannoverTL1HousingFileReader;
   private contracts: ImportHousingContracts = [];

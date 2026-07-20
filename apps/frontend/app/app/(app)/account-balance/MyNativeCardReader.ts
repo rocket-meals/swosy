@@ -6,22 +6,20 @@ import {MyCardReaderInterface, MyCardReaderResponseSupport} from "@/app/(app)/ac
 
 const isExpoGo = isRunningInExpoGo();
 
-class NfcManagerClass {
-	public static NfcManager: any;
-	public static NfcTech: any;
-}
+let cachedNfcManager: any;
+let cachedNfcTech: any;
 
 // Loader-Funktion (wird nur einmal wirklich importieren)
 async function loadNfc() {
 	if (isExpoGo) return null;
-	if (!NfcManagerClass.NfcManager || !NfcManagerClass.NfcTech) {
+	if (!cachedNfcManager || !cachedNfcTech) {
 		const nfcManager = await import('react-native-nfc-manager');
-		NfcManagerClass.NfcManager = nfcManager.default;
-		NfcManagerClass.NfcTech = nfcManager.NfcTech;
+		cachedNfcManager = nfcManager.default;
+		cachedNfcTech = nfcManager.NfcTech;
 	}
 	return {
-		NfcManager: NfcManagerClass.NfcManager,
-		NfcTech: NfcManagerClass.NfcTech,
+		NfcManager: cachedNfcManager,
+		NfcTech: cachedNfcTech,
 	};
 }
 

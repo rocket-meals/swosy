@@ -49,8 +49,8 @@ export class DirectusTestServerSetup {
   private readonly options: Required<DirectusTestServerOptions>;
   private readonly directusUrl: string;
 
-  static ADMIN_EMAIL = ADMIN_EMAIL;
-  static ADMIN_PASSWORD = ADMIN_PASSWORD;
+  static readonly ADMIN_EMAIL = ADMIN_EMAIL;
+  static readonly ADMIN_PASSWORD = ADMIN_PASSWORD;
 
   /**
    * Creates a new DirectusTestServerSetup instance

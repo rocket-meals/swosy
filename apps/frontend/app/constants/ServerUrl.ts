@@ -3,10 +3,14 @@ import { getCustomerConfig } from '@/config';
 const customerConfig = getCustomerConfig();
 
 class ServerConfiguration {
-	static ServerUrl: string = customerConfig.server_url;
+	private static serverUrl: string = customerConfig.server_url;
+
+	static get ServerUrl(): string {
+		return this.serverUrl;
+	}
 
 	static setServerUrl(url: string) {
-		this.ServerUrl = url;
+		this.serverUrl = url;
 	}
 }
 

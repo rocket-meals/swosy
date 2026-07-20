@@ -40,7 +40,7 @@ export function createUserLocationMarkerSvg(): string {
 }
 
 export class MyMapMarkerIcons {
-	static DEBUG_ICON = `<div style='width: ${MARKER_DEFAULT_SIZE}px; height: ${MARKER_DEFAULT_SIZE}px; background-color: #FF000066; position: relative;'><div style='width: ${MARKER_DEFAULT_SIZE}px; height: ${MARKER_DEFAULT_SIZE}px; background-color: #00FF0066; border-radius: 50%; position: absolute; top: 0%; left: 0%;'></div></div>`;
+	static readonly DEBUG_ICON = `<div style='width: ${MARKER_DEFAULT_SIZE}px; height: ${MARKER_DEFAULT_SIZE}px; background-color: #FF000066; position: relative;'><div style='width: ${MARKER_DEFAULT_SIZE}px; height: ${MARKER_DEFAULT_SIZE}px; background-color: #00FF0066; border-radius: 50%; position: absolute; top: 0%; left: 0%;'></div></div>`;
 
 	static getIconForWebByLocalPathUri(iconUri: string): string {
 		return `<img src='${iconUri}' style='width: ${MARKER_DEFAULT_SIZE}px; height: ${MARKER_DEFAULT_SIZE}px; object-fit: contain;'>`;

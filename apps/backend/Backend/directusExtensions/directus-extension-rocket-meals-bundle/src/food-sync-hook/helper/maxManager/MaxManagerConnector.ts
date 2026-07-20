@@ -44,8 +44,8 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
 
     private readonly config: MaxManagerConnectorConfig;
 
-    static PAGE_INDEX = "/index.php";
-    static PAGE_AJAX_KONNEKTOR = "/inc/ajax-php_konnektor.inc.php";
+    static readonly PAGE_INDEX = "/index.php";
+    static readonly PAGE_AJAX_KONNEKTOR = "/inc/ajax-php_konnektor.inc.php";
 
     private canteenIdToNameMap: Record<string, string> = {};
     private canteenIdToDataMap: Record<string, CanteenData[]> = {};

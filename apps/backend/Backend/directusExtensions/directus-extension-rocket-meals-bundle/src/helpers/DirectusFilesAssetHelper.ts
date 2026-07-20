@@ -13,12 +13,12 @@ export type DirectusFileTransformOptions = {
 };
 
 export class DirectusFilesAssetHelper {
-  public static PRESET_FILE_TRANSFORMATION_IMAGE_HD: DirectusFileTransformOptions = {
+  public static readonly PRESET_FILE_TRANSFORMATION_IMAGE_HD: DirectusFileTransformOptions = {
     width: 1024,
     height: 1024,
   };
 
-  public static PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL: DirectusFileTransformOptions = {
+  public static readonly PRESET_FILE_TRANSFORMATION_IMAGE_ORIGINAL: DirectusFileTransformOptions = {
     quality: 100,
     fit: 'contain',
   }

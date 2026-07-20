@@ -4,11 +4,15 @@ import { default as puppeteerCore } from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 
 export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
-  public static PuppeteerCore: any = puppeteerCore;
-  public static PuppeteerForJest: any = undefined;
+  public static readonly PuppeteerCore: any = puppeteerCore;
+  private static puppeteerForJest: any = undefined;
+
+  public static setPuppeteerForJest(puppeteer: any) {
+    this.puppeteerForJest = puppeteer;
+  }
 
   public static getPuppeteerLib() {
-    return this.PuppeteerForJest || this.PuppeteerCore;
+    return this.puppeteerForJest || this.PuppeteerCore;
   }
 
   /**

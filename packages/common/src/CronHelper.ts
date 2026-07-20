@@ -12,7 +12,7 @@ export class CronHelper {
     return cronObject.seconds + ' ' + cronObject.minutes + ' ' + cronObject.hours + ' ' + cronObject.dayOfMonth + ' ' + cronObject.month + ' ' + cronObject.dayOfWeek;
   }
 
-  static EVERY_HOUR: CronObject = {
+  static readonly EVERY_HOUR: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: '*',
@@ -21,7 +21,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_MINUTE: CronObject = {
+  static readonly EVERY_MINUTE: CronObject = {
     seconds: 0,
     minutes: '*',
     hours: '*',
@@ -30,7 +30,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_5_MINUTES: CronObject = {
+  static readonly EVERY_5_MINUTES: CronObject = {
     seconds: 0,
     minutes: '*/5',
     hours: '*',
@@ -39,7 +39,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_MONTH_AT_1AM: CronObject = {
+  static readonly EVERY_MONTH_AT_1AM: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 1,
@@ -48,7 +48,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_15_MINUTES: CronObject = {
+  static readonly EVERY_15_MINUTES: CronObject = {
     seconds: 0,
     minutes: '*/15',
     hours: '*',
@@ -57,7 +57,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_DAY_AT_17_59: CronObject = {
+  static readonly EVERY_DAY_AT_17_59: CronObject = {
     seconds: 0,
     minutes: 59,
     hours: 17,
@@ -66,7 +66,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_DAY_AT_4AM: CronObject = {
+  static readonly EVERY_DAY_AT_4AM: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 4,
@@ -75,7 +75,7 @@ export class CronHelper {
     dayOfWeek: '*',
   };
 
-  static EVERY_DAY_AT_3AM: CronObject = {
+  static readonly EVERY_DAY_AT_3AM: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 3,
@@ -84,7 +84,7 @@ export class CronHelper {
     dayOfWeek: '*',
   }
 
-  static EVERY_DAY_AT_2AM: CronObject = {
+  static readonly EVERY_DAY_AT_2AM: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 2,
@@ -93,7 +93,7 @@ export class CronHelper {
     dayOfWeek: '*',
   }
 
-  static EVERY_FRIDAY_AT_8AM: CronObject = {
+  static readonly EVERY_FRIDAY_AT_8AM: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 8,
@@ -102,7 +102,7 @@ export class CronHelper {
     dayOfWeek: 5,
   };
 
-  static EVERY_DAY_AT_20: CronObject = {
+  static readonly EVERY_DAY_AT_20: CronObject = {
     seconds: 0,
     minutes: 0,
     hours: 20,

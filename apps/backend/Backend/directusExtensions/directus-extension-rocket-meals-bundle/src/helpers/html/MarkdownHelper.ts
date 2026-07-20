@@ -16,7 +16,7 @@ export class MarkdownHelper {
     return html;
   }
 
-  public static EXAMPLE_MARKDOWN = `
+  public static readonly EXAMPLE_MARKDOWN = `
 # Title Level 1
 ## Title Level 2
 ### Title Level 3

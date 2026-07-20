@@ -105,8 +105,8 @@ class MyKvStorageMemory implements MyKvStorageImplementation {
 }
 
 class MyKvStorage {
-  static prefix_code_challenge = 'pkce_code_challenge_';
-  static prefix_save_session = 'pkce_save_session_';
+  static readonly prefix_code_challenge = 'pkce_code_challenge_';
+  static readonly prefix_save_session = 'pkce_save_session_';
 
   private readonly kvImplementation: MyKvStorageImplementation;
 
@@ -174,8 +174,8 @@ type CodeChallengeRedisEntryType = {
 };
 
 class CodeChallengeMethods {
-  static METHOD_S256 = 'S256';
-  static METHOD_plain = 'plain';
+  static readonly METHOD_S256 = 'S256';
+  static readonly METHOD_plain = 'plain';
 }
 
 async function generateRefreshToken(directus_session_token: string, accountability: any, userId: string, database: Knex<any, any[]>) {

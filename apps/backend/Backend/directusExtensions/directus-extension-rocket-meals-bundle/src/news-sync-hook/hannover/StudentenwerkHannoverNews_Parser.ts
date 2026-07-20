@@ -11,9 +11,9 @@ import { FetchHelper } from '../../helpers/FetchHelper';
 //const agent = new Agent({ maxHeaderSize: 32 * 1024 });
 
 export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
-  static baseUrl = 'https://www.studentenwerk-hannover.de';
-  static newsUrl = `${StudentenwerkHannoverNews_Parser.baseUrl}/unternehmen/news`;
-  static newsDetailArticleUrlStart = '/unternehmen/news';
+  static readonly baseUrl = 'https://www.studentenwerk-hannover.de';
+  static readonly newsUrl = `${StudentenwerkHannoverNews_Parser.baseUrl}/unternehmen/news`;
+  static readonly newsDetailArticleUrlStart = '/unternehmen/news';
 
   constructor() {}
 

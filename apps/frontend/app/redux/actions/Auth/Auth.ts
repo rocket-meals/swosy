@@ -35,12 +35,12 @@ export type AuthProvider = {
 };
 
 export class ServerAPI {
-	static client: (DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any>) | null = null;
-	static serverUrlCustom: string | null = null;
-	static ParamNameForAccessToken = 'directus_refresh_token';
-	static PROVIDER_NAME_APPLE = 'apple';
-	static PROVIDER_NAME_GOOGLE = 'google';
-	static simpleAuthentificationStorage: AuthenticationStorage | null = null;
+	private static client: (DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any>) | null = null;
+	private static serverUrlCustom: string | null = null;
+	static readonly ParamNameForAccessToken = 'directus_refresh_token';
+	static readonly PROVIDER_NAME_APPLE = 'apple';
+	static readonly PROVIDER_NAME_GOOGLE = 'google';
+	private static simpleAuthentificationStorage: AuthenticationStorage | null = null;
 
 	static updateServerUrl(url: string) {
 		this.serverUrlCustom = url;
