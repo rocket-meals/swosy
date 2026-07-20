@@ -11,7 +11,6 @@ import { TranslationKeys } from '@/locales/keys';
 const SingleLineInput = ({ id, value, onChange, error, isDisabled, custom_type, prefix, suffix, autoFocus, insideBottomSheet }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined; autoFocus?: boolean; insideBottomSheet?: boolean }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const flag = !suffix && !prefix;
 	// Inside bottom-sheet content the input must be BottomSheetTextInput, otherwise
 	// the sheet's keyboard tracking cannot see it and the keyboard covers the field.
 	// BottomSheetTextInput throws outside a sheet, so it must stay opt-in.

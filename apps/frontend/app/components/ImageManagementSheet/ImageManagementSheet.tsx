@@ -28,7 +28,6 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const MAX_IMAGE_DIMENSION = 6000;
 	const { foodCollection } = useAppSelector((state) => state.food);
-	const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
 
 	const getFolder = () => {
@@ -110,8 +109,6 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			if (fileName === 'foods') {
 				storage = getFolder();
 			}
-			let fileSizes: number | undefined = undefined;
-
 			if (Platform.OS === 'web') {
 				const blob: Blob = await new Promise((resolve, reject) => {
 					const xhr = new XMLHttpRequest();
@@ -127,7 +124,6 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 					xhr.send(null);
 				});
 
-				fileSizes = blob.size;
 				if (storage) {
 					formData.append('folder', storage);
 				}
@@ -146,10 +142,6 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 					formData.append('folder', storage);
 				}
 				formData.append('image', file, file_name);
-
-				const response = await fetch(finalUri);
-				const blob = await response.blob();
-				fileSizes = blob.size;
 			}
 
 			const client = ServerAPI.getClient();
@@ -160,7 +152,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			const file_id = resultFileUpload.id;
 
 			const collectionHelper = new CollectionHelper(fileName);
-                        let resultImageLinked = await collectionHelper.updateItem(selectedFoodId, {
+                        await collectionHelper.updateItem(selectedFoodId, {
                                 image: file_id,
                                 image_generated: false,
                         });
@@ -177,7 +169,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 		try {
 			const collectionHelper = new CollectionHelper(fileName);
 			setLoading({ ...loading, delete: true });
-                        let result = await collectionHelper.updateItem(selectedFoodId, {
+                        await collectionHelper.updateItem(selectedFoodId, {
                                 image: null,
                                 image_remote_url: null,
                                 image_generated: false,

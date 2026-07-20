@@ -97,10 +97,6 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 		});
 	}, [campus, openLinkCoordinateModal, translate]);
 
-	const cardWidth = useMemo(() => {
-		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-	}, [amountColumnsForcard, screenWidth]);
-
 	const imageSource = useMemo(() => {
 		if (campus?.image || campus?.image_remote_url) {
 			return { uri: campus?.image_remote_url || getImageUrl(campus?.image) };

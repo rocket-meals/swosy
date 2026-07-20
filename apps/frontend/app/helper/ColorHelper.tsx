@@ -60,7 +60,6 @@ function useLighterOrDarkerColorByContrastWithOptions(color: string | undefined,
 		}
 
 		const backgroundColor = Color(color);
-		const isDark = backgroundColor.isDark();
 		let modifiedColor = backgroundColor.clone();
 		const step = 1; // Adjust step to be more precise
 		let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -45,12 +45,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const showSeparatedMarkingsBreakdown = seperatedMarkingsReduxValue ?? customerConfigSeperate;
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-
-	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
-	let food_responsible_organization_link = appSettings?.food_responsible_organization_link || 'https://www.studentenwerk-osnabrueck.de/';
-	const handleRedirect = () => {
-		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
-	};
 
 	const markings = useSelector(selectMarkings);
 	const markingGroups = useSelector(selectMarkingGroups);

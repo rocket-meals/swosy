@@ -40,7 +40,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [data, setData] = useState<any[]>(timeTableData);
 	const [inputValue, setInputValue] = useState<string>('');
-	const [selectedColor, setSelectedColor] = useState<string>('');
+	const [, setSelectedColor] = useState<string>('');
 
 	useEffect(() => {
 		if (isUpdate && timeTableData) {
@@ -61,11 +61,6 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : primaryColor;
 	const contrastColor = myContrastColor(course_timetable_area_color, theme, mode === 'dark');
-	const SheetClose = () => {
-		closeSheet();
-		setSelectedItem(null);
-	};
-
 	const cancleSheet = () => {
 		setSelectedItem(null);
 	};
