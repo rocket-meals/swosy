@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme, type Theme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
+import { randomDieValue } from '../../helpers/RandomHelper';
 
 type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -48,7 +49,7 @@ type RollResult =
 	| { mode: 'advantage' | 'disadvantage'; rollA: DiceRoll; rollB: DiceRoll; keptRoll: 'A' | 'B'; keptTotal: number };
 
 function rollValue(sides: number): number {
-	return Math.floor(Math.random() * sides) + 1;
+	return randomDieValue(sides);
 }
 
 function rollPoolOnce(pool: PoolDie[]): DiceRoll {

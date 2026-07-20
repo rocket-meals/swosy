@@ -27,7 +27,9 @@ jobs:
         run: corepack enable
 
       - name: "📦 Install dependencies"
-        run: yarn install --immutable
+        # --mode=skip-build disables dependency lifecycle scripts (supply-chain hardening);
+        # the submit script only needs ts-node/typescript, which require no build step.
+        run: yarn install --immutable --mode=skip-build
 
       - name: "🔐 Prepare Apple App Store Connect API key"
         uses: ./.github/actions/prepare-asc-api-key

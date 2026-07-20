@@ -37,6 +37,7 @@ import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
 import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
+import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -44,7 +45,7 @@ const DANGER_COLOR = '#dc2626';
 const DEBUG_COLOR = '#7c3aed';
 
 function generateHistoryId(): string {
-	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+	return generateId();
 }
 
 function formatDate(timestamp: number): string {
