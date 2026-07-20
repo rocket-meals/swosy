@@ -175,10 +175,12 @@ const MyAvatar: React.FC<MyAvatarProps> = ({
 		// Normalize flip to a proper boolean.
 		// Supports both the current boolean format and legacy ["true"]/["false"] string-array format.
 		const rawFlip = renderOptions['flip'];
-		const flipValue: boolean =
-			typeof rawFlip === 'boolean' ? rawFlip :
-			Array.isArray(rawFlip) ? rawFlip[0] === 'true' :
-			false;
+		let flipValue = false;
+		if (typeof rawFlip === 'boolean') {
+			flipValue = rawFlip;
+		} else if (Array.isArray(rawFlip)) {
+			flipValue = rawFlip[0] === 'true';
+		}
 		renderOptions['flip'] = flipValue;
 		// When flip is true, mirror translateX so the avatar faces the correct direction.
 		if (flipValue) {

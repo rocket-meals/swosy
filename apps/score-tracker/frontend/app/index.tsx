@@ -184,24 +184,38 @@ function ScoreInputContent({
 				<Text style={styles.scoreInputSaveText}>Save</Text>
 			</TouchableOpacity>
 			<View style={styles.quickButtonsRow}>
-				{QUICK_SCORES.map((v) => (
-					<TouchableOpacity
-						key={v}
-						style={[
-							styles.quickButton,
-							{
-								backgroundColor: v < 0 ? DANGER_COLOR + '20' : v > 0 ? PRIMARY_COLOR + '20' : theme.screen.border + '40',
-								borderColor: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.border,
-							},
-						]}
-						onPress={() => handleQuickScore(v)}
-						activeOpacity={0.7}
-					>
-						<Text style={[styles.quickButtonText, { color: v < 0 ? DANGER_COLOR : v > 0 ? PRIMARY_COLOR : theme.screen.text }]}>
-							{v > 0 ? `+${v}` : String(v)}
-						</Text>
-					</TouchableOpacity>
-				))}
+				{QUICK_SCORES.map((v) => {
+					let quickButtonBackground = theme.screen.border + '40';
+					let quickButtonBorder = theme.screen.border;
+					let quickButtonTextColor = theme.screen.text;
+					if (v < 0) {
+						quickButtonBackground = DANGER_COLOR + '20';
+						quickButtonBorder = DANGER_COLOR;
+						quickButtonTextColor = DANGER_COLOR;
+					} else if (v > 0) {
+						quickButtonBackground = PRIMARY_COLOR + '20';
+						quickButtonBorder = PRIMARY_COLOR;
+						quickButtonTextColor = PRIMARY_COLOR;
+					}
+					return (
+						<TouchableOpacity
+							key={v}
+							style={[
+								styles.quickButton,
+								{
+									backgroundColor: quickButtonBackground,
+									borderColor: quickButtonBorder,
+								},
+							]}
+							onPress={() => handleQuickScore(v)}
+							activeOpacity={0.7}
+						>
+							<Text style={[styles.quickButtonText, { color: quickButtonTextColor }]}>
+								{v > 0 ? `+${v}` : String(v)}
+							</Text>
+						</TouchableOpacity>
+					);
+				})}
 			</View>
 		</View>
 	);
@@ -666,6 +680,14 @@ export default function GameScreen() {
 	const isLastPossibleRound =
 		(matchFinished && currentRoundIndex >= rounds.length - 1) || (maxRounds != null && currentRoundNumber >= maxRounds);
 
+	// Label for the "next round" navigation button
+	let nextRoundLabel = `Runde ${currentRoundNumber + 1}`;
+	if (matchFinished) {
+		nextRoundLabel = 'Spiel beendet';
+	} else if (maxRounds != null && currentRoundNumber >= maxRounds) {
+		nextRoundLabel = 'Letzte Runde';
+	}
+
 	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
 		if (columnCount === 1) return undefined;
@@ -902,6 +924,19 @@ export default function GameScreen() {
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
+	const gameTypeRowValue = selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel';
+	const gameTypeRowIconComponent = selectedGameType ? (
+		<View style={styles.gameTypeIconWrapper}>
+			<GameTypeIcon icon={selectedGameType.icon} size={40} />
+		</View>
+	) : undefined;
+	const gameTypeRowLeftIcon = selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />;
+	const finishedBannerWinnerSuffix = leaderId ? ` von ${players.find((p) => p.id === leaderId)?.name}` : '';
+	const startButtonOpacity = players.length === 0 ? 0.5 : 1;
+	const prevRoundOpacity = currentRoundIndex === 0 ? 0.4 : 1;
+	const maxRoundsSuffix = maxRounds != null ? ` / ${maxRounds}` : '';
+	const nextRoundOpacity = isLastPossibleRound ? 0.4 : 1;
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			<ScrollView
@@ -920,17 +955,9 @@ export default function GameScreen() {
 								<SettingsList
 									nativeID={ComponentIds.GAME_SETUP_GAME_TYPE_ROW}
 									label="Spiel"
-									value={selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel'}
-									leftIconComponent={
-										selectedGameType ? (
-											<View style={styles.gameTypeIconWrapper}>
-												<GameTypeIcon icon={selectedGameType.icon} size={40} />
-											</View>
-										) : undefined
-									}
-									leftIcon={
-										selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />
-									}
+									value={gameTypeRowValue}
+									leftIconComponent={gameTypeRowIconComponent}
+									leftIcon={gameTypeRowLeftIcon}
 									iconBgColor={PRIMARY_COLOR}
 									rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 									handleFunction={handleOpenGameTypeModal}
@@ -975,7 +1002,7 @@ export default function GameScreen() {
 								<Ionicons name="trophy-outline" size={18} color="#ffffff" />
 								<Text style={styles.finishedBannerText}>
 									Spiel beendet - Zielscore {maxScore} erreicht
-									{leaderId ? ` von ${players.find((p) => p.id === leaderId)?.name}` : ''}
+									{finishedBannerWinnerSuffix}
 								</Text>
 							</View>
 						)}
@@ -1003,7 +1030,7 @@ export default function GameScreen() {
 					{status === 'setup' ? (
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_START_BUTTON}
-							style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR, opacity: players.length === 0 ? 0.5 : 1 }]}
+							style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR, opacity: startButtonOpacity }]}
 							onPress={() => dispatch(startGame())}
 							disabled={players.length === 0}
 							activeOpacity={0.8}
@@ -1014,7 +1041,7 @@ export default function GameScreen() {
 						<>
 							<TouchableOpacity
 								nativeID={ComponentIds.GAME_ROUND_PREV_BUTTON}
-								style={[styles.roundNavButton, { backgroundColor: theme.screen.border, opacity: currentRoundIndex === 0 ? 0.4 : 1 }]}
+								style={[styles.roundNavButton, { backgroundColor: theme.screen.border, opacity: prevRoundOpacity }]}
 								onPress={handlePrevRound}
 								disabled={currentRoundIndex === 0}
 								activeOpacity={0.8}
@@ -1026,24 +1053,20 @@ export default function GameScreen() {
 							</TouchableOpacity>
 							<Text nativeID={ComponentIds.GAME_ROUND_LABEL} style={[styles.roundLabel, { color: theme.screen.text }]}>
 								Runde {currentRoundNumber}
-								{maxRounds != null ? ` / ${maxRounds}` : ''}
+								{maxRoundsSuffix}
 							</Text>
 							<TouchableOpacity
 								nativeID={ComponentIds.GAME_ROUND_NEXT_BUTTON}
 								style={[
 									styles.roundNavButton,
-									{ backgroundColor: PRIMARY_COLOR, opacity: isLastPossibleRound ? 0.4 : 1 },
+									{ backgroundColor: PRIMARY_COLOR, opacity: nextRoundOpacity },
 								]}
 								onPress={handleNextRound}
 								disabled={isLastPossibleRound}
 								activeOpacity={0.8}
 							>
 								<Text style={styles.roundNavText}>
-									{matchFinished
-										? 'Spiel beendet'
-										: maxRounds != null && currentRoundNumber >= maxRounds
-											? 'Letzte Runde'
-											: `Runde ${currentRoundNumber + 1}`}
+									{nextRoundLabel}
 								</Text>
 								<Ionicons name="chevron-forward" size={18} color="#ffffff" />
 							</TouchableOpacity>

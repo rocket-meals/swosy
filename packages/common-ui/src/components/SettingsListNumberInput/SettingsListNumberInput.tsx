@@ -102,6 +102,15 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 		onSave(clamp(numericValue, min, max));
 	}, [isValid, numericValue, min, max, onSave]);
 
+	let rangeHintText: string;
+	if (min != null && max != null) {
+		rangeHintText = `${min} – ${max}`;
+	} else if (min != null) {
+		rangeHintText = `Min: ${min}`;
+	} else {
+		rangeHintText = `Max: ${max}`;
+	}
+
 	const content = (
 		<View style={styles.sheetView}>
 			<View style={styles.inputRow}>
@@ -145,11 +154,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			</View>
 			{min != null || max != null ? (
 				<Text style={[styles.rangeHint, { color: theme.sheet.placeholder }]}>
-					{min != null && max != null
-						? `${min} – ${max}`
-						: min != null
-						? `Min: ${min}`
-						: `Max: ${max}`}
+					{rangeHintText}
 				</Text>
 			) : null}
 			<TouchableOpacity
@@ -204,17 +209,15 @@ const SettingsListNumberInput: React.FC<SettingsListNumberInputProps> = ({
 	const resolvedTitle = useMemo(() => modalTitle ?? title ?? label ?? '', [label, modalTitle, title]);
 	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? theme.primary;
 
-	const resolvedRightIcon = useMemo(
-		() =>
-			rightIcon ? (
-				rightIcon
-			) : rightElement ? (
-				undefined
-			) : (
-				<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />
-			),
-		[rightElement, rightIcon, theme.screen.icon],
-	);
+	const resolvedRightIcon = useMemo(() => {
+		if (rightIcon) {
+			return rightIcon;
+		}
+		if (rightElement) {
+			return undefined;
+		}
+		return <MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />;
+	}, [rightElement, rightIcon, theme.screen.icon]);
 
 	const handleOpen = useCallback(() => {
 		show({

@@ -35,6 +35,13 @@ const DANGER_COLOR = '#dc2626';
 const DEBUG_COLOR = '#7c3aed';
 const FRIEND_AVATAR_SIZE = 84; // Same size as the Game scoreboard's player avatars
 
+// Helper to determine groupPosition for list items
+function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
+
 // ─── Import/export rows (shared between the header "Optionen" modal and the
 // friend detail modal) ─────────────────────────────────────────────────────
 
@@ -260,7 +267,7 @@ function FriendEditContent({ friendId, onClose }: { friendId: string; onClose: (
 						stackedValue
 						leftIcon={<Ionicons name="trophy-outline" size={20} color="#ffffff" />}
 						iconBgColor={friend.color}
-						groupPosition={index === 0 ? 'top' : index === friendGames.length - 1 ? 'bottom' : 'middle'}
+						groupPosition={getGroupPosition(index, friendGames.length)}
 					/>
 				))
 			)}
@@ -334,6 +341,27 @@ export default function PlayersScreen() {
 		});
 	}, [navigation, theme.header.text, handleOpenOptionsModal]);
 
+	const searchResultsContent =
+		filteredFriends.length === 0 ? (
+			<Text style={[styles.emptySubtext, styles.noResultsText, { color: theme.screen.placeholder }]}>
+				Kein Freund gefunden für „{searchQuery}“.
+			</Text>
+		) : (
+			filteredFriends.map((friend, index) => (
+				<SettingsListAvatar
+					key={friend.id}
+					nativeID={`${ComponentIds.PLAYERS_SCREEN_FRIEND_ROW_PREFIX}${friend.id}`}
+					config={friend.avatarConfig}
+					avatarBackgroundColor={friend.color}
+					previewSize={FRIEND_AVATAR_SIZE}
+					label={friend.name}
+					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#9ca3af" />}
+					onPressOverride={() => handleOpenFriendModal(friend.id)}
+					groupPosition={getGroupPosition(index, filteredFriends.length)}
+				/>
+			))
+		);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			{friends.length > 0 && (
@@ -379,24 +407,8 @@ export default function PlayersScreen() {
 							Lege oben deinen ersten Spieler an
 						</Text>
 					</View>
-				) : filteredFriends.length === 0 ? (
-					<Text style={[styles.emptySubtext, styles.noResultsText, { color: theme.screen.placeholder }]}>
-						Kein Freund gefunden für „{searchQuery}“.
-					</Text>
 				) : (
-					filteredFriends.map((friend, index) => (
-						<SettingsListAvatar
-							key={friend.id}
-							nativeID={`${ComponentIds.PLAYERS_SCREEN_FRIEND_ROW_PREFIX}${friend.id}`}
-							config={friend.avatarConfig}
-							avatarBackgroundColor={friend.color}
-							previewSize={FRIEND_AVATAR_SIZE}
-							label={friend.name}
-							rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#9ca3af" />}
-							onPressOverride={() => handleOpenFriendModal(friend.id)}
-							groupPosition={index === 0 ? 'top' : index === filteredFriends.length - 1 ? 'bottom' : 'middle'}
-						/>
-					))
+					searchResultsContent
 				)}
 			</ScrollView>
 		</View>

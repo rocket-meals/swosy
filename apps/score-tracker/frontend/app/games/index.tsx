@@ -13,6 +13,13 @@ import GameTypeIcon from '../../components/GameTypeIcon';
 
 const PRIMARY_COLOR = '#2563eb';
 
+// Helper to determine groupPosition for list items
+function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+}
+
 export default function GamesScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -122,6 +129,34 @@ export default function GamesScreen() {
 		});
 	}, [navigation, theme.header.text, handleAddGameType, handleOpenImportModal]);
 
+	const searchResultsContent =
+		filteredGameTypes.length === 0 ? (
+			<Text style={[styles.emptySubtext, styles.noResultsText, { color: theme.screen.placeholder }]}>
+				Kein Spiel gefunden für „{searchQuery}“.
+			</Text>
+		) : (
+			filteredGameTypes.map((gameType, index) => {
+				const count = matchCounts[gameType.id] ?? 0;
+				return (
+					<SettingsList
+						key={gameType.id}
+						nativeID={`${ComponentIds.GAMES_SCREEN_GAME_ROW_PREFIX}${gameType.id}`}
+						leftIconComponent={
+							<View style={styles.gameIconWrapper}>
+								<GameTypeIcon icon={gameType.icon} size={56} />
+							</View>
+						}
+						label={gameType.name}
+						value={count === 1 ? '1 Partie' : `${count} Partien`}
+						stackedValue
+						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+						handleFunction={() => router.push({ pathname: '/games/[id]', params: { id: gameType.id } })}
+						groupPosition={getGroupPosition(index, filteredGameTypes.length)}
+					/>
+				);
+			})
+		);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
 			{gameTypes.length > 0 && (
@@ -157,31 +192,8 @@ export default function GamesScreen() {
 							Lege ein Spiel (z.B. Skat, Phase 10, ...) über den + Button im Header an
 						</Text>
 					</View>
-				) : filteredGameTypes.length === 0 ? (
-					<Text style={[styles.emptySubtext, styles.noResultsText, { color: theme.screen.placeholder }]}>
-						Kein Spiel gefunden für „{searchQuery}“.
-					</Text>
 				) : (
-					filteredGameTypes.map((gameType, index) => {
-						const count = matchCounts[gameType.id] ?? 0;
-						return (
-							<SettingsList
-								key={gameType.id}
-								nativeID={`${ComponentIds.GAMES_SCREEN_GAME_ROW_PREFIX}${gameType.id}`}
-								leftIconComponent={
-									<View style={styles.gameIconWrapper}>
-										<GameTypeIcon icon={gameType.icon} size={56} />
-									</View>
-								}
-								label={gameType.name}
-								value={count === 1 ? '1 Partie' : `${count} Partien`}
-								stackedValue
-								rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-								handleFunction={() => router.push({ pathname: '/games/[id]', params: { id: gameType.id } })}
-								groupPosition={index === 0 ? 'top' : index === filteredGameTypes.length - 1 ? 'bottom' : 'middle'}
-							/>
-						);
-					})
+					searchResultsContent
 				)}
 			</ScrollView>
 		</View>

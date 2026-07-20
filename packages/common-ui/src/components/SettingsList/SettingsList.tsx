@@ -61,11 +61,10 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	const showIconWrapper = hasIcon && !noIconIndent;
 	const shouldReserveIconSpace = !hasIcon && !noIconIndent;
 
-	const renderedLeftIcon = React.isValidElement(leftIcon)
-		? noIconIndent
-			? leftIcon
-			: React.cloneElement(leftIcon as any, { color: iconColor })
-		: leftIcon;
+	let renderedLeftIcon = leftIcon;
+	if (React.isValidElement(leftIcon) && !noIconIndent) {
+		renderedLeftIcon = React.cloneElement(leftIcon as any, { color: iconColor });
+	}
 
 	const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: backgroundColor ?? theme.screen.iconBg } as ViewStyle];
 	if (width !== undefined) {
@@ -105,17 +104,20 @@ const SettingsList: React.FC<SettingsListProps> = ({
 		wrapperBorderRadius = { borderRadius: borderRadiusContainer };
 	}
 
+	const valueContainerStyle = stackedValue ? styles.valueContainerStacked : styles.valueContainer;
+	const valueStackedStyle = stackedValue ? styles.valueStacked : null;
+	const valueFontSizeStyle = valueFontSize ? { fontSize: valueFontSize } : null;
+
+	let leftIconContent: React.ReactNode = null;
+	if (showIconWrapper) {
+		leftIconContent = leftIconComponent ? leftIconComponent : <View style={iconWrapperStyles}>{renderedLeftIcon}</View>;
+	} else if (hasIcon) {
+		leftIconContent = leftIconComponent ? leftIconComponent : renderedLeftIcon;
+	}
+
 	const inner = (
 		<Container onPress={pressHandler} style={containerStyles} nativeID={nativeID}>
-			{showIconWrapper ? (
-				leftIconComponent ? (
-					leftIconComponent
-				) : (
-					<View style={iconWrapperStyles}>{renderedLeftIcon}</View>
-				)
-			) : hasIcon ? (
-				leftIconComponent ? leftIconComponent : renderedLeftIcon
-			) : null}
+			{leftIconContent}
 			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
 			<View style={stackedValue ? styles.textWrapperStacked : styles.textWrapper}>
 				<View style={stackedValue ? styles.titleContainerStacked : styles.titleContainer}>
@@ -133,14 +135,14 @@ const SettingsList: React.FC<SettingsListProps> = ({
 					</Text>
 				</View>
 				{value ? (
-					<View style={stackedValue ? styles.valueContainerStacked : styles.valueContainer}>
+					<View style={valueContainerStyle}>
 						<Text
 							selectable
 							style={[
 								styles.value,
-								stackedValue ? styles.valueStacked : null,
+								valueStackedStyle,
 								{ color: valueColor ?? theme.screen.text } as TextStyle,
-								valueFontSize ? { fontSize: valueFontSize } : null,
+								valueFontSizeStyle,
 							]}
 							numberOfLines={0}
 						>
@@ -153,7 +155,8 @@ const SettingsList: React.FC<SettingsListProps> = ({
 		</Container>
 	);
 
-	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} /> : null;
+	const separatorMarginLeft = noIconIndent ? 0 : 54;
+	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: separatorMarginLeft }]} /> : null;
 
 	const accountRequiredPosition = accountRequiredGroupPosition ?? groupPosition;
 	const accountRequiredBorderStyle: ViewStyle =
