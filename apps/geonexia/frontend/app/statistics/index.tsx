@@ -76,7 +76,10 @@ export default function StatisticsScreen() {
 			children: (
 				<View>
 					{options.map((opt, i) => {
-						const position = i === 0 ? 'top' : i === options.length - 1 ? 'bottom' : 'middle';
+						let position: 'top' | 'bottom' | 'middle';
+						if (i === 0) position = 'top';
+						else if (i === options.length - 1) position = 'bottom';
+						else position = 'middle';
 						const sportDef = SPORT_TYPES.find((s) => s.type === opt.type);
 						const bgColor = sportDef?.color ?? PRIMARY_COLOR;
 						const icon = sportDef

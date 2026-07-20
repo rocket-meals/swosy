@@ -67,6 +67,13 @@ const BOUNDS_RECT_SCRIPT = `
 })();
 `;
 
+function getGroupPosition(idx: number, count: number): 'single' | 'top' | 'bottom' | 'middle' {
+	if (count === 1) return 'single';
+	if (idx === 0) return 'top';
+	if (idx === count - 1) return 'bottom';
+	return 'middle';
+}
+
 export default function HexTileInfoScreen() {
 	const { theme } = useTheme();
 	const { showAlert } = useGeonexiaAlert();
@@ -280,7 +287,7 @@ export default function HexTileInfoScreen() {
 								leftIcon={<MaterialIcons name="directions" size={22} color="#ffffff" />}
 								label={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
 								value={JSON.stringify(f)}
-								groupPosition={streets.length === 1 ? 'single' : idx === 0 ? 'top' : idx === streets.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, streets.length)}
 							/>
 						))}
 					</>
@@ -296,7 +303,7 @@ export default function HexTileInfoScreen() {
 								leftIcon={<MaterialIcons name="water" size={22} color="#ffffff" />}
 								label={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
 								value={JSON.stringify(f)}
-								groupPosition={waterways.length === 1 ? 'single' : idx === 0 ? 'top' : idx === waterways.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, waterways.length)}
 							/>
 						))}
 					</>
@@ -312,7 +319,7 @@ export default function HexTileInfoScreen() {
 								leftIcon={<MaterialIcons name="apartment" size={22} color="#ffffff" />}
 								label={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
 								value={JSON.stringify(f)}
-								groupPosition={buildings.length === 1 ? 'single' : idx === 0 ? 'top' : idx === buildings.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, buildings.length)}
 							/>
 						))}
 					</>
@@ -328,7 +335,7 @@ export default function HexTileInfoScreen() {
 								leftIcon={<MaterialIcons name="place" size={22} color="#ffffff" />}
 								label={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}
 								value={JSON.stringify(f)}
-								groupPosition={pois.length === 1 ? 'single' : idx === 0 ? 'top' : idx === pois.length - 1 ? 'bottom' : 'middle'}
+								groupPosition={getGroupPosition(idx, pois.length)}
 							/>
 						))}
 					</>
