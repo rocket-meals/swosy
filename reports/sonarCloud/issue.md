@@ -5,14 +5,14 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 55 | 50 |
-| 🔧 Maintainability | 1960 | 0 |
+| 🐛 Reliability | 44 | 44 |
+| 🔧 Maintainability | 1958 | 6 |
 
-**Total issues:** 2015 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2002 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (50/55)
+## 🐛 Reliability (44/44)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/accessibilityTester/src/report.ts:108
@@ -102,18 +102,6 @@
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:414
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L414
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/[id].tsx:438
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L438
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/activities/index.tsx:604
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L604
-
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:114
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
@@ -130,30 +118,6 @@
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
 
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/index.tsx:3487
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L3487
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/index.tsx:5090
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5090
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/routes/[id].tsx:670
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L670
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/routes/[id].tsx:1270
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L1270
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/settings/index.tsx:484
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L484
-
-- **Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.**
-  apps/geonexia/frontend/app/settings/index.tsx:549
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L549
-
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L64
@@ -169,14 +133,6 @@
 - **Do not use an object literal as default for parameter `content`.**
   apps/geonexia/frontend/helpers/TTSHelper.ts:82
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSHelper.ts#L82
-
-- **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:439
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L439
-
-- **Do not add `then` to an object.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:446
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L446
 
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/score-tracker/run-maestro-web-test.sh:81
@@ -213,4 +169,50 @@
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/scripts/submit-ios-review.ts:26
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/scripts/submit-ios-review.ts:26
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/src/EmailHelper.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EmailHelper.ts#L2
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  packages/common/src/EventHelper.ts:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L30
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  packages/common/src/EventHelper.ts:31
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/EventHelper.ts#L31
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/src/NumberHelper.ts:38
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
+
+## 🔧 Maintainability (6/1958)
+
+- **Prefer `node:path` over `path`.**
+  apps/accessibilityTester/src/index.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/index.ts#L1
+
+- **'fs' imported multiple times.**
+  apps/accessibilityTester/src/report.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
+
+- **Prefer `node:fs` over `fs`.**
+  apps/accessibilityTester/src/report.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+
+- **'fs' imported multiple times.**
+  apps/accessibilityTester/src/report.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L2
+
+- **Prefer `node:fs` over `fs`.**
+  apps/accessibilityTester/src/report.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L1
+
+- **Prefer `node:path` over `path`.**
+  apps/accessibilityTester/src/report.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L3
 

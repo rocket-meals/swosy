@@ -1,20 +1,9 @@
 Key,Message,Component,Line
-"AZ93QAer4n5ZUmHbOoCq","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",439
-"AZ93QAer4n5ZUmHbOoCr","Do not add `then` to an object.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",446
 "AZ9wjYi175F_EoJO9xIP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",30
 "AZ9wjYi175F_EoJO9xIQ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/EventHelper.ts",31
 "AZ9qyn9KHKfHY7dxI2cK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cL","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
 "AZ9qyn9KHKfHY7dxI2cM","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",26
-"AZ9lpRUZKqeTrVO2SpWO","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",414
-"AZ9lpRUZKqeTrVO2SpWP","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",438
-"AZ9lpRU4KqeTrVO2SpWQ","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",604
-"AZ9lpRXeKqeTrVO2SpWT","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3487
-"AZ9lpRXeKqeTrVO2SpWU","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5090
-"AZ9lpRQkKqeTrVO2SpWM","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",670
-"AZ9lpRQkKqeTrVO2SpWN","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",1270
-"AZ9lpRVqKqeTrVO2SpWR","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",484
-"AZ9lpRVqKqeTrVO2SpWS","Consider using 'await' for the promise inside this 'try' or replace it with 'Promise.prototype.catch(...)' usage.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",549
 "AZ9gjKGLzJugdJpoBVO_","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",81
 "AZ9gjKGLzJugdJpoBVPB","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",97
 "AZ9gjKGLzJugdJpoBVPF","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",122
