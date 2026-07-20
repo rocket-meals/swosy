@@ -113,6 +113,24 @@ function getAnchorAngleDeg(anchorPosition: string): number {
 	return match ? (240 - Number.parseInt(match[1], 10) + 360) % 360 : 0;
 }
 
+/**
+ * Group position of a list entry for settings list styling:
+ * 'single' for one-item lists, otherwise 'top' / 'middle' / 'bottom'.
+ */
+function getListGroupPosition(index: number, length: number): 'top' | 'middle' | 'bottom' | 'single' {
+	if (length === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === length - 1) return 'bottom';
+	return 'middle';
+}
+
+/** Locale-independent code unit comparison for deterministic string sorting. */
+function compareByCodeUnit(a: string, b: string): number {
+	if (a < b) return -1;
+	if (a > b) return 1;
+	return 0;
+}
+
 const PRIMARY_COLOR = '#2563eb';
 
 /** Billboard key for the castle2 sprite. Used to mark the player's home tile. */
@@ -905,12 +923,12 @@ function computeStats(points: RoutePoint[]): RunStats {
 
 		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
 		const gpsSpeed = points[i].speed;
-		const segSpeedKmh =
-			gpsSpeed != null && gpsSpeed >= 0
-				? gpsSpeed * 3.6
-				: dtSec > 0
-				? (segKm / dtSec) * 3600
-				: 0;
+		let segSpeedKmh = 0;
+		if (gpsSpeed != null && gpsSpeed >= 0) {
+			segSpeedKmh = gpsSpeed * 3.6;
+		} else if (dtSec > 0) {
+			segSpeedKmh = (segKm / dtSec) * 3600;
+		}
 		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
 			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
 			speedDistanceKm += segKm;
@@ -1091,35 +1109,35 @@ function DebugInfoContent({
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= minZoom);
 
-	const statusColor = !h3Available
-		? STATUS_ERROR_COLOR
-		: info == null
-		? STATUS_WARNING_COLOR
-		: !tilesExpected
-		? STATUS_WARNING_COLOR
-		: info.tileCount > 0
-		? STATUS_SUCCESS_COLOR
-		: STATUS_ERROR_COLOR;
+	let statusColor: string;
+	let statusText: string;
+	if (!h3Available) {
+		statusColor = STATUS_ERROR_COLOR;
+		statusText = '❌ H3 library failed to initialise';
+	} else if (info == null) {
+		statusColor = STATUS_WARNING_COLOR;
+		statusText = '⚠️ No viewport data yet. Move or zoom the map.';
+	} else if (!tilesExpected) {
+		statusColor = STATUS_WARNING_COLOR;
+		statusText = `⚠️ Zoom in to ≥${minZoom} to see tiles`;
+	} else if (info.tileCount > 0) {
+		statusColor = STATUS_SUCCESS_COLOR;
+		statusText = `✅ ${info.tileCount} H3 tiles computed`;
+	} else {
+		statusColor = STATUS_ERROR_COLOR;
+		statusText = '❌ 0 tiles – H3 library may not be working';
+	}
 
-	const statusText = !h3Available
-		? '❌ H3 library failed to initialise'
-		: info == null
-		? '⚠️ No viewport data yet. Move or zoom the map.'
-		: !tilesExpected
-		? `⚠️ Zoom in to ≥${minZoom} to see tiles`
-		: info.tileCount > 0
-		? `✅ ${info.tileCount} H3 tiles computed`
-		: '❌ 0 tiles – H3 library may not be working';
-
-	const viewportRows: { label: string; value: string }[] = info
-		? [
+	let viewportRows: { label: string; value: string }[] = [];
+	if (info) {
+		viewportRows = [
 			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${minZoom})` },
 			{ label: 'North', value: info.bounds.north.toFixed(5) },
 			{ label: 'South', value: info.bounds.south.toFixed(5) },
 			{ label: 'East', value: info.bounds.east.toFixed(5) },
 			{ label: 'West', value: info.bounds.west.toFixed(5) },
-		]
-		: [];
+		];
+	}
 
 	return (
 		<View style={styles.debugContainer}>
@@ -1316,8 +1334,7 @@ function DebugInfoContent({
 					<SettingsListGroupTitle title={`⬠ Pentagon Tiles (Res ${Math.round(h3Resolution)})`} />
 					{pentagons.map((cell, i) => {
 						const [lat, lng] = cellToLatLng(cell);
-						const position: 'top' | 'middle' | 'bottom' | 'single' =
-							pentagons.length === 1 ? 'single' : i === 0 ? 'top' : i === pentagons.length - 1 ? 'bottom' : 'middle';
+						const position: 'top' | 'middle' | 'bottom' | 'single' = getListGroupPosition(i, pentagons.length);
 						return (
 							<SettingsListSelectOptionSingle
 								key={cell}
@@ -1767,6 +1784,9 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: Bi
 					const isSelected = selected === ac.id;
 					const isOccupied = occupiedAnchors ? !!occupiedAnchors[ac.id] : false;
 					const dotSize = isSelected ? HEX_DOT_SELECTED_SIZE : HEX_DOT_SIZE;
+					const isWhiteSwatch = ac.hex === '#ffffff';
+					const unselectedBorderColor = isWhiteSwatch ? '#d1d5db' : 'transparent';
+					const unselectedBorderWidth = isWhiteSwatch ? 1 : 0;
 					return (
 						<TouchableOpacity
 							key={ac.id}
@@ -1780,8 +1800,8 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: Bi
 									left: pos.x - dotSize / 2,
 									top: pos.y - dotSize / 2,
 									backgroundColor: ac.hex,
-									borderColor: isSelected ? PRIMARY_COLOR : (ac.hex === '#ffffff' ? '#d1d5db' : 'transparent'),
-									borderWidth: isSelected ? 3 : (ac.hex === '#ffffff' ? 1 : 0),
+									borderColor: isSelected ? PRIMARY_COLOR : unselectedBorderColor,
+									borderWidth: isSelected ? 3 : unselectedBorderWidth,
 									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
 									shadowOpacity: isSelected ? 0.6 : 0,
 									shadowRadius: 4,
@@ -1881,7 +1901,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		if (!parentIndex) return null;
 		// H3 index strings - deterministic code unit comparison keeps child numbering
 		// identical across devices regardless of locale.
-		const siblings = cellToChildren(parentIndex, res).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+		const siblings = cellToChildren(parentIndex, res).sort(compareByCodeUnit);
 		const childNumber = siblings.indexOf(h3Index);
 		return {
 			parentIndex,
@@ -1890,19 +1910,30 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		};
 	}, [h3Index]);
 
+	let walkedOnValue = '⬜ No';
+	if (record) {
+		walkedOnValue = record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)';
+	}
+
+	const parentRows: { label: string; value: string }[] = [];
+	if (parentInfo) {
+		const childNumberValue = parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—';
+		parentRows.push(
+			{ label: 'Parent H3', value: parentInfo.parentIndex },
+			{ label: 'Nr. im Parent', value: childNumberValue },
+		);
+	}
+
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
-		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
+		{ label: 'Walked On', value: walkedOnValue },
 		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
 		{ label: 'Avenue Count', value: record ? String(record.avenueCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
-		...(parentInfo ? [
-			{ label: 'Parent H3', value: parentInfo.parentIndex },
-			{ label: 'Nr. im Parent', value: parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—' },
-		] : []),
+		...parentRows,
 	];
 
 	const openTileSelection = useCallback(() => {
@@ -1917,7 +1948,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 							<View key={cat}>
 								<SettingsListGroupTitle title={cat} />
 								{entries.map((entry, i) => {
-									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									const position = getListGroupPosition(i, entries.length);
 									return (
 										<SettingsListHexTile
 											key={entry.key}
@@ -2098,7 +2129,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 							iconBackgroundColor={PRIMARY_COLOR}
 							title={feature.name ?? feature.layerId ?? `Feature ${idx + 1}`}
 							value={JSON.stringify(feature, null, 2)}
-							groupPosition={mapFeatures.length === 1 ? 'single' : idx === 0 ? 'top' : idx === mapFeatures.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getListGroupPosition(idx, mapFeatures.length)}
 						/>
 					))}
 				</>
@@ -2265,7 +2296,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 							iconBackgroundColor="#f97316"
 							title={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
 							value={JSON.stringify(f)}
-							groupPosition={streets.length === 1 ? 'single' : idx === 0 ? 'top' : idx === streets.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getListGroupPosition(idx, streets.length)}
 						/>
 					))}
 				</>
@@ -2280,7 +2311,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 							iconBackgroundColor="#3b82f6"
 							title={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
 							value={JSON.stringify(f)}
-							groupPosition={waterways.length === 1 ? 'single' : idx === 0 ? 'top' : idx === waterways.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getListGroupPosition(idx, waterways.length)}
 						/>
 					))}
 				</>
@@ -2295,7 +2326,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 							iconBackgroundColor="#8b5cf6"
 							title={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
 							value={JSON.stringify(f)}
-							groupPosition={buildings.length === 1 ? 'single' : idx === 0 ? 'top' : idx === buildings.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getListGroupPosition(idx, buildings.length)}
 						/>
 					))}
 				</>
@@ -2310,7 +2341,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 							iconBackgroundColor="#10b981"
 							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}
 							value={JSON.stringify(f)}
-							groupPosition={pois.length === 1 ? 'single' : idx === 0 ? 'top' : idx === pois.length - 1 ? 'bottom' : 'middle'}
+							groupPosition={getListGroupPosition(idx, pois.length)}
 						/>
 					))}
 				</>
@@ -2424,15 +2455,7 @@ function MapSearchModalContent({ availableKeys }: { availableKeys: string[] }) {
 							label={key}
 							isEnabled={enabledKeys.includes(key)}
 							onToggle={() => dispatch(toggleMapSearchKey(key))}
-							groupPosition={
-								availableKeys.length === 1
-									? 'single'
-									: idx === 0
-										? 'top'
-										: idx === availableKeys.length - 1
-											? 'bottom'
-											: 'middle'
-							}
+							groupPosition={getListGroupPosition(idx, availableKeys.length)}
 						/>
 					))}
 				</>
@@ -2655,9 +2678,10 @@ function InterruptedRecoveryContent({
 				<Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '600' }}>Aktivität speichern (wie aufgezeichnet)</Text>
 			</TouchableOpacity>
 
-			{loading ? (
+			{loading && (
 				<Text style={{ color: theme.screen.text, opacity: 0.5 }}>Routen werden geladen…</Text>
-			) : matchingRoutes.length > 0 ? (
+			)}
+			{!loading && matchingRoutes.length > 0 && (
 				<>
 					<Text style={{ color: theme.screen.text, fontSize: 14, fontWeight: '600' }}>
 						Route zuordnen und fehlende Strecke ergänzen:
@@ -2676,7 +2700,7 @@ function InterruptedRecoveryContent({
 						</TouchableOpacity>
 					))}
 				</>
-			) : null}
+			)}
 
 			<TouchableOpacity
 				style={{ paddingVertical: 12, alignItems: 'center' }}
@@ -2862,7 +2886,7 @@ export default function RecordScreen() {
 		Object.entries(state.hexTiles.records)
 			.filter(([, r]) => r.tileImage || r.billboard || r.billboards || r.billboardsTexture)
 			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}|${JSON.stringify(r.billboardsTexture ?? {})}`)
-			.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+			.sort(compareByCodeUnit)
 			.join('\n'),
 	);
 
@@ -3960,7 +3984,7 @@ export default function RecordScreen() {
 							<View key={cat}>
 								<SettingsListGroupTitle title={cat} />
 								{entries.map((entry, i) => {
-									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									const position = getListGroupPosition(i, entries.length);
 									return (
 										<SettingsListSelectOptionSingle
 											key={entry.key}
@@ -4154,8 +4178,9 @@ export default function RecordScreen() {
 				<View>
 					<SettingsListGroupTitle title="Sport" />
 					{SPORT_TYPES.map((sportDef, i) => {
-						const position =
-							i === 0 ? 'top' : i === SPORT_TYPES.length - 1 ? 'bottom' : 'middle';
+						let position: 'top' | 'middle' | 'bottom' = 'middle';
+						if (i === 0) position = 'top';
+						else if (i === SPORT_TYPES.length - 1) position = 'bottom';
 						const icon =
 							sportDef.iconLibrary === 'MaterialCommunityIcons' ? (
 								<MaterialCommunityIcons
@@ -4434,10 +4459,12 @@ export default function RecordScreen() {
 				const elapsedSec = startTimeRef.current > 0
 					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 					: accumulatedSecondsRef.current;
-				const currentPace =
-					point.speed != null && point.speed > 0.5
-						? 1000 / (point.speed * 60) // instantaneous pace: min/km from m/s
-						: elapsedSec > 0 ? elapsedSec / 60 / d : null; // average fallback
+				let currentPace: number | null = null;
+				if (point.speed != null && point.speed > 0.5) {
+					currentPace = 1000 / (point.speed * 60); // instantaneous pace: min/km from m/s
+				} else if (elapsedSec > 0) {
+					currentPace = elapsedSec / 60 / d; // average fallback
+				}
 				if (currentPace != null) {
 					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
 					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
@@ -5171,6 +5198,27 @@ export default function RecordScreen() {
 	const livePaceMinPerKm = liveDistanceKm > 0 ? elapsedSeconds / 60 / liveDistanceKm : null;
 	const liveAvgSpeedKmh = elapsedSeconds > 0 ? (liveDistanceKm / elapsedSeconds) * 3600 : 0;
 
+	// Home button icon: white while placing home, green when a home tile is set.
+	let homeButtonIconColor = '#555555';
+	if (isSettingHome) {
+		homeButtonIconColor = '#ffffff';
+	} else if (homeHexTile !== null) {
+		homeButtonIconColor = STATUS_SUCCESS_COLOR;
+	}
+
+	// Live distance: metres below 1 km, kilometres afterwards.
+	const liveDistanceValue = liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2);
+
+	// Central record button: green when idle or paused (start/resume), amber while recording (pause).
+	const recordButtonColor = !isRecording || isPaused ? '#43a047' : '#f59e0b';
+	const recordButtonIcon = !isRecording || isPaused ? 'play-arrow' : 'pause';
+	let recordButtonAction: () => void | Promise<void> = pauseRecording;
+	if (!isRecording) {
+		recordButtonAction = handleRecordButtonPress;
+	} else if (isPaused) {
+		recordButtonAction = resumeRecording;
+	}
+
 	if (!osmConsent) {
 		return (
 			<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -5244,7 +5292,7 @@ export default function RecordScreen() {
 								<MaterialIcons
 									name="home"
 									size={20}
-									color={isSettingHome ? '#ffffff' : homeHexTile !== null ? STATUS_SUCCESS_COLOR : '#555555'}
+									color={homeButtonIconColor}
 								/>
 							</TouchableOpacity>
 							<View style={styles.buttonSpacer} />
@@ -5344,7 +5392,7 @@ export default function RecordScreen() {
 
 			{/* Bottom control panel */}
 			<View style={[styles.liveBar, { backgroundColor: theme.screen.background }]}>
-				{isPanelCollapsed ? (
+				{isPanelCollapsed && (
 					/* Collapsed: only show expand chevron – aligned right to match expanded position */
 					<View style={styles.liveBarCollapsedRow}>
 						<View style={styles.liveBarSideSlot}>
@@ -5357,16 +5405,15 @@ export default function RecordScreen() {
 							</TouchableOpacity>
 						</View>
 					</View>
-				) : (
+				)}
+				{!isPanelCollapsed && (
 					<>
 						{/* Stats row */}
 						<View style={styles.liveBarStatsRow}>
 							<View style={styles.liveStatCard}>
 								<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
 								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-									{isRecording
-										? (liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2))
-										: '--'}
+									{isRecording ? liveDistanceValue : '--'}
 								</Text>
 								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
 									{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
@@ -5421,7 +5468,7 @@ export default function RecordScreen() {
 						<View style={styles.liveBarControlsRow}>
 							{/* Left side: stop button when recording, activity type picker otherwise */}
 							<View style={styles.liveBarSideSlot}>
-								{isRecording ? (
+								{isRecording && (
 									<TouchableOpacity
 										style={[styles.stopButton, { backgroundColor: '#e53935' }]}
 										onPress={stopRecording}
@@ -5429,7 +5476,8 @@ export default function RecordScreen() {
 									>
 										<MaterialIcons name="stop" size={32} color="white" />
 									</TouchableOpacity>
-								) : (
+								)}
+								{!isRecording && (
 									<TouchableOpacity
 										style={[styles.activityTypeButton, { backgroundColor: activeSport.color + '22' }]}
 										onPress={showActivityTypeModal}
@@ -5456,25 +5504,13 @@ export default function RecordScreen() {
 							<TouchableOpacity
 								style={[
 									styles.mainRecordButton,
-									{
-										backgroundColor: !isRecording
-											? '#43a047'
-											: isPaused
-											? '#43a047'
-											: '#f59e0b',
-									},
+									{ backgroundColor: recordButtonColor },
 								]}
-								onPress={
-									!isRecording
-										? handleRecordButtonPress
-										: isPaused
-										? resumeRecording
-										: pauseRecording
-								}
+								onPress={recordButtonAction}
 								activeOpacity={0.8}
 							>
 								<MaterialIcons
-									name={!isRecording ? 'play-arrow' : isPaused ? 'play-arrow' : 'pause'}
+									name={recordButtonIcon}
 									size={32}
 									color="white"
 								/>
@@ -5482,7 +5518,7 @@ export default function RecordScreen() {
 
 							{/* Chevron-down collapse button – right side */}
 							<View style={styles.liveBarSideSlot}>
-								{!isRecording ? (
+								{!isRecording && (
 									<TouchableOpacity
 										style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
 										onPress={showRouteSelectionModal}
@@ -5490,7 +5526,8 @@ export default function RecordScreen() {
 									>
 										<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
 									</TouchableOpacity>
-								) : (
+								)}
+								{isRecording && (
 									<TouchableOpacity
 										style={styles.chevronButton}
 										onPress={() => setIsPanelCollapsed(true)}
