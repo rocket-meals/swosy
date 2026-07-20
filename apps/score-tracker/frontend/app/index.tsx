@@ -54,6 +54,7 @@ import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
+import { generateId } from '../helpers/RandomHelper';
 import GameTypeIcon from '../components/GameTypeIcon';
 import CardScoreEntryModal from '../components/CardScoreEntryModal';
 import { computeNextStartingPlayerIndex } from '../helpers/GameRules';
@@ -77,7 +78,7 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 }
 
 function generateHistoryId(): string {
-	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+	return generateId();
 }
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────

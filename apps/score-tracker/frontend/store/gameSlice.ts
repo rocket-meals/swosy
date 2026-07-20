@@ -5,6 +5,7 @@ import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
+import { generateId } from '../helpers/RandomHelper';
 export type { Player, Round, GameState, GameStatus };
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -30,10 +31,6 @@ const initialState: GameSliceState = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function generateId(): string {
-	return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
 
 function emptyScoresFor(players: Player[]): Record<string, number | null> {
 	const scores: Record<string, number | null> = {};
