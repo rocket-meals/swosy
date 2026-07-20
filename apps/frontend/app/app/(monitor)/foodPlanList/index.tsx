@@ -103,10 +103,6 @@ const Index = () => {
 		openSelectFoodPlanCanteenModal(option);
 	};
 
-	const closeIntervalSheet = () => {
-		closeScrollViewModal();
-	};
-
 	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
 		const foodIntervalValue = foodPlan?.nextFoodInterval ? String(foodPlan.nextFoodInterval) : '';
 		const refreshIntervalValue = foodPlan?.refreshInterval ? String(foodPlan.refreshInterval) : '';

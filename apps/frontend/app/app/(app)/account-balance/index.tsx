@@ -59,7 +59,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const debugMode = useDebugMode();
-	const { profile, isDevMode } = useAppSelector((state) => state.authReducer);
+	const { profile } = useAppSelector((state) => state.authReducer);
 	const { appSettings, language, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : primaryColor;
 	const [isNfcSupported, setIsNfcSupported] = useState(false);

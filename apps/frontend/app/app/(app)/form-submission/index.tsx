@@ -252,18 +252,10 @@ const Index = () => {
 		});
 	};
 
-	const closeEditSheet = () => {
-		closeScrollViewModal();
-	};
-
 	const openWarningSheet = () => {
 		showScrollViewModal({
 			children: <SubmissionWarningSheet id={String(form_submission_id)} closeSheet={closeScrollViewModal} />,
 		});
-	};
-
-	const closeWarningSheet = () => {
-		closeScrollViewModal();
 	};
 
 	const getDirectusFilesData = async (data: any) => {
@@ -390,8 +382,7 @@ const Index = () => {
 			const fieldPromises = sortedResult.map(async answer => {
 				const fieldId = String(answer?.id);
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
-				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
-				const [custom_type, ...idParts] = fieldType.split('-');
+				const [custom_type] = fieldType.split('-');
 				const defaultValue = (answer as any)[custom_type];
 				let value;
 
@@ -688,7 +679,6 @@ const Index = () => {
 				const formDataEntry = formData[String(fieldId)];
 				const value = formDataEntry?.value;
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
-				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
 				const custom_id = fieldType?.split('-')[1];
 
 				const { custom_type } = formDataEntry;
@@ -838,8 +828,6 @@ const Index = () => {
 		if (formAnswers) {
 			formAnswers.forEach(answer => {
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
-				const prefix = (answer?.form_field as DatabaseTypes.FormFields)?.value_prefix || '-';
-
 				const parts = fieldType.split('-');
 				if (parts) {
 					const collection = parts?.length > 2 ? parts.slice(2).join('-') : '';

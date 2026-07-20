@@ -12,7 +12,6 @@ import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FormsHelper } from '@/redux/actions/Forms/Forms';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { useLanguage } from '@/hooks/useLanguage';
 import { SET_CACHED_FORMS } from '@/redux/Types/types';
 
 const CACHED_COLOR = '#22c55e';
@@ -20,10 +19,9 @@ const CACHED_COLOR = '#22c55e';
 const Index = () => {
 useSetPageTitle(TranslationKeys.select_a_form);
 const { theme } = useTheme();
-const { translate } = useLanguage();
 const dispatch = useDispatch();
 const [loading, setLoading] = useState(false);
-const [isShowingCachedData, setIsShowingCachedData] = useState(false);
+const [, setIsShowingCachedData] = useState(false);
     const { category_id } = useLocalSearchParams();
     const { language } = useAppSelector((state) => state.settings);
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);

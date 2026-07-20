@@ -58,11 +58,6 @@ const TimetableScreen = () => {
 		});
 	}, [showScrollViewModal, closeScrollViewModal, timeTableData, isUpdate, selectedEventId]);
 
-	const closeSheet = () => {
-		closeScrollViewModal();
-		setIsUpdate(false);
-	};
-
 	const capitalizeFirstLetter = (string: string) => {
 		return string?.charAt(0)?.toUpperCase() + string?.slice(1)?.toLowerCase();
 	};

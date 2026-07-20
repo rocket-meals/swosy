@@ -54,9 +54,9 @@ const Index: React.FC = () => {
 	// Local State
 	const [query, setQuery] = useState<string>('');
 	const [refreshing, setRefreshing] = useState(false);
-	const [hasLoaded, setHasLoaded] = useState(false);
+	const [, setHasLoaded] = useState(false);
 	const [loading, setLoading] = useState(true);
-	const [campusesDispatched, setCampusesDispatched] = useState(false);
+	const [, setCampusesDispatched] = useState(false);
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>(null);
 	const [listWidth, setListWidth] = useState<number>(windowWidth);
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);

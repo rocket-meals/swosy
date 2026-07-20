@@ -80,22 +80,10 @@ const FeedbackScreen = () => {
 		}, [app_feedbacks_id, profile?.id])
 	);
 
-	function getIsLandScape(): boolean {
-		const windowWidth = Dimensions.get('screen').width;
-		const windowHeight = Dimensions.get('screen').height;
-		let isLandscape = windowWidth > windowHeight;
-		if (Platform.OS === 'web') {
-			isLandscape = windowWidth > windowHeight;
-		}
-		return isLandscape;
-	}
-
 	const fetchDeviceInfo = async () => {
 		const windowWidth = Dimensions.get('screen').width;
 		const windowHeight = Dimensions.get('screen').height;
 		const windowScale = Dimensions.get('screen').scale;
-		const isSimulator = !DeviceInfo.isDevice;
-		const isTablet = DeviceInfo.deviceType === DeviceInfo.DeviceType.TABLET;
 		const brand = DeviceInfo.brand;
 		let platform: string;
 		if (Platform.OS === 'web') {
@@ -106,7 +94,6 @@ const FeedbackScreen = () => {
 			platform = 'Android';
 		}
 		const systemVersion = DeviceInfo.osVersion;
-		let isLandscape = getIsLandScape();
 
 		setInputValues({
 			title: '',
