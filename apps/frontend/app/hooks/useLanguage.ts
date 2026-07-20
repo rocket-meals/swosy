@@ -10,7 +10,7 @@ const changeLanguage = (language: LanguageCode) => ({
 	payload: language,
 });
 
-const setPirateLanguage = (enabled: boolean) => ({
+const setPirateLanguageAction = (enabled: boolean) => ({
 	type: SET_PIRATE_LANGUAGE,
 	payload: enabled,
 });
@@ -119,15 +119,15 @@ export const useLanguage = () => {
 	// console.log(configureStore.getState().settings.language, "lang");
 
 	const [language, setLanguage] = useState(configureStore.getState().settings.language);
-	const [pirateLanguage, setPirateLanguageState] = useState(configureStore.getState().settings.pirateLanguage);
-	const [funLanguageMode, setFunLanguageModeState] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
+	const [pirateLanguage, setPirateLanguage] = useState(configureStore.getState().settings.pirateLanguage);
+	const [funLanguageMode, setFunLanguageMode] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
 
 	const setLanguageMode = (language: LanguageCode) => {
 		configureStore.dispatch(changeLanguage(language));
 	};
 
 	const togglePirateLanguage = (enabled: boolean) => {
-		configureStore.dispatch(setPirateLanguage(enabled));
+		configureStore.dispatch(setPirateLanguageAction(enabled));
 	};
 
 	const toggleFunLanguageMode = (mode: string | null) => {
@@ -151,8 +151,8 @@ export const useLanguage = () => {
 	useEffect(() => {
 		const unsubscribe = configureStore.subscribe(() => {
 			setLanguage(configureStore.getState().settings.language);
-			setPirateLanguageState(configureStore.getState().settings.pirateLanguage);
-			setFunLanguageModeState(configureStore.getState().settings.funLanguageMode);
+			setPirateLanguage(configureStore.getState().settings.pirateLanguage);
+			setFunLanguageMode(configureStore.getState().settings.funLanguageMode);
 		});
 
 		return () => unsubscribe();

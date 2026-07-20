@@ -316,13 +316,13 @@ export const useAnimationLogic = (
     foods_area_color: string
 ) => {
     const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
-    const [animationJson, setAmimationJson] = useState<any>(null);
+    const [animationJson, setAnimationJson] = useState<any>(null);
     const animationRef = useRef<LottieView>(null);
 
     // Optimization: Load animation once and keep it. Don't re-parse on every focus.
     useEffect(() => {
         runAfterInteractions(() => {
-            setAmimationJson(replaceLottieColors(noFoodOffersFound, foods_area_color));
+            setAnimationJson(replaceLottieColors(noFoodOffersFound, foods_area_color));
         });
     }, [foods_area_color]);
 

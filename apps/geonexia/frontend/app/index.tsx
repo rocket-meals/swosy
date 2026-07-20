@@ -2749,7 +2749,7 @@ export default function RecordScreen() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
-	const [, setLiveSpeedKmh] = useState<number | null>(null);
+	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null); // NOSONAR: liveSpeedKmh is currently unused; remove this comment once it is used
 	// Incrementally accumulated route distance (km) of the current recording.
 	// Kept in a ref so each GPS fix only adds the latest segment instead of
 	// re-summing the whole route, and so the value stays available while the
@@ -2837,9 +2837,9 @@ export default function RecordScreen() {
 
 	// H3 grid settings (refs for synchronous access in callbacks)
 	const showGridAlwaysRef = useRef(false);
-	const [, setShowGridAlways] = useState(false);
+	const [showGridAlways, setShowGridAlways] = useState(false); // NOSONAR: showGridAlways is currently unused; remove this comment once it is used
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
-	const [, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
+	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION); // NOSONAR: h3Resolution is currently unused; remove this comment once it is used
 	const h3MinZoomRef = useRef(H3_MIN_ZOOM_DEFAULT);
 
 	// Heading mode: when active during recording, the map rotates to face the

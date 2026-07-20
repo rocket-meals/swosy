@@ -31,7 +31,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
-	const [, setShowTooltip] = useState(false);
+	const [showTooltip, setShowTooltip] = useState(false); // NOSONAR: showTooltip is currently unused; remove this comment once it is used
 	const language = useAppSelector(state => state.settings.language);
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
