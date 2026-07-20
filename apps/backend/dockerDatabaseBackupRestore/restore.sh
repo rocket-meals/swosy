@@ -43,6 +43,6 @@ if [[ -f "/dump/${BACKUP_FILE}" ]]; then
 
   echo 'Database restore completed successfully.'
 else
-  echo "Error: Backup file /dump/${BACKUP_FILE} not found!"
+  echo "Error: Backup file /dump/${BACKUP_FILE} not found!" >&2
   exit 1
 fi

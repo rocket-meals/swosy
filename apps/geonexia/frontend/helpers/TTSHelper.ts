@@ -263,12 +263,10 @@ export function buildPeriodicAnnouncement(
 			} else {
 				parts.push(`${m} Minuten ${s} Sekunden`);
 			}
+		} else if (h > 0) {
+			parts.push(`${h} hour${h > 1 ? 's' : ''} ${m} minutes ${s} seconds`);
 		} else {
-			if (h > 0) {
-				parts.push(`${h} hour${h > 1 ? 's' : ''} ${m} minutes ${s} seconds`);
-			} else {
-				parts.push(`${m} minutes ${s} seconds`);
-			}
+			parts.push(`${m} minutes ${s} seconds`);
 		}
 	}
 

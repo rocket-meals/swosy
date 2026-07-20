@@ -499,7 +499,7 @@ export function matchRouteToRoads(
 		} else if (prevMatch && currMatch) {
 			// 'network': search for a real road/path route between them instead of
 			// cutting a straight line across the corner.
-			if (!graph) graph = buildRoadGraph(ways);
+			graph ??= buildRoadGraph(ways);
 			const sources = segmentEndpointsAsWeightedNodes(graph, ways[prevMatch.wayIndex].points, prevMatch);
 			const targets = segmentEndpointsAsWeightedNodes(graph, ways[currMatch.wayIndex].points, currMatch);
 			const connection = findConnectingPath(graph, sources, targets, maxConnectDistDeg);

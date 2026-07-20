@@ -216,7 +216,7 @@ generate_images() {
 
 # Main script execution
 if [[ $# -lt 2 ]]; then
-    echo "Error: Missing required arguments."
+    echo "Error: Missing required arguments." >&2
     print_usage
     exit 1
 fi
@@ -230,7 +230,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --project-dir)
             if [[ -z "$2" ]]; then
-                echo "Error: --project-dir requires a directory argument."
+                echo "Error: --project-dir requires a directory argument." >&2
                 print_usage
                 exit 1
             fi

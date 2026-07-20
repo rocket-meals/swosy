@@ -531,18 +531,14 @@ export default function SettingsScreen() {
 							}
 							if (!activity.computed) {
 								activity.computed = computeActivityData(activity, enclosedTiles);
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount ??= enclosedTiles.length;
 								updated = true;
 							} else if (
 								!Array.isArray(activity.computed.enclosedHexTiles) ||
 								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
 							) {
 								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount ??= enclosedTiles.length;
 								updated = true;
 							}
 							if (updated) {

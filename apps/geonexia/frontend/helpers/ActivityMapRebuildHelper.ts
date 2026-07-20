@@ -396,7 +396,7 @@ export function checkAndApplyForest(
 	features: MapFeatureInfo[] | undefined,
 ): void {
 	if (!features || !hasForestFeature(features)) return;
-	if (!rec.billboards) rec.billboards = {};
+	rec.billboards ??= {};
 
 	// Large tree at the hex centroid.
 	rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_PINE_TREE_LARGE;
@@ -744,7 +744,7 @@ export function rebuildMapFromActivities(
 			}
 
 			// Add or merge the activity reference
-			if (!rec.activityReferences) rec.activityReferences = [];
+			rec.activityReferences ??= [];
 			const existingRef = refByHexId.get(hexId);
 			if (existingRef) {
 				existingRef.walkedIndex = i;
@@ -791,7 +791,7 @@ export function rebuildMapFromActivities(
 			}
 
 			// Add or merge the activity reference
-			if (!rec.activityReferences) rec.activityReferences = [];
+			rec.activityReferences ??= [];
 			const existingRef = refByHexId.get(hexId);
 			if (existingRef) {
 				existingRef.enclosedIndex = i;
@@ -890,7 +890,7 @@ export function rebuildMapFromActivities(
 					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
 					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
 					const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
-					if (!rec.billboardsTexture) rec.billboardsTexture = {};
+					rec.billboardsTexture ??= {};
 					rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
 				}
 			}
@@ -913,7 +913,7 @@ export function rebuildMapFromActivities(
 	// Apply home tile castle2 billboard if a home tile is set.
 	if (homeHexTile) {
 		const homeRec = getOrCreateRecord(records, homeHexTile);
-		if (!homeRec.billboards) homeRec.billboards = {};
+		homeRec.billboards ??= {};
 		homeRec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_CASTLE2;
 	}
 
@@ -1046,7 +1046,7 @@ export function applyRouteBenches(
 			if (rec.tileImage !== TILE_IMAGE_DIRT) continue;
 			if (rec.billboards?.[BillboardAnchorPosition.CENTER]) continue;
 
-			if (!rec.billboards) rec.billboards = {};
+			rec.billboards ??= {};
 			rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_BENCH;
 			break;
 		}

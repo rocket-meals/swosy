@@ -589,9 +589,7 @@ export default function ActivitiesScreen() {
 
 							if (!activity.computed) {
 								activity.computed = computeActivityData(activity, enclosedTiles);
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount ??= enclosedTiles.length;
 								updated = true;
 							} else if (
 								!Array.isArray(activity.computed.enclosedHexTiles) ||

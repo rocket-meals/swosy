@@ -32,9 +32,7 @@ export default class CardReader {
 	}
 
 	async readCard(message?: string) {
-		if (message === undefined) {
-			message = 'Hold your phone near the card';
-		}
+		message ??= 'Hold your phone near the card';
 		let cardInformations;
 		try {
 			const result = await this.NfcManager.start();

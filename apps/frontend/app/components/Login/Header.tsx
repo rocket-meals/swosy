@@ -59,13 +59,11 @@ const LoginHeader = () => {
 					payload: 'right',
 				});
 			}
-		} else {
-			if (language === LanguageCode.AR) {
-				dispatch({
-					type: SET_DRAWER_POSITION,
-					payload: 'right',
-				});
-			}
+		} else if (language === LanguageCode.AR) {
+			dispatch({
+				type: SET_DRAWER_POSITION,
+				payload: 'right',
+			});
 		}
 	}, []);
 

@@ -426,8 +426,8 @@ function buildWalkPathGeoJson(
 			} catch {
 				continue;
 			}
-		} else {
-			if (!viewportSet.has(cellA) || !viewportSet.has(cellB)) continue;
+		} else if (!viewportSet.has(cellA) || !viewportSet.has(cellB)) {
+			continue;
 		}
 		try {
 			const [aLat, aLng] = cellToLatLng(cellA);

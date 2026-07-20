@@ -79,7 +79,7 @@ for i in $(seq 1 $MAX_WAIT); do
         break
     fi
     if [ "$i" -eq "$MAX_WAIT" ]; then
-        echo "ERROR: Dev server did not start within ${MAX_WAIT}s."
+        echo "ERROR: Dev server did not start within ${MAX_WAIT}s." >&2
         exit 1
     fi
     echo "  Waiting... ($i/${MAX_WAIT}s)"
@@ -94,15 +94,15 @@ if ! command -v maestro &> /dev/null; then
     echo "Maestro CLI not found – installing..."
     MAESTRO_INSTALLER="$(mktemp)"
     curl -fsSL --proto '=https' --tlsv1.2 -o "$MAESTRO_INSTALLER" "https://get.maestro.mobile.dev"
-    [ -s "$MAESTRO_INSTALLER" ] || { echo "ERROR: Downloaded Maestro installer is empty."; exit 1; }
-    head -n1 "$MAESTRO_INSTALLER" | grep -q '^#!' || { echo "ERROR: Downloaded Maestro installer does not look like a shell script."; exit 1; }
+    [ -s "$MAESTRO_INSTALLER" ] || { echo "ERROR: Downloaded Maestro installer is empty." >&2; exit 1; }
+    head -n1 "$MAESTRO_INSTALLER" | grep -q '^#!' || { echo "ERROR: Downloaded Maestro installer does not look like a shell script." >&2; exit 1; }
     bash "$MAESTRO_INSTALLER"
     rm -f "$MAESTRO_INSTALLER"
     export PATH="$HOME/.maestro/bin:$PATH"
 fi
 
 if ! command -v maestro &> /dev/null; then
-    echo "ERROR: Maestro CLI installation failed."
+    echo "ERROR: Maestro CLI installation failed." >&2
     echo "Install manually: curl -fsSL \"https://get.maestro.mobile.dev\" | bash"
     exit 1
 fi
@@ -168,7 +168,7 @@ if [ "$MAESTRO_EXIT_CODE" -ne 0 ]; then
         fi
     done < <(find "$MAESTRO_DEBUG_DIR" "$HOME/.maestro/tests" -type f \( -name "*.log" -o -name "*.txt" -o -name "*.xml" \) -print0 2>/dev/null)
     if [ "$FOUND_ERRORS" = false ]; then
-        echo "  (no detailed error logs found in $MAESTRO_DEBUG_DIR)"
+        echo "  (no detailed error logs found in $MAESTRO_DEBUG_DIR)" >&2
     fi
     echo ""
     exit "$MAESTRO_EXIT_CODE"

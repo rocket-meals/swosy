@@ -492,21 +492,19 @@ export class FormHelper {
     if (value_image) {
       if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
         assetUrl = value_image;
+      } else if (isSignature) {
+        // The signature should not be in a 1:1 format and shall not use Form_IMAGE_TRANSFORM_OPTIONS
+        assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+            value_image,
+            myDatabaseHelperInterface,
+            FormHelper.FORM_IMAGE_SIGNATURE_TRANSFORM_OPTIONS,
+        );
       } else {
-        if(isSignature){
-          // The signature should not be in a 1:1 format and shall not use Form_IMAGE_TRANSFORM_OPTIONS
-          assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
-              value_image,
-              myDatabaseHelperInterface,
-              FormHelper.FORM_IMAGE_SIGNATURE_TRANSFORM_OPTIONS,
-          );
-        } else {
-          assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
-              value_image,
-              myDatabaseHelperInterface,
-              FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
-          );
-        }
+        assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+            value_image,
+            myDatabaseHelperInterface,
+            FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
+        );
       }
     }
     return this.generateHtmlForImageUrl(fieldName, assetUrl, isSignature);
