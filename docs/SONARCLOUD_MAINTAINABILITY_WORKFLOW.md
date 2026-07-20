@@ -71,9 +71,9 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Prefer using nullish coalescing operator (`??=` / `??`). | 18 von 18 (Codemod mit Zeilenverifikation; alle Ziel-Typen `X \| null` bzw. `boolean \| undefined`) | – |
 | 2026-07-20 | Redirect this error message to stderr (>&2). | 14 von 14 (nur Shell-Skripte, `bash -n` geprüft) | – |
 | 2026-07-20 | 'If' statement should not be the only statement in 'else' block. | 10 von 10 (`else { if }` → `else if`) | – |
-| 2026-07-20 | Expected a `for-of` loop instead of a `for` loop with this simple iteration. | 12 von 12 (Cheerio-Objekt per `.toArray()` iteriert) | – |
-| 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (redundante Union-Member entfernt, `any` beibehalten — keine Typ-Semantik geändert) | – |
-| 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | – |
+| 2026-07-20 | Expected a `for-of` loop instead of a `for` loop with this simple iteration. | 12 von 12 (Cheerio-Objekt per `.toArray()` iteriert) | #3953 |
+| 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (redundante Union-Member entfernt, `any` beibehalten — keine Typ-Semantik geändert) | #3953 |
+| 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | #3953 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
