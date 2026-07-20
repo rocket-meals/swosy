@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Dimensions, Platform, Image } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import { useDispatch, useStore, shallowEqual } from 'react-redux';
-import { DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import { addDays, format, parse } from 'date-fns';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
@@ -24,7 +24,6 @@ import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabe
 import type LottieView from 'lottie-react-native';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
-import { useFocusEffect } from 'expo-router';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';

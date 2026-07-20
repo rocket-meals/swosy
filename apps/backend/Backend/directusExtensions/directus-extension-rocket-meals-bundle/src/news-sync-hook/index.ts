@@ -1,5 +1,4 @@
 import { NewsParseSchedule } from './NewsParseSchedule';
-import { defineHook } from '@directus/extensions-sdk';
 import { DemoNews_Parser } from './DemoNews_Parser';
 import { NewsParserInterface } from './NewsParserInterface';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
@@ -9,9 +8,8 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { WorkflowScheduleHelper } from '../workflows-runs-hook';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, CronHelper } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
-import {CronHelper, CronObject} from "repo-depkit-common";
 import {MyDefineHook} from "../helpers/MyDefineHook";
 const HOOK_NAME = 'news-sync';
 

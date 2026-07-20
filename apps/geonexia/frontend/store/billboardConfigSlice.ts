@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { BillboardConfigState, SpriteAnchorOverride } from '../helpers/BillboardConfigStorage';
+import type { BillboardConfigState } from '../helpers/BillboardConfigStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
+ // API client
 
 export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSettings> {
 	constructor(client?: any) {
@@ -14,7 +14,7 @@ export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSetting
 			fields: ['*', 'translations.*', 'housing_translations.*', 'balance_translations.*', 'login_screen_translations.*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readSingletonItem(query);
 	}
 }

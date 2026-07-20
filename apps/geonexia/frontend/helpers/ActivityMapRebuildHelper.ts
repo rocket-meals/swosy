@@ -250,7 +250,7 @@ export function findEnclosedCellsFromHexTiles(
 
 	// Check loop closure: first and last hex tiles must be the same cell or adjacent neighbors.
 	const firstHex = visitedHexIds[0];
-	const lastHex = visitedHexIds[visitedHexIds.length - 1];
+	const lastHex = visitedHexIds.at(-1)!;
 	if (firstHex !== lastHex && !areNeighborCells(firstHex, lastHex)) return [];
 
 	// Bounding box with small padding.
@@ -551,7 +551,7 @@ export function synthesizeManualActivityRoutePoints(
 			if (redLinePath.length === 0) {
 				redLinePath.push(redLineCell);
 			} else {
-				const prev = redLinePath[redLinePath.length - 1];
+				const prev = redLinePath.at(-1)!;
 				if (prev === redLineCell) continue;
 				try {
 					const pathCells = gridPathCells(prev, redLineCell);
@@ -991,7 +991,7 @@ export function applyRouteBenches(
 		// Tiles to exclude: first and last of the route.
 		const routeExcluded = new Set<string>([
 			route.hexTiles[0],
-			route.hexTiles[route.hexTiles.length - 1],
+			route.hexTiles.at(-1)!,
 		]);
 
 		// Last BENCH_MAX_ACTIVITIES_PER_ROUTE activities assigned to this route,

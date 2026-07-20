@@ -374,7 +374,7 @@ export const HoursSheetContent: React.FC = () => {
 
                 return hoursData.map((range, index) => {
                         let firstDayKey = range.day[0];
-                        let lastDayKey = range.day[range.day.length - 1];
+                        let lastDayKey = range.day.at(-1);
                         let firstDay = daysOfWeek.find(d => d.key === firstDayKey);
                         let lastDay = daysOfWeek.find(d => d.key === lastDayKey);
                         let label = `${firstDay?.name}`;

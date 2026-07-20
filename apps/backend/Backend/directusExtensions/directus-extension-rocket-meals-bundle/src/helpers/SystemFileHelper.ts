@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 export class SystemFileHelper {
   static async readFileSync(path_to_file: string, encoding: BufferEncoding): Promise<string | undefined> {

@@ -73,7 +73,7 @@ function computeRoll(pool: PoolDie[], mode: RollMode): RollResult {
 	return { mode, rollA, rollB, keptRoll, keptTotal: keptRoll === 'A' ? rollA.total : rollB.total };
 }
 
-function DiceValueRow({ dice, theme }: { dice: DieResult[]; theme: Theme }) {
+function DiceValueRow({ dice, theme }: Readonly<{ dice: DieResult[]; theme: Theme }>) {
 	return (
 		<View style={styles.resultsRow}>
 			{dice.map((die) => (

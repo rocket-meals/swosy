@@ -8,7 +8,6 @@ import { AssetsService } from './MyServiceClassHelpers';
 import { CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper } from './ShareServiceHelper';
 import { Buffer } from 'node:buffer';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
-import {AccountHelper} from "./AccountHelper";
 
 export enum MyFileTypes {
   PDF = 'application/pdf',
@@ -37,7 +36,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
 
   public static sanitizeFilename(filename: string): string {
     // Replace any invalid characters with underscores
-    filename = StringHelper.replaceAllWithOptions({ str: filename, find: '[^a-zA-Z0-9-_\\.]', replace: '_' });
+    filename = StringHelper.replaceAllWithOptions({ str: filename, find: String.raw`[^a-zA-Z0-9-_\.]`, replace: '_' });
     // Limit the filename length to 255 characters
     if (filename.length > 255) {
       filename = filename.substring(0, 255);

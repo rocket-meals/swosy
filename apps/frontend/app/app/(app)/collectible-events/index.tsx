@@ -12,7 +12,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
-import { RootState } from '@/redux/reducer';
 import useDebugMode from '@/hooks/useDebugMode';
 import styles from './styles';
 

@@ -16,7 +16,7 @@ const TriStateCheckbox = ({
 	onlyTwo = false,
 }: {
 	id: string;
-	value?: number | null | undefined; // 1: true, 0: false, null/undefined: indeterminate/none (tri-state)
+	value?: number | null; // 1: true, 0: false, null/undefined: indeterminate/none (tri-state)
 	onChange: (id: string, value?: number | null | undefined, custom_type?: string) => void;
 	isDisabled?: boolean;
 	custom_type?: string;

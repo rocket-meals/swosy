@@ -9,7 +9,6 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
-import { RootState } from '@/redux/reducer';
 import { SET_CAMPUSES_SORTING } from '@/redux/Types/types';
 
 const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {

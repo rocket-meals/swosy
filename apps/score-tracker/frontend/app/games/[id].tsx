@@ -75,7 +75,7 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 
 // ─── Icon picker modal content ────────────────────────────────────────────────
 
-function IconPickerContent({ selectedIcon, onSelect }: { selectedIcon: string; onSelect: (icon: string) => void }) {
+function IconPickerContent({ selectedIcon, onSelect }: Readonly<{ selectedIcon: string; onSelect: (icon: string) => void }>) {
 	const { theme } = useTheme();
 	return (
 		<View style={styles.iconGrid}>
@@ -101,7 +101,7 @@ function IconPickerContent({ selectedIcon, onSelect }: { selectedIcon: string; o
 
 // ─── Scoring mode modal content (live-updating, subscribes to the store) ─────
 
-function ScoringModeSection({ gameTypeId }: { gameTypeId: string }) {
+function ScoringModeSection({ gameTypeId }: Readonly<{ gameTypeId: string }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === gameTypeId));
 	if (!gameType) return null;
@@ -154,7 +154,7 @@ const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; ico
 	},
 };
 
-function StartingPlayerModeSection({ gameTypeId }: { gameTypeId: string }) {
+function StartingPlayerModeSection({ gameTypeId }: Readonly<{ gameTypeId: string }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === gameTypeId));
 	if (!gameType) return null;
@@ -199,7 +199,7 @@ function StartingPlayerModeSection({ gameTypeId }: { gameTypeId: string }) {
 const MATCH_AVATAR_SIZE = 28;
 const MAX_MATCH_AVATARS = 5;
 
-function MatchParticipants({ players }: { players: GameHistoryPlayerEntry[] }) {
+function MatchParticipants({ players }: Readonly<{ players: GameHistoryPlayerEntry[] }>) {
 	const shown = players.slice(0, MAX_MATCH_AVATARS);
 	const extra = players.length - shown.length;
 	return (

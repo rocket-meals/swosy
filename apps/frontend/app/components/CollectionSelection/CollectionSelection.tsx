@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 const CollectionSelection = ({ id, value, onChange, error, isDisabled, loading, data, custom_type }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; loading: boolean; data: any; custom_type: string }) => {
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
-	const parseValue = value ? value : null;
+	const parseValue = value || null;
 	const itemId = parseValue?.id;
 
 	return (

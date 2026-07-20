@@ -1,5 +1,5 @@
 import { HannoverTL1HousingFileReader } from './HannoverTL1HousingFileReader';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 export const hannoverHousingContractExamplePath = resolve(__dirname, 'exampleData/whv_auszuege_server.csv');
 //const realCsvPath = resolve(__dirname, 'exampleData/WohnungsWechsel.csv');

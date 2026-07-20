@@ -107,7 +107,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 					const formattedDate = format(parsed, 'dd.MM.yyyy');
 					// Preserve existing time (HH:MM) from localValue or value, fallback to '00:00'
 					const timeMatchLocal = (localValue || '').match(/(\d{2}:\d{2})$/);
-					const timeMatchValue = (value || '').match(/(\d{2}:\d{2})$/);
+					const timeMatchValue = /(\d{2}:\d{2})$/.exec(value || '');
 					const timePart = timeMatchLocal?.[1] || timeMatchValue?.[1] || '00:00';
 					const formatted = `${formattedDate} ${timePart}`;
 					setLocalValue(formatted);

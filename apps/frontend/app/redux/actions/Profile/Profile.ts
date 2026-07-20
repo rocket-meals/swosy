@@ -1,6 +1,6 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Your helper
-import { ServerAPI } from '@/redux/actions/Auth/Auth'; // Your API client
+ // Your API client
 
 export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
 	constructor(client?: any) {

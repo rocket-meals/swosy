@@ -62,7 +62,7 @@ ServerAPI.createAuthentificationStorage(
 	}
 );
 
-function AppSettingsProvider({ children }: { children: React.ReactNode }) {
+function AppSettingsProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	return (

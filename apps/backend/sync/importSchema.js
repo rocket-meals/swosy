@@ -1,11 +1,11 @@
 import fetch from 'node-fetch';
 import { CookieJar } from 'cookiejar';
-import fs from 'fs';
+import fs from 'node:fs';
 import FormData from 'form-data';
-import { spawn } from 'child_process';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import https from 'https';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import https from 'node:https';
 import inquirer from 'inquirer';
 
 // Convert import.meta.url to a file path

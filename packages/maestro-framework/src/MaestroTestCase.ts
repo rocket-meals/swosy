@@ -211,8 +211,7 @@ export class MaestroTestCase {
 				lines.push(`  - ${tag}`);
 			}
 		}
-		lines.push('---');
-		lines.push('');
+		lines.push('---', '');
 
 		// --- steps ---
 		for (const step of this.steps) {
@@ -220,10 +219,7 @@ export class MaestroTestCase {
 			lines.push(`# [Test: ${this.outputFileName}]: ${desc}`);
 			switch (step.type) {
 				case 'launchApp':
-					lines.push('- launchApp:');
-					lines.push('    clearState: true');
-					lines.push('    arguments:');
-					lines.push(`      url: ${yamlString(step.url)}`);
+					lines.push('- launchApp:', '    clearState: true', '    arguments:', `      url: ${yamlString(step.url)}`);
 					break;
 				case 'waitForAnimationToEnd':
 					lines.push('- waitForAnimationToEnd');
@@ -235,47 +231,34 @@ export class MaestroTestCase {
 					lines.push(`- tapOn: ${yamlString(step.label)}`);
 					break;
 				case 'tapOnIndex':
-					lines.push('- tapOn:');
-					lines.push(`    text: ${yamlString(step.label)}`);
-					lines.push(`    index: ${step.index}`);
+					lines.push('- tapOn:', `    text: ${yamlString(step.label)}`, `    index: ${step.index}`);
 					break;
 				case 'tapOnId':
-					lines.push('- tapOn:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
+					lines.push('- tapOn:', `    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'tapOnIdIndex':
-					lines.push('- tapOn:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
-					lines.push(`    index: ${step.index}`);
+					lines.push('- tapOn:', `    id: ${yamlString(idPattern(step.id))}`, `    index: ${step.index}`);
 					break;
 				case 'optionalTapOnId':
-					lines.push('- tapOn:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
-					lines.push('    optional: true');
+					lines.push('- tapOn:', `    id: ${yamlString(idPattern(step.id))}`, '    optional: true');
 					break;
 				case 'assertVisible':
 					lines.push(`- assertVisible: ${yamlString(step.label)}`);
 					break;
 				case 'assertVisibleId':
-					lines.push('- assertVisible:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
+					lines.push('- assertVisible:', `    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'assertVisibleIdIndex':
-					lines.push('- assertVisible:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
-					lines.push(`    index: ${step.index}`);
+					lines.push('- assertVisible:', `    id: ${yamlString(idPattern(step.id))}`, `    index: ${step.index}`);
 					break;
 				case 'assertNotVisible':
 					lines.push(`- assertNotVisible: ${yamlString(step.label)}`);
 					break;
 				case 'assertNotVisibleId':
-					lines.push('- assertNotVisible:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
+					lines.push('- assertNotVisible:', `    id: ${yamlString(idPattern(step.id))}`);
 					break;
 				case 'assertNotVisibleIdIndex':
-					lines.push('- assertNotVisible:');
-					lines.push(`    id: ${yamlString(idPattern(step.id))}`);
-					lines.push(`    index: ${step.index}`);
+					lines.push('- assertNotVisible:', `    id: ${yamlString(idPattern(step.id))}`, `    index: ${step.index}`);
 					break;
 				case 'inputText':
 					lines.push(`- inputText: ${yamlString(step.text)}`);
@@ -287,8 +270,7 @@ export class MaestroTestCase {
 					lines.push('- scroll');
 					break;
 				case 'swipe':
-					lines.push('- swipe:');
-					lines.push(`    direction: ${step.direction}`);
+					lines.push('- swipe:', `    direction: ${step.direction}`);
 					break;
 			}
 		}

@@ -11,7 +11,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import { excerpt } from '@/constants/HelperFunctions';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
 import animation from '@/assets/animations/notificationBell.json';
 import LottieView from 'lottie-react-native';
@@ -20,7 +20,6 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt } from 'repo-depkit-common';
 
 const NotificationScreen = () => {
 	useSetPageTitle(TranslationKeys.notification);

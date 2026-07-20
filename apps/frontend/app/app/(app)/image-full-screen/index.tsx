@@ -13,7 +13,6 @@ import * as FileSystem from 'expo-file-system/legacy';
 import useToast from '@/hooks/useToast';
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useDebugMode from '@/hooks/useDebugMode';
 import MyImage from '@/components/MyImage';
@@ -172,7 +171,7 @@ export default function ImageFullScreen() {
 					console.warn('Failed to parse image URL for extension:', urlError);
 				}
 			}
-			const name = assetId ? assetId : `image_${Date.now()}`;
+			const name = assetId || `image_${Date.now()}`;
 			if (Platform.OS === 'web') {
 				const link = document.createElement('a');
 				link.href = String(highResUri);

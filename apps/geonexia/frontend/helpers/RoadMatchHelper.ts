@@ -228,7 +228,7 @@ function findBestMatchOnWay(pt: [number, number], way: RoadWay, wayIndex: number
 
 /** Appends `pt` unless it's identical to the last point already in `path`. */
 function pushDistinct(path: [number, number][], pt: [number, number]): void {
-	const last = path[path.length - 1];
+	const last = path.at(-1);
 	if (last?.[0] !== pt[0] || last[1] !== pt[1]) path.push(pt);
 }
 

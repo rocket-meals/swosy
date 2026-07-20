@@ -1,6 +1,6 @@
 import { StringHelper } from 'repo-depkit-common';
 
-const WILDCARD = '\\*'; // we need to escape the * as it is a special character in regex
+const WILDCARD = String.raw`\*`; // we need to escape the * as it is a special character in regex
 const WILDCARD_REPLACEMENT = 'WILDCARD_REPLACEMENT';
 
 export class RedirectWhitelistHelper {

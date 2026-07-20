@@ -5,7 +5,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import RedirectButton from '../RedirectButton';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import styles from './styles';
 
 interface FoodLabelingInfoProps {

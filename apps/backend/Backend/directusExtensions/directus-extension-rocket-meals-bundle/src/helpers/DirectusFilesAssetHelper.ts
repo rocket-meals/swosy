@@ -2,7 +2,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseTestableHelperInterface } from './MyDatabaseHelperInterface';
 
 export type DirectusFilesAssetHelperOptions = {
-  bearerToken?: string | null | undefined;
+  bearerToken?: string | null;
 };
 
 export type DirectusFileTransformOptions = {

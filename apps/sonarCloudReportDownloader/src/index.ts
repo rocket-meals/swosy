@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import fetch from 'node-fetch';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import path from 'path';
-import { execSync } from 'child_process';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 import { IssueData } from './IssueData';
 import { StringHelper } from 'repo-depkit-common';
 

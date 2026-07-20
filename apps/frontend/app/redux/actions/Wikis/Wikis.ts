@@ -1,6 +1,6 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
+ // API client
 
 export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
 	constructor(client?: any) {
@@ -18,7 +18,7 @@ export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
 			limit: -1, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -42,7 +42,7 @@ export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 

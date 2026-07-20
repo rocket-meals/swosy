@@ -13,7 +13,7 @@ export interface MapOverlayButtonBaseProps {
 
 export type MapNorthButtonProps = MapOverlayButtonBaseProps;
 
-export function MapNorthButton({ mapRef, backgroundColor = '#ffffff', iconColor = '#555555' }: MapNorthButtonProps) {
+export function MapNorthButton({ mapRef, backgroundColor = '#ffffff', iconColor = '#555555' }: Readonly<MapNorthButtonProps>) {
 	const handlePress = useCallback(() => {
 		mapRef.current?.sendToMap({ resetBearing: true });
 	}, [mapRef]);
@@ -49,7 +49,7 @@ export function MapLocationButton({
 	onLocationFound,
 	isFollowing,
 	zoom,
-}: MapLocationButtonProps) {
+}: Readonly<MapLocationButtonProps>) {
 	const [internalActive, setInternalActive] = useState(false);
 	const showActive = isFollowing !== undefined ? isFollowing : internalActive;
 

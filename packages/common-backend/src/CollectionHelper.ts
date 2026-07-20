@@ -1,5 +1,5 @@
 import { Project } from 'ts-morph';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { CollectionNames } from 'repo-depkit-common';
 
 const pathToCommon = require.resolve('repo-depkit-common');

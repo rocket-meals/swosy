@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Redirect } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
 import { registerForPushNotificationsAsync } from '@/helper/getPushToken';
 import type { Subscription } from 'expo-notifications';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
@@ -13,7 +12,7 @@ import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntent
 
 const extractRawExpoToken = (token: string | null) => {
 	if (!token) return null;
-	const m = String(token).match(/\[(.+?)\]/);
+	const m = /\[(.+?)\]/.exec(String(token));
 	return m ? m[1] : token;
 };
 

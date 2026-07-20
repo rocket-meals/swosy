@@ -1,6 +1,6 @@
 import {FieldsService} from './MyServiceClassHelpers';
 import {MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
-import {CollectionFieldNames, CollectionNames, DatabaseTypes} from 'repo-depkit-common';
+import {CollectionNames} from 'repo-depkit-common';
 
 export class DirectusFieldsServiceHelper {
 

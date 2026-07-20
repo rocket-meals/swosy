@@ -57,7 +57,7 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
     const defaultImage = useMemo(() => getImageUrl(projectLogo), [projectLogo]);
 
     const housingAreaColorFinal = useMemo(
-        () => (housingAreaColor ? housingAreaColor : primaryColor),
+        () => (housingAreaColor || primaryColor),
         [housingAreaColor, primaryColor]
     );
 

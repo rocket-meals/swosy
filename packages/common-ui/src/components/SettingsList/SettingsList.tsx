@@ -110,9 +110,9 @@ const SettingsList: React.FC<SettingsListProps> = ({
 
 	let leftIconContent: React.ReactNode = null;
 	if (showIconWrapper) {
-		leftIconContent = leftIconComponent ? leftIconComponent : <View style={iconWrapperStyles}>{renderedLeftIcon}</View>;
+		leftIconContent = leftIconComponent || <View style={iconWrapperStyles}>{renderedLeftIcon}</View>;
 	} else if (hasIcon) {
-		leftIconContent = leftIconComponent ? leftIconComponent : renderedLeftIcon;
+		leftIconContent = leftIconComponent || renderedLeftIcon;
 	}
 
 	const inner = (

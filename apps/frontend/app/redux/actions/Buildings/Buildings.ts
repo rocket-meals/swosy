@@ -15,7 +15,7 @@ export class BuildingsOrganizationsHelper extends CollectionHelper<DatabaseTypes
 			limit: -1,
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 }
@@ -33,7 +33,7 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 			limit: -1, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItems(query);
 	}
 
@@ -88,7 +88,7 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 			fields: ['*', 'translations.*, businesshours.*'],
 		};
 
-		const query = { ...defaultQuery, ...(queryOverride || {}) };
+		const query = { ...defaultQuery, ...queryOverride };
 		return await this.readItem(id, query);
 	}
 

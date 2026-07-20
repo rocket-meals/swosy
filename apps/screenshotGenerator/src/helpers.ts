@@ -1,6 +1,5 @@
-import { promises as fs } from 'fs';
-import { existsSync } from 'fs';
-import path from 'path';
+import { promises as fs, existsSync } from 'node:fs';
+import path from 'node:path';
 import sharp from 'sharp';
 import { Browser } from 'puppeteer';
 import { Device } from './devices';
@@ -65,7 +64,7 @@ export async function createScreenshotUncompressed(url: string, device: Device, 
 
 export function getFileSafeNameFromUrl(url: string, baseUrl: string) {
   const urlWithoutBaseUrl = url.replace(baseUrl, '');
-  return StringHelper.replaceAllWithOptions({ str: urlWithoutBaseUrl, find: 'https?:\\/\\/|\\/|\\?', replace: '_' });
+  return StringHelper.replaceAllWithOptions({ str: urlWithoutBaseUrl, find: String.raw`https?:\/\/|\/|\?`, replace: '_' });
 }
 
 export function getFileName(url: string, device: Device, screenshotDirWithSlash: string, baseUrl: string) {

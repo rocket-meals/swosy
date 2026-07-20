@@ -5,7 +5,7 @@ import { QrCodeEcl, QrCodeProps } from './types';
 
 const QrCode: React.FC<QrCodeProps> = ({ value, size = 200, image, imageUrl, innerSize = 21, ecl, backgroundColor = 'white', margin = 0, quietZone = 5 }) => {
 	const imageSourceFromUrl = imageUrl ? { uri: imageUrl } : undefined;
-	const imageSource = image ? image : imageSourceFromUrl;
+	const imageSource = image || imageSourceFromUrl;
 
 	const clampedInnerSize = Math.max(0, Math.min(30, innerSize));
 	const marginSize = size * (margin / 100);

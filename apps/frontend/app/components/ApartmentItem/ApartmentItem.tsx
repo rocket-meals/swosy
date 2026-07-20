@@ -1,4 +1,4 @@
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import React, { memo } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
@@ -7,10 +7,8 @@ import { getDistanceUnit } from '@/helper/distanceHelper';
 import { BuildingItemProps } from './types';
 import styles from './styles';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import CardWithText from '../CardWithText/CardWithText';
-import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModalDistanceInformation';
 import useMyScrollviewModalApartmentAvailableFrom from '@/hooks/useMyScrollviewModalApartmentAvailableFrom';
 import useApartmentDetailsModal from '@/hooks/useApartmentDetailsModal';
@@ -40,7 +38,6 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
 	const cardSize = knownCardWidth || 200;
 
 	return (
-		<>
 			<CardWithText
 				{...{}}
 				onPress={() => handleNavigation(apartment?.id)}
@@ -112,7 +109,6 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
 			>
 				<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(apartment?.alias, 70) : excerpt(apartment?.alias, 40)}</Text>
 			</CardWithText>
-		</>
 	);
 };
 

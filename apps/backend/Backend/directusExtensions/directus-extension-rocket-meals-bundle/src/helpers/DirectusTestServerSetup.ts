@@ -1,7 +1,7 @@
-import { ChildProcess, exec, spawn } from 'child_process';
+import { ChildProcess, exec, spawn } from 'node:child_process';
 import { FetchHelper } from './FetchHelper';
 import * as os from 'node:os';
-import path from 'path';
+import path from 'node:path';
 import fse from 'fs-extra';
 
 // Server configuration

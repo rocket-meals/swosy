@@ -122,7 +122,7 @@ const useMyScrollviewTextInputModal = () => {
 						keyboardType={keyboardType}
 						numberOfLines={numberOfLines}
 						textAlignVertical={textAlignVertical}
-						inputStyle={{ ...(inputStyle ?? {}), borderRadius: borderRadiusContainer }}
+						inputStyle={{ ...inputStyle, borderRadius: borderRadiusContainer }}
 						autoFocus={autoFocus}
 						checkTextInput={checkTextInput}
 						allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}

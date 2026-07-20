@@ -122,10 +122,10 @@ function themeModeLabel(mode: ThemeMode): string {
 function GpsIntervalContent({
 	selectedSeconds,
 	onSelect,
-}: {
+}: Readonly<{
 	selectedSeconds: number;
 	onSelect: (seconds: number) => void;
-}) {
+}>) {
 	const isPreset = GPS_PRESET_SECONDS.includes(selectedSeconds);
 
 	return (
@@ -162,11 +162,11 @@ function ResetConfirmContent({
 	onConfirm,
 	onCancel,
 	theme,
-}: {
+}: Readonly<{
 	onConfirm: () => void;
 	onCancel: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	return (
 		<View style={styles.resetConfirmContainer}>
 			<Text style={[styles.resetConfirmText, { color: theme.screen.text }]}>
@@ -192,10 +192,10 @@ function ResetConfirmContent({
 function TTSLogContent({
 	theme,
 	onClear,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	onClear: () => void;
-}) {
+}>) {
 	const [entries, setEntries] = useState<TTSLogEntry[]>([]);
 	const [loading, setLoading] = useState(true);
 

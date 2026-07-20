@@ -26,7 +26,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, isPentagon, getPentagons } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, getPentagons } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import type { MapFeatureInfo } from '../helpers/RouteNameSuggestionHelper';
 import type { ViewportBounds } from '../helpers/ViewportBounds';
@@ -41,7 +41,7 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillbo
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
-import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
+import { resetMapSearchState, setMapSearchName, toggleMapSearchKey } from '../store/mapSearchSlice';
 import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../helpers/JsonFileTransferHelper';
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
@@ -109,7 +109,7 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
  * Values like 'outer_30', 'middle_120' yield their reflected angle; 'center' yields 0.
  */
 function getAnchorAngleDeg(anchorPosition: string): number {
-	const match = anchorPosition.match(/_(\d+)$/);
+	const match = /_(\d+)$/.exec(anchorPosition);
 	return match ? (240 - Number.parseInt(match[1], 10) + 360) % 360 : 0;
 }
 
@@ -474,7 +474,7 @@ function getJoystickDelta(
 	speedKmh: number,
 	heading?: number,
 ): { dLat: number; dLng: number } {
-	const dist = Math.sqrt(dx * dx + dy * dy);
+	const dist = Math.hypot(dx, dy);
 	if (dist < 2) return { dLat: 0, dLng: 0 };
 	const ratio = Math.min(dist / maxDisplacement, 1.0);
 	const speedMs = (speedKmh / 3.6) * ratio;
@@ -512,7 +512,7 @@ type JoystickControllerProps = {
 	onHeadingChange: (bearing: number) => void;
 };
 
-function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, isRecordingRef, onHeadingChange }: JoystickControllerProps) {
+function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, isRecordingRef, onHeadingChange }: Readonly<JoystickControllerProps>) {
 	const knobX = useRef(new Animated.Value(0)).current;
 	const knobY = useRef(new Animated.Value(0)).current;
 	const knobOffsetRef = useRef({ x: 0, y: 0 });
@@ -576,7 +576,7 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 				}, DEBUG_MOVE_INTERVAL_MS);
 			},
 			onPanResponderMove: (_, gestureState) => {
-				const dist = Math.sqrt(gestureState.dx ** 2 + gestureState.dy ** 2);
+				const dist = Math.hypot(gestureState.dx, gestureState.dy);
 				let cx = gestureState.dx;
 				let cy = gestureState.dy;
 				if (dist > JOYSTICK_MAX_DISPLACEMENT) {
@@ -733,7 +733,7 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	// Check loop closure: first and last GPS points must map to the same hex tile
 	// or to adjacent hex tiles.
 	const first = routePoints[0];
-	const last = routePoints[routePoints.length - 1];
+	const last = routePoints.at(-1)!;
 	const firstCell = latLngToCell(first.lat, first.lng, h3Res);
 	const lastCell = latLngToCell(last.lat, last.lng, h3Res);
 	if (firstCell !== lastCell && !areNeighborCells(firstCell, lastCell)) return [];
@@ -929,7 +929,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 		}
 	}
 
-	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const windowedSpeeds: number[] = [];
 	let windowSum = 0;
@@ -1063,7 +1063,7 @@ function DebugInfoContent({
 	onExportMapSettings,
 	onImportMapSettings,
 	onFlyToCell,
-}: DebugInfoContentProps) {
+}: Readonly<DebugInfoContentProps>) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
@@ -1349,7 +1349,7 @@ function DebugInfoContent({
 
 // ─── OSM Consent Screen ───────────────────────────────────────────────────────
 
-function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
+function OsmConsentScreen({ onConsent }: Readonly<{ onConsent: () => void }>) {
 	return (
 		<ScrollView contentContainerStyle={styles.consentContainer}>
 			<Ionicons name="map-outline" size={56} color={PRIMARY_COLOR} style={styles.consentIcon} />
@@ -1377,7 +1377,7 @@ function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
 
 const QR_MAX_BYTES = 2953;
 
-function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme: ReturnType<typeof useTheme>['theme'] }) {
+function RunShareContent({ shareData, theme }: Readonly<{ shareData: RunShareData; theme: ReturnType<typeof useTheme>['theme'] }>) {
 	const compact = JSON.stringify(shareData);
 	const pretty = JSON.stringify(shareData, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
@@ -1433,7 +1433,7 @@ function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme:
 
 // ─── Run Stats Content (used inside bottom sheet modal) ───────────────────────
 
-function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: ReturnType<typeof useTheme>['theme']; shareData: RunShareData }) {
+function RunStatsContent({ stats, theme, shareData }: Readonly<{ stats: RunStats; theme: ReturnType<typeof useTheme>['theme']; shareData: RunShareData }>) {
 	const { show: showShareModal } = useMyScrollViewModal();
 
 	const handleShare = useCallback(() => {
@@ -1510,7 +1510,7 @@ function MeasureResultContent({
 	onSaveAsActivity,
 	onSaveAsRoute,
 	onClose,
-}: MeasureResultContentProps) {
+}: Readonly<MeasureResultContentProps>) {
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ iconName: 'straighten', label: 'Route Length (hex tiles)', value: String(routeLengthInTiles) },
 		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
@@ -1739,7 +1739,7 @@ const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
 	};
 });
 
-function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorPosition; onSelect: (id: BillboardAnchorPosition) => void; occupiedAnchors?: Record<string, string | null> }) {
+function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: Readonly<{ selected: BillboardAnchorPosition; onSelect: (id: BillboardAnchorPosition) => void; occupiedAnchors?: Record<string, string | null> }>) {
 	const { theme } = useTheme();
 	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
 
@@ -1751,7 +1751,7 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: Bi
 					const next = HEX_POLYGON_POINTS[(i + 1) % 6];
 					const dx = next.x - pt.x;
 					const dy = next.y - pt.y;
-					const len = Math.sqrt(dx * dx + dy * dy);
+					const len = Math.hypot(dx, dy);
 					const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 					return (
 						<View
@@ -1852,7 +1852,7 @@ const hexPickerStyles = StyleSheet.create({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HexTileInfoContent({ h3Index }: { h3Index: string }) {
+function HexTileInfoContent({ h3Index }: Readonly<{ h3Index: string }>) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -2143,7 +2143,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 const MAGNIFY_COLOR = '#3b82f6';
 
-function MagnifyModalContent({ h3Index }: { h3Index: string }) {
+function MagnifyModalContent({ h3Index }: Readonly<{ h3Index: string }>) {
 	const { theme } = useTheme();
 	const { showAlert } = useGeonexiaAlert();
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
@@ -2414,7 +2414,7 @@ function featureToSearchKey(f: { class: string | null; subclass: string | null; 
 	return f.layerId ?? 'unknown';
 }
 
-function MapSearchModalContent({ availableKeys }: { availableKeys: string[] }) {
+function MapSearchModalContent({ availableKeys }: Readonly<{ availableKeys: string[] }>) {
 	const dispatch = useDispatch();
 	const searchState = useSelector((state: RootState) => state.mapSearch.searchState);
 	const enabledKeys = searchState?.enabledKeys ?? [];
@@ -2503,7 +2503,7 @@ function reconstructInterruptedRoute(
 	// Use current time as the end timestamp for the reconstructed activity so
 	// that the saved activity reflects when the user performed the recovery.
 	const nowMs = Date.now();
-	const lastRecordedPoint = snapshot.routePoints[snapshot.routePoints.length - 1];
+	const lastRecordedPoint = snapshot.routePoints.at(-1)!;
 	const firstGpsTimestamp = snapshot.routePoints[0].timestamp;
 
 	// Average speed (m/s) = total recorded distance / elapsed time from the
@@ -2587,12 +2587,12 @@ function InterruptedRecoveryContent({
 	theme,
 	onDiscard,
 	onSave,
-}: {
+}: Readonly<{
 	snapshot: InterruptedRecordingSnapshot;
 	theme: ReturnType<typeof useTheme>['theme'];
 	onDiscard: () => void;
 	onSave: (activity: SavedActivity) => void;
-}) {
+}>) {
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -2605,7 +2605,7 @@ function InterruptedRecoveryContent({
 
 	const durationSec = snapshot.accumulatedSeconds +
 		(snapshot.routePoints.length > 1
-			? (snapshot.routePoints[snapshot.routePoints.length - 1].timestamp - snapshot.routePoints[0].timestamp) / 1000
+			? (snapshot.routePoints.at(-1)!.timestamp - snapshot.routePoints[0].timestamp) / 1000
 			: 0);
 	const distKm = computeRoutePointsDistance(snapshot.routePoints);
 	const dateStr = new Date(snapshot.startedAt).toLocaleString();
@@ -3840,7 +3840,7 @@ export default function RecordScreen() {
 		const routePoints = generateMeasureRoutePoints(routeCells, speedBaseKmh, MEASURE_SPEED_VARIATION_KMH, startTimestamp);
 		if (routePoints.length < 2) return;
 		const stats = computeStats(routePoints);
-		const endedAt = routePoints[routePoints.length - 1].timestamp;
+		const endedAt = routePoints.at(-1)!.timestamp;
 		const activity: SavedActivity = {
 			id: String(startTimestamp),
 			startedAt: startTimestamp,
@@ -4400,7 +4400,7 @@ export default function RecordScreen() {
 
 		// If heading mode is active, rotate the map smoothly to face movement direction.
 		if (appActive && isHeadingModeRef.current && next.length >= 2) {
-			const prev = next[next.length - 2];
+			const prev = next.at(-2)!;
 			const bearing = computeBearing(prev.lat, prev.lng, point.lat, point.lng);
 			mapRef.current?.sendToMap({ bearing, easeAnimation: true, easeDuration: 500 });
 		}
@@ -4408,7 +4408,7 @@ export default function RecordScreen() {
 		// Accumulate the distance incrementally: each fix only adds its latest
 		// segment instead of re-summing the entire route on every update.
 		if (next.length >= 2) {
-			const prevPoint = next[next.length - 2];
+			const prevPoint = next.at(-2)!;
 			liveDistanceKmRef.current += haversineKm(prevPoint.lat, prevPoint.lng, point.lat, point.lng);
 		}
 		const d = liveDistanceKmRef.current;
@@ -5334,7 +5334,6 @@ export default function RecordScreen() {
 						</>
 					)}
 					{isDebugMode && !isRecording && !isMeasureMode && (
-						<>
 							<TouchableOpacity
 								style={styles.debugButton}
 								onPress={showDebugModal}
@@ -5342,7 +5341,6 @@ export default function RecordScreen() {
 							>
 								<MaterialIcons name="bug-report" size={20} color="#555555" />
 							</TouchableOpacity>
-						</>
 					)}
 					{isDebugMode && isMeasureMode && (
 						<>

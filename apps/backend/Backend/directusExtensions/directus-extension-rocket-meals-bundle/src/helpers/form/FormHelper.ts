@@ -10,8 +10,8 @@ import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberH
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 type ImageFieldContext = {
   fieldName: string;
@@ -74,65 +74,59 @@ export class FormHelper {
 
     let index = 0;
 
-    formExtractRelevantInformation.push(this.addFormField({
+    formExtractRelevantInformation.push(
+    	this.addFormField({
         alias: 'Text Field',
         data: { value_string: 'This is a long text example' },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING,
         form_submission_id: form_submission_id,
         index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
         alias: 'Text Field 2',
         data: { value_string: 'This is a long text example This is a long text example This is a long text example This is a long text example This is a long text example This is a long text example ' },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.MULTILINE_TEXT,
         form_submission_id: form_submission_id,
         index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'IBAN',
       data: { value_string: 'DE89370400440532013000' }, // example iban (DE89 3704 0044 0532 0130 00)
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT,
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'BIC',
       data: { value_string: 'DEUTDEDBXXX' }, // example bic (11 chars)
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC,
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
         alias: 'Number Field',
         data: { value_number: 12345.67 },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
         form_submission_id: form_submission_id,
         index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'Number Field With Prefix',
       data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
       prefix: "$ ",
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'Number Field With Suffix',
       data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
         suffix: " €",
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'Number Field With Prefix And Suffix',
       data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
@@ -140,23 +134,22 @@ export class FormHelper {
       suffix: " EUR",
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'Boolean Field',
       data: { value_boolean: false },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
       form_submission_id: form_submission_id,
       index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+    	this.addFormField({
       alias: 'Boolean Field True',
       data: { value_boolean: true },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
       form_submission_id: form_submission_id,
       index: index++
-    }));
+    }),
+    );
 
     let dateTypes = [
         FormHelperCommon.FORM_FIELD_TYPE.DATE,
@@ -182,21 +175,22 @@ export class FormHelper {
       images.push(imageUrl);
     }
 
-    formExtractRelevantInformation.push(this.addFormField({
+    formExtractRelevantInformation.push(
+      this.addFormField({
         alias: 'Image Field',
         data: { value_image: images[0] },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE,
         form_submission_id: form_submission_id,
         index: index++
-    }));
-
-    formExtractRelevantInformation.push(this.addFormField({
+    }),
+      this.addFormField({
       alias: 'Files Field',
       data: { value_files: images },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_FILES,
       form_submission_id: form_submission_id,
       index: index++
-    }));
+    }),
+    );
 
     const signaturePngPath = path.join(__dirname, '__tests__', 'data', 'signature_handwritten_example.png');
     if (fs.existsSync(signaturePngPath)) {
@@ -364,7 +358,7 @@ export class FormHelper {
    * (collapsed) for a connected look; groups are separated by a small gap.
    */
   private static generateBankAccountBoxesHtml(value: string): string {
-    const cleaned = StringHelper.replaceAllWithOptions({ str: value, find: '\\s', replace: '' }).toUpperCase();
+    const cleaned = StringHelper.replaceAllWithOptions({ str: value, find: String.raw`\s`, replace: '' }).toUpperCase();
     const total = cleaned.length;
 
     let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';

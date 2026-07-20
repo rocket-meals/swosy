@@ -37,6 +37,6 @@ export function computeBoxplotStats(values: number[]): BoxplotStats {
     q1: percentile(0.25),
     median: percentile(0.5),
     q3: percentile(0.75),
-    max: sorted[sorted.length - 1]!,
+    max: sorted.at(-1)!,
   };
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
-import { ApartmentSortOption, CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, shouldApplyLastOpenedBoost } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -75,9 +75,7 @@ const Index: React.FC = () => {
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 	const { buildingsLastOpenedIds } = useLastOpenedBuildings();
 
-	const housingAreaColor = housingAreaColorFromSettings
-		? housingAreaColorFromSettings
-		: primaryColor;
+	const housingAreaColor = housingAreaColorFromSettings || primaryColor;
 
 	const defaultImage = useMemo(
 		() => getImageUrl(projectLogo),

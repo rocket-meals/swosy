@@ -16,7 +16,6 @@ import { isWeb, settingsListSectionGap } from '@/constants/Constants';
 import { ServerAPI } from '@/redux/actions';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
 
@@ -378,20 +377,22 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				onPress: () => handleImagePick(true),
 			});
 		}
-		items.push({
+		items.push(
+		  {
 			key: 'gallery',
 			label: translate(TranslationKeys.gallery),
 			icon: <MaterialCommunityIcons name="folder-image" size={24} />,
 			rightElement: loading.image ? <ActivityIndicator size="small" color={theme.screen.icon} /> : null,
 			onPress: () => handleImagePick(false),
-		});
-		items.push({
+		},
+		  {
 			key: 'delete',
 			label: translate(TranslationKeys.delete),
 			icon: <MaterialCommunityIcons name="delete" size={24} />,
 			rightIcon: <MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />,
 			onPress: () => setIsDelete(true),
-		});
+		},
+		);
 
 		return [...withGrouping(items), cancelItem];
 	}, [handleDeleteImage, handleImagePick, isDelete, loading, onClose, theme.screen.icon, translate]);

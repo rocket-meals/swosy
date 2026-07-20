@@ -23,7 +23,7 @@ type JsonApiDocument = {
 
 function base64url(input: Buffer | string): string {
   const buffer = typeof input === 'string' ? Buffer.from(input) : input;
-  return buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return buffer.toString('base64').replaceAll(/\+/g, '-').replaceAll(/\//g, '_').replace(/=+$/, '');
 }
 
 function createAppStoreConnectToken(keyId: string, issuerId: string, privateKeyPath: string): string {

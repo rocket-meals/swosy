@@ -88,10 +88,10 @@ const QUICK_SCORES = [-5, -1, 0, 1, 5];
 function ScoreInputContent({
 	initialValue,
 	onSave,
-}: {
+}: Readonly<{
 	initialValue: number | null;
 	onSave: (value: number | null) => void;
-}) {
+}>) {
 	const { theme } = useTheme();
 	const [signMode, setSignMode] = useState<'plus' | 'minus'>(
 		initialValue != null && initialValue < 0 ? 'minus' : 'plus',
@@ -247,7 +247,7 @@ function PlayerTile({
 	hasScore,
 	onPress,
 	tileWidth,
-}: {
+}: Readonly<{
 	playerId: string;
 	name: string;
 	score: number;
@@ -259,7 +259,7 @@ function PlayerTile({
 	hasScore: boolean;
 	onPress: () => void;
 	tileWidth?: number;
-}) {
+}>) {
 	const { theme, isDark } = useTheme();
 	const textColor = myContrastColor(color, theme, isDark);
 	const nativeID = `${ComponentIds.GAME_PLAYER_TILE_PREFIX}${playerId}`;
@@ -340,7 +340,7 @@ function PlayerEditGroup({
 	onMoveDown,
 	canMoveUp,
 	canMoveDown,
-}: {
+}: Readonly<{
 	player: Player;
 	onRename: (name: string) => void;
 	onColorChange: (color: string) => void;
@@ -353,7 +353,7 @@ function PlayerEditGroup({
 	onMoveDown: () => void;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
-}) {
+}>) {
 	const { theme } = useTheme();
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
@@ -522,7 +522,7 @@ function ColumnsSettingsSection() {
 // subscription and the selected option updates live while the modal is open
 // (same pattern as ColumnsSettingsSection).
 
-function GameTypeSelectSection({ onDone }: { onDone: () => void }) {
+function GameTypeSelectSection({ onDone }: Readonly<{ onDone: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);

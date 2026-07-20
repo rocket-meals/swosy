@@ -3,7 +3,6 @@ import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import AutoImageScroller, { AutoScrollerImage } from '@/components/AutoImageScroller';
 import styles from './styles';

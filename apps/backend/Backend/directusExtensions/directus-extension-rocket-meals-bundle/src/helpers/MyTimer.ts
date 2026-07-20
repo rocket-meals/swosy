@@ -63,11 +63,11 @@ export class MyTimer {
   }
 
   public start() {
-    this.startTime = new Date().getTime();
+    this.startTime = Date.now();
   }
 
   public stop() {
-    this.endTime = new Date().getTime();
+    this.endTime = Date.now();
   }
 
   public startRound() {
@@ -83,7 +83,7 @@ export class MyTimer {
 
   public getElapsedTime() {
     if (this.endTime === 0) {
-      let now = new Date().getTime();
+      let now = Date.now();
       return now - this.startTime;
     }
 

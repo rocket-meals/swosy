@@ -93,7 +93,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 				color: theme.sheet.text,
 				backgroundColor: theme.sheet.inputBg,
 				borderColor: theme.sheet.inputBorder,
-				...(inputStyle ?? {}),
+				...inputStyle,
 			}}
 			autoFocus={autoFocus}
 			placeholder={placeholder}
@@ -155,7 +155,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 					color: theme.sheet.text,
 					backgroundColor: theme.sheet.inputBg,
 					borderColor: theme.sheet.inputBorder,
-					...(inputStyle ?? {}),
+					...inputStyle,
 				}}
 				autoFocus={autoFocus}
 				placeholder={placeholder}

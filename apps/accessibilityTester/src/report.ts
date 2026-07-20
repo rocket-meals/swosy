@@ -1,6 +1,5 @@
-import { promises as fs } from 'fs';
-import { existsSync } from 'fs';
-import path from 'path';
+import { promises as fs, existsSync } from 'node:fs';
+import path from 'node:path';
 
 // Report output must stay inside the working tree: the repository root when the tool
 // runs inside a checkout (found by walking up to the nearest .git), otherwise the
@@ -105,26 +104,29 @@ function impactEmoji(impact: ImpactLevel): string {
 }
 
 function escapeMarkdownTableCell(text: string): string {
-  return text.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+  return text.replaceAll(/\|/g, String.raw`\|`).replaceAll(/\n/g, ' ');
 }
 
 export function generateMarkdownReport(report: AccessibilityReport): string {
   const lines: string[] = [];
-  lines.push('# Accessibility Report');
-  lines.push('');
-  lines.push(`> Generated: ${report.generatedAt} | axe-core ${report.axeCoreVersion} | Rules: ${report.tags.join(', ')} | Viewport: ${report.viewport.width}x${report.viewport.height}`);
-  lines.push(`> Base URL: ${report.baseUrl}`);
-  lines.push('');
-  lines.push('## Summary');
-  lines.push('');
-  lines.push(`Total violations (affected elements): **${report.totals.violations}** — 🟥 Critical: ${report.totals.critical}, 🟧 Serious: ${report.totals.serious}, 🟨 Moderate: ${report.totals.moderate}, 🟦 Minor: ${report.totals.minor}`);
+  lines.push(
+    '# Accessibility Report',
+    '',
+    `> Generated: ${report.generatedAt} | axe-core ${report.axeCoreVersion} | Rules: ${report.tags.join(', ')} | Viewport: ${report.viewport.width}x${report.viewport.height}`,
+    `> Base URL: ${report.baseUrl}`,
+    '',
+    '## Summary',
+    '',
+    `Total violations (affected elements): **${report.totals.violations}** — 🟥 Critical: ${report.totals.critical}, 🟧 Serious: ${report.totals.serious}, 🟨 Moderate: ${report.totals.moderate}, 🟦 Minor: ${report.totals.minor}`,
+  );
   if (report.totals.screensWithErrors > 0) {
-    lines.push('');
-    lines.push(`⚠️ ${report.totals.screensWithErrors} screen(s) could not be analyzed (load error) — see details below.`);
+    lines.push('', `⚠️ ${report.totals.screensWithErrors} screen(s) could not be analyzed (load error) — see details below.`);
   }
-  lines.push('');
-  lines.push('| Screen | 🟥 Critical | 🟧 Serious | 🟨 Moderate | 🟦 Minor | Total | Passes |');
-  lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: |');
+  lines.push(
+    '',
+    '| Screen | 🟥 Critical | 🟧 Serious | 🟨 Moderate | 🟦 Minor | Total | Passes |',
+    '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
+  );
 
   const sortedScreens = [...report.screens].sort((a, b) => {
     const countTotal = (s: ScreenResult) => s.violations.reduce((sum, v) => sum + v.nodeCount, 0);
@@ -144,9 +146,7 @@ export function generateMarkdownReport(report: AccessibilityReport): string {
     lines.push(`| ${escapeMarkdownTableCell(screen.screen)} | ${byImpact.critical} | ${byImpact.serious} | ${byImpact.moderate} | ${byImpact.minor} | ${total} | ${screen.passCount} |`);
   }
 
-  lines.push('');
-  lines.push('## Most common rule violations');
-  lines.push('');
+  lines.push('', '## Most common rule violations', '');
   const ruleCounts = new Map<string, { impact: ImpactLevel; help: string; helpUrl: string; nodeCount: number; screenCount: number }>();
   for (const screen of report.screens) {
     for (const violation of screen.violations) {
@@ -163,36 +163,31 @@ export function generateMarkdownReport(report: AccessibilityReport): string {
   if (sortedRules.length === 0) {
     lines.push('No violations found. 🎉');
   } else {
-    lines.push('| Rule | Impact | Elements | Screens | Help |');
-    lines.push('| --- | --- | ---: | ---: | --- |');
+    lines.push('| Rule | Impact | Elements | Screens | Help |', '| --- | --- | ---: | ---: | --- |');
     for (const [ruleId, info] of sortedRules) {
       lines.push(`| \`${ruleId}\` | ${impactEmoji(info.impact)} ${info.impact} | ${info.nodeCount} | ${info.screenCount} | [${escapeMarkdownTableCell(info.help)}](${info.helpUrl}) |`);
     }
   }
 
-  lines.push('');
-  lines.push('## Details per screen');
+  lines.push('', '## Details per screen');
   for (const screen of sortedScreens) {
-    lines.push('');
-    lines.push(`### ${screen.screen}`);
-    lines.push('');
-    lines.push(`URL: \`${screen.url}\``);
+    lines.push('', `### ${screen.screen}`, '', `URL: \`${screen.url}\``);
     if (screen.error) {
-      lines.push('');
-      lines.push(`⚠️ Could not analyze this screen: ${screen.error}`);
+      lines.push('', `⚠️ Could not analyze this screen: ${screen.error}`);
       continue;
     }
     if (screen.violations.length === 0) {
-      lines.push('');
-      lines.push('No violations found. 🎉');
+      lines.push('', 'No violations found. 🎉');
       continue;
     }
     for (const impact of IMPACT_LEVELS) {
       const violationsForImpact = screen.violations.filter(v => v.impact === impact);
       for (const violation of violationsForImpact) {
-        lines.push('');
-        lines.push(`- ${impactEmoji(impact)} **${violation.id}** (${impact}) — ${violation.nodeCount} element(s)`);
-        lines.push(`  - ${violation.help} ([docs](${violation.helpUrl}))`);
+        lines.push(
+          '',
+          `- ${impactEmoji(impact)} **${violation.id}** (${impact}) — ${violation.nodeCount} element(s)`,
+          `  - ${violation.help} ([docs](${violation.helpUrl}))`,
+        );
         for (const node of violation.nodes.slice(0, 3)) {
           lines.push(`  - \`${escapeMarkdownTableCell(node.target)}\``);
         }

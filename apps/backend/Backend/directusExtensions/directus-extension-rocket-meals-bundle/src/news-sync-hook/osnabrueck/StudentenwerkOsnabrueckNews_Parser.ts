@@ -14,7 +14,6 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
   static readonly newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
   static readonly newsArticleUrl = 'https://www.studentenwerk-osnabrueck.de//de/nachrichten/artikel-details';
 
-  constructor() {}
 
   async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
     let realNewsItems = await this.getRealNewsItems();
@@ -53,7 +52,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
         news.push({
           basicNews: {
-            external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: '\\W+', replace: '_' }),
+            external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: String.raw`\W+`, replace: '_' }),
             image_remote_url: imageUrl,
             alias: header,
             date: articleDetails?.date ? articleDetails.date.toISOString() : null,

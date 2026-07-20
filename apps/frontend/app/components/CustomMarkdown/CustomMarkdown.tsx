@@ -17,9 +17,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 	const getContent = () => {
 		// Regex patterns for different content types
 		const contentPatterns = {
-			email: /\[([^\]]+)]\((mailto:[^\)]+)\)/,
-			location: /\[([^\]]+)]\(((?:geo|maps):[^\)]+)\)/i,
-			link: /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/,
+			email: /\[([^\]]+)]\((mailto:[^)]+)\)/,
+			location: /\[([^\]]+)]\(((?:geo|maps):[^)]+)\)/i,
+			link: /\[([^\]]+)]\((https?:\/\/[^)]+)\)/,
 			image: /!\[([^\]]*)]\(([^)]+)\)/,
 			heading: /^#{1,3}\s*(.*)$/,
 		};
@@ -39,7 +39,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 					if (currentParagraph.length) {
 						const minIndent = Math.min(...currentParagraph.map(item => item.indent));
 						const textContent = currentParagraph.map(item => item.text).join('\n');
-						stack[stack.length - 1].items.push({
+						stack.at(-1)!.items.push({
 							type: 'text',
 							content: textContent,
 							indent: Number.isFinite(minIndent) ? minIndent : 0,
@@ -54,7 +54,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 					const indentLength = normalizedLine.match(/^\s*/)?.[0].length ?? 0;
 					const trimmedLine = line.trim();
 
-					const headingMatch = trimmedLine.match(contentPatterns.heading);
+					const headingMatch = contentPatterns.heading.exec(trimmedLine);
 					if (headingMatch) {
 						flushTextContent();
 
@@ -66,7 +66,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 								stack.pop();
 							}
 
-							stack[stack.length - 1].items.push({
+							stack.at(-1)!.items.push({
 								type: 'heading',
 								content: headerText,
 								level,
@@ -74,7 +74,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 							continue;
 						}
 
-						while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+						while (stack.length > 1 && stack.at(-1)!.level >= level) {
 							stack.pop();
 						}
 
@@ -98,14 +98,14 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 							startCollapsed,
 						};
 
-						stack[stack.length - 1].items.push(newSection);
+						stack.at(-1)!.items.push(newSection);
 						stack.push({ level, items: newSection.items });
 						continue;
 					}
 
 					if (trimmedLine === '') {
 						flushTextContent();
-						stack[stack.length - 1].items.push({ type: 'emptyLine' });
+						stack.at(-1)!.items.push({ type: 'emptyLine' });
 						continue;
 					}
 
@@ -113,8 +113,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 					if (contentPatterns.image.test(trimmedForMatch)) {
 						flushTextContent();
-						const match = trimmedForMatch.match(contentPatterns.image);
-						stack[stack.length - 1].items.push({
+						const match = contentPatterns.image.exec(trimmedForMatch);
+						stack.at(-1)!.items.push({
 							type: 'image',
 							altText: match?.[1] || '',
 							url: match?.[2] || '',
@@ -125,8 +125,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 					if (contentPatterns.email.test(trimmedForMatch)) {
 						flushTextContent();
-						const match = trimmedForMatch.match(contentPatterns.email);
-						stack[stack.length - 1].items.push({
+						const match = contentPatterns.email.exec(trimmedForMatch);
+						stack.at(-1)!.items.push({
 							type: 'email',
 							displayText: match?.[1],
 							email: match?.[2],
@@ -137,8 +137,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 					if (contentPatterns.location.test(trimmedForMatch)) {
 						flushTextContent();
-						const match = trimmedForMatch.match(contentPatterns.location);
-						stack[stack.length - 1].items.push({
+						const match = contentPatterns.location.exec(trimmedForMatch);
+						stack.at(-1)!.items.push({
 							type: 'location',
 							displayText: match?.[1],
 							url: match?.[2],
@@ -149,8 +149,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 					if (contentPatterns.link.test(trimmedForMatch)) {
 						flushTextContent();
-						const match = trimmedForMatch.match(contentPatterns.link);
-						stack[stack.length - 1].items.push({
+						const match = contentPatterns.link.exec(trimmedForMatch);
+						stack.at(-1)!.items.push({
 							type: 'link',
 							displayText: match?.[1],
 							url: match?.[2],
@@ -227,8 +227,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 						) : (
 							<View
 								style={{
-									width: (imageWidth ? imageWidth : '100%') as DimensionValue,
-									height: (imageHeight ? imageHeight : 400) as DimensionValue,
+									width: (imageWidth || '100%') as DimensionValue,
+									height: (imageHeight || 400) as DimensionValue,
 									justifyContent: 'center',
 									alignItems: 'center',
 									padding: 10,
@@ -237,8 +237,8 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 								<Image
 									source={{ uri: url }}
 									style={{
-										width: (imageWidth ? imageWidth : '100%') as DimensionValue,
-										height: (imageHeight ? imageHeight : 400) as DimensionValue,
+										width: (imageWidth || '100%') as DimensionValue,
+										height: (imageHeight || 400) as DimensionValue,
 										resizeMode: 'cover',
 									}}
 									onError={() => setError(true)}

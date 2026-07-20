@@ -16,7 +16,7 @@ import { Theme } from '@/context/ThemeContext';
 export function getContrastRatio(foreground: string | undefined | null, background: string): number {
 	const start = performance.now();
 
-	let usedForeground = foreground ? foreground : undefined;
+	let usedForeground = foreground || undefined;
 
 	const lumA = Color(usedForeground).getLuminance();
 	const lumB = Color(background).getLuminance();

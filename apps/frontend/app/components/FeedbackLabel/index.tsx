@@ -56,7 +56,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 		const result = (await foodFeedbackLabelEntryHelper.updateFoodFeedbackLabelEntry(foodId, profile.id, labelEntries, String(label[0]?.foods_feedbacks_labels_id), likeStats, selectedCanteen?.id, offerId)) as DatabaseTypes.FoodsFeedbacksLabelsEntries;
 		dispatch({
 			type: result ? UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL : DELETE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL,
-			payload: result ? result : labelData.id,
+			payload: result || labelData.id,
 		});
 	};
 

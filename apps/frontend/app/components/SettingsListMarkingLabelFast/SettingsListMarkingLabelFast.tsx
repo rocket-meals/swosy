@@ -12,7 +12,6 @@ import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislikeFast from '@/components/SettingsListLikeDislikeFast';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 import { createSelector } from 'reselect';
 import { RootState } from '@/redux/reducer';
 import { MarkingLabelProps } from '@/components/MarkingLabels/types';
@@ -99,7 +98,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 					}
 				} else {
 					markingsCopy.push({
-						...(ownMarking ?? {}),
+						...ownMarking,
 						like: newLike,
 						markings_id: markingId,
 						profiles_id: profile?.id,

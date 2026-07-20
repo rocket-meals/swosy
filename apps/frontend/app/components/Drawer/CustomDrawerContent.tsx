@@ -13,7 +13,7 @@ import * as Linking from 'expo-linking';
 import useToast from '@/hooks/useToast';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
 import { IconProps } from '@expo/vector-icons/build/createIconSet';
 import { TranslationKeys } from '@/locales/keys';
 import { ComponentIds } from '@/constants/ComponentIds';
@@ -21,7 +21,6 @@ import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem, DrawerItemBaseFields } from 'repo-depkit-common-ui';
@@ -231,7 +230,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                 }
 
                 if (isManagement) {
-                        menuItems.push({
+                        menuItems.push(
+                          {
                                 label: translate(TranslationKeys.role_management),
                                 iconName: 'bag',
                                 iconLibName: Ionicons,
@@ -239,8 +239,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'management/index',
 				position: 9,
 				nativeID: ComponentIds.DRAWER_ITEM_MANAGEMENT,
-			});
-			menuItems.push({
+			},
+                          {
 				label: translate(TranslationKeys.experimentell),
 				iconName: 'flask',
 				iconLibName: MaterialCommunityIcons,
@@ -248,7 +248,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				route: 'experimentell/index',
 				position: 10,
 				nativeID: ComponentIds.DRAWER_ITEM_EXPERIMENTAL,
-			});
+			},
+                        );
 		}
 
 		// Add DatabaseTypes.Wikis dynamically with position sorting

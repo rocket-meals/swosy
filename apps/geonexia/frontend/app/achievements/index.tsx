@@ -358,7 +358,7 @@ type AchievementCardProps = {
 	total: number;
 };
 
-function AchievementCard({ definition, data, index, total }: AchievementCardProps) {
+function AchievementCard({ definition, data, index, total }: Readonly<AchievementCardProps>) {
 	const unlocked = isUnlocked(definition, data);
 	const { current, goal } = definition.getProgress(data);
 	const progress = Math.min(1, current / goal);

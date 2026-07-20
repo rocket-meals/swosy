@@ -77,14 +77,14 @@ export default function CardScoreEntryModal({
 	bonusPoints,
 	initialSelection,
 	onSave,
-}: {
+}: Readonly<{
 	items: CardItem[];
 	scoreFormula: RuleExpr;
 	bonusAtNumberCount?: number;
 	bonusPoints?: number;
 	initialSelection: string[];
 	onSave: (cardIds: string[], score: number) => void;
-}) {
+}>) {
 	const { theme } = useTheme();
 	const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 	const [selectedIds, setSelectedIds] = useState<string[]>(() => initialSelection.filter((id) => itemsById.has(id)));

@@ -71,7 +71,7 @@ export const resolveLocationHref = (href: string | null | undefined): ResolvedLo
 	}
 
 	if (coordinatePayload) {
-		const fallbackQuery = StringHelper.replaceAllWithOptions({ str: coordinatePayload, find: '^[,\\s]+|[,\\s]+$', replace: '' });
+		const fallbackQuery = StringHelper.replaceAllWithOptions({ str: coordinatePayload, find: String.raw`^[,\s]+|[,\s]+$`, replace: '' });
 		if (fallbackQuery) {
 			return {
 				resolvedHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`,

@@ -42,7 +42,7 @@ type PermStatus = 'idle' | 'granted' | 'denied' | 'loading';
 
 // ─── Step: Welcome ────────────────────────────────────────────────────────────
 
-function WelcomeStep({ theme }: { theme: ReturnType<typeof useTheme>['theme'] }) {
+function WelcomeStep({ theme }: Readonly<{ theme: ReturnType<typeof useTheme>['theme'] }>) {
 	return (
 		<View style={styles.stepContent}>
 			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
@@ -64,11 +64,11 @@ function GpsStep({
 	theme,
 	status,
 	onRequest,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	status: PermStatus;
 	onRequest: () => void;
-}) {
+}>) {
 	const statusColor = status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
 	let statusLabel: string | null;
 	if (status === 'granted') statusLabel = '✅ Berechtigung erteilt';
@@ -118,11 +118,11 @@ function NotificationsStep({
 	theme,
 	status,
 	onRequest,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	status: PermStatus;
 	onRequest: () => void;
-}) {
+}>) {
 	const statusColor = status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
 	let statusLabel: string | null;
 	if (status === 'granted') statusLabel = '✅ Benachrichtigungen aktiviert';
@@ -169,11 +169,11 @@ function TTSStep({
 	theme,
 	ttsEnabled,
 	onToggle,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	ttsEnabled: boolean;
 	onToggle: (v: boolean) => void;
-}) {
+}>) {
 	return (
 		<View style={styles.stepContent}>
 			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
@@ -217,7 +217,7 @@ function TTSDetailsStep({
 	onTogglePace,
 	onToggleDuration,
 	onToggleSpeed,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	announceDistance: boolean;
 	announcePace: boolean;
@@ -227,7 +227,7 @@ function TTSDetailsStep({
 	onTogglePace: (v: boolean) => void;
 	onToggleDuration: (v: boolean) => void;
 	onToggleSpeed: (v: boolean) => void;
-}) {
+}>) {
 	return (
 		<View style={styles.stepContent}>
 			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
@@ -290,11 +290,11 @@ function GpsPrecisionStep({
 	theme,
 	selected,
 	onSelect,
-}: {
+}: Readonly<{
 	theme: ReturnType<typeof useTheme>['theme'];
 	selected: number;
 	onSelect: (seconds: number) => void;
-}) {
+}>) {
 	const options: { id: number; label: string; description: string; icon: string }[] = [
 		{
 			id: 1,
@@ -361,7 +361,7 @@ function GpsPrecisionStep({
 
 // ─── Step: Finish ─────────────────────────────────────────────────────────────
 
-function FinishStep({ theme }: { theme: ReturnType<typeof useTheme>['theme'] }) {
+function FinishStep({ theme }: Readonly<{ theme: ReturnType<typeof useTheme>['theme'] }>) {
 	return (
 		<View style={styles.stepContent}>
 			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
@@ -390,11 +390,11 @@ function ProgressDots({
 	total,
 	current,
 	color,
-}: {
+}: Readonly<{
 	total: number;
 	current: number;
 	color: string;
-}) {
+}>) {
 	return (
 		<View style={styles.progressDots}>
 			{Array.from({ length: total }).map((_, i) => (

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import puppeteer, { Browser } from 'puppeteer';
 import { AxePuppeteer } from '@axe-core/puppeteer';
 import { source as axeSource, version as axeCoreVersion } from 'axe-core';

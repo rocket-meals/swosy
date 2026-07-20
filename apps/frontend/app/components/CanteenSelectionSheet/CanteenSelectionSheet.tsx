@@ -13,7 +13,6 @@ import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import CanteenSelection from '../CanteenSelection/CanteenSelection';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { useAppSelector } from '@/redux/hooks';

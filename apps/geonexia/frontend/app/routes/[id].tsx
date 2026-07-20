@@ -114,12 +114,12 @@ function ManualActivityContent({
 	onSave,
 	onClose,
 	theme,
-}: {
+}: Readonly<{
 	route: SavedRoute;
 	onSave: (activity: SavedActivity) => void;
 	onClose: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	const [hours, setHours] = useState('');
 	const [minutes, setMinutes] = useState('');
 	const [seconds, setSeconds] = useState('');
@@ -281,12 +281,12 @@ function ReassignRouteContent({
 	onSelect,
 	onCancel,
 	theme,
-}: {
+}: Readonly<{
 	routes: SavedRoute[];
 	onSelect: (routeId: string) => void;
 	onCancel: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
-}) {
+}>) {
 	return (
 		<View style={{ paddingBottom: 24 }}>
 			<SettingsListSelectOption

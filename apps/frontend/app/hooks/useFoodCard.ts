@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, ViewStyle } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
-import { isWeb } from '@/constants/Constants';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useTheme } from '@/hooks/useTheme';
 

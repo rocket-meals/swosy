@@ -7,7 +7,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { CustomCollapsibleProps } from './types';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { RootState } from '@/redux/reducer';
 
 const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({ headerText, children, customColor = '', startCollapsed = false }) => {
 	const [collapsed, setCollapsed] = useState(startCollapsed);

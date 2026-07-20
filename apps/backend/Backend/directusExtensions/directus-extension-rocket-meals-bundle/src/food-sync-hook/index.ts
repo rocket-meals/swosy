@@ -32,7 +32,7 @@ function getFoodParser(): FoodParserInterface | null {
   const FOOD_SYNC_MODE = EnvVariableHelper.getFoodSyncMode();
 
   switch (FOOD_SYNC_MODE) {
-    case 'TL1CSV':
+    case 'TL1CSV': {
       /* TL1 CSV FILE */
       const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = EnvVariableHelper.getFoodSyncTL1FileExportCsvFilePath();
       const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getFoodSyncTL1FileExportCsvFileEncoding();
@@ -41,7 +41,8 @@ function getFoodParser(): FoodParserInterface | null {
       const ftpFileReader = new FoodTL1ParserRawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
 
       return FoodParserWithCustomerAdaptions.getFoodParser(ftpFileReader);
-    case 'TL1WEB':
+    }
+    case 'TL1WEB': {
       /* TL1 URL */
       const FOOD_SYNC_TL1WEB_EXPORT_URL = EnvVariableHelper.getFoodSyncTL1WebExportUrl();
       if (!FOOD_SYNC_TL1WEB_EXPORT_URL) {
@@ -52,6 +53,7 @@ function getFoodParser(): FoodParserInterface | null {
       console.log(SCHEDULE_NAME + ': Using TL1 CSV file from URL: ' + FOOD_SYNC_TL1WEB_EXPORT_URL);
       const urlReader = new FoodTL1ParserRawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
       return FoodParserWithCustomerAdaptions.getFoodParser(urlReader);
+    }
   }
 
   return null;
@@ -68,10 +70,11 @@ function getMarkingParser(): MarkingParserInterface | null {
   const MARKING_SYNC_MODE = EnvVariableHelper.getMarkingSyncMode();
 
   switch (MARKING_SYNC_MODE) {
-    case 'TL1CSV':
+    case 'TL1CSV': {
       /* TL1 CSV FILE */
       const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFileEncoding();
       return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+    }
   }
 
   return null;

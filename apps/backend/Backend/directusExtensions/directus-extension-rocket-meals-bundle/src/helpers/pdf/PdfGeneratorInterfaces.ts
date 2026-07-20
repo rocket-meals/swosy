@@ -11,6 +11,6 @@ export type PdfGeneratorOptions = {
 };
 
 export type RequestOptions = {
-  bearerToken?: string | null | undefined;
+  bearerToken?: string | null;
   mockImageResolution?: boolean; // if true, images are mocked with a placeholder image
 };

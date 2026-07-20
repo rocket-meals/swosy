@@ -38,7 +38,6 @@ import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewM
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useNotifications } from './hooks';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
-import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 import DebugView from '@/components/DebugView';

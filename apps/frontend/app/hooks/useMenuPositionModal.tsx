@@ -10,7 +10,6 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { drawers } from '@/constants/SettingData';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { SET_DRAWER_POSITION } from '@/redux/Types/types';
 import { CollectibleAt } from 'repo-depkit-common';
 

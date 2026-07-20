@@ -22,24 +22,24 @@ const MarkdownTestScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { openTextInputModal } = useMyScrollviewTextInputModal();
-	const [customMarkdown, setCustomMarkdown] = useState('**Markdown**\\n\\nMehrzeiliges Beispiel.');
+	const [customMarkdown, setCustomMarkdown] = useState(String.raw`**Markdown**\n\nMehrzeiliges Beispiel.`);
 
 	const markdownExamples = useMemo<MarkdownExample[]>(
 		() => [
 			{
 				id: 'line-breaks',
 				title: translate(TranslationKeys.markdown_example_line_breaks),
-				content: '**Geschichte hinter der Speise:**\\n\\nDie erste Version der Mensa App SWOSY entstand im Rahmen meiner Masterarbeit.\\n\\nIch wünsche allen viel Appetit mit diesem Burger.',
+				content: String.raw`**Geschichte hinter der Speise:**\n\nDie erste Version der Mensa App SWOSY entstand im Rahmen meiner Masterarbeit.\n\nIch wünsche allen viel Appetit mit diesem Burger.`,
 			},
 			{
 				id: 'list',
 				title: translate(TranslationKeys.markdown_example_list),
-				content: '## Zutaten\\n- Kartoffeln\\n- Gemüse\\n- Sauce',
+				content: String.raw`## Zutaten\n- Kartoffeln\n- Gemüse\n- Sauce`,
 			},
 			{
 				id: 'links',
 				title: translate(TranslationKeys.markdown_example_links),
-				content: '[Webseite](https://www.swosy.de)\\n\\n[Mail](mailto:test@swosy.de)\\n\\n[Telefon](tel:+49123456789)',
+				content: String.raw`[Webseite](https://www.swosy.de)\n\n[Mail](mailto:test@swosy.de)\n\n[Telefon](tel:+49123456789)`,
 			},
 			{
 				id: 'geo',

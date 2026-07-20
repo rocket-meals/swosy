@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
@@ -80,7 +80,6 @@ const Index = () => {
 	}, []);
 
 	return (
-		<>
 			<ScrollView
 				style={{
 					...styles.container,
@@ -216,7 +215,6 @@ const Index = () => {
 					/>
 				</View>
 			</ScrollView>
-		</>
 	);
 };
 

@@ -2,7 +2,6 @@ import { WashingmachineParserInterface, WashingmachinesTypeForParser, Washingmac
 import { DateHelper } from 'repo-depkit-common';
 
 export class DemoWashingmachineParser implements WashingmachineParserInterface {
-  constructor() {}
 
   async getWashingmachines(): Promise<WashingmachinesTypeForParser[]> {
     let washingmachines: WashingmachinesTypeForParser[] = [];
@@ -34,8 +33,7 @@ export class DemoWashingmachineParser implements WashingmachineParserInterface {
 
     washingmachines.push({
       basicData: occupiedWashingmachine,
-    });
-    washingmachines.push({
+    }, {
       basicData: freeWashingmachine,
     });
 

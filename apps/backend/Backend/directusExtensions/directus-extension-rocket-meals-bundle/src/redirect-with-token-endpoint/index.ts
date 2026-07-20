@@ -10,7 +10,7 @@ const SCHEDULE_NAME = 'redirect_with_token';
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
 
-const WILDCARD = '\\*'; // we need to escape the * as it is a special character in regex
+const WILDCARD = String.raw`\*`; // we need to escape the * as it is a special character in regex
 const WILDCARD_REPLACEMENT = 'WILDCARD_REPLACEMENT';
 
 /**

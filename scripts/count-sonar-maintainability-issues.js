@@ -6,11 +6,11 @@
  *
  * Usage: node scripts/count-sonar-maintainability-issues.js [path/to/report.csv] [topN]
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const csvPath = process.argv[2] || path.join(__dirname, '..', 'reports', 'sonarCloud', 'report_maintainability.csv');
-const topN = parseInt(process.argv[3] || '10', 10);
+const topN = Number.parseInt(process.argv[3] || '10', 10);
 
 function parseCsvLine(line) {
     const fields = [];

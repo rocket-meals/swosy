@@ -5,14 +5,13 @@ import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import NewsItem from '@/components/NewsItem/NewsItem';
 import { NewsHelper } from '@/redux/actions/News/News';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, CollectibleAt } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt } from 'repo-depkit-common';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.news);

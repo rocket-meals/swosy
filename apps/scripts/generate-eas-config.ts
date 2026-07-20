@@ -72,7 +72,7 @@ function addEnvToAllBuildProfiles(config: EasConfig, customer: string | undefine
         for (const profileName of Object.keys(build)) {
                 const profile = build[profileName];
                 profile.env = {
-                        ...(profile.env || {}),
+                        ...profile.env,
                         CUSTOMER: customer,
                         EXPO_PUBLIC_CUSTOMER: customer,
                 };
