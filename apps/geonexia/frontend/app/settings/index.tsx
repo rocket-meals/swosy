@@ -36,7 +36,6 @@ import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalSeconds } from '../../store/gpsIntervalSlice';
-import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import AdvancedSettingsContent from '../../components/AdvancedSettingsContent';
 import type { RouteSmoothingLevel } from '../../helpers/RouteSmootherHelper';
@@ -274,7 +273,6 @@ export default function SettingsScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.intervalSeconds);
-	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
@@ -353,10 +351,6 @@ export default function SettingsScreen() {
 		dispatch(setDebugMode(next));
 		saveDebugModeFlag(next);
 	}, [dispatch, isDebugMode]);
-
-	const handleToggleTTS = useCallback(() => {
-		dispatch(setTTSEnabled(!isTTSEnabled));
-	}, [dispatch, isTTSEnabled]);
 
 	const handleOpenSpeechSettings = useCallback(() => {
 		showSpeechModal({
