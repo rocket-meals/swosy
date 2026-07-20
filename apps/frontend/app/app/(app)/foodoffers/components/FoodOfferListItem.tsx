@@ -50,6 +50,46 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
     theme,
     amountColumnsForcard
 }) => {
+    let itemContent: React.ReactNode = null;
+    if (item.foodoffer) {
+        itemContent = (
+            <FoodItemBase
+                canteen={selectedCanteen as any}
+                item={item.foodoffer}
+                key={item.foodoffer.id || `food-item-${index}`}
+                handleMenuSheet={handleMenuSheet}
+                handleImageSheet={handleImageSheet}
+                cardWidth={cardWidth}
+                previousFeedback={previousFeedback}
+                language={language}
+                pirateLanguage={pirateLanguage}
+                funLanguageMode={funLanguageMode}
+                serverInfo={serverInfo}
+                appSettings={appSettings}
+                primaryColor={primaryColor}
+                user={user}
+                isManagement={isManagement}
+                profile={profile}
+                markings={markings}
+                screenWidth={screenWidth}
+                theme={theme}
+                amountColumnsForcard={amountColumnsForcard}
+            />
+        );
+    } else if (item.foodofferInfoItem) {
+        itemContent = (
+            <FoodOfferInfoItem
+                key={item.foodofferInfoItem.id || `info-item-${index}`}
+                item={item.foodofferInfoItem}
+                content={
+                    (getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
+                }
+                cardWidth={cardWidth}
+                screenWidth={screenWidth}
+            />
+        );
+    }
+
     return (
         <View
             style={[
@@ -57,40 +97,7 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                 itemGap !== undefined && { marginHorizontal: itemGap, marginVertical: itemGap }
             ]}
         >
-            {item.foodoffer ? (
-                <FoodItemBase
-                    canteen={selectedCanteen as any}
-                    item={item.foodoffer}
-                    key={item.foodoffer.id || `food-item-${index}`}
-                    handleMenuSheet={handleMenuSheet}
-                    handleImageSheet={handleImageSheet}
-                    cardWidth={cardWidth}
-                    previousFeedback={previousFeedback}
-                    language={language}
-                    pirateLanguage={pirateLanguage}
-                    funLanguageMode={funLanguageMode}
-                    serverInfo={serverInfo}
-                    appSettings={appSettings}
-                    primaryColor={primaryColor}
-                    user={user}
-                    isManagement={isManagement}
-                    profile={profile}
-                    markings={markings}
-                    screenWidth={screenWidth}
-                    theme={theme}
-                    amountColumnsForcard={amountColumnsForcard}
-                />
-            ) : item.foodofferInfoItem ? (
-                <FoodOfferInfoItem
-                    key={item.foodofferInfoItem.id || `info-item-${index}`}
-                    item={item.foodofferInfoItem}
-                    content={
-                        (getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
-                    }
-                    cardWidth={cardWidth}
-                    screenWidth={screenWidth}
-                />
-            ) : null}
+            {itemContent}
         </View>
     );
 };

@@ -78,7 +78,13 @@ const Index = () => {
                     } else if (custom_type === 'value_number') {
                         updatedValueFields = { value_number: value ? String(value).replace(',', '.') : null };
                     } else if (custom_type === 'value_boolean') {
-                        updatedValueFields = { value_boolean: value === 0 ? false : value === 1 ? true : null };
+                        let booleanValue: boolean | null = null;
+                        if (value === 0) {
+                            booleanValue = false;
+                        } else if (value === 1) {
+                            booleanValue = true;
+                        }
+                        updatedValueFields = { value_boolean: booleanValue };
                     } else if (custom_type === 'value_custom') {
                         updatedValueFields = { value_custom: value };
                     } else if (custom_type === 'value_date') {

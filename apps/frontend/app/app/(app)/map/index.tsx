@@ -86,6 +86,13 @@ type ControlButtonProps = {
 	size?: 'sm' | 'md' | 'lg';
 };
 
+const getListGroupPosition = (index: number, total: number): 'single' | 'top' | 'bottom' | 'middle' => {
+	if (total === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+};
+
 const ControlButton: React.FC<ControlButtonProps> = ({
 	onPressIn,
 	onPressOut,
@@ -95,7 +102,12 @@ const ControlButton: React.FC<ControlButtonProps> = ({
 	color = 'rgba(0,0,0,0.65)',
 	size = 'md',
 }) => {
-	const dim = size === 'sm' ? 38 : size === 'lg' ? 58 : 48;
+	let dim = 48;
+	if (size === 'sm') {
+		dim = 38;
+	} else if (size === 'lg') {
+		dim = 58;
+	}
 	return (
 		<TouchableOpacity
 			style={{
@@ -565,8 +577,7 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 			<View style={{ height: 16 }} />
 			{organisations.map((org, index) => {
 				const total = organisations.length;
-				const groupPosition =
-					total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				const groupPosition = getListGroupPosition(index, total);
 				return (
 					<SettingsListOrganisationFast
 						key={org.id}
@@ -1502,6 +1513,15 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
+	const initialMapPitch = gameMode ? GAME_MODE_PITCH : INITIAL_PITCH;
+	const compassBackgroundColor = headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee');
+	const compassIconColor = headingUpMode ? 'white' : theme.screen.icon;
+	const locationIconColor = userLocation ? '#1a73e8' : theme.screen.icon;
+	const rotateLeftBackgroundColor = autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateLeftIconColor = autoRotateSpeed < 0 ? 'white' : theme.screen.icon;
+	const rotateRightBackgroundColor = autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateRightIconColor = autoRotateSpeed > 0 ? 'white' : theme.screen.icon;
+
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
 			{!isFullscreen && (
@@ -1520,7 +1540,7 @@ const OsmVectorMapScreen: React.FC = () => {
 						<MyMap
 							ref={myMapRef}
 							initialCenter={centerPosition}
-							initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
+							initialPitch={initialMapPitch}
 							loadingText={translate(TranslationKeys.loading_vector_map)}
 							onMessage={handleMessage}
 						/>
@@ -1575,12 +1595,12 @@ const OsmVectorMapScreen: React.FC = () => {
 								<TouchableOpacity
 									style={[
 										styles.gameCompassTouchable,
-										{ backgroundColor: headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee') },
+										{ backgroundColor: compassBackgroundColor },
 									]}
 									onPress={handleGameCompassToggle}
 									activeOpacity={0.75}
 								>
-									<MaterialIcons name="explore" size={26} color={headingUpMode ? 'white' : theme.screen.icon} />
+									<MaterialIcons name="explore" size={26} color={compassIconColor} />
 								</TouchableOpacity>
 							</View>
 
@@ -1612,24 +1632,24 @@ const OsmVectorMapScreen: React.FC = () => {
 									style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
 									onPress={handleLocationPress}
 								>
-									<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
+									<MaterialIcons name="my-location" size={26} color={locationIconColor} />
 								</TouchableOpacity>
 								{autoRotateMode && (
 									<>
 										<TouchableOpacity
-											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background, marginTop: 8 }]}
+											style={[styles.mapOverlayButton, { backgroundColor: rotateLeftBackgroundColor, marginTop: 8 }]}
 											onPress={handleAutoRotateSpeedLeft}
 										>
-											<MaterialIcons name="rotate-left" size={26} color={autoRotateSpeed < 0 ? 'white' : theme.screen.icon} />
+											<MaterialIcons name="rotate-left" size={26} color={rotateLeftIconColor} />
 										</TouchableOpacity>
 										<View style={{ alignItems: 'center', paddingVertical: 2 }}>
 											<Text style={{ color: theme.screen.text, fontSize: 10 }}>{`${autoRotateSpeed}°/s`}</Text>
 										</View>
 										<TouchableOpacity
-											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background }]}
+											style={[styles.mapOverlayButton, { backgroundColor: rotateRightBackgroundColor }]}
 											onPress={handleAutoRotateSpeedRight}
 										>
-											<MaterialIcons name="rotate-right" size={26} color={autoRotateSpeed > 0 ? 'white' : theme.screen.icon} />
+											<MaterialIcons name="rotate-right" size={26} color={rotateRightIconColor} />
 										</TouchableOpacity>
 
 									</>
@@ -1672,15 +1692,7 @@ const OsmVectorMapScreen: React.FC = () => {
 								title={building.alias ?? ''}
 								onPress={() => handleSearchResultSelect(building)}
 								showSeparator={index < searchResults.length - 1}
-								groupPosition={
-									searchResults.length === 1
-										? 'single'
-										: index === 0
-										? 'top'
-										: index === searchResults.length - 1
-										? 'bottom'
-										: 'middle'
-								}
+								groupPosition={getListGroupPosition(index, searchResults.length)}
 								noIconIndent
 							/>
 						))}

@@ -400,6 +400,37 @@ const Index = () => {
 		[currentPath.length, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]
 	);
 
+	let headingExcerptLength = 22;
+	if (screenWidth > 900) {
+		headingExcerptLength = 100;
+	} else if (screenWidth > 700) {
+		headingExcerptLength = 80;
+	}
+
+	let submissionsContent: React.ReactNode;
+	if (loading) {
+		submissionsContent = (
+			<View
+				style={{
+					height: 200,
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<ActivityIndicator size={30} color={theme.screen.text} />
+			</View>
+		);
+	} else if (formSubmissions?.length > 0) {
+		submissionsContent = <FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />;
+	} else {
+		submissionsContent = (
+			<View style={{ padding: 20, alignItems: 'center' }}>
+				<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
+			</View>
+		);
+	}
+
 	return (
 		<View
 			style={{
@@ -450,7 +481,7 @@ const Index = () => {
 						>
 							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
 						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
+						<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(translate(TranslationKeys.select_a_form_submission), headingExcerptLength)}</Text>
 					</View>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openSortSheet} style={{ padding: 10 }}>
@@ -558,24 +589,7 @@ const Index = () => {
 			}}
 		>
 			<View style={{ flex: 1, width: screenWidth > 768 ? '70%' : '90%' }}>
-				{loading ? (
-					<View
-						style={{
-							height: 200,
-							width: '100%',
-							justifyContent: 'center',
-							alignItems: 'center',
-						}}
-					>
-						<ActivityIndicator size={30} color={theme.screen.text} />
-					</View>
-				) : formSubmissions?.length > 0 ? (
-					<FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />
-				) : (
-					<View style={{ padding: 20, alignItems: 'center' }}>
-						<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
-					</View>
-				)}
+				{submissionsContent}
 			</View>
 		</View>
 			<FilterFormSheet isVisible={isFilterModalVisible} closeSheet={closeFilterSheet} isFormSubmission={true} setSelectedOption={setSelectedOption} selectedOption={selectedOption} options={filterOptions} />

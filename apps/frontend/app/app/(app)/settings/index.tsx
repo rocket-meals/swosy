@@ -697,14 +697,30 @@ const Settings = () => {
 		});
 
 		// === App Settings ===
+		let colorSchemeValue: string;
+		if (selectedTheme === 'systematic') {
+			colorSchemeValue = translate(TranslationKeys.color_scheme_system);
+		} else if (selectedTheme === 'dark') {
+			colorSchemeValue = translate(TranslationKeys.color_scheme_dark);
+		} else {
+			colorSchemeValue = translate(TranslationKeys.color_scheme_light);
+		}
+		let drawerPositionValue: string;
+		if (drawerPosition === 'left') {
+			drawerPositionValue = translate(TranslationKeys.drawer_config_position_left);
+		} else if (drawerPosition === 'right') {
+			drawerPositionValue = translate(TranslationKeys.drawer_config_position_right);
+		} else {
+			drawerPositionValue = translate(TranslationKeys.drawer_config_position_system);
+		}
 		rows.push({
 			key: 'section-app-settings',
 			element: (
 				<View style={sectionStyle}>
 					<SettingsGroupTitle nativeID={ComponentIds.SETTINGS_GROUP_APP_SETTINGS}>{translate(TranslationKeys.group_app_settings)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" nativeID={ComponentIds.SETTINGS_COLOR_SCHEME} />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={colorSchemeValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" nativeID={ComponentIds.SETTINGS_COLOR_SCHEME} />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPositionValue} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
 					</View>
@@ -1031,6 +1047,11 @@ const Settings = () => {
 		isClearingAsyncStorage, handleClearAsyncStorage,
 	]);
 
+	let listWidth: '100%' | '80%' = '100%';
+	if (windowWidth >= 500 && isWeb) {
+		listWidth = '80%';
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<FlatList
@@ -1040,7 +1061,7 @@ const Settings = () => {
 				style={[
 					styles.container,
 					{
-						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
+						width: listWidth,
 						alignSelf: 'center',
 					},
 				]}

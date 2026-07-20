@@ -13,6 +13,13 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 
+const getTicketGroupPosition = (index: number, total: number): 'single' | 'top' | 'bottom' | 'middle' => {
+	if (total === 1) return 'single';
+	if (index === 0) return 'top';
+	if (index === total - 1) return 'bottom';
+	return 'middle';
+};
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.my_support_tickets);
 	const { theme } = useTheme();
@@ -49,6 +56,9 @@ const Index = () => {
 			subscription.remove();
 		};
 	}, []);
+
+	const sectionWidth = windowWidth > 600 ? '85%' : '95%';
+
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.contentContainer}>
 			{loading ? (
@@ -65,7 +75,7 @@ const Index = () => {
 			) : (
 				<>
 					<Text style={{ ...styles.groupHeading, color: theme.screen.text }}>{translate(TranslationKeys.my_support_tickets)}</Text>
-					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>{allTickets && allTickets?.map((item, index: number) => <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="bell" size={24} color={theme.screen.icon} />} label={item?.title ?? undefined} value={item?.date_created ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm') : 'N/A'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.push(`/feedback-support?app_feedbacks_id=${item.id}`)} groupPosition={allTickets.length === 1 ? 'single' : index === 0 ? 'top' : index === allTickets.length - 1 ? 'bottom' : 'middle'} />)}</View>
+					<View style={[styles.section, { width: sectionWidth }]}>{allTickets && allTickets?.map((item, index: number) => <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="bell" size={24} color={theme.screen.icon} />} label={item?.title ?? undefined} value={item?.date_created ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm') : 'N/A'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.push(`/feedback-support?app_feedbacks_id=${item.id}`)} groupPosition={getTicketGroupPosition(index, allTickets.length)} />)}</View>
 				</>
 			)}
 		</ScrollView>
