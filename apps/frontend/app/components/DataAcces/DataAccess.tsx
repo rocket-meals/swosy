@@ -95,6 +95,9 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                 { label: 'Collectible Events', value: collectibleEvents },
         ];
 
+	const webListWidth = isWeb ? '80%' : '100%';
+	const listContainerWidth = windowWidth < 500 ? '100%' : webListWidth;
+
 	return (
 		<View style={{ ...styles.container, backgroundColor: theme.screen.background }}>
 			<ScrollView
@@ -114,13 +117,20 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_data_access} />
 				<View
 					style={{
-						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
+						width: listContainerWidth,
 					}}
 				>
 					{infoItems.map((item, index) => {
 						const last = index === infoItems.length - 1;
 						const first = index === 0;
-						const groupPosition = infoItems.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
+						let groupPosition = 'middle';
+						if (infoItems.length === 1) {
+							groupPosition = 'single';
+						} else if (first) {
+							groupPosition = 'top';
+						} else if (last) {
+							groupPosition = 'bottom';
+						}
 						return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={item.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(item)} groupPosition={groupPosition as any} />;
 					})}
 
@@ -130,7 +140,14 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                                                 if (!data?.value) return null;
                                                 const last = index === dataDevice.length - 1;
                                                 const first = index === 0;
-                                                const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
+                                                let groupPosition = 'middle';
+                                                if (dataDevice.length === 1) {
+                                                        groupPosition = 'single';
+                                                } else if (first) {
+                                                        groupPosition = 'top';
+                                                } else if (last) {
+                                                        groupPosition = 'bottom';
+                                                }
                                                 return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
                                         })}
                                 </View>

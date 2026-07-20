@@ -183,7 +183,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 					</View>
 
 					<View style={styles.imageActionContainer}>
-						{isManagement ? (
+						{isManagement && (
 							<TouchableOpacity
 								style={styles.editImageButton}
 								onPress={() => {
@@ -192,16 +192,16 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 							>
 								<View />
 							</TouchableOpacity>
-						) : isLastOpened ? (
+						)}
+						{!isManagement && isLastOpened && (
 							<TouchableOpacity
 								style={[styles.lastOpenedButton, { backgroundColor: campus_area_color }]}
 								onPress={handleOpenLastOpenedModal}
 							>
 								<MaterialCommunityIcons name="clock-outline" size={20} color={contrastColor} />
 							</TouchableOpacity>
-						) : (
-							<View />
 						)}
+						{!isManagement && !isLastOpened && <View />}
 
 						<View style={styles.distanceActions}>
 							<TouchableOpacity

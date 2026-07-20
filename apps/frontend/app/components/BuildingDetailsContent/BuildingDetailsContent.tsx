@@ -150,14 +150,16 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
                         <SettingsGroupTitle>{translate(TranslationKeys.organisations)}</SettingsGroupTitle>
                         {buildingOrganisations.map((org, index) => {
                             const total = buildingOrganisations.length;
-                            const groupPosition =
-                                total === 1
-                                    ? 'single'
-                                    : index === 0
-                                    ? 'top'
-                                    : index === total - 1
-                                    ? 'bottom'
-                                    : 'middle';
+                            let groupPosition: 'single' | 'top' | 'bottom' | 'middle';
+                            if (total === 1) {
+                                groupPosition = 'single';
+                            } else if (index === 0) {
+                                groupPosition = 'top';
+                            } else if (index === total - 1) {
+                                groupPosition = 'bottom';
+                            } else {
+                                groupPosition = 'middle';
+                            }
                             return (
                                 <SettingsList
                                     key={org.id}

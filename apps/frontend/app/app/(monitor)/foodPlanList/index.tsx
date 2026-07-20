@@ -108,11 +108,14 @@ const Index = () => {
 	};
 
 	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
-		const initialValue = intervalKey === 'foodInterval'
-			? (foodPlan?.nextFoodInterval ? String(foodPlan.nextFoodInterval) : '')
-			: (foodPlan?.refreshInterval ? String(foodPlan.refreshInterval) : '');
+		const foodIntervalValue = foodPlan?.nextFoodInterval ? String(foodPlan.nextFoodInterval) : '';
+		const refreshIntervalValue = foodPlan?.refreshInterval ? String(foodPlan.refreshInterval) : '';
+		const initialValue = intervalKey === 'foodInterval' ? foodIntervalValue : refreshIntervalValue;
 
 		let currentValue = initialValue;
+
+		const mediumScreenButtonWidth = windowWidth < 800 ? '50%' : '30%';
+		const buttonContainerWidth = windowWidth < 500 ? '70%' : mediumScreenButtonWidth;
 
 		showScrollViewModal({
 			title: intervalLabel,
@@ -138,7 +141,7 @@ const Index = () => {
 						style={[
 							styles.buttonContainer,
 							{
-								width: windowWidth < 500 ? '70%' : windowWidth < 800 ? '50%' : '30%',
+								width: buttonContainerWidth,
 							},
 						]}
 					>

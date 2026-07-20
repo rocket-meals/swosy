@@ -72,7 +72,15 @@ const Index = () => {
 		[params?.showMarkingsOnCard]
 	);
 
-	const cardMarkingSize = useMemo(() => (screenWidth > 1200 ? 100 : screenWidth > 900 ? 80 : 60), [screenWidth]);
+	const cardMarkingSize = useMemo(() => {
+		if (screenWidth > 1200) {
+			return 100;
+		}
+		if (screenWidth > 900) {
+			return 80;
+		}
+		return 60;
+	}, [screenWidth]);
 	const cardMarkings = useMemo(
 		() => currentMarking.filter(mark => mark?.show_on_card),
 		[currentMarking]
@@ -221,9 +229,10 @@ const Index = () => {
 	}, [foods, params.nextFoodIntervalInSeconds]);
 
 	const updateLogoStyle = useCallback(() => {
+		const logoHeightForWideScreen = width > 600 ? 75 : 70;
 		setLogoStyle({
 			width: width < 600 ? 150 : 300,
-			height: width < 600 ? 70 : width > 600 ? 75 : 70,
+			height: width < 600 ? 70 : logoHeightForWideScreen,
 			marginRight: width > 600 ? 20 : 10,
 		});
 	}, [width]);
@@ -337,6 +346,9 @@ const Index = () => {
 		</View>
 	);
 
+	const orientationFlexDirection = width > height ? 'row' : 'column';
+	const contentFlexDirection = foods && foods?.length < 1 ? 'column' : orientationFlexDirection;
+
 	return (
 		<ScrollView
 			style={{
@@ -344,7 +356,7 @@ const Index = () => {
 				backgroundColor: theme.screen.background,
 			}}
 			contentContainerStyle={{
-				flexDirection: foods && foods?.length < 1 ? 'column' : width > height ? 'row' : 'column',
+				flexDirection: contentFlexDirection,
 			}}
 		>
 			<View style={[foods && foods?.length > 0 && { flex: 1 }]}>

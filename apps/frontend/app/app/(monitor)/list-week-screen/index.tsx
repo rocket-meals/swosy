@@ -107,6 +107,9 @@ const Index = () => {
 		setWeeks(generateWeeks(selectedYear - 1));
 	};
 
+	const wideScreenWeekButtonWidth = width > 900 ? 250 : 200;
+	const weekButtonWidth = width < 450 ? width / 2 - 20 : wideScreenWeekButtonWidth;
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={[styles.header, { backgroundColor: theme.screen.background }]}>
@@ -184,7 +187,7 @@ const Index = () => {
 											},
 										],
 								{
-									width: width < 450 ? width / 2 - 20 : width > 900 ? 250 : 200,
+									width: weekButtonWidth,
 								},
 							]}
 							onPress={() => handleWeekPress('any', week.weekNumber)}

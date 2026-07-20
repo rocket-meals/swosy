@@ -596,6 +596,9 @@ const Index = () => {
 		chunkedMarkings.push(markings?.slice(i, i + 7));
 	}
 
+	const optionalFoodsAvailableMaxHeight = foods?.length > 0 ? tableMaxHeight / 2 - 20 : tableMaxHeight;
+	const optionalFoodsMaxHeight = optionalFoods?.length > 0 ? optionalFoodsAvailableMaxHeight : 0;
+
 	return (
 		<ScrollView style={[styles.outerContainer, { backgroundColor: theme.screen.background }]}>
 			<View ref={headerRef} onLayout={handleHeaderLayout} style={{ width: '100%', height: 100, position: 'relative' }}>
@@ -808,7 +811,7 @@ const Index = () => {
 							ref={optionalFoodsScrollRef}
 							style={[
 								{
-									maxHeight: optionalFoods?.length > 0 ? (foods?.length > 0 ? tableMaxHeight / 2 - 20 : tableMaxHeight) : 0,
+									maxHeight: optionalFoodsMaxHeight,
 								},
 								windowWidth < 900 && { minHeight: 200 },
 							]}

@@ -52,11 +52,10 @@ const DebugView: React.FC<DebugViewProps> = ({
                         ?.map(log => {
                                 if (typeof log === 'string') return log;
 
-                                const timestamp = log.timestamp
-                                        ? typeof log.timestamp === 'string'
-                                                ? log.timestamp
-                                                : log.timestamp.toLocaleString()
-                                        : null;
+                                let timestamp: string | null = null;
+                                if (log.timestamp) {
+                                        timestamp = typeof log.timestamp === 'string' ? log.timestamp : log.timestamp.toLocaleString();
+                                }
 
                                 return timestamp ? `${timestamp} - ${log.message}` : log.message;
                         })
