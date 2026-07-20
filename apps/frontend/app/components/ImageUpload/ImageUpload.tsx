@@ -109,7 +109,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offl
 					fields: ['id', 'value_image'],
 				})) as DatabaseTypes.FormAnswers;
 
-				if (formAnswer && formAnswer?.value_image) {
+				if (formAnswer?.value_image) {
 					const isFileDeleted = await deleteDirectusFile(String(formAnswer.value_image));
 					if (isFileDeleted) {
 						const deleteResponse = (await formAnswersHelper.updateFormAnswers(id, {

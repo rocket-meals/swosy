@@ -83,8 +83,7 @@ const Index = () => {
 			<LabelHeader Label={translate(TranslationKeys.markings)} />
 
 			<View style={styles.gridContainer}>
-				{chunkedMarkings &&
-					chunkedMarkings?.map((chunk, chunkIndex) => (
+				{chunkedMarkings?.map((chunk, chunkIndex) => (
 						<View key={chunkIndex} style={styles.mainContainer}>
 							{chunk.map((marking, index) => (
 								<MarkingItem

@@ -69,7 +69,7 @@ export class DateHelper {
     const output: Weekday[] = [];
     for (let i = 0; i < 7; i++) {
       let weekdayEnum = weekOrder[index];
-      if (!!weekdayEnum) {
+      if (weekdayEnum) {
         output.push(weekdayEnum);
       }
       index++;
@@ -90,7 +90,7 @@ export class DateHelper {
     const enumValues = DateHelper.getWeekdayEnumsValues();
     for (let i = 0; i < enumValues.length; i++) {
       const weekdayEnum = enumValues[i];
-      if (!!weekdayEnum) {
+      if (weekdayEnum) {
         const weekdayIndex = DateHelper.getWeekdayIndex(weekdayEnum);
         if (weekdayIndex === modulo) {
           return weekdayEnum;
@@ -169,7 +169,7 @@ export class DateHelper {
     const indexToWeekdayEnum: { [index: number]: Weekday } = {};
     for (let i = 0; i < weekdayEnums.length; i++) {
       const weekdayEnum = weekdayEnums[i];
-      if (!!weekdayEnum) {
+      if (weekdayEnum) {
         const weekdayEnumIndex = DateHelper.getWeekdayIndex(weekdayEnum);
         indexToWeekdayEnum[weekdayEnumIndex] = weekdayEnum;
       }

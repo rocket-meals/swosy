@@ -168,10 +168,10 @@ export default function HexTileInfoScreen() {
 		f.highway || (f.layerId && (f.layerId.includes('road') || f.layerId.includes('highway') || f.layerId.includes('transportation')))
 	) ?? [];
 	const waterways = features?.filter((f) =>
-		f.waterway || (f.layerId && f.layerId.includes('water'))
+		f.waterway || (f.layerId?.includes('water'))
 	) ?? [];
 	const buildings = features?.filter((f) =>
-		f.building || (f.layerId && f.layerId.includes('building'))
+		f.building || (f.layerId?.includes('building'))
 	) ?? [];
 	const pois = features?.filter((f) =>
 		f.amenity || f.natural || f.landuse ||
@@ -267,7 +267,7 @@ export default function HexTileInfoScreen() {
 					</View>
 				)}
 
-				{features && features.length === 0 && !loading && (
+				{features?.length === 0 && !loading && (
 					<SettingsList
 						iconBgColor="#6b7280"
 						leftIcon={<MaterialIcons name="info-outline" size={22} color="#ffffff" />}

@@ -199,8 +199,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 				<ScrollView horizontal style={{}} contentContainerStyle={{ flexDirection: 'column' }}>
 					<View style={styles.headerRow}>
 						{/* Empty space for time column */}
-						{reorderedDays &&
-							reorderedDays?.map((day, index) => (
+						{reorderedDays?.map((day, index) => (
 								<View
 									key={index}
 									style={{
@@ -238,8 +237,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 								))}
 
 								{/* Render the events for the current day */}
-								{events &&
-									events
+								{events
 										?.filter(event => event?.day?.toLocaleLowerCase() === day.id) // Filter events for the current day
 										.sort((a, b) => new Date(`1970-01-01T${a.startTime}:00Z`).getTime() - new Date(`1970-01-01T${b.startTime}:00Z`).getTime()) // Sort events by start time
 										.map((event, eventIndex, dayEvents) => {

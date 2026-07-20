@@ -47,7 +47,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       const currentItem = currentItems[0];
 
       // Selectively merge the current item with the updated fields
-      if (!!currentItem) {
+      if (currentItem) {
         for (const key in input) {
           // @ts-ignore - we want to copy the value from input to currentItem
           if (input[key] !== undefined) {

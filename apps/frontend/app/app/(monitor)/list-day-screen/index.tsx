@@ -638,8 +638,7 @@ const Index = () => {
 						</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.name + '%') as DimensionValue }]}>{translate(TranslationKeys.foodname)}</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.markings + '%') as DimensionValue }]}>{translate(TranslationKeys.markings)}</Text>
-						{foodAttributesColumn &&
-							foodAttributesColumn.map((column: any, colIdx: number) => {
+						{foodAttributesColumn?.map((column: any, colIdx: number) => {
 								const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 								return (
 									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={`header-attr-${colIdx}`}>
@@ -677,8 +676,7 @@ const Index = () => {
 							showsVerticalScrollIndicator={false}
 						>
 							<View style={[styles.table]}>
-								{foods &&
-									foods?.map((item: any, index) => {
+								{foods?.map((item: any, index) => {
 										return (
 											<View
 												key={item.id || index}
@@ -717,8 +715,7 @@ const Index = () => {
 														},
 													]}
 												>
-													{foodMarkings[item.id] &&
-														foodMarkings[item.id]?.map((m: any, idx: number) => {
+													{foodMarkings[item.id]?.map((m: any, idx: number) => {
 															const marking = {
 																icon: m.icon,
 																short_code: m.shortCode,
@@ -729,8 +726,7 @@ const Index = () => {
 															return <MarkingIcon key={idx} marking={marking} size={24} color={m.color} compact />;
 														})}
 												</View>
-												{mainFoodAttributes?.[item?.id] &&
-													mainFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
+												{mainFoodAttributes?.[item?.id]?.map((attr: any, attrIdx: number) => {
 														const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 														if (!attr?.value) {
 															return (
@@ -818,8 +814,7 @@ const Index = () => {
 							showsVerticalScrollIndicator={false}
 						>
 							<View style={[styles.table]}>
-								{optionalFoods &&
-									optionalFoods?.map((item: any, index) => (
+								{optionalFoods?.map((item: any, index) => (
 										<View
 											key={item.id || index}
 											style={[
@@ -857,8 +852,7 @@ const Index = () => {
 													},
 												]}
 											>
-												{optionalFoodMarkings[item.id] &&
-													optionalFoodMarkings[item.id]?.map((mark: any, idx: number) => {
+												{optionalFoodMarkings[item.id]?.map((mark: any, idx: number) => {
 														const marking = {
 															icon: mark.icon,
 															short_code: mark.shortCode,
@@ -869,8 +863,7 @@ const Index = () => {
 														return <MarkingIcon key={idx} marking={marking} size={24} color={mark.color} compact />;
 													})}
 											</View>
-											{optionalFoodAttributes?.[item?.id] &&
-												optionalFoodAttributes[item?.id]?.map((attr: any, attrIdx: number) => {
+											{optionalFoodAttributes?.[item?.id]?.map((attr: any, attrIdx: number) => {
 													const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 													if (!attr?.value) {
 														return (
@@ -956,8 +949,7 @@ const Index = () => {
 					}}
 				>
 					<View style={[styles.gridContainer, { backgroundColor: theme.screen.background }]}>
-						{chunkedMarkings &&
-							chunkedMarkings?.map((chunk, chunkIndex) => (
+						{chunkedMarkings?.map((chunk, chunkIndex) => (
 								<View key={chunkIndex} style={styles.mainContainer}>
 									{chunk.map((marking: any, index: any) => {
 										const markingImage = marking?.image_remote_url ? { uri: marking?.image_remote_url } : { uri: getImageUrl(marking?.image) };

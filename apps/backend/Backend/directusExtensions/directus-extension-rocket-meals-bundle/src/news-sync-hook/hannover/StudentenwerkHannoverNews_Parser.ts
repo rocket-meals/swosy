@@ -122,7 +122,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
   static extractArticleUrl($: CheerioAPI, element: CheerioElement | undefined): string | undefined {
     let articleUrl = $(element).find('a.articleLink').attr('href');
-    if (articleUrl && articleUrl.startsWith(StudentenwerkHannoverNews_Parser.newsDetailArticleUrlStart)) {
+    if (articleUrl?.startsWith(StudentenwerkHannoverNews_Parser.newsDetailArticleUrlStart)) {
       return StudentenwerkHannoverNews_Parser.baseUrl + articleUrl;
     }
     return undefined;

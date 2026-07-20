@@ -153,8 +153,7 @@ const NotificationScreen = () => {
 					>
 						{translate(TranslationKeys.foods)}
 					</Text>
-					{foodWithFeedback &&
-						foodWithFeedback?.map((item, index) => (
+					{foodWithFeedback?.map((item, index) => (
 							<View
 								style={{
 									...styles.infoRow,

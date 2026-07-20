@@ -129,7 +129,7 @@ class MyKvStorage {
     let savedKey = await this.kvImplementation.get(MyKvStorage.prefix_code_challenge + authorization_code);
     mylog('getAssociatedCodeChallengeFromCode: authorization_code: ' + authorization_code);
     mylog(savedKey);
-    if (!!savedKey) {
+    if (savedKey) {
       let obj = JSON.parse(savedKey) as CodeChallengeRedisEntryType;
       mylog(JSON.stringify(obj, null, 2));
       return obj;
@@ -148,7 +148,7 @@ class MyKvStorage {
     let savedKey = await this.kvImplementation.get(MyKvStorage.prefix_save_session + state);
     mylog('getStateInformation: state: ' + state);
     mylog(savedKey);
-    if (!!savedKey) {
+    if (savedKey) {
       let obj = JSON.parse(savedKey) as AuthorizationCodeAndRedirectType;
       mylog(JSON.stringify(obj, null, 2));
       mylog('-----');
@@ -221,7 +221,7 @@ function getProviderRedirectAllowList(provider: string): string[] {
   mylog(allowed_redirect_urls_raw);
   mylog('type of: ' + typeof allowed_redirect_urls_raw);
   let allowed_redirect_urls: string[] = [];
-  if (!!allowed_redirect_urls_raw) {
+  if (allowed_redirect_urls_raw) {
     if (typeof allowed_redirect_urls_raw === 'string') {
       allowed_redirect_urls = allowed_redirect_urls_raw?.split(',');
     } else {
@@ -252,7 +252,7 @@ function getRegisteredAuthProviderList() {
   let configured_auth_providers: string[] = [];
   if (Array.isArray(configured_auth_providers_raw)) {
     configured_auth_providers = configured_auth_providers_raw;
-  } else if (!!configured_auth_providers_raw) {
+  } else if (configured_auth_providers_raw) {
     configured_auth_providers = configured_auth_providers_raw?.split(',');
   }
   return configured_auth_providers;
@@ -441,7 +441,7 @@ export default defineEndpoint({
       await myStorage.clearStateInformation(stateAsString); // clear state information, as we got all the information and they exist.
 
       const storedCodeChallenge = await myStorage.getCodeChallenge(authorization_code);
-      if (!storedCodeChallenge || !storedCodeChallenge.code_challenge_method || !storedCodeChallenge.code_challenge) {
+      if (!storedCodeChallenge?.code_challenge_method || !storedCodeChallenge.code_challenge) {
         mylog('No information found for saved authorization code. Might be too long');
         return res.status(400).json({
           error: 'No information found for saved authorization code. Might be too long',

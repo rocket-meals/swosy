@@ -33,7 +33,7 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
  */
 export function decodeBase64DataUri(dataString: string): Base64DecodedFile {
   const matches = dataString.match(/^data:([A-Za-z0-9+/.-]+);base64,(.+)$/);
-  if (!matches || matches.length !== 3 || !matches[1] || !matches[2]) {
+  if (matches?.length !== 3 || !matches[1] || !matches[2]) {
     throw new Error('Invalid base64 data URI string');
   }
 

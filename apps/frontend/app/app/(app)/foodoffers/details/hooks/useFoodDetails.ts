@@ -28,7 +28,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
         try {
             if (id) {
                 const foodData = await fetchFoodOffersDetailsById(id.toString());
-                if (foodData && foodData.data) {
+                if (foodData?.data) {
                     const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
 
                     const translation = food?.translations?.find(
@@ -45,7 +45,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
                 }
             } else if (foodId) {
                 const foodData = await fetchFoodDetailsById(foodId.toString());
-                if (foodData && foodData.data) {
+                if (foodData?.data) {
                     const food = foodData.data;
                     const translation = food?.translations?.find(
                         (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode

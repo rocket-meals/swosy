@@ -201,7 +201,7 @@ export class ParseSchedule {
       //console.log("utilizationEntryCurrent");
       //console.log(utilizationEntryCurrent);
 
-      if (!!utilizationEntryCurrent) {
+      if (utilizationEntryCurrent) {
         //console.log("date_start: "+date_start.toISOString()+" --> "+"date_end: "+date_end.toISOString())
         let isEntryInPast = false;
         if (interval_entry.date_start < now && interval_entry.date_end < now) {

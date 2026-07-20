@@ -863,7 +863,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		if (selectedCanteen?.building) {
 			const building = buildingsDict[String(selectedCanteen.building)];
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-			if (coords && coords.length === 2) {
+			if (coords?.length === 2) {
 				return { lat: Number(coords[1]), lng: Number(coords[0]) };
 			}
 		}
@@ -931,7 +931,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		return buildings
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-				if (!coords || coords.length !== 2) return false;
+				if (coords?.length !== 2) return false;
 				const orgIds = (buildingIdToOrgsDict[building.id] ?? []).map((org) => org.id);
 				if (likedOrganisationIds.length > 0) {
 					if (orgIds.length === 0) return true;
@@ -1007,7 +1007,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const handleSearchResultSelect = useCallback((building: DatabaseTypes.Buildings) => {
 		const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-		if (coords && coords.length === 2) {
+		if (coords?.length === 2) {
 			setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 			pendingNavigateRef.current = true;
 		}
@@ -1281,7 +1281,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
 			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
 
-			if (coords && coords.length === 2) {
+			if (coords?.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 				setMapZoom(DEFAULT_ZOOM);
 				pendingNavigateRef.current = true;

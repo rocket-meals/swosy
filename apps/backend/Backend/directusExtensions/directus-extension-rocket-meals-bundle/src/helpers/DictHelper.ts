@@ -4,7 +4,7 @@ export class DictHelper {
     let values: T[] = [];
     for (let key of keys) {
       let value = dict[key];
-      if (!!value) {
+      if (value) {
         values.push(value);
       }
     }
@@ -23,7 +23,7 @@ export class DictHelper {
         key = keySelector(item);
       }
 
-      if (!!key) {
+      if (key) {
         dict[key] = item;
       }
     }

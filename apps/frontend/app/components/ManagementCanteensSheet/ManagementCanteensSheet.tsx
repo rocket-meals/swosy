@@ -128,8 +128,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 					marginTop: isWeb ? 40 : 20,
 				}}
 			>
-				{canteens &&
-					canteens?.map((canteen, index: number) => (
+				{canteens?.map((canteen, index: number) => (
 						<TouchableOpacity
 							style={{
 								...styles.card,

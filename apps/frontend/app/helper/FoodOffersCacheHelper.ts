@@ -142,7 +142,7 @@ export async function cacheFoodOffers(
 
         const meta = await getMeta();
         let tracker = await getTracker();
-        if (!meta || meta.canteenId !== canteenId || meta.day !== today) {
+        if (meta?.canteenId !== canteenId || meta.day !== today) {
             tracker = await clearTrackedCache(tracker);
         }
 

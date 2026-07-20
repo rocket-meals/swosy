@@ -69,7 +69,7 @@ export async function getStorageUsage(
 	const items: SqliteStorageKeyUsage[] = [];
 	for (let i = 0; i < storage.length; i++) {
 		const fullKey = storage.key(i);
-		if (fullKey === null || !fullKey.startsWith(prefix)) continue;
+		if (!fullKey?.startsWith(prefix)) continue;
 		const key = fullKey.slice(prefix.length);
 		if (key.startsWith('__') && key.endsWith('__')) continue;
 		items.push({ key, bytes: getUtf8ByteLength(storage.getItem(fullKey) ?? '') });
@@ -87,7 +87,7 @@ export async function clearStorage(dbName?: string): Promise<void> {
 	const keysToRemove: string[] = [];
 	for (let i = 0; i < storage.length; i++) {
 		const fullKey = storage.key(i);
-		if (fullKey !== null && fullKey.startsWith(prefix)) keysToRemove.push(fullKey);
+		if (fullKey?.startsWith(prefix)) keysToRemove.push(fullKey);
 	}
 	for (const fullKey of keysToRemove) {
 		storage.removeItem(fullKey);

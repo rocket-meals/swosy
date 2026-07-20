@@ -88,7 +88,7 @@ export class TranslationHelper {
   ) {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = await myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
-    if (!!itemWithTranslations) {
+    if (itemWithTranslations) {
       const { updateObject: updateObject, updateNeeded: updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
 
       if (updateNeeded) {
@@ -200,7 +200,7 @@ export class TranslationHelper {
       const existingLanguageCodeAsString = existingLanguageCode as LanguageCodesType;
 
       const translationFromParsing = translationsFromParsing[existingLanguageCodeAsString];
-      if (!!translationFromParsing) {
+      if (translationFromParsing) {
         //we also got a translation from the parse
         /* Update translation */
         const translationFromParsingCopy = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
@@ -241,9 +241,9 @@ export class TranslationHelper {
     let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
     for (let i = 0; i < remaining_languageKeys?.length; i++) {
       let remaining_languageKey = remaining_languageKeys[i] as LanguageCodesType | undefined;
-      if (!!remaining_languageKey) {
+      if (remaining_languageKey) {
         let translationFromParsing = translationsFromParsing[remaining_languageKey];
-        if (!!translationFromParsing) {
+        if (translationFromParsing) {
           newTranslationsFromParsing = true;
 
           // be_source_for_translations if language Code is German

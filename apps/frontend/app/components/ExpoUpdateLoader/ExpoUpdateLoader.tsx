@@ -40,7 +40,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 					return;
 				}
 
-				if (!update || !update.isAvailable) {
+				if (!update?.isAvailable) {
 					setLoading(false);
 					return;
 				}

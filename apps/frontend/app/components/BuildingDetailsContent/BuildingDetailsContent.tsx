@@ -89,7 +89,7 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         if (!campusDetails) return;
         const point = campusDetails.coordinates as { coordinates?: [number, number] } | undefined | null;
         const coordinates = Array.isArray(point?.coordinates) ? point?.coordinates : undefined;
-        if (!coordinates || coordinates.length !== 2) {
+        if (coordinates?.length !== 2) {
             console.error('Invalid coordinates');
             return;
         }

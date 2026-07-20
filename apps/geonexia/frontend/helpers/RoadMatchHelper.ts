@@ -229,7 +229,7 @@ function findBestMatchOnWay(pt: [number, number], way: RoadWay, wayIndex: number
 /** Appends `pt` unless it's identical to the last point already in `path`. */
 function pushDistinct(path: [number, number][], pt: [number, number]): void {
 	const last = path[path.length - 1];
-	if (!last || last[0] !== pt[0] || last[1] !== pt[1]) path.push(pt);
+	if (last?.[0] !== pt[0] || last[1] !== pt[1]) path.push(pt);
 }
 
 /**
@@ -470,7 +470,7 @@ export function matchRouteToRoads(
 		const next = matches[i + 1];
 		if (!prev || !next || prev.wayIndex !== next.wayIndex) continue;
 		const curr = matches[i];
-		if (curr && curr.wayIndex === prev.wayIndex) continue;
+		if (curr?.wayIndex === prev.wayIndex) continue;
 
 		const alt = findBestMatchOnWay(points[i], ways[prev.wayIndex], prev.wayIndex, noiseDegSq);
 		if (alt) matches[i] = alt;
@@ -486,7 +486,7 @@ export function matchRouteToRoads(
 		const prevMatch = matches[i - 1];
 		const currMatch = matches[i];
 
-		if (prevMatch && currMatch && prevMatch.wayIndex === currMatch.wayIndex) {
+		if (currMatch && prevMatch?.wayIndex === currMatch.wayIndex) {
 			// Follow the way's own vertices between the two projections instead of
 			// cutting a straight line, in whichever direction the walk went.
 			const wayPoints = ways[prevMatch.wayIndex].points;

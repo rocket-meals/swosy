@@ -508,8 +508,7 @@ const Index = () => {
 																				padding: 2,
 																			}}
 																		>
-																			{foodMarkings[filteredFood.id] &&
-																				foodMarkings[filteredFood.id].map((marking: any, idx: number) => {
+																			{foodMarkings[filteredFood.id]?.map((marking: any, idx: number) => {
 																					const iconParts = marking?.icon?.split(':') || [];
 																					const [library, name] = iconParts;
 																					const Icon = library && iconLibraries[library];

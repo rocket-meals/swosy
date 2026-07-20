@@ -24,7 +24,7 @@ const SupportFaq = () => {
     const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
 
 	useEffect(() => {
-		if (serverInfo && serverInfo?.info) {
+		if (serverInfo?.info) {
 			setProjectName(serverInfo?.info?.project?.project_name);
 		}
 	}, [serverInfo]);

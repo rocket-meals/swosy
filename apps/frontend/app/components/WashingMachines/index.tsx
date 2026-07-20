@@ -162,7 +162,6 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 						<ActivityIndicator size="large" color={theme.screen.text} />
 					</View>
 				) : (
-					washingMachines &&
 					washingMachines?.map((item: any) => {
 						if (item?.status === 'published') {
 							const isStatusUnknown = !item?.date_finished;

@@ -66,7 +66,7 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
 
     let role_admin_id: string | undefined = undefined;
     let adminRoleRaw = adminUser.role;
-    if (!!adminRoleRaw) {
+    if (adminRoleRaw) {
       if (typeof adminRoleRaw === 'string') {
         role_admin_id = adminRoleRaw;
       } else {

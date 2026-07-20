@@ -121,7 +121,7 @@ export function replaceLottieColors(lottieJSON: any, primaryColor: string): any 
 
 	// Helper: Convert hex color to a Lottie-compatible normalized RGB array.
 	function hexToLottieColor(hex: string): number[] {
-		if (!hex || hex.length !== 7 || !hex.startsWith('#')) {
+		if (hex?.length !== 7 || !hex.startsWith('#')) {
 			console.error(`Invalid hex color: ${hex}`);
 			return [0, 0, 0];
 		}

@@ -95,7 +95,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
       let dateElement = $('div.datum');
       let dateString = dateElement.length ? dateElement.text().trim() : null;
-      if (!!dateString) {
+      if (dateString) {
         let dateParts = dateString.split('.');
         if (dateParts.length === 3) {
           let day = Number.parseInt(dateParts[0] + '');
@@ -110,7 +110,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
             year = yearSingle;
           }
 
-          if (!!year) {
+          if (year) {
             // create date with 12:00:00 time to avoid timezone issues
             articleDetails.date = new Date(year, month - 1, day, 12, 0, 0);
           }

@@ -645,7 +645,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       let searchText = searchValue + '=';
       let regex = new RegExp(String.raw`${searchText}\d*,\d*`, 'gm');
       let match = nutritionValuesString.match(regex);
-      if (match && match.length === 1) {
+      if (match?.length === 1) {
         let matchString = match[0];
         let valueString = matchString.slice(searchText.length);
         valueString = StringHelper.replaceAllLiteralWithOptions({ str: valueString, find: ',', replace: '.' });

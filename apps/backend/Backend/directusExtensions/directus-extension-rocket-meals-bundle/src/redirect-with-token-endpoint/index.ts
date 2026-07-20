@@ -192,9 +192,9 @@ export default defineEndpoint({
       if (!!redirect && typeof redirect === 'string') {
         let redirectUrl = getValidUrl(redirect);
 
-        if (!!redirectUrl) {
+        if (redirectUrl) {
           const redirect_whitelist = await myDatabaseHelper.getAppSettingsHelper().getRedirectWhitelist();
-          if (!!redirect_whitelist) {
+          if (redirect_whitelist) {
             let foundValidRedirect = false;
             if (redirect_whitelist.length === 0) {
               foundValidRedirect = true; // no whitelist means all redirects are allowed
@@ -235,7 +235,7 @@ export default defineEndpoint({
 
       const directus_refresh_token = req.cookies.directus_refresh_token;
 
-      if (!!directus_refresh_token) {
+      if (directus_refresh_token) {
         // this means the auth provider is using "cookie" mode.
         //console.log("directus_refresh_token found");
 
@@ -246,7 +246,7 @@ export default defineEndpoint({
       }
 
       const directus_session_token = req.cookies.directus_session_token;
-      if (!!directus_session_token) {
+      if (directus_session_token) {
         // this means the auth provider is using "session" mode.
         // we need to obtain the directus_refresh_token from the directus_session_token
         //console.log("Redirect with token endpoint: directus_session_token: " + directus_session_token)

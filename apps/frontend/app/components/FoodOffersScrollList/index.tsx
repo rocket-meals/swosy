@@ -123,7 +123,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		if (!appElementsMap || !appSettings) return;
 		const getElement = (id: string) => {
 			const element = appElementsMap.get(id);
-			if (!element || !element.translations) return null;
+			if (!element?.translations) return null;
 			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
 			return { content, popup_button_text, popup_content };
 		};

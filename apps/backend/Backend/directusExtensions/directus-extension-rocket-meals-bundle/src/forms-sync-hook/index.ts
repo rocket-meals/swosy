@@ -31,7 +31,7 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
     for (let form_submission_id of form_submission_ids) {
       let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
       if (formSubmission.state === FormSubmissionState.SYNCING) {
-        if (!!input.state) {
+        if (input.state) {
           if (input.state === FormSubmissionState.CLOSED || input.state === FormSubmissionState.FAILED) {
             // Only allow to set the state to closed or failed
           } else {
@@ -62,7 +62,7 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
   registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.update', async (input, meta, eventContext) => {
     // only if state is set to submitted
     if (input.state === FormSubmissionState.SUBMITTED) {
-      if (!!input.form_answers) {
+      if (input.form_answers) {
         // tell user to first create/save the form answers
         throw new Error('Please first create/save the form answers.');
       }

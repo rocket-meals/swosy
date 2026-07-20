@@ -110,8 +110,8 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, pirateLanguage, funLanguageMode, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
 
     const keyExtractor = useCallback((item: DayItem, index: number) => {
-        if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
-        if (item.foodofferInfoItem && item.foodofferInfoItem.id) return `i-${item.foodofferInfoItem.id}`;
+        if (item.foodoffer?.id) return `f-${item.foodoffer.id}`;
+        if (item.foodofferInfoItem?.id) return `i-${item.foodofferInfoItem.id}`;
         return `di-${index}`;
     }, []);
 

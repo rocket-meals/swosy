@@ -73,12 +73,12 @@ const Index = () => {
 			>
 				<View style={styles.topContainer}>
 					<Text style={{ ...styles.heading, color: theme.screen.text }}>Top 10</Text>
-					<ScrollView>{mostLikedFoods && mostLikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
+					<ScrollView>{mostLikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
 				</View>
 
 				<View style={styles.worstContainer}>
 					<Text style={{ ...styles.heading, color: theme.screen.text }}>Worst 10</Text>
-					<ScrollView>{mostDislikedFoods && mostDislikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
+					<ScrollView>{mostDislikedFoods?.map((item: DatabaseTypes.Foods) => <StatisticsCard key={item.id} food={item} handleImageSheet={openImageManagementSheet} setSelectedFoodId={setSelectedFoodId} />)}</ScrollView>
 				</View>
 			</View>
 		</View>

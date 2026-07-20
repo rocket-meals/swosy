@@ -197,7 +197,7 @@ export const HoursSheetContent: React.FC = () => {
 						} | null = null;
 						timeRanges.forEach(timeRange => {
 							const { time_start, time_end } = timeRange;
-							if (!currentRange || currentRange.time_start === null || currentRange.time_end === null) {
+							if (currentRange?.time_start == null || currentRange.time_end == null) {
 								currentRange = { time_start, time_end };
 							} else {
 								let isSame = false;
