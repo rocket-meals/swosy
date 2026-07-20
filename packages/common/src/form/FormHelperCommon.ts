@@ -1,8 +1,8 @@
 export class FormHelperCommon {
 
-  static FORM_FIELD_PREFIX_CUSTOM_REFERENCE = "value_custom-reference-";
+  static readonly FORM_FIELD_PREFIX_CUSTOM_REFERENCE = "value_custom-reference-";
 
-  static FORM_FIELD_TYPE = {
+  static readonly FORM_FIELD_TYPE = {
     STRING: "value_string-string",
     MULTILINE_TEXT: "value_string-multiline",
     DROPDOWN: "value_string-dropdown",

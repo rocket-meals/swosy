@@ -8,21 +8,21 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { DirectusFileTransformOptions } from './DirectusFilesAssetHelper';
 
 export class AssetHelperTransformOptions {
-  static DEFAULT_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
+  static readonly DEFAULT_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
     fit: 'cover',
     width: 512,
     height: 512,
     quality: 100,
   };
 
-  static SMALL_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
+  static readonly SMALL_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
     fit: 'cover',
     width: 128,
     height: 128,
     quality: 90,
   };
 
-  static ORIGINAL_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
+  static readonly ORIGINAL_IMAGE_TRANSFORM: DirectusFileTransformOptions = {
     fit: undefined,
     width: undefined,
     height: undefined,

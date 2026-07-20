@@ -48,11 +48,11 @@ export type TranslationUpdateConfig<E extends ExistingTranslation> = {
 };
 
 export class TranslationHelper {
-  static LANGUAGE_CODE_DE: LanguageCodesType = LanguageCodes.DE;
-  static LANGUAGE_CODE_EN: LanguageCodesType = LanguageCodes.EN;
+  static readonly LANGUAGE_CODE_DE: LanguageCodesType = LanguageCodes.DE;
+  static readonly LANGUAGE_CODE_EN: LanguageCodesType = LanguageCodes.EN;
 
-  static DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE;
-  static FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN;
+  static readonly DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE;
+  static readonly FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN;
 
   static getTranslation(translationsList: ExistingTranslation[], profileLanguage: string, fieldName: string) {
     translationsList = translationsList || [];
@@ -111,8 +111,8 @@ export class TranslationHelper {
     }
   }
 
-  static FIELD_FOR_TRANSLATION_FETCHING = 'translations.*';
-  static QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING = {
+  static readonly FIELD_FOR_TRANSLATION_FETCHING = 'translations.*';
+  static readonly QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING = {
     fields: ['*', TranslationHelper.FIELD_FOR_TRANSLATION_FETCHING],
   };
 

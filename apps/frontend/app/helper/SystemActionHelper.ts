@@ -10,10 +10,10 @@ const isIOSDevice = isIOS();
 const isMobile = isAndroidDevice || isIOSDevice;
 
 export class HrefHelper {
-	static MAILTO: string = 'mailto:';
-	static TEL: string = 'tel:';
-	static GEO_ANDROID: string = 'geo:';
-	static GEO_IOS: string = 'maps:';
+	static readonly MAILTO: string = 'mailto:';
+	static readonly TEL: string = 'tel:';
+	static readonly GEO_ANDROID: string = 'geo:';
+	static readonly GEO_IOS: string = 'maps:';
 }
 
 const ANDROID_PARAM_NEW_ACTIVITY = {
@@ -102,7 +102,7 @@ class androidSystemActionHelper extends MobileSystemActionHelper {
 }
 
 export class SystemActionHelper {
-	static MobileSystemActionHelper = MobileSystemActionHelper;
-	static iPhoneSystemActionHelper = iPhoneSystemActionHelper;
-	static androidSystemActionHelper = androidSystemActionHelper;
+	static readonly MobileSystemActionHelper = MobileSystemActionHelper;
+	static readonly iPhoneSystemActionHelper = iPhoneSystemActionHelper;
+	static readonly androidSystemActionHelper = androidSystemActionHelper;
 }

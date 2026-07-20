@@ -5,9 +5,9 @@ import { ApartmentParserInterface, ApartmentsForParser } from '../ApartmentParse
 import { StringHelper } from 'repo-depkit-common';
 
 export class StudentenwerkHannoverApartments_Parser implements ApartmentParserInterface {
-  static baseUrl = 'https://www.studentenwerk-hannover.de';
+  static readonly baseUrl = 'https://www.studentenwerk-hannover.de';
   // https://www.studentenwerk-hannover.de/wohnen/wohnhaeuser
-  static apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
+  static readonly apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
 
   constructor() {}
 

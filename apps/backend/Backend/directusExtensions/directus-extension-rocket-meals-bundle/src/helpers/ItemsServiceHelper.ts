@@ -26,8 +26,8 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
   protected tablename: string;
   protected myDatabaseHelper: MyDatabaseHelperInterface;
 
-  public static FIELD_STATUS = 'status';
-  public static FIELD_STATUS_PUBLISHED = 'published';
+  public static readonly FIELD_STATUS = 'status';
+  public static readonly FIELD_STATUS_PUBLISHED = 'published';
 
   constructor(myDatabaseHelper: MyDatabaseHelperInterface, tablename: string) {
     this.myDatabaseHelper = myDatabaseHelper;

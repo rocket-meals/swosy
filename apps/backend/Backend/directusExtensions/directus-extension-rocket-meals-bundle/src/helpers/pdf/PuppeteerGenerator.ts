@@ -4,7 +4,7 @@ import { default as puppeteerCore } from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 
 export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
-  public static PuppeteerCore: any = puppeteerCore;
+  public static readonly PuppeteerCore: any = puppeteerCore;
   public static PuppeteerForJest: any = undefined;
 
   public static getPuppeteerLib() {

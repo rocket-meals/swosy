@@ -12,9 +12,9 @@ export type ReplaceCallbackOptions = {
 }
 
 export class StringHelper {
-  static EMPTY_SPACE = '\u200b';
-  static NONBREAKING_SPACE = '\u00a0';
-  static NONBREAKING_HALF_SPACE = '\u202f'; // Half space non-breaking
+  static readonly EMPTY_SPACE = '\u200b';
+  static readonly NONBREAKING_SPACE = '\u00a0';
+  static readonly NONBREAKING_HALF_SPACE = '\u202f'; // Half space non-breaking
 
   // also be able to replace "*" with "WILDCARD_REPLACEMENT"
   static replaceAllWithOptions(options: ReplaceOptions) {

@@ -10,9 +10,9 @@ type ArticleDetails = {
 };
 
 export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
-  static baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
-  static newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
-  static newsArticleUrl = 'https://www.studentenwerk-osnabrueck.de//de/nachrichten/artikel-details';
+  static readonly baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
+  static readonly newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
+  static readonly newsArticleUrl = 'https://www.studentenwerk-osnabrueck.de//de/nachrichten/artikel-details';
 
   constructor() {}
 

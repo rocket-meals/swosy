@@ -29,7 +29,7 @@ export enum DateHelperTimezone {
 }
 
 export class DateHelper {
-  static Weekday = Weekday;
+  static readonly Weekday = Weekday;
 
   static isWeekend(date: Date) {
     const weekday = date.getDay();
@@ -657,7 +657,7 @@ export class DateHelper {
     return new Date(year, month - 1, day);
   }
 
-  static MOMENT_FORMAT = {
+  static readonly MOMENT_FORMAT = {
     DATE_ONLY: 'DD.MM.YYYY',
     DATE_AND_HH_MM: 'DD.MM.YYYY HH:mm',
     DATE_HH_MM: 'HH:mm',

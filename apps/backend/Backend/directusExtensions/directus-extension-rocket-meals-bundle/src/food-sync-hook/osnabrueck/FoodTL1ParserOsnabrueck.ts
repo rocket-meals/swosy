@@ -3,13 +3,13 @@ import { FoodTL1ParserGetRawReportInterface } from '../FoodTL1Parser_GetRawRepor
 import {FoodoffersTypeForParser, FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
-  static DEFAULT_CO2_RATING_FIELD = 'EXTINFO_CO2_BEWERTUNG';
+  static readonly DEFAULT_CO2_RATING_FIELD = 'EXTINFO_CO2_BEWERTUNG';
 
-  static MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU = "custom_niedersachsen_menu";
-  static FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU = "Niedersachsenmenü"
+  static readonly MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU = "custom_niedersachsen_menu";
+  static readonly FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU = "Niedersachsenmenü"
 
-  static SPEISE_BEZEICHNUNG_HAUPTGERICHT = 'Hauptgericht';
-  static SPEISE_BEZEICHNUNG_EINTOPF_TERRINE = 'Eintopf Terrine';
+  static readonly SPEISE_BEZEICHNUNG_HAUPTGERICHT = 'Hauptgericht';
+  static readonly SPEISE_BEZEICHNUNG_EINTOPF_TERRINE = 'Eintopf Terrine';
 
   constructor(rawFoodofferReader: FoodTL1ParserGetRawReportInterface) {
     super(rawFoodofferReader);
@@ -63,7 +63,7 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
    * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
    * @param co2_bewertung_string
    */
-  static CO2RATING_A_VALUE = 'A';
+  static readonly CO2RATING_A_VALUE = 'A';
 
   static getCO2RatingMarkingExternalIdentifier(co2_bewertung_string: string) {
     return "CO2_RATING_" + co2_bewertung_string;

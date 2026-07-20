@@ -12,8 +12,8 @@ type IntercardWasher = {
 };
 
 export class StudentenwerkOsnabrueckWashingmachineParser implements WashingmachineParserInterface {
-  static url = 'https://swic.sw-os.de/smartWASH-SimpleWebClient/';
-  static getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + 'allTerminals';
+  static readonly url = 'https://swic.sw-os.de/smartWASH-SimpleWebClient/';
+  static readonly getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + 'allTerminals';
 
   constructor() {}
 
