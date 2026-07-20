@@ -53,7 +53,7 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 
 | Datum | Issue-Typ | Anzahl | PR |
 |---|---|---|---|
-| 2026-07-20 | Make this public static property readonly. | 234 von 242 (8 Ausnahmen: Properties werden neu zugewiesen) | siehe PR-Historie |
+| 2026-07-20 | Make this public static property readonly. | 242 von 242 (234 per `readonly`; 8 neu zugewiesene Properties auf `private static` bzw. Getter/Setter umgestellt) | #3938 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 

@@ -56,7 +56,7 @@ export class EnvVariableHelper {
     return this.getEnvVariable('HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH');
   }
 
-  static secretCache: string | null = null;
+  private static secretCache: string | null = null;
   static getSecret() {
     let secretFromEnv = this.getEnvVariable('SECRET');
     if (secretFromEnv) {

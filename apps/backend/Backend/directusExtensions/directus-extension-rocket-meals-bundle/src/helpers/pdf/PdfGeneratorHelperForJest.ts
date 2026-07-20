@@ -4,6 +4,6 @@ import { PuppeteerGenerator } from './PuppeteerGenerator';
 
 export class PdfGeneratorForJest extends PdfGeneratorHelper {
   public static activateForJest() {
-    PuppeteerGenerator.PuppeteerForJest = puppeteer; // set puppeteer for jest tests
+    PuppeteerGenerator.setPuppeteerForJest(puppeteer); // set puppeteer for jest tests
   }
 }
