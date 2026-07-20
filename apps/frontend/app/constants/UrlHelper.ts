@@ -1,4 +1,5 @@
 import { createURL } from 'expo-linking';
+import { Platform } from 'react-native';
 import { EnvHelper } from './EnvHelper';
 
 // import app.json
@@ -6,6 +7,14 @@ import { EnvHelper } from './EnvHelper';
 export class UrlHelper {
 	static createLocalURL(path: string) {
 		const isProduction = EnvHelper.isProduction(); // TODO: Check if issue: https://github.com/rocket-meals/rocket-meals/issues/15 is fixed
+
+		if (Platform.OS !== 'web') {
+			// The base url workaround below is only needed for web builds. In
+			// native production builds it turned "scheme://login" into
+			// "scheme://rocket-meals/login", which matches no expo-router route,
+			// so the auth deep link could never reach the login screen.
+			return createURL(path);
+		}
 
 		if (isProduction) {
 			// TODO: Check if issue: https://github.com/rocket-meals/rocket-meals/issues/15 is fixed
