@@ -25,9 +25,9 @@ export const setValue = async (key: string, value: any): Promise<void> => {
  * Retrieve a value from storage (sqlite on native, AsyncStorage on web).
  *
  * @param {string} key - The key of the value to retrieve.
- * @returns {Promise<any | null>} - The parsed value, or null if not found or an error occurred.
+ * @returns {Promise<any>} - The parsed value, or null if not found or an error occurred.
  */
-export const getValue = async (key: string): Promise<any | null> => {
+export const getValue = async (key: string): Promise<any> => {
 	try {
 		const jsonValue = await sqliteKeyValueStorage.getItem(key);
 		return jsonValue != null ? JSON.parse(jsonValue) : null;

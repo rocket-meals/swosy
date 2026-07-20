@@ -104,19 +104,19 @@ export function buildKmAnnouncement(
 
 	switch (langCode) {
 		case 'de':
-			return `${km} Kilometer${buildSpeedParts('Tempo', `Minuten {sec} Sekunden pro Kilometer`, 'Kilometer pro Stunde')}`;
+			return `${km} Kilometer${buildSpeedParts('Tempo', 'Minuten {sec} Sekunden pro Kilometer', 'Kilometer pro Stunde')}`;
 		case 'fr':
-			return `${km} kilomètre${km > 1 ? 's' : ''}${buildSpeedParts('allure', `minutes {sec} secondes par kilomètre`, 'kilomètres par heure')}`;
+			return `${km} kilomètre${km > 1 ? 's' : ''}${buildSpeedParts('allure', 'minutes {sec} secondes par kilomètre', 'kilomètres par heure')}`;
 		case 'es':
-			return `${km} kilómetro${km > 1 ? 's' : ''}${buildSpeedParts('ritmo', `minutos {sec} segundos por kilómetro`, 'kilómetros por hora')}`;
+			return `${km} kilómetro${km > 1 ? 's' : ''}${buildSpeedParts('ritmo', 'minutos {sec} segundos por kilómetro', 'kilómetros por hora')}`;
 		case 'it':
-			return `${km} chilometro${km > 1 ? 'i' : ''}${buildSpeedParts('passo', `minuti {sec} secondi al chilometro`, 'chilometri all\'ora')}`;
+			return `${km} chilometro${km > 1 ? 'i' : ''}${buildSpeedParts('passo', 'minuti {sec} secondi al chilometro', "chilometri all'ora")}`;
 		case 'pt':
-			return `${km} quilômetro${km > 1 ? 's' : ''}${buildSpeedParts('ritmo', `minutos {sec} segundos por quilômetro`, 'quilômetros por hora')}`;
+			return `${km} quilômetro${km > 1 ? 's' : ''}${buildSpeedParts('ritmo', 'minutos {sec} segundos por quilômetro', 'quilômetros por hora')}`;
 		case 'nl':
-			return `${km} kilometer${buildSpeedParts('tempo', `minuten {sec} seconden per kilometer`, 'kilometer per uur')}`;
+			return `${km} kilometer${buildSpeedParts('tempo', 'minuten {sec} seconden per kilometer', 'kilometer per uur')}`;
 		default:
-			return `${km} kilometer${km > 1 ? 's' : ''}${buildSpeedParts('pace', `minutes {sec} seconds per kilometer`, 'kilometers per hour')}`;
+			return `${km} kilometer${km > 1 ? 's' : ''}${buildSpeedParts('pace', 'minutes {sec} seconds per kilometer', 'kilometers per hour')}`;
 	}
 }
 

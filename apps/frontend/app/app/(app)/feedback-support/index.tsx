@@ -36,7 +36,7 @@ const FeedbackScreen = () => {
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [loading, setLoading] = useState(false);
 	const [inputValues, setInputValues] = useState<{
-		[key: string]: string | boolean | number | any;
+		[key: string]: any;
 	}>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);

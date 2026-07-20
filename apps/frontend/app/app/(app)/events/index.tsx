@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { SafeAreaView, ScrollView } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
@@ -24,7 +25,7 @@ const EventsScreen = () => {
     const kioskMode = useKioskMode();
     const { popupEvents } = useAppSelector((state) => state.food);
     const { primaryColor } = useAppSelector((state) => state.settings);
-	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+	const [selectedEvent, setSelectedEvent] = useState<Partial<DatabaseTypes.PopupEvents> | null>(null);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const handleClose = useCallback(() => {
 		setSelectedEvent(null);

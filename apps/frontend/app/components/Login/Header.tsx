@@ -26,8 +26,7 @@ const LoginHeader = () => {
 	function useDeviceLocaleCodesWithoutRegionCode(): string[] {
 		let localeCodes: string[] = [];
 
-		for (let i = 0; i < locales.length; i++) {
-			let locale = locales[i];
+		for (const locale of locales) {
 			localeCodes.push(locale.languageTag);
 		}
 

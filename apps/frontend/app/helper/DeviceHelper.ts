@@ -82,8 +82,7 @@ export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T 
 
 	const breakPointOrder = getSmallestToLargestBreakPointList().reverse(); // From largest to smallest for iteration.
 
-	for (let i = 0; i < breakPointOrder.length; i++) {
-		const breakPoint = breakPointOrder[i];
+	for (const breakPoint of breakPointOrder) {
 		const width: number | undefined = widthBreakPoints[breakPoint];
 		if (width && widthUnscaled >= width) {
 			const valueOfBreakPoint = breakPoints[breakPoint];

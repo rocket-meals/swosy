@@ -28,8 +28,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
       let news: NewsTypeForParser[] = [];
 
-      for (let i = 0; i < articles.length; i++) {
-        let article = articles[i];
+      for (const article of articles.toArray()) {
         let imageElement = $(article).find('img');
         let imageUrl = imageElement.length ? StudentenwerkOsnabrueckNews_Parser.baseUrl + imageElement.attr('src') : '';
 

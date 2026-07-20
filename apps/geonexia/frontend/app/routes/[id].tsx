@@ -1106,9 +1106,10 @@ export default function RouteDetailScreen() {
 		}
 
 		const count = routeActivities.length;
+		const activitiesText = count === 1 ? 'existiert noch eine Aktivität' : `existieren noch ${count} Aktivitäten`;
 		showAlert(
 			'Route löschen',
-			`Für diese Route ${count === 1 ? 'existiert noch eine Aktivität' : `existieren noch ${count} Aktivitäten`}. Was soll damit passieren?`,
+			`Für diese Route ${activitiesText}. Was soll damit passieren?`,
 			[
 				{ text: 'Abbrechen', style: 'cancel' },
 				{ text: 'Anderer Route zuordnen', onPress: handleOpenReassignPicker },
