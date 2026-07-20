@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 42 | 42 |
-| 🔧 Maintainability | 620 | 7 |
+| 🔧 Maintainability | 602 | 7 |
 
-**Total issues:** 663 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 645 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -188,7 +188,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (7/620)
+## 🔧 Maintainability (7/602)
 
 - **This pattern can be replaced with '|'.**
   apps/accessibilityTester/src/report.ts:107
