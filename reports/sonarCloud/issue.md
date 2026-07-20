@@ -6,17 +6,17 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 42 | 42 |
-| 🔧 Maintainability | 707 | 7 |
+| 🔧 Maintainability | 620 | 7 |
 
-**Total issues:** 750 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 663 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
 ## 🔒 Security (1/1)
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
-  scripts/count-sonar-maintainability-issues.js:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L49
+  scripts/count-sonar-maintainability-issues.js:93
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L93
 
 ## 🐛 Reliability (42/42)
 
@@ -49,8 +49,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L26
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/app/(app)/course-timetable/index.tsx:107
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L107
+  apps/frontend/app/app/(app)/course-timetable/index.tsx:102
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L102
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/app/index.tsx:15
@@ -188,7 +188,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (7/707)
+## 🔧 Maintainability (7/620)
 
 - **This pattern can be replaced with '|'.**
   apps/accessibilityTester/src/report.ts:107
