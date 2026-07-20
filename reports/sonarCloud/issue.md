@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 45 | 45 |
-| 🔧 Maintainability | 1442 | 4 |
+| 🔧 Maintainability | 1300 | 4 |
 
-**Total issues:** 1488 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1346 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -200,7 +200,7 @@
   scripts/count-sonar-maintainability-issues.js:13
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L13
 
-## 🔧 Maintainability (4/1442)
+## 🔧 Maintainability (4/1300)
 
 - **Prefer `node:path` over `path`.**
   apps/accessibilityTester/src/index.ts:1
