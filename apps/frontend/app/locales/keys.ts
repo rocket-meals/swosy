@@ -333,6 +333,8 @@ export enum TranslationKeys {
         app_download = 'app_download',
         app_download_selection = 'app_download_selection',
         app_banner_open = 'app_banner_open',
+        app_banner_install = 'app_banner_install',
+        app_banner_installed = 'app_banner_installed',
         react_native_qrcode_svg = 'react_native_qrcode_svg',
         friendships = 'friendships',
         friendships_add_friend = 'friendships_add_friend',

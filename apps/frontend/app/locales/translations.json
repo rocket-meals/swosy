@@ -3313,6 +3313,26 @@
     "tr": "Aç",
     "zh": "打开"
   },
+  "app_banner_install": {
+    "de": "Laden",
+    "en": "Get",
+    "ar": "تحميل",
+    "es": "Obtener",
+    "fr": "Obtenir",
+    "ru": "Загрузить",
+    "tr": "İndir",
+    "zh": "获取"
+  },
+  "app_banner_installed": {
+    "de": "App bereits installiert",
+    "en": "App already installed",
+    "ar": "التطبيق مثبت بالفعل",
+    "es": "La aplicación ya está instalada",
+    "fr": "Application déjà installée",
+    "ru": "Приложение уже установлено",
+    "tr": "Uygulama zaten yüklü",
+    "zh": "应用已安装"
+  },
   "react_native_qrcode_svg": {
     "de": "React Native QRCode SVG",
     "en": "React Native QRCode SVG",
