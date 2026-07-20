@@ -21,7 +21,7 @@ import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/Rout
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints, computeEdgesFromHexTiles, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
@@ -594,12 +594,9 @@ const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 
 /**
  * Derive the sequence of unique H3 cells visited during an activity, including
- * interpolated cells for GPS gaps, and build:
- *  - a hexTileGeoJSON with one polygon per visited cell (at `h3Resolution`, typically h10),
- *    colored by its level from the global Redux store.
- *  - a hexWalkPathGeoJSON with LineString features for each actual transition
- *    between consecutive cells at `RED_LINE_GRID_RESOLUTION` for a finer,
- *    more accurate red walk-path line.
+ * interpolated cells for GPS gaps, and build a hexTileGeoJSON with one polygon
+ * per visited cell (at `h3Resolution`, typically h10), colored by its level
+ * from the global Redux store.
  */
 function buildActivityHexGeoJson(
 	routePoints: RoutePoint[],
@@ -607,18 +604,12 @@ function buildActivityHexGeoJson(
 	hexTileRecords: Record<string, HexTileRecord>,
 ): {
 	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
-	hexWalkPathGeoJson: { type: 'FeatureCollection'; features: object[] };
 } {
 	// h10 tile tracking
 	const visitedCells = new Set<string>();
 	let lastCell: string | null = null;
 
-	// red-line walk-path edge tracking
-	const edges = new Set<string>();
-	let lastRedLineCell: string | null = null;
-
 	for (const point of routePoints) {
-		// ── h10 tile display ──────────────────────────────────────────────────
 		try {
 			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
 			if (cell) {
@@ -634,31 +625,6 @@ function buildActivityHexGeoJson(
 				}
 				visitedCells.add(cell);
 				lastCell = cell;
-			}
-		} catch {
-			// Skip invalid GPS points
-		}
-
-		// ── red-line walk-path edges ───────────────────────────────────────────────
-		try {
-			const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
-			if (redLineCell) {
-				if (lastRedLineCell && redLineCell !== lastRedLineCell) {
-					try {
-						const pathCells = gridPathCells(lastRedLineCell, redLineCell);
-						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
-							for (let i = 0; i < pathCells.length - 1; i++) {
-								const a = pathCells[i];
-								const b = pathCells[i + 1];
-								edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
-							}
-						}
-					} catch {
-						// Different icosahedron faces – add direct red-line edge
-						edges.add(lastRedLineCell < redLineCell ? `${lastRedLineCell}:${redLineCell}` : `${redLineCell}:${lastRedLineCell}`);
-					}
-				}
-				lastRedLineCell = redLineCell;
 			}
 		} catch {
 			// Skip invalid GPS points
@@ -682,29 +648,8 @@ function buildActivityHexGeoJson(
 		}
 	}
 
-	// Build walk path LineString features (red-line resolution)
-	const pathFeatures: object[] = [];
-	for (const edge of edges) {
-		const colonIdx = edge.indexOf(':');
-		if (colonIdx === -1) continue;
-		const cellA = edge.slice(0, colonIdx);
-		const cellB = edge.slice(colonIdx + 1);
-		try {
-			const [aLat, aLng] = cellToLatLng(cellA);
-			const [bLat, bLng] = cellToLatLng(cellB);
-			pathFeatures.push({
-				type: 'Feature',
-				geometry: { type: 'LineString', coordinates: [[aLng, aLat], [bLng, bLat]] },
-				properties: {},
-			});
-		} catch {
-			// Skip invalid cells
-		}
-	}
-
 	return {
 		hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures },
-		hexWalkPathGeoJson: { type: 'FeatureCollection', features: pathFeatures },
 	};
 }
 
@@ -1115,31 +1060,29 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ debugGpsPoints: null });
 		}
 
-		// Send hex tile and walk path GeoJSON so the activity screen shows the
-		// same hexagon visualization as the main map, but only for the tiles
-		// that were visited during this specific activity.
+		// The red-line walk path (h12, legacy h11) is never shown on the activity
+		// screen – the speed-colored GPS track (or road-matched line) already
+		// represents the route. Send an empty collection to clear the map layer.
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: { type: 'FeatureCollection', features: [] } });
+
+		// Send hex tile GeoJSON so the activity screen shows the same hexagon
+		// visualization as the main map, but only for the tiles that were
+		// visited during this specific activity.
 		if (isH3Available() && activity.routePoints.length > 0) {
 			try {
 				const h3Res = activity.h3Resolution ?? 10;
-				const { hexTileGeoJson, hexWalkPathGeoJson } = buildActivityHexGeoJson(
+				const { hexTileGeoJson } = buildActivityHexGeoJson(
 					activity.routePoints,
 					h3Res,
 					hexTileRecords,
 				);
 				mapRef.current.sendToMap({ hexTileGeoJson });
-				// In Straßen/Wege mode the red GPS-connected walk path is hidden as
-				// well – only the road-matched line represents the route.
-				mapRef.current.sendToMap({
-					hexWalkPathGeoJson: showRoadMatch
-						? { type: 'FeatureCollection', features: [] }
-						: hexWalkPathGeoJson,
-				});
 			} catch (err) {
 				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
 			}
 		} else if (isH3Available() && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0) {
-			// Manual activity has no GPS points – build the hex tile and walk path
-			// GeoJSON directly from the ordered hex tile list.
+			// Manual activity has no GPS points – build the hex tile GeoJSON
+			// directly from the ordered hex tile list.
 			try {
 				const hexTiles = activity.hexTilesOrdered!;
 				const tileFeatures: object[] = [];
@@ -1157,35 +1100,7 @@ export default function ActivityDetailScreen() {
 						// Skip invalid cells
 					}
 				}
-				// Build red-line walk-path edges via synthetic GPS points placed at
-				// red-line center-children, matching the accuracy of real GPS activities.
-				const syntheticPoints = synthesizeManualActivityRoutePoints(
-					hexTiles,
-					activity.startedAt,
-					activity.endedAt - activity.startedAt,
-					activity.distanceKm,
-				);
-				const edges = computeEdgesFromRoutePoints(syntheticPoints, RED_LINE_GRID_RESOLUTION);
-				const pathFeatures: object[] = [];
-				for (const edge of edges) {
-					const colonIdx = edge.indexOf(':');
-					if (colonIdx === -1) continue;
-					const cellA = edge.slice(0, colonIdx);
-					const cellB = edge.slice(colonIdx + 1);
-					try {
-						const [aLat, aLng] = cellToLatLng(cellA);
-						const [bLat, bLng] = cellToLatLng(cellB);
-						pathFeatures.push({
-							type: 'Feature',
-							geometry: { type: 'LineString', coordinates: [[aLng, aLat], [bLng, bLat]] },
-							properties: {},
-						});
-					} catch {
-						// Skip invalid cells
-					}
-				}
 				mapRef.current.sendToMap({ hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures } });
-				mapRef.current.sendToMap({ hexWalkPathGeoJson: { type: 'FeatureCollection', features: pathFeatures } });
 			} catch (err) {
 				console.warn('[ActivityDetailScreen] Failed to build manual activity hex GeoJSON:', err);
 			}
