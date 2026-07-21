@@ -53,44 +53,17 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
    - Im PR-Text: behobenen Issue-Typ, Anzahl der Fixes, bewusst ausgelassene
      Stellen mit Begründung sowie die aktuelle Top-10-Liste aufführen.
 
-## Bereits abgearbeitete Typen
+## Noch offen
 
-| Datum | Issue-Typ | Anzahl | PR |
-|---|---|---|---|
-| 2026-07-20 | Make this public static property readonly. | 242 von 242 (234 per `readonly`; 8 neu zugewiesene Properties auf `private static` bzw. Getter/Setter umgestellt) | #3938 |
-| 2026-07-20 | Prefer using an optional chain expression instead. | 81 von 81 (per Codemod + manuelle Fixes für mehrzeilige JSX-Guards und `!a \|\| a.x !== y`-Muster) | #3942 |
-| 2026-07-20 | Redundant double negation. | 62 von 62 (per Codemod) | #3942 |
-| 2026-07-20 | Remove this unused import of 'X'. | 124 von 124 | #3946 |
-| 2026-07-20 | Do not call `Array#push()` multiple times. | 60 von 60 (AST-Codemod, Kommentare zwischen pushes bleiben erhalten) | #3946 |
-| 2026-07-20 | Mark the props of the component as read-only. | 58 von 58 (`Readonly<Props>`) | #3946 |
-| 2026-07-20 | The empty object is useless. | 53 von 53 (`...(x ?? {})` → `...x`) | #3946 |
-| 2026-07-20 | Prefer `node:X` over `X`. | 49 von 51 (2x `node:buffer` im Expo-Frontend zurückgenommen — Metro kann `node:`-Imports nicht auflösen) | #3946 |
-| 2026-07-20 | 'X' imported multiple times. | 32 von 32 (Import-Merges) | #3946 |
-| 2026-07-20 | `String.raw` should be used. | 24 von 24 | #3946 |
-| 2026-07-20 | Prefer `.at(…)` over `[….length - N]`. | 24 von 24 (an strikt typisierten Stellen mit `!`) | #3946 |
-| 2026-07-20 | Unnecessary conditional for default assignment. | 21 von 21 (`a ? a : b` → `a \|\| b`) | #3946 |
-| 2026-07-20 | Use the "RegExp.exec()" method instead. | 20 von 20 (nur Regexe ohne `g`-Flag) | #3946 |
-| 2026-07-20 | Prefer `String#replaceAll()`. | 10 von 10 | #3946 |
-| 2026-07-20 | Kleintypen: Fragment (7), case-Block (7), useless constructor (6), redundantes `\| undefined` (6), unnötige Escapes (6), Boolean-Literal-Ternary (5), `Math.hypot` (5), `Number.parseInt` (3), `Date.now()` (3) | 48 von 48 | #3946 |
-| 2026-07-20 | Prefer using nullish coalescing operator (`??=` / `??`). | 18 von 18 (Codemod mit Zeilenverifikation; alle Ziel-Typen `X \| null` bzw. `boolean \| undefined`) | – |
-| 2026-07-20 | Redirect this error message to stderr (>&2). | 14 von 14 (nur Shell-Skripte, `bash -n` geprüft) | – |
-| 2026-07-20 | 'If' statement should not be the only statement in 'else' block. | 10 von 10 (`else { if }` → `else if`) | – |
-| 2026-07-20 | Expected a `for-of` loop instead of a `for` loop with this simple iteration. | 12 von 12 (Cheerio-Objekt per `.toArray()` iteriert) | #3953 |
-| 2026-07-20 | 'any' overrides all other types in this union type. | 12 von 12 (wo möglich sprechende Typen wie `Partial<...>` statt `any`; sonst redundante Union-Member entfernt) | #3953 |
-| 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | #3953 |
-| 2026-07-20 | Remove this useless assignment to variable "X". | 97 von 97 (ungenutzte useState-Werte per Array-Elision, tote Deklarationen/Handler samt ungenutzt gewordener Imports entfernt; Seiteneffekt-Aufrufe als nacktes `await` behalten) | #3958 |
-| 2026-07-20 | useState call is not destructured into value + setter pair | 18 von 18 (10x Array-Elision aus #3958 zurück zu benanntem `[x, setX]`-Paar mit `NOSONAR`-Kommentar — Kommentar entfernen, sobald die Variable genutzt wird; 8x Setter-Umbenennung: 6x Tippfehler `setAmimationJson` → `setAnimationJson`, 2x `set...State`-Suffix in `useLanguage.ts`) | – |
-| 2026-07-21 | Add an explicit return statement at the end of the function. | 20 von 20 (nur Shell-Skripte; `return $?` als letzte Anweisung ergänzt, damit der bisherige implizite Exit-Code jeder Funktion unverändert bleibt — keine Semantikänderung) | – |
+Bereits erledigte Issue-Typen werden nicht mehr in diesem Dokument mitgeführt —
+der aktuelle Stand ergibt sich aus `node scripts/count-sonar-maintainability-issues.js`
+bzw. dem nächsten SonarCloud-Scan. Details zu bereits gefixten Typen stehen in
+der Git-/PR-Historie.
 
-Neu abgearbeitete Typen bitte hier ergänzen.
-
-**Noch offen (Stand 2026-07-21, brauchen individuelle Refactorings statt mechanischer Fixes):**
+**Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
-(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
-should be last" (20x, ändert Aufrufer), `await` auf Non-Promise (16x, Prüfung pro
-Stelle nötig), Parameter-Reihenfolge (16x, ausschließlich `hashHelper.ts` — Reihenfolge
-könnte algorithmisch beabsichtigt sein, braucht manuelle Prüfung).
+(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 ## Hinweise

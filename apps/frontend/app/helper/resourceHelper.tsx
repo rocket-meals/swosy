@@ -219,11 +219,13 @@ export const getNewsTranslationByLanguageCode = (translations: DatabaseTypes.New
 };
 
 export const getCollectibleEventTranslation = (
-        translations: DatabaseTypes.CollectibleEventsTranslations[] = [],
+        translations: DatabaseTypes.CollectibleEventsTranslations[] | undefined,
         languageCode: string,
         fallbackTitle?: string | null,
         fallbackDescription?: string | null
 ) => {
+        translations = translations === undefined ? [] : translations;
+
         const title = getDirectusTranslation({ languageCode }, translations as any, 'title', false, fallbackTitle || '');
         const description = getDirectusTranslation(
                 { languageCode },

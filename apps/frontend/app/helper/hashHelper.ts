@@ -80,6 +80,10 @@ export class HashHelper {
 		let c = 0x98badcfe;
 		let d = 0x10325476;
 
+		// NOSONAR: the (a, b, c, d) rotation below is the standard MD5 round structure
+		// (RSA reference algorithm) — each round intentionally passes the four state
+		// words in a rotated order, not the same order as the FF/GG/HH/II parameter
+		// names. Reordering would break the hash. See docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md.
 		for (let k = 0; k < x.length; k += 16) {
 			const AA = a;
 			const BB = b;
