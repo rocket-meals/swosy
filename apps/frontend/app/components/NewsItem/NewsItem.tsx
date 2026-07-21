@@ -41,6 +41,14 @@ const ReadMoreTriggerButton = ({
 	</TouchableOpacity>
 );
 
+const makeReadMoreTrigger = (props: Readonly<{
+	onPress: () => void;
+	backgroundColor: string;
+	textColor: string;
+	width: number | string;
+	label: string;
+}>) => (triggerProps: object) => <ReadMoreTriggerButton triggerProps={triggerProps} {...props} />;
+
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
@@ -158,16 +166,13 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-							<ReadMoreTriggerButton
-								triggerProps={triggerProps}
-								onPress={handleNewsDetails}
-								backgroundColor={news_area_color}
-								textColor={contrastColor}
-								width={screenWidth > 768 ? 210 : '100%'}
-								label={translate(TranslationKeys.read_more)}
-							/>
-						)}
+						trigger={makeReadMoreTrigger({
+							onPress: handleNewsDetails,
+							backgroundColor: news_area_color,
+							textColor: contrastColor,
+							width: screenWidth > 768 ? 210 : '100%',
+							label: translate(TranslationKeys.read_more),
+						})}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

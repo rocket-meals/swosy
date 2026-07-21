@@ -45,12 +45,13 @@ const CanteenSelectionContent: React.FC<CanteenSelectionContentProps> = ({ onSel
 					return status === 'published' || status === 'archived';
 				});
 
-				const sortedCanteens = filteredCanteens.sort((a, b) => {
+				filteredCanteens.sort((a, b) => {
 					const aPublished = a.status === 'published';
 					const bPublished = b.status === 'published';
 					if (aPublished !== bPublished) return aPublished ? -1 : 1;
 					return (a.sort || 0) - (b.sort || 0);
 				});
+				const sortedCanteens = filteredCanteens;
 
 				const updatedCanteens = sortedCanteens.map((canteen) => {
 					const building = buildingsDict[canteen?.building as string];

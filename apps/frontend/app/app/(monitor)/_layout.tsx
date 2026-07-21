@@ -15,6 +15,13 @@ import { useAppSelector } from '@/redux/hooks';
 
 const StatisticsHeader = () => <CustomStackHeader label={'Statistics'} key={'statistics'} />;
 
+// `Stack.Screen`'s `options.header` calls this as a plain function (never as
+// a JSX tag), so a factory returning a stable function avoids defining a new
+// arrow (and thus a new "component") on every render.
+function makeTranslatedStackHeader(labelKey: TranslationKeys, headerKey?: string) {
+	return () => <TranslatedStackHeader labelKey={labelKey} headerKey={headerKey} />;
+}
+
 export default function MonitorLayout() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -100,7 +107,7 @@ export default function MonitorLayout() {
 				name="foodPlanWeek/index"
 				options={{
 					title: 'FoodPlan:Week',
-					header: () => <TranslatedStackHeader labelKey={TranslationKeys.Food_Plan_Week} headerKey={'foodPlanWeek'} />,
+					header: makeTranslatedStackHeader(TranslationKeys.Food_Plan_Week, 'foodPlanWeek'),
 				}}
 			/>
 			<Stack.Screen
@@ -113,7 +120,7 @@ export default function MonitorLayout() {
 			<Stack.Screen
 				name="foodPlanDay/index"
 				options={{
-					header: () => <TranslatedStackHeader labelKey={TranslationKeys.food_Plan_Day} headerKey={'foodPlanDay'} />,
+					header: makeTranslatedStackHeader(TranslationKeys.food_Plan_Day, 'foodPlanDay'),
 				}}
 			/>
 			<Stack.Screen
@@ -126,7 +133,7 @@ export default function MonitorLayout() {
 				name="foodPlanList/index"
 				options={{
 					title: 'foodPlan:List',
-					header: () => <TranslatedStackHeader labelKey={TranslationKeys.Food_Plan_List} headerKey={'foodPlanList'} />,
+					header: makeTranslatedStackHeader(TranslationKeys.Food_Plan_List, 'foodPlanList'),
 				}}
 			/>
 			<Stack.Screen

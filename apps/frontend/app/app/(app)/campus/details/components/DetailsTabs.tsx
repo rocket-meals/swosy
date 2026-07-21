@@ -35,6 +35,16 @@ const TabIconButton = ({
     </IconButton>
 );
 
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeTabTrigger(onPress: () => void, isActive: boolean, activeStyle: any, inactiveStyle: any, icon: React.ReactNode) {
+    return (triggerProps: object) => (
+        <TabIconButton triggerProps={triggerProps} onPress={onPress} isActive={isActive} activeStyle={activeStyle} inactiveStyle={inactiveStyle}>
+            {icon}
+        </TabIconButton>
+    );
+}
+
 const DetailsTabs: React.FC<DetailsTabsProps> = ({
     activeTab,
     setActiveTab,
@@ -50,20 +60,16 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
             <View style={{ ...styles.tabs, width: '100%', gap: screenWidth > 900 ? 20 : 0 }}>
                 <CustomTooltip
                     placement="top"
-                    trigger={triggerProps => (
-                        <TabIconButton
-                            triggerProps={triggerProps}
-                            onPress={() => setActiveTab(CampusDetailTab.INFORMATION)}
-                            isActive={activeTab === CampusDetailTab.INFORMATION}
-                            activeStyle={themeStyles}
-                            inactiveStyle={{ backgroundColor: theme.screen.iconBg }}
-                        >
-                            <Foundation
-                                name="info"
-                                size={26}
-                                color={activeTab === CampusDetailTab.INFORMATION ? contrastColor : theme.screen.icon}
-                            />
-                        </TabIconButton>
+                    trigger={makeTabTrigger(
+                        () => setActiveTab(CampusDetailTab.INFORMATION),
+                        activeTab === CampusDetailTab.INFORMATION,
+                        themeStyles,
+                        { backgroundColor: theme.screen.iconBg },
+                        <Foundation
+                            name="info"
+                            size={26}
+                            color={activeTab === CampusDetailTab.INFORMATION ? contrastColor : theme.screen.icon}
+                        />
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -75,20 +81,16 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
 
                 <CustomTooltip
                     placement="top"
-                    trigger={triggerProps => (
-                        <TabIconButton
-                            triggerProps={triggerProps}
-                            onPress={() => setActiveTab(CampusDetailTab.DESCRIPTION)}
-                            isActive={activeTab === CampusDetailTab.DESCRIPTION}
-                            activeStyle={themeStyles}
-                            inactiveStyle={{ backgroundColor: theme.screen.iconBg }}
-                        >
-                            <MaterialCommunityIcons
-                                name="sort-variant"
-                                size={26}
-                                color={activeTab === CampusDetailTab.DESCRIPTION ? contrastColor : theme.screen.icon}
-                            />
-                        </TabIconButton>
+                    trigger={makeTabTrigger(
+                        () => setActiveTab(CampusDetailTab.DESCRIPTION),
+                        activeTab === CampusDetailTab.DESCRIPTION,
+                        themeStyles,
+                        { backgroundColor: theme.screen.iconBg },
+                        <MaterialCommunityIcons
+                            name="sort-variant"
+                            size={26}
+                            color={activeTab === CampusDetailTab.DESCRIPTION ? contrastColor : theme.screen.icon}
+                        />
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

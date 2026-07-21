@@ -63,12 +63,14 @@ der Git-/PR-Historie.
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
 „Cognitive Complexity" (109x). Diesen Typ in kleinen, thematisch gruppierten PRs angehen.
 
-„Move this component definition out of the parent component" ist trotz der
-weiter unten dokumentierten Abarbeitung erneut mit 67 Vorkommen im aktuellen
-CSV vertreten (Stand 2026-07-21). Vermutlich sind seit der letzten
-Abarbeitung neue Stellen (oder durch Codeänderungen verschobene Zeilen)
-hinzugekommen — vor der nächsten Runde die aktuelle CSV neu durchsehen statt
-sich auf die alte "komplett abgearbeitet"-Notiz weiter unten zu verlassen.
+„Move this component definition out of the parent component" war trotz der
+weiter unten dokumentierten Abarbeitung erneut mit 67 Vorkommen im CSV
+vertreten (Stand 2026-07-21, erste Runde) — die aktuelle CSV wird nur per
+CI-Scan aktualisiert, daher zeigt sie diese 67 Stellen weiterhin an, obwohl
+sie in der zweiten Runde desselben Tages (siehe unten) bereits erneut
+komplett abgearbeitet wurden. Nach dem nächsten SonarCloud-Scan sollte diese
+Zahl auf 0 (bzw. nur noch `FoodItem.tsx:324`) fallen; falls nicht, vor der
+nächsten Runde die CSV neu durchsehen statt sich auf diese Notiz zu verlassen.
 
 TODO-Kommentare (36x, Regel „Complete the task associated to this TODO
 comment") werden **nicht mehr hier gefixt**, sondern in Tracking-Issue
@@ -107,6 +109,70 @@ Am 2026-07-21 zusätzlich mechanisch abgearbeitet:
   `billboardAnchorColor` in Geonexia, `CollectionHelper`-Methoden,
   `newWindow.document.write`) brauchen fachliche Migration und wurden
   bewusst nicht angefasst.
+
+Am 2026-07-21 (zweite Runde desselben Tages) zusätzlich abgearbeitet:
+
+- **„Move this component definition out of the parent component"** — die
+  erneut aufgetauchten 67 Vorkommen (siehe Hinweis oben) wurden komplett
+  abgearbeitet. Es handelte sich fast durchgehend um denselben Rest-Fall:
+  Eine frühere Runde hatte den JSX-Inhalt bereits in eine benannte
+  Modul-Ebene-Komponente ausgelagert (`HeaderIconButton`, `TabIconButton`,
+  `NavigationTriggerButton`, `TranslatedMenuHeader`/`TranslatedStackHeader`
+  u. Ä.), aber die umschließende Inline-Arrow-Funktion
+  (`trigger={triggerProps => (<X .../>)}` bzw. `header: () => (<X .../>)`)
+  blieb im Elternkomponenten-Body stehen — syntaktisch weiterhin eine
+  „Funktion, die JSX zurückgibt, verschachtelt im Elternkomponenten-Body",
+  daher erneut gemeldet. Fix: jede dieser Wrapper-Funktionen wurde in eine
+  `make*Trigger`/`make*Header`-Factory auf Modul-Ebene gehoben (Vorbild:
+  die bereits bestehende `makeDrawerIcon`-Factory), die alle
+  geschlossenen Werte (Handler, Farben, Flags, Icon-Namen) als explizite
+  Parameter entgegennimmt und die stabile `(triggerProps) => JSX`- bzw.
+  `() => JSX`-Funktion zurückgibt. Der Aufrufort enthält dadurch nur noch
+  einen Funktionsaufruf, keine Funktionsdefinition mehr.
+  - Betroffen: `apps/frontend/app/app/(app)/_layout.tsx` (19x, neue
+    `makeTranslatedMenuHeader`/`makeTranslatedStackHeader`-Factories),
+    sechs kleinere `_layout.tsx`-Dateien (`chats`, `foodoffers`,
+    `support-ticket`, `(monitor)`, `(monitor)/list-week-screen`, `(user)`;
+    9x, gleiches Factory-Muster lokal je Datei), geonexia-
+    `activities/[id].tsx`/`activities/index.tsx`/`routes/[id].tsx` und
+    score-tracker `games/[id].tsx`/`games/index.tsx`/`players/index.tsx`/
+    `index.tsx` (7x, `headerLeft`/`headerRight`-Callbacks), die
+    Header/Tabs-Komponenten von campus/foodoffers/housing/map (17x,
+    `CustomTooltip`-Trigger) sowie zehn weitere Einzelkomponenten
+    (`CustomStackHeader`, `SettingsListMarkingLabel`,
+    `SettingsListLikeDislike`, `BuildingItem`, `CanteenFeedbackLabels`,
+    `CourseTimetable`, `CustomMenuHeader`, `FeedbackLabel`,
+    `MarkingLabels`, `NewsItem`; 15x, ebenfalls `CustomTooltip`-Trigger).
+  - **Bewusst weiterhin unverändert:** `FoodItem.tsx:324` (siehe oben,
+    ~30 geschlossene Werte — weiterhin zu riskant für eine mechanische
+    Extraktion) sowie der zweite, nicht gemeldete `CustomTooltip` in
+    `BuildingItem.tsx` (wrapt `renderCard`, war nicht Teil dieser Runde).
+  - Keine Render-Ausgabe, kein Styling, keine Navigations-/Business-Logik
+    geändert — rein mechanische Extraktion mit expliziten Parametern statt
+    Closures.
+- **„Move this array 'sort' operation..."** (7x): `arr.sort(...)` wurde in
+  eine eigene Anweisung aufgeteilt (`arr.sort(...); const sorted = arr;`),
+  statt auf `toSorted` umzustellen — der Backend-Extension-Workspace
+  targetiert `ES2019`/`lib: ["ES2019"]`, wo `Array.prototype.toSorted`
+  (ES2023) nicht typsicher verfügbar ist; für Konsistenz wurde dasselbe
+  Muster auch in den Frontend-Stellen verwendet statt nur dort, wo
+  `toSorted` type-technisch ginge.
+- **Klassen-Umbenennung auf PascalCase** (7x): Unterstriche aus
+  Klassennamen entfernt (z. B. `DemoNews_Parser` → `DemoNewsParser`,
+  `iPhoneSystemActionHelper` → `IPhoneSystemActionHelper`) — inklusive
+  Umbenennung der jeweiligen Datei, damit Dateiname und Klassenname wieder
+  übereinstimmen; alle Imports/Testreferenzen mit aktualisiert.
+- **Ternary → nullish coalescing** (4x) für Fälle, in denen der geprüfte
+  Wert nur `| undefined` (nicht `| null`) typisiert ist.
+- **`export…from`** (6x): Re-Exports, die lokal nicht weiterverwendet
+  werden, direkt am Ursprungsmodul re-exportiert statt Import + separater
+  Re-Export-Zeile.
+- **Unused-local-Ersetzung durch `_`** (5x) in
+  `apps/geonexia/frontend/assets/objects/1_fix_viewbox.py`.
+- **„Do not use Array index in keys"** (15x) und **„'X' is deprecated"**
+  (15x im aktuellen CSV) erneut geprüft: entsprechen weiterhin exakt den
+  oben dokumentierten Fällen (statische/nie umsortierte Listen bzw.
+  Cesium-/CollectionHelper-Migrationen) — bewusst unverändert gelassen.
 
 „Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
 gemeldeten Catch-Blöcke (leer, nur Kommentar, oder Rethrow ohne Original-Error)

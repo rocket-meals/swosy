@@ -289,6 +289,10 @@ function PlayersHeaderRight({ color, onPress }: Readonly<{ color: string; onPres
 	);
 }
 
+function makePlayersHeaderRight(color: string, onPress: () => void) {
+	return () => <PlayersHeaderRight color={color} onPress={onPress} />;
+}
+
 export default function PlayersScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -341,7 +345,7 @@ export default function PlayersScreen() {
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => <PlayersHeaderRight color={theme.header.text} onPress={handleOpenOptionsModal} />,
+			headerRight: makePlayersHeaderRight(theme.header.text, handleOpenOptionsModal),
 		});
 	}, [navigation, theme.header.text, handleOpenOptionsModal]);
 

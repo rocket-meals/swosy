@@ -32,6 +32,14 @@ const NavigationTriggerButton = ({
 	</IconButton>
 );
 
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeNavigationTrigger(onPress: () => void, backgroundColor: string, iconColor: string) {
+	return (triggerProps: object) => (
+		<NavigationTriggerButton triggerProps={triggerProps} onPress={onPress} backgroundColor={backgroundColor} iconColor={iconColor} />
+	);
+}
+
 const HousingDetailsHeader: React.FC<HousingDetailsHeaderProps> = ({
 	apartmentDetails,
 	theme,
@@ -56,9 +64,7 @@ const HousingDetailsHeader: React.FC<HousingDetailsHeaderProps> = ({
 			>
 				<CustomTooltip
 					placement="top"
-					trigger={(triggerProps) => (
-						<NavigationTriggerButton triggerProps={triggerProps} onPress={onOpenNavigation} backgroundColor={theme.screen.iconBg} iconColor={theme.screen.icon} />
-					)}
+					trigger={makeNavigationTrigger(onOpenNavigation, theme.screen.iconBg, theme.screen.icon)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>

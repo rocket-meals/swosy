@@ -11,7 +11,7 @@ export const useFoodCardBase = (
     theme: any,
     amountColumnsForcard: number
 ) => {
-	borderWidth = borderWidth === undefined ? 0 : borderWidth;
+	borderWidth = borderWidth ?? 0;
 
 	const dimension = amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 

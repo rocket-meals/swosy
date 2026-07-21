@@ -4,10 +4,10 @@ import type { Element as CheerioElement } from 'domhandler';
 import { ApartmentParserInterface, ApartmentsForParser } from '../ApartmentParserInterface';
 import { StringHelper } from 'repo-depkit-common';
 
-export class StudentenwerkHannoverApartments_Parser implements ApartmentParserInterface {
+export class StudentenwerkHannoverApartmentsParser implements ApartmentParserInterface {
   static readonly baseUrl = 'https://www.studentenwerk-hannover.de';
   // https://www.studentenwerk-hannover.de/wohnen/wohnhaeuser
-  static readonly apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
+  static readonly apartmentsUrl = `${StudentenwerkHannoverApartmentsParser.baseUrl}/wohnen/wohnhaeuser`;
 
 
   async getApartmentList(): Promise<ApartmentsForParser[]> {
@@ -143,7 +143,7 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
       if (!imageUrl) {
         return undefined;
       }
-      return StudentenwerkHannoverApartments_Parser.baseUrl + imageUrl;
+      return StudentenwerkHannoverApartmentsParser.baseUrl + imageUrl;
     } catch (error) {
       console.log('Error while fetching image url');
       console.log(error);
@@ -153,7 +153,7 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
 
   async getRealItems(): Promise<ApartmentsForParser[]> {
     try {
-      let response = await axios.get(StudentenwerkHannoverApartments_Parser.apartmentsUrl);
+      let response = await axios.get(StudentenwerkHannoverApartmentsParser.apartmentsUrl);
       const cheerioAPI = cheerioLoad(response.data);
 
       // Find all apartment divs
@@ -161,7 +161,7 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
       cheerioAPI('div.wohnheimListView').each((index, element) => {
         let name = cheerioAPI(element).find('h3').text().trim();
         let imageUrl = this.getImageUrlFromElement(cheerioAPI, element);
-        let apartmentUrl = StudentenwerkHannoverApartments_Parser.baseUrl + cheerioAPI(element).find('a').attr('href');
+        let apartmentUrl = StudentenwerkHannoverApartmentsParser.baseUrl + cheerioAPI(element).find('a').attr('href');
 
         data.push({
           basicData: {

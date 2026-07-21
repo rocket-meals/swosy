@@ -164,7 +164,7 @@ def path_points(d: str) -> List[Tuple[float, float]]:
             # We only capture the end-point of the arc (the arc itself stays
             # within the bounding box of its control geometry).
             case 'A':
-                (rx, ry, xrot, laf, sf, x, y), i = _consume(tokens, 7, i)
+                (_, _, _, _, _, x, y), i = _consume(tokens, 7, i)
                 points.append((x, y))
                 cx, cy = x, y
             case 'a':

@@ -318,6 +318,10 @@ function RouteBackHeaderButton({ color, onPress }: Readonly<{ color: string; onP
 	);
 }
 
+function makeRouteHeaderLeft(color: string, onPress: () => void) {
+	return () => <RouteBackHeaderButton color={color} onPress={onPress} />;
+}
+
 export default function RouteDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -416,7 +420,7 @@ export default function RouteDetailScreen() {
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
 			title: route?.name ?? '',
-			headerLeft: () => <RouteBackHeaderButton color={theme.header.text} onPress={() => router.navigate('/routes')} />,
+			headerLeft: makeRouteHeaderLeft(theme.header.text, () => router.navigate('/routes')),
 		});
 	}, [navigation, router, theme.header.background, theme.header.text, route?.name]);
 

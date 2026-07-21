@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getUtf8ByteLength, formatBytes } from 'repo-depkit-common-ui';
+import { getUtf8ByteLength } from 'repo-depkit-common-ui';
 
 export type AsyncStorageKeyUsage = {
 	key: string;
@@ -9,7 +9,7 @@ export type AsyncStorageKeyUsage = {
 // Re-exported for existing callers (this module used to define these itself) - the
 // implementation now lives in repo-depkit-common-ui so the sqlite debug storage list
 // (SettingsListSqliteStorage) can share the same byte-formatting as this AsyncStorage one.
-export { getUtf8ByteLength, formatBytes };
+export { formatBytes } from 'repo-depkit-common-ui';
 
 // What's left in AsyncStorage right now - meant to be near-empty on native once the
 // migration in redux/storage/sqliteStorage.ts has run. Shown in the debug settings screen

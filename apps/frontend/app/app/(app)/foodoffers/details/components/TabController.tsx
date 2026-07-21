@@ -46,6 +46,14 @@ const TabTriggerButton = ({
     </IconButton>
 );
 
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeTabTrigger(style: any, iconName: any, iconColor: string, onSelect: () => void) {
+    return (triggerProps: any) => (
+        <TabTriggerButton triggerProps={triggerProps} style={style} iconName={iconName} iconColor={iconColor} onSelect={onSelect} />
+    );
+}
+
 const TabController = ({
     activeTab,
     setActiveTab,
@@ -65,14 +73,11 @@ const TabController = ({
     const renderTab = (tabName: FoodOfferDetailTab, iconName: any, labelKey: string) => (
         <CustomTooltip
             placement="top"
-            trigger={(triggerProps) => (
-                <TabTriggerButton
-                    triggerProps={triggerProps}
-                    style={getTabStyle(tabName)}
-                    iconName={iconName}
-                    iconColor={activeTab === tabName ? contrastColor : theme.screen.icon}
-                    onSelect={() => setActiveTab(tabName)}
-                />
+            trigger={makeTabTrigger(
+                getTabStyle(tabName),
+                iconName,
+                activeTab === tabName ? contrastColor : theme.screen.icon,
+                () => setActiveTab(tabName)
             )}
         >
             <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

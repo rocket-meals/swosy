@@ -1,2 +1,1 @@
-import { SettingsList as CommonSettingsList } from 'repo-depkit-common-ui';
-export default CommonSettingsList;
+export { SettingsList as default } from 'repo-depkit-common-ui';

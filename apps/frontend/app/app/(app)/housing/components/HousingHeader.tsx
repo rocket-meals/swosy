@@ -35,6 +35,24 @@ const HeaderIconButton = ({
 	</IconButton>
 );
 
+// Factories returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeMenuTrigger(onToggleDrawer: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onToggleDrawer} nativeID={ComponentIds.OPEN_DRAWER}>
+			<Ionicons name="menu" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
+}
+
+function makeSortTrigger(onSort: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onSort}>
+			<MaterialIcons name="sort" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
+}
+
 const HousingHeader: React.FC<HousingHeaderProps> = ({
 	theme,
 	translate,
@@ -71,11 +89,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 				>
 					<CustomTooltip
 						placement="top"
-						trigger={(triggerProps) => (
-							<HeaderIconButton triggerProps={triggerProps} onPress={() => navigation.toggleDrawer()} nativeID={ComponentIds.OPEN_DRAWER}>
-								<Ionicons name="menu" size={24} color={theme.header.text} />
-							</HeaderIconButton>
-						)}
+						trigger={makeMenuTrigger(() => navigation.toggleDrawer(), theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -91,11 +105,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 				<View style={[styles.col2, { gap: isWeb ? 30 : 15 }]}>
 					<CustomTooltip
 						placement="top"
-						trigger={(triggerProps) => (
-							<HeaderIconButton triggerProps={triggerProps} onPress={openHousingSortingModal}>
-								<MaterialIcons name="sort" size={24} color={theme.header.text} />
-							</HeaderIconButton>
-						)}
+						trigger={makeSortTrigger(openHousingSortingModal, theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

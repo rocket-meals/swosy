@@ -7,7 +7,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Location from 'expo-location';
 import { StringHelper } from 'repo-depkit-common';
 import { LIBERTY_STYLE_URL, MAP_STYLE_DEFINITIONS } from './MyMapHelper';
-import type { MyMapHandle, MyMapProps, MyMapCoreProps } from './MyMapHelper';
+import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 function escapeHtml(text: string): string {
 	let result = StringHelper.replaceAllLiteralWithOptions({ str: text, find: '&', replace: '&amp;' });
@@ -268,7 +268,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 );
 
 export default MyMap;
-export type { MyMapHandle, MyMapProps, MyMapCoreProps };
+export type { MyMapHandle, MyMapProps };
+export type { MyMapCoreProps } from './MyMapHelper';
 
 const styles = StyleSheet.create({
 	container: {

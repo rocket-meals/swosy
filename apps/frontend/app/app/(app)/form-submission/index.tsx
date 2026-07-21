@@ -368,11 +368,12 @@ const Index = () => {
 		}
 
 		if (result) {
-			const sortedResult = result.sort((a, b) => {
+			result.sort((a, b) => {
 				const sortA = (a.form_field as DatabaseTypes.FormFields)?.sort ?? Number.MAX_SAFE_INTEGER;
 				const sortB = (b.form_field as DatabaseTypes.FormFields)?.sort ?? Number.MAX_SAFE_INTEGER;
 				return sortA - sortB;
 			});
+			const sortedResult = result;
 
 			setFormAnswers(sortedResult);
 

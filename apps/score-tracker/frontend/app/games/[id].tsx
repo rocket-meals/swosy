@@ -238,6 +238,10 @@ function GameDetailBackButton({ color }: Readonly<{ color: string }>) {
 	);
 }
 
+function makeGameDetailHeaderLeft(color: string) {
+	return () => <GameDetailBackButton color={color} />;
+}
+
 // ─── Game detail screen ───────────────────────────────────────────────────────
 
 export default function GameTypeDetailScreen() {
@@ -258,7 +262,7 @@ export default function GameTypeDetailScreen() {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: gameType ? `${gameType.icon} ${gameType.name}` : 'Spiel',
-			headerLeft: () => <GameDetailBackButton color={theme.header.text} />,
+			headerLeft: makeGameDetailHeaderLeft(theme.header.text),
 		});
 	}, [navigation, theme.header.text, gameType]);
 

@@ -41,6 +41,42 @@ const HeaderIconButton = ({
     </IconButton>
 );
 
+// Factories returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeMenuTrigger(
+    onPress: () => void,
+    style: any,
+    iconColor: string,
+    hasUnreadChats: boolean,
+    accentColor: string,
+    backgroundColor: string
+) {
+    return (triggerProps: object) => (
+        <HeaderIconButton triggerProps={triggerProps} onPress={onPress} style={style} nativeID={ComponentIds.OPEN_DRAWER}>
+            <Ionicons name="menu" size={24} color={iconColor} />
+            {hasUnreadChats ? (
+                <View
+                    style={[
+                        styles.notificationDot,
+                        {
+                            backgroundColor: accentColor,
+                            borderColor: backgroundColor,
+                        },
+                    ]}
+                />
+            ) : null}
+        </HeaderIconButton>
+    );
+}
+
+function makeOptionsTrigger(onPress: () => void, style: any, iconColor: string) {
+    return (triggerProps: object) => (
+        <HeaderIconButton triggerProps={triggerProps} onPress={onPress} style={style}>
+            <Entypo name="dots-three-vertical" size={22} color={iconColor} />
+        </HeaderIconButton>
+    );
+}
+
 const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
     drawerPosition,
     hasUnreadChats,
@@ -69,21 +105,13 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                 <View style={col1Style}>
                     <CustomTooltip
                         placement="top"
-                        trigger={triggerProps => (
-                            <HeaderIconButton triggerProps={triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} nativeID={ComponentIds.OPEN_DRAWER}>
-                                <Ionicons name="menu" size={24} color={theme.header.text} />
-                                {hasUnreadChats ? (
-                                    <View
-                                        style={[
-                                            styles.notificationDot,
-                                            {
-                                                backgroundColor: theme.accent,
-                                                borderColor: theme.header.background,
-                                            },
-                                        ]}
-                                    />
-                                ) : null}
-                            </HeaderIconButton>
+                        trigger={makeMenuTrigger(
+                            () => drawerNavigation.toggleDrawer(),
+                            iconPaddingStyle,
+                            theme.header.text,
+                            hasUnreadChats,
+                            theme.accent,
+                            theme.header.background
                         )}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -109,11 +137,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
 
                     <CustomTooltip
                         placement="top"
-                        trigger={triggerProps => (
-                            <HeaderIconButton triggerProps={triggerProps} onPress={openOptionsModal} style={iconPaddingStyle}>
-                                <Entypo name="dots-three-vertical" size={22} color={theme.header.text} />
-                            </HeaderIconButton>
-                        )}
+                        trigger={makeOptionsTrigger(openOptionsModal, iconPaddingStyle, theme.header.text)}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
                             <TooltipText fontSize="$sm" color={theme.tooltip.text}>

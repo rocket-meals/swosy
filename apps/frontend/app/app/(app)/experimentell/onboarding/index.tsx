@@ -169,7 +169,8 @@ const OnboardingScreen = () => {
 					return status === 'published' || status === 'archived';
 				});
 
-				const sortedCanteens = filteredCanteens.sort((a, b) => (a.sort || 0) - (b.sort || 0));
+				filteredCanteens.sort((a, b) => (a.sort || 0) - (b.sort || 0));
+				const sortedCanteens = filteredCanteens;
 				const updatedCanteens = sortedCanteens.map(canteen => {
 					const building = buildingsDict[canteen?.building as string];
 					return {

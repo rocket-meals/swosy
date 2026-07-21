@@ -33,6 +33,12 @@ const HoverIconTrigger = ({
 	</Pressable>
 );
 
+const makeHoverIconTrigger = (onHoverIn: () => void, onHoverOut: () => void, children: React.ReactNode) => (triggerProps: object) => (
+	<HoverIconTrigger triggerProps={triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		{children}
+	</HoverIconTrigger>
+);
+
 const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -84,11 +90,13 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
-				trigger={triggerProps => (
-					<HoverIconTrigger triggerProps={triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
+				trigger={makeHoverIconTrigger(
+					() => setShowTooltip(true),
+					() => setShowTooltip(false),
+					<>
 						{imageUrl && <Image source={{ uri: imageUrl }} style={styles.icon} />}
 						{icon && getIconComponent(icon, theme.screen.icon)}
-					</HoverIconTrigger>
+					</>
 				)}
 			>
 				<TooltipContent

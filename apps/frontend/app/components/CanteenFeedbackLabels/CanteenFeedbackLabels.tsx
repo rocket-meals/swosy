@@ -34,6 +34,12 @@ const HoverIconTrigger = ({
 	</Pressable>
 );
 
+const makeHoverIconTrigger = (onHoverIn: () => void, onHoverOut: () => void, children: React.ReactNode) => (triggerProps: object) => (
+	<HoverIconTrigger triggerProps={triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		{children}
+	</HoverIconTrigger>
+);
+
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -109,19 +115,19 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
-				trigger={triggerProps => (
-					<HoverIconTrigger triggerProps={triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
-						{label?.image_remote_url || label?.image ? (
-							<Image
-								source={{
-									uri: label?.image_remote_url || (imageId ? getImageUrl(imageId) : '') || '',
-								}}
-								style={styles.icon}
-							/>
-						) : (
-							label?.icon && getIconComponent(label?.icon, theme.screen.icon)
-						)}
-					</HoverIconTrigger>
+				trigger={makeHoverIconTrigger(
+					() => setShowTooltip(true),
+					() => setShowTooltip(false),
+					label?.image_remote_url || label?.image ? (
+						<Image
+							source={{
+								uri: label?.image_remote_url || (imageId ? getImageUrl(imageId) : '') || '',
+							}}
+							style={styles.icon}
+						/>
+					) : (
+						label?.icon && getIconComponent(label?.icon, theme.screen.icon)
+					)
 				)}
 			>
 				<TooltipContent
