@@ -306,7 +306,7 @@ function ReassignRouteContent({
 	);
 }
 
-function RouteBackHeaderButton({ color, onPress }: { color: string; onPress: () => void }) {
+function RouteBackHeaderButton({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
 	return (
 		<TouchableOpacity
 			onPress={onPress}

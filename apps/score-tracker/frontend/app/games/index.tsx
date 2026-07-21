@@ -20,7 +20,7 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
-function GamesHeaderRight({ color, onImport, onAdd }: { color: string; onImport: () => void; onAdd: () => void }) {
+function GamesHeaderRight({ color, onImport, onAdd }: Readonly<{ color: string; onImport: () => void; onAdd: () => void }>) {
 	return (
 		<View style={styles.headerButtons}>
 			<TouchableOpacity

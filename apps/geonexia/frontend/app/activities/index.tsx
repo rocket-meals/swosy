@@ -382,7 +382,7 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 	}
 }
 
-function ActivitiesHeaderRight({ onRebuild, onExport, onImport }: { onRebuild: () => void; onExport: () => void; onImport: () => void }) {
+function ActivitiesHeaderRight({ onRebuild, onExport, onImport }: Readonly<{ onRebuild: () => void; onExport: () => void; onImport: () => void }>) {
 	return (
 		<View style={styles.headerButtons}>
 			<TouchableOpacity onPress={onRebuild} style={styles.headerImportButton} activeOpacity={0.7}>
