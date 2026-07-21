@@ -41,13 +41,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ a
   let usedParser: ApartmentParserInterface | null = null;
   switch (EnvVariableHelper.getSyncForCustomer()) {
     case SyncForCustomerEnum.TEST:
-      usedParser = null;
       break;
     case SyncForCustomerEnum.HANNOVER:
       usedParser = new StudentenwerkHannoverApartments_Parser();
       break;
     case SyncForCustomerEnum.OSNABRUECK:
-      usedParser = null;
       break;
   }
 

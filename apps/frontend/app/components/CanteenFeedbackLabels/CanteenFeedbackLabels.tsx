@@ -61,9 +61,9 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 		if (!selectedCanteen?.id) return;
 		let likeStats = null;
 		if (isLike === true && labelData?.like === true) {
-			likeStats = null;
+			// likeStats already null
 		} else if (isLike === false && labelData?.like === false) {
-			likeStats = null;
+			// likeStats already null
 		} else {
 			likeStats = isLike;
 		}

@@ -124,7 +124,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (reg
       usedParser = new DemoWashingmachineParser();
       break;
     case SyncForCustomerEnum.HANNOVER:
-      usedParser = null;
       break;
     case SyncForCustomerEnum.OSNABRUECK:
       usedParser = new StudentenwerkOsnabrueckWashingmachineParser();
