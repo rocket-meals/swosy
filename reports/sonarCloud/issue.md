@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 165 | 17 |
+| 🔧 Maintainability | 164 | 17 |
 
-**Total issues:** 198 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 197 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -148,7 +148,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (17/165)
+## 🔧 Maintainability (17/164)
 
 - **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
   apps/accessibilityTester/src/report.ts:110
