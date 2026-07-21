@@ -20,6 +20,10 @@ const BackTriggerButton = ({ triggerProps, onPress, color }: { triggerProps: obj
 	</TouchableOpacity>
 );
 
+const makeBackTrigger = (onPress: () => void, color: string) => (triggerProps: object) => (
+	<BackTriggerButton triggerProps={triggerProps} onPress={onPress} color={color} />
+);
+
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -93,7 +97,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
                                 <View style={styles.col1}>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => <BackTriggerButton triggerProps={triggerProps} onPress={handleGoback} color={theme.header.text} />}
+						trigger={makeBackTrigger(handleGoback, theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

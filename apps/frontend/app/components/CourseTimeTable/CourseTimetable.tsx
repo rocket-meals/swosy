@@ -47,6 +47,16 @@ const TimetableEventTrigger = ({
 	</TouchableOpacity>
 );
 
+const makeTimetableEventTrigger = (props: Readonly<{
+	color: string;
+	height: number;
+	top: number;
+	width: number;
+	left: number;
+	title: string;
+	onPress: () => void;
+}>) => (triggerProps: object) => <TimetableEventTrigger triggerProps={triggerProps} {...props} />;
+
 const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, setIsUpdate, setTimeTableData, setSelectedEventId }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -199,18 +209,15 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 			<CustomTooltip
 				key={event.id}
 				placement="top"
-				trigger={triggerProps => (
-					<TimetableEventTrigger
-						triggerProps={triggerProps}
-						color={event.color}
-						height={calculateHeight(event.startTime, event.endTime)}
-						top={calculateTopPosition(event.startTime)}
-						width={eventWidth - 4} // Add some spacing
-						left={horizontalPosition}
-						title={event.title}
-						onPress={() => handleUpdateEvent(event)}
-					/>
-				)}
+				trigger={makeTimetableEventTrigger({
+					color: event.color,
+					height: calculateHeight(event.startTime, event.endTime),
+					top: calculateTopPosition(event.startTime),
+					width: eventWidth - 4, // Add some spacing
+					left: horizontalPosition,
+					title: event.title,
+					onPress: () => handleUpdateEvent(event),
+				})}
 			>
 				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 					<TooltipText fontSize="$sm" color={theme.tooltip.text}>

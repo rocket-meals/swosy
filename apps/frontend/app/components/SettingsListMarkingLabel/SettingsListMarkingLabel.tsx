@@ -41,6 +41,14 @@ const MarkingLabelTrigger = ({
 	</Pressable>
 );
 
+const makeMarkingLabelTrigger = (props: Readonly<{
+	onPress?: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	marking: any;
+	size: number;
+}>) => (triggerProps: object) => <MarkingLabelTrigger triggerProps={triggerProps} {...props} />;
+
 const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	markingId,
 	handleMenuSheet,
@@ -183,16 +191,13 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		<View style={styles.leftIconWrapper}>
 			<CustomTooltip
 				placement="top"
-				trigger={triggerProps => (
-					<MarkingLabelTrigger
-						triggerProps={triggerProps}
-						onPress={handleMenuSheet ? () => openMarkingLabel(marking) : undefined}
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-						marking={marking}
-						size={size}
-					/>
-				)}
+				trigger={makeMarkingLabelTrigger({
+					onPress: handleMenuSheet ? () => openMarkingLabel(marking) : undefined,
+					onHoverIn: () => setShowTooltip(true),
+					onHoverOut: () => setShowTooltip(false),
+					marking,
+					size,
+				})}
 			>
 				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 					<TooltipText fontSize="$sm" color={theme.tooltip.text}>

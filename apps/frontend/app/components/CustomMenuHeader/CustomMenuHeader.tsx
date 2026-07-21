@@ -53,6 +53,14 @@ const MenuTriggerButton = ({
 	</TouchableOpacity>
 );
 
+const makeMenuTrigger = (props: Readonly<{
+	onPress: () => void;
+	color: string;
+	backgroundColor: string;
+	accentColor: string;
+	showNotificationDot: boolean;
+}>) => (triggerProps: object) => <MenuTriggerButton triggerProps={triggerProps} {...props} />;
+
 const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 	const { theme } = useTheme();
         const { translate } = useLanguage();
@@ -85,16 +93,13 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 				>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-                                                        <MenuTriggerButton
-                                                                triggerProps={triggerProps}
-                                                                onPress={() => navigation.toggleDrawer()}
-                                                                color={theme.header.text}
-                                                                backgroundColor={theme.header.background}
-                                                                accentColor={theme.accent}
-                                                                showNotificationDot={showNotificationDot}
-                                                        />
-                                                )}
+						trigger={makeMenuTrigger({
+							onPress: () => navigation.toggleDrawer(),
+							color: theme.header.text,
+							backgroundColor: theme.header.background,
+							accentColor: theme.accent,
+							showNotificationDot,
+						})}
                                         >
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

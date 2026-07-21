@@ -60,6 +60,21 @@ const LikeDislikeTriggerButton = ({
 	</Pressable>
 );
 
+const makeLikeDislikeTrigger = (props: Readonly<{
+	onPress: () => void;
+	buttonStyle: any;
+	active: boolean;
+	loading: boolean;
+	inactiveIconName: any;
+	activeIconName: any;
+	iconSize: number;
+	backgroundColor: string;
+	contrastColor: string;
+	inactiveIconColor: string;
+	inactiveTextColor: string;
+	count: number | null | undefined;
+}>) => (triggerProps: object) => <LikeDislikeTriggerButton triggerProps={triggerProps} {...props} />;
+
 const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 	like,
 	onPressLike,
@@ -81,23 +96,20 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 		<View style={styles.row}>
 			<CustomTooltip
 				placement="top"
-				trigger={triggerProps => (
-					<LikeDislikeTriggerButton
-						triggerProps={triggerProps}
-						onPress={onPressLike}
-						buttonStyle={styles.likeButton}
-						active={like === true}
-						loading={likeLoading}
-						inactiveIconName="thumb-up-outline"
-						activeIconName="thumb-up"
-						iconSize={iconSize}
-						backgroundColor={foods_area_color}
-						contrastColor={contrastColor}
-						inactiveIconColor={theme.screen.icon}
-						inactiveTextColor={theme.screen.text}
-						count={likeCount}
-					/>
-				)}
+				trigger={makeLikeDislikeTrigger({
+					onPress: onPressLike,
+					buttonStyle: styles.likeButton,
+					active: like === true,
+					loading: likeLoading,
+					inactiveIconName: "thumb-up-outline",
+					activeIconName: "thumb-up",
+					iconSize,
+					backgroundColor: foods_area_color,
+					contrastColor,
+					inactiveIconColor: theme.screen.icon,
+					inactiveTextColor: theme.screen.text,
+					count: likeCount,
+				})}
 			>
 				{likeTooltipText ? (
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -110,23 +122,20 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 
 			<CustomTooltip
 				placement="top"
-				trigger={triggerProps => (
-					<LikeDislikeTriggerButton
-						triggerProps={triggerProps}
-						onPress={onPressDislike}
-						buttonStyle={styles.dislikeButton}
-						active={like === false}
-						loading={dislikeLoading}
-						inactiveIconName="thumb-down-outline"
-						activeIconName="thumb-down"
-						iconSize={iconSize}
-						backgroundColor={foods_area_color}
-						contrastColor={contrastColor}
-						inactiveIconColor={theme.screen.icon}
-						inactiveTextColor={theme.screen.text}
-						count={dislikeCount}
-					/>
-				)}
+				trigger={makeLikeDislikeTrigger({
+					onPress: onPressDislike,
+					buttonStyle: styles.dislikeButton,
+					active: like === false,
+					loading: dislikeLoading,
+					inactiveIconName: "thumb-down-outline",
+					activeIconName: "thumb-down",
+					iconSize,
+					backgroundColor: foods_area_color,
+					contrastColor,
+					inactiveIconColor: theme.screen.icon,
+					inactiveTextColor: theme.screen.text,
+					count: dislikeCount,
+				})}
 			>
 				{dislikeTooltipText ? (
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

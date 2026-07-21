@@ -58,6 +58,10 @@ const NavigationTriggerButton = ({
 	</IconButton>
 );
 
+const makeNavigationTrigger = (onPress: () => void, backgroundColor: string, iconColor: string) => (triggerProps: object) => (
+	<NavigationTriggerButton triggerProps={triggerProps} onPress={onPress} backgroundColor={backgroundColor} iconColor={iconColor} />
+);
+
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 
 	campus, 
 	onEditImage, 
@@ -157,9 +161,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 					{isWeb ? (
 						<CustomTooltip
 							placement="top"
-							trigger={innerTriggerProps => (
-								<NavigationTriggerButton triggerProps={innerTriggerProps} onPress={handleOpenNavigation} backgroundColor={campus_area_color} iconColor={contrastColor} />
-							)}
+							trigger={makeNavigationTrigger(handleOpenNavigation, campus_area_color, contrastColor)}
 						>
 							<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 								<TooltipText fontSize="$sm" color={theme.tooltip.text}>
