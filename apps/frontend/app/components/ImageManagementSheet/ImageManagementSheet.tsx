@@ -71,7 +71,7 @@ async function buildImageFormData(finalUri: string, file_name: string, storage: 
 		formData.append('image', blob, file_name);
 	} else {
 		const uriParts = finalUri.split('.');
-		const fileType = uriParts[uriParts.length - 1];
+		const fileType = uriParts.at(-1);
 		const fileExtension = `.${fileType}`;
 
 		const file: any = {

@@ -52,35 +52,44 @@ const makeReadMoreTrigger = (props: Readonly<{
 const NEWS_ITEM_WIDE_BREAKPOINT = 768;
 const NEWS_ITEM_EXTRA_WIDE_BREAKPOINT = 900;
 
+const NEWS_ITEM_NARROW_LAYOUT = {
+	imageContainerWidth: '100%' as const,
+	newsContentWidth: '100%' as const,
+	cardFlexDirection: 'column' as const,
+	imageHeight: 180,
+	contentJustifyContent: 'flex-start' as const,
+	contentPadding: 0,
+	headerMarginTop: 5,
+	headerFlexDirection: 'column' as const,
+	titleWidth: '100%' as const,
+	dateWidth: '100%' as const,
+	actionAlignItems: 'center' as const,
+	readMoreWidth: '100%' as number | string,
+};
+
 /**
  * Resolves all the screenWidth-dependent layout values used by NewsItem's
  * JSX, so the `screenWidth > 768` breakpoint check isn't repeated ~10x.
  */
 function resolveNewsItemLayout(screenWidth: number) {
-	const isWide = screenWidth > NEWS_ITEM_WIDE_BREAKPOINT;
-
-	let imageContainerWidth: '20%' | '30%' | '100%' = '100%';
-	if (isWide) {
-		imageContainerWidth = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT ? '20%' : '30%';
-	}
-	let newsContentWidth: '79%' | '69%' | '100%' = '100%';
-	if (isWide) {
-		newsContentWidth = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT ? '79%' : '69%';
+	if (screenWidth <= NEWS_ITEM_WIDE_BREAKPOINT) {
+		return NEWS_ITEM_NARROW_LAYOUT;
 	}
 
+	const isExtraWide = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT;
 	return {
-		imageContainerWidth,
-		newsContentWidth,
-		cardFlexDirection: isWide ? ('row' as const) : ('column' as const),
-		imageHeight: isWide ? 220 : 180,
-		contentJustifyContent: isWide ? ('space-between' as const) : ('flex-start' as const),
-		contentPadding: isWide ? 10 : 0,
-		headerMarginTop: isWide ? 10 : 5,
-		headerFlexDirection: isWide ? ('row' as const) : ('column' as const),
-		titleWidth: isWide ? ('80%' as const) : ('100%' as const),
-		dateWidth: isWide ? ('20%' as const) : ('100%' as const),
-		actionAlignItems: isWide ? ('flex-start' as const) : ('center' as const),
-		readMoreWidth: isWide ? (210 as number | string) : '100%',
+		imageContainerWidth: isExtraWide ? ('20%' as const) : ('30%' as const),
+		newsContentWidth: isExtraWide ? ('79%' as const) : ('69%' as const),
+		cardFlexDirection: 'row' as const,
+		imageHeight: 220,
+		contentJustifyContent: 'space-between' as const,
+		contentPadding: 10,
+		headerMarginTop: 10,
+		headerFlexDirection: 'row' as const,
+		titleWidth: '80%' as const,
+		dateWidth: '20%' as const,
+		actionAlignItems: 'flex-start' as const,
+		readMoreWidth: 210 as number | string,
 	};
 }
 

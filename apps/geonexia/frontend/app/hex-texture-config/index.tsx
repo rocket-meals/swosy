@@ -502,8 +502,8 @@ export default function HexTextureConfigScreen() {
 			{/* Settings for selected terrain type */}
 			{selectedTerrainKey !== null && (() => {
 				const terrainKey = selectedTerrainKey;
-				const entry = ALL_TERRAIN_ENTRIES.find((e) => e.key === terrainKey);
-				if (!entry) return null;
+				const hasEntry = ALL_TERRAIN_ENTRIES.some((e) => e.key === terrainKey);
+				if (!hasEntry) return null;
 				const anchorX = getAnchorX(terrainKey);
 				const anchorY = getAnchorY(terrainKey);
 				const scale = getScale(terrainKey);

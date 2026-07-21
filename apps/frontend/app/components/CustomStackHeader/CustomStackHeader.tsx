@@ -24,45 +24,43 @@ const makeBackTrigger = (onPress: () => void, color: string) => (triggerProps: o
 	<BackTriggerButton triggerProps={triggerProps} onPress={onPress} color={color} />
 );
 
+// Ordered pathname-substring -> target mappings, checked top to bottom (first match wins),
+// for the plain cases where the target doesn't depend on anything but the pathname.
+const GO_BACK_TARGET_RULES: { pathIncludes: string; target: string }[] = [
+	{ pathIncludes: `/${AppScreens.FOOD_OFFERS}/details`, target: `/${AppScreens.FOOD_OFFERS}` },
+	{ pathIncludes: `/${AppScreens.HOUSING}/details`, target: `/${AppScreens.HOUSING}` },
+	{ pathIncludes: `/${AppScreens.STATISTICS}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: `/${AppScreens.SUPPORT_TICKET}`, target: `/${AppScreens.SUPPORT_FAQ}` },
+	{ pathIncludes: `/${AppScreens.FEEDBACK_SUPPORT}`, target: `/${AppScreens.SUPPORT_FAQ}` },
+	{ pathIncludes: `/${AppScreens.SUPPORT_FAQ}`, target: `/${AppScreens.SETTINGS}` },
+	{ pathIncludes: `/${AppScreens.CAMPUS}/details`, target: `/${AppScreens.CAMPUS}` },
+	{ pathIncludes: `/${AppScreens.LIST_WEEK_SCREEN}`, target: `/${AppScreens.FOOD_PLAN_WEEK}` },
+	{ pathIncludes: `/${AppScreens.FOOD_PLAN_WEEK}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: `/${AppScreens.FORMS}`, target: `/${AppScreens.FORM_CATEGORIES}` },
+	{ pathIncludes: `/${AppScreens.FORM_CATEGORIES}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: '/chats/details', target: '/chats' },
+];
+
 /**
  * Resolves which screen "go back" should navigate to, based on the current
  * pathname. Returns null when the router's own back-stack should be used
  * instead (`router.back()`).
  */
 function resolveGoBackTarget(pathname: string, loggedIn: boolean, canGoBack: boolean): string | null {
-	if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {
-		return `/${AppScreens.FOOD_OFFERS}`;
-	} else if (pathname.includes(`/${AppScreens.HOUSING}/details`)) {
-		return `/${AppScreens.HOUSING}`;
-	} else if (pathname.includes(`/${AppScreens.STATISTICS}`)) {
-		return `/${AppScreens.MANAGEMENT}`;
-	} else if (pathname.includes(`/${AppScreens.SUPPORT_TICKET}`)) {
-		return `/${AppScreens.SUPPORT_FAQ}`;
-	} else if (pathname.includes(`/${AppScreens.FEEDBACK_SUPPORT}`)) {
-		return `/${AppScreens.SUPPORT_FAQ}`;
-	} else if (pathname.includes(`/${AppScreens.SUPPORT_FAQ}`)) {
-		return `/${AppScreens.SETTINGS}`;
-	} else if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
+	// Checked before the table below since its target depends on `loggedIn`, not just the pathname.
+	if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
 		return loggedIn ? `/${AppScreens.SETTINGS}` : `/${AppScreens.LOGIN}`;
-	} else if (pathname.includes(`/${AppScreens.CAMPUS}/details`)) {
-		return `/${AppScreens.CAMPUS}`;
-	} else if (pathname.includes(`/${AppScreens.LIST_WEEK_SCREEN}`)) {
-		return `/${AppScreens.FOOD_PLAN_WEEK}`;
-	} else if (pathname.includes(`/${AppScreens.FOOD_PLAN_WEEK}`)) {
-		return `/${AppScreens.MANAGEMENT}`;
-	} else if (pathname.includes(`/${AppScreens.FORMS}`)) {
-		return `/${AppScreens.FORM_CATEGORIES}`;
-	} else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
-		return `/${AppScreens.MANAGEMENT}`;
-	} else if (pathname.includes('/chats/details')) {
-		return '/chats';
-	} else if (canGoBack) {
-		return null;
-	} else if (loggedIn) {
-		return `/${AppScreens.FOOD_OFFERS}`;
-	} else {
-		return `/${AppScreens.LOGIN}`;
 	}
+
+	const matchedRule = GO_BACK_TARGET_RULES.find(rule => pathname.includes(rule.pathIncludes));
+	if (matchedRule) {
+		return matchedRule.target;
+	}
+
+	if (canGoBack) {
+		return null;
+	}
+	return loggedIn ? `/${AppScreens.FOOD_OFFERS}` : `/${AppScreens.LOGIN}`;
 }
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {

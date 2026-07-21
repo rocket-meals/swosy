@@ -187,7 +187,7 @@ export class ParseSchedule {
     intervalMinutes: number,
   ) {
     let now = new Date();
-    const { canteen, cashregisters, utilization_group } = utilizationContext;
+    const { utilization_group } = utilizationContext;
 
     let interval = await this.getInterval(intervalMinutes, date);
 

@@ -49,21 +49,32 @@ const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
+interface RefreshFoodOffersInBackgroundOptions {
+	datesToLoad: string[];
+	loadDay: (date: string) => Promise<DayData>;
+	dayHashesRef: React.MutableRefObject<Record<string, string>>;
+	serverLoadingTimerRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>;
+	setDays: React.Dispatch<React.SetStateAction<DayData[]>>;
+	updateCache: (newDays: DayData[]) => void;
+	setServerLoading: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsOffline: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 /**
  * Re-fetches the given dates from the server while cached data is already
  * shown, updating state only if the server data actually changed (via hash
  * comparison), and manages the "offline hint" timer/flag around the request.
  */
-async function refreshFoodOffersInBackground(
-	datesToLoad: string[],
-	loadDay: (date: string) => Promise<DayData>,
-	dayHashesRef: React.MutableRefObject<Record<string, string>>,
-	serverLoadingTimerRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
-	setDays: React.Dispatch<React.SetStateAction<DayData[]>>,
-	updateCache: (newDays: DayData[]) => void,
-	setServerLoading: React.Dispatch<React.SetStateAction<boolean>>,
-	setIsOffline: React.Dispatch<React.SetStateAction<boolean>>,
-): Promise<void> {
+async function refreshFoodOffersInBackground({
+	datesToLoad,
+	loadDay,
+	dayHashesRef,
+	serverLoadingTimerRef,
+	setDays,
+	updateCache,
+	setServerLoading,
+	setIsOffline,
+}: RefreshFoodOffersInBackgroundOptions): Promise<void> {
 	setServerLoading(true);
 	setIsOffline(false);
 	// Start a 5-second timer; if server fetch hasn't finished, show offline hint
@@ -400,7 +411,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				setLoading(false);
 
 				// Step 2: Fetch from server in background and update if data changed
-				await refreshFoodOffersInBackground(
+				await refreshFoodOffersInBackground({
 					datesToLoad,
 					loadDay,
 					dayHashesRef,
@@ -408,8 +419,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 					setDays,
 					updateCache,
 					setServerLoading,
-					setIsOffline
-				);
+					setIsOffline,
+				});
 			} else {
 				// No cached data, do a full load with loading spinner
 				await loadFoodOffersFullyFresh(datesToLoad, loadDay, setDays, updateCache, setLoading, setIsOffline);

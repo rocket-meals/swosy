@@ -859,6 +859,120 @@ Zusätzlich zwei Stellen aus dieser Runde (`settings/index.tsx` im
 Frontend, `routes/[id].tsx` in Geonexia) vormerken, falls der nächste Scan
 sie trotz der durchgeführten Extraktion weiterhin meldet.
 
+## Am 2026-07-21 (sechste Runde): Restfunde aus der fünften Runde selbst behoben
+
+Ausgangspunkt war die aktuelle CSV mit 125 Vorkommen: 63x „Cognitive
+Complexity", 16x Argument-Reihenfolge, 15x „Array index in keys", 12x „ist
+deprecated", 3x „useless assignment", 3x „Signatur ... ist deprecated", 2x
+„Prefer `X` over `X`" (generische Regel-ID, zwei unterschiedliche konkrete
+Meldungen), 2x „node:buffer", je 1x „too many parameters" (zwei
+Fundstellen). Abgleich mit den bereits in der fünften Runde dokumentierten 49
+bewusst unveränderten Stellen ergab: **exakt dieselben Dateien/Zeilen** wie
+dort dokumentiert (Array-index-Fälle, `hexTilesEnclosed`/`billboardsFlat`/
+`billboardAnchorColor`, `CollectionHelper`-Signaturen,
+`document.write`, `node:buffer`, `CardWithText`-Redundanz, die
+`hashHelper.ts`-Argument-Reihenfolge mit dem bestehenden
+`NOSONAR`-Kommentar) — seit der fünften Runde hat sich an diesen Stellen
+nichts geändert, die Begründungen dort gelten unverändert fort (nicht erneut
+einzeln neu hergeleitet, nur stichprobenartig gegengeprüft, u. a. dass der
+`NOSONAR`-Kommentar in `hashHelper.ts` weiterhin vorhanden ist).
+
+**Tatsächlich neu und mechanisch gefixt (8 Stellen):** Alle acht Stellen
+waren durch die Cognitive-Complexity-Extraktionen der fünften Runde selbst
+neu entstanden (frisch extrahierte Hilfsfunktionen, die ihrerseits ein neues,
+anderes Sonar-Finding auslösten) bzw. bislang unentdeckte Einzelfälle:
+
+- **„Async/Function 'X' has too many parameters" (2x):** Die in der fünften
+  Runde extrahierten `refreshFoodOffersInBackground`
+  (`FoodOffersScrollList/index.tsx`, 8 Parameter) und
+  `buildSyntheticGapPoints` (`geonexia/app/index.tsx`, 8 Parameter) wurden
+  auf je ein Options-Objekt umgestellt (analog zu `boundsOverlap`/
+  `getFoodofferToCreate`/`createBuildingMarkerSvg` aus der vierten Runde),
+  jeweils einzige Aufrufstelle angepasst.
+- **„Remove this useless assignment" (3x):**
+  `utilization-canteen-hook/ParseSchedule.ts:190` —
+  `updateUtilizationEntryForCanteenAtDate` destrukturierte `canteen` und
+  `cashregisters` aus `utilizationContext`, verwendete davon aber nur
+  `utilization_group` (die beiden anderen Felder werden ausschließlich in der
+  Schwesterfunktion `applyUtilizationForecastOrActual` gebraucht, die
+  denselben Destructuring-Ausdruck separat und dort korrekt vollständig
+  nutzt) — Destructuring auf `utilization_group` reduziert.
+  `geonexia/app/routes/[id].tsx:1199` — `activeTiles` wurde aus dem
+  Rückgabewert von `computeRouteDetailDerivedState` destrukturiert, aber in
+  der aufrufenden Komponente nirgends mehr gelesen (nur innerhalb der
+  Helper-Funktion selbst gebraucht) — aus dem Destructuring entfernt.
+- **„Prefer `.at(…)` over `[….length - index]`" (2x):**
+  `ImageManagementSheet.tsx:74` und
+  `useMyScrollviewDirectusImageEditModal.tsx:178` — beide identisch:
+  `uriParts[uriParts.length - 1]` zu `uriParts.at(-1)` (Ergebnis wird nur in
+  Template-Strings verwendet, `string | undefined` statt `string` ändert
+  hier nichts).
+- **„Prefer `.some(…)` over `.find(…)`" (1x):**
+  `hex-texture-config/index.tsx:505` — der gefundene Eintrag wurde nur für
+  den `if (!entry) return null;`-Existenz-Check gebraucht (kein Feld von
+  `entry` wird danach gelesen) — zu `ALL_TERRAIN_ENTRIES.some(...)` /
+  `if (!hasEntry) return null;` geändert.
+
+**Cognitive-Complexity: die fünf niedrigsten Fundstellen (16-18) behoben.**
+Alle fünf betrafen exakt die Funktionen, die in der fünften Runde bereits
+aus größeren Elternfunktionen/-komponenten extrahiert wurden, aber selbst
+weiterhin über der Grenze von 15 lagen (dieselbe Systematik wie beim „Move
+component"-Stale-CSV-Fund und den `resolveNewsItemLayout`/
+`resolveInitialFieldValue`-artigen Fällen oben — die fünfte Runde hatte
+diese neuen, kleineren Funde noch nicht im Blick, da der damalige Scan-Stand
+älter war):
+
+- `resolveNewsItemLayout` (`NewsItem.tsx`, 16→..): die zwölf
+  `isWide ? A : B`-Ternaries (teils mit verschachteltem
+  `>900`-Breakpoint-Ternary) durch zwei feste Layout-Objekte
+  (`NEWS_ITEM_NARROW_LAYOUT` als Konstante, das breite Layout als zweiter
+  `return`-Zweig) ersetzt — die Funktion trifft dadurch nur noch zwei
+  Entscheidungen (schmal/breit, dabei extra-breit) statt zwölf, identische
+  Werte für jede Kombination aus `screenWidth`.
+- `mergeDaysWithSameTimeRanges` (`HoursSheet.tsx`, 16→..): der komplette
+  Schleifenkörper (verschachteltes if/else mit je einem weiteren
+  if/else) in eine neue `mergeDayIntoGroupedTimes`-Funktion extrahiert, die
+  den laufenden Zustand (`previousSavedTimeRanges`/
+  `previousDaysForTimeRange`) explizit entgegennimmt und zurückgibt statt
+  über Closures zu mutieren — die Schleife selbst ruft die Funktion nur noch
+  auf.
+- `resolveInitialFieldValue` (`form-submission/index.tsx`, 17→..): die
+  äußere if/else-if-Kette (6 Fälle) auf frühe `return`s umgestellt (kein
+  gemeinsames `value`, keine `else`-Zweige mehr nötig); die verschachtelte
+  Boolean-Auflösung (`value_boolean`: false/true/sonst → 0/1/null) in eine
+  eigene `resolveBooleanFieldValue`-Funktion ausgelagert.
+- `resolveGoBackTarget` (`CustomStackHeader.tsx`, 18→..): die 13-fache
+  `if/else if`-Kette auf `pathname.includes(...)` in eine
+  `GO_BACK_TARGET_RULES`-Lookup-Tabelle (Pfad-Teilstring → Ziel) plus
+  `.find(...)` umgestellt; der einzige Fall mit von `loggedIn` abhängigem
+  Ziel (`HOUSING_DELETE_USER`) bleibt als expliziter Sonderfall vor der
+  Tabellen-Suche (Pfad-Muster überschneiden sich nicht mit den
+  Tabellen-Einträgen, geprüft anhand der `AppLinks`-Definitionen), der
+  `canGoBack`-Fallback danach unverändert.
+- `detectManualTimestampSeparator` (`DateTimeInputs/index.tsx`, 18→..): die
+  vier strukturell identischen
+  „Zeichen an Position X prüfen, Manual-Ref setzen/zurücksetzen"-Blöcke in
+  eine `detectManualSeparatorAt`-Hilfsfunktion gebündelt, viermal aufgerufen
+  (alle vier Aufrufe laufen weiterhin unbedingt vor der abschließenden
+  `||`-Verknüpfung, damit alle vier Refs wie zuvor bei jedem Aufruf
+  aktualisiert werden und kein Short-Circuit einen Ref-Reset überspringt).
+  Die strukturell ähnliche, aber nicht gemeldete `detectManualDateTimeSeparator`
+  (3 statt 4 Trennzeichen) blieb bewusst unverändert, um den Diff auf die
+  gemeldete Stelle zu beschränken.
+
+**Verifizierung:** `tsc --noEmit`-Baseline-Diff (`git stash`/`git stash pop`)
+für `apps/frontend/app`, `apps/geonexia/frontend` sowie `yarn typecheck` für
+die Backend-Extension: durchgehend keine neuen Fehler, nur
+Zeilennummern-Verschiebungen bei denselben vorbestehenden (unabhängigen)
+Fehlern wie vor dieser Runde. Keine dedizierten Testdateien für die
+betroffenen Komponenten/Hooks vorhanden (per Grep bestätigt).
+
+**Bilanz dieser Runde:** 8 mechanische Fixes + 5 Cognitive-Complexity-
+Extraktionen = 13 neu bearbeitete Fundstellen. **Noch offen für weitere
+Runden:** die übrigen ca. 58 Cognitive-Complexity-Funde (Komplexität 22 bis
+201, siehe Liste weiter oben in der fünften Runde) sowie das 51-Case-`switch`
+in `settingsReducer.ts`.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
