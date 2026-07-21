@@ -139,7 +139,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
       dateAsDate.setHours(12, 0, 0, 0);
       return dateAsDate.toISOString();
     } catch (error) {
-      console.log('Error fetching article page: ' + articleUrl);
+      console.error('Error fetching article page: ' + articleUrl, error);
       return null;
     }
   }

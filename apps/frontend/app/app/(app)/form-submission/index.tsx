@@ -75,6 +75,7 @@ const parseDropdownValues = (input: unknown): string[] => {
 				return parsed.filter((value): value is string => typeof value === 'string' && value.trim().length > 0).map(value => value.trim());
 			}
 		} catch (error) {
+			console.warn('parseDropdownValues: input is not valid JSON, falling back to line/comma splitting', error);
 			const candidates = input
 				.split(/\r?\n|,/)
 				.map(value => value.trim())

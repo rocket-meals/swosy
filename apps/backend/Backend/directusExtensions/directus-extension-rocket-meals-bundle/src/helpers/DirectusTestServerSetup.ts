@@ -328,7 +328,7 @@ export class DirectusTestServerSetup {
           this.log('Directus server is ready!');
         }
       } catch (error) {
-        this.log('Server not yet ready, retrying...');
+        this.log(`Server not yet ready, retrying... (${(error as Error).message})`);
       }
 
       if (!serverReady) {

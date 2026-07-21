@@ -165,7 +165,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                 return completeHtmlForCanteen;
                 //console.log(" - Fetched speiseplan for canteen id: " + canteenId + " for date: " + data.date.toDateString()+" HTML length: " + completeHtmlForCanteen.length);
             } catch (error) {
-                console.error("Failed to fetch speiseplan for canteen id: " + canteenId);
+                console.error("Failed to fetch speiseplan for canteen id: " + canteenId, error);
             }
         }
         return undefined;

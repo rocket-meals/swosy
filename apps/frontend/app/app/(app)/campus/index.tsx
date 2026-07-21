@@ -164,6 +164,7 @@ const Index: React.FC = () => {
 			}
 			return null;
 		} catch (e) {
+			console.warn('fetchSelectedBuilding error', e);
 			toast('Please select canteen', 'error');
 			return null;
 		}

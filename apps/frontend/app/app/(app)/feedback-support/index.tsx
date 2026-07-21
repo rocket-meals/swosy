@@ -202,7 +202,8 @@ const FeedbackScreen = () => {
 			const appStateJson = JSON.stringify(configureStore.getState());
 			sanitizedInput.content = `${sanitizedInput.content ?? ''}\n\n---APP_STATE_JSON---\n${appStateJson}`;
 		} catch (e) {
-			// ignore serialization errors, submit feedback without the app state snapshot
+			// submit feedback without the app state snapshot if it can't be serialized
+			console.warn('feedback-support: could not serialize app state', e);
 		}
 	};
 
