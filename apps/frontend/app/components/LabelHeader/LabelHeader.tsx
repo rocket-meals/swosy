@@ -6,7 +6,7 @@ import CompanyImage from '@/components/CompanyImage';
 import { StringHelper } from 'repo-depkit-common';
 
 
-const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, isConnected = true }) => {
+const LabelHeader: React.FC<{ Label: any; isConnected?: boolean }> = ({ Label, isConnected = true }) => {
 	const { theme } = useTheme();
 	const [currentTime, setCurrentTime] = useState('');
 	const [logoStyle, setLogoStyle] = useState(styles.logo);

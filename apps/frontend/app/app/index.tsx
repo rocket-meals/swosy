@@ -65,7 +65,6 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Partial
 				type: UPDATE_PROFILE,
 				payload: updated,
 			});
-		} else {
 		}
 	} catch (e) {
 		console.error('Error in savePushTokenToAPI:', e);

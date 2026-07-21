@@ -452,7 +452,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
             }
         }
 
-        return Promise.resolve(foodoffers);
+        return foodoffers;
     }
 
     async getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]> {

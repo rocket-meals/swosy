@@ -107,7 +107,7 @@ const normalizeExpectedValue = (value: unknown): string => {
 		return value.map(item => String(item).trim().toLowerCase()).join(',');
 	}
 
-	return String(value).trim().toLowerCase();
+	return JSON.stringify(value).trim().toLowerCase();
 };
 
 const normalizeCurrentValue = (value: unknown, customType?: string): string => {
@@ -128,7 +128,7 @@ const normalizeCurrentValue = (value: unknown, customType?: string): string => {
 		return value.map(item => String(item).trim().toLowerCase()).join(',');
 	}
 
-	return String(value).trim().toLowerCase();
+	return JSON.stringify(value).trim().toLowerCase();
 };
 
 const isAnswerVisible = (
@@ -450,7 +450,7 @@ const Index = () => {
 				const dynamicCollectionHelper = new DynamicCollectionHelper(collection);
 				const data = (await dynamicCollectionHelper.fectAllCollection()) as any;
 				if (data) {
-					if (collection === 'apartments' && data && data?.length > 0) {
+					if (collection === 'apartments' && data?.length > 0) {
 						const buildingsHelper = new BuildingsHelper();
 						const apartmentWithBuilding = await Promise.all(
 							data.map(async (apartment: any) => {

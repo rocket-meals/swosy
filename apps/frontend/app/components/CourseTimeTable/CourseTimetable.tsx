@@ -89,7 +89,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 			if (currentHour === 20) {
 				setShowCurrentTimeOffset(false);
 			} else {
-				setCurrentTimeOffset(offset > 0 ? offset : 0);
+				setCurrentTimeOffset(Math.max(offset, 0));
 			}
 		};
 

@@ -28,10 +28,10 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         state: WORKFLOW_RUN_STATE.FAILED,
       });
     }
-    await context.logger.appendLog('Last result hash: ' + lastResultHash.getHash());
+    await context.logger.appendLog('Last result hash: ' + JSON.stringify(lastResultHash.getHash()));
 
     const currentResultHash = await this.getCurrentResultHash();
-    await context.logger.appendLog('Current Result Hash: ' + currentResultHash.getHash());
+    await context.logger.appendLog('Current Result Hash: ' + JSON.stringify(currentResultHash.getHash()));
     if (currentResultHash.isSame(lastResultHash)) {
       await context.logger.appendLog('No new data found. Skipping workflow run.');
       return context.logger.getFinalLogWithStateAndParams({

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, AppStateStatus, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
 import ModalSheet from '../BaseBottomModal';
@@ -34,7 +34,7 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 	const [titleKey, setTitleKey] = useState<TranslationKeys>(TranslationKeys.update_available);
 	const [messageKey, setMessageKey] = useState<TranslationKeys>(TranslationKeys.update_available_message);
 
-	const checkForUpdates = async (showUpToDate = false) => {
+	const checkForUpdates = useCallback(async (showUpToDate = false) => {
 		if (!isSmartPhone()) return;
 		if (isInExpoGo()) return;
 		try {
@@ -53,7 +53,7 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 		} catch (e) {
 			console.error('Error while checking updates', e);
 		}
-	};
+	}, [isSmartPhone]);
 
 	useEffect(() => {
 		if (!isSmartPhone()) return;
@@ -78,8 +78,13 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
 		}
 	};
 
+	const contextValue = useMemo(
+		() => ({ manualCheck: () => checkForUpdates(true) }),
+		[checkForUpdates]
+	);
+
 	return (
-		<UpdateCheckerContext.Provider value={{ manualCheck: () => checkForUpdates(true) }}>
+		<UpdateCheckerContext.Provider value={contextValue}>
 			{children}
 			{modalVisible && (
 				<ModalSheet visible={modalVisible} onClose={() => setModalVisible(false)} title={translate(titleKey)}>

@@ -5,7 +5,7 @@ ARG POSTGIS_VERSION=13-master
 FROM postgis/postgis:${POSTGIS_VERSION}
 
 # Maintainer info
-MAINTAINER Your Name <your.email@example.com>
+LABEL maintainer="Your Name <your.email@example.com>"
 
 # Install cron
 RUN apt-get update && \

@@ -6,10 +6,7 @@ const isExpoGo = isRunningInExpoGo();
 
 export default class MyUnsupportedCardReader implements MyCardReaderInterface {
 	async isNfcEnabled(): Promise<MyCardReaderResponseSupport> {
-		if (isExpoGo) {
-			return { result: false, message: 'NFC is not supported in Expo Go' };
-		}
-		return { result: false, message: 'NFC is not supported on this device' };
+		return this.isNfcSupported();
 	}
 
 	async isNfcSupported(): Promise<MyCardReaderResponseSupport> {

@@ -247,7 +247,7 @@ const enableRequiredSettings = async headers => {
     const module = modules[moduleIndex];
     // module.id comes from the Directus API response; strip control/newline characters
     // before logging so it can't be used to forge fake log lines (log injection).
-    const safeModuleId = String(module.id).replace(/[\r\n\t\x00-\x1f]/g, '');
+    const safeModuleId = String(module.id).replace(/[\x00-\x1f]/g, '');
     if (requiredModules.has(module.id)) {
       if (!module.enabled) {
         console.log(` -  Enabling ${safeModuleId}`);
@@ -593,7 +593,7 @@ const fetchGetOptions = (headers, method) => {
 
 // Refactored fetch GET function
 const fetchGetResponse = async (url, headers) => {
-  let headersObject = undefined;
+  let headersObject;
   if (headers) {
     headersObject = { Cookie: headers.get('cookie') };
   }
@@ -626,11 +626,17 @@ const fetchPatchResponse = async (url, headers, body) => {
 
 // Command-line argument processing
 if (process.argv[2] === 'push') {
-  mainPush()
-    .then(() => process.exit(0))
-    .catch(console.error);
+  try {
+    await mainPush();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+  }
 } else if (process.argv[2] === 'pull') {
-  mainPull()
-    .then(() => process.exit(0))
-    .catch(console.error);
+  try {
+    await mainPull();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+  }
 }

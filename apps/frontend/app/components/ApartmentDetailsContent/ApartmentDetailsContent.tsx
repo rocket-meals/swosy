@@ -48,7 +48,7 @@ const ApartmentDetailsContent: React.FC<ApartmentDetailsContentProps> = ({ id })
     useEffect(() => {
         if (
             activeTab === HousingDetailTab.WASHING_MACHINE &&
-            !((apartmentDetails as any)?.washingmachines?.length > 0)
+            ((apartmentDetails as any)?.washingmachines?.length ?? 0) <= 0
         ) {
             setActiveTab(HousingDetailTab.INFORMATION);
         }

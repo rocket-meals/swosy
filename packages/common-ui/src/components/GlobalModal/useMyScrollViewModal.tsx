@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import MyScrollViewModal, { MyScrollViewModalProps } from '../MyScrollViewModal';
 import { useModal } from './useModal';
 
-export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
+export type MyScrollViewModalConfig = MyScrollViewModalProps & { children?: ReactNode };
 
 type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string };
 
@@ -26,7 +26,7 @@ export const useMyScrollViewModal = () => {
 		};
 
 		const element = (
-			<MyScrollViewModal closeSheet={close} backgroundColor={backgroundColor} {...restProps}>
+			<MyScrollViewModal backgroundColor={backgroundColor} {...restProps}>
 				{children}
 			</MyScrollViewModal>
 		);

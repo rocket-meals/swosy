@@ -119,7 +119,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <MaterialCommunityIcons name="vector-polygon" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
-			current: Math.min(1, Object.values(hexTileRecords).filter((r) => r.enclosedCount > 0).length > 0 ? 1 : 0),
+			current: Math.min(1, Object.values(hexTileRecords).some((r) => r.enclosedCount > 0) ? 1 : 0),
 			goal: 1,
 		}),
 	},

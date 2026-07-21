@@ -15,7 +15,7 @@ import styles from '../styles';
 interface HousingHeaderProps {
 	theme: any;
 	translate: (key: string) => string;
-	drawerPosition: 'left' | 'right' | 'system' | string;
+	drawerPosition: string;
 	openHousingSortingModal: () => void;
 }
 

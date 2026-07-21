@@ -52,17 +52,17 @@ export const getDetailedDescriptionTranslation = (translations: Array<any>, lang
 	return translation?.detailed_description || '';
 };
 
-export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.FormCategoriesTranslations | DatabaseTypes.FormsTranslations | DatabaseTypes.FormFieldsTranslations>, languageCode: string): string => {
+const getNameFromTranslation = (translations: Array<{ languages_code?: string | DatabaseTypes.Languages | null; name?: string | null }> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
 	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
 	return translation?.name || '';
 };
 
-export const getFoodAttributesTranslation = (translations: Array<Partial<DatabaseTypes.FoodsAttributesTranslations> | Partial<Translation>> | null | undefined, languageCode: string): string => {
-	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
-	return translation?.name || '';
-};
+export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.FormCategoriesTranslations | DatabaseTypes.FormsTranslations | DatabaseTypes.FormFieldsTranslations>, languageCode: string): string =>
+	getNameFromTranslation(translations, languageCode);
+
+export const getFoodAttributesTranslation = (translations: Array<Partial<DatabaseTypes.FoodsAttributesTranslations> | Partial<Translation>> | null | undefined, languageCode: string): string =>
+	getNameFromTranslation(translations, languageCode);
 
 const getFoodCategoryName = (categories: DatabaseTypes.FoodsCategories[], category: string | DatabaseTypes.FoodsCategories | null | undefined, languageCode: string): string => {
 	if (!category) return '';

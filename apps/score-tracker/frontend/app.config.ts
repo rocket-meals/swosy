@@ -12,7 +12,7 @@ require('ts-node').register({
 
 const { getBuildNumber } = require('./config.ts');
 
-module.exports = function ({ config }: ConfigContext): ExpoConfig {
+module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
 	return {
 		...config,

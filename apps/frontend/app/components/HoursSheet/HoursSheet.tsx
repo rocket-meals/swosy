@@ -82,8 +82,7 @@ const computeConsecutiveRangesByDay = (
 	// Iterate over each day and its corresponding time ranges
 	sortedDayKeys.forEach(day => {
 		const timeRanges = dayStartAndEndTimeDict[day];
-		if (!timeRanges || timeRanges.length === 0) {
-		} else {
+		if (timeRanges && timeRanges.length > 0) {
 			// sorting the time ranges by time_start
 			timeRanges.sort((a, b) => {
 				if (a.time_start === null || b.time_start === null) {
@@ -105,19 +104,17 @@ const computeConsecutiveRangesByDay = (
 				const { time_start, time_end } = timeRange;
 				if (currentRange?.time_start == null || currentRange.time_end == null) {
 					currentRange = { time_start, time_end };
-				} else {
-					if (time_start === currentRange.time_start && time_end === currentRange.time_end) {
-						// do nothing
-					} else if (time_start === null || time_end === null) {
-						// do nothing
-					} else if (time_start >= currentRange.time_start && time_end <= currentRange.time_end) {
-						// do nothing
-					} else if (time_start < currentRange.time_end && time_end > currentRange.time_end) {
-						currentRange.time_end = time_end;
-					} else if (time_start > currentRange.time_end) {
-						consecutiveRanges.push(currentRange); // push the current range to the consecutive ranges
-						currentRange = { time_start, time_end }; // start a new range
-					}
+				} else if (time_start === currentRange.time_start && time_end === currentRange.time_end) {
+					// do nothing
+				} else if (time_start === null || time_end === null) {
+					// do nothing
+				} else if (time_start >= currentRange.time_start && time_end <= currentRange.time_end) {
+					// do nothing
+				} else if (time_start < currentRange.time_end && time_end > currentRange.time_end) {
+					currentRange.time_end = time_end;
+				} else if (time_start > currentRange.time_end) {
+					consecutiveRanges.push(currentRange); // push the current range to the consecutive ranges
+					currentRange = { time_start, time_end }; // start a new range
 				}
 			});
 			if (currentRange) {
@@ -502,7 +499,7 @@ export const HoursSheetContent: React.FC = () => {
 const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
 	return (
-		<MyScrollViewModal title={translate(TranslationKeys.businesshours)} closeSheet={closeSheet}>
+		<MyScrollViewModal title={translate(TranslationKeys.businesshours)}>
 			<HoursSheetContent />
 		</MyScrollViewModal>
 	);

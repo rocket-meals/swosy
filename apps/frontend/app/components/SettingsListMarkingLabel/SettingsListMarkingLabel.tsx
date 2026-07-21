@@ -129,7 +129,6 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 				} else {
 					setDislikeLoading(false);
 				}
-				return;
 			} else {
 				try {
 					const likeStats = ownMarking?.like === like ? null : like;

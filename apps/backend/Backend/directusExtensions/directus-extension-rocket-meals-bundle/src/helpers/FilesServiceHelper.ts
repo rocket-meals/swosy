@@ -1,4 +1,4 @@
-import { FileServiceCreator, FileServiceFileStream, FileServiceSteamType, FilesService, MutationOptions } from './ItemsServiceCreator';
+import { FileServiceCreator, FileServiceFileStream, FileServiceSteamType, FilesService } from './ItemsServiceCreator';
 import { ItemsServiceHelper } from './ItemsServiceHelper';
 import { CollectionNames, DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { PrimaryKey } from '@directus/types';
@@ -95,7 +95,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
    * @param primaryKey   Optional file id to update instead of creating
    * @param opts         Additional Directus mutation options
    */
-  async uploadOne(stream: FileServiceSteamType, data: FileServiceFileStream, primaryKey?: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey> {
+  async uploadOne(stream: FileServiceSteamType, data: FileServiceFileStream, primaryKey?: PrimaryKey, opts?: any): Promise<PrimaryKey> {
     let filesService = await this.getItemsService();
     return filesService.uploadOne(stream, data, primaryKey, opts);
   }

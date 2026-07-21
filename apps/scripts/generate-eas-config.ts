@@ -95,4 +95,4 @@ function main() {
         console.log(`EAS config generated at ${TARGET_FILE} (customer: ${customer || 'default'})`);
 }
 
-void main();
+main();

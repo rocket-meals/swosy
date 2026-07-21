@@ -8,7 +8,6 @@ import type { ScrollViewModalContentProps } from './types';
 export type { ScrollViewModalContentProps } from './types';
 
 export interface MyScrollViewModalProps extends ScrollViewModalContentProps {
-	closeSheet?: () => void;
 	renderItem?: (info: { item: any; index: number }) => ReactNode;
 	keyExtractor?: (item: any, index: number) => string;
 	onClose?: () => void;

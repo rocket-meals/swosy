@@ -48,7 +48,7 @@ def load_available_icon_families(glyphmaps_path, fonts_path):
 # Function to find node_modules directory and ensure npm install is done
 def find_node_modules_directory(max_levels_up=10):
     current_dir = os.getcwd()
-    for level in range(max_levels_up):
+    for _ in range(max_levels_up):
         if os.path.isdir(os.path.join(current_dir, "backend")) and os.path.isdir(os.path.join(current_dir, "frontend")):
             possible_path = os.path.join(current_dir, "frontend/app/node_modules")
             if os.path.isdir(possible_path):

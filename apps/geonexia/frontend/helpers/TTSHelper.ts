@@ -16,6 +16,8 @@ const SPEECH_RATE_MAP: Record<SpeechRate, number> = {
  * Convert a {@link SpeechRate} preset to the numeric rate value expected by
  * `expo-speech`.
  */
+const DEFAULT_KM_ANNOUNCEMENT_CONTENT: KmAnnouncementContent = { announcePace: true, announceSpeedKmh: false };
+
 export function speechRateToNumber(rate: SpeechRate): number {
 	return SPEECH_RATE_MAP[rate] ?? 1.0;
 }
@@ -79,7 +81,7 @@ export function buildKmAnnouncement(
 	km: number,
 	paceMinPerKm: number | null,
 	locale: string,
-	content: KmAnnouncementContent = { announcePace: true, announceSpeedKmh: false },
+	content: KmAnnouncementContent = DEFAULT_KM_ANNOUNCEMENT_CONTENT,
 ): string {
 	const langCode = locale.split('-')[0].toLowerCase();
 	const paceMin = paceMinPerKm != null ? Math.floor(paceMinPerKm) : null;
