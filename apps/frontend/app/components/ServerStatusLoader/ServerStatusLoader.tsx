@@ -9,19 +9,19 @@ export interface ServerStatusFlowLoaderProps {
 	children?: React.ReactNode;
 }
 
+async function loadServerInfo(): Promise<ServerInfo | null> {
+	try {
+		const result = await ServerAPI.downloadServerInfo();
+		return result;
+	} catch (error) {
+		console.error('Failed to fetch server info:', error);
+		return null;
+	}
+}
+
 export const ServerStatusLoader: React.FC<ServerStatusFlowLoaderProps> = ({ children }) => {
 	const dispatch = useDispatch();
 	const { primaryColor } = useAppSelector(state => state.settings);
-
-	async function loadServerInfo(): Promise<ServerInfo | null> {
-		try {
-			const result = await ServerAPI.downloadServerInfo();
-			return result;
-		} catch (error) {
-			console.error('Failed to fetch server info:', error);
-			return null;
-		}
-	}
 
 	async function loadInformation() {
 		const TIMEOUT_IN_SECONDS = 15;

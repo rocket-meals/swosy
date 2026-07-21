@@ -454,6 +454,103 @@ Compile-Fehler gefunden und behoben (Aufrufstellen in `HoursSheet.tsx` und
 `CalendarSheet.tsx`, die `closeSheet` noch direkt an `<MyScrollViewModal>`
 übergeben hatten).
 
+## Am 2026-07-21 (vierte Runde): kleine Restfunde + erster Cognitive-Complexity-Schwung
+
+Nach der dritten Runde (siehe oben) wurden zunächst die noch offenen kleinen
+mechanischen Funde abgeschlossen, danach ein erster, bewusst kleiner Schwung
+des bislang unangetasteten „Cognitive Complexity"-Bergs (109x) abgearbeitet —
+ausgewählt wurden Funktionen mit Werten nur knapp über der Grenze von 15
+(meist 16-20), da diese mit 1-2 Extraktionen sicher unter die Grenze zu
+bringen sind, ohne die Fachlogik anzufassen.
+
+**Kleine Restfunde:**
+- **Irreführende Bedingung** (1x): `BuildingDetailsContent.tsx` —
+  `(acc, org) => { if (org.id) acc[org.id] = org; return acc; }` sah aus, als
+  wäre `return acc` Teil der Bedingung; explizite Klammern um den
+  `if`-Body ergänzt, `return acc` bleibt unbedingt (keine Verhaltensänderung).
+- **„Move function to the outer scope"** (4x): `resolveAnchorPosition`
+  (`geonexia/app/index.tsx`, schließt über `boundary`/`n`/`centerLng`/
+  `centerLat` — als explizite Parameter auf Modul-Ebene gehoben, dabei auch
+  die zugehörigen, bislang pro Aufruf neu angelegten Konstanten
+  `DEGREE_POSITION_GEO`/`OUTER_ANCHOR_BY_DEGREE`/`MIDDLE_ANCHOR_BY_DEGREE`
+  mit hochgezogen, da sie reine statische Lookup-Tabellen ohne
+  Render-Abhängigkeit sind), `getTodayRangeIso` (`mails-hook/index.ts`,
+  reine Funktion ohne Closures), `hexToLottieColor` (`animationHelper.ts`,
+  reine Funktion) und `loadServerInfo` (`ServerStatusLoader.tsx`, reine
+  Funktion) — alle vier schließen über nichts Komponentenspezifisches und
+  wurden 1:1 auf Modul-Ebene verschoben.
+- **„Too many parameters"** (3x): `boundsOverlap` (`TileFeatureHelper.ts`,
+  8→2 Parameter durch neuen `BoundingBox`-Typ statt 4 Einzelwerten pro Box),
+  `getFoodofferToCreate` (`ParseSchedule.ts`, 8→1 Parameter-Objekt) und
+  `createBuildingMarkerSvg` (`map/index.tsx`, 10→1 Parameter-Objekt) — jeweils
+  auf ein Options-Objekt umgestellt, einzige Aufrufstelle je Funktion
+  entsprechend angepasst.
+- **`Mark these members as readonly`** (1x): `CollectionHelper.collection`/
+  `_client` werden nur im Konstruktor zugewiesen — `readonly` ergänzt.
+- **Regex-Komplexität** (1x, `1_fix_viewbox.py`): bewusst NICHT geändert —
+  der SVG-Path-Tokenizer-Regex ist funktional korrekt und eine strukturelle
+  Vereinfachung birgt reales Risiko, Rand- fälle (Exponentialschreibweise,
+  führender/fehlender Dezimalpunkt) beim Parsen von SVG-Pfaddaten subtil zu
+  verändern; der Lint-Gewinn rechtfertigt dieses Risiko für dieses interne
+  Build-Skript nicht.
+
+**Cognitive-Complexity-Erstrunde (8 Funktionen, alle 16-20 → jetzt < 15):**
+- `SortingHelper.sortByEatingHabits` (`packages/common`, 19→..): die
+  Like/Dislike-Klassifizierung pro Angebot (verschachteltes `for`+`if`+`for`+
+  `if`+`if/else-if`) in eine eigene `classifyOfferByEatingHabits`-Funktion
+  extrahiert, die `'liked' | 'disliked' | 'neutral'` zurückgibt — per
+  bestehendem Test (`SortingHelper.test.ts`) verifiziert (weiterhin grün).
+- `suggestRouteNames` (`RouteNameSuggestionHelper.ts`, 19→..): die drei
+  unabhängigen Scoring-Durchläufe (Route-Dict, Enclosed-Dict, Fallback-
+  Kategorien) in `scoreRouteDictEntries`/`scoreEnclosedDictEntries`/
+  `scoreFallbackCategoryNames` extrahiert, `addCandidate`-Closure als
+  Parameter durchgereicht — identische Bewertungslogik, nur aufgeteilt.
+- `GooglePlayHelper.fetchAllReviews` (17→..): die Einzelseiten-Abfrage
+  (URL bauen, fetchen, JSON parsen, Logger-Warnung) in eine private
+  `fetchReviewsPage`-Methode ausgelagert, die Paginierungsschleife bleibt
+  in `fetchAllReviews`.
+- `push-notification-hook`s `.items.update`-Filter (16→..): die Merge- und
+  Notify-Logik pro Schlüssel in `mergeUpdateAndNotifyIfPublished`
+  extrahiert (Parameter-Typ bewusst `any` belassen wie zuvor implizit, da
+  `itemService.readByQuery`s Filter-Typ keine explizit typisierten
+  Primärschlüssel-Werte akzeptiert und eine strengere Typisierung hier
+  einen vorbestehenden, nicht verwandten Typkonflikt aufgerissen hätte).
+- `parseCsvLine` (`generateIssueMarkdown.ts`, 16→..): von `for`-Schleife mit
+  verschachteltem `if(inQuotes){if...else}else if...else if...else` auf eine
+  `while`-Schleife mit frühen `continue`s umgestellt (gleiches Zeichen-für-
+  Zeichen-Verhalten, u. a. beim Escaped-Anführungszeichen `""`, nur ohne die
+  zusätzliche Verschachtelungsebene).
+- `AttributeItem.tsx` (16→..): Wert-Auflösung (`number_value`/`string_value`/
+  Prefix) in `resolveAttributeValue` und Icon-Key-Parsing (`library:name`)
+  in `resolveIconFromKey` extrahiert (letzteres deckt sowohl `icon_expo` als
+  auch `icon_value` ab, vorher dupliziert).
+- `StatisticsCard.tsx` (16→..): die Breakpoint-Bedingung
+  `screenWidth > 950 ? X : Y` kam ~16x vor (teils identisch dupliziert für
+  beide Rating-Zeilen) — auf eine `isWide`-Variable plus einmalig berechnete
+  benannte Konstanten (`flexDirection`, `cardHeight`, `imageSize`, `fontSize`,
+  …) reduziert; jede Bedingung wird jetzt nur noch einmal ausgewertet statt
+  bis zu dreimal dupliziert.
+- `MyMap`s `loadHtml`-Effekt (`packages/common-ui`, 16→..): die fünf
+  unabhängigen HTML-Patch-Schritte (initiale Position, initialer Style,
+  Loading-Text, Inject-Script, Legal-Info ausblenden) in je eine eigene
+  `apply*Patch`-Funktion extrahiert, die `htmlContent` entgegennimmt und
+  zurückgibt — die Effekt-Funktion reiht die Aufrufe jetzt nur noch linear.
+
+Verifiziert per `tsc --noEmit`-Baseline-Diff (`git stash`/`git stash pop`)
+für `apps/frontend/app`, `apps/geonexia/frontend`, `apps/score-tracker/frontend`
+sowie `yarn typecheck` für die Backend-Extension: keine neuen Fehler. Zusätzlich
+die bestehenden Tests `SortingHelper.test.ts`, `GooglePlayReviews.test.ts` und
+`ParseScheduleSyncDiff.test.ts` laufen lassen — weiterhin grün.
+`RouteNameSuggestionHelper.test.ts` schlägt bereits auf dem unveränderten
+Stand mit einem umgebungsbedingten Jest/Expo-Fehler fehl (`expo-modules-core`
+EventEmitter-Setup in dieser Sandbox), unabhängig von dieser Änderung
+verifiziert (gleicher Fehler vor und nach dem Diff).
+
+**Noch offen für weitere Runden:** ca. 101 der 109 Cognitive-Complexity-Funde
+(die übrigen reichen bis zu 201 und brauchen fachliche Einzelbetrachtung,
+insbesondere die großen React-Komponenten und `ActivityMapRebuildHelper.ts`/
+`geonexia/app/index.tsx` mit mehreren Funktionen > 80).
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

@@ -62,13 +62,13 @@ function tileYToLat(yFrac: number, zoom: number): number {
 	return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
 }
 
+/** Axis-aligned geographic bounding box. */
+type BoundingBox = { minLat: number; minLng: number; maxLat: number; maxLng: number };
+
 /** Simple axis-aligned bounding-box overlap check. */
-function boundsOverlap(
-	aMinLat: number, aMinLng: number, aMaxLat: number, aMaxLng: number,
-	bMinLat: number, bMinLng: number, bMaxLat: number, bMaxLng: number,
-): boolean {
-	return aMinLat <= bMaxLat && aMaxLat >= bMinLat &&
-		aMinLng <= bMaxLng && aMaxLng >= bMinLng;
+function boundsOverlap(a: BoundingBox, b: BoundingBox): boolean {
+	return a.minLat <= b.maxLat && a.maxLat >= b.minLat &&
+		a.minLng <= b.maxLng && a.maxLng >= b.minLng;
 }
 
 // ─── Name-null filter ───────────────────────────────────────────────────────
@@ -337,9 +337,8 @@ export async function fetchAndParseTile(
 				const featMinLat = tileYToLat(y + by2 / extent, z);
 
 				if (!boundsOverlap(
-					featMinLat, featMinLng, featMaxLat, featMaxLng,
-					filterBounds.minLat, filterBounds.minLng,
-					filterBounds.maxLat, filterBounds.maxLng,
+					{ minLat: featMinLat, minLng: featMinLng, maxLat: featMaxLat, maxLng: featMaxLng },
+					filterBounds,
 				)) {
 					continue;
 				}

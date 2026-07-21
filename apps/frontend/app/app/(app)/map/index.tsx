@@ -628,7 +628,7 @@ function getFirstOrganisationFromDict(
 	return orgs && orgs.length > 0 ? orgs[0] : null;
 }
 
-function createBuildingMarkerSvg(
+function createBuildingMarkerSvg(params: {
 	externalIdentifier?: string | null,
 	markerColor?: string | null,
 	markerLabel?: string | null,
@@ -639,7 +639,19 @@ function createBuildingMarkerSvg(
 	fallbackLabelColor?: string | null,
 	alias?: string | null,
 	showLabel?: boolean,
-): string {
+}): string {
+	const {
+		externalIdentifier,
+		markerColor,
+		markerLabel,
+		markerLabelColor,
+		orgMarkerColor,
+		orgMarkerLabelColor,
+		fallbackColor,
+		fallbackLabelColor,
+		alias,
+		showLabel,
+	} = params;
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
@@ -950,18 +962,18 @@ const OsmVectorMapScreen: React.FC = () => {
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: createBuildingMarkerSvg(
-						building.external_identifier,
-						building.map_marker_color,
-						building.map_marker_label,
-						building.map_marker_label_color,
-						firstOrg?.map_marker_color ?? null,
-						firstOrg?.map_marker_label_color ?? null,
-						primaryColor,
-						primaryColorContrastColor,
-						building.alias,
-						showMarkerLabels,
-					),
+					icon: createBuildingMarkerSvg({
+						externalIdentifier: building.external_identifier,
+						markerColor: building.map_marker_color,
+						markerLabel: building.map_marker_label,
+						markerLabelColor: building.map_marker_label_color,
+						orgMarkerColor: firstOrg?.map_marker_color ?? null,
+						orgMarkerLabelColor: firstOrg?.map_marker_label_color ?? null,
+						fallbackColor: primaryColor,
+						fallbackLabelColor: primaryColorContrastColor,
+						alias: building.alias,
+						showLabel: showMarkerLabels,
+					}),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};

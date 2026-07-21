@@ -25,6 +25,37 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     return input;
   });
 
+  // Merge the updated fields into the current item for a single key, and send the
+  // notification if the merged item is now published. Returns the (possibly updated) input.
+  async function mergeUpdateAndNotifyIfPublished(itemService: ReturnType<typeof myDatabaseHelper.getPushNotificationsHelper>, currentItemId: any, input: Partial<DatabaseTypes.PushNotifications>) {
+    const currentItems = await itemService.readByQuery({
+      filter: { id: currentItemId },
+    });
+
+    if (!currentItems || currentItems.length === 0) {
+      throw new Error(`Item with ID ${currentItemId} not found`);
+    }
+
+    const currentItem = currentItems[0];
+    if (!currentItem) {
+      return input;
+    }
+
+    // Selectively merge the current item with the updated fields
+    for (const key in input) {
+      // @ts-ignore - we want to copy the value from input to currentItem
+      if (input[key] !== undefined) {
+        // @ts-ignore - we want to copy the value from input to currentItem
+        currentItem[key] = input[key];
+      }
+    }
+    if (ItemsServiceHelper.isStatusPublished(currentItem)) {
+      await sendNotification(currentItem, input);
+      return ItemsServiceHelper.setStatusPublished(input);
+    }
+    return input;
+  }
+
   filter<Partial<DatabaseTypes.PushNotifications>>(collectionName + '.items.update', async (input: Partial<DatabaseTypes.PushNotifications>, { keys, collection }) => {
     let itemService = myDatabaseHelper.getPushNotificationsHelper();
 
@@ -35,30 +66,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
 
     for (const key of keys) {
       const currentItemId = key; // Assuming only one item is being updated
-      const currentItems = await itemService.readByQuery({
-        filter: { id: currentItemId },
-      });
-
-      if (!currentItems || currentItems.length === 0) {
-        throw new Error(`Item with ID ${currentItemId} not found`);
-      }
-
-      const currentItem = currentItems[0];
-
-      // Selectively merge the current item with the updated fields
-      if (currentItem) {
-        for (const key in input) {
-          // @ts-ignore - we want to copy the value from input to currentItem
-          if (input[key] !== undefined) {
-            // @ts-ignore - we want to copy the value from input to currentItem
-            currentItem[key] = input[key];
-          }
-        }
-        if (ItemsServiceHelper.isStatusPublished(currentItem)) {
-          await sendNotification(currentItem, input);
-          input = ItemsServiceHelper.setStatusPublished(input);
-        }
-      }
+      input = await mergeUpdateAndNotifyIfPublished(itemService, currentItemId, input);
     }
 
     return input;
