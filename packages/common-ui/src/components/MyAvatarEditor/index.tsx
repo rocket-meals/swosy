@@ -519,6 +519,41 @@ const STYLE_NUMERIC_DEFAULTS: Partial<Record<AvatarStyle, Partial<Record<string,
 };
 
 /**
+ * Computes the default value for each color attribute of the given style: the
+ * schema default color if the DiceBear schema declares one, otherwise the
+ * first preset color for that key/style combination.
+ */
+function computeColorAttributeDefaults(style: AvatarStyle, colorKeys: string[]): Record<string, string[]> {
+	const defaults: Record<string, string[]> = {};
+	for (const key of colorKeys) {
+		const schemaDefaults = getSchemaDefaultColors(style, key);
+		if (schemaDefaults.length > 0) {
+			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
+		} else {
+			const presetColors = getPresetColorsForKey(key, style);
+			if (presetColors.length > 0) {
+				defaults[key] = [stripHashPrefix(presetColors[0])];
+			}
+		}
+	}
+	return defaults;
+}
+
+/** Per-style numeric defaults (e.g. scale=100 for openPeeps) as a partial options map. */
+function computeStyleNumericDefaults(style: AvatarStyle): Record<string, string[]> {
+	const defaults: Record<string, string[]> = {};
+	const numericDefaults = STYLE_NUMERIC_DEFAULTS[style];
+	if (numericDefaults) {
+		for (const [key, value] of Object.entries(numericDefaults)) {
+			if (value !== undefined) {
+				defaults[key] = [value];
+			}
+		}
+	}
+	return defaults;
+}
+
+/**
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
  * in the allowed enum values, otherwise the first available value is used.
@@ -538,26 +573,8 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 		// Probability is not stored – the renderer derives it from key presence at render time.
 	}
 	const colorKeys = getStyleColorKeys(style);
-	for (const key of colorKeys) {
-		const schemaDefaults = getSchemaDefaultColors(style, key);
-		if (schemaDefaults.length > 0) {
-			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
-		} else {
-			const presetColors = getPresetColorsForKey(key, style);
-			if (presetColors.length > 0) {
-				defaults[key] = [stripHashPrefix(presetColors[0])];
-			}
-		}
-	}
-	// Apply per-style numeric defaults (e.g. scale=100 for openPeeps)
-	const numericDefaults = STYLE_NUMERIC_DEFAULTS[style];
-	if (numericDefaults) {
-		for (const [key, value] of Object.entries(numericDefaults)) {
-			if (value !== undefined) {
-				defaults[key] = [value];
-			}
-		}
-	}
+	Object.assign(defaults, computeColorAttributeDefaults(style, colorKeys));
+	Object.assign(defaults, computeStyleNumericDefaults(style));
 	return defaults;
 }
 
