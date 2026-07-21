@@ -4,6 +4,13 @@ import { Stack } from 'expo-router';
 import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
 
+// `Stack.Screen`'s `options.header` calls this as a plain function (never as
+// a JSX tag), so a factory returning a stable function avoids defining a new
+// arrow (and thus a new "component") on every render.
+function makeTranslatedStackHeader(labelKey: TranslationKeys, headerKey?: string) {
+	return () => <TranslatedStackHeader labelKey={labelKey} headerKey={headerKey} />;
+}
+
 export default function Layout() {
 	const { theme } = useTheme();
 	return (
@@ -17,7 +24,7 @@ export default function Layout() {
 				name="index"
 				options={{
 					title: 'Support Ticket',
-					header: () => <TranslatedStackHeader labelKey={TranslationKeys.my_support_tickets} headerKey={'Support Ticket'} />,
+					header: makeTranslatedStackHeader(TranslationKeys.my_support_tickets, 'Support Ticket'),
 				}}
 			/>
 		</Stack>

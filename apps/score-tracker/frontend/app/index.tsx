@@ -620,6 +620,24 @@ function GameHeaderRight({
 	);
 }
 
+function makeGameHeaderRight(
+	color: string,
+	isActive: boolean,
+	isEditingPlayers: boolean,
+	onToggleEditingPlayers: () => void,
+	onOpenSettings: () => void,
+) {
+	return () => (
+		<GameHeaderRight
+			color={color}
+			isActive={isActive}
+			isEditingPlayers={isEditingPlayers}
+			onToggleEditingPlayers={onToggleEditingPlayers}
+			onOpenSettings={onOpenSettings}
+		/>
+	);
+}
+
 export default function GameScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -872,14 +890,12 @@ export default function GameScreen() {
 		navigation.setOptions({
 			// Show which game is being played right in the header
 			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
-			headerRight: () => (
-				<GameHeaderRight
-					color={theme.header.text}
-					isActive={status === 'active'}
-					isEditingPlayers={isEditingPlayers}
-					onToggleEditingPlayers={toggleEditingPlayers}
-					onOpenSettings={handleOpenSettingsModal}
-				/>
+			headerRight: makeGameHeaderRight(
+				theme.header.text,
+				status === 'active',
+				isEditingPlayers,
+				toggleEditingPlayers,
+				handleOpenSettingsModal,
 			),
 		});
 	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal, selectedGameType]);

@@ -30,7 +30,7 @@ export default function FoodOfferLayout() {
 			<Stack.Screen
 				name="details/index"
 				options={{
-					header: () => <TranslatedStackHeader labelKey={TranslationKeys.food_details} />,
+					header: makeTranslatedStackHeader(TranslationKeys.food_details),
 				}}
 			/>
 		</Stack>

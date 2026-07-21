@@ -41,6 +41,10 @@ function GamesHeaderRight({ color, onImport, onAdd }: Readonly<{ color: string; 
 	);
 }
 
+function makeGamesHeaderRight(color: string, onImport: () => void, onAdd: () => void) {
+	return () => <GamesHeaderRight color={color} onImport={onImport} onAdd={onAdd} />;
+}
+
 export default function GamesScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -129,7 +133,7 @@ export default function GamesScreen() {
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => <GamesHeaderRight color={theme.header.text} onImport={handleOpenImportModal} onAdd={handleAddGameType} />,
+			headerRight: makeGamesHeaderRight(theme.header.text, handleOpenImportModal, handleAddGameType),
 		});
 	}, [navigation, theme.header.text, handleAddGameType, handleOpenImportModal]);
 
