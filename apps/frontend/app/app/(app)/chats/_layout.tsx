@@ -8,6 +8,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
+// `Stack.Screen`'s `options.header` calls this as a plain function (never as
+// a JSX tag), so a factory returning a stable function avoids defining a new
+// arrow (and thus a new "component") on every render — same pattern as
+// `makeDrawerIcon` used for `drawerIcon` elsewhere.
+function makeTranslatedMenuHeader(labelKey: TranslationKeys, headerKey?: string) {
+	return () => <TranslatedMenuHeader labelKey={labelKey} headerKey={headerKey} />;
+}
+
 function ChatDetailsHeader() {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -45,13 +53,13 @@ export default function ChatsLayout() {
                         <Stack.Screen
                                 name="index"
                                 options={{
-                                        header: () => <TranslatedMenuHeader labelKey={TranslationKeys.chats} />,
+                                        header: makeTranslatedMenuHeader(TranslationKeys.chats),
                                 }}
                         />
                         <Stack.Screen
                                 name="details/index"
                                 options={{
-                                        header: () => <ChatDetailsHeader />,
+                                        header: ChatDetailsHeader,
                                 }}
                         />
                 </Stack>

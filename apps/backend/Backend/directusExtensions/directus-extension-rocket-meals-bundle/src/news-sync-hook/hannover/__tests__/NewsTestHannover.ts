@@ -1,6 +1,6 @@
 // small jest test
 import { describe, expect, it } from '@jest/globals';
-import { StudentenwerkHannoverNews_Parser } from '../StudentenwerkHannoverNews_Parser';
+import { StudentenwerkHannoverNewsParser } from '../StudentenwerkHannoverNewsParser';
 import path from 'path';
 import fs from 'fs';
 
@@ -10,7 +10,7 @@ const htmlNewsUnterstuetzungBeimStart = fs.readFileSync(path.resolve(__dirname, 
 const htmlNewsBafoegAntragLeichterGemacht = fs.readFileSync(path.resolve(__dirname, './NewsBafoegAntragLeichterGemacht.html'), 'utf8');
 
 describe('NewsTestHannover', () => {
-  let newsParser = new StudentenwerkHannoverNews_Parser();
+  let newsParser = new StudentenwerkHannoverNewsParser();
 
   it('should find news with fields', async () => {
     let limitAmountNews = 2;
@@ -24,7 +24,7 @@ describe('NewsTestHannover', () => {
 
     //console.log("Article URL: " + articleUrl);
 
-    let response = await StudentenwerkHannoverNews_Parser.fetchArticleDate(articleUrl);
+    let response = await StudentenwerkHannoverNewsParser.fetchArticleDate(articleUrl);
     //console.log("Response: " + response);
     //console.log(response);
     expect(response).toBeDefined();

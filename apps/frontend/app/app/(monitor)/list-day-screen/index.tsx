@@ -244,7 +244,7 @@ const Index = () => {
 				return status === 'published' || status === 'archived';
 			});
 
-			const sortedCanteens = filteredCanteens.sort((a, b) => {
+			filteredCanteens.sort((a, b) => {
 				const aPublished = a.status === 'published';
 				const bPublished = b.status === 'published';
 
@@ -256,6 +256,7 @@ const Index = () => {
 				// If both are same status, sort by sort value
 				return (a.sort || 0) - (b.sort || 0);
 			});
+			const sortedCanteens = filteredCanteens;
 
 			const updatedCanteens = sortedCanteens.map(canteen => {
 				const building = buildingsDict[canteen?.building as string];

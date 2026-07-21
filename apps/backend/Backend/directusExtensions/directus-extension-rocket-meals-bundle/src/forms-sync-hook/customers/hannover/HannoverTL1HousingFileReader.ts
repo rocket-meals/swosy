@@ -421,8 +421,8 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
   }
 
   public static getSortedKeysForHousingContractCompositeId(): ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[] {
-    let sortedKeysForHousingContractCompositeId = HOUSING_CONTRACT_FIELDS_FOR_ID.sort((a, b) => a.localeCompare(b));
-    return sortedKeysForHousingContractCompositeId;
+    HOUSING_CONTRACT_FIELDS_FOR_ID.sort((a, b) => a.localeCompare(b));
+    return HOUSING_CONTRACT_FIELDS_FOR_ID;
   }
 
   getHousingContractInternalCustomId(housingContract: ImportHousingContract): string | null {

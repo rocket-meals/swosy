@@ -664,6 +664,10 @@ function ActivityDetailBackHeaderButton({ color, onPress }: Readonly<{ color: st
 	);
 }
 
+function makeActivityDetailHeaderLeft(color: string, onPress: () => void) {
+	return () => <ActivityDetailBackHeaderButton color={color} onPress={onPress} />;
+}
+
 export default function ActivityDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -768,7 +772,7 @@ export default function ActivityDetailScreen() {
 		navigation.setOptions({
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
-			headerLeft: () => <ActivityDetailBackHeaderButton color={theme.header.text} onPress={() => router.navigate('/activities')} />,
+			headerLeft: makeActivityDetailHeaderLeft(theme.header.text, () => router.navigate('/activities')),
 		});
 	}, [navigation, router, theme.header.background, theme.header.text]);
 

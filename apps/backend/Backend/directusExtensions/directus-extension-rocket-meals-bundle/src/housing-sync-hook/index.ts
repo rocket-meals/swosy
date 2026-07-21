@@ -1,5 +1,5 @@
 import { ApartmentsParseSchedule } from './ApartmentsParseSchedule';
-import { StudentenwerkHannoverApartments_Parser } from './hannover/StudentenwerkHannoverApartments_Parser';
+import { StudentenwerkHannoverApartmentsParser } from './hannover/StudentenwerkHannoverApartmentsParser';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
 import { ApartmentParserInterface } from './ApartmentParserInterface';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -43,7 +43,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ a
     case SyncForCustomerEnum.TEST:
       break;
     case SyncForCustomerEnum.HANNOVER:
-      usedParser = new StudentenwerkHannoverApartments_Parser();
+      usedParser = new StudentenwerkHannoverApartmentsParser();
       break;
     case SyncForCustomerEnum.OSNABRUECK:
       break;

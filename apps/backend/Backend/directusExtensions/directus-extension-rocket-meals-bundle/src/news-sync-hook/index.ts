@@ -1,9 +1,9 @@
 import { NewsParseSchedule } from './NewsParseSchedule';
-import { DemoNews_Parser } from './DemoNews_Parser';
+import { DemoNewsParser } from './DemoNewsParser';
 import { NewsParserInterface } from './NewsParserInterface';
 import { EnvVariableHelper, SyncForCustomerEnum } from '../helpers/EnvVariableHelper';
-import { StudentenwerkHannoverNews_Parser } from './hannover/StudentenwerkHannoverNews_Parser';
-import { StudentenwerkOsnabrueckNews_Parser } from './osnabrueck/StudentenwerkOsnabrueckNews_Parser';
+import { StudentenwerkHannoverNewsParser } from './hannover/StudentenwerkHannoverNewsParser';
+import { StudentenwerkOsnabrueckNewsParser } from './osnabrueck/StudentenwerkOsnabrueckNewsParser';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { WorkflowScheduleHelper } from '../workflows-runs-hook';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
@@ -43,13 +43,13 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ a
   let usedParser: NewsParserInterface | null = null;
   switch (EnvVariableHelper.getSyncForCustomer()) {
     case SyncForCustomerEnum.TEST:
-      usedParser = new DemoNews_Parser();
+      usedParser = new DemoNewsParser();
       break;
     case SyncForCustomerEnum.HANNOVER:
-      usedParser = new StudentenwerkHannoverNews_Parser();
+      usedParser = new StudentenwerkHannoverNewsParser();
       break;
     case SyncForCustomerEnum.OSNABRUECK:
-      usedParser = new StudentenwerkOsnabrueckNews_Parser();
+      usedParser = new StudentenwerkOsnabrueckNewsParser();
       break;
   }
 

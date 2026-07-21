@@ -224,7 +224,7 @@ export const getCollectibleEventTranslation = (
         fallbackTitle?: string | null,
         fallbackDescription?: string | null
 ) => {
-        translations = translations === undefined ? [] : translations;
+        translations = translations ?? [];
 
         const title = getDirectusTranslation({ languageCode }, translations as any, 'title', false, fallbackTitle || '');
         const description = getDirectusTranslation(

@@ -398,6 +398,10 @@ function ActivitiesHeaderRight({ onRebuild, onExport, onImport }: Readonly<{ onR
 	);
 }
 
+function makeActivitiesHeaderRight(onRebuild: () => void, onExport: () => void, onImport: () => void) {
+	return () => <ActivitiesHeaderRight onRebuild={onRebuild} onExport={onExport} onImport={onImport} />;
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -777,7 +781,7 @@ export default function ActivitiesScreen() {
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => <ActivitiesHeaderRight onRebuild={handleRebuildMap} onExport={handleExportAll} onImport={openImportModal} />,
+			headerRight: makeActivitiesHeaderRight(handleRebuildMap, handleExportAll, openImportModal),
 		});
 	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 

@@ -9,7 +9,7 @@ type ArticleDetails = {
   date?: Date | null;
 };
 
-export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
+export class StudentenwerkOsnabrueckNewsParser implements NewsParserInterface {
   static readonly baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
   static readonly newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
   static readonly newsArticleUrl = 'https://www.studentenwerk-osnabrueck.de//de/nachrichten/artikel-details';
@@ -22,7 +22,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
   async getRealNewsItems(): Promise<NewsTypeForParser[]> {
     try {
-      let response = await axios.get(StudentenwerkOsnabrueckNews_Parser.newsUrl);
+      let response = await axios.get(StudentenwerkOsnabrueckNewsParser.newsUrl);
       let $ = cheerioLoad(response.data); // Load the HTML into cheerio
       let articles = $('div.article');
 
@@ -30,10 +30,10 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
       for (const article of articles.toArray()) {
         let imageElement = $(article).find('img');
-        let imageUrl = imageElement.length ? StudentenwerkOsnabrueckNews_Parser.baseUrl + imageElement.attr('src') : '';
+        let imageUrl = imageElement.length ? StudentenwerkOsnabrueckNewsParser.baseUrl + imageElement.attr('src') : '';
 
         let linkElement = $(article).find('a');
-        let articleUrl = linkElement.length ? StudentenwerkOsnabrueckNews_Parser.baseUrl + linkElement.attr('href') : '';
+        let articleUrl = linkElement.length ? StudentenwerkOsnabrueckNewsParser.baseUrl + linkElement.attr('href') : '';
 
         let articleDetails = await this.getArticleDetails(articleUrl);
 

@@ -15,7 +15,7 @@ const initialState: CollectibleEventsState = {
 };
 
 const collectibleEventsReducer = (state: CollectibleEventsState | undefined, actions: { type: string; payload?: any }) => {
-        state = state === undefined ? initialState : state;
+        state = state ?? initialState;
 
         switch (actions.type) {
                 case SET_COLLECTIBLE_EVENTS: {

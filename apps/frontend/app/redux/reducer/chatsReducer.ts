@@ -8,7 +8,7 @@ const initialState: ChatsState = {
 };
 
 const chatsReducer = (state: ChatsState | undefined, actions: { type: string; payload?: any }) => {
-        state = state === undefined ? initialState : state;
+        state = state ?? initialState;
 
         switch (actions.type) {
                 case SET_CHATS:

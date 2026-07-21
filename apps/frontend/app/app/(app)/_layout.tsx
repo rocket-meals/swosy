@@ -62,6 +62,14 @@ function FeedbackAndSupportHeader() {
 	return <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />;
 }
 
+// Screen `options.header` render-props below are almost all "translate one key,
+// render Translated{Menu,Stack}Header" — these factories return a stable function
+// per call site instead of defining a new arrow (nested in this component's render
+// body) for every `Drawer.Screen`.
+const makeTranslatedMenuHeader = (labelKey: TranslationKeys, headerKey?: string) => () => <TranslatedMenuHeader labelKey={labelKey} headerKey={headerKey} />;
+
+const makeTranslatedStackHeader = (labelKey: TranslationKeys, headerKey?: string) => () => <TranslatedStackHeader labelKey={labelKey} headerKey={headerKey} />;
+
 export default function Layout() {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -683,7 +691,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="account-balance/index"
 					options={{
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.accountbalance} headerKey={'Account-Balance'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.accountbalance, 'Account-Balance'),
 						title: translate(TranslationKeys.accountbalance),
 					}}
 				/>
@@ -705,13 +713,13 @@ export default function Layout() {
 					name="news/index"
 					options={{
 						title: 'News',
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.news} headerKey={'News'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.news, 'News'),
 					}}
 				/>
 				<Drawer.Screen
 					name="course-timetable/index"
 					options={{
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.course_timetable} headerKey={'course_timetable'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.course_timetable, 'course_timetable'),
 						title: 'Course Timetable',
 					}}
 				/>
@@ -719,7 +727,7 @@ export default function Layout() {
 					name="settings/index"
 					options={{
 						title: 'Settings',
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.settings} headerKey={'settings'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.settings, 'settings'),
 					}}
 				/>
 				<Drawer.Screen
@@ -738,14 +746,14 @@ export default function Layout() {
 				<Drawer.Screen
 					name="management/index"
 					options={{
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.role_management} headerKey={'Management'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.role_management, 'Management'),
 						title: 'Management',
 					}}
 				/>
 				<Drawer.Screen
 					name="experimentell/index"
 					options={{
-						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.experimentell} headerKey={'Experimentell'} />,
+						header: makeTranslatedMenuHeader(TranslationKeys.experimentell, 'Experimentell'),
 						title: translate(TranslationKeys.experimentell),
 					}}
 				/>
@@ -766,7 +774,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="vertical-image-scroll/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.vertical_image_scroll} headerKey={'vertical_image_scroll'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.vertical_image_scroll, 'vertical_image_scroll'),
 						title: translate(TranslationKeys.vertical_image_scroll),
 					}}
 				/>
@@ -783,21 +791,21 @@ export default function Layout() {
 				<Drawer.Screen
 					name="notification/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.notification} headerKey={'notification'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.notification, 'notification'),
 						title: translate(TranslationKeys.notification),
 					}}
 				/>
                                 <Drawer.Screen
                                         name="events/index"
                                         options={{
-                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.events} headerKey={'events'} />,
+                                                header: makeTranslatedStackHeader(TranslationKeys.events, 'events'),
                                                 title: translate(TranslationKeys.events),
                                         }}
                                 />
                                 <Drawer.Screen
                                         name="collectible-events/index"
                                         options={{
-                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.collectible_events} headerKey={'collectible_events'} />,
+                                                header: makeTranslatedStackHeader(TranslationKeys.collectible_events, 'collectible_events'),
                                                 title: translate(TranslationKeys.collectible_events),
                                         }}
                                 />
@@ -812,7 +820,7 @@ export default function Layout() {
                                         name="support-FAQ/index"
                                         options={{
                                                 title: translate(TranslationKeys.feedback_support_faq),
-                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.feedback_support_faq} headerKey={'Feedback Support Faq'} />,
+                                                header: makeTranslatedStackHeader(TranslationKeys.feedback_support_faq, 'Feedback Support Faq'),
 					}}
 				/>
 
@@ -820,7 +828,7 @@ export default function Layout() {
 					name="feedback-support/index"
 					options={{
 						title: 'Feedback & Support',
-						header: () => <FeedbackAndSupportHeader />,
+						header: FeedbackAndSupportHeader,
 					}}
 				/>
 
@@ -828,7 +836,7 @@ export default function Layout() {
 					name="give-feedback/index"
 					options={{
 						title: translate(TranslationKeys.rueckmeldung_geben),
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.rueckmeldung_geben} headerKey={'rueckmeldung_geben'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.rueckmeldung_geben, 'rueckmeldung_geben'),
 					}}
 				/>
 
@@ -851,7 +859,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="licenseInformation/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.license_information} headerKey={'license_information'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.license_information, 'license_information'),
 						title: 'License Information',
 					}}
 				/>
@@ -860,7 +868,7 @@ export default function Layout() {
 					name="data-access/index"
 					options={{
 						title: 'Data Access',
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.dataAccess} headerKey={'Data Access'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.dataAccess, 'Data Access'),
 					}}
 				/>
 
@@ -868,20 +876,20 @@ export default function Layout() {
 					name="eating-habits/index"
 					options={{
 						title: 'Eating Habits',
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.eating_habits} headerKey={'Eating Habits'} />,
+						header: makeTranslatedStackHeader(TranslationKeys.eating_habits, 'Eating Habits'),
 					}}
 				/>
 
 				<Drawer.Screen
 					name="form-categories/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.select_a_form_category} />,
+						header: makeTranslatedStackHeader(TranslationKeys.select_a_form_category),
 					}}
 				/>
 				<Drawer.Screen
 					name="forms/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.select_a_form} />,
+						header: makeTranslatedStackHeader(TranslationKeys.select_a_form),
 					}}
 				/>
 				<Drawer.Screen
@@ -899,7 +907,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="form-queue/index"
 					options={{
-						header: () => <TranslatedStackHeader labelKey={TranslationKeys.form_queue} />,
+						header: makeTranslatedStackHeader(TranslationKeys.form_queue),
 					}}
 				/>
 				<Drawer.Screen
