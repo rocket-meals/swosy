@@ -178,7 +178,7 @@ export default function ImageFullScreen() {
 				link.download = `${name}.${extension}`;
 				document.body.appendChild(link);
 				link.click();
-				document.body.removeChild(link);
+				link.remove();
 			} else {
 				const filename = `${name}.${extension}`;
 				const fileUri = (FileSystem as any).documentDirectory + filename;

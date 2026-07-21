@@ -4,22 +4,18 @@ FROM directus/directus:11.9.3
 # Switch to root user to install packages
 USER root
 
-# Install Git using apk
-RUN apk update && \
-    apk add git
-
-
-# Install required dependencies for Puppeteer
+# Install Git and required dependencies for Puppeteer using apk
 RUN apk update && apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
     ca-certificates \
-    ttf-freefont \
-    udev \
+    chromium \
+    curl \
     dbus \
-    curl
+    freetype \
+    git \
+    harfbuzz \
+    nss \
+    ttf-freefont \
+    udev
 
 # openssl # Apple Token generation# Apple Token generation
 # xxd # Apple Token generation
@@ -36,8 +32,6 @@ RUN corepack enable
 USER node
 
 RUN corepack enable && \
-    corepack prepare pnpm@8.6.12 --activate
-
-RUN pnpm install directus-extension-sync@3.0.3
-
-RUN pnpm install directus-extension-flow-manager@1.4.1
+    corepack prepare pnpm@8.6.12 --activate && \
+    pnpm install directus-extension-sync@3.0.3 && \
+    pnpm install directus-extension-flow-manager@1.4.1

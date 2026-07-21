@@ -629,7 +629,7 @@ export enum TranslationKeys {
 	Feb = 'Feb',
 	Mar = 'Mar',
 	Apr = 'Apr',
-	MayShort = 'May',
+	MayShort = 'MayShort',
 	Jun = 'Jun',
 	Jul = 'Jul',
 	Aug = 'Aug',

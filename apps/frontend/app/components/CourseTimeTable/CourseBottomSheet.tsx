@@ -68,7 +68,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const handleSavePress = () => {
 		// Function to validate HH:MM format
 		const validateTime = (time: string) => {
-			const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // Regex for HH:MM format
+			const regex = /^([01]?\d|2[0-3]):[0-5]\d$/; // Regex for HH:MM format
 			return regex.test(time);
 		};
 

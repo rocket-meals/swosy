@@ -241,7 +241,7 @@ export class DirectusDatabaseSync {
       const module = modules[moduleIndex];
       // module.id comes from the Directus API response; strip control/newline characters
       // before logging so it can't be used to forge fake log lines (log injection).
-      const safeModuleId = String(module.id).replace(/[\r\n\t\x00-\x1f]/g, '');
+      const safeModuleId = String(module.id).replace(/[\x00-\x1f]/g, '');
       if (requiredModules.has(module.id)) {
         if (module.enabled) {
           console.log(` -  ${safeModuleId} already enabled`);

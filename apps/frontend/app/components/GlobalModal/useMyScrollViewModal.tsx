@@ -3,7 +3,7 @@ import MyScrollViewModal, { MyScrollViewModalProps } from '@/components/MyScroll
 import { useModal } from './useModal';
 import type { ModalCloseReason } from 'repo-depkit-common-ui';
 
-export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
+export type MyScrollViewModalConfig = MyScrollViewModalProps & { children?: ReactNode };
 
 type ScrollViewModalOptions = {
 	backgroundStyle?: any;
@@ -34,7 +34,7 @@ export const useMyScrollViewModal = () => {
                         : undefined;
 
                 const element = (
-                        <MyScrollViewModal closeSheet={close} backgroundColor={backgroundColor} {...restProps}>
+                        <MyScrollViewModal backgroundColor={backgroundColor} {...restProps}>
                                 {children}
                         </MyScrollViewModal>
                 );

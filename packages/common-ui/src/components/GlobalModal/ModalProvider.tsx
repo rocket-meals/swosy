@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useState, ReactNode, useRef, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState, ReactNode, useRef, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '../BaseBottomSheet';
 import { useTheme } from '../../context/ThemeContext';
@@ -106,14 +106,14 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 		closeInvocations: 0,
 	});
 
-	const clearCloseTimeout = () => {
+	const clearCloseTimeout = useCallback(() => {
 		if (closeTimeoutRef.current) {
 			clearTimeout(closeTimeoutRef.current);
 			closeTimeoutRef.current = null;
 		}
-	};
+	}, []);
 
-	const notifyClosed = (items: ModalStackItem[], reason: ModalCloseReason) => {
+	const notifyClosed = useCallback((items: ModalStackItem[], reason: ModalCloseReason) => {
 		for (const item of items) {
 			try {
 				item.onClosed?.(reason);
@@ -121,26 +121,26 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 				// A consumer's onClosed callback must never break the modal stack itself.
 			}
 		}
-	};
+	}, []);
 
-	const takePendingClosed = (): ModalStackItem[] => {
+	const takePendingClosed = useCallback((): ModalStackItem[] => {
 		const items = pendingClosedRef.current;
 		pendingClosedRef.current = [];
 		return items;
-	};
+	}, []);
 
 	// The single place a confirmed close is finalized: unmount the sheet's content and
 	// only THEN notify the closed items, so an onClosed callback that opens the next
 	// modal (e.g. the popup-event queue) always starts from a settled, empty sheet.
-	const finalizeConfirmedClose = () => {
+	const finalizeConfirmedClose = useCallback(() => {
 		isClosingRef.current = false;
 		setIsSheetClosing(false);
 		clearCloseTimeout();
 		setModalStack([]);
 		notifyClosed(takePendingClosed(), 'closed');
-	};
+	}, [clearCloseTimeout, notifyClosed, takePendingClosed]);
 
-	const open = (c: ReactNode, options?: ModalOptions) => {
+	const open = useCallback((c: ReactNode, options?: ModalOptions) => {
 		const supersededClose = isClosingRef.current;
 		clearCloseTimeout();
 		isClosingRef.current = false;
@@ -173,9 +173,9 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			sheetRefReady: Boolean(sheetRef.current),
 			openInvocations: prev.openInvocations + 1,
 		}));
-	};
+	}, [clearCloseTimeout, notifyClosed, takePendingClosed]);
 
-	const openAndDiscardOthers = (c: ReactNode, options?: ModalOptions) => {
+	const openAndDiscardOthers = useCallback((c: ReactNode, options?: ModalOptions) => {
 		clearCloseTimeout();
 		isClosingRef.current = false;
 		setIsSheetClosing(false);
@@ -205,9 +205,9 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			sheetRefReady: Boolean(sheetRef.current),
 			openInvocations: prev.openInvocations + 1,
 		}));
-	};
+	}, [clearCloseTimeout, notifyClosed, takePendingClosed]);
 
-	const closeAll = () => {
+	const closeAll = useCallback(() => {
 		if (modalStackRef.current.length === 0) return;
 		if (isClosingRef.current) return;
 
@@ -239,9 +239,9 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			sheetRefReady: Boolean(sheetRef.current),
 			closeInvocations: prev.closeInvocations + 1,
 		}));
-	};
+	}, [clearCloseTimeout, notifyClosed, finalizeConfirmedClose]);
 
-	const close = () => {
+	const close = useCallback(() => {
 		if (modalStackRef.current.length === 0) return;
 		if (isClosingRef.current) return;
 
@@ -283,7 +283,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 			sheetRefReady: Boolean(sheetRef.current),
 			closeInvocations: prev.closeInvocations + 1,
 		}));
-	};
+	}, [clearCloseTimeout, notifyClosed, finalizeConfirmedClose]);
 
 	// Desired dismiss behaviour (see BaseBottomSheetProps for the matching prop docs): a
 	// backdrop tap or a swipe-down-to-close gesture is a "get me out of here" gesture from
@@ -327,7 +327,7 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 				sheetRef.current?.expand?.();
 			}
 		}
-	}, []);
+	}, [clearCloseTimeout, notifyClosed, takePendingClosed, finalizeConfirmedClose]);
 
 	const ensureExpand = () => {
 		let tries = 0;
@@ -373,16 +373,22 @@ export const ModalContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 	const currentItem = modalStack[modalStack.length - 1] ?? null;
 	const screenBackgroundColor = currentItem?.headerBackgroundColor || theme.screen.background;
 
+	const contextValue = useMemo<ModalContextType>(() => ({
+		open, close, openAndDiscardOthers, closeAll, debug,
+		_currentItem: currentItem,
+		_sheetRef: sheetRef,
+		_handleSheetChange: handleSheetChange,
+		_screenBackgroundColor: screenBackgroundColor,
+		_stackDepth: modalStack.length,
+		_isSheetClosing: isSheetClosing,
+	}), [
+		open, close, openAndDiscardOthers, closeAll, debug,
+		currentItem, handleSheetChange, screenBackgroundColor,
+		modalStack.length, isSheetClosing,
+	]);
+
 	return (
-		<ModalContext.Provider value={{
-			open, close, openAndDiscardOthers, closeAll, debug,
-			_currentItem: currentItem,
-			_sheetRef: sheetRef,
-			_handleSheetChange: handleSheetChange,
-			_screenBackgroundColor: screenBackgroundColor,
-			_stackDepth: modalStack.length,
-			_isSheetClosing: isSheetClosing,
-		}}>
+		<ModalContext.Provider value={contextValue}>
 			{children}
 		</ModalContext.Provider>
 	);

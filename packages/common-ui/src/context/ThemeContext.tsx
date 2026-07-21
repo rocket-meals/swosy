@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Appearance } from 'react-native';
 import { darkTheme, lightTheme, Theme } from '../themes';
 
@@ -24,10 +24,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 	const [theme, setTheme] = useState<Theme>(() => resolveTheme('systematic'));
 
-	const setThemeMode = (newMode: ThemeMode) => {
+	const setThemeMode = useCallback((newMode: ThemeMode) => {
 		setMode(newMode);
 		setTheme(resolveTheme(newMode));
-	};
+	}, []);
 
 	useEffect(() => {
 		setTheme(resolveTheme(mode));
@@ -46,8 +46,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 	const isDark = theme === darkTheme;
 
+	const value = useMemo(
+		() => ({ theme, isDark, setThemeMode }),
+		[theme, isDark, setThemeMode]
+	);
+
 	return (
-		<ThemeContext.Provider value={{ theme, isDark, setThemeMode }}>
+		<ThemeContext.Provider value={value}>
 			{children}
 		</ThemeContext.Provider>
 	);

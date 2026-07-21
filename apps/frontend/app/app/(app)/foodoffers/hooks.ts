@@ -268,7 +268,7 @@ export const useSheetHandling = (
     // Optimization: Keep sheet active to prevent unmount/remount on navigation
     const [isActive] = useState(true);
 
-    const openSheet = useCallback((sheet: 'menu' | 'sort' | string, props = {}) => {
+    const openSheet = useCallback((sheet: string, props = {}) => {
         if (sheet === 'sort') {
             openFoodofferSortingModal();
             return;

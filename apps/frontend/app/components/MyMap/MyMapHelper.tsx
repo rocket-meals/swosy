@@ -8,5 +8,3 @@ export interface MyMapProps extends MyMapCoreProps {
 	initialCenter: { lat: number; lng: number };
 	onMessage: (data: object) => void;
 }
-
-export class MyMapHelper {}

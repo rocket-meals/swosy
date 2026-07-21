@@ -89,7 +89,7 @@ export class TranslationHelper {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     if (itemWithTranslations) {
-      const { updateObject: updateObject, updateNeeded: updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
+      const { updateObject, updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
 
       if (updateNeeded) {
         //const createTranslations = updateObject.translations.create;

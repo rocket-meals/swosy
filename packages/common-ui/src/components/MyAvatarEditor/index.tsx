@@ -691,7 +691,7 @@ type AvatarEditorBehaviorProps = {
 };
 
 type AvatarEditorModalContentProps = AvatarPreviewAppearanceProps &
-	AvatarEditorBehaviorProps & {
+	Omit<AvatarEditorBehaviorProps, 'onDebugEvent'> & {
 		initialConfig: AvatarConfig;
 		configObservable: ConfigObservable;
 		configRef: React.MutableRefObject<AvatarConfig>;

@@ -496,9 +496,7 @@ export class DateHelper {
   }
 
   static getDateInMinutes(date: Date, minutes: number) {
-    const tempDate = new Date(date);
-    tempDate.setMinutes(tempDate.getMinutes() + minutes);
-    return tempDate;
+    return DateHelper.addMinutes(date, minutes);
   }
 
   static getCurrentDateInMinutes(minutes: number) {

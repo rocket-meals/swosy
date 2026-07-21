@@ -117,7 +117,9 @@ function getAnchorAngleDeg(anchorPosition: string): number {
  * Group position of a list entry for settings list styling:
  * 'single' for one-item lists, otherwise 'top' / 'middle' / 'bottom'.
  */
-function getListGroupPosition(index: number, length: number): 'top' | 'middle' | 'bottom' | 'single' {
+type ListGroupPosition = 'top' | 'middle' | 'bottom' | 'single';
+
+function getListGroupPosition(index: number, length: number): ListGroupPosition {
 	if (length === 1) return 'single';
 	if (index === 0) return 'top';
 	if (index === length - 1) return 'bottom';
@@ -129,7 +131,7 @@ function getListGroupPosition(index: number, length: number): 'top' | 'middle' |
  * and tile-color pickers; each caller supplies its own per-entry row (selection state
  * and onPress differ between the two pickers).
  */
-function renderTerrainCategoryList(renderEntry: (entry: TerrainAssetEntry, position: 'top' | 'middle' | 'bottom' | 'single') => React.ReactNode) {
+function renderTerrainCategoryList(renderEntry: (entry: TerrainAssetEntry, position: ListGroupPosition) => React.ReactNode) {
 	return (
 		<View style={{ paddingBottom: 20 }}>
 			{TERRAIN_CATEGORIES.map((cat) => {
@@ -1348,7 +1350,7 @@ function DebugInfoContent({
 					<SettingsListGroupTitle title={`⬠ Pentagon Tiles (Res ${Math.round(h3Resolution)})`} />
 					{pentagons.map((cell, i) => {
 						const [lat, lng] = cellToLatLng(cell);
-						const position: 'top' | 'middle' | 'bottom' | 'single' = getListGroupPosition(i, pentagons.length);
+						const position: ListGroupPosition = getListGroupPosition(i, pentagons.length);
 						return (
 							<SettingsListSelectOptionSingle
 								key={cell}

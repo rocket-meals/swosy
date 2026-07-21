@@ -206,31 +206,28 @@ const Index = () => {
 			const normalizedLocale = language || undefined;
 			const sortedSubmissions = [...submissions];
 
-			switch (option) {
-				case 'alphabetical':
-				default:
-					sortedSubmissions.sort((first, second) => {
-						const firstAlias = (first.alias || '').trim();
-						const secondAlias = (second.alias || '').trim();
+			// 'alphabetical' is currently the only supported option; any other
+			// value falls back to the same alphabetical sort.
+			sortedSubmissions.sort((first, second) => {
+				const firstAlias = (first.alias || '').trim();
+				const secondAlias = (second.alias || '').trim();
 
-						if (!firstAlias && !secondAlias) {
-							return 0;
-						}
+				if (!firstAlias && !secondAlias) {
+					return 0;
+				}
 
-						if (!firstAlias) {
-							return 1;
-						}
+				if (!firstAlias) {
+					return 1;
+				}
 
-						if (!secondAlias) {
-							return -1;
-						}
+				if (!secondAlias) {
+					return -1;
+				}
 
-						return firstAlias.localeCompare(secondAlias, normalizedLocale, {
-							sensitivity: 'base',
-						});
-					});
-					break;
-			}
+				return firstAlias.localeCompare(secondAlias, normalizedLocale, {
+					sensitivity: 'base',
+				});
+			});
 
 			return sortedSubmissions;
 		},

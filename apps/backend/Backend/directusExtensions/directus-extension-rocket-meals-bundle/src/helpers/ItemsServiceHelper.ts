@@ -1,4 +1,4 @@
-import { ItemsService, ItemsServiceCreator, MutationOptions, QueryOptions } from './ItemsServiceCreator';
+import { ItemsService, ItemsServiceCreator, QueryOptions } from './ItemsServiceCreator';
 import type { Filter } from '@directus/types/dist/filter';
 import { ApiContext } from './ApiContext';
 import { Accountability, EventContext, PrimaryKey, Query } from '@directus/types';
@@ -318,12 +318,12 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
   accountability: Accountability | null | undefined;
   knex: Knex;
 
-  async createMany(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async createMany(data: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.createMany(data, opts);
   }
 
-  async deleteByQuery(query: Query, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async deleteByQuery(query: Query, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.deleteByQuery(query, opts);
   }
@@ -344,27 +344,27 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     );
   }
 
-  async updateBatch(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateBatch(data: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateBatch(data, opts);
   }
 
-  async updateByQuery(query: Query, data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateByQuery(query: Query, data: Partial<T>, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateByQuery(query, data, opts);
   }
 
-  async updateMany(keys: PrimaryKey[], data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateMany(keys: PrimaryKey[], data: Partial<T>, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateMany(keys, data, opts);
   }
 
-  async upsertMany(payloads: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async upsertMany(payloads: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.upsertMany(payloads, opts);
   }
 
-  async upsertSingleton(data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey> {
+  async upsertSingleton(data: Partial<T>, opts?: any): Promise<PrimaryKey> {
     let itemsService = await this.getItemsService();
     return await itemsService.upsertSingleton(data, opts);
   }

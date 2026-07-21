@@ -39,6 +39,8 @@ for arg in "$@"; do
         --skip-generate)
             SKIP_GENERATE=true
             ;;
+        *)
+            ;;
     esac
 done
 

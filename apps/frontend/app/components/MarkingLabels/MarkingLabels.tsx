@@ -218,7 +218,6 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				} else {
 					setDislikeLoading(false);
 				}
-				return;
 			} else {
 				try {
 					const likeStats = ownMarking?.like === like ? null : like;

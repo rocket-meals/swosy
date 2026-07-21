@@ -78,7 +78,7 @@ export class ParseSchedule {
         let foodsJSONList = await this.foodParser.getFoodsListForParser();
         let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
         let currentMealOffersHash = new WorkflowResultHash(HashHelper.hashFromObject(foodofferListForParser));
-        await this.context.logger.appendLog('Current meal offers hash: ' + currentMealOffersHash.getHash());
+        await this.context.logger.appendLog('Current meal offers hash: ' + JSON.stringify(currentMealOffersHash.getHash()));
 
         //console.log("Get Previous Meal Offers Hash");
         let previousMealOffersHash = await this.getPreviousMealOffersHash();
@@ -92,7 +92,7 @@ export class ParseSchedule {
           });
         }
 
-        await this.context.logger.appendLog('Previous meal offers hash: ' + previousMealOffersHash.getHash());
+        await this.context.logger.appendLog('Previous meal offers hash: ' + JSON.stringify(previousMealOffersHash.getHash()));
 
         const markingsExclusionsHelper = this.context.myDatabaseHelper.getMarkingsExclusionsHelper();
 

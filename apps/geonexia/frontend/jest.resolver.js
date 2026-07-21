@@ -12,7 +12,7 @@
 
 const rnResolver = require('react-native/jest/resolver.js');
 
-module.exports = (modulePath, options) => {
+function customJestResolver(modulePath, options) {
     const originalPackageFilter = options.packageFilter;
 
     return rnResolver(modulePath, {
@@ -25,4 +25,6 @@ module.exports = (modulePath, options) => {
             return filtered;
         },
     });
-};
+}
+
+module.exports = customJestResolver;

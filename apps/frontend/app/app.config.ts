@@ -12,6 +12,6 @@ require('ts-node').register({
 
 const { getFinalConfig } = require('./config.ts');
 
-module.exports = function ({ config }: ConfigContext) {
+module.exports = function getExpoConfig({ config }: ConfigContext) {
 	return getFinalConfig(config);
 };

@@ -273,6 +273,187 @@ nur `CustomMarkdown.tsx` (`TextContent`/`ImageContent`, als JSX-Tags gerendert
 — Bild-Ladefehler-State ist vorher bei jedem Re-Render von `CustomMarkdown`
 verloren gegangen) und `FeedbackSupport.tsx` (`IconSelector`).
 
+Am 2026-07-21 (dritte Runde desselben Tages) wurde ein breiter Schwung
+mechanischer Fixes über ~20 verschiedene, jeweils kleine (1-16x) Issue-Typen
+abgearbeitet (insgesamt ca. 75 Einzelfundstellen), da der häufigste
+verbleibende Typ „Cognitive Complexity" (109x) bewusst individuelle
+Refactorings statt mechanischer Fixes braucht (siehe oben) und daher nicht
+Teil dieser Runde war:
+
+- **Context-Provider-Werte in `useMemo`** (4x): `SettingsContext`,
+  `ThemeContext`, `ExpoUpdateChecker`, `ModalProvider` (`packages/common-ui`)
+  übergaben ein bei jedem Render neu erzeugtes Objekt an `Context.Provider`.
+  Bei `ModalProvider` wurden dazu zusätzlich `open`/`close`/
+  `openAndDiscardOthers`/`closeAll`/`handleSheetChange` und ihre internen
+  Helper (`clearCloseTimeout`, `notifyClosed`, `takePendingClosed`,
+  `finalizeConfirmedClose`) mit `useCallback` referenzstabil gemacht, da sie
+  nur auf Refs und stabile `setState`-Funktionen zugreifen (kein Zugriff auf
+  sich änderndes State/Props in der Closure) — rein additive Memoisierung,
+  keine Verhaltensänderung.
+- **Union-Type „von `string` überdeckt"** (5x): `foodoffers/hooks.ts`
+  (`sheet: 'menu' | 'sort' | string`) und `HousingHeader.tsx`
+  (`drawerPosition: 'left' | 'right' | 'system' | string`) — die
+  Literal-Member waren durch den bereits vorhandenen `string`-Typ ohnehin
+  nie eigenständig wirksam; auf den reinen `string`-Typ vereinfacht (keine
+  Laufzeitänderung).
+- **Doppelte Funktionsimplementierungen** (3x): `resourceHelper.tsx`
+  (`getFromCategoryTranslation`/`getFromCategoryTranslation`/
+  `getFoodAttributesTranslation` teilen sich jetzt eine private
+  `getNameFromTranslation`-Hilfsfunktion), `MyUnsupportedCardReader.ts`
+  (`isNfcEnabled` ruft jetzt `isNfcSupported()` auf statt den Body zu
+  duplizieren) und `packages/common/src/DateHelper.ts`
+  (`getDateInMinutes` ruft jetzt `addMinutes` auf).
+- **Anonyme Funktionen benannt** (3x): `module.exports = function (...)` in
+  allen drei `app.config.ts` (`frontend`, `geonexia`, `score-tracker`) zu
+  `function getExpoConfig(...)`.
+- **Redundante Type-Aliase entfernt** (3x): `TTSEnabled` (→ `boolean`),
+  `H3Index` (→ `string`, nur intern in `H3Helper.ts` verwendet) und
+  `MutationOptions` (→ `any`, Vorkommen und Imports in `FilesServiceHelper.ts`/
+  `ItemsServiceHelper.ts` mit aktualisiert).
+- **`switch` mit ≤2 Fällen durch `if` ersetzt** (3x): `forms-sync-hook/index.ts`
+  und `food-sync-hook/index.ts` (jeweils ein einzelner Case + leerer
+  `default`) sowie `form-submissions/index.tsx` (Case `'alphabetical'` und
+  `default` hatten identischen Fallthrough-Body — Switch komplett entfernt,
+  Sortierung läuft jetzt unbedingt, exakt gleiches Verhalten für alle
+  `option`-Werte).
+- **`Boolean`/`String`-Wrapper-Typen** (3x) durch `boolean`/`string` ersetzt:
+  `LabelHeader.tsx`, `Login/types.ts`, `SubmissionWarningModal/types.ts`.
+- **Union-Typen zu benannten Type-Aliasen extrahiert** (2 Meldungen, 3
+  Fundstellen): `ListGroupPosition` in `geonexia/app/index.tsx` (3
+  Vorkommen) und `ProfileField` in `FriendsContent/index.tsx` (3 Vorkommen).
+- **Fehlender `default`-Case in Shell-Scripts** (2x): beide
+  `run-maestro-web-test.sh` (`frontend`, `score-tracker`) bekamen einen
+  expliziten `*) ;;`-Case in der Flag-Parsing-`case`.
+- **Doppelte Zeichen in Regex-Zeichenklasse** (2x): `[\r\n\t\x00-\x1f]` in
+  `DirectusDatabaseSync.ts` und `importSchema.js` — `\r`/`\n`/`\t` sind
+  bereits Teil von `\x00-\x1f`; zu `[\x00-\x1f]` vereinfacht.
+- **Überflüssiger `void`-Operator** (2x): `void main();` in beiden
+  `generate-eas-config.ts` (`score-tracker`, `scripts`) — `main()` ist
+  synchron (kein Promise), `void` also ohne Zweck.
+- **Ungenutzte PropTypes/Props entfernt** (4x): `onDebugEvent` aus
+  `AvatarEditorModalContentProps` ausgenommen (`Omit<AvatarEditorBehaviorProps,
+  'onDebugEvent'>` — wird von `AvatarEditorModalContent` nirgends
+  konsumiert/weitergereicht, andere Komponenten mit `onDebugEvent` bleiben
+  unverändert), `accentColor` aus `SettingsListLeftRightProps` entfernt
+  (nirgends gelesen) und `closeSheet` aus `MyScrollViewModalProps` (beide
+  Varianten, `packages/common-ui` und `apps/frontend`) — die Komponente hat
+  `closeSheet` nie destrukturiert/verwendet. Da `closeSheet` an mehreren
+  Stellen dennoch an `<MyScrollViewModal>` durchgereicht wurde (totes
+  Prop-Drilling), mussten zusätzlich die Aufrufstellen angepasst werden:
+  beide `useMyScrollViewModal.tsx`-Hooks (`packages/common-ui` und
+  `apps/frontend`), `HoursSheet.tsx` (`HourSheet`) und `CalendarSheet.tsx` —
+  überall wurde nur der nie wirksame `closeSheet`-Prop entfernt, keine
+  Verhaltensänderung (per TypeScript-Diff gegen den Stand vor dieser Runde
+  verifiziert, siehe unten).
+- **`node:buffer`-Import bewusst NICHT geändert** (2x, `form-queue/index.tsx`,
+  `form-submission/index.tsx`, beide `apps/frontend`): Metro (React
+  Native/Expo) unterstützt das `node:`-URL-Schema für Kernmodul-Polyfills
+  nicht (im installierten `metro-resolver` gibt es keine entsprechende
+  Sonderbehandlung) — anders als bei den Node.js-ausgeführten Backend-Skripten
+  hätte das Bundle hier vermutlich mit „Unable to resolve module node:buffer"
+  gebrochen. Blieb bei `from 'buffer'`.
+- **Redundante Jump-Statements** (2x): `SettingsListMarkingLabel.tsx` und
+  `MarkingLabels.tsx` hatten je ein `if (isAnonymousUser) { ...; return; }
+  else { ... }` als letzte Anweisung der Funktion — das `return` wurde
+  entfernt (der `else`-Zweig wird dadurch weiterhin korrekt übersprungen,
+  keine Verhaltensänderung, da nichts nach dem `if/else` folgt).
+- **Object-Default-Stringifizierung** (6x): `form-submission/index.tsx`
+  (`normalizeExpectedValue`/`normalizeCurrentValue` nutzen jetzt
+  `JSON.stringify(...)` statt `String(...)` im Objekt-Fallback-Pfad) sowie
+  vier echte Logging-Stellen in `ParseSchedule.ts` und
+  `FormImportSyncWorkflow.ts`: `WorkflowResultHash.getHash()` gibt
+  `Record<string, unknown> | Array<unknown> | null` zurück (keinen String!)
+  — die String-Konkatenation `'... ' + hash.getHash()` produzierte in den
+  Logs tatsächlich `[object Object]` statt des Hash-Inhalts. Zu
+  `JSON.stringify(hash.getHash())` geändert — echte Verbesserung der
+  Log-Aussagekraft, keine Logik geändert.
+- **Leere Blöcke** (2x): `app/index.tsx` (`if (updated) {...} else {}` —
+  leeres `else` entfernt) und `HoursSheet.tsx` (`if (!timeRanges ...) {}
+  else { ... }` — Bedingung negiert (`if (timeRanges && timeRanges.length >
+  0) { ... }`), leerer Zweig entfernt).
+- **Dockerfile-RUN-Merges** (2x, `apps/backend/Dockerfile`): die beiden
+  `apk update`-RUNs (git, dann Puppeteer-Dependencies) zu einem RUN
+  zusammengeführt (dabei automatisch auch das separate „remove cache"-Finding
+  miterledigt, da der ganze Befehl jetzt `--no-cache` nutzt) sowie die drei
+  aufeinanderfolgenden `corepack`/`pnpm install`-RUNs zu einem RUN verkettet.
+  Zusätzlich die Paketliste alphanumerisch sortiert (weiteres Sonar-Finding)
+  und in `apps/backend/dockerDatabaseBackup/Dockerfile` das veraltete
+  `MAINTAINER`-Instruction durch `LABEL maintainer="..."` ersetzt.
+- **Regex-Vereinfachungen**: `[0-9]` → `\d` in `CourseBottomSheet.tsx` (2
+  Vorkommen in einer Zeile) und `hexId.charCodeAt(i)` →
+  `hexId.codePointAt(i) ?? 0` in `ActivityMapRebuildHelper.ts`.
+- **Ternary → `Math.max()`** (2x): `CourseTimetable.tsx`
+  (`offset > 0 ? offset : 0` → `Math.max(offset, 0)`) und
+  `ByteSizeHelper.ts` (`decimals < 0 ? 0 : decimals` →
+  `Math.max(decimals, 0)`).
+- **Interface-Namen an PascalCase angepasst** (2x): `sheetProps` →
+  `SheetProps` in `EditFormSubmissionSheet/types.ts` und
+  `SubmissionWarningSheet/types.ts` (inkl. aller Imports/Nutzungen).
+- **Promise-Chain → Top-Level-`await`**: `apps/backend/sync/importSchema.js`
+  ist ESM (`"type": "module"`, nutzt bereits `import`), Top-Level-`await` ist
+  also gültig — `mainPush()/mainPull().then(...).catch(console.error)` zu
+  `try { await ...; process.exit(0); } catch (error) { console.error(error);
+  }` geändert (identisches Verhalten: kein `process.exit` bei Fehlern, wie
+  zuvor bei `.catch`).
+- **Diverse Einzelfälle** (je 1x, ~20 Stück): u. a. `.slice(-2)` statt
+  `.slice(len-2, len)` in `hashHelper.ts`; `.some(...)` statt
+  `.filter(...).length > 0` in `achievements/index.tsx`; benannte
+  Jest-Resolver-Funktion statt anonymer Arrow in `jest.resolver.js`;
+  gehoistete `DEFAULT_KM_ANNOUNCEMENT_CONTENT`-Konstante statt
+  Objekt-Literal als Parameter-Default in `TTSHelper.ts`; `return value`
+  statt `return Promise.resolve(value)` in `MaxManagerConnector.ts`
+  (Funktion ist bereits `async`); unnötig umbenanntes Destructuring
+  (`updateObject: updateObject`) in `TranslationHelper.ts`; Default- statt
+  Named-Import für `puppeteer-core` in `PuppeteerGenerator.ts`
+  (`esModuleInterop` ist im Workspace aktiv); `let headersObject;` statt
+  `= undefined` in `importSchema.js`; leere `MyMapHelper`-Klasse entfernt
+  (nirgends als Wert importiert, nur der Dateiname für Typ-Imports
+  gebraucht); `link.remove()` statt `document.body.removeChild(link)` in
+  `image-full-screen/index.tsx`; zusammengelegte `ON_LOGIN`/`UPDATE_LOGIN`
+  Switch-Cases in `authReducer.ts` (identischer Body); unnötiges
+  Objekt-Spread-in-Objekt-Literal in `WorkflowRunJobInterface.ts`;
+  `for _ in range(...)` statt ungenutztem `level` in
+  `getBase64IconForMail.py`; redundante `data &&`-Prüfung entfernt in
+  `form-submission/index.tsx` (durch äußeres `if (data)` bereits garantiert);
+  einzelnes `if` im `else`-Block zu `else if`-Kette abgeflacht in
+  `HoursSheet.tsx`; `!(x > 0)` zu `(x ?? 0) <= 0` in
+  `ApartmentDetailsContent.tsx` (statt naivem `x <= 0`, da `x` über
+  Optional-Chaining `undefined` sein kann und `undefined <= 0` anders als
+  `!(undefined > 0)` auswertet — mit `?? 0` bleibt das Verhalten für den
+  `undefined`-Fall identisch).
+- **Echter Bug gefunden und mitgefixt**: `locales/keys.ts` —
+  `MayShort = 'May'` zeigte auf den Übersetzungs-Eintrag der ausgeschriebenen
+  „May"-Übersetzung statt auf den eigenständigen, bereits in
+  `translations.json` vorhandenen `"MayShort"`-Eintrag (der z. B. für
+  Arabisch/Spanisch/Chinesisch andere Werte als „May" hat). Der Kalender
+  (`CalendarSheet.tsx`, `monthNamesShort`) zeigte dadurch für den
+  abgekürzten Mai-Monatsnamen in diesen Sprachen fälschlich die
+  ausgeschriebene Übersetzung. Zu `MayShort = 'MayShort'` korrigiert.
+- **Bewusst nicht geändert:**
+  - `Object.prototype.hasOwnProperty.call(...)` in `packages/common/src/DateHelper.ts`
+    (→ `Object.hasOwn()`, ES2022): `DateHelper` wird auch vom
+    Backend-Extension-Workspace importiert, der `target`/`lib: ["ES2019"]`
+    nutzt — gleiche Kategorie Risiko wie das bereits dokumentierte
+    `toSorted()`-Skip oben.
+  - `JSON.parse(JSON.stringify(lottieJSON))` in `animationHelper.ts`
+    (→ `structuredClone(...)`): Laufzeitunterstützung in Hermes/React
+    Native über alle unterstützten Versionen hinweg nicht sicher verifizierbar
+    in dieser Session; Risiko eines Laufzeitfehlers (`structuredClone is not
+    defined`) höher bewertet als der Lint-Gewinn.
+  - `Cognitive Complexity` (weiterhin 109x) und das 51-Case-`switch` in
+    `settingsReducer.ts` (Meldung „Reduce non-empty switch cases from 51 to
+    30") bleiben für eigene, gezielte Refactoring-Runden vorgemerkt.
+
+Verifiziert per `tsc --noEmit` (Baseline vor dieser Runde vs. danach,
+`git stash`/`git stash pop`) für alle betroffenen Workspaces (`apps/frontend/app`,
+`apps/geonexia/frontend`, `apps/score-tracker/frontend`, `apps/backend-sync`,
+`apps/scripts`) sowie `yarn typecheck` für die Backend-Extension: keine neuen
+Fehler, nur Zeilennummern-Verschiebungen bei vorbestehenden (unabhängigen)
+Fehlern. Dabei zwei durch die `closeSheet`-Prop-Entfernung verursachte
+Compile-Fehler gefunden und behoben (Aufrufstellen in `HoursSheet.tsx` und
+`CalendarSheet.tsx`, die `closeSheet` noch direkt an `<MyScrollViewModal>`
+übergeben hatten).
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

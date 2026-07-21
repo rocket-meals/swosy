@@ -448,11 +448,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (reg
   // Send mail after form submission state syncing
   registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
 
-  switch (EnvVariableHelper.getSyncForCustomer()) {
-    case SyncForCustomerEnum.HANNOVER:
-      FormSyncHannover.registerHooks(registerFunctions, apiContext);
-      break;
-    default:
-      break;
+  if (EnvVariableHelper.getSyncForCustomer() === SyncForCustomerEnum.HANNOVER) {
+    FormSyncHannover.registerHooks(registerFunctions, apiContext);
   }
 });
