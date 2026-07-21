@@ -1,17 +1,5 @@
 Key,Message,Component,Line
-"AZ-GDOuhnwEU1_wPHMGZ","Remove this useless assignment to variable ""canteen"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts",190
-"AZ-GDOuhnwEU1_wPHMGa","Remove this useless assignment to variable ""cashregisters"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts",190
-"AZ-GDPCRnwEU1_wPHMGb","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",216
-"AZ-GDPQYnwEU1_wPHMGe","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",32
-"AZ-GDPe1nwEU1_wPHMGg","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",430
-"AZ-GDPIknwEU1_wPHMGc","Async function 'refreshFoodOffersInBackground' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",57
-"AZ-GDPZEnwEU1_wPHMGf","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",74
-"AZ-GDPPcnwEU1_wPHMGd","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",59
-"AZ-GDPq-nwEU1_wPHMGh","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewDirectusImageEditModal.tsx",178
-"AZ-GDP-onwEU1_wPHMGj","Function 'buildSyntheticGapPoints' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2638
-"AZ-GDP5wnwEU1_wPHMGi","Remove this useless assignment to variable ""activeTiles"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",1199
 "AZ-DyPTpw_Adoi_0b8bD","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",23
-"AZ-DyPKTw_Adoi_0b8bC","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",166
 "AZ9_ondP-TchFAS-K2Wc","Review this redundant assignment: ""resolvedAspectRatio"" already holds the assigned value along all execution paths.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",112
 "AZ9sgsKphFHGbvsT3KfX","Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",346
 "AZ9sZyGg04m_SfjRDf9K","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",464
@@ -35,7 +23,6 @@ Key,Message,Component,Line
 "AZ12eg0jus-xC6EIJUtY","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",57
 "AZ1kvhY4tUR0f1ZqLdjm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",319
 "AZ1kvhY4tUR0f1ZqLdjk","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",550
-"AZ7v18PAhkdGLBATgzMF","Prefer `.some(…)` over `.find(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",505
 "AZ1UqIdQ4AHuoAEza5EI","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",199
 "AZ1UqIdQ4AHuoAEza5EK","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",201
 "AZ1UqIdQ4AHuoAEza5EL","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",203
@@ -51,7 +38,7 @@ Key,Message,Component,Line
 "AZ0_-1Ghip1ffNXdD4x6","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteDisplayHelper.ts",50
 "AZ08FJNucusPjCU6Qfeq","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",600
 "AZ08FJKpcusPjCU6Qfep","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/store.ts",94
-"AZ05li8OkGZROQtBFiA7","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4056
+"AZ05li8OkGZROQtBFiA7","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4067
 "AZ05NCP9vIUCM9Fw0Ek7","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",240
 "AZ05GDnLoxp4O0LdguSA","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",158
 "AZ05GDnLoxp4O0LdguSB","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",176
@@ -59,14 +46,14 @@ Key,Message,Component,Line
 "AZ0shtepHCNUh2gxqokx","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",105
 "AZ0q4DRAwLXvqUESGFMG","Refactor this function to reduce its Cognitive Complexity from 54 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",365
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
-"AZ0l8P0X4f4TF5V4_eK7","Refactor this function to reduce its Cognitive Complexity from 83 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3097
-"AZ0kNDBpB0YJ19oE3NfV","Refactor this function to reduce its Cognitive Complexity from 201 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4264
-"AZ0fKKJJdghgBKdKARgS","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2884
+"AZ0l8P0X4f4TF5V4_eK7","Refactor this function to reduce its Cognitive Complexity from 83 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3108
+"AZ0kNDBpB0YJ19oE3NfV","Refactor this function to reduce its Cognitive Complexity from 201 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4275
+"AZ0fKKJJdghgBKdKARgS","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2895
 "AZ0eWxOWRvqNgnlDLcVw","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1014
 "AZ0YpBMgLvrw8DEQgX7e","Refactor this function to reduce its Cognitive Complexity from 28 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",48
 "AZ0Tpk31ufp2jxPAhSyC","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",1329
 "AZ0Tpk_Bufp2jxPAhSzX","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MyImage/index.tsx",54
-"AZ0Tpk2Eufp2jxPAhSwz","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",692
+"AZ0Tpk2Eufp2jxPAhSwz","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",697
 "AZ0Tpk4Nufp2jxPAhSyN","Refactor this function to reduce its Cognitive Complexity from 49 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",68
 "AZ0Tpk4Nufp2jxPAhSyL","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",20
 "AZ0Tpktdufp2jxPAhSu8","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",276
@@ -89,7 +76,7 @@ Key,Message,Component,Line
 "AZkUSvqIS4VhJojFFCa8","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts",18
 "AZkUSvxcS4VhJojFFCia","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",210
 "AZkUSvK8S4VhJojFFAWW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",148
-"AZkUSvNxS4VhJojFFAZe","Refactor this function to reduce its Cognitive Complexity from 65 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",730
+"AZkUSvNxS4VhJojFFAZe","Refactor this function to reduce its Cognitive Complexity from 65 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",735
 "AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",28
 "AZkUSvHUS4VhJojFFATX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",25
 "AZkUSvHUS4VhJojFFATY","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",31

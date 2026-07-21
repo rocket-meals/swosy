@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 125 | 17 |
+| 🔧 Maintainability | 112 | 17 |
 
-**Total issues:** 158 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 145 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -148,7 +148,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (17/125)
+## 🔧 Maintainability (17/112)
 
 - **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
   apps/accessibilityTester/src/report.ts:110
@@ -202,14 +202,6 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts:162
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts#L162
 
-- **Remove this useless assignment to variable "canteen".**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts:190
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts#L190
-
-- **Remove this useless assignment to variable "cashregisters".**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts:190
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts#L190
-
 - **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts:18
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts#L18
@@ -217,4 +209,12 @@
 - **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts:210
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts#L210
+
+- **Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts:128
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts#L128
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/course-timetable/index.tsx:108
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L108
 
