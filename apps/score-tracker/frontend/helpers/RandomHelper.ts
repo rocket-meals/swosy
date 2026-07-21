@@ -10,14 +10,31 @@ function getCrypto(): Crypto | undefined {
 }
 
 // Fallback for the rare runtime without a CSPRNG: derive entropy from high-resolution
-// timing instead of Math.random().
+// timing instead of Math.random(). The seed lives at module scope and is only
+// initialised once - some runtimes (Hermes on-device, this project's jest
+// setup) expose `performance.now()` with the same millisecond resolution as
+// `Date.now()`, so reseeding from wall-clock time on every call would make
+// several values requested within the same millisecond (e.g. rolling a whole
+// pool of dice at once) come out identical.
+let fallbackSeed: number | undefined;
+
+function nextFallbackByte(): number {
+	if (fallbackSeed === undefined) {
+		const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+		fallbackSeed = (Math.floor(now * 1000) ^ Date.now()) & 0x7fffffff;
+	}
+	// Math.imul keeps the multiplication within exact 32-bit integer arithmetic.
+	// A plain `seed * 1103515245` overflows Number.MAX_SAFE_INTEGER and silently
+	// loses its low bits, which made every extracted byte (and thus every die
+	// roll) collapse to the same value.
+	fallbackSeed = (Math.imul(fallbackSeed, 1103515245) + 12345) & 0x7fffffff;
+	return fallbackSeed & 0xff;
+}
+
 function fallbackRandomBytes(length: number): Uint8Array {
-	const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
-	let seed = Math.floor(now * 1000) ^ Date.now();
 	const bytes = new Uint8Array(length);
 	for (let i = 0; i < length; i++) {
-		seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-		bytes[i] = seed & 0xff;
+		bytes[i] = nextFallbackByte();
 	}
 	return bytes;
 }
