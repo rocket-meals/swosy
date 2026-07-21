@@ -61,8 +61,7 @@ bzw. dem nächsten SonarCloud-Scan. Details zu bereits gefixten Typen stehen in
 der Git-/PR-Historie.
 
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
-„Cognitive Complexity" (109x), „Move this component definition out of the parent
-component" (97x), TODO-Kommentare (39x).
+„Cognitive Complexity" (109x), TODO-Kommentare (39x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 „Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
@@ -103,6 +102,44 @@ Markdown-Zeilen (`DataAccess.tsx`, `course-timetable/index.tsx`) sowie die
 URL-Liste in `rss-feed-config/index.tsx` (nur Anhängen/Editieren, kein
 Löschen/Umsortieren vorhanden — vor einer Restrukturierung zu ID-Objekten
 erst klären, ob Löschen/Umsortieren tatsächlich nie kommen soll).
+
+„Move this component definition out of the parent component" (97x) wurde
+teilweise abgearbeitet: 45 der 46 Vorkommen außerhalb von `_layout.tsx`-Dateien
+wurden gefixt, indem die jeweilige verschachtelte Funktion (meist ein
+`CustomTooltip`-`trigger={triggerProps => (...)}`-Block oder ein
+`navigation.setOptions({ headerLeft/headerRight: () => (...) })`) auf Modul-
+oder Dateiebene als eigene benannte Komponente extrahiert wurde; Closures
+wurden als explizite Props durchgereicht. Bei `MyMarkdown.tsx` (drei
+`react-native-render-html`-Renderer) wurden bewusst Factory-Funktionen
+(`makeLinkRenderer`, `makeSubRenderer`, `makeSupRenderer`) statt parameterloser
+Komponenten verwendet, da die Renderer `contrastColor`/`textColor`/`fontSize`
+aus dem `useMemo` weiterhin benötigen.
+
+**Zwei Dinge bewusst offengelassen:**
+- `FoodItem.tsx:324` — der `CustomTooltip`-Trigger dort schließt über ~20
+  Werte (Styles, Handler, Item-Daten), was ihn zum größten und riskantesten
+  Kandidaten in diesem Batch macht; da `CustomTooltip` den Trigger ohnehin nur
+  als Funktion aufruft (kein JSX-Tag, also kein echtes Remount-Risiko), ist der
+  Nutzen einer sofortigen Extraktion gering gegenüber dem Risiko, beim
+  Durchreichen der vielen Closures etwas zu vertauschen. Für eine eigene,
+  ruhigere Änderung vormerken.
+- Alle 51 Vorkommen in `_layout.tsx`-Dateien (`apps/frontend/app/app/(app)/_layout.tsx`
+  20x, `apps/geonexia/frontend/app/_layout.tsx` 12x,
+  `apps/score-tracker/frontend/app/_layout.tsx` 7x, plus 12x in kleineren
+  `_layout.tsx`-Dateien) — bewusst für einen eigenen, fokussierten PR
+  aufgehoben, da es sich um die zentralen Navigationskonfigurationen der drei
+  Apps handelt und Fehler dort app-weite Auswirkungen hätten.
+
+Anmerkung zur Sonar-Regel: Ein Großteil der gefixten Stellen sind
+Render-Prop-Funktionen (`trigger`, `headerLeft`/`headerRight`), die von ihrem
+Aufrufer direkt als Funktion aufgerufen werden, nicht als JSX-Tag instanziiert
+— es gibt dort also keinen echten Remount-Bug (React vergibt nur beim
+JSX-Tag `<Foo/>` eine Komponentenidentität). Sonar meldet sie trotzdem, weil
+es rein syntaktisch auf „Funktion gibt JSX zurück, verschachtelt im
+Elternkomponenten-Body" prüft. Echte Remount-Bugs mit sichtbarem Impact waren
+nur `CustomMarkdown.tsx` (`TextContent`/`ImageContent`, als JSX-Tags gerendert
+— Bild-Ladefehler-State ist vorher bei jedem Re-Render von `CustomMarkdown`
+verloren gegangen) und `FeedbackSupport.tsx` (`IconSelector`).
 
 ## Hinweise
 

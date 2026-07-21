@@ -226,6 +226,18 @@ function MatchParticipants({ players }: Readonly<{ players: GameHistoryPlayerEnt
 	);
 }
 
+function GameDetailBackButton({ color }: { color: string }) {
+	return (
+		<TouchableOpacity
+			nativeID={ComponentIds.GAME_DETAIL_BACK_BUTTON}
+			onPress={() => router.replace('/games')}
+			style={styles.headerBackButton}
+		>
+			<Ionicons name="arrow-back" size={24} color={color} />
+		</TouchableOpacity>
+	);
+}
+
 // ─── Game detail screen ───────────────────────────────────────────────────────
 
 export default function GameTypeDetailScreen() {
@@ -246,15 +258,7 @@ export default function GameTypeDetailScreen() {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: gameType ? `${gameType.icon} ${gameType.name}` : 'Spiel',
-			headerLeft: () => (
-				<TouchableOpacity
-					nativeID={ComponentIds.GAME_DETAIL_BACK_BUTTON}
-					onPress={() => router.replace('/games')}
-					style={styles.headerBackButton}
-				>
-					<Ionicons name="arrow-back" size={24} color={theme.header.text} />
-				</TouchableOpacity>
-			),
+			headerLeft: () => <GameDetailBackButton color={theme.header.text} />,
 		});
 	}, [navigation, theme.header.text, gameType]);
 

@@ -16,6 +16,22 @@ interface HousingDetailsHeaderProps {
 	onOpenNavigation: () => void;
 }
 
+const NavigationTriggerButton = ({
+	triggerProps,
+	onPress,
+	backgroundColor,
+	iconColor,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	backgroundColor: string;
+	iconColor: string;
+}) => (
+	<IconButton {...triggerProps} style={[styles.navigationButton, { backgroundColor }]} onPress={onPress}>
+		<MaterialCommunityIcons name="navigation-variant" size={24} color={iconColor} />
+	</IconButton>
+);
+
 const HousingDetailsHeader: React.FC<HousingDetailsHeaderProps> = ({
 	apartmentDetails,
 	theme,
@@ -41,20 +57,7 @@ const HousingDetailsHeader: React.FC<HousingDetailsHeaderProps> = ({
 				<CustomTooltip
 					placement="top"
 					trigger={(triggerProps) => (
-						<IconButton
-							{...triggerProps}
-							style={[
-								styles.navigationButton,
-								{ backgroundColor: theme.screen.iconBg },
-							]}
-							onPress={onOpenNavigation}
-						>
-							<MaterialCommunityIcons
-								name="navigation-variant"
-								size={24}
-								color={theme.screen.icon}
-							/>
-						</IconButton>
+						<NavigationTriggerButton triggerProps={triggerProps} onPress={onOpenNavigation} backgroundColor={theme.screen.iconBg} iconColor={theme.screen.icon} />
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

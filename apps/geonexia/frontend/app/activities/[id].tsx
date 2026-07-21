@@ -652,6 +652,18 @@ function buildActivityHexGeoJson(
 	};
 }
 
+function ActivityDetailBackHeaderButton({ color, onPress }: { color: string; onPress: () => void }) {
+	return (
+		<TouchableOpacity
+			onPress={onPress}
+			style={styles.headerBackButton}
+			activeOpacity={0.7}
+		>
+			<MaterialIcons name="arrow-back" size={24} color={color} />
+		</TouchableOpacity>
+	);
+}
+
 export default function ActivityDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -756,15 +768,7 @@ export default function ActivityDetailScreen() {
 		navigation.setOptions({
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
-			headerLeft: () => (
-				<TouchableOpacity
-					onPress={() => router.navigate('/activities')}
-					style={styles.headerBackButton}
-					activeOpacity={0.7}
-				>
-					<MaterialIcons name="arrow-back" size={24} color={theme.header.text} />
-				</TouchableOpacity>
-			),
+			headerLeft: () => <ActivityDetailBackHeaderButton color={theme.header.text} onPress={() => router.navigate('/activities')} />,
 		});
 	}, [navigation, router, theme.header.background, theme.header.text]);
 

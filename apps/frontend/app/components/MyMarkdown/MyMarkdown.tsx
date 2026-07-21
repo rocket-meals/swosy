@@ -46,6 +46,68 @@ export const replaceLinebreaks = (sourceContent: string) => {
 	return sourceContent;
 };
 
+function makeLinkRenderer(contrastColor: string): CustomBlockRenderer {
+	return (props: any) => {
+		const { href } = props.tnode.attributes;
+		const { data } = props.tnode;
+		const text = data || props.children[0]?.data;
+
+		const hrefLower = href?.toLowerCase() ?? '';
+		const isLatLonLink = hrefLower.startsWith('latlon:');
+		const isLocationLink = isLatLonLink || hrefLower.startsWith(UriScheme.GEO) || hrefLower.startsWith(UriScheme.MAPS);
+
+		let finalHref = href;
+		if (isLatLonLink) {
+			const coordinateString = href.slice('latlon:'.length);
+			const [latitudeRaw, longitudeRaw] = coordinateString.split(',');
+
+			const latitude = Number.parseFloat(latitudeRaw?.trim() ?? '');
+			const longitude = Number.parseFloat(longitudeRaw?.trim() ?? '');
+
+			if (!Number.isNaN(latitude) && !Number.isNaN(longitude)) {
+				finalHref = CommonSystemActionHelper.getGoogleMapsUrl(latitude, longitude);
+			}
+		} else if (isLocationLink) {
+			const { resolvedHref } = resolveLocationHref(href);
+			finalHref = resolvedHref ?? href;
+		}
+
+		const handlePress = () => {
+			if (finalHref) {
+				openLinkSafely(finalHref);
+			}
+		};
+
+		let iconLeft = <FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />;
+
+		if (finalHref?.startsWith('tel:')) {
+			iconLeft = <FontAwesome6 name="phone" size={20} color={contrastColor} />;
+		} else if (finalHref?.startsWith('mailto:')) {
+			iconLeft = <MaterialCommunityIcons name="email" size={24} color={contrastColor} />;
+		} else if (isLocationLink) {
+			iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
+		}
+
+		return <ProjectButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
+	};
+}
+
+function makeSubRenderer(fontSize: number, textColor: string): CustomTextualRenderer {
+	return (props: any) => {
+		const { data } = props.tnode;
+		const text = data || props.children[0]?.data;
+		return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
+	};
+}
+
+function makeSupRenderer(fontSize: number, textColor: string): CustomTextualRenderer {
+	return (props: any) => {
+		const { data } = props.tnode;
+		const text = data || props.children[0]?.data;
+		return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
+	};
+}
+
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
 	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 
@@ -104,62 +166,12 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 
 	const customRenderers = React.useMemo(() => {
 		const renderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
-		a: (props: any) => {
-			const { href } = props.tnode.attributes;
-			const { data } = props.tnode;
-			const text = data || props.children[0]?.data;
-
-			const hrefLower = href?.toLowerCase() ?? '';
-			const isLatLonLink = hrefLower.startsWith('latlon:');
-			const isLocationLink = isLatLonLink || hrefLower.startsWith(UriScheme.GEO) || hrefLower.startsWith(UriScheme.MAPS);
-
-			let finalHref = href;
-			if (isLatLonLink) {
-				const coordinateString = href.slice('latlon:'.length);
-				const [latitudeRaw, longitudeRaw] = coordinateString.split(',');
-
-				const latitude = Number.parseFloat(latitudeRaw?.trim() ?? '');
-				const longitude = Number.parseFloat(longitudeRaw?.trim() ?? '');
-
-				if (!Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-					finalHref = CommonSystemActionHelper.getGoogleMapsUrl(latitude, longitude);
-				}
-			} else if (isLocationLink) {
-				const { resolvedHref } = resolveLocationHref(href);
-				finalHref = resolvedHref ?? href;
-			}
-
-			const handlePress = () => {
-				if (finalHref) {
-					openLinkSafely(finalHref);
-				}
-			};
-
-			let iconLeft = <FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />;
-
-			if (finalHref?.startsWith('tel:')) {
-				iconLeft = <FontAwesome6 name="phone" size={20} color={contrastColor} />;
-			} else if (finalHref?.startsWith('mailto:')) {
-				iconLeft = <MaterialCommunityIcons name="email" size={24} color={contrastColor} />;
-			} else if (isLocationLink) {
-				iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
-			}
-
-			return <ProjectButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
-		},
-		sub: (props: any) => {
-			const { data } = props.tnode;
-			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
-		},
-		sup: (props: any) => {
-			const { data } = props.tnode;
-			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
-		},
-	};
-	return renderers;
-}, [textColor, fontSize, contrastColor]);
+			a: makeLinkRenderer(contrastColor),
+			sub: makeSubRenderer(fontSize, textColor),
+			sup: makeSupRenderer(fontSize, textColor),
+		};
+		return renderers;
+	}, [textColor, fontSize, contrastColor]);
 
 	return (
 		<View>

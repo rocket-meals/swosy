@@ -159,6 +159,102 @@ const processMarkdownContent = (lines: string[]) => {
 	return result;
 };
 
+const calculateMarginLeft = (level: number, indent = 0) => level * 16 + indent * 4;
+
+// Component for rendering text with proper formatting
+const TextContent = ({ text, level, indent, textColor }: { text: string; level: number; indent: number; textColor: string }) => (
+	<Text
+		style={{
+			fontSize: 16,
+			fontFamily: 'Poppins_400Regular',
+			color: textColor,
+			marginLeft: calculateMarginLeft(level, indent),
+			lineHeight: 24,
+		}}
+	>
+		{text}
+	</Text>
+);
+
+// Component for rendering images
+const ImageContent = ({
+	url,
+	altText,
+	level,
+	indent,
+	textColor,
+	imageWidth,
+	imageHeight,
+}: {
+	url: string;
+	altText: string;
+	level: number;
+	indent: number;
+	textColor: string;
+	imageWidth?: string | number;
+	imageHeight?: string | number;
+}) => {
+	const [error, setError] = useState(false);
+
+	return (
+		<View
+			style={{
+				width: '100%',
+				alignItems: 'center',
+				marginLeft: calculateMarginLeft(level, indent),
+				marginVertical: 10,
+				borderRadius: 8,
+				overflow: 'hidden',
+				marginTop: 20,
+			}}
+		>
+			{error ? (
+				<View
+					style={{
+						borderWidth: 1,
+						borderColor: textColor,
+						justifyContent: 'center',
+						alignItems: 'center',
+						padding: 10,
+					}}
+				>
+					<Text
+						style={{
+							fontSize: 12,
+							color: textColor,
+							fontFamily: 'Poppins_400Regular',
+							textAlign: 'center',
+							fontStyle: 'italic',
+						}}
+					>
+						{altText}
+					</Text>
+				</View>
+			) : (
+				<View
+					style={{
+						width: (imageWidth || '100%') as DimensionValue,
+						height: (imageHeight || 400) as DimensionValue,
+						justifyContent: 'center',
+						alignItems: 'center',
+						padding: 10,
+					}}
+				>
+					<Image
+						source={{ uri: url }}
+						style={{
+							width: (imageWidth || '100%') as DimensionValue,
+							height: (imageHeight || 400) as DimensionValue,
+							resizeMode: 'cover',
+						}}
+						onError={() => setError(true)}
+					/>
+				</View>
+			)}
+		</View>
+	);
+};
+
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
@@ -169,86 +265,6 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 			const lines = rawText.split('\n');
 
 			const contrastColor = myContrastColor(backgroundColor || primaryColor, theme, mode === 'dark');
-
-			const calculateMarginLeft = (level: number, indent = 0) => level * 16 + indent * 4;
-
-			// Component for rendering text with proper formatting
-			const TextContent = ({ text, level, indent }: { text: string; level: number; indent: number }) => (
-				<Text
-					style={{
-						fontSize: 16,
-						fontFamily: 'Poppins_400Regular',
-						color: theme.screen.text,
-						marginLeft: calculateMarginLeft(level, indent),
-						lineHeight: 24,
-					}}
-				>
-					{text}
-				</Text>
-			);
-
-			// Component for rendering images
-			const ImageContent = ({ url, altText, level, indent }: { url: string; altText: string; level: number; indent: number }) => {
-				const [error, setError] = useState(false);
-
-				return (
-					<View
-						style={{
-							width: '100%',
-							alignItems: 'center',
-							marginLeft: calculateMarginLeft(level, indent),
-							marginVertical: 10,
-							borderRadius: 8,
-							overflow: 'hidden',
-							marginTop: 20,
-						}}
-					>
-						{error ? (
-							<View
-								style={{
-									borderWidth: 1,
-									borderColor: theme.screen.text,
-									justifyContent: 'center',
-									alignItems: 'center',
-									padding: 10,
-								}}
-							>
-								<Text
-									style={{
-										fontSize: 12,
-										color: theme.screen.text,
-										fontFamily: 'Poppins_400Regular',
-										textAlign: 'center',
-										fontStyle: 'italic',
-									}}
-								>
-									{altText}
-								</Text>
-							</View>
-						) : (
-							<View
-								style={{
-									width: (imageWidth || '100%') as DimensionValue,
-									height: (imageHeight || 400) as DimensionValue,
-									justifyContent: 'center',
-									alignItems: 'center',
-									padding: 10,
-								}}
-							>
-								<Image
-									source={{ uri: url }}
-									style={{
-										width: (imageWidth || '100%') as DimensionValue,
-										height: (imageHeight || 400) as DimensionValue,
-										resizeMode: 'cover',
-									}}
-									onError={() => setError(true)}
-								/>
-							</View>
-						)}
-					</View>
-				);
-			};
 
 			// Main renderer for content items
 			const renderContentItem = (item: any, level: number, index: number) => {
@@ -274,7 +290,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 						return <View key={`empty-${level}-${index}`} style={{ height: 16 }} />;
 
 					case 'text':
-						return <TextContent key={`text-${level}-${index}`} text={item.content} level={level} indent={item.indent || 0} />;
+						return <TextContent key={`text-${level}-${index}`} text={item.content} level={level} indent={item.indent || 0} textColor={theme.screen.text} />;
 
 					case 'email':
 						return (
@@ -300,7 +316,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 					}
 
 					case 'image':
-						return <ImageContent key={`image-${level}-${index}`} url={item.url} altText={item.altText} level={level} indent={item.indent || 0} />;
+						return <ImageContent key={`image-${level}-${index}`} url={item.url} altText={item.altText} level={level} indent={item.indent || 0} textColor={theme.screen.text} imageWidth={imageWidth} imageHeight={imageHeight} />;
 
 					case 'collapsible':
 						return (

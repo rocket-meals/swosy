@@ -306,6 +306,18 @@ function ReassignRouteContent({
 	);
 }
 
+function RouteBackHeaderButton({ color, onPress }: { color: string; onPress: () => void }) {
+	return (
+		<TouchableOpacity
+			onPress={onPress}
+			style={styles.headerBackButton}
+			activeOpacity={0.7}
+		>
+			<MaterialIcons name="arrow-back" size={24} color={color} />
+		</TouchableOpacity>
+	);
+}
+
 export default function RouteDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -404,15 +416,7 @@ export default function RouteDetailScreen() {
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
 			title: route?.name ?? '',
-			headerLeft: () => (
-				<TouchableOpacity
-					onPress={() => router.navigate('/routes')}
-					style={styles.headerBackButton}
-					activeOpacity={0.7}
-				>
-					<MaterialIcons name="arrow-back" size={24} color={theme.header.text} />
-				</TouchableOpacity>
-			),
+			headerLeft: () => <RouteBackHeaderButton color={theme.header.text} onPress={() => router.navigate('/routes')} />,
 		});
 	}, [navigation, router, theme.header.background, theme.header.text, route?.name]);
 

@@ -581,6 +581,45 @@ function GameTypeSelectSection({ onDone }: Readonly<{ onDone: () => void }>) {
 
 // ─── Game Screen ──────────────────────────────────────────────────────────────
 
+function GameHeaderRight({
+	color,
+	isActive,
+	isEditingPlayers,
+	onToggleEditingPlayers,
+	onOpenSettings,
+}: {
+	color: string;
+	isActive: boolean;
+	isEditingPlayers: boolean;
+	onToggleEditingPlayers: () => void;
+	onOpenSettings: () => void;
+}) {
+	return (
+		<View style={styles.headerButtons}>
+			{isActive && (
+				<TouchableOpacity
+					nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
+					onPress={onToggleEditingPlayers}
+					style={styles.headerButton}
+				>
+					<Ionicons
+						name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
+						size={22}
+						color={color}
+					/>
+				</TouchableOpacity>
+			)}
+			<TouchableOpacity
+				nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
+				onPress={onOpenSettings}
+				style={styles.headerButton}
+			>
+				<Ionicons name="settings-outline" size={22} color={color} />
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 export default function GameScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -834,28 +873,13 @@ export default function GameScreen() {
 			// Show which game is being played right in the header
 			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
 			headerRight: () => (
-				<View style={styles.headerButtons}>
-					{status === 'active' && (
-						<TouchableOpacity
-							nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
-							onPress={toggleEditingPlayers}
-							style={styles.headerButton}
-						>
-							<Ionicons
-								name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
-								size={22}
-								color={theme.header.text}
-							/>
-						</TouchableOpacity>
-					)}
-					<TouchableOpacity
-						nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
-						onPress={handleOpenSettingsModal}
-						style={styles.headerButton}
-					>
-						<Ionicons name="settings-outline" size={22} color={theme.header.text} />
-					</TouchableOpacity>
-				</View>
+				<GameHeaderRight
+					color={theme.header.text}
+					isActive={status === 'active'}
+					isEditingPlayers={isEditingPlayers}
+					onToggleEditingPlayers={toggleEditingPlayers}
+					onOpenSettings={handleOpenSettingsModal}
+				/>
 			),
 		});
 	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal, selectedGameType]);

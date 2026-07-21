@@ -14,6 +14,22 @@ interface DetailsHeaderProps {
     onOpenNavigation: () => void;
 }
 
+const NavigationTriggerButton = ({
+    triggerProps,
+    onPress,
+    backgroundColor,
+    iconColor,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    backgroundColor: string;
+    iconColor: string;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={{ ...styles.navigationButton, backgroundColor }}>
+        <MaterialCommunityIcons name="navigation-variant" size={24} color={iconColor} />
+    </IconButton>
+);
+
 const DetailsHeader: React.FC<DetailsHeaderProps> = ({
     alias,
     screenWidth,
@@ -36,13 +52,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({
                 <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
-                        <IconButton
-                            {...triggerProps}
-                            onPress={onOpenNavigation}
-                            style={{ ...styles.navigationButton, backgroundColor: theme.screen.iconBg }}
-                        >
-                            <MaterialCommunityIcons name="navigation-variant" size={24} color={theme.screen.icon} />
-                        </IconButton>
+                        <NavigationTriggerButton triggerProps={triggerProps} onPress={onOpenNavigation} backgroundColor={theme.screen.iconBg} iconColor={theme.screen.icon} />
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

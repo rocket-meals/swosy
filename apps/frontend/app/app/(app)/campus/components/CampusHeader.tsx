@@ -16,6 +16,22 @@ interface CampusHeaderProps {
     drawerPosition: 'left' | 'right' | 'system' | undefined; // Added 'system'
 }
 
+const HeaderIconButton = ({
+    triggerProps,
+    onPress,
+    nativeID,
+    children,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    nativeID?: string;
+    children: React.ReactNode;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} nativeID={nativeID}>
+        {children}
+    </IconButton>
+);
+
 const CampusHeader: React.FC<CampusHeaderProps> = ({
     theme,
     translate,
@@ -34,9 +50,9 @@ const CampusHeader: React.FC<CampusHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={onToggleDrawer} style={{ padding: 10 }} nativeID={ComponentIds.OPEN_DRAWER}>
+                            <HeaderIconButton triggerProps={triggerProps} onPress={onToggleDrawer} nativeID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
-                            </IconButton>
+                            </HeaderIconButton>
                         )}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -53,9 +69,9 @@ const CampusHeader: React.FC<CampusHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={onSort} style={{ padding: 10 }}>
+                            <HeaderIconButton triggerProps={triggerProps} onPress={onSort}>
                                 <MaterialIcons name="sort" size={24} color={theme.header.text} />
-                            </IconButton>
+                            </HeaderIconButton>
                         )}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

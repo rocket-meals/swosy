@@ -8,6 +8,58 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { isWeb } from '@/constants/Constants';
 import { SettingsListLikeDislikeProps } from './types';
 
+const LikeDislikeTriggerButton = ({
+	triggerProps,
+	onPress,
+	buttonStyle,
+	active,
+	loading,
+	inactiveIconName,
+	activeIconName,
+	iconSize,
+	backgroundColor,
+	contrastColor,
+	inactiveIconColor,
+	inactiveTextColor,
+	count,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	buttonStyle: any;
+	active: boolean;
+	loading: boolean;
+	inactiveIconName: any;
+	activeIconName: any;
+	iconSize: number;
+	backgroundColor: string;
+	contrastColor: string;
+	inactiveIconColor: string;
+	inactiveTextColor: string;
+	count: number | null | undefined;
+}) => (
+	<Pressable
+		{...triggerProps}
+		style={{
+			...buttonStyle,
+			backgroundColor: active ? backgroundColor : undefined,
+		}}
+		onPress={onPress}
+	>
+		{loading ? (
+			<ActivityIndicator size={iconSize} color={backgroundColor} />
+		) : (
+			<MaterialCommunityIcons
+				name={active ? activeIconName : inactiveIconName}
+				size={iconSize}
+				color={active ? contrastColor : inactiveIconColor}
+			/>
+		)}
+		{count != null && count > 0 && (
+			<Text style={[styles.count, { color: active ? contrastColor : inactiveTextColor }]}>{count}</Text>
+		)}
+	</Pressable>
+);
+
 const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 	like,
 	onPressLike,
@@ -30,27 +82,21 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 			<CustomTooltip
 				placement="top"
 				trigger={triggerProps => (
-					<Pressable
-						{...triggerProps}
-						style={{
-							...styles.likeButton,
-							backgroundColor: like ? foods_area_color : undefined,
-						}}
+					<LikeDislikeTriggerButton
+						triggerProps={triggerProps}
 						onPress={onPressLike}
-					>
-						{likeLoading ? (
-							<ActivityIndicator size={iconSize} color={foods_area_color} />
-						) : (
-							<MaterialCommunityIcons
-								name={like ? 'thumb-up' : 'thumb-up-outline'}
-								size={iconSize}
-								color={like ? contrastColor : theme.screen.icon}
-							/>
-						)}
-						{likeCount != null && likeCount > 0 && (
-							<Text style={[styles.count, { color: like ? contrastColor : theme.screen.text }]}>{likeCount}</Text>
-						)}
-					</Pressable>
+						buttonStyle={styles.likeButton}
+						active={like === true}
+						loading={likeLoading}
+						inactiveIconName="thumb-up-outline"
+						activeIconName="thumb-up"
+						iconSize={iconSize}
+						backgroundColor={foods_area_color}
+						contrastColor={contrastColor}
+						inactiveIconColor={theme.screen.icon}
+						inactiveTextColor={theme.screen.text}
+						count={likeCount}
+					/>
 				)}
 			>
 				{likeTooltipText ? (
@@ -65,27 +111,21 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 			<CustomTooltip
 				placement="top"
 				trigger={triggerProps => (
-					<Pressable
-						{...triggerProps}
-						style={{
-							...styles.dislikeButton,
-							backgroundColor: like === false ? foods_area_color : undefined,
-						}}
+					<LikeDislikeTriggerButton
+						triggerProps={triggerProps}
 						onPress={onPressDislike}
-					>
-						{dislikeLoading ? (
-							<ActivityIndicator size={iconSize} color={foods_area_color} />
-						) : (
-							<MaterialCommunityIcons
-								name={like === false ? 'thumb-down' : 'thumb-down-outline'}
-								size={iconSize}
-								color={like === false ? contrastColor : theme.screen.icon}
-							/>
-						)}
-						{dislikeCount != null && dislikeCount > 0 && (
-							<Text style={[styles.count, { color: like === false ? contrastColor : theme.screen.text }]}>{dislikeCount}</Text>
-						)}
-					</Pressable>
+						buttonStyle={styles.dislikeButton}
+						active={like === false}
+						loading={dislikeLoading}
+						inactiveIconName="thumb-down-outline"
+						activeIconName="thumb-down"
+						iconSize={iconSize}
+						backgroundColor={foods_area_color}
+						contrastColor={contrastColor}
+						inactiveIconColor={theme.screen.icon}
+						inactiveTextColor={theme.screen.text}
+						count={dislikeCount}
+					/>
 				)}
 			>
 				{dislikeTooltipText ? (

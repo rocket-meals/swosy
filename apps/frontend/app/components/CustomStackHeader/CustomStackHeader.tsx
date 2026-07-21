@@ -14,6 +14,12 @@ import { TranslationKeys } from '@/locales/keys';
 
 import { AppScreens } from 'repo-depkit-common';
 
+const BackTriggerButton = ({ triggerProps, onPress, color }: { triggerProps: object; onPress: () => void; color: string }) => (
+	<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={onPress} style={{ padding: 10 }}>
+		<Ionicons name="arrow-back" size={26} color={color} />
+	</TouchableOpacity>
+);
+
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -87,11 +93,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
                                 <View style={styles.col1}>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
-								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
-							</TouchableOpacity>
-						)}
+						trigger={triggerProps => <BackTriggerButton triggerProps={triggerProps} onPress={handleGoback} color={theme.header.text} />}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

@@ -18,6 +18,22 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
+const HoverIconTrigger = ({
+	triggerProps,
+	onHoverIn,
+	onHoverOut,
+	children,
+}: {
+	triggerProps: object;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	children: React.ReactNode;
+}) => (
+	<Pressable style={{ cursor: 'default' } as any} {...triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		{children}
+	</Pressable>
+);
+
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -94,7 +110,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 				placement="top"
 				isOpen={showTooltip}
 				trigger={triggerProps => (
-					<Pressable style={{ cursor: 'default' } as any} {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
+					<HoverIconTrigger triggerProps={triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
 						{label?.image_remote_url || label?.image ? (
 							<Image
 								source={{
@@ -105,7 +121,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 						) : (
 							label?.icon && getIconComponent(label?.icon, theme.screen.icon)
 						)}
-					</Pressable>
+					</HoverIconTrigger>
 				)}
 			>
 				<TooltipContent

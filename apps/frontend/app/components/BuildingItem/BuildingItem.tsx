@@ -38,6 +38,26 @@ export interface BuildingItemPropsOptimized extends CardLayoutProps {
 	isLastOpened?: boolean;
 }
 
+const NavigationTriggerButton = ({
+	triggerProps,
+	onPress,
+	backgroundColor,
+	iconColor,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	backgroundColor: string;
+	iconColor: string;
+}) => (
+	<IconButton
+		{...triggerProps}
+		style={[styles.navigationButton, { backgroundColor }]}
+		onPress={onPress}
+	>
+		<MaterialCommunityIcons name="navigation-variant" size={20} color={iconColor} />
+	</IconButton>
+);
+
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 
 	campus, 
 	onEditImage, 
@@ -138,16 +158,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 						<CustomTooltip
 							placement="top"
 							trigger={innerTriggerProps => (
-								<IconButton
-									{...innerTriggerProps}
-									style={[
-										styles.navigationButton,
-										{ backgroundColor: campus_area_color },
-									]}
-									onPress={handleOpenNavigation}
-								>
-									<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
-								</IconButton>
+								<NavigationTriggerButton triggerProps={innerTriggerProps} onPress={handleOpenNavigation} backgroundColor={campus_area_color} iconColor={contrastColor} />
 							)}
 						>
 							<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

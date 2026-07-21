@@ -23,6 +23,24 @@ interface FoodOffersHeaderProps {
     openOptionsModal: () => void;
 }
 
+const HeaderIconButton = ({
+    triggerProps,
+    onPress,
+    style,
+    nativeID,
+    children,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    style?: any;
+    nativeID?: string;
+    children: React.ReactNode;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={style} nativeID={nativeID}>
+        {children}
+    </IconButton>
+);
+
 const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
     drawerPosition,
     hasUnreadChats,
@@ -52,7 +70,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} nativeID={ComponentIds.OPEN_DRAWER}>
+                            <HeaderIconButton triggerProps={triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle} nativeID={ComponentIds.OPEN_DRAWER}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                                 {hasUnreadChats ? (
                                     <View
@@ -65,7 +83,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                         ]}
                                     />
                                 ) : null}
-                            </IconButton>
+                            </HeaderIconButton>
                         )}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -92,9 +110,9 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={openOptionsModal} style={iconPaddingStyle}>
+                            <HeaderIconButton triggerProps={triggerProps} onPress={openOptionsModal} style={iconPaddingStyle}>
                                 <Entypo name="dots-three-vertical" size={22} color={theme.header.text} />
-                            </IconButton>
+                            </HeaderIconButton>
                         )}
                     >
                         <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
