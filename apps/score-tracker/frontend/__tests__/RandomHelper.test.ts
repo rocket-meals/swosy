@@ -1,27 +1,18 @@
 /**
  * Regression test for the dice screen always rolling a 1.
  *
- * React Native/Hermes has no global `crypto.getRandomValues` (no polyfill is
- * installed in this app), so `randomDieValue` always used its fallback PRNG.
- * That fallback multiplied its seed with a plain `*`, which overflows
- * Number.MAX_SAFE_INTEGER and silently zeroes out the low bits the byte is
- * read from - so every roll came out as `(0 % sides) + 1 === 1`.
+ * randomDieValue used to run through a hand-rolled fallback PRNG (needed for
+ * runtimes without crypto.getRandomValues, e.g. React Native/Hermes) whose LCG
+ * multiplied its seed with a plain `*`. That overflows Number.MAX_SAFE_INTEGER
+ * and silently zeroes out the low bits the byte was read from, so every roll
+ * came out as `(0 % sides) + 1 === 1`. RandomHelper is now backed by plain
+ * Math.random() (not security-sensitive - local ids and dice rolls only), so
+ * this just guards against a regression in that single central function.
  */
 
 import { randomDieValue } from '../helpers/RandomHelper';
 
-describe('randomDieValue - fallback PRNG (no crypto.getRandomValues available)', () => {
-	const originalCrypto = (globalThis as { crypto?: Crypto }).crypto;
-
-	beforeAll(() => {
-		// Simulate the React Native/Hermes runtime, which has no crypto global.
-		delete (globalThis as { crypto?: Crypto }).crypto;
-	});
-
-	afterAll(() => {
-		(globalThis as { crypto?: Crypto }).crypto = originalCrypto;
-	});
-
+describe('randomDieValue', () => {
 	it('does not always roll a 1 for a six-sided die', () => {
 		const rolls = Array.from({ length: 200 }, () => randomDieValue(6));
 		const distinctValues = new Set(rolls);
@@ -45,5 +36,10 @@ describe('randomDieValue - fallback PRNG (no crypto.getRandomValues available)',
 				expect(value).toBeLessThanOrEqual(sides);
 			}
 		}
+	});
+
+	it('returns 1 for a die with 1 or fewer sides', () => {
+		expect(randomDieValue(1)).toBe(1);
+		expect(randomDieValue(0)).toBe(1);
 	});
 });
