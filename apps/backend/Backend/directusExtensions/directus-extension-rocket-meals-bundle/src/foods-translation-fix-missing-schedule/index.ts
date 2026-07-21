@@ -198,6 +198,102 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     await context.logger.appendLog('=== Translation test complete ===');
   }
 
+  /** Logs each source field's value once per food (aids diagnosing DeepL translation issues). */
+  private async logSourceFieldValues(
+    food: DatabaseTypes.Foods,
+    sourceTranslation: DatabaseTypes.FoodsTranslations,
+    fieldsToTranslate: string[],
+    context: WorkflowRunContext,
+  ): Promise<void> {
+    for (const field of fieldsToTranslate) {
+      const value = (sourceTranslation as any)[field];
+      await context.logger.appendLog(
+        'Food ' + food.id + ': source field "' + field + '" = ' +
+        (value ? '"' + String(value).substring(0, 80) + '"' : 'null/empty')
+      );
+    }
+  }
+
+  /**
+   * Processes a single translation entry: returns `null` (nothing to do) when it's the source
+   * translation, disallowed, has no resolvable language, or has nothing left to translate;
+   * otherwise translates and saves it, returning whether it was fixed and the updated attempted count.
+   */
+  private async processTranslationEntry(
+    translation: DatabaseTypes.FoodsTranslations,
+    attempted: number,
+    ctx: {
+      food: DatabaseTypes.Foods;
+      sourceTranslation: DatabaseTypes.FoodsTranslations;
+      sourceLanguageCode: string | undefined;
+      fieldsToTranslate: string[];
+      fieldLanguagesIdOrCode: string;
+      translator: Translator;
+      context: WorkflowRunContext;
+      remainingCapacity: number;
+    },
+  ): Promise<{fixed: boolean; attempted: number} | null> {
+    const {food, sourceTranslation, sourceLanguageCode, fieldsToTranslate, fieldLanguagesIdOrCode, translator, context, remainingCapacity} = ctx;
+
+    // Skip source translation.
+    if (translation.be_source_for_translations) {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id + ': Skipped – is source translation.'
+      );
+      return null;
+    }
+
+    // Only process translations explicitly allowed to be translated (or where the flag is unset).
+    if (translation.let_be_translated === false) {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id + ': Skipped – let_be_translated is false.'
+      );
+      return null;
+    }
+
+    // Resolve the language code for this translation entry.
+    const languageCode = await this.resolveTranslationLanguageCode(food, translation, context);
+    if (!languageCode) {
+      return null;
+    }
+
+    // Determine which fields are missing in this translation AND have a non-empty source value.
+    // Only these qualify for translation (and count toward the MAX_TRANSLATIONS limit).
+    const fieldsToAttempt = fieldsToTranslate.filter(field => {
+      const translationValue = (translation as any)[field];
+      const sourceValue = (sourceTranslation as any)[field];
+      return !translationValue && !!sourceValue;
+    });
+
+    if (fieldsToAttempt.length === 0) {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+        'Skipped – no fields to translate (either already populated or source is empty for all fields).'
+      );
+      return null;
+    }
+
+    await context.logger.appendLog(
+      'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+      'Attempting translation for field(s): [' + fieldsToAttempt.join(', ') + ']'
+    );
+
+    const translateResult = await this.translateFieldsForTranslation({
+      food, translation, sourceTranslation, sourceLanguageCode, languageCode,
+      fieldsToAttempt, translator, context, attempted, remainingCapacity,
+    });
+    const translatedItem = translateResult.translatedItem;
+
+    translatedItem[fieldLanguagesIdOrCode] = {code: languageCode};
+    translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
+    translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
+
+    const wasSaved = await this.saveTranslatedItemIfNeeded(
+      food, translation, translatedItem, fieldsToTranslate, languageCode, context
+    );
+    return {fixed: wasSaved, attempted: translateResult.attempted};
+  }
+
   /**
    * Attempts to fill in all missing translatable fields for every translation entry of a single food
    * that has `let_be_translated !== false` and is not the source translation.
@@ -254,16 +350,14 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       ', languageField="' + FIELD_LANGUAGES_ID_OR_CODE + '"' +
       ', fieldsToTranslate=[' + fieldsToTranslate.join(', ') + ']'
     );
-    for (const field of fieldsToTranslate) {
-      const value = (sourceTranslation as any)[field];
-      await context.logger.appendLog(
-        'Food ' + food.id + ': source field "' + field + '" = ' +
-        (value ? '"' + String(value).substring(0, 80) + '"' : 'null/empty')
-      );
-    }
+    await this.logSourceFieldValues(food, sourceTranslation, fieldsToTranslate, context);
 
     let fixed = 0;
     let attempted = 0;
+    const entryCtx = {
+      food, sourceTranslation, sourceLanguageCode, fieldsToTranslate,
+      fieldLanguagesIdOrCode: FIELD_LANGUAGES_ID_OR_CODE, translator, context, remainingCapacity,
+    };
 
     for (const translation of translations) {
       if (attempted >= remainingCapacity) {
@@ -273,66 +367,10 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         break;
       }
 
-      // Skip source translation.
-      if (translation.be_source_for_translations) {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id + ': Skipped – is source translation.'
-        );
-        continue;
-      }
-
-      // Only process translations explicitly allowed to be translated (or where the flag is unset).
-      if (translation.let_be_translated === false) {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id + ': Skipped – let_be_translated is false.'
-        );
-        continue;
-      }
-
-      // Resolve the language code for this translation entry.
-      const languageCode = await this.resolveTranslationLanguageCode(food, translation, context);
-      if (!languageCode) {
-        continue;
-      }
-
-      // Determine which fields are missing in this translation AND have a non-empty source value.
-      // Only these qualify for translation (and count toward the MAX_TRANSLATIONS limit).
-      const fieldsToAttempt = fieldsToTranslate.filter(field => {
-        const translationValue = (translation as any)[field];
-        const sourceValue = (sourceTranslation as any)[field];
-        return !translationValue && !!sourceValue;
-      });
-
-      if (fieldsToAttempt.length === 0) {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-          'Skipped – no fields to translate (either already populated or source is empty for all fields).'
-        );
-        continue;
-      }
-
-      await context.logger.appendLog(
-        'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-        'Attempting translation for field(s): [' + fieldsToAttempt.join(', ') + ']'
-      );
-
-      const translateResult = await this.translateFieldsForTranslation({
-        food, translation, sourceTranslation, sourceLanguageCode, languageCode,
-        fieldsToAttempt, translator, context, attempted, remainingCapacity,
-      });
-      const translatedItem = translateResult.translatedItem;
-      attempted = translateResult.attempted;
-
-      translatedItem[FIELD_LANGUAGES_ID_OR_CODE] = {code: languageCode};
-      translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
-      translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
-
-      const wasSaved = await this.saveTranslatedItemIfNeeded(
-        food, translation, translatedItem, fieldsToTranslate, languageCode, context
-      );
-      if (wasSaved) {
-        fixed++;
-      }
+      const result = await this.processTranslationEntry(translation, attempted, entryCtx);
+      if (!result) continue;
+      attempted = result.attempted;
+      if (result.fixed) fixed++;
     }
 
     await context.logger.appendLog(

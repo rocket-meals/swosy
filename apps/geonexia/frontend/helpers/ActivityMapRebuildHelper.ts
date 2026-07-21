@@ -17,7 +17,7 @@
 
 import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available, cellToParent, cellToChildren, cellToCenterChild, getResolution, gridPathCells } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
-import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
+import { ComputedActivityData, ComputedHexTileEntry, getEffectiveEnclosedHexTiles, RoutePoint, SavedActivity } from './ActivityStorage';
 import type { SavedRoute } from './RouteStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
@@ -753,12 +753,7 @@ function computeEnclosedHexTilesForActivity(activity: SavedActivity): string[] {
 	}
 	// Not enough walked tiles to form a polygon; fall back to any stored
 	// value for legacy activities that pre-date hexTilesOrdered.
-	return (
-		activity.computed?.enclosedHexTiles ??
-		activity.enclosedHexTiles ??
-		activity.hexTilesEnclosed ??
-		[]
-	);
+	return activity.computed?.enclosedHexTiles ?? getEffectiveEnclosedHexTiles(activity);
 }
 
 /** Pre-build a map for O(1) lookup of an activity's existing per-tile references. */

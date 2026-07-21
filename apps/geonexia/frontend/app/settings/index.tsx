@@ -15,7 +15,7 @@ import {
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteAllActivities, loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteAllActivities, getEffectiveEnclosedHexTiles, loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available } from '../../helpers/H3Helper';
 import {
@@ -315,9 +315,7 @@ async function migrateActivityEnclosedTiles(activity: SavedActivity): Promise<vo
 	let updated = false;
 	let enclosedTiles: string[] =
 		activity.computed?.enclosedHexTiles ??
-		activity.enclosedHexTiles ??
-		activity.hexTilesEnclosed ??
-		[];
+		getEffectiveEnclosedHexTiles(activity);
 	if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
 		const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 		enclosedTiles = findEnclosedCellsFromHexTiles(
@@ -546,9 +544,7 @@ export default function SettingsScreen() {
 						for (const activity of allActivities) {
 							let enclosedTiles: string[] =
 								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
+								getEffectiveEnclosedHexTiles(activity);
 							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
 								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(

@@ -334,6 +334,84 @@ function buildFeatureInfo(
 }
 
 /**
+ * Resolve the raw PBF buffer for a tile, using the buffer cache when available
+ * and otherwise downloading it. Returns `{ empty: true }` for a tile that
+ * legitimately has no data (404, e.g. ocean areas). Extracted from
+ * fetchAndParseTile() to keep that function's Cognitive Complexity manageable.
+ */
+async function resolveTileBuffer(
+	tileUrlTemplate: string,
+	z: number,
+	x: number,
+	y: number,
+	cacheKey: string,
+): Promise<{ buffer: ArrayBuffer } | { empty: true }> {
+	const cachedBuffer = tileBufferCache[cacheKey];
+	if (cachedBuffer) {
+		return { buffer: cachedBuffer };
+	}
+
+	const url = tileUrlTemplate
+		.replace('{z}', String(z))
+		.replace('{x}', String(x))
+		.replace('{y}', String(y));
+
+	const res = await fetch(url);
+	if (!res.ok) {
+		if (res.status === 404) {
+			// Tiles may legitimately return 404 for ocean / empty areas.
+			return { empty: true };
+		}
+		throw new Error(`Tile fetch failed (${res.status}): ${url}`);
+	}
+
+	const buffer = await res.arrayBuffer();
+	tileBufferCache[cacheKey] = buffer;
+	return { buffer };
+}
+
+/**
+ * Collect the deduplicated (by synthetic class|subclass|name feature ID), occurrence-counted
+ * features of a parsed vector tile, optionally restricted to those overlapping `filterBounds`.
+ * Extracted from fetchAndParseTile() to keep that function's Cognitive Complexity manageable.
+ */
+function collectTileFeatures(
+	tile: VectorTile,
+	x: number,
+	y: number,
+	z: number,
+	filterBounds?: { minLat: number; minLng: number; maxLat: number; maxLng: number },
+): Map<string, MapFeatureInfo> {
+	const featureMap = new Map<string, MapFeatureInfo>();
+
+	for (const layerName of Object.keys(tile.layers)) {
+		if (SKIP_LAYERS.has(layerName)) continue;
+
+		const layer = tile.layers[layerName];
+		for (let i = 0; i < layer.length; i++) {
+			const feat = layer.feature(i);
+			const props = feat.properties ?? {};
+
+			// ── Geographic filter ────────────────────────────────────
+			if (filterBounds && !featureOverlapsBounds(feat, x, y, z, filterBounds)) {
+				continue;
+			}
+
+			const { featureId, info } = buildFeatureInfo(layerName, props);
+			const existing = featureMap.get(featureId);
+			if (existing) {
+				existing.count += 1;
+				continue;
+			}
+
+			featureMap.set(featureId, { ...info, count: 1 });
+		}
+	}
+
+	return featureMap;
+}
+
+/**
  * Fetch a single vector tile and parse it into an array of `MapFeatureInfo`.
  * Results are cached in-memory so repeated requests for the same tile
  * (e.g. overlapping H3 bounding boxes) are served instantly.
@@ -363,60 +441,14 @@ export async function fetchAndParseTile(
 	}
 
 	// Use cached raw buffer when available (avoids re-downloading for filtered queries).
-	let buffer: ArrayBuffer;
-	const cachedBuffer = tileBufferCache[cacheKey];
-	if (cachedBuffer) {
-		buffer = cachedBuffer;
-	} else {
-		const url = tileUrlTemplate
-			.replace('{z}', String(z))
-			.replace('{x}', String(x))
-			.replace('{y}', String(y));
-
-		const res = await fetch(url);
-		if (!res.ok) {
-			// Tiles may legitimately return 404 for ocean / empty areas.
-			if (res.status === 404) {
-				tileFeaturesCache[cacheKey] = [];
-				return [];
-			}
-			throw new Error(`Tile fetch failed (${res.status}): ${url}`);
-		}
-
-		buffer = await res.arrayBuffer();
-		tileBufferCache[cacheKey] = buffer;
+	const bufferResult = await resolveTileBuffer(tileUrlTemplate, z, x, y, cacheKey);
+	if ('empty' in bufferResult) {
+		tileFeaturesCache[cacheKey] = [];
+		return [];
 	}
 
-	const tile = new VectorTile(new Pbf(buffer));
-
-	// Use a Map keyed by the synthetic feature ID (class|subclass|name) to
-	// deduplicate within the tile and accumulate occurrence counts.
-	const featureMap = new Map<string, MapFeatureInfo>();
-
-	for (const layerName of Object.keys(tile.layers)) {
-		if (SKIP_LAYERS.has(layerName)) continue;
-
-		const layer = tile.layers[layerName];
-		for (let i = 0; i < layer.length; i++) {
-			const feat = layer.feature(i);
-			const props = feat.properties ?? {};
-
-			// ── Geographic filter ────────────────────────────────────
-			if (filterBounds && !featureOverlapsBounds(feat, x, y, z, filterBounds)) {
-				continue;
-			}
-
-			const { featureId, info } = buildFeatureInfo(layerName, props);
-			const existing = featureMap.get(featureId);
-			if (existing) {
-				existing.count += 1;
-				continue;
-			}
-
-			featureMap.set(featureId, { ...info, count: 1 });
-		}
-	}
-
+	const tile = new VectorTile(new Pbf(bufferResult.buffer));
+	const featureMap = collectTileFeatures(tile, x, y, z, filterBounds);
 	const features = Array.from(featureMap.values());
 
 	// Only cache when no filter was applied (unfiltered superset).

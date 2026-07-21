@@ -15,7 +15,7 @@ import SettingsListActivity from '../../components/SettingsListActivity';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
 
-import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
+import { getEffectiveEnclosedHexTiles, loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
@@ -668,9 +668,7 @@ export default function ActivitiesScreen() {
 							} else {
 								enclosedTiles =
 									activity.computed?.enclosedHexTiles ??
-									activity.enclosedHexTiles ??
-									activity.hexTilesEnclosed ??
-									[];
+									getEffectiveEnclosedHexTiles(activity);
 							}
 
 							if (!activity.computed) {
