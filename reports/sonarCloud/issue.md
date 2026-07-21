@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 32 | 32 |
-| 🔧 Maintainability | 349 | 17 |
+| 🔧 Maintainability | 259 | 17 |
 
-**Total issues:** 382 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 292 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -148,7 +148,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (17/349)
+## 🔧 Maintainability (17/259)
 
 - **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
   apps/accessibilityTester/src/report.ts:110
@@ -173,10 +173,6 @@
 - **Replace this "switch" statement by "if" statements to increase readability.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:72
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L72
-
-- **Rename class "FoodTL1Parser_RawReportTestReaderOsnabrueck" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts#L3
 
 - **Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:326
@@ -214,7 +210,11 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:208
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L208
 
-- **Move this array "sort" operation to a separate statement or replace it with "toSorted".**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:424
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L424
+- **Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:101
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L101
+
+- **'lastResultHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts:31
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts#L31
 

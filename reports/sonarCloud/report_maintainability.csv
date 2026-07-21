@@ -1,76 +1,38 @@
 Key,Message,Component,Line
+"AZ-FJdfdmDbgFiM-Tfc_","Replace the unused local variable ""xrot"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",171
+"AZ-FJdfdmDbgFiM-TfdA","Replace the unused local variable ""laf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",171
+"AZ-FJdfdmDbgFiM-TfdB","Replace the unused local variable ""sf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",171
+"AZ-FJdfdmDbgFiM-TfdC","Replace the unused local variable ""rx"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",171
+"AZ-FJdfdmDbgFiM-TfdD","Replace the unused local variable ""ry"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",171
 "AZ-E_z8ZlYxwCqPOyBT3","Prefer negative index over length minus index for `slice`.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",71
-"AZ-EmFIqUEwljlrjn1YY","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",686
-"AZ-EmFIqUEwljlrjn1YZ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",708
-"AZ-EmFIqUEwljlrjn1Ya","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",722
-"AZ-EmFIqUEwljlrjn1Yb","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",741
-"AZ-EmFIqUEwljlrjn1Yc","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",748
-"AZ-EmFIqUEwljlrjn1Yd","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",769
-"AZ-EmFIqUEwljlrjn1Ye","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",786
-"AZ-EmFIqUEwljlrjn1Yf","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",793
-"AZ-EmFIqUEwljlrjn1Yg","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",800
-"AZ-EmFIqUEwljlrjn1Yh","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",815
-"AZ-EmFIqUEwljlrjn1Yi","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",823
-"AZ-EmFIqUEwljlrjn1Yj","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",831
-"AZ-EmFIqUEwljlrjn1Yk","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",854
-"AZ-EmFIqUEwljlrjn1Yl","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",863
-"AZ-EmFIqUEwljlrjn1Ym","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",871
-"AZ-EmFIqUEwljlrjn1Yn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",878
-"AZ-EmFIqUEwljlrjn1Yo","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",884
-"AZ-EmFIqUEwljlrjn1Yp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",902
-"AZ-EmE7FUEwljlrjn1YV","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/chats/_layout.tsx",48
-"AZ-EmE7FUEwljlrjn1YW","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/chats/_layout.tsx",54
-"AZ-EmFEkUEwljlrjn1YX","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/_layout.tsx",26
-"AZ-EmFLtUEwljlrjn1Yq","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/support-ticket/_layout.tsx",20
-"AZ-EmFQeUEwljlrjn1Yt","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/_layout.tsx",103
-"AZ-EmFQeUEwljlrjn1Yu","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/_layout.tsx",116
-"AZ-EmFQeUEwljlrjn1Yv","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/_layout.tsx",129
-"AZ-EmFPHUEwljlrjn1Ys","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/_layout.tsx",20
-"AZ-EmFOIUEwljlrjn1Yr","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(user)/_layout.tsx",20
-"AZ-ERXjhk-ul62LHaBO-","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",96
-"AZ-ERXm2k-ul62LHaBO_","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",186
-"AZ-ERYGFk-ul62LHaBPD","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",771
-"AZ-ERYGek-ul62LHaBPF","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",780
-"AZ-ERYFkk-ul62LHaBPB","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",419
-"AZ-ERYMVk-ul62LHaBPJ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",261
-"AZ-ERYL_k-ul62LHaBPH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",132
-"AZ-ERYNIk-ul62LHaBPM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/players/index.tsx",344
 "AZ-DyPTpw_Adoi_0b8bD","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",23
 "AZ-DyPKTw_Adoi_0b8bC","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",136
 "AZ-DyQDuw_Adoi_0b8bE","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",120
 "AZ-DyQDuw_Adoi_0b8bF","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1876
-"AZ-Dc5ddfoF4mdGUMdBy","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/helper/resourceHelper.tsx",227
-"AZ-Dc5b6foF4mdGUMdBx","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useFoodCard.ts",14
-"AZ-Dc5Z3foF4mdGUMdBw","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/chatsReducer.ts",11
-"AZ-Dc5W5foF4mdGUMdBv","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/collectibleEventsReducer.ts",18
 "AZ-Bw3Vx4ahQirloZfrI","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",109
 "AZ-BoN5D2dySIBRns02b","Update this function so that its implementation is not identical to the one on line 55.","rocket-meals_rocket-meals:apps/frontend/app/helper/resourceHelper.tsx",61
-"AZ-AWQzQWmQjD3RHiAyv","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",964
+"AZ-AWQzQWmQjD3RHiAyv","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",965
 "AZ9_ondP-TchFAS-K2Wc","Review this redundant assignment: ""resolvedAspectRatio"" already holds the assigned value along all execution paths.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",112
 "AZ94yUx5NqjKlFTKWCw-","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",388
-"AZ90OYAhlqCs1FI_2yqs","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",623
+"AZ90OYAhlqCs1FI_2yqs","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",641
 "AZ90OX_YlqCs1FI_2yqe","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",53
 "AZ9xw82ZvWdF5aY3XKh0","'onDebugEvent' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",690
-"AZ9szAiBzUEsGMzaUJro","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",993
+"AZ9szAiBzUEsGMzaUJro","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",997
 "AZ9sgsKphFHGbvsT3KfX","Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",327
 "AZ9sZyGg04m_SfjRDf9H","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",47
 "AZ9sZyGg04m_SfjRDf9K","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RoadMatchHelper.ts",445
-"AZ9mzuUCReHRwKWsmvkt","Use `export…from` to re-export `formatBytes`.","rocket-meals_rocket-meals:apps/frontend/app/helper/AsyncStorageUsageHelper.ts",12
 "AZ9gKdXunQ6LQh7VFNhX","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",212
 "AZ9gjKGLzJugdJpoBVO-","Add a default case (*) to handle unexpected values.","rocket-meals_rocket-meals:apps/score-tracker/run-maestro-web-test.sh",38
-"AZ9MXJnpTGeptNLGMpnJ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/BalanceQuickAccessButton.tsx",103
 "AZ9LJjfRJ76BOezZrqev","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",110
 "AZ9GQrWnPG3QTBW6lktW","Remove duplicates in this character class.","rocket-meals_rocket-meals:apps/backend-sync/src/DirectusDatabaseSync.ts",244
 "AZ9GQqf9PG3QTBW6lktN","Remove duplicates in this character class.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",250
-"AZ9GQrZUPG3QTBW6lktY","Use `export…from` to re-export `MyMapCoreProps`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.tsx",271
 "AZ9BYlmS993SQF2ql_XI","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/frontend/app/components/FriendsContent/index.tsx",450
-"AZ8vcikryU4aPEVURR6g","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",445
+"AZ8vcikryU4aPEVURR6g","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",449
 "AZ8vcinGyU4aPEVURR6i","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",421
 "AZ8vcicRyU4aPEVURR6c","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",529
-"AZ8kngTW00wtKe1XsVl0","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",778
-"AZ8kngTW00wtKe1XsVl1","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",791
-"AZ8kngTW00wtKe1XsVl2","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1028
-"AZ8DZ8ebbzaBxP-NaEwx","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/onboarding/index.tsx",172
+"AZ8kngTW00wtKe1XsVl0","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",782
+"AZ8kngTW00wtKe1XsVl1","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",795
+"AZ8kngTW00wtKe1XsVl2","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1032
 "AZ76kXGBwtcSxb7GSELI","Use the opposite operator (<=) instead.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentDetailsContent/ApartmentDetailsContent.tsx",51
 "AZ7v17-MhkdGLBATgzL9","Add a default case (*) to handle unexpected values.","rocket-meals_rocket-meals:apps/frontend/run-maestro-web-test.sh",32
 "AZ7XznWl_c1oKk55Rx7u","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",292
@@ -89,7 +51,6 @@ Key,Message,Component,Line
 "AZ2YIf6SHOaBv7t4lshE","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",150
 "AZ2U4NYB2EVQqD_aZxzi","Remove this use of the ""void"" operator.","rocket-meals_rocket-meals:apps/score-tracker/scripts/generate-eas-config.ts",75
 "AZ2Tk1227OEcDMWQizd8","The function should be named.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app.config.ts",15
-"AZ2Tk12f7OEcDMWQizd5","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",875
 "AZ17K3SPSTzC4JOH8LEH","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",465
 "AZ14cDpzAuf7ECOyqeXO","Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",326
 "AZ14cDpzAuf7ECOyqeXU","Method 'getFoodofferToCreate' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",941
@@ -111,13 +72,13 @@ Key,Message,Component,Line
 "AZ1S6EHxP7XVSqemBA4y","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2483
 "AZ1OefJpZOYU8jrLR9RW","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",411
 "AZ1OR5Y77R0-edR1qF-H","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",375
-"AZ1LvL92mmXMTKdZFLyJ","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",635
+"AZ1LvL92mmXMTKdZFLyJ","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",639
 "AZ1Lp0nFX1wrgZnAE3lk","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",231
 "AZ1Lp0nFX1wrgZnAE3lm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",722
 "AZ1LC7BJFtVQsuyyBkDa","Refactor this function to reduce its Cognitive Complexity from 120 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",681
-"AZ1I9Kfp9DoLcXMmfUtv","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",321
+"AZ1I9Kfp9DoLcXMmfUtv","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",325
 "AZ1GDyfOxSn_iKVSgNMQ","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",77
-"AZ1GDydfxSn_iKVSgNMM","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",636
+"AZ1GDydfxSn_iKVSgNMM","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",640
 "AZ1GDyavxSn_iKVSgNML","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",81
 "AZ1EtY5FWUOCih0Af5ZN","Do not use an object literal as default for parameter `content`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TTSHelper.ts",82
 "AZ1EMIc56oJbwS86_fe4","Function 'boundsOverlap' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",66
@@ -140,15 +101,8 @@ Key,Message,Component,Line
 "AZ0shtepHCNUh2gxqokx","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",105
 "AZ0q4DRAwLXvqUESGFMG","Refactor this function to reduce its Cognitive Complexity from 54 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",265
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
-"AZ0qQsaFwNvxBfmg7NNp","Replace the unused local variable ""sf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNq","Replace the unused local variable ""rx"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNr","Replace the unused local variable ""laf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNs","Replace the unused local variable ""xrot"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNt","Replace the unused local variable ""ry"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
 "AZ0l8P0X4f4TF5V4_eK7","Refactor this function to reduce its Cognitive Complexity from 83 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2933
 "AZ0kNDBpB0YJ19oE3NfV","Refactor this function to reduce its Cognitive Complexity from 201 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4192
-"AZ0fd-UFapyM9SrSXIMO","Use `export…from` to re-export `default`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",2
-"AZ0fd-VDapyM9SrSXIMP","Use `export…from` to re-export `default`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListBoolean/SettingsListBoolean.tsx",4
 "AZ0feAdTapyM9SrSXIMY","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/context/SettingsContext.tsx",17
 "AZ0fKKJJdghgBKdKARgS","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2720
 "AZ0eWxOWRvqNgnlDLcVw","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",901
@@ -162,9 +116,8 @@ Key,Message,Component,Line
 "AZ0U1T6zmRbbgKiJY8A8","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",82
 "AZ0Tpk31ufp2jxPAhSyC","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",1291
 "AZ0Tpk31ufp2jxPAhSxq","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",681
-"AZ0Tpldvufp2jxPAhS5M","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewModalCanteenSelection.tsx",48
 "AZ0Tpk_Bufp2jxPAhSzX","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MyImage/index.tsx",54
-"AZ0Tpk2Eufp2jxPAhSwz","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",640
+"AZ0Tpk2Eufp2jxPAhSwz","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",641
 "AZ0Tpk4Nufp2jxPAhSyN","Refactor this function to reduce its Cognitive Complexity from 49 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",68
 "AZ0TplDEufp2jxPAhS0A","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/FileUpload/FileUpload.tsx",112
 "AZ0Tpk2Eufp2jxPAhSwo","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",286
@@ -174,37 +127,16 @@ Key,Message,Component,Line
 "AZ0Tpk31ufp2jxPAhSxp","Function 'createBuildingMarkerSvg' has too many parameters (10). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",631
 "AZ0TplLWufp2jxPAhS1t","This statement will not be executed conditionally; only the first statement will be. The rest will execute unconditionally.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingDetailsContent/BuildingDetailsContent.tsx",53
 "AZ0Tpk31ufp2jxPAhSyE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",1668
-"AZ0Tpk3jufp2jxPAhSxc","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/MapHeader.tsx",62
-"AZ0Tpk3jufp2jxPAhSxd","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/MapHeader.tsx",102
-"AZ0Tpk3jufp2jxPAhSxe","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/MapHeader.tsx",121
-"AZ0TplNeufp2jxPAhS18","Use `export…from` to re-export `TooltipContent`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
-"AZ0TplNeufp2jxPAhS19","Use `export…from` to re-export `TooltipText`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
-"AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",57
-"AZ0TplIZufp2jxPAhS1V","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",84
-"AZ0TplIZufp2jxPAhS1W","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",113
-"AZ0TplJGufp2jxPAhS1a","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",111
-"AZ0TplJGufp2jxPAhS1b","Remove this redundant jump.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",124
+"AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",65
+"AZ0TplJGufp2jxPAhS1a","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",119
+"AZ0TplJGufp2jxPAhS1b","Remove this redundant jump.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",132
 "AZ0Tplvuufp2jxPAhTK5","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts",10
 "AZ0TplvDufp2jxPAhTKz","Move function 'getTodayRangeIso' to the outer scope.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts",40
-"AZ0TplHYufp2jxPAhS1N","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",160
-"AZ0Tpkkyufp2jxPAhSuF","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",52
-"AZ0Tpkkyufp2jxPAhSuG","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",71
-"AZ0TpkmXufp2jxPAhSuH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/details/components/DetailsHeader.tsx",54
-"AZ0Tpkmnufp2jxPAhSuJ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/details/components/DetailsTabs.tsx",53
-"AZ0Tpkmnufp2jxPAhSuK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/details/components/DetailsTabs.tsx",78
-"AZ0Tpkv_ufp2jxPAhSva","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",72
-"AZ0Tpkv_ufp2jxPAhSvb","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",112
-"AZ0TpkvTufp2jxPAhSvK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",74
-"AZ0TpkvHufp2jxPAhSvE","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/TabController.tsx",68
 "AZ0TpkwNufp2jxPAhSvn","""menu"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",271
 "AZ0TpkwNufp2jxPAhSvo","""sort"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",271
 "AZ0Tpkxhufp2jxPAhSv-","""system"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",18
 "AZ0Tpkxhufp2jxPAhSv8","""left"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",18
 "AZ0Tpkxhufp2jxPAhSv9","""right"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",18
-"AZ0Tpkxhufp2jxPAhSv_","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",74
-"AZ0Tpkxhufp2jxPAhSwA","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",94
-"AZ0TpkxMufp2jxPAhSv3","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsHeader.tsx",59
-"AZ0TpkxCufp2jxPAhSv0","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/details/components/HousingDetailsTabs.tsx",58
 "AZ9wjXwD75F_EoJO9xIO","Mark these members as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",29
 "AZ5JdOxPjvp1UF7n1YmM","Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",414
 "AZ0Tpk-Qufp2jxPAhSzP","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/Details/AttributeItem.tsx",18
@@ -221,8 +153,8 @@ Key,Message,Component,Line
 "AZoqYCDkI-V0abeTAETn","'value' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",131
 "AZ0Tpk8Eufp2jxPAhSy0","Empty block statement.","rocket-meals_rocket-meals:apps/frontend/app/app/index.tsx",68
 "AZoCyrBgngjPLpUxvJ_b","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",209
-"AZlylR8Uafb6tpRtN87P","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",179
-"AZlylR8Uafb6tpRtN87Q","Remove this redundant jump.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",192
+"AZlylR8Uafb6tpRtN87P","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",208
+"AZlylR8Uafb6tpRtN87Q","Remove this redundant jump.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",221
 "AZ0TplnZufp2jxPAhS6p","'currentMealOffersHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",81
 "AZ0TplnZufp2jxPAhS6q","'previousMealOffersHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",95
 "AZ0TpltJufp2jxPAhTKp","'lastResultHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts",31
@@ -231,26 +163,22 @@ Key,Message,Component,Line
 "AZkUSvreS4VhJojFFCb3","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",709
 "AZkUSvreS4VhJojFFCb8","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",791
 "AZkUSvreS4VhJojFFCcD","Refactor this function to reduce its Cognitive Complexity from 41 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",985
-"AZkUSvq9S4VhJojFFCbH","Rename class ""FoodTL1Parser_RawReportTestReaderOsnabrueck"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts",3
 "AZkUSvtsS4VhJojFFCeU","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts",19
 "AZkUSvt1S4VhJojFFCeb","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/RegisterHookCreateFormSubmissionsFormAnswers.ts",13
-"AZkUSvtiS4VhJojFFCeS","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",424
 "AZkUSvuBS4VhJojFFCeh","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",61
 "AZkUSvuBS4VhJojFFCek","Refactor this function to reduce its Cognitive Complexity from 93 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",149
 "AZkUSvigS4VhJojFFCXr","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MarkingFilterHelper.ts",20
 "AZkUSvgPS4VhJojFFCWt","Destructuring assignment updateObject unnecessarily renamed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",92
 "AZkUSvgPS4VhJojFFCWu","Destructuring assignment updateNeeded unnecessarily renamed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",92
 "AZkUSvgPS4VhJojFFCWy","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",146
-"AZkUSvo3S4VhJojFFCZu","Rename class ""StudentenwerkHannoverApartments_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/hannover/StudentenwerkHannoverApartments_Parser.ts",7
 "AZkUSvzJS4VhJojFFCkz","Refactor this function to reduce its Cognitive Complexity from 39 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts",72
 "AZkUSvzaS4VhJojFFCk-","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/push-notification-hook/index.ts",28
 "AZkUSvzAS4VhJojFFCkn","Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts",162
 "AZkUSvqIS4VhJojFFCa8","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts",18
 "AZkUSvxcS4VhJojFFCia","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",210
-"AZkUSvP-S4VhJojFFAcm","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",714
 "AZkUSvK8S4VhJojFFAWW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",148
-"AZkUSvNxS4VhJojFFAZY","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",383
-"AZkUSvNxS4VhJojFFAZe","Refactor this function to reduce its Cognitive Complexity from 65 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",678
+"AZkUSvNxS4VhJojFFAZY","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",384
+"AZkUSvNxS4VhJojFFAZe","Refactor this function to reduce its Cognitive Complexity from 65 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",679
 "AZkUSvJzS4VhJojFFAUQ","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",36
 "AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",28
 "AZkUSvHUS4VhJojFFATX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",25
@@ -259,7 +187,7 @@ Key,Message,Component,Line
 "AZkUSvGJS4VhJojFFAS2","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",49
 "AZkUSvHoS4VhJojFFATk","Replace this ""Boolean"" wrapper object with primitive type ""boolean"".","rocket-meals_rocket-meals:apps/frontend/app/components/LabelHeader/LabelHeader.tsx",9
 "AZkUSvJeS4VhJojFFAUH","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingIcon/index.tsx",18
-"AZkUSvCWS4VhJojFFARN","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",44
+"AZkUSvCWS4VhJojFFARN","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",52
 "AZkUSvIaS4VhJojFFATz","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/StatisticsCard/StatisticsCard.tsx",11
 "AZkUSvFkS4VhJojFFASv","Refactor this function to reduce its Cognitive Complexity from 30 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/TimeTable/TimeTableList.tsx",10
 "AZkUSvUYS4VhJojFFAhq","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",93
@@ -285,24 +213,12 @@ Key,Message,Component,Line
 "AZlyj_ww0YdgFOBafBM8","Prefer using the default import over named import.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/pdf/PuppeteerGenerator.ts",2
 "AZkUSvxcS4VhJojFFCiY","Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",128
 "AZkUSv1LS4VhJojFFCrl","It's not necessary to initialize 'headersObject' to undefined.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",596
-"AZkUSu_jS4VhJojFFAP6","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/CanteenFeedbackLabels/CanteenFeedbackLabels.tsx",112
-"AZkUSu66S4VhJojFFAOf","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/components/CanteenSelectionSheet/CanteenSelectionSheet.tsx",59
-"AZkUSvC0S4VhJojFFARi","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",202
-"AZkUSvErS4VhJojFFASb","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMenuHeader/CustomMenuHeader.tsx",88
-"AZkUSvB4S4VhJojFFAQ4","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/FeedbackLabel/index.tsx",87
 "AZkUSvDUS4VhJojFFARx","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",324
-"AZkUSvFHS4VhJojFFASm","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",260
-"AZkUSvFHS4VhJojFFASn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",276
-"AZkUSvFHS4VhJojFFASo","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",298
-"AZkUSvFHS4VhJojFFASp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",323
 "AZkUSu7eS4VhJojFFAOp","Unexpected empty class.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/MyMapHelper.tsx",12
-"AZkUSvCWS4VhJojFFARQ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",161
-"AZkUSvUHS4VhJojFFAhf","Rename class ""iPhoneSystemActionHelper"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",96
 "AZkUSvK8S4VhJojFFAWX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",152
 "AZlyj_cc0YdgFOBafBLv","Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",181
 "AZkUSv1TS4VhJojFFCrn","Merge this RUN instruction with the consecutive ones.","rocket-meals_rocket-meals:apps/backend/Dockerfile",38
-"AZkUSu8DS4VhJojFFAO1","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",31
-"AZkUSvSVS4VhJojFFAfw","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",247
+"AZkUSu8DS4VhJojFFAO1","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",35
 "AZkUSvQ4S4VhJojFFAdm","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx",31
 "AZkUSv3FS4VhJojFFCsX","Update this function so that its implementation is not identical to the one on line 360.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",498
 "AZkUSvtiS4VhJojFFCeM","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",101
@@ -312,24 +228,21 @@ Key,Message,Component,Line
 "AZkUSvL-S4VhJojFFAW0","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",108
 "AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",114
 "AZlyj_Yk0YdgFOBafBLm","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",42
-"AZkUSvNxS4VhJojFFAZX","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",371
-"AZkUSvNxS4VhJojFFAZc","This always evaluates to truthy. Consider refactoring this code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",452
+"AZkUSvNxS4VhJojFFAZc","This always evaluates to truthy. Consider refactoring this code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",453
 "AZkUSvRPS4VhJojFFAeO","The signature '(...text: string[]): void | undefined' of 'newWindow.document.write' is deprecated.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx",417
 "AZkUSvC_S4VhJojFFARp","Use concise character class syntax '\d' instead of '[0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",71
 "AZkUSvC_S4VhJojFFARq","Use concise character class syntax '\d' instead of '[0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",71
-"AZlyj_JR0YdgFOBafBLH","Prefer `Math.max()` to simplify ternary expressions.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",82
+"AZlyj_JR0YdgFOBafBLH","Prefer `Math.max()` to simplify ternary expressions.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",92
 "AZkUSvHUS4VhJojFFATW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",19
 "AZkUSvG7S4VhJojFFATL","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",53
 "AZkUSvG7S4VhJojFFATS","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",450
 "AZkUSvIiS4VhJojFFAT0","Rename interface ""sheetProps"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/components/EditFormSubmissionSheet/types.ts",1
 "AZkUSvBTS4VhJojFFAQl","Empty block statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",85
 "AZkUSvIHS4VhJojFFATw","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/ImageUpload/ImageUpload.tsx",100
-"AZkUSu9AS4VhJojFFAPE","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/components/ManagementCanteensSheet/ManagementCanteensSheet.tsx",57
 "AZkUSvEOS4VhJojFFASL","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/ManagmentFoodPlan/FoodPlan.tsx",36
 "AZlyj_Pf0YdgFOBafBLY","Move async function 'loadServerInfo' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/components/ServerStatusLoader/ServerStatusLoader.tsx",16
 "AZkUSvF_S4VhJojFFASz","Replace this ""String"" wrapper object with primitive type ""string"".","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningModal/types.ts",4
 "AZkUSvAUS4VhJojFFAQV","Rename interface ""sheetProps"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningSheet/types.ts",1
-"AZkUSvUHS4VhJojFFAhg","Rename class ""androidSystemActionHelper"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",98
 "AZlyj_mS0YdgFOBafBMG","Move function 'hexToLottieColor' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",123
 "AZlyj_mS0YdgFOBafBMN","Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",175
 "AZkUSvcAS4VhJojFFCTK","This case's code block is the same as the block for the case on line 23.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/authReducer.ts",30
@@ -339,11 +252,8 @@ Key,Message,Component,Line
 "AZkUSv1TS4VhJojFFCrm","Merge this RUN instruction with the consecutive ones.","rocket-meals_rocket-meals:apps/backend/Dockerfile",8
 "AZkUSv1TS4VhJojFFCrp","Sort these package names alphanumerically.","rocket-meals_rocket-meals:apps/backend/Dockerfile",13
 "AZkUSvuBS4VhJojFFCen","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",451
-"AZkUSvw1S4VhJojFFCh3","Rename class ""StudentenwerkOsnabrueckNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",12
 "AZkUSv1cS4VhJojFFCrs","Replace deprecated instructions with an up-to-date equivalent.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/Dockerfile",8
-"AZkUSvxIS4VhJojFFCiB","Rename class ""DemoNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/DemoNews_Parser.ts",6
 "AZkUSv02S4VhJojFFCrf","Replace the unused loop index ""level"" with ""_"".","rocket-meals_rocket-meals:apps/backend/Backend/scripts/getBase64IconForMail.py",51
-"AZkUSvuzS4VhJojFFCfG","Rename class ""StudentenwerkHannoverNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/hannover/StudentenwerkHannoverNews_Parser.ts",13
 "AZkUSvsCS4VhJojFFCcq","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",72
 "AZ5JdNiSjvp1UF7n1YmG","Prefer top-level await over using a promise chain.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",631
 "AZ5JdNiSjvp1UF7n1YmH","Prefer top-level await over using a promise chain.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",635
