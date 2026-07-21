@@ -269,6 +269,7 @@ const Index = () => {
 			return updatedCanteens;
 			// dispatch({ type: SET_CANTEENS, payload: updatedCanteens });
 		} catch (error) {
+			console.warn('list-day-screen: could not build canteen list', error);
 			return [];
 		}
 	};

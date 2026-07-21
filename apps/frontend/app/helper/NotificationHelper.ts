@@ -107,8 +107,7 @@ export class NotificationHelper {
 			}
 			return await Notifications.getPermissionsAsync();
 		} catch (err) {
-			//TODO: handle emulator
-			//console.log(err)
+			console.warn('NotificationHelper: could not get device notification permission (e.g. running on an emulator)', err);
 		}
 	}
 
@@ -131,8 +130,7 @@ export class NotificationHelper {
 			// @ts-ignore
 			return permission;
 		} catch (err) {
-			//TODO: handle emulator
-			//console.log(err)
+			console.warn('NotificationHelper: could not request device notification permission (e.g. running on an emulator)', err);
 			return undefined;
 		}
 	}
@@ -148,8 +146,7 @@ export class NotificationHelper {
 				projectId: projectId,
 			});
 		} catch (err) {
-			//TODO: handle emulator
-			//console.log(err)
+			console.warn('NotificationHelper: could not get Expo push token (e.g. running on an emulator)', err);
 			return undefined;
 		}
 	}

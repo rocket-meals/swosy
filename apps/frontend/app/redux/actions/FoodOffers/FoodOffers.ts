@@ -166,7 +166,7 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 
 		return applyArchivedFoodFilter(response.data);
 	} catch (error) {
-		throw new Error('Error fetching Food Offers');
+		throw new Error(`Error fetching Food Offers: ${(error as Error).message}`);
 	}
 };
 
@@ -190,7 +190,7 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 		});
 		return response.data;
 	} catch (error) {
-		throw new Error('Error fetching Food Offers');
+		throw new Error(`Error fetching Food Offers: ${(error as Error).message}`);
 	}
 };
 
@@ -204,7 +204,7 @@ export const fetchFoodofferComponentsById = async (id: string) => {
 		});
 		return response.data;
 	} catch (error) {
-		throw new Error('Error fetching Foodoffer Components');
+		throw new Error(`Error fetching Foodoffer Components: ${(error as Error).message}`);
 	}
 };
 
@@ -274,7 +274,7 @@ export const fetchFoodDetailsById = async (id: string) => {
 		});
 		return response.data;
 	} catch (error) {
-		throw new Error('Error fetching Food Offers');
+		throw new Error(`Error fetching Food Offers: ${(error as Error).message}`);
 	}
 };
 
@@ -305,7 +305,7 @@ export const fetchFoodsFeedbacksLabelsEntries = async (foodId: string, labelId: 
 
 		return response.data;
 	} catch (error) {
-		throw new Error('Error fetching Foods Feedbacks Labels Entries');
+		throw new Error(`Error fetching Foods Feedbacks Labels Entries: ${(error as Error).message}`);
 	}
 };
 
@@ -314,6 +314,6 @@ export const fetchBuildings = async () => {
 		const response = await fetchWithRetry('/items/buildings?fields=*&limit=-1', {});
 		return response.data;
 	} catch (error) {
-		throw new Error(`Error Fetching Buildings`);
+		throw new Error(`Error Fetching Buildings: ${(error as Error).message}`);
 	}
 };

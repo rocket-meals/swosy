@@ -95,7 +95,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
 				sel = parsed.toISOString().split('T')[0];
 			} catch (e) {
-				// ignore
+				console.warn('DateTimeInputs: could not parse local date/time value', localValue, e);
 			}
 		}
 
@@ -114,7 +114,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 					onChange(id, formatted, custom_type);
 					onError(id, '');
 				} catch (e) {
-					// ignore
+					console.warn('DateTimeInputs: could not parse selected date/time', dateString, e);
 				}
 			},
 		});
@@ -208,7 +208,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
 				sel = parsed.toISOString().split('T')[0];
 			} catch (e) {
-				// ignore
+				console.warn('DateTimeInputs: could not parse local date value', localValue, e);
 			}
 		}
 
@@ -222,7 +222,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 					onChange(id, formatted, custom_type);
 					onError(id, '');
 				} catch (e) {
-					// ignore
+					console.warn('DateTimeInputs: could not parse selected date', dateString, e);
 				}
 			},
 		});

@@ -63,8 +63,13 @@ der Git-/PR-Historie.
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
-(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x).
+(39x), Funktions-Verschachtelung (35x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
+
+„Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
+gemeldeten Catch-Blöcke (leer, nur Kommentar, oder Rethrow ohne Original-Error)
+protokollieren jetzt den tatsächlichen Fehler bzw. reichen ihn in der Fehlermeldung
+weiter, ohne das bestehende Fallback-/Swallow-Verhalten zu ändern.
 
 ## Hinweise
 
