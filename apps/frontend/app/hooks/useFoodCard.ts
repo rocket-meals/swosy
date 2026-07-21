@@ -5,12 +5,14 @@ import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useTheme } from '@/hooks/useTheme';
 
 export const useFoodCardBase = (
-    borderWidth: number = 0, 
-    borderColor: string | undefined, 
-    screenWidth: number, 
-    theme: any, 
+    borderWidth: number | undefined,
+    borderColor: string | undefined,
+    screenWidth: number,
+    theme: any,
     amountColumnsForcard: number
 ) => {
+	borderWidth = borderWidth === undefined ? 0 : borderWidth;
+
 	const dimension = amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 
 	const containerStyle: ViewStyle = {

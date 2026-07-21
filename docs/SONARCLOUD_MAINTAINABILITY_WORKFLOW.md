@@ -81,16 +81,16 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Remove this useless assignment to variable "X". | 97 von 97 (ungenutzte useState-Werte per Array-Elision, tote Deklarationen/Handler samt ungenutzt gewordener Imports entfernt; Seiteneffekt-Aufrufe als nacktes `await` behalten) | #3958 |
 | 2026-07-20 | useState call is not destructured into value + setter pair | 18 von 18 (10x Array-Elision aus #3958 zurück zu benanntem `[x, setX]`-Paar mit `NOSONAR`-Kommentar — Kommentar entfernen, sobald die Variable genutzt wird; 8x Setter-Umbenennung: 6x Tippfehler `setAmimationJson` → `setAnimationJson`, 2x `set...State`-Suffix in `useLanguage.ts`) | – |
 | 2026-07-21 | Add an explicit return statement at the end of the function. | 20 von 20 (nur Shell-Skripte; `return $?` als letzte Anweisung ergänzt, damit der bisherige implizite Exit-Code jeder Funktion unverändert bleibt — keine Semantikänderung) | – |
+| 2026-07-21 | Default parameters should be last. | 20 von 20 (Default stand jeweils vorn, meist bei Redux-Reducern `(state = initialState, actions)` — Positions-Konvention von `combineReducers` erzwingt diese Reihenfolge. Fix: Default aus der Signatur entfernt, stattdessen `x = x === undefined ? default : x;` als erste Zeile im Funktionskörper — keine Semantikänderung, alle Call-Sites unverändert) | #3966 |
+| 2026-07-21 | Unexpected `await` of a non-Promise (non-"Thenable") value. | 16 von 16 (alle betrafen echte Bugs: `await` auf synchrone `getXHelper()`/`getResultHash()`/`getContent()`/`window.open()`-Aufrufe, die kein Promise zurückgeben — Definitionen geprüft, `await` entfernt) | #3966 |
+| 2026-07-21 | Arguments 'X' and 'X' have the same names but not the same order as the function parameters. | 16 von 16, alle in `hashHelper.ts` — verifiziert als False Positive: Standard-MD5-Rundenstruktur (RSA-Referenzalgorithmus), die `(a,b,c,d)`-Rotation ist beabsichtigt. Kein Code-Fix, stattdessen erklärender `NOSONAR`-Kommentar ergänzt | #3966 |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
 **Noch offen (Stand 2026-07-21, brauchen individuelle Refactorings statt mechanischer Fixes):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
-(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
-should be last" (20x, ändert Aufrufer), `await` auf Non-Promise (16x, Prüfung pro
-Stelle nötig), Parameter-Reihenfolge (16x, ausschließlich `hashHelper.ts` — Reihenfolge
-könnte algorithmisch beabsichtigt sein, braucht manuelle Prüfung).
+(39x), Funktions-Verschachtelung (35x), Exception-Handling (23x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 ## Hinweise

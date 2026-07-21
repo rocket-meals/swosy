@@ -5,7 +5,9 @@ const initialState = {
 	foodAttributesDict: {},
 };
 
-const foodAttributesReducer = (state = initialState, actions: any) => {
+const foodAttributesReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_FOOD_ATTRIBUTE_GROUPS: {
 			return {
