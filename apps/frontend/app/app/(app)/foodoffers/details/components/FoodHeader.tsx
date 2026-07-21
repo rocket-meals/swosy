@@ -38,6 +38,14 @@ const StarRatingIconButton = ({
     </IconButton>
 );
 
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeStarRatingTrigger(onPress: () => void, filled: boolean, color: string) {
+    return (triggerProps: object) => (
+        <StarRatingIconButton triggerProps={triggerProps} onPress={onPress} filled={filled} color={color} />
+    );
+}
+
 const FoodHeader = ({
     foodDetails,
     screenWidth,
@@ -71,9 +79,7 @@ const FoodHeader = ({
             {isWeb ? (
                 <CustomTooltip
                     placement="top"
-                    trigger={(triggerProps) => (
-                        <StarRatingIconButton triggerProps={triggerProps} onPress={() => rateFood(index + 1)} filled={previousFeedback?.rating > index} color={foodsAreaColor} />
-                    )}
+                    trigger={makeStarRatingTrigger(() => rateFood(index + 1), previousFeedback?.rating > index, foodsAreaColor)}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
                         <TooltipText fontSize="$sm" color={theme.tooltip.text}>

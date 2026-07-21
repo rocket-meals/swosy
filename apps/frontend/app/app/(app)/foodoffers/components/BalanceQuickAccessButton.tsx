@@ -48,6 +48,14 @@ const BalanceTriggerButton = ({
 	</IconButton>
 );
 
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeBalanceTrigger(onPress: () => void, style: any, color: string) {
+	return (triggerProps: object) => (
+		<BalanceTriggerButton triggerProps={triggerProps} onPress={onPress} style={style} color={color} />
+	);
+}
+
 const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ style }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -100,9 +108,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 	return (
 		<CustomTooltip
 			placement="top"
-			trigger={triggerProps => (
-				<BalanceTriggerButton triggerProps={triggerProps} onPress={() => openAccountBalanceModal(isNfcSupported && isNfcEnabled)} style={style} color={theme.header.text} />
-			)}
+			trigger={makeBalanceTrigger(() => openAccountBalanceModal(isNfcSupported && isNfcEnabled), style, theme.header.text)}
 		>
 			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 				<TooltipText fontSize="$sm" color={theme.tooltip.text}>
