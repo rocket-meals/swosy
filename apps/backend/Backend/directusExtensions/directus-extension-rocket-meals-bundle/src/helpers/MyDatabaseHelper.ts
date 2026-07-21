@@ -107,7 +107,6 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
   getServerUrl(): string {
     let defaultServerUrl = 'http://127.0.0.1'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
     // could be also: http://rocket-meals-directus:8055/server/info but we stick to the default localhost
-    // TODO: Fix traefik and use the public url support
 
     let defaultServerPort = this.getServerPort();
     if (defaultServerPort) {

@@ -384,7 +384,7 @@ export default defineEndpoint({
       await myStorage.setCodeChallenge(authorization_code, {
         code_challenge: code_challenge_app,
         code_challenge_method: code_challenge_method_app,
-        //directus_session_token: null, // TODO: can be removed, as we dont want to share the directus session token.
+        //directus_session_token: null,
         directus_refresh_token: null, // currently we have not saved the directus_refresh_token. After the OAuth2 Flow we will add it there
       });
 

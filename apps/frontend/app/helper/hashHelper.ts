@@ -2,7 +2,6 @@ export class HashHelper {
 	/**
 	 * Compute an MD5 hash for a string. This implementation is minimal and should
 	 * be replaced with expo-crypto when package installation is possible.
-	 * TODO: Replace with expo-crypto MD5 implementation
 	 */
 	static md5(str: string): string {
 		let xl: number;

@@ -3,8 +3,8 @@ import { CollectionNames, DatabaseTypes, LanguageCodes, LanguageCodesType } from
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
-const FIELD_TRANSLATION_LANGUAGE_CODE = 'languages_code'; // TODO Import from directus-extension-auto-translation package the field name
-const FIELD_LANGUAGE_ID = 'code'; // TODO Import from directus-extension-auto-translation package the field name
+const FIELD_TRANSLATION_LANGUAGE_CODE = 'languages_code';
+const FIELD_LANGUAGE_ID = 'code';
 
 export type ExistingTranslation = {
   be_source_for_translations?: boolean | null;
@@ -233,7 +233,6 @@ export class TranslationHelper {
         }
       } else {
         //the parser dont provide a translation, we should delete it?
-        //TODO check if translation was generated or manually typed
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
       }
     }

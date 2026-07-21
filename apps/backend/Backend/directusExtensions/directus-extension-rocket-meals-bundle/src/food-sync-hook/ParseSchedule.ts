@@ -218,8 +218,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for food categories here, similar to markings
     }
   }
 
@@ -253,8 +251,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for foodoffer categories here, similar to markings
     }
   }
 
@@ -842,7 +838,7 @@ export class ParseSchedule {
         await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
         await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
 
-        await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
+        await this.updateFoodBasicFields(basicFoodData);
         await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
 
         await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);

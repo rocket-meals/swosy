@@ -146,7 +146,6 @@ export type FormExtractRelevantInformationSingle = {
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[];
 
 function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
-  // TODO: Move this into a workflow instead of a hook
   registerFunctions.action(CollectionNames.FORM_SUBMISSIONS + '.items.update', async (meta, context) => {
     console.log('Send mail after form submission state syncing');
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
@@ -387,7 +386,6 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
 
   let internalMyDatabaseHelper = myDatabaseHelper.cloneWithInternalServerMode();
   // we need the internal server mode to generate the pdf, as traefik does not route the request correctly
-  // TODO: Fix traefik configuration or add server to extra_hosts in docker-compose
   let pdfBuffer = await FormHelper.generatePdfFromForm({
     form,
     formExtractRelevantInformation,

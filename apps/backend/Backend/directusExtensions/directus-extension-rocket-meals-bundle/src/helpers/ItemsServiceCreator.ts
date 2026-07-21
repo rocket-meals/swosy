@@ -40,7 +40,7 @@ export interface AbstractService<Item> {
 }
 
 // https://github.com/directus/directus/blob/main/api/src/types/items.ts
-export type MutationOptions = any; // TODO: check if we ever need this
+export type MutationOptions = any;
 
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts#L35
 export type QueryOptions = {
@@ -103,7 +103,7 @@ export class ItemsServiceCreator extends GetItemsService {
     let database = this.eventContext?.database || this.apiContext.database; // https://github.com/directus/directus/discussions/11051#discussioncomment-2014806
     return new ItemsService(tablename, {
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
@@ -140,7 +140,7 @@ export class FileServiceCreator extends GetItemsService {
 
     return new FilesService({
       accountability: accountability, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
@@ -164,7 +164,7 @@ export class ActivityServiceCreator extends GetItemsService {
     const database = this.apiContext.database;
     return new ActivityService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
@@ -200,7 +200,7 @@ export class ServerServiceCreator extends GetItemsService {
     const database = this.apiContext.database;
     return new ServerService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }

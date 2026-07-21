@@ -7,7 +7,6 @@ import { HashHelper } from '../helpers/HashHelper';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 
 export class NewsParseSchedule {
-  //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
   private readonly context: WorkflowRunContext;
   private readonly parser: NewsParserInterface;
 
