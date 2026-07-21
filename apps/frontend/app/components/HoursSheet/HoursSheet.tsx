@@ -127,6 +127,39 @@ const computeConsecutiveRangesByDay = (
 	return dayConsecutiveRanges;
 };
 
+// Pushes one entry per time range in `timeRanges` into `groupedTimes`, all attributed to `days`.
+const flushGroupedTimeRanges = (
+	timeRanges: { time_start: number | null; time_end: number | null }[],
+	days: string[],
+	groupedTimes: { day: string[]; time_start: string | null; time_end: string | null }[]
+): void => {
+	timeRanges.forEach(timeRange => {
+		groupedTimes.push({
+			day: days,
+			time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
+			time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
+		});
+	});
+};
+
+// Checks whether two lists of time ranges contain the same set of (time_start, time_end) pairs.
+const haveSameTimeRanges = (
+	currentTimeRanges: { time_start: number | null; time_end: number | null }[],
+	previousSavedTimeRanges: { time_start: number | null; time_end: number | null }[]
+): boolean => {
+	let isSameTimeRange = false;
+	if (currentTimeRanges.length === previousSavedTimeRanges.length) {
+		currentTimeRanges.forEach(timeRange => {
+			previousSavedTimeRanges.forEach(previousTimeRange => {
+				if (timeRange.time_start === previousTimeRange.time_start && timeRange.time_end === previousTimeRange.time_end) {
+					isSameTimeRange = true;
+				}
+			});
+		});
+	}
+	return isSameTimeRange;
+};
+
 const mergeDaysWithSameTimeRanges = (
 	sortedDayKeys: string[],
 	dayConsecutiveRanges: Record<string, { time_start: number | null; time_end: number | null }[]>
@@ -150,13 +183,7 @@ const mergeDaysWithSameTimeRanges = (
 			// but we need to check if we have a previous day with time ranges and if so, we need to add it to the groupedTimes
 			if (previousDaysForTimeRange.length > 0 && previousSavedTimeRanges.length > 0) {
 				// we have a previous day with time ranges
-				previousSavedTimeRanges.forEach(timeRange => {
-					groupedTimes.push({
-						day: previousDaysForTimeRange,
-						time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-						time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-					});
-				});
+				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
 				previousSavedTimeRanges = [];
 				previousDaysForTimeRange = [];
 			} else {
@@ -166,43 +193,21 @@ const mergeDaysWithSameTimeRanges = (
 			// So we have previous time ranges and now we want to check if the current time ranges are the same as the previous time ranges
 			let isLastDay = i === sortedDayKeys.length - 1;
 
-			let isSameTimeRange = false;
-
-			if (currentTimeRanges.length === previousSavedTimeRanges.length) {
-				currentTimeRanges.forEach(timeRange => {
-					previousSavedTimeRanges.forEach(previousTimeRange => {
-						if (timeRange.time_start === previousTimeRange.time_start && timeRange.time_end === previousTimeRange.time_end) {
-							isSameTimeRange = true;
-						}
-					});
-				});
-			}
+			let isSameTimeRange = haveSameTimeRanges(currentTimeRanges, previousSavedTimeRanges);
 
 			if (isSameTimeRange) {
 				// we have a same time range, so we can add the current day to the previous days
 				previousDaysForTimeRange.push(currentDay);
 			} else {
 				// we have a different time range, so we need to save the previous time ranges and add the current day to the grouped times
-				previousSavedTimeRanges.forEach(timeRange => {
-					groupedTimes.push({
-						day: previousDaysForTimeRange,
-						time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-						time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-					});
-				});
+				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
 				previousDaysForTimeRange = [currentDay];
 				previousSavedTimeRanges = currentTimeRanges;
 			}
 
 			// if we are at the last day, we need to add the previous time ranges to the grouped times
 			if (isLastDay) {
-				previousSavedTimeRanges.forEach(timeRange => {
-					groupedTimes.push({
-						day: previousDaysForTimeRange,
-						time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-						time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-					});
-				});
+				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
 			}
 		}
 	}

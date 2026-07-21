@@ -689,6 +689,33 @@ function createBuildingMarkerSvg(params: {
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
+function resolveMapOverlayStyle(
+	gameMode: boolean,
+	headingUpMode: boolean,
+	theme: ReturnType<typeof useTheme>['theme'],
+	userLocation: { lat: number; lng: number } | null,
+	autoRotateSpeed: number,
+) {
+	const initialMapPitch = gameMode ? GAME_MODE_PITCH : INITIAL_PITCH;
+	const compassBackgroundColor = headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee');
+	const compassIconColor = headingUpMode ? 'white' : theme.screen.icon;
+	const locationIconColor = userLocation ? '#1a73e8' : theme.screen.icon;
+	const rotateLeftBackgroundColor = autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateLeftIconColor = autoRotateSpeed < 0 ? 'white' : theme.screen.icon;
+	const rotateRightBackgroundColor = autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateRightIconColor = autoRotateSpeed > 0 ? 'white' : theme.screen.icon;
+	return {
+		initialMapPitch,
+		compassBackgroundColor,
+		compassIconColor,
+		locationIconColor,
+		rotateLeftBackgroundColor,
+		rotateLeftIconColor,
+		rotateRightBackgroundColor,
+		rotateRightIconColor,
+	};
+}
+
 const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
 	const { theme } = useTheme();
@@ -1517,14 +1544,16 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	const initialMapPitch = gameMode ? GAME_MODE_PITCH : INITIAL_PITCH;
-	const compassBackgroundColor = headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee');
-	const compassIconColor = headingUpMode ? 'white' : theme.screen.icon;
-	const locationIconColor = userLocation ? '#1a73e8' : theme.screen.icon;
-	const rotateLeftBackgroundColor = autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
-	const rotateLeftIconColor = autoRotateSpeed < 0 ? 'white' : theme.screen.icon;
-	const rotateRightBackgroundColor = autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
-	const rotateRightIconColor = autoRotateSpeed > 0 ? 'white' : theme.screen.icon;
+	const {
+		initialMapPitch,
+		compassBackgroundColor,
+		compassIconColor,
+		locationIconColor,
+		rotateLeftBackgroundColor,
+		rotateLeftIconColor,
+		rotateRightBackgroundColor,
+		rotateRightIconColor,
+	} = resolveMapOverlayStyle(gameMode, headingUpMode, theme, userLocation, autoRotateSpeed);
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>

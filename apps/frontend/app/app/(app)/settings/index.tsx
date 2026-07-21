@@ -64,6 +64,24 @@ type CollectibleItemSize = 'small' | 'medium' | 'large';
 
 const ListItemSeparator = () => <View style={{ height: 10 }} />;
 
+function resolveColorSchemeLabel(selectedTheme: string, translate: (key: string) => string): string {
+	if (selectedTheme === 'systematic') {
+		return translate(TranslationKeys.color_scheme_system);
+	} else if (selectedTheme === 'dark') {
+		return translate(TranslationKeys.color_scheme_dark);
+	}
+	return translate(TranslationKeys.color_scheme_light);
+}
+
+function resolveDrawerPositionLabel(drawerPosition: string, translate: (key: string) => string): string {
+	if (drawerPosition === 'left') {
+		return translate(TranslationKeys.drawer_config_position_left);
+	} else if (drawerPosition === 'right') {
+		return translate(TranslationKeys.drawer_config_position_right);
+	}
+	return translate(TranslationKeys.drawer_config_position_system);
+}
+
 const Settings = () => {
         useSetPageTitle(TranslationKeys.settings);
         const { theme, setThemeMode } = useTheme();
@@ -697,22 +715,8 @@ const Settings = () => {
 		);
 
 		// === App Settings ===
-		let colorSchemeValue: string;
-		if (selectedTheme === 'systematic') {
-			colorSchemeValue = translate(TranslationKeys.color_scheme_system);
-		} else if (selectedTheme === 'dark') {
-			colorSchemeValue = translate(TranslationKeys.color_scheme_dark);
-		} else {
-			colorSchemeValue = translate(TranslationKeys.color_scheme_light);
-		}
-		let drawerPositionValue: string;
-		if (drawerPosition === 'left') {
-			drawerPositionValue = translate(TranslationKeys.drawer_config_position_left);
-		} else if (drawerPosition === 'right') {
-			drawerPositionValue = translate(TranslationKeys.drawer_config_position_right);
-		} else {
-			drawerPositionValue = translate(TranslationKeys.drawer_config_position_system);
-		}
+		const colorSchemeValue = resolveColorSchemeLabel(selectedTheme, translate);
+		const drawerPositionValue = resolveDrawerPositionLabel(drawerPosition, translate);
 		rows.push(
 			{
 			key: 'section-app-settings',

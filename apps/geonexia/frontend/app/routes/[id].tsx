@@ -322,6 +322,56 @@ function makeRouteHeaderLeft(color: string, onPress: () => void) {
 	return () => <RouteBackHeaderButton color={color} onPress={onPress} />;
 }
 
+type RouteInfoRow = { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string };
+
+/**
+ * Compute the derived, non-render values for the route detail screen: the
+ * currently active tile list (edited vs. saved), its length/tile count, the
+ * initial map center from the route bounds, the info-list rows, and whether
+ * an anchor tile is currently selected in "add" edit sub-mode.
+ */
+function computeRouteDetailDerivedState(
+	route: SavedRoute,
+	isEditing: boolean,
+	editedHexTiles: string[],
+	enclosedTilesReady: boolean,
+	enclosedTiles: string[],
+	mapEditSubMode: MapEditSubMode,
+	addAnchorTileIndex: number | null,
+): {
+	activeTiles: string[];
+	distanceKm: number;
+	tileCount: number;
+	routeInitialCenter: { lat: number; lng: number } | undefined;
+	infoRows: RouteInfoRow[];
+	lastInfoIdx: number;
+	addModeHasAnchor: boolean;
+} {
+	const activeTiles = isEditing ? editedHexTiles : route.hexTiles;
+	const distanceKm = computeRouteLengthKm(activeTiles);
+	const tileCount = activeTiles.length;
+
+	// Compute initial map center from route bounds
+	const bounds = computeHexBounds(route.hexTiles);
+	const routeInitialCenter = bounds
+		? { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 }
+		: undefined;
+
+	const infoRows: RouteInfoRow[] = [
+		{ icon: 'straighten', label: 'Streckenlänge', value: formatDistanceKm(distanceKm) },
+		{ icon: 'grid-on', label: 'Kacheln', value: String(tileCount) },
+		{ icon: 'crop-free', label: 'Eingeschlossene Kacheln', value: enclosedTilesReady ? String(enclosedTiles.length) : '…' },
+		...(route.sportType
+			? [{ icon: 'directions-run' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Sportart', value: route.sportType }]
+			: []),
+	];
+
+	const lastInfoIdx = infoRows.length - 1;
+	const addModeHasAnchor = isEditing && mapEditSubMode === 'add' && addAnchorTileIndex !== null;
+
+	return { activeTiles, distanceKm, tileCount, routeInitialCenter, infoRows, lastInfoIdx, addModeHasAnchor };
+}
+
 export default function RouteDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -1146,29 +1196,15 @@ export default function RouteDetailScreen() {
 		);
 	}
 
-	const activeTiles = isEditing ? editedHexTiles : route.hexTiles;
-	const distanceKm = computeRouteLengthKm(activeTiles);
-	const tileCount = activeTiles.length;
-
-	// Compute initial map center from route bounds
-	const routeInitialCenter = (() => {
-		const bounds = computeHexBounds(route.hexTiles);
-		if (!bounds) return undefined;
-		return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
-	})();
-
-	const infoRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
-		{ icon: 'straighten', label: 'Streckenlänge', value: formatDistanceKm(distanceKm) },
-		{ icon: 'grid-on', label: 'Kacheln', value: String(tileCount) },
-		{ icon: 'crop-free', label: 'Eingeschlossene Kacheln', value: enclosedTilesReady ? String(enclosedTiles.length) : '…' },
-		...(route.sportType
-			? [{ icon: 'directions-run' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Sportart', value: route.sportType }]
-			: []),
-	];
-
-	const lastInfoIdx = infoRows.length - 1;
-
-	const addModeHasAnchor = isEditing && mapEditSubMode === 'add' && addAnchorTileIndex !== null;
+	const { activeTiles, routeInitialCenter, infoRows, lastInfoIdx, addModeHasAnchor } = computeRouteDetailDerivedState(
+		route,
+		isEditing,
+		editedHexTiles,
+		enclosedTilesReady,
+		enclosedTiles,
+		mapEditSubMode,
+		addAnchorTileIndex,
+	);
 
 	return (
 		<ScrollView

@@ -24,6 +24,43 @@ import { excerpt } from '@/constants/HelperFunctions';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
+/**
+ * Fill in `title`/`content` on the sanitized feedback input from
+ * `defaultValues` when the user hasn't entered their own (non-empty) value.
+ * Mutates `filteredInputValues` in place, matching the original inline logic.
+ */
+function applyDefaultFeedbackValues(filteredInputValues: { [key: string]: any }, defaultValues?: { title: string; content: string }): void {
+	if (!defaultValues) return;
+
+	if (!String(filteredInputValues.title ?? '').trim()) {
+		filteredInputValues.title = defaultValues.title;
+	}
+	if (!String(filteredInputValues.content ?? '').trim()) {
+		filteredInputValues.content = defaultValues.content;
+	}
+}
+
+/**
+ * Handle a failed feedback create/update submission: reset the loading
+ * state, store the error message/JSON for display, and toast the error.
+ */
+function reportFeedbackSubmissionError(
+	e: any,
+	setLoading: (value: boolean) => void,
+	setErrorMessage: (value: string | null) => void,
+	setErrorJson: (value: string | null) => void,
+	toast: (message: string, type?: string) => void
+): void {
+	setLoading(false);
+	setErrorMessage(e?.message || String(e));
+	try {
+		setErrorJson(JSON.stringify(e));
+	} catch (jsonError) {
+		setErrorJson(String(e));
+	}
+	toast(`Error: ${e?.message || e}`, 'error');
+}
+
 const FeedbackScreen = () => {
 	useSetPageTitle(TranslationKeys.feedback_and_support);
 	const { translate } = useLanguage();
@@ -213,14 +250,7 @@ const FeedbackScreen = () => {
 		if (inputValues) {
 			setLoading(true);
 			const { email, ...filteredInputValues } = inputValues;
-			if (defaultValues) {
-				if (!String(filteredInputValues.title ?? '').trim()) {
-					filteredInputValues.title = defaultValues.title;
-				}
-				if (!String(filteredInputValues.content ?? '').trim()) {
-					filteredInputValues.content = defaultValues.content;
-				}
-			}
+			applyDefaultFeedbackValues(filteredInputValues, defaultValues);
 			if (profile?.id) {
 				filteredInputValues.profile = profile?.id;
 			}
@@ -250,14 +280,7 @@ const FeedbackScreen = () => {
 					router.navigate('/support-FAQ');
 				}
 			} catch (e: any) {
-				setLoading(false);
-				setErrorMessage(e?.message || String(e));
-				try {
-					setErrorJson(JSON.stringify(e));
-				} catch (jsonError) {
-					setErrorJson(String(e));
-				}
-				toast(`Error: ${e?.message || e}`, 'error');
+				reportFeedbackSubmissionError(e, setLoading, setErrorMessage, setErrorJson, toast);
 			}
 		}
 	};

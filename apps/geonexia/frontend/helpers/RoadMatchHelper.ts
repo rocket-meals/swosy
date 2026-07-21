@@ -22,7 +22,7 @@
  */
 
 import Pbf from 'pbf';
-import { VectorTile } from '@mapbox/vector-tile';
+import { VectorTile, type VectorTileFeature, type VectorTileLayer } from '@mapbox/vector-tile';
 
 import { resolveTileUrl, getTilesForBounds, calculateOptimalZoom, DEFAULT_STYLE_URL } from './TileFeatureHelper';
 import type { LatLngBounds } from './TileFeatureHelper';
@@ -44,6 +44,42 @@ export type RoadWay = {
 /** Cache: `"tileUrlTemplate|z|x|y"` → parsed road ways for that tile. */
 const roadWayTileCache: Record<string, RoadWay[]> = {};
 
+/** Normalize a vector-tile feature's GeoJSON geometry into an array of coordinate lines. */
+function geometryToLines(geometry: ReturnType<VectorTileFeature['toGeoJSON']>['geometry']): [number, number][][] {
+	if (geometry.type === 'MultiLineString') return geometry.coordinates;
+	if (geometry.type === 'LineString') return [geometry.coordinates];
+	return [];
+}
+
+/**
+ * Extract road/path polylines (as `RoadWay`s) from the `transportation` layer
+ * of a decoded vector tile, converting each feature's GeoJSON geometry
+ * (LineString or MultiLineString) into one or more ways.
+ */
+function extractRoadWaysFromLayer(
+	layer: VectorTileLayer | undefined,
+	x: number,
+	y: number,
+	z: number,
+): RoadWay[] {
+	const ways: RoadWay[] = [];
+	if (!layer) return ways;
+
+	for (let i = 0; i < layer.length; i++) {
+		const feat = layer.feature(i);
+		if (feat.type !== GEOMETRY_TYPE_LINE) continue;
+
+		const geometry = feat.toGeoJSON(x, y, z).geometry;
+		const lines = geometryToLines(geometry);
+
+		for (const line of lines) {
+			if (line.length >= 2) ways.push({ points: line });
+		}
+	}
+
+	return ways;
+}
+
 async function fetchRoadWaysForTile(
 	tileUrlTemplate: string,
 	z: number,
@@ -64,24 +100,7 @@ async function fetchRoadWaysForTile(
 	const buffer = await res.arrayBuffer();
 	const tile = new VectorTile(new Pbf(buffer));
 	const layer = tile.layers[TRANSPORTATION_LAYER];
-	const ways: RoadWay[] = [];
-
-	if (layer) {
-		for (let i = 0; i < layer.length; i++) {
-			const feat = layer.feature(i);
-			if (feat.type !== GEOMETRY_TYPE_LINE) continue;
-
-			const geometry = feat.toGeoJSON(x, y, z).geometry;
-			let lines: [number, number][][];
-			if (geometry.type === 'MultiLineString') lines = geometry.coordinates;
-			else if (geometry.type === 'LineString') lines = [geometry.coordinates];
-			else lines = [];
-
-			for (const line of lines) {
-				if (line.length >= 2) ways.push({ points: line });
-			}
-		}
-	}
+	const ways = extractRoadWaysFromLayer(layer, x, y, z);
 
 	roadWayTileCache[cacheKey] = ways;
 	return ways;

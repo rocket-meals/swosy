@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
@@ -362,8 +362,6 @@ export default function HexTileInfoScreen() {
 			</ScrollView>
 		</View>
 	);
-
-	if (Platform.OS === 'web') return content;
 
 	return content;
 }

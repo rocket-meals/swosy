@@ -68,7 +68,7 @@ export class HashHelper {
 			for (let lCount = 0; lCount <= 3; lCount++) {
 				const lByte = (lValue >>> (lCount * 8)) & 255;
 				wordToHexValue_temp = '0' + lByte.toString(16);
-				wordToHexValue += wordToHexValue_temp.slice(wordToHexValue_temp.length - 2, wordToHexValue_temp.length);
+				wordToHexValue += wordToHexValue_temp.slice(-2);
 			}
 			return wordToHexValue;
 		};

@@ -49,6 +49,41 @@ const makeReadMoreTrigger = (props: Readonly<{
 	label: string;
 }>) => (triggerProps: object) => <ReadMoreTriggerButton triggerProps={triggerProps} {...props} />;
 
+const NEWS_ITEM_WIDE_BREAKPOINT = 768;
+const NEWS_ITEM_EXTRA_WIDE_BREAKPOINT = 900;
+
+/**
+ * Resolves all the screenWidth-dependent layout values used by NewsItem's
+ * JSX, so the `screenWidth > 768` breakpoint check isn't repeated ~10x.
+ */
+function resolveNewsItemLayout(screenWidth: number) {
+	const isWide = screenWidth > NEWS_ITEM_WIDE_BREAKPOINT;
+
+	let imageContainerWidth: '20%' | '30%' | '100%' = '100%';
+	if (isWide) {
+		imageContainerWidth = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT ? '20%' : '30%';
+	}
+	let newsContentWidth: '79%' | '69%' | '100%' = '100%';
+	if (isWide) {
+		newsContentWidth = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT ? '79%' : '69%';
+	}
+
+	return {
+		imageContainerWidth,
+		newsContentWidth,
+		cardFlexDirection: isWide ? ('row' as const) : ('column' as const),
+		imageHeight: isWide ? 220 : 180,
+		contentJustifyContent: isWide ? ('space-between' as const) : ('flex-start' as const),
+		contentPadding: isWide ? 10 : 0,
+		headerMarginTop: isWide ? 10 : 5,
+		headerFlexDirection: isWide ? ('row' as const) : ('column' as const),
+		titleWidth: isWide ? ('80%' as const) : ('100%' as const),
+		dateWidth: isWide ? ('20%' as const) : ('100%' as const),
+		actionAlignItems: isWide ? ('flex-start' as const) : ('center' as const),
+		readMoreWidth: isWide ? (210 as number | string) : '100%',
+	};
+}
+
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
@@ -85,20 +120,26 @@ const NewsItem: React.FC<any> = ({ news }) => {
 		}
 	};
 
-	let imageContainerWidth: '20%' | '30%' | '100%' = '100%';
-	if (screenWidth > 768) {
-		imageContainerWidth = screenWidth > 900 ? '20%' : '30%';
-	}
-	let newsContentWidth: '79%' | '69%' | '100%' = '100%';
-	if (screenWidth > 768) {
-		newsContentWidth = screenWidth > 900 ? '79%' : '69%';
-	}
+	const {
+		imageContainerWidth,
+		newsContentWidth,
+		cardFlexDirection,
+		imageHeight,
+		contentJustifyContent,
+		contentPadding,
+		headerMarginTop,
+		headerFlexDirection,
+		titleWidth,
+		dateWidth,
+		actionAlignItems,
+		readMoreWidth,
+	} = resolveNewsItemLayout(screenWidth);
 
 	return (
 		<View
 			style={{
 				...styles.card,
-				flexDirection: screenWidth > 768 ? 'row' : 'column',
+				flexDirection: cardFlexDirection,
 				backgroundColor: theme.screen.iconBg,
 			}}
 		>
@@ -106,7 +147,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				style={{
 					...styles.imageContainer,
 					width: imageContainerWidth,
-					height: screenWidth > 768 ? 220 : 180,
+					height: imageHeight,
 				}}
 			>
 				<Image
@@ -119,8 +160,8 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			<View
 				style={{
 					width: newsContentWidth,
-					justifyContent: screenWidth > 768 ? 'space-between' : 'flex-start',
-					padding: screenWidth > 768 ? 10 : 0,
+					justifyContent: contentJustifyContent,
+					padding: contentPadding,
 				}}
 			>
 				<View
@@ -131,16 +172,16 @@ const NewsItem: React.FC<any> = ({ news }) => {
 					<View
 						style={{
 							...styles.newsHeader,
-							marginTop: screenWidth > 768 ? 10 : 5,
+							marginTop: headerMarginTop,
 							marginBottom: 10,
-							flexDirection: screenWidth > 768 ? 'row' : 'column',
+							flexDirection: headerFlexDirection,
 						}}
 					>
 						<Text
 							style={{
 								...styles.newsHeading,
 								color: theme.screen.text,
-								width: screenWidth > 768 ? '80%' : '100%',
+								width: titleWidth,
 							}}
 						>
 							{title}
@@ -149,7 +190,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 							style={{
 								...styles.newsDate,
 								color: theme.screen.text,
-								width: screenWidth > 768 ? '20%' : '100%',
+								width: dateWidth,
 								textAlign: 'right',
 							}}
 						>
@@ -161,7 +202,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				<View
 					style={{
 						...styles.actionContainer,
-						alignItems: screenWidth > 768 ? 'flex-start' : 'center',
+						alignItems: actionAlignItems,
 					}}
 				>
 					<CustomTooltip
@@ -170,7 +211,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 							onPress: handleNewsDetails,
 							backgroundColor: news_area_color,
 							textColor: contrastColor,
-							width: screenWidth > 768 ? 210 : '100%',
+							width: readMoreWidth,
 							label: translate(TranslationKeys.read_more),
 						})}
 					>

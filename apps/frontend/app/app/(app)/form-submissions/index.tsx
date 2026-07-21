@@ -33,6 +33,45 @@ type FormSubmissionListRow =
 			submission: DatabaseTypes.FormSubmissions;
 	  };
 
+/**
+ * Resolve the main list area content: loading indicator, the actual list,
+ * or an empty-state message. Called directly (not rendered as a JSX tag),
+ * so it does not introduce a new component identity.
+ */
+function resolveSubmissionsContent(
+	loading: boolean,
+	formSubmissions: DatabaseTypes.FormSubmissions[],
+	listData: FormSubmissionListRow[],
+	renderItem: (info: { item: FormSubmissionListRow }) => React.ReactElement,
+	theme: any,
+	translate: (key: string) => string
+): React.ReactNode {
+	if (loading) {
+		return (
+			<View
+				style={{
+					height: 200,
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<ActivityIndicator size={30} color={theme.screen.text} />
+			</View>
+		);
+	}
+
+	if (formSubmissions?.length > 0) {
+		return <FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />;
+	}
+
+	return (
+		<View style={{ padding: 20, alignItems: 'center' }}>
+			<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
+		</View>
+	);
+}
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_submission);
 	const { translate } = useLanguage();
@@ -404,29 +443,16 @@ const Index = () => {
 		headingExcerptLength = 80;
 	}
 
-	let submissionsContent: React.ReactNode;
-	if (loading) {
-		submissionsContent = (
-			<View
-				style={{
-					height: 200,
-					width: '100%',
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<ActivityIndicator size={30} color={theme.screen.text} />
-			</View>
-		);
-	} else if (formSubmissions?.length > 0) {
-		submissionsContent = <FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />;
-	} else {
-		submissionsContent = (
-			<View style={{ padding: 20, alignItems: 'center' }}>
-				<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
-			</View>
-		);
-	}
+	const submissionsContent: React.ReactNode = resolveSubmissionsContent(loading, formSubmissions, listData, renderItem, theme, translate);
+
+	const isWideHeader = screenWidth > 768;
+	const headerRowFlexDirection = drawerPosition === 'right' ? 'row-reverse' : 'row';
+	const headerRowGap = isWideHeader ? 20 : 10;
+	const searchContainerWidth = isWideHeader ? '60%' : '90%';
+	const searchContainerVerticalSpacing = isWideHeader ? 20 : 0;
+	const searchInputWidth = isWideHeader ? '90%' : '85%';
+	const searchButtonWidth = isWideHeader ? '10%' : '15%';
+	const contentWrapperWidth = isWideHeader ? '70%' : '90%';
 
 	return (
 		<View
@@ -440,29 +466,23 @@ const Index = () => {
 					...styles.header,
 					backgroundColor: theme.header.background,
 					paddingHorizontal: isWeb ? 20 : 10,
-					gap: screenWidth > 768 ? 20 : 10,
+					gap: headerRowGap,
 				}}
 			>
 				<View
 					style={[
 						styles.row,
 						{
-							flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+							flexDirection: headerRowFlexDirection,
 						},
 					]}
 				>
 					<View
 						style={[
 							styles.col1,
-							screenWidth > 768
-								? {
-										gap: 20,
-									}
-								: {
-										gap: 10,
-									},
+							{ gap: headerRowGap },
 							{
-								flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+								flexDirection: headerRowFlexDirection,
 							},
 						]}
 					>
@@ -547,15 +567,15 @@ const Index = () => {
 				<View
 					style={{
 						...styles.searchContainer,
-						width: screenWidth > 768 ? '60%' : '90%',
-						marginTop: screenWidth > 768 ? 20 : 0,
-						marginBottom: screenWidth > 768 ? 20 : 0,
+						width: searchContainerWidth,
+						marginTop: searchContainerVerticalSpacing,
+						marginBottom: searchContainerVerticalSpacing,
 					}}
 				>
 					<TextInput
 						style={{
 							...styles.searchInput,
-							width: screenWidth > 768 ? '90%' : '85%',
+							width: searchInputWidth,
 							color: theme.screen.text,
 						}}
 						cursorColor={theme.screen.text}
@@ -568,7 +588,7 @@ const Index = () => {
 						style={{
 							...styles.searchButton,
 							backgroundColor: theme.screen.iconBg,
-							width: screenWidth > 768 ? '10%' : '15%',
+							width: searchButtonWidth,
 						}}
 						onPress={handleSearchFilter}
 					>
@@ -585,7 +605,7 @@ const Index = () => {
 				alignItems: 'center',
 			}}
 		>
-			<View style={{ flex: 1, width: screenWidth > 768 ? '70%' : '90%' }}>
+			<View style={{ flex: 1, width: contentWrapperWidth }}>
 				{submissionsContent}
 			</View>
 		</View>

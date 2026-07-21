@@ -228,6 +228,50 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * list so that the closing segment is included in the polygon and the
  * adjacency check succeeds.
  */
+/**
+ * Compute the grid-distance search radius (in hex rings) that covers all of
+ * the given bounding-box corner coordinates from `centerCell`, used to size
+ * the `gridDisk` search for enclosed cells.
+ */
+function computeSearchRadiusFromBoundingBoxCorners(
+	corners: Array<[number, number]>,
+	centerCell: string,
+	h3Res: number,
+): number {
+	let maxK = 0;
+	for (const [lat, lng] of corners) {
+		try {
+			const cornerCell = latLngToCell(lat, lng, h3Res);
+			const dist = gridDistance(centerCell, cornerCell);
+			if (dist > maxK) maxK = dist;
+		} catch {
+			// ignore
+		}
+	}
+	return maxK;
+}
+
+/** From a set of candidate cells, return those not already visited whose centroid falls inside `polygon`. */
+function filterCellsInsidePolygon(
+	candidates: string[],
+	visitedSet: Set<string>,
+	polygon: Array<[number, number]>,
+): string[] {
+	const enclosed: string[] = [];
+	for (const cell of candidates) {
+		if (visitedSet.has(cell)) continue;
+		try {
+			const [cellLat, cellLng] = cellToLatLng(cell);
+			if (pointInPolygon(cellLng, cellLat, polygon)) {
+				enclosed.push(cell);
+			}
+		} catch {
+			// ignore invalid cells
+		}
+	}
+	return enclosed;
+}
+
 export function findEnclosedCellsFromHexTiles(
 	visitedHexIds: string[],
 	resolution: number,
@@ -265,38 +309,17 @@ export function findEnclosedCellsFromHexTiles(
 	const centerLng = (maxLng + minLng) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
 
-	let maxK = 0;
 	const corners: Array<[number, number]> = [
 		[maxLat, maxLng],
 		[maxLat, minLng],
 		[minLat, maxLng],
 		[minLat, minLng],
 	];
-	for (const [lat, lng] of corners) {
-		try {
-			const cornerCell = latLngToCell(lat, lng, h3Res);
-			const dist = gridDistance(centerCell, cornerCell);
-			if (dist > maxK) maxK = dist;
-		} catch {
-			// ignore
-		}
-	}
+	const maxK = computeSearchRadiusFromBoundingBoxCorners(corners, centerCell, h3Res);
 
 	const visitedSet = new Set(visitedHexIds);
 	const candidates = gridDisk(centerCell, Math.min(maxK + 1, MAX_GRID_DISK_RADIUS));
-	const enclosed: string[] = [];
-	for (const cell of candidates) {
-		if (visitedSet.has(cell)) continue;
-		try {
-			const [cellLat, cellLng] = cellToLatLng(cell);
-			if (pointInPolygon(cellLng, cellLat, polygon)) {
-				enclosed.push(cell);
-			}
-		} catch {
-			// ignore invalid cells
-		}
-	}
-	return enclosed;
+	return filterCellsInsidePolygon(candidates, visitedSet, polygon);
 }
 
 /**
