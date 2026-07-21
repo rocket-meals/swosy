@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 30 | 30 |
-| 🔧 Maintainability | 112 | 17 |
+| 🔧 Maintainability | 87 | 17 |
 
-**Total issues:** 145 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 120 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -148,73 +148,73 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (17/112)
+## 🔧 Maintainability (17/87)
 
-- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
-  apps/accessibilityTester/src/report.ts:110
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L110
+- **Do not call `Array#push()` multiple times.**
+  apps/accessibilityTester/src/report.ts:235
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L235
 
-- **Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-reviews-pull-hook/index.ts#L19
+- **Async method 'translateFieldsForTranslation' has too many parameters (10). Maximum allowed is 7.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:383
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L383
 
-- **Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:298
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L298
-
-- **Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:326
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L326
-
-- **Refactor this function to reduce its Cognitive Complexity from 41 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1016
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L1016
-
-- **Refactor this function to reduce its Cognitive Complexity from 38 to the 15 allowed.**
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:208
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L208
 
-- **Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts#L19
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts:77
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts#L77
 
 - **Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts:61
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts#L61
-
-- **Refactor this function to reduce its Cognitive Complexity from 93 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts:149
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts#L149
-
-- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MarkingFilterHelper.ts:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MarkingFilterHelper.ts#L20
-
-- **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts:146
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts#L146
-
-- **Refactor this function to reduce its Cognitive Complexity from 39 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts:72
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts#L72
-
-- **Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts:162
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts#L162
-
-- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts:18
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts#L18
-
-- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts:210
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts#L210
-
-- **Refactor this function to reduce its Cognitive Complexity from 36 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts:128
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts#L128
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts:179
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts#L179
 
 - **Do not use Array index in keys**
   apps/frontend/app/app/(app)/course-timetable/index.tsx:108
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L108
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/course-timetable/index.tsx:114
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L114
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx:181
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx#L181
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:148
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L148
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:152
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L152
+
+- **Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.**
+  apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx:116
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx#L116
+
+- **Prefer `node:buffer` over `buffer`.**
+  apps/frontend/app/app/(app)/form-queue/index.tsx:20
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-queue/index.tsx#L20
+
+- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
+  apps/frontend/app/app/(app)/form-submission/index.tsx:319
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L319
+
+- **Async function 'buildUpdatedValueFieldsForAnswer' has too many parameters (9). Maximum allowed is 7.**
+  apps/frontend/app/app/(app)/form-submission/index.tsx:419
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L419
+
+- **Prefer `node:buffer` over `buffer`.**
+  apps/frontend/app/app/(app)/form-submission/index.tsx:42
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L42
+
+- **Provide multiple methods instead of using "append" to determine which action to take.**
+  apps/frontend/app/app/(app)/form-submissions/index.tsx:109
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L109
+
+- **Do not use Array index in keys**
+  apps/frontend/app/app/(app)/map/index.tsx:1750
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/index.tsx#L1750
 
