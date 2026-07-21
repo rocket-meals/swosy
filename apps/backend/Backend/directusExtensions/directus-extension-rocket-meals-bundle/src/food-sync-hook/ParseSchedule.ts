@@ -1177,7 +1177,9 @@ export class ParseSchedule {
   }
 
   async updateMarkingTranslations(marking: DatabaseTypes.Markings, markingJSON: MarkingsTypeForParser) {
-    await TranslationHelper.updateItemTranslations<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(marking, {
+    let itemService = this.context.myDatabaseHelper.getMarkingsHelper();
+    let markingWithTranslations = await itemService.readOneWithTranslations(marking.id);
+    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(markingWithTranslations, {
       translationsFromParsing: markingJSON.translations,
       items_primary_field_in_translation_table: 'markings_id',
       itemsTablename: CollectionNames.MARKINGS,
