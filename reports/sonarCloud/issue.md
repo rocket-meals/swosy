@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
 | 🐛 Reliability | 42 | 42 |
-| 🔧 Maintainability | 524 | 7 |
+| 🔧 Maintainability | 487 | 7 |
 
-**Total issues:** 567 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 530 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -57,20 +57,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/index.tsx#L15
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:21
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L21
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L16
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L20
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L15
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:22
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L22
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:17
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L17
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:24
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L24
+  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:19
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L19
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/frontend/app/components/EmailInput/EmailInput.tsx:9
@@ -188,7 +188,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (7/524)
+## 🔧 Maintainability (7/487)
 
 - **This pattern can be replaced with '|'.**
   apps/accessibilityTester/src/report.ts:107
