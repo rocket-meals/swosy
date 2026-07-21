@@ -14,13 +14,14 @@ import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/Food
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
-import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
+import TranslatedMenuHeader from '@/components/CustomMenuHeader/TranslatedMenuHeader';
 import { CanteenFeedbackLabelEntryHelper } from '@/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
 import { FoodOffersCategoriesHelper } from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
 import { FoodOffersInfoItemsHelper } from '@/redux/actions/FoodOffersInfoItems/FoodOffersInfoItems';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
 import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
@@ -54,6 +55,13 @@ import { loadChatReadStatus } from '@/helper/chatReadStatus';
 import { FriendshipsHelper } from '@/redux/actions/Friendships/Friendships';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
+
+const renderDrawerContent = (props: React.ComponentProps<typeof CustomDrawerContent>) => <CustomDrawerContent {...props} />;
+
+function FeedbackAndSupportHeader() {
+	const { translate } = useLanguage();
+	return <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />;
+}
 
 export default function Layout() {
 	const { theme } = useTheme();
@@ -656,7 +664,7 @@ export default function Layout() {
 			<Drawer
 				screenOptions={drawerScreenOptions}
 				detachInactiveScreens={true}
-				drawerContent={(props) => <CustomDrawerContent {...props} />}
+				drawerContent={renderDrawerContent}
 				backBehavior="history"
 			>
 				<Drawer.Screen
@@ -676,7 +684,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="account-balance/index"
 					options={{
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.accountbalance)} key={'Account-Balance'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.accountbalance} headerKey={'Account-Balance'} />,
 						title: translate(TranslationKeys.accountbalance),
 					}}
 				/>
@@ -698,13 +706,13 @@ export default function Layout() {
 					name="news/index"
 					options={{
 						title: 'News',
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.news)} key={'News'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.news} headerKey={'News'} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="course-timetable/index"
 					options={{
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.course_timetable)} key={'course_timetable'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.course_timetable} headerKey={'course_timetable'} />,
 						title: 'Course Timetable',
 					}}
 				/>
@@ -712,7 +720,7 @@ export default function Layout() {
 					name="settings/index"
 					options={{
 						title: 'Settings',
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.settings)} key={'settings'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.settings} headerKey={'settings'} />,
 					}}
 				/>
 				<Drawer.Screen
@@ -731,14 +739,14 @@ export default function Layout() {
 				<Drawer.Screen
 					name="management/index"
 					options={{
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.role_management)} key={'Management'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.role_management} headerKey={'Management'} />,
 						title: 'Management',
 					}}
 				/>
 				<Drawer.Screen
 					name="experimentell/index"
 					options={{
-						header: () => <CustomMenuHeader label={translate(TranslationKeys.experimentell)} key={'Experimentell'} />,
+						header: () => <TranslatedMenuHeader labelKey={TranslationKeys.experimentell} headerKey={'Experimentell'} />,
 						title: translate(TranslationKeys.experimentell),
 					}}
 				/>
@@ -759,7 +767,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="vertical-image-scroll/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.vertical_image_scroll)} key={'vertical_image_scroll'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.vertical_image_scroll} headerKey={'vertical_image_scroll'} />,
 						title: translate(TranslationKeys.vertical_image_scroll),
 					}}
 				/>
@@ -776,26 +784,21 @@ export default function Layout() {
 				<Drawer.Screen
 					name="notification/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.notification)} key={'notification'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.notification} headerKey={'notification'} />,
 						title: translate(TranslationKeys.notification),
 					}}
 				/>
                                 <Drawer.Screen
                                         name="events/index"
                                         options={{
-                                                header: () => <CustomStackHeader label={translate(TranslationKeys.events)} key={'events'} />,
+                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.events} headerKey={'events'} />,
                                                 title: translate(TranslationKeys.events),
                                         }}
                                 />
                                 <Drawer.Screen
                                         name="collectible-events/index"
                                         options={{
-                                                header: () => (
-                                                        <CustomStackHeader
-                                                                label={translate(TranslationKeys.collectible_events)}
-                                                                key={'collectible_events'}
-                                                        />
-                                                ),
+                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.collectible_events} headerKey={'collectible_events'} />,
                                                 title: translate(TranslationKeys.collectible_events),
                                         }}
                                 />
@@ -810,7 +813,7 @@ export default function Layout() {
                                         name="support-FAQ/index"
                                         options={{
                                                 title: translate(TranslationKeys.feedback_support_faq),
-                                                header: () => <CustomStackHeader label={translate(TranslationKeys.feedback_support_faq)} key={'Feedback Support Faq'} />,
+                                                header: () => <TranslatedStackHeader labelKey={TranslationKeys.feedback_support_faq} headerKey={'Feedback Support Faq'} />,
 					}}
 				/>
 
@@ -818,7 +821,7 @@ export default function Layout() {
 					name="feedback-support/index"
 					options={{
 						title: 'Feedback & Support',
-						header: () => <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />,
+						header: () => <FeedbackAndSupportHeader />,
 					}}
 				/>
 
@@ -826,7 +829,7 @@ export default function Layout() {
 					name="give-feedback/index"
 					options={{
 						title: translate(TranslationKeys.rueckmeldung_geben),
-						header: () => <CustomStackHeader label={translate(TranslationKeys.rueckmeldung_geben)} key={'rueckmeldung_geben'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.rueckmeldung_geben} headerKey={'rueckmeldung_geben'} />,
 					}}
 				/>
 
@@ -849,7 +852,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="licenseInformation/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.license_information)} key={'license_information'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.license_information} headerKey={'license_information'} />,
 						title: 'License Information',
 					}}
 				/>
@@ -858,7 +861,7 @@ export default function Layout() {
 					name="data-access/index"
 					options={{
 						title: 'Data Access',
-						header: () => <CustomStackHeader label={translate(TranslationKeys.dataAccess)} key={'Data Access'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.dataAccess} headerKey={'Data Access'} />,
 					}}
 				/>
 
@@ -866,20 +869,20 @@ export default function Layout() {
 					name="eating-habits/index"
 					options={{
 						title: 'Eating Habits',
-						header: () => <CustomStackHeader label={translate(TranslationKeys.eating_habits)} key={'Eating Habits'} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.eating_habits} headerKey={'Eating Habits'} />,
 					}}
 				/>
 
 				<Drawer.Screen
 					name="form-categories/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.select_a_form_category)} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.select_a_form_category} />,
 					}}
 				/>
 				<Drawer.Screen
 					name="forms/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.select_a_form)} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.select_a_form} />,
 					}}
 				/>
 				<Drawer.Screen
@@ -897,7 +900,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="form-queue/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.form_queue)} />,
+						header: () => <TranslatedStackHeader labelKey={TranslationKeys.form_queue} />,
 					}}
 				/>
 				<Drawer.Screen

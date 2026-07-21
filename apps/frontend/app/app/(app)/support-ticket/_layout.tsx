@@ -1,13 +1,11 @@
 import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
-import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
-import { useLanguage } from '@/hooks/useLanguage';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
 
 export default function Layout() {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
 	return (
 		<Stack
 			screenOptions={{
@@ -19,7 +17,7 @@ export default function Layout() {
 				name="index"
 				options={{
 					title: 'Support Ticket',
-					header: () => <CustomStackHeader label={translate(TranslationKeys.my_support_tickets)} key={'Support Ticket'} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.my_support_tickets} headerKey={'Support Ticket'} />,
 				}}
 			/>
 		</Stack>

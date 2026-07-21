@@ -124,6 +124,15 @@ function ThemeSyncBridge() {
 	return null;
 }
 
+// Returns a `drawerIcon` render-prop for the given icon set/name, so each
+// Drawer.Screen's options can reference a stable function instead of
+// defining a new arrow (and thus a new "component") on every render.
+function makeDrawerIcon(IconSet: typeof Ionicons | typeof MaterialCommunityIcons, name: string) {
+	return ({ color, size }: { color: string; size: number }) => <IconSet name={name as any} size={size} color={color} />;
+}
+
+const renderDrawerContent = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
+
 function ThemedDrawerNavigator() {
 	const { theme } = useTheme();
 
@@ -131,7 +140,7 @@ function ThemedDrawerNavigator() {
 		<>
 		<StatusBar style="auto" />
 		<Drawer
-			drawerContent={(props) => <CustomDrawerContent {...props} />}
+			drawerContent={renderDrawerContent}
 			screenOptions={{
 				drawerActiveTintColor: '#2563eb',
 				headerStyle: { backgroundColor: theme.header.background },
@@ -142,18 +151,14 @@ function ThemedDrawerNavigator() {
 				name="index"
 				options={{
 					title: 'Record',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="radio-button-on-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'radio-button-on-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="activities/index"
 				options={{
 					title: 'Activities',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="list-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'list-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -167,45 +172,35 @@ function ThemedDrawerNavigator() {
 				name="statistics/index"
 				options={{
 					title: 'Statistics',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="bar-chart-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'bar-chart-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="achievements/index"
 				options={{
 					title: 'Achievements',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="trophy-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'trophy-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="challenges/index"
 				options={{
 					title: 'Challenges',
-					drawerIcon: ({ color, size }) => (
-						<MaterialCommunityIcons name="sword-cross" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(MaterialCommunityIcons, 'sword-cross'),
 				}}
 			/>
 			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="bulb-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'bulb-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="routes/index"
 				options={{
 					title: 'Routes',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="map-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'map-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -219,27 +214,21 @@ function ThemedDrawerNavigator() {
 				name="billboard-config/index"
 				options={{
 					title: 'Billboard Config',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="build-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'build-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="hex-texture-config/index"
 				options={{
 					title: 'Hex Texture Config',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="grid-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'grid-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="flask-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'flask-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -281,9 +270,7 @@ function ThemedDrawerNavigator() {
 				name="settings/index"
 				options={{
 					title: 'Settings',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="settings-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 				}}
 			/>
 		</Drawer>

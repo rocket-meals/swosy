@@ -3,6 +3,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 
+const BuildingDetailsHeader = () => <CustomStackHeader label={'Building Details'} />;
+
 export default function FoodOfferLayout() {
 	const { theme } = useTheme();
 
@@ -23,7 +25,7 @@ export default function FoodOfferLayout() {
 			<Stack.Screen
 				name="details/index"
 				options={{
-					header: () => <CustomStackHeader label={'Building Details'} />,
+					header: BuildingDetailsHeader,
 				}}
 			/>
 		</Stack>

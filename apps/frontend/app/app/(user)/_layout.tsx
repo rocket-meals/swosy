@@ -1,13 +1,11 @@
 import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
-import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
-import { useLanguage } from '@/hooks/useLanguage';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
 
 export default function FoodOfferLayout() {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
 
 	return (
 		<Stack
@@ -19,7 +17,7 @@ export default function FoodOfferLayout() {
 			<Stack.Screen
 				name="delete-user/index"
 				options={{
-					header: () => <CustomStackHeader label={translate(TranslationKeys.account_delete)} key={'account_delete'} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.account_delete} headerKey={'account_delete'} />,
 				}}
 			/>
 		</Stack>
