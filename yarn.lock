@@ -27462,6 +27462,8 @@ __metadata:
     expo-status-bar: "npm:~3.0.8"
     expo-system-ui: "npm:~6.0.8"
     expo-updates: "npm:~29.0.16"
+    jest: "npm:^29.2.1"
+    jest-expo: "npm:~53.0.2"
     react: "npm:19.1.0"
     react-dom: "npm:19.1.0"
     react-native: "npm:0.81.5"
