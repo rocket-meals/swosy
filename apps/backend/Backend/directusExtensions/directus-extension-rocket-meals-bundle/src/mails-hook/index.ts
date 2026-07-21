@@ -84,7 +84,7 @@ function extractDirectusFileIdFromAttachment(attachment: any): string | undefine
 
 function extractDirectusFileIdsFromAttachments(input: Partial<DatabaseTypes.Mails>): string[] {
   // @ts-ignore - create is not always defined
-  const attachments_create = input.attachments?.create;
+  const attachments_create: any[] | undefined = input.attachments?.create;
   if (!attachments_create) {
     return [];
   }
