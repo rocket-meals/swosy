@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 1 | 1 |
-| 🐛 Reliability | 42 | 42 |
-| 🔧 Maintainability | 421 | 7 |
+| 🐛 Reliability | 32 | 32 |
+| 🔧 Maintainability | 349 | 17 |
 
-**Total issues:** 464 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 382 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -18,15 +18,7 @@
   scripts/count-sonar-maintainability-issues.js:93
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L93
 
-## 🐛 Reliability (42/42)
-
-- **This pattern can be replaced with '|'.**
-  apps/accessibilityTester/src/report.ts:107
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
-
-- **This pattern can be replaced with '\n'.**
-  apps/accessibilityTester/src/report.ts:107
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
+## 🐛 Reliability (32/32)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts:40
@@ -108,30 +100,6 @@
   apps/frontend/run-maestro-web-test.sh:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/run-maestro-web-test.sh#L76
 
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:114
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L114
-
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:487
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L487
-
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:108
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L108
-
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:510
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L510
-
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:64
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L64
-
-- **This pattern can be replaced with '"'.**
-  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:76
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
-
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:375
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L375
@@ -168,14 +136,6 @@
   apps/score-tracker/run-maestro-web-test.sh:170
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/run-maestro-web-test.sh#L170
 
-- **This pattern can be replaced with '+'.**
-  apps/scripts/submit-ios-review.ts:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
-
-- **This pattern can be replaced with '/'.**
-  apps/scripts/submit-ios-review.ts:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
-
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/scripts/submit-ios-review.ts:26
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L26
@@ -188,15 +148,7 @@
   packages/common/src/NumberHelper.ts:38
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/NumberHelper.ts#L38
 
-## 🔧 Maintainability (7/421)
-
-- **This pattern can be replaced with '|'.**
-  apps/accessibilityTester/src/report.ts:107
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
-
-- **This pattern can be replaced with '\n'.**
-  apps/accessibilityTester/src/report.ts:107
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L107
+## 🔧 Maintainability (17/349)
 
 - **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
   apps/accessibilityTester/src/report.ts:110
@@ -214,7 +166,55 @@
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:298
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L298
 
-- **`FILE_FIELD_SPECIALS` should be a `Set`, and use `FILE_FIELD_SPECIALS.has()` to check existence or non-existence.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts#L15
+- **Prefer `return value` over `return Promise.resolve(value)`.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:455
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L455
+
+- **Replace this "switch" statement by "if" statements to increase readability.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:72
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L72
+
+- **Rename class "FoodTL1Parser_RawReportTestReaderOsnabrueck" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts#L3
+
+- **Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:326
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L326
+
+- **Method 'getFoodofferToCreate' has too many parameters (8). Maximum allowed is 7.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:941
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L941
+
+- **'currentMealOffersHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:81
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L81
+
+- **'previousMealOffersHash.getHash()' may use Object's default stringification format ('[object Object]') when stringified.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:95
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L95
+
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:709
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L709
+
+- **Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:791
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L791
+
+- **Refactor this function to reduce its Cognitive Complexity from 41 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:985
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L985
+
+- **Refactor this function to not always return the same value.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts:10
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foodoffers-components-hook/index.ts#L10
+
+- **Refactor this function to reduce its Cognitive Complexity from 38 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:208
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L208
+
+- **Move this array "sort" operation to a separate statement or replace it with "toSorted".**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts:424
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts#L424
 
