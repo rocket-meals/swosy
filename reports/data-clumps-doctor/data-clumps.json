@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-21T17:51:53.495Z",
+  "report_timestamp": "2026-07-21T18:57:43.991Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 105,
-          "average": 1.5555972952667168,
-          "amountSavedValuesForKeys": 4141,
-          "amountKeys": 28
+          "average": 1.5561396920766053,
+          "amountSavedValuesForKeys": 4144,
+          "amountKeys": 29
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 75,
-          "average": 2.3278688524590163,
-          "amountSavedValuesForKeys": 1562,
+          "average": 2.333825701624815,
+          "amountSavedValuesForKeys": 1580,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 105,
-          "average": 1.5703450891164201,
-          "amountSavedValuesForKeys": 4141,
-          "amountKeys": 28
+          "average": 1.5708870356330553,
+          "amountSavedValuesForKeys": 4144,
+          "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4691,
-        "detection_time_ms": 89,
+        "ast_generation_time_ms": 3462,
+        "detection_time_ms": 61,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 194.27,
-          "os_memory_free": 14907928576,
-          "os_memory_total": 16766410752,
+          "os_uptime": 125.16,
+          "os_memory_free": 14900494336,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 17,
-    "amount_files_with_data_clumps": 14,
-    "amount_methods_with_data_clumps": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 18,
+    "amount_files_with_data_clumps": 15,
+    "amount_methods_with_data_clumps": 2,
     "fields_to_fields_data_clump": 24,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 24
+    "parameters_to_parameters_data_clump": 2,
+    "amount_data_clumps": 26
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "a181b0af761979f6fa34efab71a273547181511c",
-    "project_commit_hash": "a181b0af761979f6fa34efab71a273547181511c",
+    "project_version": "9402111417685f42f3bff6333cac68415018d8dc",
+    "project_commit_hash": "9402111417685f42f3bff6333cac68415018d8dc",
     "project_tag": null,
-    "project_commit_date": "1784656201",
+    "project_commit_date": "1784660152",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 567,
-    "number_of_classes_or_interfaces": 1194,
-    "number_of_methods": 1429,
-    "number_of_data_fields": 4141,
-    "number_of_method_parameters": 1562
+    "number_of_classes_or_interfaces": 1195,
+    "number_of_methods": 1438,
+    "number_of_data_fields": 4144,
+    "number_of_method_parameters": 1580
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -91,6 +91,200 @@
     }
   },
   "data_clumps": {
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate-new_attribute_valuesdictExternalIdentifierToFoodAttributestypeHelper": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate-new_attribute_valuesdictExternalIdentifierToFoodAttributestypeHelper",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",
+      "from_class_or_interface_name": "ParseSchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule",
+      "from_method_name": "getFoodsOrFoodoffersWithOnlySetAttributesFields",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",
+      "to_class_or_interface_name": "ParseSchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule",
+      "to_method_name": "buildAttributeValuesToCreate",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/new_attribute_values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/new_attribute_values",
+          "name": "new_attribute_values",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface\").FoodParseFoodAttributesType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/new_attribute_values",
+            "name": "new_attribute_values",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface\").FoodParseFoodAttributesType",
+            "modifiers": [],
+            "position": {
+              "startLine": 740,
+              "startColumn": 40,
+              "endLine": 740,
+              "endColumn": 89
+            }
+          },
+          "position": {
+            "startLine": 709,
+            "startColumn": 138,
+            "endLine": 709,
+            "endColumn": 187
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/dictExternalIdentifierToFoodAttributes": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/dictExternalIdentifierToFoodAttributes",
+          "name": "dictExternalIdentifierToFoodAttributes",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule\").DictFoodsAttributesExternalIdentifiersToFoodsAttributes",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/dictExternalIdentifierToFoodAttributes",
+            "name": "dictExternalIdentifierToFoodAttributes",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule\").DictFoodsAttributesExternalIdentifiersToFoodsAttributes",
+            "modifiers": [],
+            "position": {
+              "startLine": 740,
+              "startColumn": 91,
+              "endLine": 740,
+              "endColumn": 186
+            }
+          },
+          "position": {
+            "startLine": 709,
+            "startColumn": 189,
+            "endLine": 709,
+            "endColumn": 284
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/typeHelper": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/typeHelper",
+          "name": "typeHelper",
+          "type": "{ isFood: boolean; isFoodoffer: boolean; }",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/typeHelper",
+            "name": "typeHelper",
+            "type": "{ isFood: boolean; isFoodoffer: boolean; }",
+            "modifiers": [],
+            "position": {
+              "startLine": 740,
+              "startColumn": 188,
+              "endLine": 740,
+              "endColumn": 241
+            }
+          },
+          "position": {
+            "startLine": 709,
+            "startColumn": 286,
+            "endLine": 709,
+            "endColumn": 339
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields-new_attribute_valuesdictExternalIdentifierToFoodAttributestypeHelper": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields-new_attribute_valuesdictExternalIdentifierToFoodAttributestypeHelper",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",
+      "from_class_or_interface_name": "ParseSchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule",
+      "from_method_name": "buildAttributeValuesToCreate",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",
+      "to_class_or_interface_name": "ParseSchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule",
+      "to_method_name": "getFoodsOrFoodoffersWithOnlySetAttributesFields",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/new_attribute_values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/new_attribute_values",
+          "name": "new_attribute_values",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface\").FoodParseFoodAttributesType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/new_attribute_values",
+            "name": "new_attribute_values",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface\").FoodParseFoodAttributesType",
+            "modifiers": [],
+            "position": {
+              "startLine": 709,
+              "startColumn": 138,
+              "endLine": 709,
+              "endColumn": 187
+            }
+          },
+          "position": {
+            "startLine": 740,
+            "startColumn": 40,
+            "endLine": 740,
+            "endColumn": 89
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/dictExternalIdentifierToFoodAttributes": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/dictExternalIdentifierToFoodAttributes",
+          "name": "dictExternalIdentifierToFoodAttributes",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule\").DictFoodsAttributesExternalIdentifiersToFoodsAttributes",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/dictExternalIdentifierToFoodAttributes",
+            "name": "dictExternalIdentifierToFoodAttributes",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule\").DictFoodsAttributesExternalIdentifiersToFoodsAttributes",
+            "modifiers": [],
+            "position": {
+              "startLine": 709,
+              "startColumn": 189,
+              "endLine": 709,
+              "endColumn": 284
+            }
+          },
+          "position": {
+            "startLine": 740,
+            "startColumn": 91,
+            "endLine": 740,
+            "endColumn": 186
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/typeHelper": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/buildAttributeValuesToCreate/parameter/typeHelper",
+          "name": "typeHelper",
+          "type": "{ isFood: boolean; isFoodoffer: boolean; }",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts/class/ParseSchedule/method/getFoodsOrFoodoffersWithOnlySetAttributesFields/parameter/typeHelper",
+            "name": "typeHelper",
+            "type": "{ isFood: boolean; isFoodoffer: boolean; }",
+            "modifiers": [],
+            "position": {
+              "startLine": 709,
+              "startColumn": 286,
+              "endLine": 709,
+              "endColumn": 339
+            }
+          },
+          "position": {
+            "startLine": 740,
+            "startColumn": 188,
+            "endLine": 740,
+            "endColumn": 241
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 1
+      }
+    },
     "fields_to_fields_data_clump-apps/frontend/app/components/DebugView/index.tsx-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelbackgroundColorborderColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/frontend/app/components/DebugView/index.tsx-apps/frontend/app/components/DebugView/index.tsx/interface/DebugAction-packages/common-ui/src/components/SettingsListAvatar/index.tsx/interface/SettingsListAvatarProps-labelbackgroundColorborderColor",
@@ -184,7 +378,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -281,7 +475,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 3
       }
     },
@@ -378,7 +572,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -500,7 +694,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -622,7 +816,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 3,
+        "cluster_id": 4,
         "cluster_type": 2
       }
     },
@@ -744,7 +938,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -841,7 +1035,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -938,7 +1132,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1060,7 +1254,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1157,7 +1351,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1354,7 +1548,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1526,7 +1720,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -1648,7 +1842,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1770,7 +1964,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -1867,7 +2061,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -2064,7 +2258,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
+        "cluster_id": 5,
         "cluster_type": 3
       }
     },
@@ -2236,7 +2430,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 5,
+        "cluster_id": 6,
         "cluster_type": 2
       }
     },
@@ -2433,7 +2627,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     },
@@ -2530,7 +2724,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 3
       }
     },
@@ -2627,7 +2821,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 3
       }
     },
@@ -2724,7 +2918,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 3
       }
     },
@@ -2821,7 +3015,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -2918,7 +3112,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -3115,7 +3309,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     }
