@@ -29,7 +29,6 @@ import * as Location from 'expo-location';
 import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MAP_STYLE_DEFINITIONS } from 'repo-depkit-common-ui';
-import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
@@ -1697,8 +1696,6 @@ const OsmVectorMapScreen: React.FC = () => {
 									</TouchableOpacity>
 								)}
 							</View>
-							{/* Jogging route recorder */}
-							<JoggingOverlay mapRef={myMapRef} />
 							<DebugView title="Map Log">
 								<ScrollView
 									ref={logScrollRef}
