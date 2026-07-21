@@ -1,53 +1,16 @@
 Key,Message,Component,Line
-"AZ-GgepSjOePB6H8a9Iu","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/accessibilityTester/src/report.ts",235
-"AZ-GgdddjOePB6H8a9IV","Async method 'translateFieldsForTranslation' has too many parameters (10). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",383
-"AZ-Ggdc5jOePB6H8a9IU","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts",77
-"AZ-GgdWtjOePB6H8a9IT","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts",179
-"AZ-GgdrajOePB6H8a9IX","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",319
-"AZ-GgdrajOePB6H8a9IY","Async function 'buildUpdatedValueFieldsForAnswer' has too many parameters (9). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",419
-"AZ-GgdgOjOePB6H8a9IW","Provide multiple methods instead of using ""append"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",109
-"AZ-GgduYjOePB6H8a9IZ","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",71
-"AZ-Ggd7FjOePB6H8a9Ic","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",96
-"AZ-GgeEAjOePB6H8a9Id","Arrow function has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/components/ManagmentFoodPlan/FoodPlan.tsx",17
-"AZ-Ggd3ijOePB6H8a9Ia","Provide multiple methods instead of using ""like"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",141
-"AZ-Ggd5_jOePB6H8a9Ib","Provide multiple methods instead of using ""like"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",148
-"AZ-GgefdjOePB6H8a9Ih","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",110
-"AZ-GgefdjOePB6H8a9Ii","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",624
-"AZ-GgefdjOePB6H8a9Ij","Provide multiple methods instead of using ""showRoadMatch"" to determine which action to take.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",799
-"AZ-Ggeh8jOePB6H8a9Ik","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",420
-"AZ-Ggeh8jOePB6H8a9Il","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1059
-"AZ-Ggeh8jOePB6H8a9Im","Refactor this function to reduce its Cognitive Complexity from 52 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2975
-"AZ-Ggeh8jOePB6H8a9In","Refactor this function to reduce its Cognitive Complexity from 30 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3095
-"AZ-Ggeh8jOePB6H8a9Io","Function 'handleHexTileClicked' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3275
-"AZ-Ggeh8jOePB6H8a9Ip","Function 'applyPausedLocationUpdate' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3332
-"AZ-Ggeh8jOePB6H8a9Iq","Refactor this function to reduce its Cognitive Complexity from 97 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3427
-"AZ-Ggeh8jOePB6H8a9Ir","Function 'evaluatePaceHintAnnouncement' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3572
-"AZ-Ggeh8jOePB6H8a9Is","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3572
-"AZ-Ggeh8jOePB6H8a9It","Function 'persistRecordingSnapshotIfDue' has too many parameters (10). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3690
-"AZ-Ggee4jOePB6H8a9Ig","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",128
-"AZ-GgeYNjOePB6H8a9Ie","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",913
-"AZ-GgeYNjOePB6H8a9If","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",960
-"AZ-GgeyYjOePB6H8a9Iv","Replace this union type with a type alias.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyAvatarEditor/index.tsx",719
-"AZ9_ondP-TchFAS-K2Wc","Review this redundant assignment: ""resolvedAspectRatio"" already holds the assigned value along all execution paths.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",112
-"AZ8kngTW00wtKe1XsVl1","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",761
-"AZ6HQcROOdZXxk7mATjP","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",208
+"AZ-G7yOnHEKP2Ptfy9qi","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",321
+"AZ-G7ypRHEKP2Ptfy9qj","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",235
+"AZ-G7zRHHEKP2Ptfy9qk","Function 'announcePaceHintTransitionIfDue' has too many parameters (9). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3789
+"AZ-G7zg0HEKP2Ptfy9ql","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",109
+"AZ8kngTW00wtKe1XsVl1","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",800
 "AZ2dsUdPLVHN2p9NjR1S","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",416
 "AZ2dkkUv3GBU49WbMwdE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",101
 "AZ2aKN1GQ7FHawfCon5a","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx",415
-"AZ1kvhY4tUR0f1ZqLdjm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",319
-"AZ1kvhY4tUR0f1ZqLdjk","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",550
-"AZ1UqIdQ4AHuoAEza5EI","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",199
-"AZ1UqIdQ4AHuoAEza5EK","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",201
-"AZ1UqIdQ4AHuoAEza5EL","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",203
-"AZ1UqIdQ4AHuoAEza5EN","'billboardsFlat' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",242
 "AZ1TdZ_pIh8m09xZ03NJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",402
-"AZ1LvL92mmXMTKdZFLyJ","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",672
-"AZ1Lp0nFX1wrgZnAE3lm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",759
-"AZ1EMIc56oJbwS86_fe5","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",350
-"AZ05NCP9vIUCM9Fw0Ek7","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",240
-"AZ05GDnLoxp4O0LdguSA","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",158
-"AZ05GDnLoxp4O0LdguSB","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",176
-"AZ02tSEbU7rlc86SOrCp","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1953
+"AZ05GDnLoxp4O0LdguSA","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",187
+"AZ05GDnLoxp4O0LdguSB","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",205
+"AZ02tSEbU7rlc86SOrCp","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1992
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
 "AZ0YpBMgLvrw8DEQgX7e","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",105
 "AZ0Tpk4Nufp2jxPAhSyL","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",20

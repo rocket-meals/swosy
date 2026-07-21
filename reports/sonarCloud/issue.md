@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 87 | 46 |
+| 🔧 Maintainability | 50 | 46 |
 
-**Total issues:** 91 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 54 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -32,27 +32,7 @@
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
 
-## 🔧 Maintainability (46/87)
-
-- **Do not call `Array#push()` multiple times.**
-  apps/accessibilityTester/src/report.ts:235
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/accessibilityTester/src/report.ts#L235
-
-- **Async method 'translateFieldsForTranslation' has too many parameters (10). Maximum allowed is 7.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:383
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L383
-
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts:208
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts#L208
-
-- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts:77
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts#L77
-
-- **Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts:179
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/redirect-with-token-endpoint/index.ts#L179
+## 🔧 Maintainability (46/50)
 
 - **Do not use Array index in keys**
   apps/frontend/app/app/(app)/course-timetable/index.tsx:91
@@ -82,29 +62,17 @@
   apps/frontend/app/app/(app)/form-queue/index.tsx:20
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-queue/index.tsx#L20
 
-- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
-  apps/frontend/app/app/(app)/form-submission/index.tsx:319
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L319
-
-- **Async function 'buildUpdatedValueFieldsForAnswer' has too many parameters (9). Maximum allowed is 7.**
-  apps/frontend/app/app/(app)/form-submission/index.tsx:419
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L419
-
 - **Prefer `node:buffer` over `buffer`.**
   apps/frontend/app/app/(app)/form-submission/index.tsx:42
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L42
 
-- **Provide multiple methods instead of using "append" to determine which action to take.**
-  apps/frontend/app/app/(app)/form-submissions/index.tsx:109
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L109
+- **Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.**
+  apps/frontend/app/app/(app)/form-submissions/index.tsx:321
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L321
 
 - **Do not use Array index in keys**
   apps/frontend/app/app/(app)/map/index.tsx:1750
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/index.tsx#L1750
-
-- **Unnecessary use of conditional expression for default assignment.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:71
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L71
 
 - **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
   apps/frontend/app/app/(monitor)/bigScreen/index.tsx:84
@@ -117,10 +85,6 @@
 - **Do not use Array index in keys**
   apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx:31
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx#L31
-
-- **'any' overrides all other types in this union type.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:96
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L96
 
 - **Do not use Array index in keys**
   apps/frontend/app/components/DataAcces/DataAccess.tsx:25
@@ -138,21 +102,13 @@
   apps/frontend/app/components/FoodItem/FoodItem.tsx:324
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L324
 
-- **Arrow function has too many parameters (8). Maximum allowed is 7.**
-  apps/frontend/app/components/ManagmentFoodPlan/FoodPlan.tsx:17
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/ManagmentFoodPlan/FoodPlan.tsx#L17
-
-- **Provide multiple methods instead of using "like" to determine which action to take.**
-  apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx:141
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx#L141
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx:235
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx#L235
 
 - **Do not use Array index in keys**
   apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx:101
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx#L101
-
-- **Provide multiple methods instead of using "like" to determine which action to take.**
-  apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx:148
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx#L148
 
 - **Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.**
   apps/frontend/app/helper/animationHelper.ts:175
@@ -217,4 +173,48 @@
 - **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
   apps/frontend/app/helper/hashHelper.ts:149
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L149
+
+- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
+  apps/frontend/app/helper/hashHelper.ts:153
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L153
+
+- **'hexTilesEnclosed' is deprecated.**
+  apps/geonexia/frontend/app/activities/[id].tsx:800
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L800
+
+- **Do not use Array index in keys**
+  apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx:415
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx#L415
+
+- **Do not use Array index in keys**
+  apps/geonexia/frontend/app/experimental/onboarding/index.tsx:402
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/onboarding/index.tsx#L402
+
+- **Do not use Array index in keys**
+  apps/geonexia/frontend/app/experimental/seaphara/index.tsx:416
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/seaphara/index.tsx#L416
+
+- **Function 'announcePaceHintTransitionIfDue' has too many parameters (9). Maximum allowed is 7.**
+  apps/geonexia/frontend/app/index.tsx:3789
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L3789
+
+- **Do not use Array index in keys**
+  apps/geonexia/frontend/app/index.tsx:1992
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1992
+
+- **Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.**
+  apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/assets/objects/1_fix_viewbox.py#L28
+
+- **'billboardAnchorColor' is deprecated.**
+  apps/geonexia/frontend/store/hexTileSlice.ts:187
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/store/hexTileSlice.ts#L187
+
+- **'billboardAnchorColor' is deprecated.**
+  apps/geonexia/frontend/store/hexTileSlice.ts:205
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/store/hexTileSlice.ts#L205
+
+- **The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionTypeAlias' is deprecated.**
+  packages/common-backend/src/CollectionHelper.ts:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-backend/src/CollectionHelper.ts#L35
 
