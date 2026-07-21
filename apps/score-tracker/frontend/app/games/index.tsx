@@ -20,6 +20,27 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
+function GamesHeaderRight({ color, onImport, onAdd }: { color: string; onImport: () => void; onAdd: () => void }) {
+	return (
+		<View style={styles.headerButtons}>
+			<TouchableOpacity
+				nativeID={ComponentIds.GAMES_SCREEN_IMPORT_BUTTON}
+				onPress={onImport}
+				style={styles.headerButton}
+			>
+				<Ionicons name="cloud-download-outline" size={22} color={color} />
+			</TouchableOpacity>
+			<TouchableOpacity
+				nativeID={ComponentIds.GAMES_SCREEN_ADD_BUTTON}
+				onPress={onAdd}
+				style={styles.headerButton}
+			>
+				<Ionicons name="add-circle-outline" size={24} color={color} />
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 export default function GamesScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -108,24 +129,7 @@ export default function GamesScreen() {
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => (
-				<View style={styles.headerButtons}>
-					<TouchableOpacity
-						nativeID={ComponentIds.GAMES_SCREEN_IMPORT_BUTTON}
-						onPress={handleOpenImportModal}
-						style={styles.headerButton}
-					>
-						<Ionicons name="cloud-download-outline" size={22} color={theme.header.text} />
-					</TouchableOpacity>
-					<TouchableOpacity
-						nativeID={ComponentIds.GAMES_SCREEN_ADD_BUTTON}
-						onPress={handleAddGameType}
-						style={styles.headerButton}
-					>
-						<Ionicons name="add-circle-outline" size={24} color={theme.header.text} />
-					</TouchableOpacity>
-				</View>
-			),
+			headerRight: () => <GamesHeaderRight color={theme.header.text} onImport={handleOpenImportModal} onAdd={handleAddGameType} />,
 		});
 	}, [navigation, theme.header.text, handleAddGameType, handleOpenImportModal]);
 

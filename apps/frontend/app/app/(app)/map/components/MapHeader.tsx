@@ -22,6 +22,22 @@ interface MapHeaderProps {
 	isFilterActive?: boolean;
 }
 
+const HeaderIconButton = ({
+	triggerProps,
+	onPress,
+	nativeID,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	nativeID?: string;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} onPress={onPress} style={styles.iconButton} nativeID={nativeID}>
+		{children}
+	</IconButton>
+);
+
 const MapHeader: React.FC<MapHeaderProps> = ({
 	drawerPosition,
 	query,
@@ -44,14 +60,9 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				<CustomTooltip
 					placement="bottom"
 					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => drawerNavigation.toggleDrawer()}
-							style={styles.iconButton}
-							nativeID={ComponentIds.OPEN_DRAWER}
-						>
+						<HeaderIconButton triggerProps={triggerProps} onPress={() => drawerNavigation.toggleDrawer()} nativeID={ComponentIds.OPEN_DRAWER}>
 							<Ionicons name="menu" size={24} color={theme.header.text} />
-						</IconButton>
+						</HeaderIconButton>
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -89,16 +100,12 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				<CustomTooltip
 					placement="bottom"
 					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => onFilterPress?.()}
-							style={styles.iconButton}
-						>
+						<HeaderIconButton triggerProps={triggerProps} onPress={() => onFilterPress?.()}>
 							<View style={styles.filterIconWrapper}>
 								<FontAwesome name="filter" size={24} color={theme.header.text} />
 								{isFilterActive && <View style={styles.filterBadge} />}
 							</View>
-						</IconButton>
+						</HeaderIconButton>
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -112,13 +119,9 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				<CustomTooltip
 					placement="bottom"
 					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => onSettingsPress?.()}
-							style={styles.iconButton}
-						>
+						<HeaderIconButton triggerProps={triggerProps} onPress={() => onSettingsPress?.()}>
 							<Ionicons name="settings-outline" size={24} color={theme.header.text} />
-						</IconButton>
+						</HeaderIconButton>
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

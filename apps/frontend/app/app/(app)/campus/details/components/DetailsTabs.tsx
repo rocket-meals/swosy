@@ -15,6 +15,26 @@ interface DetailsTabsProps extends TabsStyleProps {
     children: React.ReactNode;
 }
 
+const TabIconButton = ({
+    triggerProps,
+    onPress,
+    isActive,
+    activeStyle,
+    inactiveStyle,
+    children,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    isActive: boolean;
+    activeStyle: any;
+    inactiveStyle: any;
+    children: React.ReactNode;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={[styles.tab, isActive ? activeStyle : inactiveStyle]}>
+        {children}
+    </IconButton>
+);
+
 const DetailsTabs: React.FC<DetailsTabsProps> = ({
     activeTab,
     setActiveTab,
@@ -31,20 +51,19 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                 <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
-                        <IconButton
-                            {...triggerProps}
+                        <TabIconButton
+                            triggerProps={triggerProps}
                             onPress={() => setActiveTab(CampusDetailTab.INFORMATION)}
-                            style={[
-                                styles.tab,
-                                activeTab === CampusDetailTab.INFORMATION ? themeStyles : { backgroundColor: theme.screen.iconBg }
-                            ]}
+                            isActive={activeTab === CampusDetailTab.INFORMATION}
+                            activeStyle={themeStyles}
+                            inactiveStyle={{ backgroundColor: theme.screen.iconBg }}
                         >
                             <Foundation
                                 name="info"
                                 size={26}
                                 color={activeTab === CampusDetailTab.INFORMATION ? contrastColor : theme.screen.icon}
                             />
-                        </IconButton>
+                        </TabIconButton>
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -57,20 +76,19 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                 <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
-                        <IconButton
-                            {...triggerProps}
-                            style={[
-                                styles.tab,
-                                activeTab === CampusDetailTab.DESCRIPTION ? themeStyles : { backgroundColor: theme.screen.iconBg }
-                            ]}
+                        <TabIconButton
+                            triggerProps={triggerProps}
                             onPress={() => setActiveTab(CampusDetailTab.DESCRIPTION)}
+                            isActive={activeTab === CampusDetailTab.DESCRIPTION}
+                            activeStyle={themeStyles}
+                            inactiveStyle={{ backgroundColor: theme.screen.iconBg }}
                         >
                             <MaterialCommunityIcons
                                 name="sort-variant"
                                 size={26}
                                 color={activeTab === CampusDetailTab.DESCRIPTION ? contrastColor : theme.screen.icon}
                             />
-                        </IconButton>
+                        </TabIconButton>
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

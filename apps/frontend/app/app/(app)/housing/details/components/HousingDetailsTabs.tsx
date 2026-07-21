@@ -17,6 +17,26 @@ interface HousingDetailsTabsProps extends TabsStyleProps {
 	apartmentDetails: DatabaseTypes.Apartments | null;
 }
 
+const TabIconButton = ({
+	triggerProps,
+	onPress,
+	isActive,
+	activeStyle,
+	inactiveStyle,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	isActive: boolean;
+	activeStyle: any;
+	inactiveStyle: any;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} style={[styles.tab, isActive ? activeStyle : inactiveStyle]} onPress={onPress}>
+		{children}
+	</IconButton>
+);
+
 const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 	activeTab,
 	setActiveTab,
@@ -36,16 +56,15 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 			key={key}
 			placement="top"
 			trigger={(triggerProps) => (
-				<IconButton
-					{...triggerProps}
-					style={[
-						styles.tab,
-						activeTab === key ? themeStyles : { backgroundColor: theme.screen.iconBg },
-					]}
+				<TabIconButton
+					triggerProps={triggerProps}
 					onPress={() => setActiveTab(key)}
+					isActive={activeTab === key}
+					activeStyle={themeStyles}
+					inactiveStyle={{ backgroundColor: theme.screen.iconBg }}
 				>
 					{icon}
-				</IconButton>
+				</TabIconButton>
 			)}
 		>
 			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

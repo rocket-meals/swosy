@@ -19,6 +19,22 @@ interface HousingHeaderProps {
 	openHousingSortingModal: () => void;
 }
 
+const HeaderIconButton = ({
+	triggerProps,
+	onPress,
+	nativeID,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	nativeID?: string;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} nativeID={nativeID}>
+		{children}
+	</IconButton>
+);
+
 const HousingHeader: React.FC<HousingHeaderProps> = ({
 	theme,
 	translate,
@@ -56,14 +72,9 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 					<CustomTooltip
 						placement="top"
 						trigger={(triggerProps) => (
-							<IconButton
-								{...triggerProps}
-								onPress={() => navigation.toggleDrawer()}
-								style={{ padding: 10 }}
-								nativeID={ComponentIds.OPEN_DRAWER}
-							>
+							<HeaderIconButton triggerProps={triggerProps} onPress={() => navigation.toggleDrawer()} nativeID={ComponentIds.OPEN_DRAWER}>
 								<Ionicons name="menu" size={24} color={theme.header.text} />
-							</IconButton>
+							</HeaderIconButton>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -81,13 +92,9 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 					<CustomTooltip
 						placement="top"
 						trigger={(triggerProps) => (
-							<IconButton
-								{...triggerProps}
-								onPress={openHousingSortingModal}
-								style={{ padding: 10 }}
-							>
+							<HeaderIconButton triggerProps={triggerProps} onPress={openHousingSortingModal}>
 								<MaterialIcons name="sort" size={24} color={theme.header.text} />
-							</IconButton>
+							</HeaderIconButton>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

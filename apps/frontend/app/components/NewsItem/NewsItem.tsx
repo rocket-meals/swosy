@@ -12,6 +12,35 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 
+const ReadMoreTriggerButton = ({
+	triggerProps,
+	onPress,
+	backgroundColor,
+	textColor,
+	width,
+	label,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	backgroundColor: string;
+	textColor: string;
+	width: number | string;
+	label: string;
+}) => (
+	<TouchableOpacity
+		{...triggerProps}
+		style={{
+			...styles.readMoreButton,
+			backgroundColor,
+			width,
+		}}
+		onPress={onPress}
+	>
+		<Text style={{ ...styles.readMore, color: textColor }}>{label}</Text>
+		<FontAwesome6 name="arrow-up-right-from-square" size={20} color={textColor} />
+	</TouchableOpacity>
+);
+
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
@@ -130,18 +159,14 @@ const NewsItem: React.FC<any> = ({ news }) => {
 					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
-							<TouchableOpacity
-								{...triggerProps}
-								style={{
-									...styles.readMoreButton,
-									backgroundColor: news_area_color,
-									width: screenWidth > 768 ? 210 : '100%',
-								}}
+							<ReadMoreTriggerButton
+								triggerProps={triggerProps}
 								onPress={handleNewsDetails}
-							>
-								<Text style={{ ...styles.readMore, color: contrastColor }}>{translate(TranslationKeys.read_more)}</Text>
-								<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />
-							</TouchableOpacity>
+								backgroundColor={news_area_color}
+								textColor={contrastColor}
+								width={screenWidth > 768 ? 210 : '100%'}
+								label={translate(TranslationKeys.read_more)}
+							/>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

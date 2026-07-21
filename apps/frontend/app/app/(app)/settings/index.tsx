@@ -62,6 +62,8 @@ import FoodoffersAverageRatingToggle from '@/components/FoodoffersAverageRatingT
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
+const ListItemSeparator = () => <View style={{ height: 10 }} />;
+
 const Settings = () => {
         useSetPageTitle(TranslationKeys.settings);
         const { theme, setThemeMode } = useTheme();
@@ -1066,7 +1068,7 @@ const Settings = () => {
 					paddingVertical: 40,
 					backgroundColor: theme.screen.background,
 				}}
-				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+				ItemSeparatorComponent={ListItemSeparator}
 			/>
 		</SafeAreaView>
 	);

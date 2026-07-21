@@ -17,6 +17,35 @@ interface TabControllerProps extends FoodAreaDisplayProps {
     containerWidth: string | number;
 }
 
+const TabTriggerButton = ({
+    triggerProps,
+    style,
+    iconName,
+    iconColor,
+    onSelect,
+}: {
+    triggerProps: any;
+    style: any;
+    iconName: any;
+    iconColor: string;
+    onSelect: () => void;
+}) => (
+    <IconButton
+        {...triggerProps}
+        style={style}
+        activeOpacity={1}
+        onPress={(e: any) => {
+            onSelect();
+            if (triggerProps.onPress) {
+                triggerProps.onPress(e);
+            }
+        }}
+        padding={10}
+    >
+        <MaterialCommunityIcons name={iconName} size={26} color={iconColor} />
+    </IconButton>
+);
+
 const TabController = ({
     activeTab,
     setActiveTab,
@@ -37,24 +66,13 @@ const TabController = ({
         <CustomTooltip
             placement="top"
             trigger={(triggerProps) => (
-                <IconButton
-                    {...triggerProps}
+                <TabTriggerButton
+                    triggerProps={triggerProps}
                     style={getTabStyle(tabName)}
-                    activeOpacity={1}
-                    onPress={(e: any) => {
-                        setActiveTab(tabName);
-                        if (triggerProps.onPress) {
-                            triggerProps.onPress(e);
-                        }
-                    }}
-                    padding={10}
-                >
-                    <MaterialCommunityIcons
-                        name={iconName}
-                        size={26}
-                        color={activeTab === tabName ? contrastColor : theme.screen.icon}
-                    />
-                </IconButton>
+                    iconName={iconName}
+                    iconColor={activeTab === tabName ? contrastColor : theme.screen.icon}
+                    onSelect={() => setActiveTab(tabName)}
+                />
             )}
         >
             <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

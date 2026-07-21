@@ -19,29 +19,29 @@ type FeedbackItemProps = {
 	setInputValues?: any;
 };
 
+const FeedbackIconSelector: React.FC<{
+	name: any;
+	size: number;
+	color: string;
+	style?: object;
+}> = ({ name, size, color, style }) => {
+	if (name === 'feed') {
+		return <MaterialIcons name={name} size={size} color={color} style={style} />;
+	} else if (name === 'like1' || name === 'dislike1') {
+		return <AntDesign name={name} size={size} color={color} style={style} />;
+	} else {
+		return <MaterialCommunityIcons name={name} size={size} color={color} style={style} />;
+	}
+};
+
 const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIcons = [], theme, windowWidth, onPress, inputValues, setInputValues }) => {
 	const { translate } = useLanguage();
 	const { primaryColor } = useAppSelector((state) => state.settings);
 
-	const IconSelector: React.FC<{
-		name: any;
-		size: number;
-		color: string;
-		style?: object;
-	}> = ({ name, size, color, style }) => {
-		if (name === 'feed') {
-			return <MaterialIcons name={name} size={size} color={color} style={style} />;
-		} else if (name === 'like1' || name === 'dislike1') {
-			return <AntDesign name={name} size={size} color={color} style={style} />;
-		} else {
-			return <MaterialCommunityIcons name={name} size={size} color={color} style={style} />;
-		}
-	};
-
 	return (
 		<TouchableOpacity style={[styles.container, { backgroundColor: theme.screen.iconBg }]} disabled={title === 'like_status'} onPress={title !== 'like_status' ? onPress : undefined}>
 			<View style={styles.iconTextContainer}>
-				{icon && <IconSelector name={icon} size={20} color={theme.screen.icon} style={{ marginRight: 10 }} />}
+				{icon && <FeedbackIconSelector name={icon} size={20} color={theme.screen.icon} style={{ marginRight: 10 }} />}
 				<Text
 					style={{
 						color: theme.screen.text,

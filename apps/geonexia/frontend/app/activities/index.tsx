@@ -382,6 +382,22 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 	}
 }
 
+function ActivitiesHeaderRight({ onRebuild, onExport, onImport }: { onRebuild: () => void; onExport: () => void; onImport: () => void }) {
+	return (
+		<View style={styles.headerButtons}>
+			<TouchableOpacity onPress={onRebuild} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+			<TouchableOpacity onPress={onExport} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+			<TouchableOpacity onPress={onImport} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -761,19 +777,7 @@ export default function ActivitiesScreen() {
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => (
-				<View style={styles.headerButtons}>
-					<TouchableOpacity onPress={handleRebuildMap} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-				</View>
-			),
+			headerRight: () => <ActivitiesHeaderRight onRebuild={handleRebuildMap} onExport={handleExportAll} onImport={openImportModal} />,
 		});
 	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 

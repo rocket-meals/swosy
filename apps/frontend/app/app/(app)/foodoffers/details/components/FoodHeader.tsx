@@ -22,6 +22,22 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     initialImageRemoteUrl?: string | null;
 }
 
+const StarRatingIconButton = ({
+    triggerProps,
+    onPress,
+    filled,
+    color,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    filled: boolean;
+    color: string;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={styles.paddingSmall}>
+        <MaterialIcons name={filled ? 'star' : 'star-border'} size={22} color={color} />
+    </IconButton>
+);
+
 const FoodHeader = ({
     foodDetails,
     screenWidth,
@@ -56,13 +72,7 @@ const FoodHeader = ({
                 <CustomTooltip
                     placement="top"
                     trigger={(triggerProps) => (
-                        <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
-                            <MaterialIcons
-                                name={previousFeedback?.rating > index ? 'star' : 'star-border'}
-                                size={22}
-                                color={foodsAreaColor}
-                            />
-                        </IconButton>
+                        <StarRatingIconButton triggerProps={triggerProps} onPress={() => rateFood(index + 1)} filled={previousFeedback?.rating > index} color={foodsAreaColor} />
                     )}
                 >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

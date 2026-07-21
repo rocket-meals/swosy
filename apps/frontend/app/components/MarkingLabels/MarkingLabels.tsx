@@ -19,6 +19,89 @@ import { TranslationKeys } from '@/locales/keys';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 
+const MarkingIconTrigger = ({
+	triggerProps,
+	onPress,
+	onHoverIn,
+	onHoverOut,
+	marking,
+	size,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	marking: any;
+	size: number;
+}) => (
+	<Pressable {...triggerProps} onPress={onPress} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		<MarkingIcon marking={marking} size={size} />
+	</Pressable>
+);
+
+const MarkingLabelTextTrigger = ({
+	triggerProps,
+	onHoverIn,
+	onHoverOut,
+	text,
+	textColor,
+}: {
+	triggerProps: object;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	text: string;
+	textColor: string;
+}) => (
+	<Pressable {...triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut} style={styles.labelContainer}>
+		<Text
+			style={{
+				...styles.label,
+				color: textColor,
+				fontSize: isWeb ? 18 : 14,
+				textAlignVertical: 'center',
+			}}
+		>
+			{text}
+		</Text>
+	</Pressable>
+);
+
+const MarkingReactionTrigger = ({
+	triggerProps,
+	onPress,
+	onHoverIn,
+	onHoverOut,
+	buttonStyle,
+	loading,
+	active,
+	activeIconName,
+	inactiveIconName,
+	iconSize,
+	activeColor,
+	inactiveColor,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	buttonStyle: any;
+	loading: boolean;
+	active: boolean;
+	activeIconName: any;
+	inactiveIconName: any;
+	iconSize: number;
+	activeColor: string;
+	inactiveColor: string;
+}) => (
+	<Pressable onHoverIn={onHoverIn} onHoverOut={onHoverOut} style={buttonStyle} {...triggerProps} onPress={onPress}>
+		{loading ? (
+			<ActivityIndicator size={25} color={activeColor} />
+		) : (
+			<MaterialCommunityIcons name={active ? activeIconName : inactiveIconName} size={iconSize} color={active ? activeColor : inactiveColor} />
+		)}
+	</Pressable>
+);
+
 const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet, size = 30 }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -175,9 +258,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
-							<Pressable {...triggerProps} onPress={() => openMarkingLabel(marking)} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
-								<MarkingIcon marking={marking} size={size} />
-							</Pressable>
+							<MarkingIconTrigger triggerProps={triggerProps} onPress={() => openMarkingLabel(marking)} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} marking={marking} size={size} />
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -193,18 +274,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					placement="top"
 					isOpen={showTooltip}
 					trigger={triggerProps => (
-						<Pressable {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={styles.labelContainer}>
-							<Text
-								style={{
-									...styles.label,
-									color: theme.screen.text,
-									fontSize: isWeb ? 18 : 14,
-									textAlignVertical: 'center',
-								}}
-							>
-								{markingText}
-							</Text>
-						</Pressable>
+						<MarkingLabelTextTrigger triggerProps={triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} text={markingText} textColor={theme.screen.text} />
 					)}
 				>
 					<TooltipContent
@@ -226,9 +296,20 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				<CustomTooltip
 					placement="top"
 					trigger={triggerProps => (
-						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={styles.likeButton} {...triggerProps} onPress={() => handleUpdateMarking(true)}>
-							{likeLoading ? <ActivityIndicator size={25} color={foods_area_color} /> : <MaterialCommunityIcons name={ownMarking?.like ? 'thumb-up' : 'thumb-up-outline'} size={iconSize} color={ownMarking?.like ? foods_area_color : theme.screen.icon} />}
-						</Pressable>
+						<MarkingReactionTrigger
+							triggerProps={triggerProps}
+							onPress={() => handleUpdateMarking(true)}
+							onHoverIn={() => setShowTooltip(true)}
+							onHoverOut={() => setShowTooltip(false)}
+							buttonStyle={styles.likeButton}
+							loading={likeLoading}
+							active={!!ownMarking?.like}
+							activeIconName="thumb-up"
+							inactiveIconName="thumb-up-outline"
+							iconSize={iconSize}
+							activeColor={foods_area_color}
+							inactiveColor={theme.screen.icon}
+						/>
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -240,9 +321,20 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				<CustomTooltip
 					placement="top"
 					trigger={triggerProps => (
-						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} {...triggerProps} style={styles.dislikeButton} {...triggerProps} onPress={() => handleUpdateMarking(false)}>
-							{dislikeLoading ? <ActivityIndicator size={25} color={foods_area_color} /> : <MaterialCommunityIcons name={ownMarking?.like === false ? 'thumb-down' : 'thumb-down-outline'} size={iconSize} color={ownMarking?.like === false ? foods_area_color : theme.screen.icon} />}
-						</Pressable>
+						<MarkingReactionTrigger
+							triggerProps={triggerProps}
+							onPress={() => handleUpdateMarking(false)}
+							onHoverIn={() => setShowTooltip(true)}
+							onHoverOut={() => setShowTooltip(false)}
+							buttonStyle={styles.dislikeButton}
+							loading={dislikeLoading}
+							active={ownMarking?.like === false}
+							activeIconName="thumb-down"
+							inactiveIconName="thumb-down-outline"
+							iconSize={iconSize}
+							activeColor={foods_area_color}
+							inactiveColor={theme.screen.icon}
+						/>
 					)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

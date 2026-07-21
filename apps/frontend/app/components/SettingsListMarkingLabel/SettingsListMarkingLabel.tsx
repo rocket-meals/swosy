@@ -21,6 +21,26 @@ export interface SettingsListMarkingLabelProps extends MarkingLabelProps {}
 // All props are defined in MarkingLabelProps; this named export is kept for
 // backwards compatibility and as the canonical type for this component.
 
+const MarkingLabelTrigger = ({
+	triggerProps,
+	onPress,
+	onHoverIn,
+	onHoverOut,
+	marking,
+	size,
+}: {
+	triggerProps: object;
+	onPress?: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	marking: any;
+	size: number;
+}) => (
+	<Pressable {...triggerProps} onPress={onPress} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		<MarkingIcon marking={marking} size={size} />
+	</Pressable>
+);
+
 const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	markingId,
 	handleMenuSheet,
@@ -163,26 +183,16 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		<View style={styles.leftIconWrapper}>
 			<CustomTooltip
 				placement="top"
-				trigger={triggerProps =>
-					handleMenuSheet ? (
-						<Pressable
-							{...triggerProps}
-							onPress={() => openMarkingLabel(marking)}
-							onHoverIn={() => setShowTooltip(true)}
-							onHoverOut={() => setShowTooltip(false)}
-						>
-							<MarkingIcon marking={marking} size={size} />
-						</Pressable>
-					) : (
-						<Pressable
-							{...triggerProps}
-							onHoverIn={() => setShowTooltip(true)}
-							onHoverOut={() => setShowTooltip(false)}
-						>
-							<MarkingIcon marking={marking} size={size} />
-						</Pressable>
-					)
-				}
+				trigger={triggerProps => (
+					<MarkingLabelTrigger
+						triggerProps={triggerProps}
+						onPress={handleMenuSheet ? () => openMarkingLabel(marking) : undefined}
+						onHoverIn={() => setShowTooltip(true)}
+						onHoverOut={() => setShowTooltip(false)}
+						marking={marking}
+						size={size}
+					/>
+				)}
 			>
 				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 					<TooltipText fontSize="$sm" color={theme.tooltip.text}>

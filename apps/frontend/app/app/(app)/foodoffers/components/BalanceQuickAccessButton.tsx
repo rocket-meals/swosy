@@ -27,6 +27,27 @@ interface BalanceQuickAccessButtonProps {
  * (e.g. in Expo Go) so the modal's "Simulate X€" debug actions remain
  * reachable to exercise the flow without physical hardware.
  */
+const BalanceTriggerButton = ({
+	triggerProps,
+	onPress,
+	style,
+	color,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	style?: any;
+	color: string;
+}) => (
+	<IconButton
+		{...triggerProps}
+		onPress={onPress}
+		style={style}
+		nativeID={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
+	>
+		<Octicons name="credit-card" size={24} color={color} />
+	</IconButton>
+);
+
 const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ style }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -80,14 +101,7 @@ const BalanceQuickAccessButton: React.FC<BalanceQuickAccessButtonProps> = ({ sty
 		<CustomTooltip
 			placement="top"
 			trigger={triggerProps => (
-				<IconButton
-					{...triggerProps}
-					onPress={() => openAccountBalanceModal(isNfcSupported && isNfcEnabled)}
-					style={style}
-					nativeID={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
-				>
-					<Octicons name="credit-card" size={24} color={theme.header.text} />
-				</IconButton>
+				<BalanceTriggerButton triggerProps={triggerProps} onPress={() => openAccountBalanceModal(isNfcSupported && isNfcEnabled)} style={style} color={theme.header.text} />
 			)}
 		>
 			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

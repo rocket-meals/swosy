@@ -11,6 +11,42 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 
+const TimetableEventTrigger = ({
+	triggerProps,
+	color,
+	height,
+	top,
+	width,
+	left,
+	title,
+	onPress,
+}: {
+	triggerProps: object;
+	color: string;
+	height: number;
+	top: number;
+	width: number;
+	left: number;
+	title: string;
+	onPress: () => void;
+}) => (
+	<TouchableOpacity
+		{...triggerProps}
+		style={{
+			...styles.slotEvent,
+			backgroundColor: color,
+			borderColor: color,
+			height,
+			top,
+			width,
+			left,
+		}}
+		onPress={onPress}
+	>
+		<Text style={styles.eventText}>{title}</Text>
+	</TouchableOpacity>
+);
+
 const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, setIsUpdate, setTimeTableData, setSelectedEventId }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -164,21 +200,16 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 				key={event.id}
 				placement="top"
 				trigger={triggerProps => (
-					<TouchableOpacity
-						{...triggerProps}
-						style={{
-							...styles.slotEvent,
-							backgroundColor: event.color,
-							borderColor: event.color,
-							height: calculateHeight(event.startTime, event.endTime),
-							top: calculateTopPosition(event.startTime),
-							width: eventWidth - 4, // Add some spacing
-							left: horizontalPosition,
-						}}
+					<TimetableEventTrigger
+						triggerProps={triggerProps}
+						color={event.color}
+						height={calculateHeight(event.startTime, event.endTime)}
+						top={calculateTopPosition(event.startTime)}
+						width={eventWidth - 4} // Add some spacing
+						left={horizontalPosition}
+						title={event.title}
 						onPress={() => handleUpdateEvent(event)}
-					>
-						<Text style={styles.eventText}>{event.title}</Text>
-					</TouchableOpacity>
+					/>
 				)}
 			>
 				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
