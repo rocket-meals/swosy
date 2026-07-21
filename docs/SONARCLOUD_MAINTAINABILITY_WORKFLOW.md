@@ -103,32 +103,54 @@ URL-Liste in `rss-feed-config/index.tsx` (nur Anhängen/Editieren, kein
 Löschen/Umsortieren vorhanden — vor einer Restrukturierung zu ID-Objekten
 erst klären, ob Löschen/Umsortieren tatsächlich nie kommen soll).
 
-„Move this component definition out of the parent component" (97x) wurde
-teilweise abgearbeitet: 45 der 46 Vorkommen außerhalb von `_layout.tsx`-Dateien
-wurden gefixt, indem die jeweilige verschachtelte Funktion (meist ein
-`CustomTooltip`-`trigger={triggerProps => (...)}`-Block oder ein
-`navigation.setOptions({ headerLeft/headerRight: () => (...) })`) auf Modul-
-oder Dateiebene als eigene benannte Komponente extrahiert wurde; Closures
-wurden als explizite Props durchgereicht. Bei `MyMarkdown.tsx` (drei
-`react-native-render-html`-Renderer) wurden bewusst Factory-Funktionen
-(`makeLinkRenderer`, `makeSubRenderer`, `makeSupRenderer`) statt parameterloser
-Komponenten verwendet, da die Renderer `contrastColor`/`textColor`/`fontSize`
-aus dem `useMemo` weiterhin benötigen.
+„Move this component definition out of the parent component" (97x) ist jetzt
+komplett abgearbeitet bis auf eine bewusst offengelassene Stelle. Die
+verschachtelten Funktionen (meist ein `CustomTooltip`-
+`trigger={triggerProps => (...)}`-Block, ein `navigation.setOptions({
+headerLeft/headerRight/header: () => (...) })` oder ein `drawerIcon`/
+`drawerContent`-Callback) wurden auf Modul- oder Dateiebene als eigene
+benannte Komponente extrahiert; Closures wurden als explizite Props
+durchgereicht. Bei `MyMarkdown.tsx` (drei `react-native-render-html`-Renderer)
+wurden bewusst Factory-Funktionen (`makeLinkRenderer`, `makeSubRenderer`,
+`makeSupRenderer`) statt parameterloser Komponenten verwendet, da die
+Renderer `contrastColor`/`textColor`/`fontSize` aus dem `useMemo` weiterhin
+benötigen.
 
-**Zwei Dinge bewusst offengelassen:**
-- `FoodItem.tsx:324` — der `CustomTooltip`-Trigger dort schließt über ~20
-  Werte (Styles, Handler, Item-Daten), was ihn zum größten und riskantesten
-  Kandidaten in diesem Batch macht; da `CustomTooltip` den Trigger ohnehin nur
-  als Funktion aufruft (kein JSX-Tag, also kein echtes Remount-Risiko), ist der
-  Nutzen einer sofortigen Extraktion gering gegenüber dem Risiko, beim
-  Durchreichen der vielen Closures etwas zu vertauschen. Für eine eigene,
-  ruhigere Änderung vormerken.
-- Alle 51 Vorkommen in `_layout.tsx`-Dateien (`apps/frontend/app/app/(app)/_layout.tsx`
-  20x, `apps/geonexia/frontend/app/_layout.tsx` 12x,
-  `apps/score-tracker/frontend/app/_layout.tsx` 7x, plus 12x in kleineren
-  `_layout.tsx`-Dateien) — bewusst für einen eigenen, fokussierten PR
-  aufgehoben, da es sich um die zentralen Navigationskonfigurationen der drei
-  Apps handelt und Fehler dort app-weite Auswirkungen hätten.
+Die 51 Vorkommen in den `_layout.tsx`-Navigationsdateien (`apps/frontend/app/app/(app)/_layout.tsx`
+20x, `apps/geonexia/frontend/app/_layout.tsx` 12x,
+`apps/score-tracker/frontend/app/_layout.tsx` 7x, plus 12x in kleineren
+`_layout.tsx`-Dateien) folgten demselben Muster wie die restlichen 45 —
+`header`/`headerLeft`/`headerRight` werden von React Navigation direkt als
+Funktion aufgerufen, nie als JSX-Tag instanziiert, also kein echter
+Remount-Bug. Zwei wiederkehrende Muster wurden dabei über eine Datei hinweg
+gebündelt statt pro Stelle einzeln zu extrahieren:
+- **`drawerIcon: ({color,size}) => (<Icon .../>)`** (17x in den Drawer-Configs
+  von score-tracker und geonexia) → `makeDrawerIcon(IconSet, name)`, eine
+  Factory, die eine stabile Funktion zurückgibt (`drawerIcon:
+  makeDrawerIcon(Ionicons, 'menu-outline')`) — eliminiert den Inline-Arrow an
+  der Aufrufstelle komplett statt ihn nur zu verkleinern.
+- **`header: () => <CustomStackHeader label={translate(key)} .../>`** bzw.
+  `<CustomMenuHeader ...>` (rund 30x über `apps/frontend`) → zwei neue geteilte
+  Komponenten `TranslatedStackHeader`/`TranslatedMenuHeader`
+  (`apps/frontend/app/components/Custom{Stack,Menu}Header/Translated*Header.tsx`),
+  die `useLanguage()` selbst aufrufen statt `translate` von außen
+  durchzureichen — dadurch entfällt die Closure ganz, nicht nur ihre
+  Verschachtelung.
+Einzeln extrahiert wurden nur die strukturell abweichenden Fälle: der
+`ChatDetailsHeader` in `chats/_layout.tsx` (braucht `router`/`theme` für einen
+Refresh-Button), die statischen `BuildingDetailsHeader`/`ApartmentDetailsHeader`/
+`StatisticsHeader` (kein `translate` nötig) und `FeedbackAndSupportHeader`
+(zwei verkettete `translate()`-Aufrufe, passt nicht ins
+Ein-`labelKey`-Schema).
+
+**Eine Stelle bewusst offengelassen:** `FoodItem.tsx:324` — der
+`CustomTooltip`-Trigger dort schließt über ~30 Werte (Styles, Handler,
+Item-Daten), was ihn zum mit Abstand größten und riskantesten Kandidaten in
+diesem gesamten Issue-Typ macht. Da `CustomTooltip` den Trigger ohnehin nur
+als Funktion aufruft (kein JSX-Tag, also kein echtes Remount-Risiko), überwiegt
+das Risiko, beim Durchreichen so vieler Closures etwas zu vertauschen, den
+Nutzen einer sofortigen Extraktion. Für eine eigene, ruhige Änderung
+vormerken.
 
 Anmerkung zur Sonar-Regel: Ein Großteil der gefixten Stellen sind
 Render-Prop-Funktionen (`trigger`, `headerLeft`/`headerRight`), die von ihrem

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
-import { useLanguage } from '@/hooks/useLanguage';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
@@ -13,10 +13,11 @@ import { ActivityIndicator, View } from 'react-native';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
 import { useAppSelector } from '@/redux/hooks';
 
+const StatisticsHeader = () => <CustomStackHeader label={'Statistics'} key={'statistics'} />;
+
 export default function MonitorLayout() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const { translate } = useLanguage();
 	const markingHelper = new MarkingHelper();
 	const appSettingsHelper = new AppSettingsHelper();
 	const markingGroupsHelper = new MarkingGroupsHelper();
@@ -92,14 +93,14 @@ export default function MonitorLayout() {
 				name="statistics/index"
 				options={{
 					title: 'statistics',
-					header: () => <CustomStackHeader label={'Statistics'} key={'statistics'} />,
+					header: StatisticsHeader,
 				}}
 			/>
 			<Stack.Screen
 				name="foodPlanWeek/index"
 				options={{
 					title: 'FoodPlan:Week',
-					header: () => <CustomStackHeader label={translate(TranslationKeys.Food_Plan_Week)} key={'foodPlanWeek'} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.Food_Plan_Week} headerKey={'foodPlanWeek'} />,
 				}}
 			/>
 			<Stack.Screen
@@ -112,7 +113,7 @@ export default function MonitorLayout() {
 			<Stack.Screen
 				name="foodPlanDay/index"
 				options={{
-					header: () => <CustomStackHeader label={translate(TranslationKeys.food_Plan_Day)} key={'foodPlanDay'} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.food_Plan_Day} headerKey={'foodPlanDay'} />,
 				}}
 			/>
 			<Stack.Screen
@@ -125,7 +126,7 @@ export default function MonitorLayout() {
 				name="foodPlanList/index"
 				options={{
 					title: 'foodPlan:List',
-					header: () => <CustomStackHeader label={translate(TranslationKeys.Food_Plan_List)} key={'foodPlanList'} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.Food_Plan_List} headerKey={'foodPlanList'} />,
 				}}
 			/>
 			<Stack.Screen

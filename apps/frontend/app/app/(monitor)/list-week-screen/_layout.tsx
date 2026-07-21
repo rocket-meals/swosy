@@ -1,13 +1,11 @@
 import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
-import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
-import { useLanguage } from '@/hooks/useLanguage';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
 
 export default function FoodOfferLayout() {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
 	return (
 		<Stack
 			screenOptions={{
@@ -19,7 +17,7 @@ export default function FoodOfferLayout() {
 				name="index"
 				options={{
 					title: 'list-week-screen',
-					header: () => <CustomStackHeader label={translate(TranslationKeys.Food_Plan_Week)} />,
+					header: () => <TranslatedStackHeader labelKey={TranslationKeys.Food_Plan_Week} />,
 				}}
 			/>
 			<Stack.Screen
