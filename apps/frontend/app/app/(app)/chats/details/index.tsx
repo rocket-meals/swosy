@@ -30,6 +30,21 @@ type LinkedFoodInfo = {
         foodOfferId?: string | null;
 };
 
+/**
+ * Apply `setLinkedFoodFeedback` only if the calling effect is still mounted
+ * (avoids the classic "set state after unmount" React warning for the async
+ * `resolveLinkedFoodFeedback` chain, which has several early-return points).
+ */
+function setLinkedFoodFeedbackIfMounted(
+        isMounted: boolean,
+        setLinkedFoodFeedback: (value: LinkedFoodInfo | null) => void,
+        value: LinkedFoodInfo | null
+): void {
+        if (isMounted) {
+                setLinkedFoodFeedback(value);
+        }
+}
+
 const ChatDetailsScreen = () => {
 	useSetPageTitle(TranslationKeys.chat);
 	const { theme } = useTheme();
@@ -289,18 +304,14 @@ const ChatDetailsScreen = () => {
                         const chatFeedbackRelations = resolveFeedbackRelation(chat);
 
                         if (!chatFeedbackRelations || chatFeedbackRelations.length === 0) {
-                                if (isMounted) {
-                                        setLinkedFoodFeedback(null);
-                                }
+                                setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, null);
                                 return;
                         }
 
                         const feedbackId = getEntityId(chatFeedbackRelations[0]);
 
                         if (!feedbackId) {
-                                if (isMounted) {
-                                        setLinkedFoodFeedback(null);
-                                }
+                                setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, null);
                                 return;
                         }
 
@@ -315,36 +326,28 @@ const ChatDetailsScreen = () => {
                                 )) as DatabaseTypes.FoodsFeedbacks;
 
                                 if (!feedback?.food) {
-                                        if (isMounted) {
-                                                setLinkedFoodFeedback(null);
-                                        }
+                                        setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, null);
                                         return;
                                 }
 
                                 const foodId = getEntityId(feedback.food);
 
                                 if (!foodId) {
-                                        if (isMounted) {
-                                                setLinkedFoodFeedback(null);
-                                        }
+                                        setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, null);
                                         return;
                                 }
 
                                 const food = (await loadFoodById(foodId)) as DatabaseTypes.Foods;
                                 const foodOfferId = getEntityId(feedback.foodoffer);
 
-                                if (isMounted) {
-                                        setLinkedFoodFeedback({
-                                                food,
-                                                feedback,
-                                                foodOfferId,
-                                        });
-                                }
+                                setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, {
+                                        food,
+                                        feedback,
+                                        foodOfferId,
+                                });
                         } catch (error) {
                                 console.error('Error resolving linked food feedback for chat:', error);
-                                if (isMounted) {
-                                        setLinkedFoodFeedback(null);
-                                }
+                                setLinkedFoodFeedbackIfMounted(isMounted, setLinkedFoodFeedback, null);
                         }
                 };
 

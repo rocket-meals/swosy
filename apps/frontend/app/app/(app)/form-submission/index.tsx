@@ -160,6 +160,93 @@ const isAnswerVisible = (
 	return normalizeCurrentValue(currentValue, referencedCustomType) === normalizedExpectedValue;
 };
 
+/**
+ * Resolve the icon component/name for a form field's `icon_expo` value
+ * (format `library:name`), looking up the library in `iconLibraries`.
+ */
+const resolveFieldIcon = (iconExpo: string | undefined | null): { IconComponent: any; iconName: string } => {
+	let IconComponent: any = null;
+	let iconName = '';
+	if (iconExpo) {
+		const [library, name] = iconExpo.split(':') ?? [];
+		if (iconLibraries[library]) {
+			IconComponent = iconLibraries[library];
+			iconName = name;
+		}
+	}
+	return { IconComponent, iconName };
+};
+
+/**
+ * Apply the "form submission is locked by another user" handling: show a
+ * warning (web modal / mobile sheet) if locked by someone else, otherwise
+ * (online mode only) lock the submission to the current user.
+ */
+async function applyFormSubmissionLockState(
+	result: DatabaseTypes.FormSubmissions,
+	user: any,
+	offlineMode: boolean,
+	formSubmissionId: string,
+	formsSubmissionsHelper: FormsSubmissionsHelper,
+	setIsWarning: (value: boolean) => void,
+	openWarningSheet: () => void
+): Promise<void> {
+	if (result?.user_locked_by && result?.user_locked_by !== user?.id) {
+		if (isWeb) {
+			setIsWarning(true);
+		} else {
+			openWarningSheet();
+		}
+	} else if (!offlineMode) {
+		try {
+			await formsSubmissionsHelper.updateFormSubmissionById(formSubmissionId, {
+				user_locked_by: String(user?.id),
+				date_started: new Date().toISOString(),
+			});
+		} catch {
+			// update fails silently on network error
+		}
+	}
+}
+
+/**
+ * Resolve the initial edit-form value for a form answer, based on its
+ * custom field type (mirrors the per-type conversions used when submitting).
+ */
+async function resolveInitialFieldValue(
+	fieldType: string,
+	customType: string,
+	defaultValue: any,
+	parseDateForEditFn: (fieldType: string, value: string) => string,
+	getDirectusFilesDataFn: (data: any) => Promise<any[]>
+): Promise<any> {
+	let value;
+
+	if (customType === 'value_custom') {
+		value = defaultValue || null;
+	} else if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
+		value = defaultValue ? String(defaultValue)?.replace('.', ',') : null;
+	} else if (customType === 'value_boolean') {
+		if (defaultValue === false) {
+			value = 0;
+		} else if (defaultValue === true) {
+			value = 1;
+		} else {
+			value = null;
+		}
+	} else if (FormHelperCommon.isDateFieldType(fieldType)) {
+		value = parseDateForEditFn(fieldType, defaultValue);
+	} else if (customType === 'value_files') {
+		value = defaultValue ? await getDirectusFilesDataFn(defaultValue) : [];
+	} else if (customType === 'value_image') {
+		value = defaultValue ? getFormValueImageUrl(defaultValue) : null;
+	} else {
+		value = defaultValue || null;
+	}
+
+	return value;
+}
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -304,22 +391,7 @@ const Index = () => {
 
 		if (result) {
 			dispatch({ type: SET_FORM_SUBMISSION, payload: result });
-			if (result?.user_locked_by && result?.user_locked_by !== user?.id) {
-				if (isWeb) {
-					setIsWarning(true);
-				} else {
-					openWarningSheet();
-				}
-			} else if (!offlineMode) {
-				try {
-					await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
-						user_locked_by: String(user?.id),
-						date_started: new Date().toISOString(),
-					});
-				} catch {
-					// update fails silently on network error
-				}
-			}
+			await applyFormSubmissionLockState(result, user, offlineMode, String(form_submission_id), formsSubmissionsHelper, setIsWarning, openWarningSheet);
 		} else if (offlineMode) {
 			toast(translate(TranslationKeys.form_submission_not_found_offline), 'error');
 		} else {
@@ -386,29 +458,8 @@ const Index = () => {
 				const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
 				const [custom_type] = fieldType.split('-');
 				const defaultValue = (answer as any)[custom_type];
-				let value;
 
-				if (custom_type === 'value_custom') {
-					value = defaultValue || null;
-				} else if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
-					value = defaultValue ? String(defaultValue)?.replace('.', ',') : null;
-				} else if (custom_type === 'value_boolean') {
-					if (defaultValue === false) {
-						value = 0;
-					} else if (defaultValue === true) {
-						value = 1;
-					} else {
-						value = null;
-					}
-				} else if (FormHelperCommon.isDateFieldType(fieldType)) {
-					value = parseDateForEdit(fieldType, defaultValue);
-				} else if (custom_type === 'value_files') {
-					value = defaultValue ? await getDirectusFilesData(defaultValue) : [];
-				} else if (custom_type === 'value_image') {
-					value = defaultValue ? getFormValueImageUrl(defaultValue) : null;
-				} else {
-					value = defaultValue || null;
-				}
+				const value = await resolveInitialFieldValue(fieldType, custom_type, defaultValue, parseDateForEdit, getDirectusFilesData);
 
 				if (value) {
 					return { fieldId, value, error: '', custom_type };
@@ -972,47 +1023,14 @@ const Index = () => {
 									const fieldId = String(answer?.id);
 									const dropdownValues = parseDropdownValues((answer?.form_field as DatabaseTypes.FormFields)?.dropdown_values);
 									const description = (answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromDescriptionTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : '';
-									const visibilityDependsOnFieldId = formField ? extractFormFieldId(formField.visibility_depends_on_referenced_field) : undefined;
-									const expectedVisibilityValue = formField?.visibility_depends_on_referenced_value_equals;
-									const normalizedExpectedValue = normalizeExpectedValue(expectedVisibilityValue);
-									const baseVisibility = formField?.is_visible_in_form ?? true;
-									const hasVisibilityDependency = Boolean(visibilityDependsOnFieldId && normalizedExpectedValue !== '');
-									let showInForm = baseVisibility;
+									const showInForm = isAnswerVisible(answer, formAnswers, getAnswerValue);
 
-									if (showInForm && hasVisibilityDependency) {
-										const referencedAnswer = formAnswers.find(item => {
-											const referencedField = isFormFieldEntity(item?.form_field) ? item.form_field : null;
-											const referencedFieldId = extractFormFieldId(referencedField || item?.form_field);
-
-											return referencedFieldId === visibilityDependsOnFieldId;
-										});
-
-										if (referencedAnswer) {
-											const referencedField = isFormFieldEntity(referencedAnswer?.form_field) ? referencedAnswer.form_field : null;
-											const referencedFieldType = referencedField?.field_type || '';
-											const [referencedCustomType] = referencedFieldType.split('-');
-											const currentValue = getAnswerValue(referencedAnswer);
-											const normalizedCurrentValue = normalizeCurrentValue(currentValue, referencedCustomType);
-
-											showInForm = normalizedCurrentValue === normalizedExpectedValue;
-										} else {
-											showInForm = false;
-										}
-									}
 									if (!showInForm) {
 										return null;
 									}
 
 									const isDisabled = (answer?.form_field as DatabaseTypes.FormFields)?.is_disabled || false;
-									let IconComponent: any = null;
-									let iconName = '';
-									if ((answer?.form_field as DatabaseTypes.FormFields)?.icon_expo) {
-										const [library, name] = (answer?.form_field as DatabaseTypes.FormFields)?.icon_expo?.split(':') ?? [];
-										if (iconLibraries[library]) {
-											IconComponent = iconLibraries[library];
-											iconName = name;
-										}
-									}
+									const { IconComponent, iconName } = resolveFieldIcon((answer?.form_field as DatabaseTypes.FormFields)?.icon_expo);
 
 									return (
 										<View
