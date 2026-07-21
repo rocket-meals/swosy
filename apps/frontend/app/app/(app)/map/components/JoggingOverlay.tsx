@@ -47,6 +47,37 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+type SegmentAccumulator = {
+	distanceKm: number;
+	elevationGainM: number;
+	elevationLossM: number;
+	speedsKmh: number[];
+};
+
+/** Processes one GPS segment (between two consecutive points), updating the distance, elevation and speed accumulators in place. */
+function accumulateSegmentStats(prev: RoutePoint, curr: RoutePoint, acc: SegmentAccumulator): void {
+	const segKm = haversineKm(prev.lat, prev.lng, curr.lat, curr.lng);
+	acc.distanceKm += segKm;
+
+	// Elevation
+	if (curr.altitude != null && prev.altitude != null) {
+		const diff = (curr.altitude as number) - (prev.altitude as number);
+		if (diff > 0) acc.elevationGainM += diff;
+		else acc.elevationLossM += Math.abs(diff);
+	}
+
+	// Speed: prefer GPS speed, fall back to distance/time
+	const dtSec = (curr.timestamp - prev.timestamp) / 1000;
+	const gpsSpeed = curr.speed;
+	let segSpeedKmh = 0;
+	if (gpsSpeed != null && gpsSpeed >= 0) {
+		segSpeedKmh = gpsSpeed * 3.6;
+	} else if (dtSec > 0) {
+		segSpeedKmh = (segKm / dtSec) * 3600;
+	}
+	if (segSpeedKmh > 0) acc.speedsKmh.push(segSpeedKmh);
+}
+
 /** Compute run statistics from recorded GPS points. */
 function computeStats(points: RoutePoint[]): RunStats {
 	if (points.length < 2) {
@@ -66,33 +97,11 @@ function computeStats(points: RoutePoint[]): RunStats {
 		};
 	}
 
-	let distanceKm = 0;
-	let elevationGainM = 0;
-	let elevationLossM = 0;
-	const speedsKmh: number[] = [];
-
+	const acc: SegmentAccumulator = { distanceKm: 0, elevationGainM: 0, elevationLossM: 0, speedsKmh: [] };
 	for (let i = 1; i < points.length; i++) {
-		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
-		distanceKm += segKm;
-
-		// Elevation
-		if (points[i].altitude != null && points[i - 1].altitude != null) {
-			const diff = (points[i].altitude as number) - (points[i - 1].altitude as number);
-			if (diff > 0) elevationGainM += diff;
-			else elevationLossM += Math.abs(diff);
-		}
-
-		// Speed: prefer GPS speed, fall back to distance/time
-		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
-		const gpsSpeed = points[i].speed;
-		let segSpeedKmh = 0;
-		if (gpsSpeed != null && gpsSpeed >= 0) {
-			segSpeedKmh = gpsSpeed * 3.6;
-		} else if (dtSec > 0) {
-			segSpeedKmh = (segKm / dtSec) * 3600;
-		}
-		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+		accumulateSegmentStats(points[i - 1], points[i], acc);
 	}
+	const { distanceKm, elevationGainM, elevationLossM, speedsKmh } = acc;
 
 	const durationSeconds = (points.at(-1).timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;

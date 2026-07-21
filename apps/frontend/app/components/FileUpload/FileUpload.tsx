@@ -26,6 +26,46 @@ export enum ImagePickerMediaTypes {
 	LivePhotos = 'livePhotos',
 }
 
+/**
+ * Deletes a single file from the remotely stored form-answer file relation:
+ * fetches the FormAnswer to find the relation id for this file, deletes that
+ * relation via Directus, then updates the local value, calling onChange only
+ * once everything succeeded.
+ */
+async function deleteRemoteFormAnswerFile(
+	formAnswersHelper: FormAnswersHelper,
+	id: string,
+	item: any,
+	value: any,
+	onChange: (id: string, value: any, custom_type: string) => void,
+	custom_type: string,
+): Promise<void> {
+	const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
+		fields: ['id', 'value_files.id', 'value_files.directus_files_id'],
+	})) as FormAnswer;
+
+	if (!formAnswer?.value_files || formAnswer.value_files.length === 0) {
+		console.error('No form answer found or no files associated');
+		return;
+	}
+
+	const relation = formAnswer.value_files.find((file: FileRelation) => file.directus_files_id === item?.directus_files_id);
+
+	if (!relation) {
+		console.error('Relation ID not found for file:', item?.directus_files_id);
+		return;
+	}
+
+	const response = (await formAnswersHelper.updateFormAnswers(id, {
+		id: id,
+		value_files: { delete: [relation.id] },
+	})) as FormAnswer;
+
+	if (response) {
+		onChange(id, value ? value?.filter((file: any) => file.directus_files_id !== item?.directus_files_id) : [], custom_type);
+	}
+}
+
 const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offlineMode, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; offlineMode?: boolean; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
@@ -117,30 +157,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 					onChange(id, value ? value?.filter((file: any) => file.directus_files_id !== item?.directus_files_id) : [], custom_type);
 					return;
 				}
-				const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
-					fields: ['id', 'value_files.id', 'value_files.directus_files_id'],
-				})) as FormAnswer;
-
-				if (!formAnswer?.value_files || formAnswer.value_files.length === 0) {
-					console.error('No form answer found or no files associated');
-					return;
-				}
-
-				const relation = formAnswer.value_files.find((file: FileRelation) => file.directus_files_id === item?.directus_files_id);
-
-				if (!relation) {
-					console.error('Relation ID not found for file:', item?.directus_files_id);
-					return;
-				}
-
-				const response = (await formAnswersHelper.updateFormAnswers(id, {
-					id: id,
-					value_files: { delete: [relation.id] },
-				})) as FormAnswer;
-
-				if (response) {
-					onChange(id, value ? value?.filter((file: any) => file.directus_files_id !== item?.directus_files_id) : [], custom_type);
-				}
+				await deleteRemoteFormAnswerFile(formAnswersHelper, id, item, value, onChange, custom_type);
 			} else {
 				onChange(id, value ? value?.filter((file: any) => file.directus_files_id !== item?.directus_files_id) : [], custom_type);
 			}

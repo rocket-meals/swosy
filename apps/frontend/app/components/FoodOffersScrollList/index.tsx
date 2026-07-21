@@ -49,6 +49,89 @@ const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
 const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
+/**
+ * Re-fetches the given dates from the server while cached data is already
+ * shown, updating state only if the server data actually changed (via hash
+ * comparison), and manages the "offline hint" timer/flag around the request.
+ */
+async function refreshFoodOffersInBackground(
+	datesToLoad: string[],
+	loadDay: (date: string) => Promise<DayData>,
+	dayHashesRef: React.MutableRefObject<Record<string, string>>,
+	serverLoadingTimerRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
+	setDays: React.Dispatch<React.SetStateAction<DayData[]>>,
+	updateCache: (newDays: DayData[]) => void,
+	setServerLoading: React.Dispatch<React.SetStateAction<boolean>>,
+	setIsOffline: React.Dispatch<React.SetStateAction<boolean>>,
+): Promise<void> {
+	setServerLoading(true);
+	setIsOffline(false);
+	// Start a 5-second timer; if server fetch hasn't finished, show offline hint
+	serverLoadingTimerRef.current = setTimeout(() => {
+		setIsOffline(true);
+	}, 5000);
+	try {
+		const serverDays: DayData[] = [];
+		let anyChanged = false;
+		for (const date of datesToLoad) {
+			const day = await loadDay(date);
+			serverDays.push(day);
+			const serverHash = computeFoodOffersHash(day.offers);
+			const cachedHash = dayHashesRef.current[date] || '';
+			if (serverHash !== cachedHash) {
+				anyChanged = true;
+			}
+			dayHashesRef.current[date] = serverHash;
+		}
+
+		if (anyChanged) {
+			setDays(serverDays);
+			updateCache(serverDays);
+		}
+		// Server responded successfully – clear offline hint
+		setIsOffline(false);
+	} catch (e) {
+		// Network error / offline – keep showing cached data
+		console.error('Error fetching food offers from server, keeping cached data', e);
+		setIsOffline(true);
+	} finally {
+		if (serverLoadingTimerRef.current) {
+			clearTimeout(serverLoadingTimerRef.current);
+			serverLoadingTimerRef.current = null;
+		}
+		setServerLoading(false);
+	}
+}
+
+/**
+ * Loads the given dates fully from the server (no cache available yet),
+ * showing the main loading spinner for the duration of the request.
+ */
+async function loadFoodOffersFullyFresh(
+	datesToLoad: string[],
+	loadDay: (date: string) => Promise<DayData>,
+	setDays: React.Dispatch<React.SetStateAction<DayData[]>>,
+	updateCache: (newDays: DayData[]) => void,
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+	setIsOffline: React.Dispatch<React.SetStateAction<boolean>>,
+): Promise<void> {
+	setLoading(true);
+	try {
+		const loaded: DayData[] = [];
+		for (const date of datesToLoad) {
+			loaded.push(await loadDay(date));
+		}
+		setDays(loaded);
+		updateCache(loaded);
+	} catch (e) {
+		// Network error / offline with no cache – show empty state
+		console.error('Error fetching food offers (no cache available)', e);
+		setIsOffline(true);
+	} finally {
+		setLoading(false);
+	}
+}
+
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -317,60 +400,19 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				setLoading(false);
 
 				// Step 2: Fetch from server in background and update if data changed
-				setServerLoading(true);
-				setIsOffline(false);
-				// Start a 5-second timer; if server fetch hasn't finished, show offline hint
-				serverLoadingTimerRef.current = setTimeout(() => {
-					setIsOffline(true);
-				}, 5000);
-				try {
-					const serverDays: DayData[] = [];
-					let anyChanged = false;
-					for (const date of datesToLoad) {
-						const day = await loadDay(date);
-						serverDays.push(day);
-						const serverHash = computeFoodOffersHash(day.offers);
-						const cachedHash = dayHashesRef.current[date] || '';
-						if (serverHash !== cachedHash) {
-							anyChanged = true;
-						}
-						dayHashesRef.current[date] = serverHash;
-					}
-
-					if (anyChanged) {
-						setDays(serverDays);
-						updateCache(serverDays);
-					}
-					// Server responded successfully – clear offline hint
-					setIsOffline(false);
-				} catch (e) {
-					// Network error / offline – keep showing cached data
-					console.error('Error fetching food offers from server, keeping cached data', e);
-					setIsOffline(true);
-				} finally {
-					if (serverLoadingTimerRef.current) {
-						clearTimeout(serverLoadingTimerRef.current);
-						serverLoadingTimerRef.current = null;
-					}
-					setServerLoading(false);
-				}
+				await refreshFoodOffersInBackground(
+					datesToLoad,
+					loadDay,
+					dayHashesRef,
+					serverLoadingTimerRef,
+					setDays,
+					updateCache,
+					setServerLoading,
+					setIsOffline
+				);
 			} else {
 				// No cached data, do a full load with loading spinner
-				setLoading(true);
-				try {
-					const loaded: DayData[] = [];
-					for (const date of datesToLoad) {
-						loaded.push(await loadDay(date));
-					}
-					setDays(loaded);
-					updateCache(loaded);
-				} catch (e) {
-					// Network error / offline with no cache – show empty state
-					console.error('Error fetching food offers (no cache available)', e);
-					setIsOffline(true);
-				} finally {
-					setLoading(false);
-				}
+				await loadFoodOffersFullyFresh(datesToLoad, loadDay, setDays, updateCache, setLoading, setIsOffline);
 			}
 		},
 		[startDate, loadDay, loadCachedDay, cacheKey, updateCache]

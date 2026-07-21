@@ -24,6 +24,47 @@ const makeBackTrigger = (onPress: () => void, color: string) => (triggerProps: o
 	<BackTriggerButton triggerProps={triggerProps} onPress={onPress} color={color} />
 );
 
+/**
+ * Resolves which screen "go back" should navigate to, based on the current
+ * pathname. Returns null when the router's own back-stack should be used
+ * instead (`router.back()`).
+ */
+function resolveGoBackTarget(pathname: string, loggedIn: boolean, canGoBack: boolean): string | null {
+	if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {
+		return `/${AppScreens.FOOD_OFFERS}`;
+	} else if (pathname.includes(`/${AppScreens.HOUSING}/details`)) {
+		return `/${AppScreens.HOUSING}`;
+	} else if (pathname.includes(`/${AppScreens.STATISTICS}`)) {
+		return `/${AppScreens.MANAGEMENT}`;
+	} else if (pathname.includes(`/${AppScreens.SUPPORT_TICKET}`)) {
+		return `/${AppScreens.SUPPORT_FAQ}`;
+	} else if (pathname.includes(`/${AppScreens.FEEDBACK_SUPPORT}`)) {
+		return `/${AppScreens.SUPPORT_FAQ}`;
+	} else if (pathname.includes(`/${AppScreens.SUPPORT_FAQ}`)) {
+		return `/${AppScreens.SETTINGS}`;
+	} else if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
+		return loggedIn ? `/${AppScreens.SETTINGS}` : `/${AppScreens.LOGIN}`;
+	} else if (pathname.includes(`/${AppScreens.CAMPUS}/details`)) {
+		return `/${AppScreens.CAMPUS}`;
+	} else if (pathname.includes(`/${AppScreens.LIST_WEEK_SCREEN}`)) {
+		return `/${AppScreens.FOOD_PLAN_WEEK}`;
+	} else if (pathname.includes(`/${AppScreens.FOOD_PLAN_WEEK}`)) {
+		return `/${AppScreens.MANAGEMENT}`;
+	} else if (pathname.includes(`/${AppScreens.FORMS}`)) {
+		return `/${AppScreens.FORM_CATEGORIES}`;
+	} else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
+		return `/${AppScreens.MANAGEMENT}`;
+	} else if (pathname.includes('/chats/details')) {
+		return '/chats';
+	} else if (canGoBack) {
+		return null;
+	} else if (loggedIn) {
+		return `/${AppScreens.FOOD_OFFERS}`;
+	} else {
+		return `/${AppScreens.LOGIN}`;
+	}
+}
+
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -33,42 +74,11 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const handleGoback = () => {
-		if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {
-			router.navigate(`/${AppScreens.FOOD_OFFERS}`);
-		} else if (pathname.includes(`/${AppScreens.HOUSING}/details`)) {
-			router.navigate(`/${AppScreens.HOUSING}`);
-		} else if (pathname.includes(`/${AppScreens.STATISTICS}`)) {
-			router.navigate(`/${AppScreens.MANAGEMENT}`);
-		} else if (pathname.includes(`/${AppScreens.SUPPORT_TICKET}`)) {
-			router.navigate(`/${AppScreens.SUPPORT_FAQ}`);
-		} else if (pathname.includes(`/${AppScreens.FEEDBACK_SUPPORT}`)) {
-			router.navigate(`/${AppScreens.SUPPORT_FAQ}`);
-		} else if (pathname.includes(`/${AppScreens.SUPPORT_FAQ}`)) {
-			router.navigate(`/${AppScreens.SETTINGS}`);
-		} else if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
-			if (loggedIn) {
-				router.navigate(`/${AppScreens.SETTINGS}`);
-			} else {
-				router.navigate(`/${AppScreens.LOGIN}`);
-			}
-		} else if (pathname.includes(`/${AppScreens.CAMPUS}/details`)) {
-			router.navigate(`/${AppScreens.CAMPUS}`);
-		} else if (pathname.includes(`/${AppScreens.LIST_WEEK_SCREEN}`)) {
-			router.navigate(`/${AppScreens.FOOD_PLAN_WEEK}`);
-		} else if (pathname.includes(`/${AppScreens.FOOD_PLAN_WEEK}`)) {
-			router.navigate(`/${AppScreens.MANAGEMENT}`);
-		} else if (pathname.includes(`/${AppScreens.FORMS}`)) {
-			router.navigate(`/${AppScreens.FORM_CATEGORIES}`);
-                } else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
-                        router.navigate(`/${AppScreens.MANAGEMENT}`);
-                } else if (pathname.includes('/chats/details')) {
-                        router.navigate('/chats');
-                } else if (router.canGoBack()) {
-                        router.back();
-                } else if (loggedIn) {
-			router.navigate(`/${AppScreens.FOOD_OFFERS}`);
+		const target = resolveGoBackTarget(pathname, loggedIn, router.canGoBack());
+		if (target) {
+			router.navigate(target);
 		} else {
-			router.navigate(`/${AppScreens.LOGIN}`);
+			router.back();
 		}
 	};
 
