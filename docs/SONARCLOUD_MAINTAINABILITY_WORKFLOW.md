@@ -80,15 +80,17 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 | 2026-07-20 | Refactor this code to not use nested template literals. | 10 von 10 (innere Literale ohne Interpolation → normale Strings; sonst in Variable extrahiert) | #3953 |
 | 2026-07-20 | Remove this useless assignment to variable "X". | 97 von 97 (ungenutzte useState-Werte per Array-Elision, tote Deklarationen/Handler samt ungenutzt gewordener Imports entfernt; Seiteneffekt-Aufrufe als nacktes `await` behalten) | #3958 |
 | 2026-07-20 | useState call is not destructured into value + setter pair | 18 von 18 (10x Array-Elision aus #3958 zurück zu benanntem `[x, setX]`-Paar mit `NOSONAR`-Kommentar — Kommentar entfernen, sobald die Variable genutzt wird; 8x Setter-Umbenennung: 6x Tippfehler `setAmimationJson` → `setAnimationJson`, 2x `set...State`-Suffix in `useLanguage.ts`) | – |
+| 2026-07-21 | Add an explicit return statement at the end of the function. | 20 von 20 (nur Shell-Skripte; `return $?` als letzte Anweisung ergänzt, damit der bisherige implizite Exit-Code jeder Funktion unverändert bleibt — keine Semantikänderung) | – |
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
-**Übersprungen (Stand 2026-07-20, individuelle Refactorings statt mechanischer Fixes):**
-„Cognitive Complexity" (113x), „Move this component definition out of the parent
+**Übersprungen (Stand 2026-07-21, individuelle Refactorings statt mechanischer Fixes):**
+„Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
 (39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
-should be last" (20x, ändert Aufrufer), „Add an explicit return" (20x),
-`await` auf Non-Promise (16x), Parameter-Reihenfolge (16x).
+should be last" (20x, ändert Aufrufer), `await` auf Non-Promise (16x, Prüfung pro
+Stelle nötig), Parameter-Reihenfolge (16x, ausschließlich `hashHelper.ts` — Reihenfolge
+könnte algorithmisch beabsichtigt sein, braucht manuelle Prüfung).
 Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
 
 ## Hinweise
