@@ -25,6 +25,42 @@ describe('NumberHelper.formatNumber', () => {
   });
 });
 
+describe('NumberHelper.insertThousandsSeparators', () => {
+  // SonarCloud reliability rule (regex ReDoS): the previous implementation used the
+  // `\B(?=(\d{3})+(?!\d))` lookahead regex, which SonarCloud flagged as having
+  // super-linear runtime due to backtracking. It was replaced by a plain, regex-free
+  // loop. These tests verify the replacement is both behaviorally equivalent and fast.
+  it('groups digits in blocks of three from the right', () => {
+    expect(NumberHelper.insertThousandsSeparators('1', ',')).toBe('1');
+    expect(NumberHelper.insertThousandsSeparators('123', ',')).toBe('123');
+    expect(NumberHelper.insertThousandsSeparators('1234', ',')).toBe('1,234');
+    expect(NumberHelper.insertThousandsSeparators('1234567', ',')).toBe('1,234,567');
+  });
+
+  it('keeps a leading minus sign in front of the first digit group', () => {
+    expect(NumberHelper.insertThousandsSeparators('-1234567', ',')).toBe('-1,234,567');
+    expect(NumberHelper.insertThousandsSeparators('-123', ',')).toBe('-123');
+  });
+
+  it('supports arbitrary separator strings', () => {
+    expect(NumberHelper.insertThousandsSeparators('1234567', '.')).toBe('1.234.567');
+  });
+
+  it('handles empty input without throwing', () => {
+    expect(NumberHelper.insertThousandsSeparators('', ',')).toBe('');
+  });
+
+  it('stays fast (no super-linear backtracking) for very long digit strings', () => {
+    const longDigits = '9'.repeat(200_000);
+    const start = Date.now();
+    const result = NumberHelper.insertThousandsSeparators(longDigits, ',');
+    const durationMs = Date.now() - start;
+
+    expect(result.replace(/,/g, '')).toBe(longDigits);
+    expect(durationMs).toBeLessThan(500);
+  });
+});
+
 describe('NumberHelper.formatCompact', () => {
   it('returns the number as string when below 1000', () => {
     expect(NumberHelper.formatCompact(0)).toBe('0');

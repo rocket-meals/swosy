@@ -17,24 +17,8 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt, StringHelper } from 'repo-depkit-common';
-
-const extractTextAndLink = (description: string) => {
-	// Remove unintended spaces between `]` and `(`
-	const cleanedDescription = StringHelper.replaceAllWithOptions({ str: description, find: String.raw`]\s+\(`, replace: '](' });
-
-	const regex = /\[(.*?)\]\((.*?)\)/g;
-	const match = regex.exec(cleanedDescription);
-
-	if (match) {
-		const label = match[1]; // The text inside the square brackets
-		const link = match[2]; // The URL inside the parentheses
-		const textWithoutLinkAndLabel = cleanedDescription.replace(match[0], '').trim(); // Remove the entire match
-		return { text: textWithoutLinkAndLabel, label, link };
-	}
-
-	return { text: description, label: '', link: null };
-};
+import { CollectibleAt } from 'repo-depkit-common';
+import { PARSE_MARKDOWN_REGEX, extractTextAndLink } from './markdownHelpers';
 
 const TimetableScreen = () => {
 	useSetPageTitle(TranslationKeys.course_timetable);
@@ -99,8 +83,7 @@ const TimetableScreen = () => {
 	};
 
 	const parseMarkdown = (text: string) => {
-		const regex = /(\*\*.*?\*\*|\*.*?\*|\[.*?\]\(.*?\))/g;
-		const parts = text?.split(regex);
+		const parts = text?.split(PARSE_MARKDOWN_REGEX);
 
 		return parts?.map((part, index) => {
 			if (part?.startsWith('**') && part?.endsWith('**')) {
