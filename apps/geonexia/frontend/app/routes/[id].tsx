@@ -91,6 +91,66 @@ function buildAggregatedFeatures(featureMap: Record<string, MapFeatureInfo[]>): 
 	return aggregated;
 }
 
+// Queries tile features for a list of hex cell ids, warning (and falling back
+// to an empty feature list) for any cell whose query fails. `isCancelled` is
+// polled between requests so an in-flight query loop can be abandoned early.
+async function queryFeaturesForHexTiles(
+	hexIds: string[],
+	isCancelled: () => boolean,
+	warnLabel: string,
+): Promise<Record<string, MapFeatureInfo[]>> {
+	const featureMap: Record<string, MapFeatureInfo[]> = {};
+	for (const hexId of hexIds) {
+		if (isCancelled()) return featureMap;
+		try {
+			const features = await queryTileFeaturesForHexCell(
+				hexId,
+				undefined,
+				{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
+			);
+			featureMap[hexId] = features;
+		} catch (err) {
+			console.warn(`[RouteDetailScreen] Failed to query features for ${warnLabel}`, hexId, err);
+			featureMap[hexId] = [];
+		}
+	}
+	return featureMap;
+}
+
+// Computes the hex tiles enclosed by the route's loop: builds a closed ring
+// from the ordered tile center points and fills it with polygonToCells, then
+// excludes the route tiles themselves. See the call site for why this approach
+// (rather than cellsToMultiPolygon + polygonToCells) is needed.
+function computeEnclosedTilesForRoute(route: SavedRoute): string[] {
+	const tiles: string[] = [];
+	try {
+		const firstTile = route.hexTiles[0];
+		const lastTile = route.hexTiles[route.hexTiles.length - 1];
+		if (firstTile && lastTile && route.hexTiles.length >= 3) {
+			const res = getResolution(firstTile);
+
+			// Check loop closure: first and last tiles must be adjacent (neighbors).
+			if (areNeighborCells(firstTile, lastTile)) {
+				// Build closed ring from ordered tile center points [lat, lng]
+				const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
+				ring.push(ring[0]); // close the ring
+
+				// Fill the polygon interior with H3 cells, then exclude the route tiles
+				const filledCells = polygonToCells([ring], res, false);
+				const routeSet = new Set(route.hexTiles);
+				for (const cell of filledCells) {
+					if (!routeSet.has(cell)) {
+						tiles.push(cell);
+					}
+				}
+			}
+		}
+	} catch (err) {
+		console.warn('[RouteDetailScreen] Failed to compute enclosed tiles:', err);
+	}
+	return tiles;
+}
+
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
 		weekday: 'long',
@@ -648,21 +708,7 @@ export default function RouteDetailScreen() {
 			setFeaturesLoading(true);
 
 			// 1. Build hex tile → features dict
-			const featureMap: Record<string, MapFeatureInfo[]> = {};
-			for (const hexId of route.hexTiles) {
-				if (cancelled) return;
-				try {
-					const features = await queryTileFeaturesForHexCell(
-						hexId,
-						undefined,
-						{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
-					);
-					featureMap[hexId] = features;
-				} catch (err) {
-					console.warn('[RouteDetailScreen] Failed to query features for hex tile', hexId, err);
-					featureMap[hexId] = [];
-				}
-			}
+			const featureMap = await queryFeaturesForHexTiles(route.hexTiles, () => cancelled, 'hex tile');
 
 			if (cancelled) return;
 			setHexTileFeatureMap(featureMap);
@@ -695,37 +741,10 @@ export default function RouteDetailScreen() {
 			if (route.enclosedTiles !== undefined) {
 				tiles = route.enclosedTiles;
 			} else {
-				// 1. Compute enclosed tiles using the same algorithm as the activity end screen:
-				//    build a polygon from the ordered tile center points and fill it with
-				//    polygonToCells.  cellsToMultiPolygon + polygonToCells does NOT work here
-				//    because for a ring of tiles it produces a donut, and filling a donut just
-				//    returns the ring tiles themselves (leaving 0 enclosed cells after exclusion).
-				tiles = [];
-				try {
-					const firstTile = route.hexTiles[0];
-					const lastTile = route.hexTiles[route.hexTiles.length - 1];
-					if (firstTile && lastTile && route.hexTiles.length >= 3) {
-						const res = getResolution(firstTile);
-
-						// Check loop closure: first and last tiles must be adjacent (neighbors).
-						if (areNeighborCells(firstTile, lastTile)) {
-							// Build closed ring from ordered tile center points [lat, lng]
-							const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
-							ring.push(ring[0]); // close the ring
-
-							// Fill the polygon interior with H3 cells, then exclude the route tiles
-							const filledCells = polygonToCells([ring], res, false);
-							const routeSet = new Set(route.hexTiles);
-							for (const cell of filledCells) {
-								if (!routeSet.has(cell)) {
-									tiles.push(cell);
-								}
-							}
-						}
-					}
-				} catch (err) {
-					console.warn('[RouteDetailScreen] Failed to compute enclosed tiles:', err);
-				}
+				// 1. Compute enclosed tiles using the same algorithm as the activity end screen
+				//    (see computeEnclosedTilesForRoute for why cellsToMultiPolygon + polygonToCells
+				//    does not work here).
+				tiles = computeEnclosedTilesForRoute(route);
 
 				if (cancelled) return;
 
@@ -754,21 +773,7 @@ export default function RouteDetailScreen() {
 			setEnclosedFeaturesLoading(true);
 
 			// 2. Query features for each enclosed tile
-			const featureMap: Record<string, MapFeatureInfo[]> = {};
-			for (const hexId of tiles) {
-				if (cancelled) return;
-				try {
-					const features = await queryTileFeaturesForHexCell(
-						hexId,
-						undefined,
-						{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
-					);
-					featureMap[hexId] = features;
-				} catch (err) {
-					console.warn('[RouteDetailScreen] Failed to query features for enclosed tile', hexId, err);
-					featureMap[hexId] = [];
-				}
-			}
+			const featureMap = await queryFeaturesForHexTiles(tiles, () => cancelled, 'enclosed tile');
 
 			if (cancelled) return;
 

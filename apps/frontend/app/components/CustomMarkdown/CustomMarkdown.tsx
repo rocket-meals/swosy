@@ -19,24 +19,129 @@ const CONTENT_PATTERNS = {
 	heading: /^#{1,3}\s*(.*)$/,
 };
 
+// Flush the buffered paragraph lines into the current stack frame's items.
+// Returns the (always empty) replacement paragraph buffer.
+const flushParagraph = (
+	paragraph: Array<{ text: string; indent: number }>,
+	targetItems: any[],
+): Array<{ text: string; indent: number }> => {
+	if (paragraph.length) {
+		const minIndent = Math.min(...paragraph.map(item => item.indent));
+		const textContent = paragraph.map(item => item.text).join('\n');
+		targetItems.push({
+			type: 'text',
+			content: textContent,
+			indent: Number.isFinite(minIndent) ? minIndent : 0,
+		});
+	}
+	return [];
+};
+
+// Look ahead from fromIndex for the next non-empty line and report whether it is indented.
+const computeStartCollapsed = (lines: string[], fromIndex: number): boolean => {
+	for (let lookahead = fromIndex; lookahead < lines.length; lookahead += 1) {
+		const lookLine = lines[lookahead];
+		if (lookLine.trim() === '') {
+			continue;
+		}
+		const lookNormalized = StringHelper.replaceAllLiteralWithOptions({ str: lookLine, find: '\t', replace: '    ' });
+		const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
+		return lookIndent > 0;
+	}
+	return false;
+};
+
+// Apply a matched heading line to the section stack (push/pop levels, open collapsibles).
+const applyHeadingToStack = (
+	stack: Array<{ level: number; items: any[] }>,
+	lines: string[],
+	currentIndex: number,
+	headingMatch: RegExpExecArray,
+): void => {
+	const level = headingMatch[0].match(/#/g)?.length || 1;
+	const headerText = headingMatch[1].trim();
+
+	if (level === 1) {
+		while (stack.length > 1) {
+			stack.pop();
+		}
+
+		stack.at(-1)!.items.push({
+			type: 'heading',
+			content: headerText,
+			level,
+		});
+		return;
+	}
+
+	while (stack.length > 1 && stack.at(-1)!.level >= level) {
+		stack.pop();
+	}
+
+	const startCollapsed = computeStartCollapsed(lines, currentIndex + 1);
+
+	const newSection = {
+		type: 'collapsible',
+		header: headerText,
+		items: [],
+		level,
+		startCollapsed,
+	};
+
+	stack.at(-1)!.items.push(newSection);
+	stack.push({ level, items: newSection.items });
+};
+
+// Try to match the line against the inline content patterns (image/email/location/link).
+const matchInlineContentItem = (trimmedForMatch: string, indentLength: number): any | null => {
+	const imageMatch = CONTENT_PATTERNS.image.exec(trimmedForMatch);
+	if (imageMatch) {
+		return {
+			type: 'image',
+			altText: imageMatch[1] || '',
+			url: imageMatch[2] || '',
+			indent: indentLength,
+		};
+	}
+
+	const emailMatch = CONTENT_PATTERNS.email.exec(trimmedForMatch);
+	if (emailMatch) {
+		return {
+			type: 'email',
+			displayText: emailMatch[1],
+			email: emailMatch[2],
+			indent: indentLength,
+		};
+	}
+
+	const locationMatch = CONTENT_PATTERNS.location.exec(trimmedForMatch);
+	if (locationMatch) {
+		return {
+			type: 'location',
+			displayText: locationMatch[1],
+			url: locationMatch[2],
+			indent: indentLength,
+		};
+	}
+
+	const linkMatch = CONTENT_PATTERNS.link.exec(trimmedForMatch);
+	if (linkMatch) {
+		return {
+			type: 'link',
+			displayText: linkMatch[1],
+			url: linkMatch[2],
+			indent: indentLength,
+		};
+	}
+
+	return null;
+};
+
 // Process markdown content into a structured format
 const processMarkdownContent = (lines: string[]) => {
 	const result: any[] = [];
 	const stack: Array<{ level: number; items: any[] }> = [{ level: 0, items: result }];
 	let currentParagraph: Array<{ text: string; indent: number }> = [];
-
-	const flushTextContent = () => {
-		if (currentParagraph.length) {
-			const minIndent = Math.min(...currentParagraph.map(item => item.indent));
-			const textContent = currentParagraph.map(item => item.text).join('\n');
-			stack.at(-1)!.items.push({
-				type: 'text',
-				content: textContent,
-				indent: Number.isFinite(minIndent) ? minIndent : 0,
-			});
-			currentParagraph = [];
-		}
-	};
 
 	for (let i = 0; i < lines.length; i += 1) {
 		const line = lines[i];
@@ -46,106 +151,23 @@ const processMarkdownContent = (lines: string[]) => {
 
 		const headingMatch = CONTENT_PATTERNS.heading.exec(trimmedLine);
 		if (headingMatch) {
-			flushTextContent();
-
-			const level = headingMatch[0].match(/#/g)?.length || 1;
-			const headerText = headingMatch[1].trim();
-
-			if (level === 1) {
-				while (stack.length > 1) {
-					stack.pop();
-				}
-
-				stack.at(-1)!.items.push({
-					type: 'heading',
-					content: headerText,
-					level,
-				});
-				continue;
-			}
-
-			while (stack.length > 1 && stack.at(-1)!.level >= level) {
-				stack.pop();
-			}
-
-			let startCollapsed = false;
-			for (let lookahead = i + 1; lookahead < lines.length; lookahead += 1) {
-				const lookLine = lines[lookahead];
-				if (lookLine.trim() === '') {
-					continue;
-				}
-				const lookNormalized = StringHelper.replaceAllLiteralWithOptions({ str: lookLine, find: '\t', replace: '    ' });
-				const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
-				startCollapsed = lookIndent > 0;
-				break;
-			}
-
-			const newSection = {
-				type: 'collapsible',
-				header: headerText,
-				items: [],
-				level,
-				startCollapsed,
-			};
-
-			stack.at(-1)!.items.push(newSection);
-			stack.push({ level, items: newSection.items });
+			currentParagraph = flushParagraph(currentParagraph, stack.at(-1)!.items);
+			applyHeadingToStack(stack, lines, i, headingMatch);
 			continue;
 		}
 
 		if (trimmedLine === '') {
-			flushTextContent();
+			currentParagraph = flushParagraph(currentParagraph, stack.at(-1)!.items);
 			stack.at(-1)!.items.push({ type: 'emptyLine' });
 			continue;
 		}
 
 		const trimmedForMatch = trimmedLine;
 
-		if (CONTENT_PATTERNS.image.test(trimmedForMatch)) {
-			flushTextContent();
-			const match = CONTENT_PATTERNS.image.exec(trimmedForMatch);
-			stack.at(-1)!.items.push({
-				type: 'image',
-				altText: match?.[1] || '',
-				url: match?.[2] || '',
-				indent: indentLength,
-			});
-			continue;
-		}
-
-		if (CONTENT_PATTERNS.email.test(trimmedForMatch)) {
-			flushTextContent();
-			const match = CONTENT_PATTERNS.email.exec(trimmedForMatch);
-			stack.at(-1)!.items.push({
-				type: 'email',
-				displayText: match?.[1],
-				email: match?.[2],
-				indent: indentLength,
-			});
-			continue;
-		}
-
-		if (CONTENT_PATTERNS.location.test(trimmedForMatch)) {
-			flushTextContent();
-			const match = CONTENT_PATTERNS.location.exec(trimmedForMatch);
-			stack.at(-1)!.items.push({
-				type: 'location',
-				displayText: match?.[1],
-				url: match?.[2],
-				indent: indentLength,
-			});
-			continue;
-		}
-
-		if (CONTENT_PATTERNS.link.test(trimmedForMatch)) {
-			flushTextContent();
-			const match = CONTENT_PATTERNS.link.exec(trimmedForMatch);
-			stack.at(-1)!.items.push({
-				type: 'link',
-				displayText: match?.[1],
-				url: match?.[2],
-				indent: indentLength,
-			});
+		const inlineItem = matchInlineContentItem(trimmedForMatch, indentLength);
+		if (inlineItem) {
+			currentParagraph = flushParagraph(currentParagraph, stack.at(-1)!.items);
+			stack.at(-1)!.items.push(inlineItem);
 			continue;
 		}
 
@@ -155,7 +177,7 @@ const processMarkdownContent = (lines: string[]) => {
 		});
 	}
 
-	flushTextContent();
+	flushParagraph(currentParagraph, stack.at(-1)!.items);
 	return result;
 };
 

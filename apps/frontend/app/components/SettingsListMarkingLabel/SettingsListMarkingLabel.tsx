@@ -49,6 +49,35 @@ const makeMarkingLabelTrigger = (props: Readonly<{
 	size: number;
 }>) => (triggerProps: object) => <MarkingLabelTrigger triggerProps={triggerProps} {...props} />;
 
+const buildUpdatedProfileData = (profile: any, ownMarking: any, like: boolean, markingId: any) => {
+	const likeStats = ownMarking?.like === like ? null : like;
+	const updatedMarking = { ...ownMarking, like: likeStats };
+
+	const profileData = { ...profile };
+	let markingFound = false;
+
+	profileData?.markings.forEach((profileMarkings: any, index: number) => {
+		if (profileMarkings.markings_id === updatedMarking?.markings_id) {
+			markingFound = true;
+			if (updatedMarking?.like === null) {
+				profileData.markings.splice(index, 1);
+			} else {
+				profileData.markings[index] = updatedMarking;
+			}
+		}
+	});
+
+	if (!markingFound) {
+		profileData.markings.push({
+			...updatedMarking,
+			markings_id: markingId,
+			profiles_id: profileData?.id,
+		});
+	}
+
+	return profileData;
+};
+
 const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	markingId,
 	handleMenuSheet,
@@ -115,66 +144,35 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		}
 	};
 
+	const setLikeDislikeLoading = (like: boolean, value: boolean) => {
+		if (like) {
+			setLikeLoading(value);
+		} else {
+			setDislikeLoading(value);
+		}
+	};
+
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
-			if (like) {
-				setLikeLoading(true);
-			} else {
-				setDislikeLoading(true);
-			}
+			setLikeDislikeLoading(like, true);
 			if (isAnonymousUser) {
 				handleAnonymousMarking(like);
-				if (like) {
-					setLikeLoading(false);
-				} else {
-					setDislikeLoading(false);
-				}
+				setLikeDislikeLoading(like, false);
 			} else {
 				try {
-					const likeStats = ownMarking?.like === like ? null : like;
-					const updatedMarking = { ...ownMarking, like: likeStats };
-
-					const profileData = { ...profile };
-					let markingFound = false;
-
-					profileData?.markings.forEach((profileMarkings: any, index: number) => {
-						if (profileMarkings.markings_id === updatedMarking?.markings_id) {
-							markingFound = true;
-							if (updatedMarking?.like === null) {
-								profileData.markings.splice(index, 1);
-							} else {
-								profileData.markings[index] = updatedMarking;
-							}
-						}
-					});
-
-					if (!markingFound) {
-						profileData.markings.push({
-							...updatedMarking,
-							markings_id: markingId,
-							profiles_id: profileData?.id,
-						});
-					}
+					const profileData = buildUpdatedProfileData(profile, ownMarking, like, markingId);
 
 					dispatch({ type: UPDATE_PROFILE, payload: profileData });
 
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
 						fetchProfile();
-						if (like) {
-							setLikeLoading(false);
-						} else {
-							setDislikeLoading(false);
-						}
+						setLikeDislikeLoading(like, false);
 					}
 				} catch (error) {
 					console.error('Error updating marking:', error);
 				} finally {
-					if (like) {
-						setLikeLoading(false);
-					} else {
-						setDislikeLoading(false);
-					}
+					setLikeDislikeLoading(like, false);
 				}
 			}
 		},

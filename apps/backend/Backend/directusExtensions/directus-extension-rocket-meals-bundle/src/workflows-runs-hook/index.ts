@@ -125,6 +125,81 @@ function getDictWorkflowIdToWorkflowRuns(workflowRuns: Partial<DatabaseTypes.Wor
   return dictWorkflowIdToWorkflowRuns;
 }
 
+async function ensureAllWorkflowsExist(workflowIds: string[], myDatabaseHelper: MyDatabaseHelper): Promise<void> {
+  for (let workflowId of workflowIds) {
+    try {
+      await createWorkflowIfNotExisting(workflowId, myDatabaseHelper);
+    } catch (err: any) {
+      console.error(err);
+      throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot find or create workflow with id: ' + workflowId);
+    }
+  }
+}
+
+async function ensureAllWorkflowsAreEnabled(workflowIds: string[], myDatabaseHelper: MyDatabaseHelper): Promise<void> {
+  for (let workflowId of workflowIds) {
+    console.log('Checking if workflow with id: ' + workflowId + ' is enabled');
+    let workflow: DatabaseTypes.Workflows | undefined = undefined;
+    try {
+      workflow = await myDatabaseHelper.getWorkflowsHelper().readOne(workflowId);
+    } catch (err: any) {
+      console.error(err);
+      throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot read workflow with id: ' + workflowId);
+    }
+    if (!workflow) {
+      throw new Error('Workflow with id: ' + workflowId + ' not found');
+    }
+    let enabled = workflow?.enabled;
+    if (enabled === false) {
+      throw new Error('Workflow with id: ' + workflowId + ' is not enabled');
+    }
+  }
+}
+
+function ensureAllWorkflowsAreRegistered(workflowIds: string[]): void {
+  let notRegisteredWorkflowIds = workflowIds.filter(workflowId => !WorkflowScheduler.getRegisteredWorkflow(workflowId));
+  if (notRegisteredWorkflowIds.length > 0) {
+    throw new Error('-- No WorkflowRunJobInterface found for workflowIds: ' + notRegisteredWorkflowIds.join(', '));
+  }
+}
+
+async function handleWorkflowRunsWantToRunForWorkflowId(
+  workflowId: string,
+  workflowRuns: Partial<DatabaseTypes.WorkflowsRuns>[],
+  input: Partial<DatabaseTypes.WorkflowsRuns>,
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<void> {
+  console.log('Running workflowId: ' + workflowId);
+  let alreadyRunningWorkflowRuns = await getAlreadyRunningWorkflowruns(workflowId, myDatabaseHelper);
+  let workflowRunJobInterface = WorkflowScheduler.getRegisteredWorkflow(workflowId);
+  if (!workflowRunJobInterface) {
+    // never the case, because we checked before, but just to be sure
+    throw new Error('-- No WorkflowRunJobInterface found for workflowId: ' + workflowId);
+  } else {
+    console.log('Handling workflow_runs for workflowId: ' + workflowId);
+    let result = workflowRunJobInterface.handleWorkflowRunsWantToRun(input, workflowRuns, alreadyRunningWorkflowRuns);
+    if (result.errorMessage) {
+      console.error('Error while setting workflow_runs to running: ' + result.errorMessage);
+      throw new Error('Error while setting workflow_runs to running: ' + result.errorMessage);
+    }
+  }
+}
+
+async function handleWorkflowRunsWantToRunForAllWorkflows(
+  dictWorkflowIdToWorkflowRuns: {
+    [p: string]: Partial<DatabaseTypes.WorkflowsRuns>[];
+  },
+  input: Partial<DatabaseTypes.WorkflowsRuns>,
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<void> {
+  for (let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)) {
+    const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
+    if (workflowRuns) {
+      await handleWorkflowRunsWantToRunForWorkflowId(workflowId, workflowRuns, input, myDatabaseHelper);
+    }
+  }
+}
+
 async function modifyInputForCreateOrUpdateWorkflowRunToRunning(
   input: Partial<DatabaseTypes.WorkflowsRuns>,
   dictWorkflowIdToWorkflowRuns: {
@@ -144,58 +219,14 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(
     }
 
     // check if all workflows exist
-    for (let workflowId of workflowIds) {
-      try {
-        await createWorkflowIfNotExisting(workflowId, myDatabaseHelper);
-      } catch (err: any) {
-        console.error(err);
-        throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot find or create workflow with id: ' + workflowId);
-      }
-    }
+    await ensureAllWorkflowsExist(workflowIds, myDatabaseHelper);
 
     // check if all workflows are enabled
-    for (let workflowId of workflowIds) {
-      console.log('Checking if workflow with id: ' + workflowId + ' is enabled');
-      let workflow: DatabaseTypes.Workflows | undefined = undefined;
-      try {
-        workflow = await myDatabaseHelper.getWorkflowsHelper().readOne(workflowId);
-      } catch (err: any) {
-        console.error(err);
-        throw new Error('modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot read workflow with id: ' + workflowId);
-      }
-      if (!workflow) {
-        throw new Error('Workflow with id: ' + workflowId + ' not found');
-      }
-      let enabled = workflow?.enabled;
-      if (enabled === false) {
-        throw new Error('Workflow with id: ' + workflowId + ' is not enabled');
-      }
-    }
+    await ensureAllWorkflowsAreEnabled(workflowIds, myDatabaseHelper);
 
-    let notRegisteredWorkflowIds = workflowIds.filter(workflowId => !WorkflowScheduler.getRegisteredWorkflow(workflowId));
-    if (notRegisteredWorkflowIds.length > 0) {
-      throw new Error('-- No WorkflowRunJobInterface found for workflowIds: ' + notRegisteredWorkflowIds.join(', '));
-    }
+    ensureAllWorkflowsAreRegistered(workflowIds);
 
-    for (let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)) {
-      console.log('Running workflowId: ' + workflowId);
-      const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
-      if (workflowRuns) {
-        let alreadyRunningWorkflowRuns = await getAlreadyRunningWorkflowruns(workflowId, myDatabaseHelper);
-        let workflowRunJobInterface = WorkflowScheduler.getRegisteredWorkflow(workflowId);
-        if (!workflowRunJobInterface) {
-          // never the case, because we checked before, but just to be sure
-          throw new Error('-- No WorkflowRunJobInterface found for workflowId: ' + workflowId);
-        } else {
-          console.log('Handling workflow_runs for workflowId: ' + workflowId);
-          let result = workflowRunJobInterface.handleWorkflowRunsWantToRun(input, workflowRuns, alreadyRunningWorkflowRuns);
-          if (result.errorMessage) {
-            console.error('Error while setting workflow_runs to running: ' + result.errorMessage);
-            throw new Error('Error while setting workflow_runs to running: ' + result.errorMessage);
-          }
-        }
-      }
-    }
+    await handleWorkflowRunsWantToRunForAllWorkflows(dictWorkflowIdToWorkflowRuns, input, myDatabaseHelper);
     input.log = input.log || WorkflowRunLogger.createLogRow('Workflow Run started');
   }
 
@@ -205,6 +236,86 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(
 async function handleActionWorkflowRunUpdatedOrCreated(payload: Partial<DatabaseTypes.WorkflowsRuns>, myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[]): Promise<void> {
   await handleActionRunningCreatedOrUpdatedWorkflow(payload, myDatabaseHelper, keys);
   await handleActionOnUpdateOrCreateIfWorkflowRunShouldBeDeleted(payload, myDatabaseHelper, keys);
+}
+
+function resolveResultLegalState(result: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {
+  let legalStates = Object.values(WORKFLOW_RUN_STATE) as string[];
+  let hasResultLegalState = false;
+  if (
+    !!result.state &&
+    legalStates.includes(result.state) && // check if state is a legal state
+    result.state !== WORKFLOW_RUN_STATE.RUNNING // and not still running
+  ) {
+    hasResultLegalState = true;
+  }
+  if (!hasResultLegalState) {
+    result.state = WORKFLOW_RUN_STATE.FAILED;
+  }
+  return result;
+}
+
+async function runWorkflowRunJob(
+  workflowRun: DatabaseTypes.WorkflowsRuns,
+  workflowRunJobInterface: WorkflowRunJobInterface,
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
+  let result: Partial<DatabaseTypes.WorkflowsRuns> = workflowRun;
+  let logger = new WorkflowRunLogger(workflowRun, myDatabaseHelper);
+  const context = new WorkflowRunContext(workflowRun, myDatabaseHelper, logger);
+  try {
+    //console.log("About to run job for workflowRun: "+workflowRun.id);
+    result = await workflowRunJobInterface.runJob(context);
+  } catch (e: any) {
+    console.log('Error while running workflow: ' + e.message);
+    result = logger.getFinalLogWithStateAndParams({
+      state: WORKFLOW_RUN_STATE.FAILED,
+    });
+  }
+  return result;
+}
+
+async function runAndFinalizeWorkflowRun(
+  workflowRun: DatabaseTypes.WorkflowsRuns,
+  workflowRunJobInterface: WorkflowRunJobInterface,
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<void> {
+  //console.log("-- Running workflowRun: "+workflowRun.id);
+  let date_started = new Date().toISOString();
+  await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
+      primary_key: workflowRun.id,
+      update: {
+          date_started: date_started,
+      }
+  });
+
+  let result = await runWorkflowRunJob(workflowRun, workflowRunJobInterface, myDatabaseHelper);
+  //console.log("WorkflowRun finished: "+workflowRun.id);
+  result = resolveResultLegalState(result);
+  //console.log("Had result legal state: "+hasResultLegalState);
+
+  result.date_started = date_started; // make sure that date_started is not overwritten
+  result.date_finished = new Date().toISOString();
+  result.runtime_in_seconds = Number.parseInt('' + (new Date(result.date_finished).getTime() - new Date(date_started).getTime()) / 1000);
+
+  await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
+    primary_key: workflowRun.id,
+    update: result,
+  });
+}
+
+async function runWorkflowRunsForWorkflowId(
+  workflowId: string,
+  workflowRuns: DatabaseTypes.WorkflowsRuns[],
+  myDatabaseHelper: MyDatabaseHelper
+): Promise<void> {
+  let workflowRunJobInterface = WorkflowScheduler.getRegisteredWorkflow(workflowId);
+  if (!workflowRunJobInterface) {
+    throw new Error('No WorkflowRunJobInterface found for workflowId: ' + workflowId);
+  } else {
+    for (let workflowRun of workflowRuns) {
+      await runAndFinalizeWorkflowRun(workflowRun, workflowRunJobInterface, myDatabaseHelper);
+    }
+  }
 }
 
 async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<DatabaseTypes.WorkflowsRuns>, myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[]): Promise<void> {
@@ -219,57 +330,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Data
     for (let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)) {
       const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
       if (workflowRuns) {
-        let workflowRunJobInterface = WorkflowScheduler.getRegisteredWorkflow(workflowId);
-        if (!workflowRunJobInterface) {
-          throw new Error('No WorkflowRunJobInterface found for workflowId: ' + workflowId);
-        } else {
-          for (let workflowRun of workflowRuns) {
-            //console.log("-- Running workflowRun: "+workflowRun.id);
-            let date_started = new Date().toISOString();
-            await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
-                primary_key: workflowRun.id,
-                update: {
-                    date_started: date_started,
-                }
-            });
-
-            let result: Partial<DatabaseTypes.WorkflowsRuns> = workflowRun;
-            let logger = new WorkflowRunLogger(workflowRun, myDatabaseHelper);
-            const context = new WorkflowRunContext(workflowRun, myDatabaseHelper, logger);
-            try {
-              //console.log("About to run job for workflowRun: "+workflowRun.id);
-              result = await workflowRunJobInterface.runJob(context);
-            } catch (e: any) {
-              console.log('Error while running workflow: ' + e.message);
-              result = logger.getFinalLogWithStateAndParams({
-                state: WORKFLOW_RUN_STATE.FAILED,
-              });
-            }
-            //console.log("WorkflowRun finished: "+workflowRun.id);
-            let legalStates = Object.values(WORKFLOW_RUN_STATE) as string[];
-            let hasResultLegalState = false;
-            if (
-              !!result.state &&
-              legalStates.includes(result.state) && // check if state is a legal state
-              result.state !== WORKFLOW_RUN_STATE.RUNNING // and not still running
-            ) {
-              hasResultLegalState = true;
-            }
-            if (!hasResultLegalState) {
-              result.state = WORKFLOW_RUN_STATE.FAILED;
-            }
-            //console.log("Had result legal state: "+hasResultLegalState);
-
-            result.date_started = date_started; // make sure that date_started is not overwritten
-            result.date_finished = new Date().toISOString();
-            result.runtime_in_seconds = Number.parseInt('' + (new Date(result.date_finished).getTime() - new Date(date_started).getTime()) / 1000);
-
-            await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
-              primary_key: workflowRun.id,
-              update: result,
-            });
-          }
-        }
+        await runWorkflowRunsForWorkflowId(workflowId, workflowRuns, myDatabaseHelper);
       }
     }
   }

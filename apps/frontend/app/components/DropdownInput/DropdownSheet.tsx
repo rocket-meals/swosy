@@ -29,6 +29,108 @@ const ensureStringArray = (options: string[]): string[] => {
   return Array.from(uniqueValues);
 };
 
+type DropdownSheetTheme = ReturnType<typeof useTheme>['theme'];
+
+const renderDeselectRow = (
+  active: boolean,
+  isDisabled: boolean | undefined,
+  primaryColor: string,
+  theme: DropdownSheetTheme,
+  translate: (key: TranslationKeys) => string,
+  handleDeselect: () => void,
+) => {
+  return (
+    <TouchableOpacity
+      key="deselect"
+      style={[styles.optionRow, { backgroundColor: active ? primaryColor : theme.screen.iconBg }]}
+      onPress={handleDeselect}
+      disabled={isDisabled}
+      onPressIn={() => console.log('[DropdownSheet] deselect pressed')}
+    >
+      <Text style={[styles.optionLabel, { color: active ? theme.activeText : theme.screen.text }]}>
+        {translate(TranslationKeys.deselect)}
+      </Text>
+      <MaterialCommunityIcons name={active ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={active ? theme.activeText : theme.screen.icon} />
+    </TouchableOpacity>
+  );
+};
+
+const renderCustomRow = (
+  customSelected: boolean,
+  isDisabled: boolean | undefined,
+  primaryColor: string,
+  theme: DropdownSheetTheme,
+  translate: (key: TranslationKeys) => string,
+  handleSelectCustom: () => void,
+) => {
+  return (
+    <TouchableOpacity
+      key="custom"
+      style={[styles.optionRow, { backgroundColor: customSelected ? primaryColor : theme.screen.iconBg }]}
+      onPress={handleSelectCustom}
+      disabled={isDisabled}
+      onPressIn={() => console.log('[DropdownSheet] select custom pressed')}
+    >
+      <Text style={[styles.optionLabel, { color: customSelected ? theme.activeText : theme.screen.text }]}>
+        {translate(TranslationKeys.enter_custom_value)}
+      </Text>
+      <MaterialCommunityIcons name={customSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={customSelected ? theme.activeText : theme.screen.icon} />
+    </TouchableOpacity>
+  );
+};
+
+const renderCustomInputRow = (
+  customValue: string,
+  error: string | undefined,
+  isDisabled: boolean | undefined,
+  prefix: AffixProps['prefix'],
+  suffix: AffixProps['suffix'],
+  onCustomValueChange: (val: string) => void,
+) => {
+  return (
+    <View key="customInput" style={{ width: '100%', marginBottom: 2 }}>
+      <SingleLineInput
+        id="custom"
+        value={customValue}
+        onChange={(_, val) => {
+          onCustomValueChange(val);
+          console.log('[DropdownSheet] custom input changed to', val);
+        }}
+        error={error || ''}
+        isDisabled={!!isDisabled}
+        custom_type="string"
+        insideBottomSheet
+        prefix={prefix}
+        suffix={suffix}
+        autoFocus
+      />
+    </View>
+  );
+};
+
+const renderOptionRow = (
+  optionValue: string,
+  index: number,
+  isSelected: boolean,
+  isDisabled: boolean | undefined,
+  primaryColor: string,
+  theme: DropdownSheetTheme,
+  handleSelectOption: (option: string) => void,
+) => {
+  return (
+    <TouchableOpacity
+      key={`option-${optionValue}-${index}`}
+      style={[styles.optionRow, { backgroundColor: isSelected ? primaryColor : theme.screen.iconBg }]}
+      onPress={() => handleSelectOption(optionValue)}
+      disabled={isDisabled}
+      onPressIn={() => console.log('[DropdownSheet] option pressed', optionValue)}
+    >
+      <Text style={[styles.optionLabel, { color: isSelected ? theme.activeText : theme.screen.text }]}>{optionValue}</Text>
+      <MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={isSelected ? theme.activeText : theme.screen.icon} />
+    </TouchableOpacity>
+  );
+};
+
 const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allowCustomValues, value, onSelectOption, onSelectCustom, onDeselect, isDisabled, prefix, suffix, error }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
@@ -87,78 +189,27 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
     return rows;
   }, [normalizedOptions, allowCustomValues, customSelected]);
 
+  const handleCustomValueChange = (val: string) => {
+    setCustomValue(val);
+    onSelectCustom(val);
+  };
+
   return (
     <View style={{ gap: 10 }}>
       {listItems.map((item, index) => {
         if (item.kind === 'deselect') {
           const active = !customSelected && value.trim().length === 0;
-          return (
-            <TouchableOpacity
-              key={item.kind}
-              style={[styles.optionRow, { backgroundColor: active ? primaryColor : theme.screen.iconBg }]}
-              onPress={handleDeselect}
-              disabled={isDisabled}
-              onPressIn={() => console.log('[DropdownSheet] deselect pressed')}
-            >
-              <Text style={[styles.optionLabel, { color: active ? theme.activeText : theme.screen.text }]}>
-                {translate(TranslationKeys.deselect)}
-              </Text>
-              <MaterialCommunityIcons name={active ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={active ? theme.activeText : theme.screen.icon} />
-            </TouchableOpacity>
-          );
+          return renderDeselectRow(active, isDisabled, primaryColor, theme, translate, handleDeselect);
         }
         if (item.kind === 'custom') {
-          return (
-            <TouchableOpacity
-              key={item.kind}
-              style={[styles.optionRow, { backgroundColor: customSelected ? primaryColor : theme.screen.iconBg }]}
-              onPress={handleSelectCustom}
-              disabled={isDisabled}
-              onPressIn={() => console.log('[DropdownSheet] select custom pressed')}
-            >
-              <Text style={[styles.optionLabel, { color: customSelected ? theme.activeText : theme.screen.text }]}>
-                {translate(TranslationKeys.enter_custom_value)}
-              </Text>
-              <MaterialCommunityIcons name={customSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={customSelected ? theme.activeText : theme.screen.icon} />
-            </TouchableOpacity>
-          );
+          return renderCustomRow(customSelected, isDisabled, primaryColor, theme, translate, handleSelectCustom);
         }
         if (item.kind === 'customInput') {
-          return (
-            <View key={item.kind} style={{ width: '100%', marginBottom: 2 }}>
-              <SingleLineInput
-                id="custom"
-                value={customValue}
-                onChange={(_, val) => {
-                  setCustomValue(val);
-                  onSelectCustom(val);
-                  console.log('[DropdownSheet] custom input changed to', val);
-                }}
-                error={error || ''}
-                isDisabled={!!isDisabled}
-                custom_type="string"
-                insideBottomSheet
-                prefix={prefix}
-                suffix={suffix}
-                autoFocus
-              />
-            </View>
-          );
+          return renderCustomInputRow(customValue, error, isDisabled, prefix, suffix, handleCustomValueChange);
         }
         // option
         const isSelected = !customSelected && value === item.value;
-        return (
-          <TouchableOpacity
-            key={`option-${item.value}-${index}`}
-            style={[styles.optionRow, { backgroundColor: isSelected ? primaryColor : theme.screen.iconBg }]}
-            onPress={() => handleSelectOption(item.value)}
-            disabled={isDisabled}
-            onPressIn={() => console.log('[DropdownSheet] option pressed', item.value)}
-          >
-            <Text style={[styles.optionLabel, { color: isSelected ? theme.activeText : theme.screen.text }]}>{item.value}</Text>
-            <MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={isSelected ? theme.activeText : theme.screen.icon} />
-          </TouchableOpacity>
-        );
+        return renderOptionRow(item.value, index, isSelected, isDisabled, primaryColor, theme, handleSelectOption);
       })}
     </View>
   );

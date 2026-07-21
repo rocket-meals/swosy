@@ -20,6 +20,115 @@ import { uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/Helper
 import { Buffer } from 'buffer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 
+const resolveDateValueField = (value: any, fieldType: string): Record<string, any> => {
+    let formattedDate: string | null = null;
+    try {
+        if (value) {
+            let dateObj;
+            if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM) {
+                dateObj = parse(value, 'dd.MM.yyyy HH:mm', new Date());
+            } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE) {
+                dateObj = parse(value, 'dd.MM.yyyy', new Date());
+            } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM) {
+                const today = format(new Date(), 'yyyy-MM-dd');
+                dateObj = parse(`${today} ${value}`, 'yyyy-MM-dd HH:mm', new Date());
+            } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP) {
+                dateObj = parse(value, 'dd.MM.yyyy HH:mm:ss', new Date());
+            }
+            if (dateObj && isValid(dateObj)) {
+                formattedDate = format(dateObj, "yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            }
+        }
+    } catch {
+        formattedDate = null;
+    }
+    return { value_date: formattedDate };
+};
+
+const resolveImageValueField = async (value: any, fieldId: string, imageFolderId: string | null): Promise<Record<string, any>> => {
+    if (value?.name) {
+        try {
+            const response = await fetch(value.image);
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const fileData = { name: value.name, type: value.type, buffer: isWeb ? buffer : value.image, edit: true };
+            const fileId = isWeb ? await uploadToDirectus(fileData, imageFolderId) : await uploadToDirectusFromMobile(fileData, imageFolderId);
+            return { value_image: fileId };
+        } catch (uploadError) {
+            console.error('Queue sync: image upload failed for field', fieldId, uploadError);
+            return {};
+        }
+    } else if (value === null || value === undefined) {
+        // Image/signature was cleared — explicitly set to null
+        return { value_image: null };
+    }
+    return {};
+};
+
+const resolveFilesValueField = async (value: any, fieldId: string, filesFolderId: string | null): Promise<Record<string, any>> => {
+    if (Array.isArray(value) && value.length > 0) {
+        try {
+            const newFiles = value.filter((file: any) => !file?.edit);
+            if (newFiles.length > 0) {
+                const uploadedIds = await Promise.all(
+                    newFiles.map(async (file: any) => {
+                        const response = await fetch(file.image);
+                        const arrayBuffer = await response.arrayBuffer();
+                        const buffer = Buffer.from(arrayBuffer);
+                        const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
+                        return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
+                    })
+                );
+                return {
+                    value_files: {
+                        create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
+                    },
+                };
+            }
+            // else: only existing files, no new uploads needed
+            return {};
+        } catch (uploadError) {
+            console.error('Queue sync: file upload failed for field', fieldId, uploadError);
+            return {};
+        }
+    } else {
+        // All files cleared — explicitly set to empty
+        return { value_files: [] };
+    }
+};
+
+const resolveUpdatedValueFields = async (
+    customType: string | undefined,
+    value: any,
+    fieldId: string,
+    fieldType: string,
+    imageFolderId: string | null,
+    filesFolderId: string | null
+): Promise<Record<string, any>> => {
+    if (customType === 'value_string') {
+        return { value_string: value };
+    } else if (customType === 'value_number') {
+        return { value_number: value ? String(value).replace(',', '.') : null };
+    } else if (customType === 'value_boolean') {
+        let booleanValue: boolean | null = null;
+        if (value === 0) {
+            booleanValue = false;
+        } else if (value === 1) {
+            booleanValue = true;
+        }
+        return { value_boolean: booleanValue };
+    } else if (customType === 'value_custom') {
+        return { value_custom: value };
+    } else if (customType === 'value_date') {
+        return resolveDateValueField(value, fieldType);
+    } else if (customType === 'value_image') {
+        return resolveImageValueField(value, fieldId, imageFolderId);
+    } else if (customType === 'value_files') {
+        return resolveFilesValueField(value, fieldId, filesFolderId);
+    }
+    return {};
+};
+
 const Index = () => {
     useSetPageTitle(TranslationKeys.form_queue);
     const { translate } = useLanguage();
@@ -72,91 +181,14 @@ const Index = () => {
                     const { value, custom_type } = formDataEntry;
                     const fieldType = (answer?.form_field as DatabaseTypes.FormFields)?.field_type || '';
 
-                    let updatedValueFields: Record<string, any> = {};
-                    if (custom_type === 'value_string') {
-                        updatedValueFields = { value_string: value };
-                    } else if (custom_type === 'value_number') {
-                        updatedValueFields = { value_number: value ? String(value).replace(',', '.') : null };
-                    } else if (custom_type === 'value_boolean') {
-                        let booleanValue: boolean | null = null;
-                        if (value === 0) {
-                            booleanValue = false;
-                        } else if (value === 1) {
-                            booleanValue = true;
-                        }
-                        updatedValueFields = { value_boolean: booleanValue };
-                    } else if (custom_type === 'value_custom') {
-                        updatedValueFields = { value_custom: value };
-                    } else if (custom_type === 'value_date') {
-                        let formattedDate: string | null = null;
-                        try {
-                            if (value) {
-                                let dateObj;
-                                if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM) {
-                                    dateObj = parse(value, 'dd.MM.yyyy HH:mm', new Date());
-                                } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE) {
-                                    dateObj = parse(value, 'dd.MM.yyyy', new Date());
-                                } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM) {
-                                    const today = format(new Date(), 'yyyy-MM-dd');
-                                    dateObj = parse(`${today} ${value}`, 'yyyy-MM-dd HH:mm', new Date());
-                                } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP) {
-                                    dateObj = parse(value, 'dd.MM.yyyy HH:mm:ss', new Date());
-                                }
-                                if (dateObj && isValid(dateObj)) {
-                                    formattedDate = format(dateObj, "yyyy-MM-dd'T'HH:mm:ss.SSSX");
-                                }
-                            }
-                        } catch {
-                            formattedDate = null;
-                        }
-                        updatedValueFields = { value_date: formattedDate };
-                    } else if (custom_type === 'value_image') {
-                        if (value?.name) {
-                            try {
-                                const response = await fetch(value.image);
-                                const arrayBuffer = await response.arrayBuffer();
-                                const buffer = Buffer.from(arrayBuffer);
-                                const fileData = { name: value.name, type: value.type, buffer: isWeb ? buffer : value.image, edit: true };
-                                const fileId = isWeb ? await uploadToDirectus(fileData, imageFolderId) : await uploadToDirectusFromMobile(fileData, imageFolderId);
-                                updatedValueFields = { value_image: fileId };
-                            } catch (uploadError) {
-                                console.error('Queue sync: image upload failed for field', fieldId, uploadError);
-                                updatedValueFields = {};
-                            }
-                        } else if (value === null || value === undefined) {
-                            // Image/signature was cleared — explicitly set to null
-                            updatedValueFields = { value_image: null };
-                        }
-                    } else if (custom_type === 'value_files') {
-                        if (Array.isArray(value) && value.length > 0) {
-                            try {
-                                const newFiles = value.filter((file: any) => !file?.edit);
-                                if (newFiles.length > 0) {
-                                    const uploadedIds = await Promise.all(
-                                        newFiles.map(async (file: any) => {
-                                            const response = await fetch(file.image);
-                                            const arrayBuffer = await response.arrayBuffer();
-                                            const buffer = Buffer.from(arrayBuffer);
-                                            const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
-                                            return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
-                                        })
-                                    );
-                                    updatedValueFields = {
-                                        value_files: {
-                                            create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
-                                        },
-                                    };
-                                }
-                                // else: only existing files, no new uploads needed
-                            } catch (uploadError) {
-                                console.error('Queue sync: file upload failed for field', fieldId, uploadError);
-                                updatedValueFields = {};
-                            }
-                        } else {
-                            // All files cleared — explicitly set to empty
-                            updatedValueFields = { value_files: [] };
-                        }
-                    }
+                    const updatedValueFields = await resolveUpdatedValueFields(
+                        custom_type,
+                        value,
+                        fieldId,
+                        fieldType,
+                        imageFolderId,
+                        filesFolderId
+                    );
 
                     return { id: fieldId, ...updatedValueFields };
                 })

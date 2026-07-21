@@ -5,6 +5,115 @@ import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { FormImportSyncFormSubmissions } from './FormImportTypes';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
 
+/**
+ * Builds a lookup from a form field's external_import_id to the form field itself.
+ */
+function buildFormFieldExternalImportIdMap(formFields: DatabaseTypes.FormFields[]): {
+  [key: string]: DatabaseTypes.FormFields;
+} {
+  let dictFormFieldExternalImportIdToFormFieldId: {
+    [key: string]: DatabaseTypes.FormFields;
+  } = {};
+  for (let formField of formFields) {
+    let external_import_id = formField.external_import_id;
+    if (external_import_id) {
+      dictFormFieldExternalImportIdToFormFieldId[external_import_id] = formField;
+    }
+  }
+  return dictFormFieldExternalImportIdToFormFieldId;
+}
+
+/**
+ * Maps the passed form answers to the matching form fields (by external_import_id)
+ * so they can be created together with a new form submission.
+ */
+function buildCreateFormAnswers(
+  formAnswers: FormImportSyncFormSubmissions['form_answers'],
+  dictFormFieldExternalImportIdToFormFieldId: { [key: string]: DatabaseTypes.FormFields },
+): Partial<DatabaseTypes.FormAnswers>[] {
+  let createFormAnswers: Partial<DatabaseTypes.FormAnswers>[] = [];
+  // now we need to fill the form answers with the data from the housing contract
+  // iterate over all data fields of the housing contract
+  for (let passedFormAnswer of formAnswers) {
+    let external_import_id = passedFormAnswer.external_import_id;
+    //await logger.appendLog("-- FormAnswer external_import_id: " + external_import_id);
+    let formField = dictFormFieldExternalImportIdToFormFieldId[external_import_id];
+    if (formField) {
+      createFormAnswers.push({
+        ...passedFormAnswer,
+        form_field: formField.id,
+      });
+    }
+  }
+  return createFormAnswers;
+}
+
+/**
+ * Searches for an existing form submission and creates it (together with its form answers)
+ * if it does not exist yet.
+ */
+async function syncFormSubmission(
+  context: WorkflowRunContext,
+  form: DatabaseTypes.Forms,
+  formSubmission: FormImportSyncFormSubmissions,
+  dictFormFieldExternalImportIdToFormFieldId: { [key: string]: DatabaseTypes.FormFields },
+  currentIndexOfFormSubmission: number,
+  amountOfFormSubmissions: number,
+): Promise<void> {
+  let internal_custom_id = formSubmission.internal_custom_id;
+  await context.logger.appendLog('Processing (' + currentIndexOfFormSubmission + '/' + amountOfFormSubmissions + '): ' + internal_custom_id);
+  let searchFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
+    form: form.id,
+    internal_custom_id: internal_custom_id, // identifier for the housing contract for future reference
+  };
+  let foundFormSubmission = await context.myDatabaseHelper.getFormsSubmissionsHelper().findFirstItem(searchFormSubmission);
+  if (!foundFormSubmission) {
+    //await logger.appendLog("- does not exist. Creating.");
+    //await logger.appendLog(JSON.stringify(formSubmission, null, 2));
+    let alias = formSubmission.alias;
+    let createFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
+      form: form.id,
+      internal_custom_id: internal_custom_id, // identifier for the form submission for future reference
+      alias: alias,
+    };
+
+    let createFormAnswers = buildCreateFormAnswers(formSubmission.form_answers, dictFormFieldExternalImportIdToFormFieldId);
+
+    // Set the form answers with provided data
+    createFormSubmission.form_answers = {
+      // @ts-ignore - this way directus will create the relation
+      create: createFormAnswers,
+      // @ts-ignore - this way directus will create the relation
+      update: [],
+      // @ts-ignore - this way directus will create the relation
+      delete: [],
+    };
+
+    await context.myDatabaseHelper.getFormsSubmissionsHelper().createOne(createFormSubmission);
+  } else {
+    //await logger.appendLog("- already exists. Skipping.");
+  }
+}
+
+/**
+ * Iterates over all form submissions and synchronizes each of them with the database.
+ */
+async function syncAllFormSubmissions(
+  context: WorkflowRunContext,
+  form: DatabaseTypes.Forms,
+  formSubmissions: FormImportSyncFormSubmissions[],
+  dictFormFieldExternalImportIdToFormFieldId: { [key: string]: DatabaseTypes.FormFields },
+): Promise<void> {
+  const amountOfFormSubmissions = formSubmissions.length;
+  await context.logger.appendLog('Amount of form submissions: ' + amountOfFormSubmissions);
+  let currentIndexOfFormSubmission = 0;
+  for (let formSubmission of formSubmissions) {
+    currentIndexOfFormSubmission++;
+    await syncFormSubmission(context, form, formSubmission, dictFormFieldExternalImportIdToFormFieldId, currentIndexOfFormSubmission, amountOfFormSubmissions);
+  }
+  await context.logger.appendLog('Finished processing all form submissions.');
+}
+
 export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
   constructor() {
     super();
@@ -62,15 +171,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         let formFields = await context.myDatabaseHelper.getFormsFieldsHelper().findItems({
           form: form.id,
         });
-        let dictFormFieldExternalImportIdToFormFieldId: {
-          [key: string]: DatabaseTypes.FormFields;
-        } = {};
-        for (let formField of formFields) {
-          let external_import_id = formField.external_import_id;
-          if (external_import_id) {
-            dictFormFieldExternalImportIdToFormFieldId[external_import_id] = formField;
-          }
-        }
+        let dictFormFieldExternalImportIdToFormFieldId = buildFormFieldExternalImportIdMap(formFields);
         //await logger.appendLog("Found " + formFields.length + " form fields.");
         //await logger.appendLog("dictFormFieldExternalImportIdToFormFieldId")
         //await logger.appendLog(JSON.stringify(dictFormFieldExternalImportIdToFormFieldId, null, 2));
@@ -78,60 +179,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         // Now we can create the form submissions or search for existing ones
         await context.logger.appendLog('Getting data.');
         let formSubmissions = await this.getData();
-        const amountOfFormSubmissions = formSubmissions.length;
-        await context.logger.appendLog('Amount of form submissions: ' + amountOfFormSubmissions);
-        let currentIndexOfFormSubmission = 0;
-        for (let formSubmission of formSubmissions) {
-          currentIndexOfFormSubmission++;
-          let internal_custom_id = formSubmission.internal_custom_id;
-          await context.logger.appendLog('Processing (' + currentIndexOfFormSubmission + '/' + amountOfFormSubmissions + '): ' + internal_custom_id);
-          let searchFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
-            form: form.id,
-            internal_custom_id: internal_custom_id, // identifier for the housing contract for future reference
-          };
-          let foundFormSubmission = await context.myDatabaseHelper.getFormsSubmissionsHelper().findFirstItem(searchFormSubmission);
-          if (!foundFormSubmission) {
-            //await logger.appendLog("- does not exist. Creating.");
-            //await logger.appendLog(JSON.stringify(formSubmission, null, 2));
-            let alias = formSubmission.alias;
-            let createFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
-              form: form.id,
-              internal_custom_id: internal_custom_id, // identifier for the form submission for future reference
-              alias: alias,
-            };
-
-            let createFormAnswers: Partial<DatabaseTypes.FormAnswers>[] = [];
-            // now we need to fill the form answers with the data from the housing contract
-            // iterate over all data fields of the housing contract
-            let formAnswers = formSubmission.form_answers;
-            for (let passedFormAnswer of formAnswers) {
-              let external_import_id = passedFormAnswer.external_import_id;
-              //await logger.appendLog("-- FormAnswer external_import_id: " + external_import_id);
-              let formField = dictFormFieldExternalImportIdToFormFieldId[external_import_id];
-              if (formField) {
-                createFormAnswers.push({
-                  ...passedFormAnswer,
-                  form_field: formField.id,
-                });
-              }
-            }
-
-            // Set the form answers with provided data
-            createFormSubmission.form_answers = {
-              // @ts-ignore - this way directus will create the relation
-              create: createFormAnswers,
-              // @ts-ignore - this way directus will create the relation
-              update: [],
-              // @ts-ignore - this way directus will create the relation
-              delete: [],
-            };
-
-            await context.myDatabaseHelper.getFormsSubmissionsHelper().createOne(createFormSubmission);
-          } else {
-            //await logger.appendLog("- already exists. Skipping.");
-          }
-        }
-        await context.logger.appendLog('Finished processing all form submissions.');
+        await syncAllFormSubmissions(context, form, formSubmissions, dictFormFieldExternalImportIdToFormFieldId);
 
         return context.logger.getFinalLogWithStateAndParams({
           state: WORKFLOW_RUN_STATE.SUCCESS,

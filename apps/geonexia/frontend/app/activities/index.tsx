@@ -402,6 +402,111 @@ function makeActivitiesHeaderRight(onRebuild: () => void, onExport: () => void, 
 	return () => <ActivitiesHeaderRight onRebuild={onRebuild} onExport={onExport} onImport={onImport} />;
 }
 
+// ─── Import helpers ────────────────────────────────────────────────────────
+
+/**
+ * Normalizes the parsed import payload into a raw activities array plus any
+ * exported routes. Supports three formats:
+ *  1. New: { activities: [...], routes: [...] }
+ *  2. Old: [...] (array of activities)
+ *  3. Old: single activity object
+ */
+function extractImportedActivitiesAndRoutes(parsed: unknown): { rawActivities: unknown[]; exportedRoutes: SavedRoute[] } {
+	if (
+		typeof parsed === 'object' &&
+		parsed !== null &&
+		!Array.isArray(parsed) &&
+		Array.isArray((parsed as Record<string, unknown>).activities)
+	) {
+		const wrapper = parsed as Record<string, unknown>;
+		const rawActivities = wrapper.activities as unknown[];
+		const exportedRoutes = Array.isArray(wrapper.routes) ? (wrapper.routes as SavedRoute[]) : [];
+		return { rawActivities, exportedRoutes };
+	}
+	return { rawActivities: Array.isArray(parsed) ? parsed : [parsed], exportedRoutes: [] };
+}
+
+/** Validates that every raw imported entry looks like a SavedActivity. Returns null if any entry is invalid. */
+function validateImportedActivities(rawActivities: unknown[]): SavedActivity[] | null {
+	const validActivities: SavedActivity[] = [];
+	for (const item of rawActivities) {
+		const activity = item as SavedActivity;
+		if (
+			typeof activity.id !== 'string' ||
+			typeof activity.startedAt !== 'number' ||
+			!Array.isArray(activity.routePoints)
+		) {
+			return null;
+		}
+		validActivities.push(activity);
+	}
+	return validActivities;
+}
+
+/**
+ * Resolves (or creates) the route an imported activity should link to, mutating
+ * `existingRoutes` in place when a route is matched or newly created. Returns the
+ * resolved routeId together with the (possibly incremented) routeIdOffset used to
+ * keep generated route ids unique within a single import batch.
+ */
+function resolveRouteForImportedActivity(
+	activity: SavedActivity,
+	existingRoutes: SavedRoute[],
+	exportedRouteMap: Map<string, SavedRoute>,
+	routeIdOffset: number,
+): { routeId: string | null | undefined; routeIdOffset: number } {
+	const hexTiles = activity.hexTilesOrdered ?? [];
+	const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+	let routeId: string | null | undefined = activity.routeId;
+
+	if (hexTiles.length > 0 && isH3Available()) {
+		const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
+		if (match) {
+			// Link to the existing matching route.
+			routeId = match.route.id;
+			const updatedRoute: SavedRoute = {
+				...match.route,
+				activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
+			};
+			saveRoute(updatedRoute);
+			const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
+			if (idx >= 0) existingRoutes[idx] = updatedRoute;
+		} else {
+			// No matching route on this device — create one from the imported tiles.
+			// Prefer the exported route's name when available.
+			const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
+			const d = new Date(activity.startedAt);
+			const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+			const routePoints =
+				activity.routePoints.length > 0
+					? activity.routePoints
+					: synthesizeManualActivityRoutePoints(
+						hexTiles,
+						activity.startedAt,
+						(activity.endedAt - activity.startedAt),
+						activity.stats.distanceKm,
+					);
+			const newRoute: SavedRoute = {
+				id: String(Date.now() + routeIdOffset++),
+				name,
+				hexTiles,
+				h3Resolution: h3Res,
+				createdAt: activity.startedAt,
+				sportType: activity.sportType,
+				walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
+				walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
+				walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
+				activityIds: [activity.id],
+			};
+			saveRoute(newRoute);
+			existingRoutes.push(newRoute);
+			routeId = newRoute.id;
+		}
+	}
+
+	return { routeId, routeIdOffset };
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -455,39 +560,12 @@ export default function ActivitiesScreen() {
 			return;
 		}
 
-		// Support three formats:
-		//  1. New: { activities: [...], routes: [...] }
-		//  2. Old: [...] (array of activities)
-		//  3. Old: single activity object
-		let rawActivities: unknown[];
-		let exportedRoutes: SavedRoute[] = [];
-		if (
-			typeof parsed === 'object' &&
-			parsed !== null &&
-			!Array.isArray(parsed) &&
-			Array.isArray((parsed as Record<string, unknown>).activities)
-		) {
-			const wrapper = parsed as Record<string, unknown>;
-			rawActivities = wrapper.activities as unknown[];
-			if (Array.isArray(wrapper.routes)) {
-				exportedRoutes = wrapper.routes as SavedRoute[];
-			}
-		} else {
-			rawActivities = Array.isArray(parsed) ? parsed : [parsed];
-		}
+		const { rawActivities, exportedRoutes } = extractImportedActivitiesAndRoutes(parsed);
 
-		const validActivities: SavedActivity[] = [];
-		for (const item of rawActivities) {
-			const activity = item as SavedActivity;
-			if (
-				typeof activity.id !== 'string' ||
-				typeof activity.startedAt !== 'number' ||
-				!Array.isArray(activity.routePoints)
-			) {
-				showAlert('Import Failed', 'One or more entries do not look like valid activities.');
-				return;
-			}
-			validActivities.push(activity);
+		const validActivities = validateImportedActivities(rawActivities);
+		if (!validActivities) {
+			showAlert('Import Failed', 'One or more entries do not look like valid activities.');
+			return;
 		}
 
 		// Build a lookup map for exported route names so new routes inherit the
@@ -500,54 +578,9 @@ export default function ActivitiesScreen() {
 		let routeIdOffset = 0;
 
 		for (const activity of validActivities) {
-			const hexTiles = activity.hexTilesOrdered ?? [];
-			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-			let routeId: string | null | undefined = activity.routeId;
-
-			if (hexTiles.length > 0 && isH3Available()) {
-				const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
-				if (match) {
-					// Link to the existing matching route.
-					routeId = match.route.id;
-					const updatedRoute: SavedRoute = {
-						...match.route,
-						activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
-					};
-					saveRoute(updatedRoute);
-					const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
-					if (idx >= 0) existingRoutes[idx] = updatedRoute;
-				} else {
-					// No matching route on this device — create one from the imported tiles.
-					// Prefer the exported route's name when available.
-					const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
-					const d = new Date(activity.startedAt);
-					const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
-					const routePoints =
-						activity.routePoints.length > 0
-							? activity.routePoints
-							: synthesizeManualActivityRoutePoints(
-								hexTiles,
-								activity.startedAt,
-								(activity.endedAt - activity.startedAt),
-								activity.stats.distanceKm,
-							);
-					const newRoute: SavedRoute = {
-						id: String(Date.now() + routeIdOffset++),
-						name,
-						hexTiles,
-						h3Resolution: h3Res,
-						createdAt: activity.startedAt,
-						sportType: activity.sportType,
-						walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
-						walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
-						walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
-						activityIds: [activity.id],
-					};
-					saveRoute(newRoute);
-					existingRoutes.push(newRoute);
-					routeId = newRoute.id;
-				}
-			}
+			const resolved = resolveRouteForImportedActivity(activity, existingRoutes, exportedRouteMap, routeIdOffset);
+			const { routeId } = resolved;
+			routeIdOffset = resolved.routeIdOffset;
 
 			const activityToSave: SavedActivity =
 				routeId !== activity.routeId ? { ...activity, routeId } : activity;

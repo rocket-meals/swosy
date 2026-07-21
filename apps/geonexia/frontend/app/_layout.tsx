@@ -460,6 +460,82 @@ async function rebuildWorldFromActivitiesIfStale(
 	return false;
 }
 
+// Dispatches billboard updates for whichever of the center/small forest trees
+// are still missing at the given hex tile.
+function dispatchMissingForestTrees(
+	hexId: string,
+	smallTreeAnchor: BillboardAnchorPosition,
+	hasCenterTree: boolean,
+	hasSmallTree: boolean,
+) {
+	if (!hasCenterTree) {
+		store.dispatch(setBillboardAtAnchor({
+			h3Index: hexId,
+			anchorColor: BillboardAnchorPosition.CENTER,
+			billboard: BILLBOARD_PINE_TREE_LARGE,
+		}));
+	}
+	if (!hasSmallTree) {
+		store.dispatch(setBillboardAtAnchor({
+			h3Index: hexId,
+			anchorColor: smallTreeAnchor,
+			billboard: BILLBOARD_PINE_TREE_SMALL,
+		}));
+	}
+}
+
+// If the given hex tile record is missing its forest trees, resolves (from
+// cache or by querying) whether the tile has a forest feature and, if so,
+// dispatches the missing tree billboards. Newly queried features are
+// collected into `newEntries` so the caller can merge them into the cache.
+async function applyForestTreesForHex(
+	hexId: string,
+	rec: any,
+	hexTileFeatureCache: HexTileFeatureCache,
+	newEntries: HexTileFeatureCache,
+) {
+	const needsTrees = !rec.walkedOn && rec.enclosedCount > 0;
+	if (!needsTrees) return;
+	const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
+	const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
+	const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
+	if (hasCenterTree && hasSmallTree) return;
+	const cached = hexTileFeatureCache[hexId];
+	if (cached) {
+		if (hasForestFeature(cached)) {
+			dispatchMissingForestTrees(hexId, smallTreeAnchor, hasCenterTree, hasSmallTree);
+		}
+	} else {
+		try {
+			const features = await queryTileFeaturesForHexCell(hexId);
+			newEntries[hexId] = features;
+			if (hasForestFeature(features)) {
+				dispatchMissingForestTrees(hexId, smallTreeAnchor, hasCenterTree, hasSmallTree);
+			}
+		} catch {
+			// ignore per-cell errors
+		}
+	}
+}
+
+// Fire-and-forget on startup: apply forest trees to enclosed tiles that are
+// missing them. This covers cases where a recording ended before the
+// in-session tree dispatch completed (e.g. app was killed mid-run).
+async function applyMissingForestBillboardsOnStartup(records: Record<string, any>) {
+	try {
+		const hexTileFeatureCache = await loadHexTileFeatureCache();
+		const newEntries: HexTileFeatureCache = {};
+		for (const [hexId, rec] of Object.entries(records)) {
+			await applyForestTreesForHex(hexId, rec, hexTileFeatureCache, newEntries);
+		}
+		if (Object.keys(newEntries).length > 0) {
+			await mergeHexTileFeatureCache(newEntries);
+		}
+	} catch (err) {
+		console.warn('[Layout] Feature cache update on startup failed:', err);
+	}
+}
+
 export default function Layout() {
 	useEffect(() => {
 		(async () => {
@@ -480,67 +556,7 @@ export default function Layout() {
 			// Fire-and-forget: apply forest trees to enclosed tiles that are
 			// missing them. This covers cases where a recording ended before the
 			// in-session tree dispatch completed (e.g. app was killed mid-run).
-			void (async () => {
-				try {
-					const hexTileFeatureCache = await loadHexTileFeatureCache();
-					const newEntries: HexTileFeatureCache = {};
-					for (const [hexId, rec] of Object.entries(records)) {
-						const needsTrees = !rec.walkedOn && rec.enclosedCount > 0;
-						if (!needsTrees) continue;
-						const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
-						const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
-						const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
-						if (hasCenterTree && hasSmallTree) continue;
-						const cached = hexTileFeatureCache[hexId];
-						if (cached) {
-							if (hasForestFeature(cached)) {
-								if (!hasCenterTree) {
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: BillboardAnchorPosition.CENTER,
-										billboard: BILLBOARD_PINE_TREE_LARGE,
-									}));
-								}
-								if (!hasSmallTree) {
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: smallTreeAnchor,
-										billboard: BILLBOARD_PINE_TREE_SMALL,
-									}));
-								}
-							}
-						} else {
-							try {
-								const features = await queryTileFeaturesForHexCell(hexId);
-								newEntries[hexId] = features;
-								if (hasForestFeature(features)) {
-									if (!hasCenterTree) {
-										store.dispatch(setBillboardAtAnchor({
-											h3Index: hexId,
-											anchorColor: BillboardAnchorPosition.CENTER,
-											billboard: BILLBOARD_PINE_TREE_LARGE,
-										}));
-									}
-									if (!hasSmallTree) {
-										store.dispatch(setBillboardAtAnchor({
-											h3Index: hexId,
-											anchorColor: smallTreeAnchor,
-											billboard: BILLBOARD_PINE_TREE_SMALL,
-										}));
-									}
-								}
-							} catch {
-								// ignore per-cell errors
-							}
-						}
-					}
-					if (Object.keys(newEntries).length > 0) {
-						await mergeHexTileFeatureCache(newEntries);
-					}
-				} catch (err) {
-					console.warn('[Layout] Feature cache update on startup failed:', err);
-				}
-			})();
+			void applyMissingForestBillboardsOnStartup(records);
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});

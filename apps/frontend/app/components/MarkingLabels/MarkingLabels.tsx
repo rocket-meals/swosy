@@ -131,6 +131,47 @@ const makeMarkingReactionTrigger = (props: Readonly<{
 	inactiveColor: string;
 }>) => (triggerProps: object) => <MarkingReactionTrigger triggerProps={triggerProps} {...props} />;
 
+// Sets the like/dislike loading flag depending on which reaction is being toggled.
+const setMarkingLoadingState = (
+	like: boolean,
+	value: boolean,
+	setLikeLoading: (value: boolean) => void,
+	setDislikeLoading: (value: boolean) => void
+) => {
+	if (like) {
+		setLikeLoading(value);
+	} else {
+		setDislikeLoading(value);
+	}
+};
+
+// Applies the updated marking to the profile's markings array (removing, replacing, or adding it), mutating and returning profileData.
+const applyMarkingUpdateToProfile = (profileData: any, updatedMarking: any, markingId: any): any => {
+	let markingFound = false;
+
+	profileData?.markings.forEach((profileMarkings: any, index: number) => {
+		if (profileMarkings.markings_id === updatedMarking?.markings_id) {
+			markingFound = true;
+			if (updatedMarking?.like === null) {
+				profileData.markings.splice(index, 1); // Remove if unliked
+			} else {
+				profileData.markings[index] = updatedMarking; // Update like status
+			}
+		}
+	});
+
+	// If the marking doesn't exist, add it
+	if (!markingFound) {
+		profileData.markings.push({
+			...updatedMarking,
+			markings_id: markingId,
+			profiles_id: profileData?.id,
+		});
+	}
+
+	return profileData;
+};
+
 const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet, size = 30 }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -206,46 +247,16 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
-			if (like) {
-				setLikeLoading(true);
-			} else {
-				setDislikeLoading(true);
-			}
+			setMarkingLoadingState(like, true, setLikeLoading, setDislikeLoading);
 			if (isAnonymousUser) {
 				handleAnonymousMarking(like);
-				if (like) {
-					setLikeLoading(false);
-				} else {
-					setDislikeLoading(false);
-				}
+				setMarkingLoadingState(like, false, setLikeLoading, setDislikeLoading);
 			} else {
 				try {
 					const likeStats = ownMarking?.like === like ? null : like;
 					const updatedMarking = { ...ownMarking, like: likeStats };
 
-					const profileData = { ...profile };
-					let markingFound = false;
-
-					// Update or remove marking in the profile
-					profileData?.markings.forEach((profileMarkings: any, index: number) => {
-						if (profileMarkings.markings_id === updatedMarking?.markings_id) {
-							markingFound = true;
-							if (updatedMarking?.like === null) {
-								profileData.markings.splice(index, 1); // Remove if unliked
-							} else {
-								profileData.markings[index] = updatedMarking; // Update like status
-							}
-						}
-					});
-
-					// If the marking doesn't exist, add it
-					if (!markingFound) {
-						profileData.markings.push({
-							...updatedMarking,
-							markings_id: markingId,
-							profiles_id: profileData?.id,
-						});
-					}
+					const profileData = applyMarkingUpdateToProfile({ ...profile }, updatedMarking, markingId);
 
 					dispatch({ type: UPDATE_PROFILE, payload: profileData });
 
@@ -253,20 +264,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
 						fetchProfile();
-						if (like) {
-							setLikeLoading(false);
-						} else {
-							setDislikeLoading(false);
-						}
+						setMarkingLoadingState(like, false, setLikeLoading, setDislikeLoading);
 					}
 				} catch (error) {
 					console.error('Error updating marking:', error);
 				} finally {
-					if (like) {
-						setLikeLoading(false);
-					} else {
-						setDislikeLoading(false);
-					}
+					setMarkingLoadingState(like, false, setLikeLoading, setDislikeLoading);
 				}
 			}
 		},

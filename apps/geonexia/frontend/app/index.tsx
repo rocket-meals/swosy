@@ -38,9 +38,10 @@ import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeEdgesFromRoutePoints, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, addWalkedEdgesRedLine, HexTileCustomizationPayload } from '../store/hexTileSlice';
-import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
-import { store, RootState } from '../store/store';
+import { setSportType, SPORT_TYPES, SportType, SportTypeDefinition } from '../store/sportTypeSlice';
+import { store, RootState, AppDispatch } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
+import type { SpeechSettingsState } from '../store/speechSettingsSlice';
 import { resetMapSearchState, setMapSearchName, toggleMapSearchKey } from '../store/mapSearchSlice';
 import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../helpers/JsonFileTransferHelper';
 import { getLocales } from 'expo-localization';
@@ -362,52 +363,34 @@ type H3FeatureCollection = {
 	features: H3GeoJsonFeature[];
 };
 
-function buildH3GeoJson(
-	bounds: ViewportBounds,
-	zoom: number,
-	resolution: number,
-	showAlways: boolean,
-	hexTileRecords: Record<string, HexTileRecord>,
-	minZoom: number = H3_MIN_ZOOM_DEFAULT,
-): H3FeatureCollection {
-	if (!showAlways && zoom < minZoom) {
-		// At low zoom: hide the unvisited grid, but still show tiles that have been
-		// visited or enclosed (level > 0) so the user can see their overall progress.
-		const features: H3GeoJsonFeature[] = [];
-		for (const [cell, record] of Object.entries(hexTileRecords)) {
-			if (record.level <= 0) continue;
-			if (features.length >= H3_MAX_CELLS) break;
-			try {
-				const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-				if (boundary.length > 0) {
-					features.push({
-						type: 'Feature',
-						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-						properties: { h3Index: cell, level: record.level },
-					});
-				}
-			} catch {
-				// Skip invalid cells
+/**
+ * Build the low-zoom H3 feature set: hides the unvisited grid, but still shows
+ * tiles that have been visited or enclosed (level > 0) so the user can see
+ * their overall progress.
+ */
+function buildLowZoomH3Features(hexTileRecords: Record<string, HexTileRecord>): H3GeoJsonFeature[] {
+	const features: H3GeoJsonFeature[] = [];
+	for (const [cell, record] of Object.entries(hexTileRecords)) {
+		if (record.level <= 0) continue;
+		if (features.length >= H3_MAX_CELLS) break;
+		try {
+			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+			if (boundary.length > 0) {
+				features.push({
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+					properties: { h3Index: cell, level: record.level },
+				});
 			}
+		} catch {
+			// Skip invalid cells
 		}
-		return { type: 'FeatureCollection', features };
 	}
+	return features;
+}
 
-	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
-	// resolution and visually subdivide each parent cell into its children at
-	// the next resolution level.  Whole-number resolutions use the existing
-	// behaviour (round to nearest integer so e.g. 10.9 still maps to res 11).
-	const isHalfResolution = resolution % 1 !== 0;
-	const h3Res = Math.max(
-		H3_RESOLUTION_MIN,
-		Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
-	);
-
-	const centerLat = (bounds.north + bounds.south) / 2;
-	const centerLng = (bounds.east + bounds.west) / 2;
-	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
-
-	// Determine how many grid rings are needed to cover all four viewport corners.
+/** Determine how many grid rings are needed to cover all four viewport corners. */
+function computeMaxGridDistanceToCorners(bounds: ViewportBounds, h3Res: number, centerCell: string): number {
 	const corners: Array<[number, number]> = [
 		[bounds.north, bounds.east],
 		[bounds.north, bounds.west],
@@ -425,68 +408,116 @@ function buildH3GeoJson(
 			console.warn('[H3] gridDistance failed for corner cell:', err);
 		}
 	}
+	return maxK;
+}
 
+/**
+ * For fractional resolutions (e.g. 10.5) compute child hexes at the next
+ * integer resolution and color them in 7 colors: the center child gets white
+ * (colorIndex 0) and the 6 ring children get red, yellow, green, blue,
+ * purple, orange (colorIndex 1–6) in ring order.
+ */
+function buildHalfResolutionH3Features(
+	parentCells: string[],
+	h3Res: number,
+	hexTileRecords: Record<string, HexTileRecord>,
+): H3GeoJsonFeature[] {
+	const features: H3GeoJsonFeature[] = [];
+	const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
+	for (const parentCell of parentCells) {
+		if (features.length >= H3_MAX_CELLS) break;
+		const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
+		const centerChild = cellToCenterChild(parentCell, childRes);
+		if (!centerChild) continue;
+
+		// Center child → colorIndex 0 (white)
+		const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
+		if (centerBoundary.length > 0) {
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
+				properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
+			});
+		}
+
+		// Ring children → colorIndex 1–6
+		let ringChildren: string[] = [];
+		try {
+			ringChildren = gridRingUnsafe(centerChild, 1).filter(
+				(c) => cellToParent(c, h3Res) === parentCell,
+			);
+		} catch (err) {
+			// gridRingUnsafe can throw for pentagon cells; skip ring for those
+			console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
+		}
+		for (let i = 0; i < ringChildren.length; i++) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const child = ringChildren[i];
+			const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+			if (boundary.length > 0) {
+				features.push({
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+					properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
+				});
+			}
+		}
+	}
+	return features;
+}
+
+/** Whole-number resolutions: one feature per parent cell at the base resolution. */
+function buildWholeResolutionH3Features(
+	parentCells: string[],
+	hexTileRecords: Record<string, HexTileRecord>,
+): H3GeoJsonFeature[] {
+	const features: H3GeoJsonFeature[] = [];
+	for (const cell of parentCells) {
+		if (features.length >= H3_MAX_CELLS) break;
+		const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+		// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
+		features.push({
+			type: 'Feature',
+			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+			properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
+		});
+	}
+	return features;
+}
+
+function buildH3GeoJson(
+	bounds: ViewportBounds,
+	zoom: number,
+	resolution: number,
+	showAlways: boolean,
+	hexTileRecords: Record<string, HexTileRecord>,
+	minZoom: number = H3_MIN_ZOOM_DEFAULT,
+): H3FeatureCollection {
+	if (!showAlways && zoom < minZoom) {
+		return { type: 'FeatureCollection', features: buildLowZoomH3Features(hexTileRecords) };
+	}
+
+	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
+	// resolution and visually subdivide each parent cell into its children at
+	// the next resolution level.  Whole-number resolutions use the existing
+	// behaviour (round to nearest integer so e.g. 10.9 still maps to res 11).
+	const isHalfResolution = resolution % 1 !== 0;
+	const h3Res = Math.max(
+		H3_RESOLUTION_MIN,
+		Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
+	);
+
+	const centerLat = (bounds.north + bounds.south) / 2;
+	const centerLng = (bounds.east + bounds.west) / 2;
+	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
+
+	const maxK = computeMaxGridDistanceToCorners(bounds, h3Res, centerCell);
 	const k = Math.min(maxK + 1, 30);
 	const parentCells = gridDisk(centerCell, k);
 
-	const features: H3GeoJsonFeature[] = [];
-	if (isHalfResolution) {
-		// For fractional resolutions (e.g. 10.5) we compute child hexes at the
-		// next integer resolution and color them in 7 colors: the center child
-		// gets white (colorIndex 0) and the 6 ring children get red, yellow,
-		// green, blue, purple, orange (colorIndex 1–6) in ring order.
-		const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
-		for (const parentCell of parentCells) {
-			if (features.length >= H3_MAX_CELLS) break;
-			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
-			const centerChild = cellToCenterChild(parentCell, childRes);
-			if (!centerChild) continue;
-
-			// Center child → colorIndex 0 (white)
-			const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
-			if (centerBoundary.length > 0) {
-				features.push({
-					type: 'Feature',
-					geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
-					properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
-				});
-			}
-
-			// Ring children → colorIndex 1–6
-			let ringChildren: string[] = [];
-			try {
-				ringChildren = gridRingUnsafe(centerChild, 1).filter(
-					(c) => cellToParent(c, h3Res) === parentCell,
-				);
-			} catch (err) {
-				// gridRingUnsafe can throw for pentagon cells; skip ring for those
-				console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
-			}
-			for (let i = 0; i < ringChildren.length; i++) {
-				if (features.length >= H3_MAX_CELLS) break;
-				const child = ringChildren[i];
-				const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
-				if (boundary.length > 0) {
-					features.push({
-						type: 'Feature',
-						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-						properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
-					});
-				}
-			}
-		}
-	} else {
-		for (const cell of parentCells) {
-			if (features.length >= H3_MAX_CELLS) break;
-			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-			// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
-			features.push({
-				type: 'Feature',
-				geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-				properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
-			});
-		}
-	}
+	const features: H3GeoJsonFeature[] = isHalfResolution
+		? buildHalfResolutionH3Features(parentCells, h3Res, hexTileRecords)
+		: buildWholeResolutionH3Features(parentCells, hexTileRecords);
 
 	return { type: 'FeatureCollection', features };
 }
@@ -1011,30 +1042,25 @@ function generateMeasureRoutePoints(
 	return points;
 }
 
-function computeStats(points: RoutePoint[]): RunStats {
-	if (points.length < 2) {
-		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
-		return {
-			distanceKm: 0,
-			durationSeconds,
-			paceMinPerKm: 0,
-			maxSpeedKmh: 0,
-			minSpeedKmh: 0,
-			avgSpeedKmh: 0,
-			medianSpeedKmh: 0,
-			kcal: 0,
-			steps: 0,
-			elevationGainM: 0,
-			elevationLossM: 0,
-			fluidNeedsMl: 0,
-		};
-	}
+type RouteSegmentAccumulation = {
+	distanceKm: number;
+	elevationGainM: number;
+	elevationLossM: number;
+	speedsKmh: number[];
+	speedDistanceKm: number;
+	speedDurationSeconds: number;
+};
 
+/**
+ * Walk consecutive route points accumulating total distance, elevation
+ * gain/loss, and the per-segment speed samples (once the GPS warm-up period
+ * has elapsed) used for the max/min/avg/median speed stats.
+ */
+function accumulateRouteSegments(points: RoutePoint[], startTimestamp: number): RouteSegmentAccumulation {
 	let distanceKm = 0;
 	let elevationGainM = 0;
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
-	const startTimestamp = points[0].timestamp;
 	let speedDistanceKm = 0;
 	let speedDurationSeconds = 0;
 
@@ -1063,8 +1089,11 @@ function computeStats(points: RoutePoint[]): RunStats {
 		}
 	}
 
-	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
-	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	return { distanceKm, elevationGainM, elevationLossM, speedsKmh, speedDistanceKm, speedDurationSeconds };
+}
+
+/** Smooths raw per-segment speeds with a trailing moving-average window. */
+function computeWindowedSpeeds(speedsKmh: number[]): number[] {
 	const windowedSpeeds: number[] = [];
 	let windowSum = 0;
 	for (let i = 0; i < speedsKmh.length; i++) {
@@ -1072,15 +1101,47 @@ function computeStats(points: RoutePoint[]): RunStats {
 		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
 		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
 	}
+	return windowedSpeeds;
+}
+
+/** Median of the raw (non-windowed) per-segment speeds. */
+function computeMedianSpeed(speedsKmh: number[]): number {
+	if (speedsKmh.length === 0) return 0;
+	const sorted = [...speedsKmh].sort((a, b) => a - b);
+	const mid = Math.floor(sorted.length / 2);
+	return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
+
+function computeStats(points: RoutePoint[]): RunStats {
+	if (points.length < 2) {
+		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
+		return {
+			distanceKm: 0,
+			durationSeconds,
+			paceMinPerKm: 0,
+			maxSpeedKmh: 0,
+			minSpeedKmh: 0,
+			avgSpeedKmh: 0,
+			medianSpeedKmh: 0,
+			kcal: 0,
+			steps: 0,
+			elevationGainM: 0,
+			elevationLossM: 0,
+			fluidNeedsMl: 0,
+		};
+	}
+
+	const startTimestamp = points[0].timestamp;
+	const { distanceKm, elevationGainM, elevationLossM, speedsKmh, speedDistanceKm, speedDurationSeconds } =
+		accumulateRouteSegments(points, startTimestamp);
+
+	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
+	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	const windowedSpeeds = computeWindowedSpeeds(speedsKmh);
 	const maxSpeedKmh = windowedSpeeds.length > 0 ? Math.max(...windowedSpeeds) : 0;
 	const minSpeedKmh = windowedSpeeds.length > 0 ? Math.min(...windowedSpeeds) : 0;
 	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
-	const medianSpeedKmh = (() => {
-		if (speedsKmh.length === 0) return 0;
-		const sorted = [...speedsKmh].sort((a, b) => a - b);
-		const mid = Math.floor(sorted.length / 2);
-		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-	})();
+	const medianSpeedKmh = computeMedianSpeed(speedsKmh);
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
@@ -2892,6 +2953,1186 @@ function InterruptedRecoveryContent({
 	);
 }
 
+// ─── RecordScreen: loadAndSendCustomizations helpers ──────────────────────────
+
+/** Image overlay entry sent to the map for a customized hex tile's terrain texture. */
+type TileImageOverlay = {
+	id: string;
+	url: string;
+	coordinates: [[number, number], [number, number], [number, number], [number, number]];
+	opacity: number;
+	// Actual H3 hex vertices in [lng, lat] order for precise canvas clipping.
+	polygonCoords: [number, number][];
+	// Bearing from hex center to its first vertex (radians, 0 = North, CW positive).
+	// Used to rotate the texture so it aligns with the H3 hex orientation.
+	rotation: number;
+};
+
+/**
+ * Build the tile-image overlays (per customized hex tile) sent to the map as
+ * MapLibre image sources, one per tile that has a `tileImage` customization.
+ */
+async function buildTileImageOverlays(
+	records: Record<string, HexTileRecord>,
+	textureAnchors: RootState['hexTextureConfig']['spriteAnchors'],
+	currentHexTextureOpacity: number,
+	loadAssetUrl: (cacheKey: string, moduleId: number, mimeType: string) => Promise<string | null>,
+): Promise<TileImageOverlay[]> {
+	// Flat lookup: terrain asset key → { moduleId, mimeType }
+	const terrainLookup = new Map<string, { moduleId: number; mimeType: string }>();
+	for (const assets of Object.values(TERRAIN_ASSETS)) {
+		for (const entry of assets) {
+			terrainLookup.set(entry.key, { moduleId: entry.source as number, mimeType: entry.mimeType ?? 'image/svg+xml' });
+		}
+	}
+
+	const imageOverlays: TileImageOverlay[] = [];
+
+	for (const [h3Index, record] of Object.entries(records)) {
+		// ── Tile image overlay ──────────────────────────────────────────────
+		if (record.tileImage) {
+			const terrainEntry = terrainLookup.get(record.tileImage);
+			if (terrainEntry !== undefined) {
+				const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
+				if (url) {
+					// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
+					const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+					if (boundary.length >= 3) {
+						let minLat = Infinity, maxLat = -Infinity;
+						let minLng = Infinity, maxLng = -Infinity;
+						for (const [lat, lng] of boundary) {
+							if (lat < minLat) minLat = lat;
+							if (lat > maxLat) maxLat = lat;
+							if (lng < minLng) minLng = lng;
+							if (lng > maxLng) maxLng = lng;
+						}
+						// Compute the geographic bearing (azimuth) from the hex center to its first
+						// vertex. Math.cos(centerLat) corrects the longitude delta for the fact that
+						// 1° of longitude covers less ground at higher latitudes. atan2(x, y) with
+						// (dlng, dlat) gives the angle measured clockwise from North, which is the
+						// standard geographic convention (0 = North, π/2 = East).
+						const centerLat = (minLat + maxLat) / 2;
+						const centerLng = (minLng + maxLng) / 2;
+						const v0 = boundary[0];
+						const dlat = v0[0] - centerLat;
+						const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
+						const rotation = Math.atan2(dlng, dlat); // radians CW from North
+
+						// Apply per-terrain anchor/scale overrides from hex texture config.
+						const terrainOverride = textureAnchors[record.tileImage];
+						const texAnchorX = terrainOverride?.anchorX ?? 0.5;
+						const texAnchorY = terrainOverride?.anchorY ?? 0.5;
+						const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
+						const bboxW = maxLng - minLng;
+						const bboxH = maxLat - minLat;
+						// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
+						// portion of the texture (matching the HexFieldPreview behaviour).
+						const scaledW = bboxW * texScale;
+						const scaledH = bboxH * texScale;
+						// Pin the anchor fraction of the image to the hex center.
+						// This keeps the texture centred at scale 1 and lets the anchor
+						// shift which part of the image is visible at other scales.
+						// centerLng/centerLat are already computed above for the rotation calc.
+						const adjMinLng = centerLng - texAnchorX * scaledW;
+						const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
+						const adjMinLat = centerLat - texAnchorY * scaledH;
+						const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
+
+						imageOverlays.push({
+							id: `tile-img-${h3Index}`,
+							url,
+							// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
+							coordinates: [
+								[adjMinLng, adjMaxLat],
+								[adjMaxLng, adjMaxLat],
+								[adjMaxLng, adjMinLat],
+								[adjMinLng, adjMinLat],
+							],
+							opacity: currentHexTextureOpacity,
+							// Actual hex vertices in [lng, lat] for canvas polygon clipping.
+							polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
+							rotation,
+						});
+					}
+				}
+			}
+		}
+	}
+
+	return imageOverlays;
+}
+
+type BillboardFeature = {
+	type: 'Feature';
+	geometry: { type: 'Point'; coordinates: [number, number] };
+	properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number; flat: boolean };
+};
+
+type BillboardOverlaysResult = {
+	images: Record<string, { url: string }>;
+	features: BillboardFeature[];
+};
+
+/**
+ * Build the billboard GeoJSON symbol-layer data (images + point features) sent
+ * to the map: Hex Texture Adaptions (always flat) and Hex Objects (face-camera
+ * by default, with legacy per-anchor flat flag support).
+ *
+ * Billboards are rendered as a MapLibre symbol layer whose icon-size is set to
+ * a fixed value per feature. The zoom-based exponential expression in the
+ * MapLibre HTML ensures the icon scales proportionally with the map so that
+ * each billboard occupies a constant geographic area. Billboard size also
+ * scales with the H3 edge length: larger on bigger hexagons, smaller on
+ * smaller ones.
+ *
+ * Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
+ * for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
+ * zoomed in or on high-DPI screens. Features carry an iconSizeAtRefZoom property
+ * (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14) so the layer's
+ * icon-size zoom expression scales it correctly at all zoom levels.
+ * NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
+ */
+async function buildBillboardOverlays(
+	records: Record<string, HexTileRecord>,
+	spriteAnchors: RootState['billboardConfig']['spriteAnchors'],
+	billboardScaleRef: React.MutableRefObject<number>,
+	currentHexTextureAdaptionOpacity: number,
+	currentHexObjectOpacity: number,
+	loadAssetUrl: (cacheKey: string, moduleId: number, mimeType: string) => Promise<string | null>,
+): Promise<BillboardOverlaysResult> {
+	// Billboard pixel size is determined by the sprite's scaleFactor, the
+	// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
+	// relative to the reference resolution (10). This makes billboards larger on
+	// bigger hexagons and smaller on smaller ones.
+	// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
+	// at the reference resolution.
+	const BILLBOARD_STANDARD_ICON_SIZE = 128;
+
+	const billboardImages: Record<string, { url: string }> = {};
+	const billboardFeatures: BillboardFeature[] = [];
+
+	for (const [h3Index, record] of Object.entries(records)) {
+		// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
+		const effectiveBillboards = getEffectiveBillboards(record);
+		const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
+		// Per-anchor flat flags (legacy; used only for old `billboards` data).
+		const effectiveFlat = getEffectiveBillboardsFlat(record);
+
+		const hasBillboards = Object.keys(effectiveBillboards).length > 0;
+		const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
+		if (!hasBillboards && !hasTextureAdaptions) continue;
+
+		// Compute hex boundary (centroid + vertices) once per tile.
+		const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
+		let sumLng = 0, sumLat = 0;
+		const n = boundary.length - 1;
+		if (n <= 0) continue;
+		for (let j = 0; j < n; j++) {
+			const [bLng, bLat] = boundary[j] as [number, number];
+			sumLng += bLng;
+			sumLat += bLat;
+		}
+		const centerLng = sumLng / n;
+		const centerLat = sumLat / n;
+
+		// Size constants for this tile's resolution (shared across all anchors).
+		const cellRes = getResolution(h3Index);
+		const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
+		const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
+
+		// ── Hex Texture Adaptions (always flat on the map surface) ────────────
+		for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
+			const parsed = parseBillboardKey(billboardKey);
+			if (!parsed) continue;
+			const { sprite, idx } = parsed;
+			const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+			if (!url) continue;
+
+			const iconKey = `billboard-${billboardKey}`;
+			const anchorOverride = spriteAnchors[idx];
+			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+			const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
+			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+			));
+			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+			if (!billboardImages[iconKey]) {
+				billboardImages[iconKey] = { url };
+			}
+			// Hex Texture Adaptions are always flat and rotated by the position angle.
+			const textureRotation = getAnchorAngleDeg(anchorColor);
+			billboardFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [lng, lat] },
+				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation },
+			});
+		}
+
+		// ── Hex Objects (face-camera; legacy billboardsFlat flag still respected) ──
+		for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
+			const parsed = parseBillboardKey(billboardKey);
+			if (!parsed) continue;
+			const { sprite, idx } = parsed;
+			const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+			if (!url) continue;
+
+			const iconKey = `billboard-${billboardKey}`;
+			const anchorOverride = spriteAnchors[idx];
+			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+			const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
+			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+			));
+			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+			// Hex Objects are face-camera by default; legacy per-anchor flat flag
+			// is still respected for backward compatibility with existing data.
+			const flat = effectiveFlat[anchorColor] === true;
+
+			if (!billboardImages[iconKey]) {
+				billboardImages[iconKey] = { url };
+			}
+			billboardFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [lng, lat] },
+				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat, opacity: currentHexObjectOpacity },
+			});
+		}
+	}
+
+	return { images: billboardImages, features: billboardFeatures };
+}
+
+// ─── RecordScreen: handleMapMessage helpers ────────────────────────────────────
+
+/** Handles the 'MapComponentMounted' map message: activates the hex tile
+ * layer, resends the current route (if any) and player position, and
+ * (re)sends the current tile/billboard customizations. */
+function handleMapComponentMounted(
+	mapRef: React.MutableRefObject<MyMapHandle | null>,
+	routePointsRef: React.MutableRefObject<RoutePoint[]>,
+	debugPlayerPositionRef: React.MutableRefObject<{ lat: number; lng: number } | null>,
+	sendRouteToMap: (points: RoutePoint[]) => void,
+	centerMapOnPosition: (pos: { lat: number; lng: number }, zoom?: number) => void,
+	loadAndSendCustomizations: () => void,
+): void {
+	// Activate hex tile layer. strokeColor is intentionally omitted so that
+	// the default gray value defined in hexTileScript.ts is preserved.
+	const { hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
+	mapRef.current?.sendToMap({
+		hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: 0, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
+	});
+	if (routePointsRef.current.length > 0) {
+		sendRouteToMap(routePointsRef.current);
+	}
+	const pos = debugPlayerPositionRef.current;
+	if (pos) {
+		centerMapOnPosition(pos);
+	}
+	// Send any already-selected tile images to the map.
+	loadAndSendCustomizations();
+}
+
+/** Handles the 'MapViewportChanged' map message: shows the selected route's
+ * preview tiles/walk-path when a route is selected pre-recording, otherwise
+ * refreshes the normal (global) tile display for the new viewport. */
+function handleMapViewportChanged(
+	vp: { bounds: ViewportBounds; zoom: number },
+	selectedRouteRef: React.MutableRefObject<SavedRoute | null>,
+	isRecordingRef: React.MutableRefObject<boolean>,
+	debugViewportRef: React.MutableRefObject<DebugViewportInfo | null>,
+	mapRef: React.MutableRefObject<MyMapHandle | null>,
+	refreshNormalTileDisplay: (vp: { bounds: ViewportBounds; zoom: number }) => void,
+): void {
+	debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: 0 };
+
+	// When a route is selected (pre-recording), show only the route's tiles
+	// and walk path instead of the full global tile set.
+	if (selectedRouteRef.current && !isRecordingRef.current) {
+		try {
+			const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+				selectedRouteRef.current,
+				store.getState().hexTiles.records,
+			);
+			debugViewportRef.current.tileCount = hexTileGeoJson.features.length;
+			mapRef.current?.sendToMap({ hexTileGeoJson });
+			mapRef.current?.sendToMap({ hexWalkPathGeoJson });
+		} catch (err) {
+			console.warn('[RecordScreen] Route preview viewport update failed:', err);
+		}
+	} else {
+		refreshNormalTileDisplay(vp);
+	}
+}
+
+/** Handles the 'HexTileClicked' map message: dispatches to whichever click
+ * mode (set-home, coloring, magnify, or default tile-info) is currently active. */
+function handleHexTileClicked(
+	clickedMsg: { h3Index?: string; mapFeatures?: MapFeatureInfo[] },
+	isSettingHomeRef: React.MutableRefObject<boolean>,
+	setIsSettingHome: (val: boolean) => void,
+	coloringTileImageRef: React.MutableRefObject<string | null>,
+	isMagnifyModeRef: React.MutableRefObject<boolean>,
+	showMagnifyHexTileModal: (h3Index: string) => void,
+	showHexTileModal: (h3Index: string) => void,
+	dispatch: AppDispatch,
+): void {
+	if (clickedMsg.h3Index) {
+		if (isSettingHomeRef.current) {
+			// Set-home mode: place castle2 at the center of the selected tile
+			// and store it as the player's home.
+			const newHomeHex = clickedMsg.h3Index;
+			dispatch(setBillboardAtAnchor({
+				h3Index: newHomeHex,
+				anchorColor: BillboardAnchorPosition.CENTER,
+				billboard: BILLBOARD_CASTLE2_KEY,
+			}));
+			dispatch(setHomeHexTile(newHomeHex));
+			isSettingHomeRef.current = false;
+			setIsSettingHome(false);
+		} else if (coloringTileImageRef.current !== null) {
+			// Coloring mode active: directly apply the selected tile image.
+			dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
+		} else if (isMagnifyModeRef.current) {
+			// Magnify mode active: show detailed map info modal.
+			showMagnifyHexTileModal(clickedMsg.h3Index);
+		} else {
+			showHexTileModal(clickedMsg.h3Index);
+		}
+	}
+}
+
+/** Handles the 'MapMeasurePoint' map message: appends the tapped point to the
+ * in-progress measure route while measure mode is active. */
+function handleMapMeasurePoint(
+	ptMsg: { lat: number; lng: number },
+	isMeasureModeRef: React.MutableRefObject<boolean>,
+	measureWaypointsRef: React.MutableRefObject<Array<{ lat: number; lng: number }>>,
+	mapRef: React.MutableRefObject<MyMapHandle | null>,
+): void {
+	if (isMeasureModeRef.current) {
+		const newWaypoints = [...measureWaypointsRef.current, { lat: ptMsg.lat, lng: ptMsg.lng }];
+		measureWaypointsRef.current = newWaypoints;
+		const coords = newWaypoints.map((w) => [w.lng, w.lat]);
+		mapRef.current?.sendToMap({ measureRouteCoords: coords });
+		mapRef.current?.sendToMap({ measurePoints: coords });
+	}
+}
+
+// ─── RecordScreen: handleLocationUpdate helpers ────────────────────────────────
+
+/** Handles a location update while a recording is paused: updates the visual
+ * player marker (without recording GPS points or marking hex tiles) and keeps
+ * the GPS speed-filter reference in sync. */
+function applyPausedLocationUpdate(
+	point: RoutePoint,
+	fromJoystick: boolean,
+	appActive: boolean,
+	movedPlayerManuallyRef: React.MutableRefObject<boolean>,
+	debugPlayerPositionRef: React.MutableRefObject<{ lat: number; lng: number } | null>,
+	lastAcceptedGpsPointRef: React.MutableRefObject<RoutePoint | null>,
+	mapRef: React.MutableRefObject<MyMapHandle | null>,
+	centerMapOnPosition: (pos: { lat: number; lng: number }, zoom?: number) => void,
+): void {
+	// For real GPS: skip if the user already overrode the position with the
+	// joystick before pausing – this mirrors the active-recording behaviour and
+	// prevents GPS from snapping the marker back while the user navigates
+	// virtually during the pause.
+	const shouldUpdate = fromJoystick || !movedPlayerManuallyRef.current;
+	if (shouldUpdate) {
+		debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+		if (appActive) {
+			mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+			centerMapOnPosition({ lat: point.lat, lng: point.lng });
+		}
+		// Advance the accepted-point ref for real GPS so the speed filter works
+		// correctly on the first GPS point recorded after resume.
+		if (!fromJoystick) {
+			lastAcceptedGpsPointRef.current = point;
+		}
+	}
+}
+
+/**
+ * GPS speed/interval filter applied to real (non-joystick) GPS fixes.
+ * Returns true when the point should be discarded as noise/glitch/too-frequent;
+ * otherwise records it as the last accepted GPS point (matching the original
+ * inline behaviour) and returns false.
+ */
+function maybeFilterGpsPoint(
+	fromJoystick: boolean,
+	point: RoutePoint,
+	isRecordingRef: React.MutableRefObject<boolean>,
+	joystickActiveRef: React.MutableRefObject<boolean>,
+	movedPlayerManuallyRef: React.MutableRefObject<boolean>,
+	lastAcceptedGpsPointRef: React.MutableRefObject<RoutePoint | null>,
+	selectedSportTypeRef: React.MutableRefObject<SportType>,
+): boolean {
+	if (fromJoystick) return false;
+
+	// While the joystick is actively held during a recording, skip GPS
+	// route points entirely. The joystick is providing the authoritative
+	// position; adding a real GPS fix would create a visible jump in the
+	// recorded route from the virtual joystick position back to the
+	// physical GPS location.
+	if (isRecordingRef.current && (joystickActiveRef.current || movedPlayerManuallyRef.current)) {
+		return true;
+	}
+
+	const lastAccepted = lastAcceptedGpsPointRef.current;
+	if (lastAccepted) {
+		const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
+
+		// ── GPS time-interval filter ──────────────────────────────────────────
+		// During recording, skip this point if the elapsed time since the last
+		// accepted GPS fix is less than 95 % of the configured GPS interval.
+		// This prevents the platform from delivering points more frequently than
+		// the user-selected accuracy setting, which would result in too many
+		// recorded GPS points.
+		if (isRecordingRef.current) {
+			const gpsIntervalSeconds = store.getState().gpsInterval.intervalSeconds;
+			const minElapsedSec = gpsIntervalSeconds * 0.95;
+			if (dtSec < minElapsedSec) {
+				return true;
+			}
+		}
+
+		if (dtSec > 0) {
+			const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
+			const impliedSpeedKmh = (distKm / dtSec) * 3600;
+			const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
+			const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
+			if (impliedSpeedKmh > maxSpeedKmh) {
+				console.warn(
+					`[RecordScreen] GPS point filtered: implied speed ${impliedSpeedKmh.toFixed(1)} km/h` +
+					` exceeds max ${maxSpeedKmh} km/h for sport "${selectedSportTypeRef.current}".`,
+				);
+				return true;
+			}
+		}
+	}
+	lastAcceptedGpsPointRef.current = point;
+	return false;
+}
+
+/** Tracks the H3 cell (and finer red-line cell) visited by this GPS/joystick
+ * point: fills in gap cells across GPS dropouts, dispatches markVisited for
+ * newly-visited cells, and records walked edges for both the standard and
+ * red-line resolutions. */
+function trackVisitedHexCells(
+	point: RoutePoint,
+	h3ResolutionRef: React.MutableRefObject<number>,
+	lastCellRef: React.MutableRefObject<string | null>,
+	visitedHexIdsRef: React.MutableRefObject<Set<string>>,
+	orderedHexTilesRef: React.MutableRefObject<string[]>,
+	lastRedLineCellRef: React.MutableRefObject<string | null>,
+	dispatch: AppDispatch,
+): void {
+	if (isH3Available()) {
+		try {
+			// Use the same base integer resolution as buildH3GeoJson so that the
+			// visited cell ID matches the keys in the GeoJSON and the Redux records.
+			// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
+			// as the base and subdivides into children; visits are tracked at the base
+			// (parent) resolution so the colour update propagates to all sub-tiles.
+			const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+			const cell = latLngToCell(point.lat, point.lng, h3Res);
+			if (cell) {
+				// ── GPS gap interpolation ─────────────────────────────────────────
+				// When moving from lastCellRef to the new cell, fill in all H3 cells
+				// on the straight-line path between them. This handles GPS dropouts
+				// where the device had no signal for several updates: tiles the user
+				// actually passed through are still counted as visited.
+				if (lastCellRef.current && cell !== lastCellRef.current) {
+					try {
+						const pathCells = gridPathCells(lastCellRef.current, cell);
+						// pathCells[0] is lastCellRef (already visited), pathCells[last] is
+						// `cell` which will be processed below. Only fill when the gap is
+						// within a reasonable bound to avoid marking thousands of tiles on a
+						// very long GPS outage.
+						// pathCells.length - 2 is the number of intermediate cells (excludes
+						// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
+						// exactly that many intermediate cells at most.
+						if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+							const newEdges: string[] = [];
+							for (let i = 0; i < pathCells.length - 1; i++) {
+								const a = pathCells[i];
+								const b = pathCells[i + 1];
+								newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+								if (i > 0) {
+									// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
+									if (!visitedHexIdsRef.current.has(pathCells[i])) {
+										visitedHexIdsRef.current.add(pathCells[i]);
+										orderedHexTilesRef.current.push(pathCells[i]);
+										dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
+									}
+								}
+							}
+							if (newEdges.length > 0) {
+								dispatch(addWalkedEdges(newEdges));
+							}
+						}
+					} catch (pathErr) {
+						// gridPathCells can throw when the two cells are on different
+						// icosahedron faces – log at warn level for diagnosability and continue.
+						console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
+					}
+				}
+
+				// Only count each tile once per run so the level can rise by at most
+				// one step during a single activity.
+				if (!visitedHexIdsRef.current.has(cell)) {
+					visitedHexIdsRef.current.add(cell);
+					orderedHexTilesRef.current.push(cell);
+					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+				}
+				if (cell !== lastCellRef.current) {
+					lastCellRef.current = cell;
+				}
+
+				// ── Red-line walk-path edge tracking ────────────────────────────────
+				// Track finer red-line cell transitions for the red walk-path line.
+				try {
+					const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
+					if (redLineCell && redLineCell !== lastRedLineCellRef.current) {
+						if (lastRedLineCellRef.current) {
+							const newRedLineEdges: string[] = [];
+							try {
+								const redLinePathCells = gridPathCells(lastRedLineCellRef.current, redLineCell);
+								if (redLinePathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+									for (let i = 0; i < redLinePathCells.length - 1; i++) {
+										const a = redLinePathCells[i];
+										const b = redLinePathCells[i + 1];
+										newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+									}
+								}
+							} catch {
+								const a = lastRedLineCellRef.current;
+								const b = redLineCell;
+								newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+							}
+							if (newRedLineEdges.length > 0) {
+								dispatch(addWalkedEdgesRedLine(newRedLineEdges));
+							}
+						}
+						lastRedLineCellRef.current = redLineCell;
+					}
+				} catch {
+					// latLngToCell can throw for invalid coordinates; skip silently
+				}
+			}
+		} catch (err) {
+			console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
+		}
+	}
+}
+
+/** Announces a whole-km distance milestone via TTS when the runner crosses one
+ * during this update, respecting the user's speech settings. */
+function announceKmMilestoneIfNeeded(
+	liveDistanceKm: number,
+	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>,
+	lastAnnouncedKmRef: React.MutableRefObject<number>,
+	startTimeRef: React.MutableRefObject<number>,
+	accumulatedSecondsRef: React.MutableRefObject<number>,
+): void {
+	if (!speechSettingsRef.current.enabled) return;
+	const crossedKm = Math.floor(liveDistanceKm);
+	if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
+		lastAnnouncedKmRef.current = crossedKm;
+		const elapsedSec = startTimeRef.current > 0
+				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+				: accumulatedSecondsRef.current;
+		const paceMinPerKm = elapsedSec > 0 && liveDistanceKm > 0 ? elapsedSec / 60 / liveDistanceKm : null;
+		const locale = getLocales()[0]?.languageTag ?? 'en-US';
+		const langCode = locale.split('-')[0].toLowerCase();
+		const curSs = speechSettingsRef.current;
+		const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale, {
+			announcePace: curSs.announcePace,
+			announceSpeedKmh: curSs.announceSpeed,
+		});
+		try {
+			speakAnnouncement(text, langCode, {
+				rate: speechRateToNumber(curSs.speechRate),
+			}, 'km_milestone');
+		} catch (err) {
+			console.warn('[RecordScreen] Km milestone announcement failed:', err);
+		}
+	}
+}
+
+/** Evaluates and (if needed) speaks a pace-hint transition announcement
+ * ("too fast" / "too slow" / back to on-target), with hysteresis thresholds
+ * and a cooldown between announcements. */
+function evaluatePaceHintAnnouncement(
+	point: RoutePoint,
+	liveDistanceKm: number,
+	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>,
+	startTimeRef: React.MutableRefObject<number>,
+	accumulatedSecondsRef: React.MutableRefObject<number>,
+	paceHintStateRef: React.MutableRefObject<PaceHintState>,
+	lastPaceHintTimeRef: React.MutableRefObject<number>,
+	paceHintCooldownMs: number,
+): void {
+	if (!speechSettingsRef.current.enabled || liveDistanceKm <= 0) return;
+	const curSs = speechSettingsRef.current;
+	if (!curSs.paceTargetEnabled) return;
+
+	// Use instantaneous GPS speed for comparison so the hint reflects
+	// the runner's current speed rather than the session average.
+	// Fall back to the average pace when GPS speed is unavailable.
+	const elapsedSec = startTimeRef.current > 0
+		? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+		: accumulatedSecondsRef.current;
+	let currentPace: number | null = null;
+	if (point.speed != null && point.speed > 0.5) {
+		currentPace = 1000 / (point.speed * 60); // instantaneous pace: min/km from m/s
+	} else if (elapsedSec > 0) {
+		currentPace = elapsedSec / 60 / liveDistanceKm; // average fallback
+	}
+	if (currentPace != null) {
+		const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
+		const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
+		const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
+
+		// Lower pace value = faster running.  Thresholds are subtracted/added
+		// from the target to define the acceptable range boundaries.
+		const fasterBound = targetPace - fasterThreshold;
+		const slowerBound = targetPace + slowerThreshold;
+
+		const prev = paceHintStateRef.current;
+		let next: PaceHintState = 'on_target';
+
+		if (curSs.paceHintFasterEnabled && currentPace < fasterBound) {
+			next = 'too_fast';
+		} else if (curSs.paceHintSlowerEnabled && currentPace > slowerBound) {
+			next = 'too_slow';
+		}
+
+		const now = Date.now();
+		const locale = getLocales()[0]?.languageTag ?? 'en-US';
+		const langCode = locale.split('-')[0].toLowerCase();
+
+		// Announce "too fast" / "too slow" only on transition from on_target.
+		if (
+			next !== 'on_target' &&
+			prev === 'on_target' &&
+			now - lastPaceHintTimeRef.current >= paceHintCooldownMs
+		) {
+			const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
+			try {
+				speakAnnouncement(text, langCode, {
+					volume: curSs.volume,
+					rate: speechRateToNumber(curSs.speechRate),
+					useApplicationAudioSession: curSs.duckMusicDuringTTS,
+				}, 'pace_hint');
+			} catch (err) {
+				console.warn('[RecordScreen] Pace hint announcement failed:', err);
+			}
+			lastPaceHintTimeRef.current = now;
+		}
+
+		// Announce "Zielgeschwindigkeit erreicht" when returning to on_target
+		// after a warning state.
+		if (next === 'on_target' && prev !== 'on_target') {
+			const text = buildOnTargetAnnouncement(locale);
+			try {
+				speakAnnouncement(text, langCode, {
+					volume: curSs.volume,
+					rate: speechRateToNumber(curSs.speechRate),
+					useApplicationAudioSession: curSs.duckMusicDuringTTS,
+				}, 'pace_hint_on_target');
+			} catch (err) {
+				console.warn('[RecordScreen] On-target announcement failed:', err);
+			}
+		}
+
+		paceHintStateRef.current = next;
+	}
+}
+
+/** Refreshes the H3 hex-tile and walk-path GeoJSON (plus the search highlight
+ * layer) sent to the map so newly-visited tiles are reflected without waiting
+ * for a full viewport-change event. No-ops while backgrounded. */
+function refreshHexDisplayForViewport(
+	appActive: boolean,
+	debugViewportRef: React.MutableRefObject<DebugViewportInfo | null>,
+	mapRef: React.MutableRefObject<MyMapHandle | null>,
+	h3ResolutionRef: React.MutableRefObject<number>,
+	showGridAlwaysRef: React.MutableRefObject<boolean>,
+	h3MinZoomRef: React.MutableRefObject<number>,
+	refreshSearchHighlight: (cells: string[]) => void,
+): void {
+	const vp = debugViewportRef.current;
+	if (appActive && vp && mapRef.current) {
+		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+		try {
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
+		} catch (err) {
+			console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
+		}
+		debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
+		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
+		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+		refreshSearchHighlight(viewportCells);
+	}
+}
+
+/** Persists a recording snapshot for crash recovery, throttled to at most once
+ * every 10 seconds while actively (non-paused) recording. */
+function persistRecordingSnapshotIfDue(
+	isRecordingRef: React.MutableRefObject<boolean>,
+	isPausedRef: React.MutableRefObject<boolean>,
+	lastSnapshotSaveRef: React.MutableRefObject<number>,
+	startTimeRef: React.MutableRefObject<number>,
+	accumulatedSecondsRef: React.MutableRefObject<number>,
+	routePointsRef: React.MutableRefObject<RoutePoint[]>,
+	orderedHexTilesRef: React.MutableRefObject<string[]>,
+	h3ResolutionRef: React.MutableRefObject<number>,
+	selectedSportTypeRef: React.MutableRefObject<SportType>,
+	selectedRouteRef: React.MutableRefObject<SavedRoute | null>,
+): void {
+	if (isRecordingRef.current && !isPausedRef.current) {
+		const now = Date.now();
+		// Save a snapshot at most every 10 seconds to limit I/O.
+		if (now - lastSnapshotSaveRef.current >= 10_000) {
+			lastSnapshotSaveRef.current = now;
+			saveRecordingSnapshot({
+				startedAt: startTimeRef.current,
+				accumulatedSeconds: accumulatedSecondsRef.current,
+				segmentStart: startTimeRef.current,
+				routePoints: routePointsRef.current,
+				hexTilesOrdered: orderedHexTilesRef.current,
+				h3Resolution: Math.floor(h3ResolutionRef.current),
+				sportType: selectedSportTypeRef.current,
+				routeId: selectedRouteRef.current?.id ?? null,
+				savedAt: now,
+			});
+		}
+	}
+}
+
+// ─── RecordScreen: render helpers ──────────────────────────────────────────────
+
+/** Home button icon color: white while placing home, green when a home tile is set. */
+function resolveHomeButtonIconColor(isSettingHome: boolean, homeHexTile: string | null): string {
+	if (isSettingHome) return '#ffffff';
+	if (homeHexTile !== null) return STATUS_SUCCESS_COLOR;
+	return '#555555';
+}
+
+/** Central record button action: start when idle, resume when paused, otherwise pause. */
+function resolveRecordButtonAction(
+	isRecording: boolean,
+	isPaused: boolean,
+	pauseRecording: () => void,
+	handleRecordButtonPress: () => Promise<void>,
+	resumeRecording: () => void,
+): () => void | Promise<void> {
+	if (!isRecording) return handleRecordButtonPress;
+	if (isPaused) return resumeRecording;
+	return pauseRecording;
+}
+
+type MapOverlayButtonsProps = Readonly<{
+	mapRef: React.MutableRefObject<MyMapHandle | null>;
+	isHeadingMode: boolean;
+	handleCompassPress: () => void;
+	isFollowing: boolean;
+	setFollowMode: (val: boolean) => void;
+	movedPlayerManuallyRef: React.MutableRefObject<boolean>;
+	isRecording: boolean;
+	isSettingHome: boolean;
+	homeHexTile: string | null;
+	homeButtonIconColor: string;
+	isSettingHomeRef: React.MutableRefObject<boolean>;
+	setIsSettingHome: (val: boolean) => void;
+	searchState: RootState['mapSearch']['searchState'];
+	openSearchModal: () => Promise<void>;
+	isDebugMode: boolean;
+	coloringTileImage: string | null;
+	openColoringModal: () => void;
+	isMeasureMode: boolean;
+	cancelMeasureMode: () => void;
+	startMeasureMode: () => void;
+	showDebugModal: () => void;
+	finishMeasurement: () => Promise<void>;
+	undoMeasurePoint: () => void;
+}>;
+
+/** Top-right map overlay button cluster: compass, locate-me, set-home, search,
+ * and (in debug mode) coloring / measure / debug-menu / measure-confirm buttons. */
+function MapOverlayButtons({
+	mapRef,
+	isHeadingMode,
+	handleCompassPress,
+	isFollowing,
+	setFollowMode,
+	movedPlayerManuallyRef,
+	isRecording,
+	isSettingHome,
+	homeHexTile,
+	homeButtonIconColor,
+	isSettingHomeRef,
+	setIsSettingHome,
+	searchState,
+	openSearchModal,
+	isDebugMode,
+	coloringTileImage,
+	openColoringModal,
+	isMeasureMode,
+	cancelMeasureMode,
+	startMeasureMode,
+	showDebugModal,
+	finishMeasurement,
+	undoMeasurePoint,
+}: MapOverlayButtonsProps) {
+	return (
+		<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+			{/* Compass / heading-mode toggle button */}
+			<TouchableOpacity
+				style={[
+					styles.compassButton,
+					isHeadingMode && { backgroundColor: PRIMARY_COLOR },
+				]}
+				onPress={handleCompassPress}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons
+					name={isHeadingMode ? 'navigation' : 'explore'}
+					size={26}
+					color={isHeadingMode ? '#ffffff' : '#555555'}
+				/>
+			</TouchableOpacity>
+			<View style={styles.buttonSpacer} />
+			<MapLocationButton
+				mapRef={mapRef}
+				backgroundColor="#ffffff"
+				iconColor="#555555"
+				activeColor={PRIMARY_COLOR}
+				isFollowing={isFollowing}
+				zoom={17}
+				onLocationFound={() => {
+					movedPlayerManuallyRef.current = false;
+					setFollowMode(true);
+				}}
+			/>
+			<View style={styles.buttonSpacer} />
+			{/* Set Home button – always visible when not recording */}
+			{!isRecording && (
+				<>
+					<TouchableOpacity
+						style={[
+							styles.debugButton,
+							isSettingHome && { backgroundColor: STATUS_WARNING_COLOR },
+							!isSettingHome && homeHexTile !== null && { backgroundColor: STATUS_SUCCESS_COLOR + '22' },
+						]}
+						onPress={() => {
+							if (!isSettingHome && homeHexTile !== null) {
+								const [lat, lng] = cellToLatLng(homeHexTile);
+								mapRef.current?.sendToMap({
+									mapCenterPosition: { lat, lng },
+									zoom: 17,
+								});
+							} else {
+								isSettingHomeRef.current = !isSettingHome;
+								setIsSettingHome(!isSettingHome);
+							}
+						}}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons
+							name="home"
+							size={20}
+							color={homeButtonIconColor}
+						/>
+					</TouchableOpacity>
+					<View style={styles.buttonSpacer} />
+				</>
+			)}
+			{/* Search highlight button – always visible in RecordScreen */}
+			<TouchableOpacity
+				style={[
+					styles.debugButton,
+					searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
+				]}
+				onPress={() => { void openSearchModal(); }}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons
+					name="search"
+					size={20}
+					color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
+				/>
+			</TouchableOpacity>
+			<View style={styles.buttonSpacer} />
+			{isDebugMode && !isRecording && (
+				<>
+					<TouchableOpacity
+						style={[
+							styles.debugButton,
+							coloringTileImage !== null && { backgroundColor: PRIMARY_COLOR },
+						]}
+						onPress={openColoringModal}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
+					</TouchableOpacity>
+					<View style={styles.buttonSpacer} />
+					<TouchableOpacity
+						style={[
+							styles.debugButton,
+							isMeasureMode && { backgroundColor: '#f97316' },
+						]}
+						onPress={isMeasureMode ? cancelMeasureMode : startMeasureMode}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="straighten" size={20} color={isMeasureMode ? '#ffffff' : '#555555'} />
+					</TouchableOpacity>
+					<View style={styles.buttonSpacer} />
+				</>
+			)}
+			{isDebugMode && !isRecording && !isMeasureMode && (
+					<TouchableOpacity
+						style={styles.debugButton}
+						onPress={showDebugModal}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="bug-report" size={20} color="#555555" />
+					</TouchableOpacity>
+			)}
+			{isDebugMode && isMeasureMode && (
+				<>
+					<TouchableOpacity
+						style={[styles.debugButton, { backgroundColor: '#43a047' }]}
+						onPress={finishMeasurement}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="check" size={20} color="#ffffff" />
+					</TouchableOpacity>
+					<View style={styles.buttonSpacer} />
+					<TouchableOpacity
+						style={styles.debugButton}
+						onPress={undoMeasurePoint}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="undo" size={20} color="#555555" />
+					</TouchableOpacity>
+				</>
+			)}
+		</View>
+	);
+}
+
+type LiveControlPanelProps = Readonly<{
+	isPanelCollapsed: boolean;
+	setIsPanelCollapsed: (val: boolean) => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+	isRecording: boolean;
+	liveDistanceValue: string;
+	liveDistanceKm: number;
+	livePaceMinPerKm: number | null;
+	liveAvgSpeedKmh: number;
+	selectedRoute: SavedRoute | null;
+	setSelectedRoute: (route: SavedRoute | null) => void;
+	isDebugMode: boolean;
+	debugReplayActivity: SavedActivity | null;
+	setDebugReplayActivity: (activity: SavedActivity | null) => void;
+	stopRecording: () => Promise<void>;
+	activeSport: SportTypeDefinition;
+	showActivityTypeModal: () => void;
+	recordButtonColor: string;
+	recordButtonAction: () => void | Promise<void>;
+	recordButtonIcon: 'play-arrow' | 'pause';
+	showRouteSelectionModal: () => Promise<void>;
+}>;
+
+/** Bottom control panel: live stats row, selected-route/replay indicators, and
+ * the stop/record-pause/route-picker controls row. Collapses to just a chevron
+ * while recording if the user collapses it. */
+function LiveControlPanel({
+	isPanelCollapsed,
+	setIsPanelCollapsed,
+	theme,
+	isRecording,
+	liveDistanceValue,
+	liveDistanceKm,
+	livePaceMinPerKm,
+	liveAvgSpeedKmh,
+	selectedRoute,
+	setSelectedRoute,
+	isDebugMode,
+	debugReplayActivity,
+	setDebugReplayActivity,
+	stopRecording,
+	activeSport,
+	showActivityTypeModal,
+	recordButtonColor,
+	recordButtonAction,
+	recordButtonIcon,
+	showRouteSelectionModal,
+}: LiveControlPanelProps) {
+	return (
+		<View style={[styles.liveBar, { backgroundColor: theme.screen.background }]}>
+			{isPanelCollapsed && (
+				/* Collapsed: only show expand chevron – aligned right to match expanded position */
+				<View style={styles.liveBarCollapsedRow}>
+					<View style={styles.liveBarSideSlot}>
+						<TouchableOpacity
+							style={styles.chevronButton}
+							onPress={() => setIsPanelCollapsed(false)}
+							activeOpacity={0.7}
+						>
+							<MaterialIcons name="expand-less" size={24} color={theme.screen.icon} />
+						</TouchableOpacity>
+					</View>
+				</View>
+			)}
+			{!isPanelCollapsed && (
+				<>
+					{/* Stats row */}
+					<View style={styles.liveBarStatsRow}>
+						<View style={styles.liveStatCard}>
+							<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
+							<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+								{isRecording ? liveDistanceValue : '--'}
+							</Text>
+							<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
+								{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
+							</Text>
+						</View>
+						<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+						<View style={styles.liveStatCard}>
+							<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
+							<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+								{isRecording && livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
+							</Text>
+							<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
+						</View>
+						<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+						<View style={styles.liveStatCard}>
+							<MaterialIcons name="directions-run" size={20} color={theme.screen.icon} />
+							<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+								{isRecording ? liveAvgSpeedKmh.toFixed(1) : '--'}
+							</Text>
+							<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
+						</View>
+					</View>
+
+					{/* Selected route indicator (shown only before recording starts) */}
+					{!isRecording && selectedRoute && (
+						<View style={styles.selectedRouteRow}>
+							<MaterialIcons name="route" size={14} color={PRIMARY_COLOR} />
+							<Text style={[styles.selectedRouteText, { color: theme.screen.text }]} numberOfLines={1}>
+								{selectedRoute.name}
+							</Text>
+							<TouchableOpacity onPress={() => setSelectedRoute(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+								<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+							</TouchableOpacity>
+						</View>
+					)}
+
+					{/* Debug replay indicator (shown in debug mode before recording starts) */}
+					{isDebugMode && !isRecording && debugReplayActivity && (
+						<View style={styles.selectedRouteRow}>
+							<MaterialIcons name="replay" size={14} color="#f97316" />
+							<Text style={[styles.selectedRouteText, { color: '#f97316' }]} numberOfLines={1}>
+								{'🔄 Replay: ' + new Date(debugReplayActivity.startedAt).toLocaleDateString() + ' ' + new Date(debugReplayActivity.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+							</Text>
+							<TouchableOpacity onPress={() => setDebugReplayActivity(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+								<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+							</TouchableOpacity>
+						</View>
+					)}
+
+
+					{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
+					<View style={styles.liveBarControlsRow}>
+						{/* Left side: stop button when recording, activity type picker otherwise */}
+						<View style={styles.liveBarSideSlot}>
+							{isRecording && (
+								<TouchableOpacity
+									style={[styles.stopButton, { backgroundColor: '#e53935' }]}
+									onPress={stopRecording}
+									activeOpacity={0.8}
+								>
+									<MaterialIcons name="stop" size={32} color="white" />
+								</TouchableOpacity>
+							)}
+							{!isRecording && (
+								<TouchableOpacity
+									style={[styles.activityTypeButton, { backgroundColor: activeSport.color + '22' }]}
+									onPress={showActivityTypeModal}
+									activeOpacity={0.8}
+								>
+									{activeSport.iconLibrary === 'MaterialCommunityIcons' ? (
+										<MaterialCommunityIcons
+											name={activeSport.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+											size={28}
+											color={activeSport.color}
+										/>
+									) : (
+										<MaterialIcons
+											name={activeSport.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+											size={28}
+											color={activeSport.color}
+										/>
+									)}
+								</TouchableOpacity>
+							)}
+						</View>
+
+						{/* Central record / pause button */}
+						<TouchableOpacity
+							style={[
+								styles.mainRecordButton,
+								{ backgroundColor: recordButtonColor },
+							]}
+							onPress={recordButtonAction}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons
+								name={recordButtonIcon}
+								size={32}
+								color="white"
+							/>
+						</TouchableOpacity>
+
+						{/* Chevron-down collapse button – right side */}
+						<View style={styles.liveBarSideSlot}>
+							{!isRecording && (
+								<TouchableOpacity
+									style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
+									onPress={showRouteSelectionModal}
+									activeOpacity={0.8}
+								>
+									<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
+								</TouchableOpacity>
+							)}
+							{isRecording && (
+								<TouchableOpacity
+									style={styles.chevronButton}
+									onPress={() => setIsPanelCollapsed(true)}
+									activeOpacity={0.7}
+								>
+									<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
+								</TouchableOpacity>
+							)}
+						</View>
+					</View>
+				</>
+			)}
+		</View>
+	);
+}
+
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -3046,7 +4287,7 @@ export default function RecordScreen() {
 	// True while the joystick is being actively used; suppresses compass updates.
 	const joystickActiveRef = useRef(false);
 
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	// ── Tile image / model overlay sync ────────────────────────────────────────
 
@@ -3115,223 +4356,15 @@ export default function RecordScreen() {
 		const currentHexTextureAdaptionOpacity = store.getState().displaySettings.hexTextureAdaptionOpacity;
 		const currentHexObjectOpacity = store.getState().displaySettings.hexObjectOpacity;
 
-		// Flat lookup: terrain asset key → { moduleId, mimeType }
-		const terrainLookup = new Map<string, { moduleId: number; mimeType: string }>();
-		for (const assets of Object.values(TERRAIN_ASSETS)) {
-			for (const entry of assets) {
-				terrainLookup.set(entry.key, { moduleId: entry.source as number, mimeType: entry.mimeType ?? 'image/svg+xml' });
-			}
-		}
-
-		type ImageOverlay = {
-			id: string;
-			url: string;
-			coordinates: [[number, number], [number, number], [number, number], [number, number]];
-			opacity: number;
-			// Actual H3 hex vertices in [lng, lat] order for precise canvas clipping.
-			polygonCoords: [number, number][];
-			// Bearing from hex center to its first vertex (radians, 0 = North, CW positive).
-			// Used to rotate the texture so it aligns with the H3 hex orientation.
-			rotation: number;
-		};
-
-		const imageOverlays: ImageOverlay[] = [];
-
-		for (const [h3Index, record] of Object.entries(records)) {
-			// ── Tile image overlay ──────────────────────────────────────────────
-			if (record.tileImage) {
-				const terrainEntry = terrainLookup.get(record.tileImage);
-				if (terrainEntry !== undefined) {
-					const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
-					if (url) {
-						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
-						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-						if (boundary.length >= 3) {
-							let minLat = Infinity, maxLat = -Infinity;
-							let minLng = Infinity, maxLng = -Infinity;
-							for (const [lat, lng] of boundary) {
-								if (lat < minLat) minLat = lat;
-								if (lat > maxLat) maxLat = lat;
-								if (lng < minLng) minLng = lng;
-								if (lng > maxLng) maxLng = lng;
-							}
-							// Compute the geographic bearing (azimuth) from the hex center to its first
-							// vertex. Math.cos(centerLat) corrects the longitude delta for the fact that
-							// 1° of longitude covers less ground at higher latitudes. atan2(x, y) with
-							// (dlng, dlat) gives the angle measured clockwise from North, which is the
-							// standard geographic convention (0 = North, π/2 = East).
-							const centerLat = (minLat + maxLat) / 2;
-							const centerLng = (minLng + maxLng) / 2;
-							const v0 = boundary[0];
-							const dlat = v0[0] - centerLat;
-							const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
-							const rotation = Math.atan2(dlng, dlat); // radians CW from North
-
-							// Apply per-terrain anchor/scale overrides from hex texture config.
-							const terrainOverride = textureAnchors[record.tileImage];
-							const texAnchorX = terrainOverride?.anchorX ?? 0.5;
-							const texAnchorY = terrainOverride?.anchorY ?? 0.5;
-							const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
-							const bboxW = maxLng - minLng;
-							const bboxH = maxLat - minLat;
-							// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
-							// portion of the texture (matching the HexFieldPreview behaviour).
-							const scaledW = bboxW * texScale;
-							const scaledH = bboxH * texScale;
-							// Pin the anchor fraction of the image to the hex center.
-							// This keeps the texture centred at scale 1 and lets the anchor
-							// shift which part of the image is visible at other scales.
-							// centerLng/centerLat are already computed above for the rotation calc.
-							const adjMinLng = centerLng - texAnchorX * scaledW;
-							const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
-							const adjMinLat = centerLat - texAnchorY * scaledH;
-							const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
-
-							imageOverlays.push({
-								id: `tile-img-${h3Index}`,
-								url,
-								// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
-								coordinates: [
-									[adjMinLng, adjMaxLat],
-									[adjMaxLng, adjMaxLat],
-									[adjMaxLng, adjMinLat],
-									[adjMinLng, adjMinLat],
-								],
-								opacity: currentHexTextureOpacity,
-								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
-								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
-								rotation,
-							});
-						}
-					}
-				}
-			}
-		}
-
-		// ── Billboard GeoJSON symbol layer ───────────────────────────────────────────
-		// Billboards are rendered as a MapLibre symbol layer whose icon-size is set to
-		// a fixed value per feature. The zoom-based exponential expression in the
-		// MapLibre HTML ensures the icon scales proportionally with the map so that
-		// each billboard occupies a constant geographic area. Billboard size also
-		// scales with the H3 edge length: larger on bigger hexagons, smaller on
-		// smaller ones.
-		//
-		// Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
-		// for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
-		// zoomed in or on high-DPI screens. Features carry an iconSizeAtRefZoom property
-		// (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14) so the layer's
-		// icon-size zoom expression scales it correctly at all zoom levels.
-		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
-		const BILLBOARD_STANDARD_ICON_SIZE = 128;
-
-		// Billboard pixel size is determined by the sprite's scaleFactor, the
-		// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
-		// relative to the reference resolution (10). This makes billboards larger on
-		// bigger hexagons and smaller on smaller ones.
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
-		// at the reference resolution.
-
-		const billboardImages: Record<string, { url: string }> = {};
-		type BillboardFeature = {
-			type: 'Feature';
-			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number; flat: boolean };
-		};
-		const billboardFeatures: BillboardFeature[] = [];
-
-		for (const [h3Index, record] of Object.entries(records)) {
-			// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
-			const effectiveBillboards = getEffectiveBillboards(record);
-			const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
-			// Per-anchor flat flags (legacy; used only for old `billboards` data).
-			const effectiveFlat = getEffectiveBillboardsFlat(record);
-
-			const hasBillboards = Object.keys(effectiveBillboards).length > 0;
-			const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
-			if (!hasBillboards && !hasTextureAdaptions) continue;
-
-			// Compute hex boundary (centroid + vertices) once per tile.
-			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
-			let sumLng = 0, sumLat = 0;
-			const n = boundary.length - 1;
-			if (n <= 0) continue;
-			for (let j = 0; j < n; j++) {
-				const [bLng, bLat] = boundary[j] as [number, number];
-				sumLng += bLng;
-				sumLat += bLat;
-			}
-			const centerLng = sumLng / n;
-			const centerLat = sumLat / n;
-
-			// Size constants for this tile's resolution (shared across all anchors).
-			const cellRes = getResolution(h3Index);
-			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
-			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
-
-			// ── Hex Texture Adaptions (always flat on the map surface) ────────────
-			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
-				const parsed = parseBillboardKey(billboardKey);
-				if (!parsed) continue;
-				const { sprite, idx } = parsed;
-				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
-				if (!url) continue;
-
-				const iconKey = `billboard-${billboardKey}`;
-				const anchorOverride = spriteAnchors[idx];
-				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-				const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
-				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
-				));
-				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
-
-				if (!billboardImages[iconKey]) {
-					billboardImages[iconKey] = { url };
-				}
-				// Hex Texture Adaptions are always flat and rotated by the position angle.
-				const textureRotation = getAnchorAngleDeg(anchorColor);
-				billboardFeatures.push({
-					type: 'Feature',
-					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation },
-				});
-			}
-
-			// ── Hex Objects (face-camera; legacy billboardsFlat flag still respected) ──
-			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
-				const parsed = parseBillboardKey(billboardKey);
-				if (!parsed) continue;
-				const { sprite, idx } = parsed;
-				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
-				if (!url) continue;
-
-				const iconKey = `billboard-${billboardKey}`;
-				const anchorOverride = spriteAnchors[idx];
-				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-				const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
-				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
-				));
-				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
-
-				// Hex Objects are face-camera by default; legacy per-anchor flat flag
-				// is still respected for backward compatibility with existing data.
-				const flat = effectiveFlat[anchorColor] === true;
-
-				if (!billboardImages[iconKey]) {
-					billboardImages[iconKey] = { url };
-				}
-				billboardFeatures.push({
-					type: 'Feature',
-					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat, opacity: currentHexObjectOpacity },
-				});
-			}
-		}
+		const imageOverlays = await buildTileImageOverlays(records, textureAnchors, currentHexTextureOpacity, loadAssetUrl);
+		const { images: billboardImages, features: billboardFeatures } = await buildBillboardOverlays(
+			records,
+			spriteAnchors,
+			billboardScaleRef,
+			currentHexTextureAdaptionOpacity,
+			currentHexObjectOpacity,
+			loadAssetUrl,
+		);
 
 		mapRef.current.sendToMap({
 			imageOverlays,
@@ -4068,78 +5101,18 @@ export default function RecordScreen() {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			mapWebViewReadyRef.current = true;
-			// Activate hex tile layer. strokeColor is intentionally omitted so that
-			// the default gray value defined in hexTileScript.ts is preserved.
-			const { hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
-			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: 0, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
-			});
-			if (routePointsRef.current.length > 0) {
-				sendRouteToMap(routePointsRef.current);
-			}
-			const pos = debugPlayerPositionRef.current;
-			if (pos) {
-				centerMapOnPosition(pos);
-			}
-			// Send any already-selected tile images to the map.
-			loadAndSendCustomizations();
+			handleMapComponentMounted(mapRef, routePointsRef, debugPlayerPositionRef, sendRouteToMap, centerMapOnPosition, loadAndSendCustomizations);
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
-			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: 0 };
-
-			// When a route is selected (pre-recording), show only the route's tiles
-			// and walk path instead of the full global tile set.
-			if (selectedRouteRef.current && !isRecordingRef.current) {
-				try {
-					const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
-						selectedRouteRef.current,
-						store.getState().hexTiles.records,
-					);
-					debugViewportRef.current.tileCount = hexTileGeoJson.features.length;
-					mapRef.current?.sendToMap({ hexTileGeoJson });
-					mapRef.current?.sendToMap({ hexWalkPathGeoJson });
-				} catch (err) {
-					console.warn('[RecordScreen] Route preview viewport update failed:', err);
-				}
-			} else {
-				refreshNormalTileDisplay(vp);
-			}
+			handleMapViewportChanged(vp, selectedRouteRef, isRecordingRef, debugViewportRef, mapRef, refreshNormalTileDisplay);
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
-			if (clickedMsg.h3Index) {
-				if (isSettingHomeRef.current) {
-					// Set-home mode: place castle2 at the center of the selected tile
-					// and store it as the player's home.
-					const newHomeHex = clickedMsg.h3Index;
-					dispatch(setBillboardAtAnchor({
-						h3Index: newHomeHex,
-						anchorColor: BillboardAnchorPosition.CENTER,
-						billboard: BILLBOARD_CASTLE2_KEY,
-					}));
-					dispatch(setHomeHexTile(newHomeHex));
-					isSettingHomeRef.current = false;
-					setIsSettingHome(false);
-				} else if (coloringTileImageRef.current !== null) {
-					// Coloring mode active: directly apply the selected tile image.
-					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
-				} else if (isMagnifyModeRef.current) {
-					// Magnify mode active: show detailed map info modal.
-					showMagnifyHexTileModal(clickedMsg.h3Index);
-				} else {
-					showHexTileModal(clickedMsg.h3Index);
-				}
-			}
+			handleHexTileClicked(clickedMsg, isSettingHomeRef, setIsSettingHome, coloringTileImageRef, isMagnifyModeRef, showMagnifyHexTileModal, showHexTileModal, dispatch);
 		} else if (msg.tag === 'MapMeasurePoint') {
 			const ptMsg = msg as { lat: number; lng: number };
-			if (isMeasureModeRef.current) {
-				const newWaypoints = [...measureWaypointsRef.current, { lat: ptMsg.lat, lng: ptMsg.lng }];
-				measureWaypointsRef.current = newWaypoints;
-				const coords = newWaypoints.map((w) => [w.lng, w.lat]);
-				mapRef.current?.sendToMap({ measureRouteCoords: coords });
-				mapRef.current?.sendToMap({ measurePoints: coords });
-			}
+			handleMapMeasurePoint(ptMsg, isMeasureModeRef, measureWaypointsRef, mapRef);
 		}
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch, refreshNormalTileDisplay]);
 
@@ -4280,27 +5253,7 @@ export default function RecordScreen() {
 		// AppState 'active' handler re-syncs the display on return.
 		const appActive = AppState.currentState === 'active';
 		if (isPausedRef.current) {
-			// During pause: update the visual player position but do NOT record GPS points
-			// or mark hex tiles. Both real GPS and joystick movement are allowed so the
-			// player marker stays live while the run is paused.
-			//
-			// For real GPS: skip if the user already overrode the position with the
-			// joystick before pausing – this mirrors the active-recording behaviour and
-			// prevents GPS from snapping the marker back while the user navigates
-			// virtually during the pause.
-			const shouldUpdate = fromJoystick || !movedPlayerManuallyRef.current;
-			if (shouldUpdate) {
-				debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
-				if (appActive) {
-					mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
-					centerMapOnPosition({ lat: point.lat, lng: point.lng });
-				}
-				// Advance the accepted-point ref for real GPS so the speed filter works
-				// correctly on the first GPS point recorded after resume.
-				if (!fromJoystick) {
-					lastAcceptedGpsPointRef.current = point;
-				}
-			}
+			applyPausedLocationUpdate(point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef, lastAcceptedGpsPointRef, mapRef, centerMapOnPosition);
 			return;
 		}
 
@@ -4308,49 +5261,8 @@ export default function RecordScreen() {
 		// If the implied speed between the last accepted GPS fix and this one is
 		// unrealistically high for the selected sport, discard the point as a GPS
 		// glitch / noise spike.
-		if (!fromJoystick) {
-			// While the joystick is actively held during a recording, skip GPS
-			// route points entirely. The joystick is providing the authoritative
-			// position; adding a real GPS fix would create a visible jump in the
-			// recorded route from the virtual joystick position back to the
-			// physical GPS location.
-			if (isRecordingRef.current && (joystickActiveRef.current || movedPlayerManuallyRef.current)) {
-				return;
-			}
-
-			const lastAccepted = lastAcceptedGpsPointRef.current;
-			if (lastAccepted) {
-				const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
-
-				// ── GPS time-interval filter ──────────────────────────────────────────
-				// During recording, skip this point if the elapsed time since the last
-				// accepted GPS fix is less than 95 % of the configured GPS interval.
-				// This prevents the platform from delivering points more frequently than
-				// the user-selected accuracy setting, which would result in too many
-				// recorded GPS points.
-				if (isRecordingRef.current) {
-					const gpsIntervalSeconds = store.getState().gpsInterval.intervalSeconds;
-					const minElapsedSec = gpsIntervalSeconds * 0.95;
-					if (dtSec < minElapsedSec) {
-						return;
-					}
-				}
-
-				if (dtSec > 0) {
-					const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
-					const impliedSpeedKmh = (distKm / dtSec) * 3600;
-					const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
-					const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
-					if (impliedSpeedKmh > maxSpeedKmh) {
-						console.warn(
-							`[RecordScreen] GPS point filtered: implied speed ${impliedSpeedKmh.toFixed(1)} km/h` +
-							` exceeds max ${maxSpeedKmh} km/h for sport "${selectedSportTypeRef.current}".`,
-						);
-						return;
-					}
-				}
-			}
-			lastAcceptedGpsPointRef.current = point;
+		if (maybeFilterGpsPoint(fromJoystick, point, isRecordingRef, joystickActiveRef, movedPlayerManuallyRef, lastAcceptedGpsPointRef, selectedSportTypeRef)) {
+			return;
 		}
 
 		const next = [...routePointsRef.current, point];
@@ -4363,103 +5275,7 @@ export default function RecordScreen() {
 		}
 
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
-		if (isH3Available()) {
-			try {
-				// Use the same base integer resolution as buildH3GeoJson so that the
-				// visited cell ID matches the keys in the GeoJSON and the Redux records.
-				// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
-				// as the base and subdivides into children; visits are tracked at the base
-				// (parent) resolution so the colour update propagates to all sub-tiles.
-				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
-				const cell = latLngToCell(point.lat, point.lng, h3Res);
-				if (cell) {
-					// ── GPS gap interpolation ─────────────────────────────────────────
-					// When moving from lastCellRef to the new cell, fill in all H3 cells
-					// on the straight-line path between them. This handles GPS dropouts
-					// where the device had no signal for several updates: tiles the user
-					// actually passed through are still counted as visited.
-					if (lastCellRef.current && cell !== lastCellRef.current) {
-						try {
-							const pathCells = gridPathCells(lastCellRef.current, cell);
-							// pathCells[0] is lastCellRef (already visited), pathCells[last] is
-							// `cell` which will be processed below. Only fill when the gap is
-							// within a reasonable bound to avoid marking thousands of tiles on a
-							// very long GPS outage.
-							// pathCells.length - 2 is the number of intermediate cells (excludes
-							// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
-							// exactly that many intermediate cells at most.
-							if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-								const newEdges: string[] = [];
-								for (let i = 0; i < pathCells.length - 1; i++) {
-									const a = pathCells[i];
-									const b = pathCells[i + 1];
-									newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-									if (i > 0) {
-										// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
-										if (!visitedHexIdsRef.current.has(pathCells[i])) {
-											visitedHexIdsRef.current.add(pathCells[i]);
-											orderedHexTilesRef.current.push(pathCells[i]);
-											dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
-										}
-									}
-								}
-								if (newEdges.length > 0) {
-									dispatch(addWalkedEdges(newEdges));
-								}
-							}
-						} catch (pathErr) {
-							// gridPathCells can throw when the two cells are on different
-							// icosahedron faces – log at warn level for diagnosability and continue.
-							console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
-						}
-					}
-
-					// Only count each tile once per run so the level can rise by at most
-					// one step during a single activity.
-					if (!visitedHexIdsRef.current.has(cell)) {
-						visitedHexIdsRef.current.add(cell);
-						orderedHexTilesRef.current.push(cell);
-						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
-					}
-					if (cell !== lastCellRef.current) {
-						lastCellRef.current = cell;
-					}
-
-					// ── Red-line walk-path edge tracking ────────────────────────────────
-					// Track finer red-line cell transitions for the red walk-path line.
-					try {
-						const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
-						if (redLineCell && redLineCell !== lastRedLineCellRef.current) {
-							if (lastRedLineCellRef.current) {
-								const newRedLineEdges: string[] = [];
-								try {
-									const redLinePathCells = gridPathCells(lastRedLineCellRef.current, redLineCell);
-									if (redLinePathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-										for (let i = 0; i < redLinePathCells.length - 1; i++) {
-											const a = redLinePathCells[i];
-											const b = redLinePathCells[i + 1];
-											newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-										}
-									}
-								} catch {
-									const a = lastRedLineCellRef.current;
-									const b = redLineCell;
-									newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-								}
-								if (newRedLineEdges.length > 0) {
-									dispatch(addWalkedEdgesRedLine(newRedLineEdges));
-								}
-							}
-							lastRedLineCellRef.current = redLineCell;
-						}
-					} catch {
-						// latLngToCell can throw for invalid coordinates; skip silently
-					}
-				}
-			} catch (err) {
-				console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
-			}
-		}
+		trackVisitedHexCells(point, h3ResolutionRef, lastCellRef, visitedHexIdsRef, orderedHexTilesRef, lastRedLineCellRef, dispatch);
 
 		// If heading mode is active, rotate the map smoothly to face movement direction.
 		if (appActive && isHeadingModeRef.current && next.length >= 2) {
@@ -4480,108 +5296,10 @@ export default function RecordScreen() {
 		}
 
 		// Announce each whole-km milestone via TTS when enabled.
-		if (speechSettingsRef.current.enabled) {
-			const crossedKm = Math.floor(d);
-			if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
-				lastAnnouncedKmRef.current = crossedKm;
-				const elapsedSec = startTimeRef.current > 0
-						? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
-						: accumulatedSecondsRef.current;
-				const paceMinPerKm = elapsedSec > 0 && d > 0 ? elapsedSec / 60 / d : null;
-				const locale = getLocales()[0]?.languageTag ?? 'en-US';
-				const langCode = locale.split('-')[0].toLowerCase();
-				const curSs = speechSettingsRef.current;
-				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale, {
-					announcePace: curSs.announcePace,
-					announceSpeedKmh: curSs.announceSpeed,
-				});
-				try {
-					speakAnnouncement(text, langCode, {
-						rate: speechRateToNumber(curSs.speechRate),
-					}, 'km_milestone');
-				} catch (err) {
-					console.warn('[RecordScreen] Km milestone announcement failed:', err);
-				}
-			}
-		}
+		announceKmMilestoneIfNeeded(d, speechSettingsRef, lastAnnouncedKmRef, startTimeRef, accumulatedSecondsRef);
 
 		// ── Pace hint announcements with hysteresis threshold ────────────
-		if (speechSettingsRef.current.enabled && d > 0) {
-			const curSs = speechSettingsRef.current;
-			if (curSs.paceTargetEnabled) {
-				// Use instantaneous GPS speed for comparison so the hint reflects
-				// the runner's current speed rather than the session average.
-				// Fall back to the average pace when GPS speed is unavailable.
-				const elapsedSec = startTimeRef.current > 0
-					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
-					: accumulatedSecondsRef.current;
-				let currentPace: number | null = null;
-				if (point.speed != null && point.speed > 0.5) {
-					currentPace = 1000 / (point.speed * 60); // instantaneous pace: min/km from m/s
-				} else if (elapsedSec > 0) {
-					currentPace = elapsedSec / 60 / d; // average fallback
-				}
-				if (currentPace != null) {
-					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
-					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
-					const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
-
-					// Lower pace value = faster running.  Thresholds are subtracted/added
-					// from the target to define the acceptable range boundaries.
-					const fasterBound = targetPace - fasterThreshold;
-					const slowerBound = targetPace + slowerThreshold;
-
-					const prev = paceHintStateRef.current;
-					let next: PaceHintState = 'on_target';
-
-					if (curSs.paceHintFasterEnabled && currentPace < fasterBound) {
-						next = 'too_fast';
-					} else if (curSs.paceHintSlowerEnabled && currentPace > slowerBound) {
-						next = 'too_slow';
-					}
-
-					const now = Date.now();
-					const locale = getLocales()[0]?.languageTag ?? 'en-US';
-					const langCode = locale.split('-')[0].toLowerCase();
-
-					// Announce "too fast" / "too slow" only on transition from on_target.
-					if (
-						next !== 'on_target' &&
-						prev === 'on_target' &&
-						now - lastPaceHintTimeRef.current >= PACE_HINT_COOLDOWN_MS
-					) {
-						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
-						try {
-							speakAnnouncement(text, langCode, {
-								volume: curSs.volume,
-								rate: speechRateToNumber(curSs.speechRate),
-								useApplicationAudioSession: curSs.duckMusicDuringTTS,
-							}, 'pace_hint');
-						} catch (err) {
-							console.warn('[RecordScreen] Pace hint announcement failed:', err);
-						}
-						lastPaceHintTimeRef.current = now;
-					}
-
-					// Announce "Zielgeschwindigkeit erreicht" when returning to on_target
-					// after a warning state.
-					if (next === 'on_target' && prev !== 'on_target') {
-						const text = buildOnTargetAnnouncement(locale);
-						try {
-							speakAnnouncement(text, langCode, {
-								volume: curSs.volume,
-								rate: speechRateToNumber(curSs.speechRate),
-								useApplicationAudioSession: curSs.duckMusicDuringTTS,
-							}, 'pace_hint_on_target');
-						} catch (err) {
-							console.warn('[RecordScreen] On-target announcement failed:', err);
-						}
-					}
-
-					paceHintStateRef.current = next;
-				}
-			}
-		}
+		evaluatePaceHintAnnouncement(point, d, speechSettingsRef, startTimeRef, accumulatedSecondsRef, paceHintStateRef, lastPaceHintTimeRef, PACE_HINT_COOLDOWN_MS);
 
 		if (appActive && point.speed != null && point.speed >= 0) {
 			setLiveSpeedKmh(point.speed * 3.6);
@@ -4601,41 +5319,10 @@ export default function RecordScreen() {
 		// Refresh hex GeoJSON to show updated tile levels (includes the just-dispatched
 		// visit). Skipped while backgrounded; the AppState 'active' handler rebuilds
 		// the full map display when the app returns to the foreground.
-		const vp = debugViewportRef.current;
-		if (appActive && vp && mapRef.current) {
-			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
-			} catch (err) {
-				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
-			}
-			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
-			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges, store.getState().hexTiles.walkedEdgesRedLine);
-			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
-			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
-			refreshSearchHighlight(viewportCells);
-		}
+		refreshHexDisplayForViewport(appActive, debugViewportRef, mapRef, h3ResolutionRef, showGridAlwaysRef, h3MinZoomRef, refreshSearchHighlight);
 
 		// ── Periodically persist a recording snapshot for crash recovery ──
-		if (isRecordingRef.current && !isPausedRef.current) {
-			const now = Date.now();
-			// Save a snapshot at most every 10 seconds to limit I/O.
-			if (now - lastSnapshotSaveRef.current >= 10_000) {
-				lastSnapshotSaveRef.current = now;
-				saveRecordingSnapshot({
-					startedAt: startTimeRef.current,
-					accumulatedSeconds: accumulatedSecondsRef.current,
-					segmentStart: startTimeRef.current,
-					routePoints: routePointsRef.current,
-					hexTilesOrdered: orderedHexTilesRef.current,
-					h3Resolution: Math.floor(h3ResolutionRef.current),
-					sportType: selectedSportTypeRef.current,
-					routeId: selectedRouteRef.current?.id ?? null,
-					savedAt: now,
-				});
-			}
-		}
+		persistRecordingSnapshotIfDue(isRecordingRef, isPausedRef, lastSnapshotSaveRef, startTimeRef, accumulatedSecondsRef, routePointsRef, orderedHexTilesRef, h3ResolutionRef, selectedSportTypeRef, selectedRouteRef);
 	}, [centerMapOnPosition, sendRouteToMap, dispatch, refreshSearchHighlight]);
 
 	// Moves the player to a new position (used by the debug gamepad).
@@ -5255,12 +5942,7 @@ export default function RecordScreen() {
 	const liveAvgSpeedKmh = elapsedSeconds > 0 ? (liveDistanceKm / elapsedSeconds) * 3600 : 0;
 
 	// Home button icon: white while placing home, green when a home tile is set.
-	let homeButtonIconColor = '#555555';
-	if (isSettingHome) {
-		homeButtonIconColor = '#ffffff';
-	} else if (homeHexTile !== null) {
-		homeButtonIconColor = STATUS_SUCCESS_COLOR;
-	}
+	const homeButtonIconColor = resolveHomeButtonIconColor(isSettingHome, homeHexTile);
 
 	// Live distance: metres below 1 km, kilometres afterwards.
 	const liveDistanceValue = liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2);
@@ -5268,12 +5950,7 @@ export default function RecordScreen() {
 	// Central record button: green when idle or paused (start/resume), amber while recording (pause).
 	const recordButtonColor = !isRecording || isPaused ? '#43a047' : '#f59e0b';
 	const recordButtonIcon = !isRecording || isPaused ? 'play-arrow' : 'pause';
-	let recordButtonAction: () => void | Promise<void> = pauseRecording;
-	if (!isRecording) {
-		recordButtonAction = handleRecordButtonPress;
-	} else if (isPaused) {
-		recordButtonAction = resumeRecording;
-	}
+	const recordButtonAction = resolveRecordButtonAction(isRecording, isPaused, pauseRecording, handleRecordButtonPress, resumeRecording);
 
 	if (!osmConsent) {
 		return (
@@ -5292,139 +5969,31 @@ export default function RecordScreen() {
 				)}
 
 				{/* Map overlay buttons – top-right */}
-				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-					{/* Compass / heading-mode toggle button */}
-					<TouchableOpacity
-						style={[
-							styles.compassButton,
-							isHeadingMode && { backgroundColor: PRIMARY_COLOR },
-						]}
-						onPress={handleCompassPress}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons
-							name={isHeadingMode ? 'navigation' : 'explore'}
-							size={26}
-							color={isHeadingMode ? '#ffffff' : '#555555'}
-						/>
-					</TouchableOpacity>
-					<View style={styles.buttonSpacer} />
-					<MapLocationButton
-						mapRef={mapRef}
-						backgroundColor="#ffffff"
-						iconColor="#555555"
-						activeColor={PRIMARY_COLOR}
-						isFollowing={isFollowing}
-						zoom={17}
-						onLocationFound={() => {
-							movedPlayerManuallyRef.current = false;
-							setFollowMode(true);
-						}}
-					/>
-					<View style={styles.buttonSpacer} />
-					{/* Set Home button – always visible when not recording */}
-					{!isRecording && (
-						<>
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									isSettingHome && { backgroundColor: STATUS_WARNING_COLOR },
-									!isSettingHome && homeHexTile !== null && { backgroundColor: STATUS_SUCCESS_COLOR + '22' },
-								]}
-								onPress={() => {
-									if (!isSettingHome && homeHexTile !== null) {
-										const [lat, lng] = cellToLatLng(homeHexTile);
-										mapRef.current?.sendToMap({
-											mapCenterPosition: { lat, lng },
-											zoom: 17,
-										});
-									} else {
-										isSettingHomeRef.current = !isSettingHome;
-										setIsSettingHome(!isSettingHome);
-									}
-								}}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons
-									name="home"
-									size={20}
-									color={homeButtonIconColor}
-								/>
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-						</>
-					)}
-					{/* Search highlight button – always visible in RecordScreen */}
-					<TouchableOpacity
-						style={[
-							styles.debugButton,
-							searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
-						]}
-						onPress={() => { void openSearchModal(); }}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons
-							name="search"
-							size={20}
-							color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
-						/>
-					</TouchableOpacity>
-					<View style={styles.buttonSpacer} />
-					{isDebugMode && !isRecording && (
-						<>
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									coloringTileImage !== null && { backgroundColor: PRIMARY_COLOR },
-								]}
-								onPress={openColoringModal}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									isMeasureMode && { backgroundColor: '#f97316' },
-								]}
-								onPress={isMeasureMode ? cancelMeasureMode : startMeasureMode}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="straighten" size={20} color={isMeasureMode ? '#ffffff' : '#555555'} />
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-						</>
-					)}
-					{isDebugMode && !isRecording && !isMeasureMode && (
-							<TouchableOpacity
-								style={styles.debugButton}
-								onPress={showDebugModal}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="bug-report" size={20} color="#555555" />
-							</TouchableOpacity>
-					)}
-					{isDebugMode && isMeasureMode && (
-						<>
-							<TouchableOpacity
-								style={[styles.debugButton, { backgroundColor: '#43a047' }]}
-								onPress={finishMeasurement}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="check" size={20} color="#ffffff" />
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-							<TouchableOpacity
-								style={styles.debugButton}
-								onPress={undoMeasurePoint}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="undo" size={20} color="#555555" />
-							</TouchableOpacity>
-						</>
-					)}
-				</View>
+				<MapOverlayButtons
+					mapRef={mapRef}
+					isHeadingMode={isHeadingMode}
+					handleCompassPress={handleCompassPress}
+					isFollowing={isFollowing}
+					setFollowMode={setFollowMode}
+					movedPlayerManuallyRef={movedPlayerManuallyRef}
+					isRecording={isRecording}
+					isSettingHome={isSettingHome}
+					homeHexTile={homeHexTile}
+					homeButtonIconColor={homeButtonIconColor}
+					isSettingHomeRef={isSettingHomeRef}
+					setIsSettingHome={setIsSettingHome}
+					searchState={searchState}
+					openSearchModal={openSearchModal}
+					isDebugMode={isDebugMode}
+					coloringTileImage={coloringTileImage}
+					openColoringModal={openColoringModal}
+					isMeasureMode={isMeasureMode}
+					cancelMeasureMode={cancelMeasureMode}
+					startMeasureMode={startMeasureMode}
+					showDebugModal={showDebugModal}
+					finishMeasurement={finishMeasurement}
+					undoMeasurePoint={undoMeasurePoint}
+				/>
 
 				{/* Joystick controller – bottom-left overlay */}
 				{isDebugMode && (
@@ -5445,156 +6014,28 @@ export default function RecordScreen() {
 				</View>
 
 			{/* Bottom control panel */}
-			<View style={[styles.liveBar, { backgroundColor: theme.screen.background }]}>
-				{isPanelCollapsed && (
-					/* Collapsed: only show expand chevron – aligned right to match expanded position */
-					<View style={styles.liveBarCollapsedRow}>
-						<View style={styles.liveBarSideSlot}>
-							<TouchableOpacity
-								style={styles.chevronButton}
-								onPress={() => setIsPanelCollapsed(false)}
-								activeOpacity={0.7}
-							>
-								<MaterialIcons name="expand-less" size={24} color={theme.screen.icon} />
-							</TouchableOpacity>
-						</View>
-					</View>
-				)}
-				{!isPanelCollapsed && (
-					<>
-						{/* Stats row */}
-						<View style={styles.liveBarStatsRow}>
-							<View style={styles.liveStatCard}>
-								<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
-								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-									{isRecording ? liveDistanceValue : '--'}
-								</Text>
-								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
-									{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
-								</Text>
-							</View>
-							<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-							<View style={styles.liveStatCard}>
-								<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
-								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-									{isRecording && livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
-								</Text>
-								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
-							</View>
-							<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-							<View style={styles.liveStatCard}>
-								<MaterialIcons name="directions-run" size={20} color={theme.screen.icon} />
-								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-									{isRecording ? liveAvgSpeedKmh.toFixed(1) : '--'}
-								</Text>
-								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
-							</View>
-						</View>
-
-						{/* Selected route indicator (shown only before recording starts) */}
-						{!isRecording && selectedRoute && (
-							<View style={styles.selectedRouteRow}>
-								<MaterialIcons name="route" size={14} color={PRIMARY_COLOR} />
-								<Text style={[styles.selectedRouteText, { color: theme.screen.text }]} numberOfLines={1}>
-									{selectedRoute.name}
-								</Text>
-								<TouchableOpacity onPress={() => setSelectedRoute(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
-								</TouchableOpacity>
-							</View>
-						)}
-
-						{/* Debug replay indicator (shown in debug mode before recording starts) */}
-						{isDebugMode && !isRecording && debugReplayActivity && (
-							<View style={styles.selectedRouteRow}>
-								<MaterialIcons name="replay" size={14} color="#f97316" />
-								<Text style={[styles.selectedRouteText, { color: '#f97316' }]} numberOfLines={1}>
-									{'🔄 Replay: ' + new Date(debugReplayActivity.startedAt).toLocaleDateString() + ' ' + new Date(debugReplayActivity.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-								</Text>
-								<TouchableOpacity onPress={() => setDebugReplayActivity(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
-								</TouchableOpacity>
-							</View>
-						)}
-
-
-						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
-						<View style={styles.liveBarControlsRow}>
-							{/* Left side: stop button when recording, activity type picker otherwise */}
-							<View style={styles.liveBarSideSlot}>
-								{isRecording && (
-									<TouchableOpacity
-										style={[styles.stopButton, { backgroundColor: '#e53935' }]}
-										onPress={stopRecording}
-										activeOpacity={0.8}
-									>
-										<MaterialIcons name="stop" size={32} color="white" />
-									</TouchableOpacity>
-								)}
-								{!isRecording && (
-									<TouchableOpacity
-										style={[styles.activityTypeButton, { backgroundColor: activeSport.color + '22' }]}
-										onPress={showActivityTypeModal}
-										activeOpacity={0.8}
-									>
-										{activeSport.iconLibrary === 'MaterialCommunityIcons' ? (
-											<MaterialCommunityIcons
-												name={activeSport.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
-												size={28}
-												color={activeSport.color}
-											/>
-										) : (
-											<MaterialIcons
-												name={activeSport.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
-												size={28}
-												color={activeSport.color}
-											/>
-										)}
-									</TouchableOpacity>
-								)}
-							</View>
-
-							{/* Central record / pause button */}
-							<TouchableOpacity
-								style={[
-									styles.mainRecordButton,
-									{ backgroundColor: recordButtonColor },
-								]}
-								onPress={recordButtonAction}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons
-									name={recordButtonIcon}
-									size={32}
-									color="white"
-								/>
-							</TouchableOpacity>
-
-							{/* Chevron-down collapse button – right side */}
-							<View style={styles.liveBarSideSlot}>
-								{!isRecording && (
-									<TouchableOpacity
-										style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
-										onPress={showRouteSelectionModal}
-										activeOpacity={0.8}
-									>
-										<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-								{isRecording && (
-									<TouchableOpacity
-										style={styles.chevronButton}
-										onPress={() => setIsPanelCollapsed(true)}
-										activeOpacity={0.7}
-									>
-										<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-							</View>
-						</View>
-					</>
-				)}
-			</View>
+			<LiveControlPanel
+				isPanelCollapsed={isPanelCollapsed}
+				setIsPanelCollapsed={setIsPanelCollapsed}
+				theme={theme}
+				isRecording={isRecording}
+				liveDistanceValue={liveDistanceValue}
+				liveDistanceKm={liveDistanceKm}
+				livePaceMinPerKm={livePaceMinPerKm}
+				liveAvgSpeedKmh={liveAvgSpeedKmh}
+				selectedRoute={selectedRoute}
+				setSelectedRoute={setSelectedRoute}
+				isDebugMode={isDebugMode}
+				debugReplayActivity={debugReplayActivity}
+				setDebugReplayActivity={setDebugReplayActivity}
+				stopRecording={stopRecording}
+				activeSport={activeSport}
+				showActivityTypeModal={showActivityTypeModal}
+				recordButtonColor={recordButtonColor}
+				recordButtonAction={recordButtonAction}
+				recordButtonIcon={recordButtonIcon}
+				showRouteSelectionModal={showRouteSelectionModal}
+			/>
 		</SafeAreaView>
 	);
 }

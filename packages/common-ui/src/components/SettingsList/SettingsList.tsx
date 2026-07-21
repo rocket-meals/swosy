@@ -13,6 +13,63 @@ import { SettingsListProps } from './types';
 const padding = 0;
 const basePaddingVertical = 10;
 
+function computeGroupPositionStyles(
+	groupPosition: SettingsListProps['groupPosition'],
+): { groupContainerStyle: ViewStyle | null; wrapperBorderRadius: ViewStyle } {
+	if (groupPosition === 'top') {
+		return {
+			groupContainerStyle: {
+				borderTopLeftRadius: borderRadiusContainer,
+				borderTopRightRadius: borderRadiusContainer,
+				paddingTop: basePaddingVertical + padding,
+			},
+			wrapperBorderRadius: { borderTopLeftRadius: borderRadiusContainer, borderTopRightRadius: borderRadiusContainer },
+		};
+	} else if (groupPosition === 'bottom') {
+		return {
+			groupContainerStyle: {
+				borderBottomLeftRadius: borderRadiusContainer,
+				borderBottomRightRadius: borderRadiusContainer,
+				paddingBottom: basePaddingVertical + padding,
+			},
+			wrapperBorderRadius: { borderBottomLeftRadius: borderRadiusContainer, borderBottomRightRadius: borderRadiusContainer },
+		};
+	} else if (groupPosition === 'single') {
+		return {
+			groupContainerStyle: {
+				borderRadius: borderRadiusContainer,
+				paddingTop: basePaddingVertical + padding,
+				paddingBottom: basePaddingVertical + padding,
+			},
+			wrapperBorderRadius: { borderRadius: borderRadiusContainer },
+		};
+	}
+	return { groupContainerStyle: null, wrapperBorderRadius: {} };
+}
+
+function computeLeftIconContent(
+	showIconWrapper: boolean,
+	hasIcon: boolean,
+	leftIconComponent: React.ReactNode,
+	iconWrapperStyles: ViewStyle[],
+	renderedLeftIcon: React.ReactNode,
+): React.ReactNode {
+	if (showIconWrapper) {
+		return leftIconComponent || <View style={iconWrapperStyles}>{renderedLeftIcon}</View>;
+	} else if (hasIcon) {
+		return leftIconComponent || renderedLeftIcon;
+	}
+	return null;
+}
+
+function resolveAccountRequiredBorderStyle(
+	accountRequiredPosition: SettingsListProps['groupPosition'],
+): ViewStyle {
+	return accountRequiredPosition === 'middle' || accountRequiredPosition === 'bottom'
+		? { borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }
+		: { borderWidth: 2 };
+}
+
 const SettingsList: React.FC<SettingsListProps> = ({
 	leftIcon,
 	leftIconComponent,
@@ -79,41 +136,22 @@ const SettingsList: React.FC<SettingsListProps> = ({
 		iconWrapperStyles.push(styles.transparentIconWrapper);
 	}
 
-	let wrapperBorderRadius: ViewStyle = {};
-
-	if (groupPosition === 'top') {
-		containerStyles.push({
-			borderTopLeftRadius: borderRadiusContainer,
-			borderTopRightRadius: borderRadiusContainer,
-			paddingTop: basePaddingVertical + padding,
-		});
-		wrapperBorderRadius = { borderTopLeftRadius: borderRadiusContainer, borderTopRightRadius: borderRadiusContainer };
-	} else if (groupPosition === 'bottom') {
-		containerStyles.push({
-			borderBottomLeftRadius: borderRadiusContainer,
-			borderBottomRightRadius: borderRadiusContainer,
-			paddingBottom: basePaddingVertical + padding,
-		});
-		wrapperBorderRadius = { borderBottomLeftRadius: borderRadiusContainer, borderBottomRightRadius: borderRadiusContainer };
-	} else if (groupPosition === 'single') {
-		containerStyles.push({
-			borderRadius: borderRadiusContainer,
-			paddingTop: basePaddingVertical + padding,
-			paddingBottom: basePaddingVertical + padding,
-		});
-		wrapperBorderRadius = { borderRadius: borderRadiusContainer };
+	const { groupContainerStyle, wrapperBorderRadius } = computeGroupPositionStyles(groupPosition);
+	if (groupContainerStyle) {
+		containerStyles.push(groupContainerStyle);
 	}
 
 	const valueContainerStyle = stackedValue ? styles.valueContainerStacked : styles.valueContainer;
 	const valueStackedStyle = stackedValue ? styles.valueStacked : null;
 	const valueFontSizeStyle = valueFontSize ? { fontSize: valueFontSize } : null;
 
-	let leftIconContent: React.ReactNode = null;
-	if (showIconWrapper) {
-		leftIconContent = leftIconComponent || <View style={iconWrapperStyles}>{renderedLeftIcon}</View>;
-	} else if (hasIcon) {
-		leftIconContent = leftIconComponent || renderedLeftIcon;
-	}
+	const leftIconContent: React.ReactNode = computeLeftIconContent(
+		showIconWrapper,
+		hasIcon,
+		leftIconComponent,
+		iconWrapperStyles,
+		renderedLeftIcon,
+	);
 
 	const inner = (
 		<Container onPress={pressHandler} style={containerStyles} nativeID={nativeID}>
@@ -159,10 +197,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: separatorMarginLeft }]} /> : null;
 
 	const accountRequiredPosition = accountRequiredGroupPosition ?? groupPosition;
-	const accountRequiredBorderStyle: ViewStyle =
-		accountRequiredPosition === 'middle' || accountRequiredPosition === 'bottom'
-			? { borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }
-			: { borderWidth: 2 };
+	const accountRequiredBorderStyle: ViewStyle = resolveAccountRequiredBorderStyle(accountRequiredPosition);
 
 	if (isAccountRequired) {
 		return (

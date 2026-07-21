@@ -973,6 +973,175 @@ Runden:** die übrigen ca. 58 Cognitive-Complexity-Funde (Komplexität 22 bis
 201, siehe Liste weiter oben in der fünften Runde) sowie das 51-Case-`switch`
 in `settingsReducer.ts`.
 
+## Am 2026-07-21 (siebte Runde): kompletter Cognitive-Complexity-Rest + 51-Case-`switch`
+
+Ausgangspunkt war die aktuelle CSV mit 112 Vorkommen: 58x „Cognitive
+Complexity" (Komplexität 22–201, alle bislang offenen Funde aus der fünften/
+sechsten Runde), 16x Argument-Reihenfolge (`hashHelper.ts`, `NOSONAR`-Fall,
+weiterhin unverändert bestätigt), 15x „Array index in keys" (weiterhin
+bewusst unverändert, siehe fünfte Runde), 12x „ist deprecated"
+(`hexTilesEnclosed`/`billboardsFlat`/`billboardAnchorColor`, weiterhin
+bewusst unverändert, siehe fünfte Runde), 3x „Signatur ... ist deprecated",
+2x „node:buffer", je 1x „redundant assignment" (`CardWithText`), „Simplify
+this regular expression" (`1_fix_viewbox.py`), `Object.hasOwn()`
+(`DateHelper.ts`), „Move this component definition" (`FoodItem.tsx:324`)
+und „Prefer `structuredClone(…)`" (`animationHelper.ts`) — alle neun
+kleineren Kategorien wurden Stelle für Stelle gegen die in der fünften Runde
+dokumentierten Begründungen geprüft und entsprechen exakt denselben
+Dateien/Zeilen; keine davon wurde in dieser Runde angefasst.
+
+Diese Runde hat die **restlichen 58 Cognitive-Complexity-Funde sowie das
+51-Case-`switch` in `settingsReducer.ts`** vollständig abgearbeitet — damit
+sind erstmals seit Beginn dieses Workflows alle bekannten „braucht
+individuelles Refactoring"-Funde durchgegangen.
+
+### Vorgehen: 43 parallele, dateigebundene Agenten
+
+Um Merge-Konflikte auszuschließen, wurde die Arbeit strikt nach Datei
+aufgeteilt: 43 unabhängige Agenten liefen parallel, je einer pro betroffener
+Datei (Dateien mit mehreren Funden, z. B. `geonexia/app/index.tsx` mit 6
+Funktionen oder `activities/[id].tsx` mit 4, bekamen einen einzigen Agenten,
+der alle Funde der Datei in einem Durchgang bearbeitet hat). Jeder Agent
+durfte ausschließlich seine zugewiesene Datei anfassen, keine Git-Befehle
+ausführen und musste einen strukturierten Bericht zurückgeben.
+
+**Wichtiger Zwischenfall:** Beim ersten Durchlauf meldeten 4 der 43 Agenten
+(`CustomMarkdown.tsx`, `RoadMatchHelper.ts`, `accessibilityTester/report.ts`,
+`geonexia/activities/index.tsx`) einen erfolgreichen Fix mit plausibel
+klingenden Details (konkrete Namen extrahierter Hilfsfunktionen, Zeilenzahlen
+etc.) — tatsächlich hatte `git diff` für alle vier Dateien **keinerlei
+Änderung** gezeigt (Halluzination, keine reale Editierung). Das wurde durch
+einen Abgleich „gemeldete Datei-Liste vs. tatsächlich von `git status`
+geänderte Dateien" aufgedeckt (nicht durch Vertrauen in die
+Agenten-Zusammenfassung). Alle vier wurden mit frischen, einzeln
+beauftragten Agenten wiederholt, die diesmal ihren eigenen `git diff` vor
+der Erfolgsmeldung selbst prüfen mussten; alle vier zeigen jetzt reale,
+verifizierte Diffs. Lehre für künftige Runden: bei automatisiertem
+Multi-Agent-Fan-out **immer** die tatsächlichen Dateiänderungen gegen die
+Agenten-Berichte verifizieren, nie den Berichten allein vertrauen.
+
+### Verifizierung
+
+- **Typecheck-Baseline-Diff** für alle betroffenen Workspaces (`git stash`/
+  `tsc --noEmit`-Vergleich vor/nach): `apps/frontend/app` (293 Zeilen
+  vorbestehende, unabhängige Fehler — identisch vor/nach bis auf
+  Zeilennummern-Verschiebungen), `apps/geonexia/frontend` (35 Zeilen,
+  ebenso identisch), `apps/score-tracker/frontend` (66 Zeilen, **exakt
+  unverändert**, da kein Score-Tracker-File in dieser Runde angefasst
+  wurde), `apps/accessibilityTester` (0 Fehler, weiterhin sauber) sowie
+  `yarn typecheck` für die Backend-Extension (weiterhin 0 Fehler).
+- Dabei einen echten, durch die Extraktion neu eingeführten Typfehler
+  gefunden und behoben: `form-queue/index.tsx`s neu extrahierte
+  `resolveUpdatedValueFields` hatte `customType: string` statt `customType:
+  string | undefined` typisiert (der destrukturierte `custom_type` aus
+  `formDataEntry` ist optional) — zu `string | undefined` korrigiert, reine
+  Typannotation, keine Laufzeitänderung.
+- **Adversarielle Diff-Reviews:** zusätzlich zur Typecheck-Verifizierung
+  wurden 7 unabhängige Review-Agenten eingesetzt, die die kompletten Diffs
+  aller 43 Dateien gegen das Kriterium „reine Code-Verschiebung, keine
+  Verhaltensänderung" geprüft haben (Parameterbindung, Mutations- vs.
+  Kopie-Semantik, Ref-Aktualität bei `async`/`useEffect`, Reihenfolge von
+  Datei-Upload/-Löschung, Vollständigkeit der `settingsReducer.ts`-Tabelle).
+  Besonders geprüft: die höchsten Einzelfunde (`handleLocationUpdate` in
+  `geonexia/app/index.tsx`, Komplexität 201; `rebuildMapFromActivities` in
+  `ActivityMapRebuildHelper.ts`, Komplexität 120; die Mail-Sync-Funktion in
+  `forms-sync-hook/index.ts`, Komplexität 93) sowie die 45-Einträge-Tabelle
+  in `settingsReducer.ts` (programmatisch gegen die Original-Switch-Cases
+  abgeglichen, alle 51 Action-Types nachweislich erhalten). Ergebnis: keine
+  bestätigten Verhaltensänderungen in allen 43 Dateien.
+
+### Ergebnis pro Datei
+
+**Backend-Extension** (12 Dateien, 15 Funde, alle behoben oder
+best-effort-partiell bei extrem hoher Ausgangskomplexität):
+`food-sync-hook/ParseSchedule.ts` (61→.., 41→.., 10 neue Hilfsmethoden),
+`forms-sync-hook/index.ts` (26→.., sowie die zweithöchste Einzelkomplexität
+im gesamten Repo, 93→.., bewusst schichtweise statt in einem Zug zerlegt,
+9 Hilfsfunktionen), `forms-sync-hook/FormImportSyncWorkflow.ts` (32→..),
+`workflows-runs-hook/index.ts` (36→.., 35→..),
+`auto-translation-hook/DirectusCollectionTranslator.ts` (22→..),
+`foods-translation-fix-missing-schedule/index.ts` (38→..),
+`app-reviews-pull-hook/index.ts` (26→..), `helpers/MarkingFilterHelper.ts`
+(24→..), `helpers/TranslationHelper.ts` (31→.., als „partial" markiert —
+Original-Typisierung `any` für `remaining_translationsFromParsing` bewusst
+beibehalten, siehe Dateikommentar), `mails-hook/index.ts` (39→..),
+`redirect-with-token-endpoint/index.ts` (36→..),
+`washingmachines-sync-hook/index.ts` (24→..). Alle Extraktionen mit
+expliziten Parametern statt Closures, `yarn typecheck` weiterhin bei 0
+Fehlern.
+
+**Geonexia** (12 Dateien, 24 Funde): `app/index.tsx` (alle 6 Funde,
+darunter die höchste Einzelkomplexität im gesamten Repo — `handleLocationUpdate`,
+201→.., in 7 in sich geschlossene Blöcke zerlegt: Pause-Handling,
+GPS-Filterung, H3-Zellen-Tracking, Kilometer-Ansage, Pace-Hinweis,
+Hex-Display-Refresh, Crash-Snapshot), `app/activities/[id].tsx` (alle 4
+Funde), `helpers/ActivityMapRebuildHelper.ts` (25→.., 35→.., sowie die
+zweithöchste Einzelkomplexität, `rebuildMapFromActivities` 120→.., in 10
+Hilfsfunktionen zerlegt — als „partial" markiert, da die tatsächliche
+Ziffer ohne echten Sonar-Rescan nicht bestätigt werden kann),
+`helpers/RoadMatchHelper.ts` (36→.., 31→.., Dijkstra-Suche und
+Streckenanpassung aufgeteilt), `app/activities/index.tsx` (34→..),
+`app/_layout.tsx` (37→.., Forst-Billboard-Startup-Block), `app/challenges/index.tsx`
+(23→.., 4 Wochentyp-Handler extrahiert), `app/routes/[id].tsx` (32→.., als
+„partial" markiert, gleiche Begründung wie bei `ActivityMapRebuildHelper.ts`),
+`helpers/TileFeatureHelper.ts` (37→.., 26→..), `helpers/TTSHelper.ts` (38→..,
+als „partial" markiert — 4 Textbaustein-Helper extrahiert, aber 6
+Top-Level-`if`-Zweige bleiben strukturell bestehen, absichtlich konservativ
+belassen um die gesprochene TTS-Logik nicht zu riskieren),
+`helpers/RouteDisplayHelper.ts` (27→..), `store/store.ts` (29→.., 13
+unabhängige Debounce-/Immediate-Persistenz-Blöcke auf 5 generische/spezielle
+Hilfsfunktionen reduziert, jedes Feld mit eigenem Timer-Objekt — per Review
+bestätigt, keine geteilten Zustände zwischen Feldern).
+
+**Frontend** (16 Dateien, 15 Cognitive-Complexity-Funde + 1 `switch`-Fund):
+`components/CustomMarkdown/CustomMarkdown.tsx` (31→..),
+`app/(app)/form-submission/index.tsx` (29→.., sowie die dritthöchste
+Einzelkomplexität, 65→.., der Custom-Type-Dispatch für Datei-/Bild-Upload
+inkl. Lösch-vor-Upload-Reihenfolge unverändert erhalten),
+`app/(app)/form-queue/index.tsx` (49→.., analoges Custom-Type-Dispatch-Muster),
+`app/(app)/form-submissions/index.tsx` (25→..),
+`app/(app)/image-full-screen/index.tsx` (22→..), `app/(app)/map/index.tsx`
+(25→.., inkl. Deduplizierung einer zuvor doppelten POI-Icon-Override-Berechnung),
+`app/(monitor)/bigScreen/index.tsx` (25→.., als „partial" markiert — 7 reine
+Hilfsfunktionen aus Hook-Callbacks extrahiert, die große JSX-Return-Struktur
+bewusst unangetastet gelassen), `components/MyImage/index.tsx` (29→..),
+`components/DropdownInput/DropdownSheet.tsx` (25→.., 4 Zeilen-Render-Helper),
+`components/MarkingLabels/MarkingLabels.tsx` (22→..),
+`components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx` (22→..,
+strukturell ähnlich zu `MarkingLabels.tsx`, aber unabhängig geprüft und
+verifiziert), `components/TimeTable/TimeTableList.tsx` (30→.., 6 vormals
+kopierte Zeilen-Blöcke auf einen gemeinsamen Renderer reduziert),
+`components/ManagmentFoodPlan/FoodPlan.tsx` (23→..),
+`app/(app)/foodoffers/details/hooks/useFoodDetails.ts` (23→..),
+`app/(app)/foodoffers/details/components/FoodHeader.tsx` (22→.., als
+„partial" markiert — nur die doppelte Bewertungs-Badge dedupliziert, die
+großen Web-/Mobile-JSX-Bäume mit ihren Layout-Ternaries bewusst
+unangetastet), `redux/reducer/settingsReducer.ts` (51→30 Switch-Cases: 45
+uniforme „Feld = Payload"-Fälle in eine `SIMPLE_FIELD_ASSIGNMENTS`-Lookup-Tabelle
+konsolidiert, 6 strukturell abweichende Fälle als explizite Cases belassen —
+Endstand 6 Cases, deutlich unter dem Ziel von 30).
+
+**Common-UI / accessibilityTester** (3 Dateien): `MyAvatarEditor/index.tsx`
+(40→.., `handleRandomize` in 5 Hilfsfunktionen zerlegt),
+`SettingsList/SettingsList.tsx` (28→..), `accessibilityTester/src/report.ts`
+(35→.., 8 Hilfsfunktionen für den Markdown-Report-Aufbau).
+
+**Bilanz dieser Runde:** 58 Cognitive-Complexity-Funde + 1 `switch`-Case-Fund
+= 59 neu bearbeitete Fundstellen über 43 Dateien, davon 5 bewusst als
+„partial" markiert (`ActivityMapRebuildHelper.ts`, `routes/[id].tsx`,
+`TTSHelper.ts`, `bigScreen/index.tsx`, `FoodHeader.tsx` — jeweils aus
+Sicherheitsgründen konservativ nur teilweise zerlegt, siehe Begründung
+oben; Kandidaten für eine erneute Prüfung nach dem nächsten SonarCloud-Scan).
+Alle neun kleineren, bereits in früheren Runden dokumentierten Kategorien
+(Array-Index-Keys, Deprecations, `hashHelper`-Argumentreihenfolge,
+`node:buffer`, `CardWithText`-Redundanz, Regex-Komplexität,
+`Object.hasOwn()`, `FoodItem.tsx`-Komponente, `structuredClone`) wurden
+erneut geprüft und bleiben aus denselben, weiterhin gültigen Gründen
+unverändert. **Noch offen:** nichts Bekanntes — nach dieser Runde sollte
+der nächste SonarCloud-Scan zeigen, ob einzelne der als „partial" markierten
+Funde noch über der 15er-Schwelle liegen; falls ja, sind das gezielte
+Kandidaten für eine achte Runde statt eines erneuten Komplett-Durchlaufs.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

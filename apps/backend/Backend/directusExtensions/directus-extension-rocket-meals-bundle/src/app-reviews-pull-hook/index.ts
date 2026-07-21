@@ -11,6 +11,72 @@ import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 
 const SCHEDULE_NAME = 'app_reviews_pull';
 
+async function pullAppleReviewsIfConfigured(
+  pullHelper: AppReviewsPullHelper,
+  appleAppId: string | null | undefined,
+  privateKey: string | null | undefined,
+  context: WorkflowRunContext
+): Promise<PulledAppReview[]> {
+  if (appleAppId && privateKey) {
+    return pullHelper.pullAppleReviews(appleAppId, privateKey);
+  } else if (appleAppId && !privateKey) {
+    await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
+  } else if (!appleAppId) {
+    await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — no Apple App ID configured for this customer');
+  }
+  return [];
+}
+
+async function pullGoogleReviewsIfConfigured(
+  pullHelper: AppReviewsPullHelper,
+  googlePlayPackageName: string | null | undefined,
+  googleServiceAccountKeyJson: string | null | undefined,
+  context: WorkflowRunContext
+): Promise<PulledAppReview[]> {
+  if (googlePlayPackageName && googleServiceAccountKeyJson) {
+    return pullHelper.pullGoogleReviews(googlePlayPackageName, googleServiceAccountKeyJson);
+  } else if (googlePlayPackageName && !googleServiceAccountKeyJson) {
+    await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON not configured');
+  } else if (!googlePlayPackageName) {
+    await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — no Google Play package name configured for this customer');
+  }
+  return [];
+}
+
+type ReviewSyncResult = 'created' | 'updated' | 'skipped';
+
+async function syncSingleReview(
+  review: PulledAppReview,
+  appFeedbacksHelper: ReturnType<MyDatabaseHelper['getAppFeedbacksHelper']>
+): Promise<ReviewSyncResult> {
+  const existing = await appFeedbacksHelper.readByQuery({
+    filter: { external_identifier: { _eq: review.external_identifier } },
+    limit: 1,
+  });
+
+  if (existing && existing.length > 0) {
+    // Update response if the pulled review has a response and the existing record has a different or empty response
+    const existingFeedback = existing[0]!;
+    const existingResponse = existingFeedback.response?.trim() || '';
+    const newResponse = review.response?.trim() || '';
+    if (newResponse && existingResponse !== newResponse) {
+      await appFeedbacksHelper.updateOne(existingFeedback.id, {
+        response: review.response,
+        feedback_read_by_support: true,
+      });
+      return 'updated';
+    }
+    return 'skipped';
+  }
+
+  const createData: Partial<DatabaseTypes.AppFeedbacks> = { ...review };
+  if (review.response) {
+    createData.feedback_read_by_support = true;
+  }
+  await appFeedbacksHelper.createOne(createData);
+  return 'created';
+}
+
 class AppReviewsPullWorkflow extends SingleWorkflowRun {
   getWorkflowId(): string {
     return 'app-reviews-pull';
@@ -36,23 +102,8 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
         return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SKIPPED });
       }
 
-      let appleReviews: PulledAppReview[] = [];
-      if (appleAppId && privateKey) {
-        appleReviews = await pullHelper.pullAppleReviews(appleAppId, privateKey);
-      } else if (appleAppId && !privateKey) {
-        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — APP_STORE_CONNECT_PRIVATE_KEY not configured');
-      } else if (!appleAppId) {
-        await context.logger.appendLog('app-reviews-pull-hook: Skipping Apple reviews — no Apple App ID configured for this customer');
-      }
-
-      let googleReviews: PulledAppReview[] = [];
-      if (googlePlayPackageName && googleServiceAccountKeyJson) {
-        googleReviews = await pullHelper.pullGoogleReviews(googlePlayPackageName, googleServiceAccountKeyJson);
-      } else if (googlePlayPackageName && !googleServiceAccountKeyJson) {
-        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_JSON not configured');
-      } else if (!googlePlayPackageName) {
-        await context.logger.appendLog('app-reviews-pull-hook: Skipping Google Play reviews — no Google Play package name configured for this customer');
-      }
+      const appleReviews = await pullAppleReviewsIfConfigured(pullHelper, appleAppId, privateKey, context);
+      const googleReviews = await pullGoogleReviewsIfConfigured(pullHelper, googlePlayPackageName, googleServiceAccountKeyJson, context);
       const allReviews = [...appleReviews, ...googleReviews];
       const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
@@ -61,34 +112,14 @@ class AppReviewsPullWorkflow extends SingleWorkflowRun {
       let updated = 0;
 
       for (const review of allReviews) {
-        const existing = await appFeedbacksHelper.readByQuery({
-          filter: { external_identifier: { _eq: review.external_identifier } },
-          limit: 1,
-        });
-
-        if (existing && existing.length > 0) {
-          // Update response if the pulled review has a response and the existing record has a different or empty response
-          const existingFeedback = existing[0]!;
-          const existingResponse = existingFeedback.response?.trim() || '';
-          const newResponse = review.response?.trim() || '';
-          if (newResponse && existingResponse !== newResponse) {
-            await appFeedbacksHelper.updateOne(existingFeedback.id, {
-              response: review.response,
-              feedback_read_by_support: true,
-            });
-            updated++;
-          } else {
-            skipped++;
-          }
-          continue;
+        const result = await syncSingleReview(review, appFeedbacksHelper);
+        if (result === 'created') {
+          created++;
+        } else if (result === 'updated') {
+          updated++;
+        } else {
+          skipped++;
         }
-
-        const createData: Partial<DatabaseTypes.AppFeedbacks> = { ...review };
-        if (review.response) {
-          createData.feedback_read_by_support = true;
-        }
-        await appFeedbacksHelper.createOne(createData);
-        created++;
       }
 
       await context.logger.appendLog('Created ' + created + ' new reviews, updated ' + updated + ' with responses, skipped ' + skipped + ' duplicates');

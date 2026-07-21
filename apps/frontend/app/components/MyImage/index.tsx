@@ -14,6 +14,46 @@ export type MyImageProps = {
         useAccessTokenForWebAsParameter?: boolean;
 } & Omit<ExpoImageProps, 'source'>;
 
+function resolveRemoteUrlSource(
+	remote_image_url: string,
+	authToken: string | null,
+	useAccessTokenForWebAsParameter: boolean
+): { uri: string } {
+	const isLocalhostUrl = remote_image_url.startsWith('http://localhost');
+	if (Platform.OS === 'web' && authToken && (useAccessTokenForWebAsParameter || isLocalhostUrl)) {
+		const isRemoteUrl = remote_image_url.startsWith('http://') || remote_image_url.startsWith('https://');
+		if (isRemoteUrl) {
+			const separator = remote_image_url.includes('?') ? '&' : '?';
+			return { uri: `${remote_image_url}${separator}access_token=${encodeURIComponent(authToken)}` };
+		}
+	}
+	return { uri: remote_image_url };
+}
+
+function resolveDirectusAssetSource(
+	directusAssetId: string | number,
+	authToken: string | null,
+	useAccessTokenForWebAsParameter: boolean
+): { uri?: string; headers?: { Authorization: string } } {
+	const baseUrl = getHighResImageUrl(String(directusAssetId));
+	if (!baseUrl) return { uri: undefined };
+	if (authToken) {
+		if (Platform.OS === 'web') {
+			const isLocalhostUrl = baseUrl.startsWith('http://localhost');
+			if (useAccessTokenForWebAsParameter || isLocalhostUrl) {
+				// On web, <img> tags cannot send custom headers in cross-origin requests,
+				// so we include the token as a query parameter. This is the standard Directus approach.
+				// For localhost (development), token is added automatically since the connection is insecure (HTTP).
+				const separator = baseUrl.includes('?') ? '&' : '?';
+				return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
+			}
+			return { uri: baseUrl };
+		}
+		return { uri: baseUrl, headers: { Authorization: `Bearer ${authToken}` } };
+	}
+	return { uri: baseUrl };
+}
+
 const MyImage: React.FC<MyImageProps> = ({
         remote_image_url,
         directus_asset_id,
@@ -53,35 +93,11 @@ const MyImage: React.FC<MyImageProps> = ({
 
         const source = useMemo(() => {
                 if (remote_image_url) {
-                        const isLocalhostUrl = remote_image_url.startsWith('http://localhost');
-                        if (Platform.OS === 'web' && authToken && (useAccessTokenForWebAsParameter || isLocalhostUrl)) {
-                                const isRemoteUrl = remote_image_url.startsWith('http://') || remote_image_url.startsWith('https://');
-                                if (isRemoteUrl) {
-                                        const separator = remote_image_url.includes('?') ? '&' : '?';
-                                        return { uri: `${remote_image_url}${separator}access_token=${encodeURIComponent(authToken)}` };
-                                }
-                        }
-                        return { uri: remote_image_url };
+                        return resolveRemoteUrlSource(remote_image_url, authToken, useAccessTokenForWebAsParameter);
                 }
 
                 if (directusAssetId) {
-                        const baseUrl = getHighResImageUrl(String(directusAssetId));
-                        if (!baseUrl) return { uri: undefined };
-                        if (authToken) {
-                                if (Platform.OS === 'web') {
-                                        const isLocalhostUrl = baseUrl.startsWith('http://localhost');
-                                        if (useAccessTokenForWebAsParameter || isLocalhostUrl) {
-                                                // On web, <img> tags cannot send custom headers in cross-origin requests,
-                                                // so we include the token as a query parameter. This is the standard Directus approach.
-                                                // For localhost (development), token is added automatically since the connection is insecure (HTTP).
-                                                const separator = baseUrl.includes('?') ? '&' : '?';
-                                                return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
-                                        }
-                                        return { uri: baseUrl };
-                                }
-                                return { uri: baseUrl, headers: { Authorization: `Bearer ${authToken}` } };
-                        }
-                        return { uri: baseUrl };
+                        return resolveDirectusAssetSource(directusAssetId, authToken, useAccessTokenForWebAsParameter);
                 }
 
                 if (defaultImageUrl) {
