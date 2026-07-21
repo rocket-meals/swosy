@@ -175,7 +175,7 @@ async function buildImageFormData(finalUri: string, fileName: string, storage: s
 		formData.append('image', blob, fileName);
 	} else {
 		const uriParts = finalUri.split('.');
-		const fileType = uriParts[uriParts.length - 1];
+		const fileType = uriParts.at(-1);
 		const fileExtension = `.${fileType}`;
 		const file: any = {
 			uri: finalUri,

@@ -2635,16 +2635,27 @@ function computeGapTileCoordsAndDistance(
  * distributing the available time budget (`gapMs`) proportionally to distance
  * so the last synthetic point lands exactly at the end of that budget.
  */
-function buildSyntheticGapPoints(
-	gapTiles: string[],
-	gapCoords: Array<[number, number]>,
-	totalGapKm: number,
-	gapMs: number,
-	startLat: number,
-	startLng: number,
-	startTimestamp: number,
-	avgSpeedMs: number,
-): RoutePoint[] {
+interface BuildSyntheticGapPointsOptions {
+	gapTiles: string[];
+	gapCoords: Array<[number, number]>;
+	totalGapKm: number;
+	gapMs: number;
+	startLat: number;
+	startLng: number;
+	startTimestamp: number;
+	avgSpeedMs: number;
+}
+
+function buildSyntheticGapPoints({
+	gapTiles,
+	gapCoords,
+	totalGapKm,
+	gapMs,
+	startLat,
+	startLng,
+	startTimestamp,
+	avgSpeedMs,
+}: BuildSyntheticGapPointsOptions): RoutePoint[] {
 	let prevLat = startLat;
 	let prevLng = startLng;
 	let currentTimestamp = startTimestamp;
@@ -2730,16 +2741,16 @@ function reconstructInterruptedRoute(
 	// Generate interpolated GPS points along the gap tiles using their hex
 	// center coordinates. Each point is flagged as `interpolated: true` to
 	// indicate it was synthetically created to compensate for the GPS gap.
-	const syntheticPoints = buildSyntheticGapPoints(
+	const syntheticPoints = buildSyntheticGapPoints({
 		gapTiles,
 		gapCoords,
 		totalGapKm,
 		gapMs,
-		lastRecordedPoint.lat,
-		lastRecordedPoint.lng,
-		lastRecordedPoint.timestamp,
+		startLat: lastRecordedPoint.lat,
+		startLng: lastRecordedPoint.lng,
+		startTimestamp: lastRecordedPoint.timestamp,
 		avgSpeedMs,
-	);
+	});
 
 	return [...snapshot.routePoints, ...syntheticPoints];
 }

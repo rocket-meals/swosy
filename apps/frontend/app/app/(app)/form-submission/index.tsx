@@ -209,6 +209,17 @@ async function applyFormSubmissionLockState(
 	}
 }
 
+// Maps the tri-state boolean default (false/true/unset) to the stored 0/1/null value.
+function resolveBooleanFieldValue(defaultValue: any): number | null {
+	if (defaultValue === false) {
+		return 0;
+	}
+	if (defaultValue === true) {
+		return 1;
+	}
+	return null;
+}
+
 /**
  * Resolve the initial edit-form value for a form answer, based on its
  * custom field type (mirrors the per-type conversions used when submitting).
@@ -220,31 +231,25 @@ async function resolveInitialFieldValue(
 	parseDateForEditFn: (fieldType: string, value: string) => string,
 	getDirectusFilesDataFn: (data: any) => Promise<any[]>
 ): Promise<any> {
-	let value;
-
 	if (customType === 'value_custom') {
-		value = defaultValue || null;
-	} else if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
-		value = defaultValue ? String(defaultValue)?.replace('.', ',') : null;
-	} else if (customType === 'value_boolean') {
-		if (defaultValue === false) {
-			value = 0;
-		} else if (defaultValue === true) {
-			value = 1;
-		} else {
-			value = null;
-		}
-	} else if (FormHelperCommon.isDateFieldType(fieldType)) {
-		value = parseDateForEditFn(fieldType, defaultValue);
-	} else if (customType === 'value_files') {
-		value = defaultValue ? await getDirectusFilesDataFn(defaultValue) : [];
-	} else if (customType === 'value_image') {
-		value = defaultValue ? getFormValueImageUrl(defaultValue) : null;
-	} else {
-		value = defaultValue || null;
+		return defaultValue || null;
 	}
-
-	return value;
+	if (FormHelperCommon.isFieldTypeNumber(fieldType)) {
+		return defaultValue ? String(defaultValue)?.replace('.', ',') : null;
+	}
+	if (customType === 'value_boolean') {
+		return resolveBooleanFieldValue(defaultValue);
+	}
+	if (FormHelperCommon.isDateFieldType(fieldType)) {
+		return parseDateForEditFn(fieldType, defaultValue);
+	}
+	if (customType === 'value_files') {
+		return defaultValue ? await getDirectusFilesDataFn(defaultValue) : [];
+	}
+	if (customType === 'value_image') {
+		return defaultValue ? getFormValueImageUrl(defaultValue) : null;
+	}
+	return defaultValue || null;
 }
 
 const Index = () => {

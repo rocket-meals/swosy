@@ -160,56 +160,66 @@ const haveSameTimeRanges = (
 	return isSameTimeRange;
 };
 
+type TimeRange = { time_start: number | null; time_end: number | null };
+type GroupedTime = { day: string[]; time_start: string | null; time_end: string | null };
+type DayMergeState = { previousSavedTimeRanges: TimeRange[]; previousDaysForTimeRange: string[] };
+
+// Merges one day's consecutive ranges into `groupedTimes`, carrying the running
+// "same time range so far" state forward to the next day via the returned state.
+const mergeDayIntoGroupedTimes = (
+	currentDay: string,
+	currentTimeRanges: TimeRange[] | undefined,
+	isLastDay: boolean,
+	state: DayMergeState,
+	groupedTimes: GroupedTime[]
+): DayMergeState => {
+	let { previousSavedTimeRanges, previousDaysForTimeRange } = state;
+
+	if (!currentTimeRanges || currentTimeRanges.length === 0) {
+		// if we have no time ranges for this day, we can skip it
+		// but we need to check if we have a previous day with time ranges and if so, we need to add it to the groupedTimes
+		if (previousDaysForTimeRange.length > 0 && previousSavedTimeRanges.length > 0) {
+			// we have a previous day with time ranges
+			flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+			previousSavedTimeRanges = [];
+			previousDaysForTimeRange = [];
+		}
+		return { previousSavedTimeRanges, previousDaysForTimeRange };
+	}
+
+	// So we have previous time ranges and now we want to check if the current time ranges are the same as the previous time ranges
+	let isSameTimeRange = haveSameTimeRanges(currentTimeRanges, previousSavedTimeRanges);
+
+	if (isSameTimeRange) {
+		// we have a same time range, so we can add the current day to the previous days
+		previousDaysForTimeRange = [...previousDaysForTimeRange, currentDay];
+	} else {
+		// we have a different time range, so we need to save the previous time ranges and add the current day to the grouped times
+		flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+		previousDaysForTimeRange = [currentDay];
+		previousSavedTimeRanges = currentTimeRanges;
+	}
+
+	// if we are at the last day, we need to add the previous time ranges to the grouped times
+	if (isLastDay) {
+		flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+	}
+
+	return { previousSavedTimeRanges, previousDaysForTimeRange };
+};
+
 const mergeDaysWithSameTimeRanges = (
 	sortedDayKeys: string[],
-	dayConsecutiveRanges: Record<string, { time_start: number | null; time_end: number | null }[]>
-): { day: string[]; time_start: string | null; time_end: string | null }[] => {
-	const groupedTimes: {
-		day: string[];
-		time_start: string | null;
-		time_end: string | null;
-	}[] = [];
+	dayConsecutiveRanges: Record<string, TimeRange[]>
+): GroupedTime[] => {
+	const groupedTimes: GroupedTime[] = [];
 
-	let previousSavedTimeRanges: {
-		time_start: number | null;
-		time_end: number | null;
-	}[] = [];
-	let previousDaysForTimeRange: string[] = [];
+	let state: DayMergeState = { previousSavedTimeRanges: [], previousDaysForTimeRange: [] };
 	for (let i = 0; i < sortedDayKeys.length; i++) {
 		let currentDay = sortedDayKeys[i];
 		let currentTimeRanges = dayConsecutiveRanges[currentDay];
-		if (!currentTimeRanges || currentTimeRanges.length === 0) {
-			// if we have no time ranges for this day, we can skip it
-			// but we need to check if we have a previous day with time ranges and if so, we need to add it to the groupedTimes
-			if (previousDaysForTimeRange.length > 0 && previousSavedTimeRanges.length > 0) {
-				// we have a previous day with time ranges
-				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
-				previousSavedTimeRanges = [];
-				previousDaysForTimeRange = [];
-			} else {
-				// Do nothing as previous day has handled the time ranges
-			}
-		} else {
-			// So we have previous time ranges and now we want to check if the current time ranges are the same as the previous time ranges
-			let isLastDay = i === sortedDayKeys.length - 1;
-
-			let isSameTimeRange = haveSameTimeRanges(currentTimeRanges, previousSavedTimeRanges);
-
-			if (isSameTimeRange) {
-				// we have a same time range, so we can add the current day to the previous days
-				previousDaysForTimeRange.push(currentDay);
-			} else {
-				// we have a different time range, so we need to save the previous time ranges and add the current day to the grouped times
-				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
-				previousDaysForTimeRange = [currentDay];
-				previousSavedTimeRanges = currentTimeRanges;
-			}
-
-			// if we are at the last day, we need to add the previous time ranges to the grouped times
-			if (isLastDay) {
-				flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
-			}
-		}
+		let isLastDay = i === sortedDayKeys.length - 1;
+		state = mergeDayIntoGroupedTimes(currentDay, currentTimeRanges, isLastDay, state, groupedTimes);
 	}
 
 	return groupedTimes;

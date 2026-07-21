@@ -421,6 +421,22 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	);
 };
 
+// Checks a single separator position against its expected character, updating `wasManualRef`
+// to reflect whether it was just manually typed (true) or is no longer present (false).
+function detectManualSeparatorAt(
+	text: string,
+	index: number,
+	expectedChar: string,
+	wasManualRef: React.MutableRefObject<boolean>,
+): boolean {
+	if (text[index] === expectedChar && !wasManualRef.current) {
+		wasManualRef.current = true;
+		return true;
+	}
+	wasManualRef.current = false;
+	return false;
+}
+
 /**
  * Checks whether the user manually typed one of the separator characters
  * (the two dots or the two colons) of a "DD.MM.YYYY HH:MM:SS" value at the
@@ -434,35 +450,15 @@ function detectManualTimestampSeparator(
 	isSecondLastColonManual: React.MutableRefObject<boolean>,
 	isLastColonManual: React.MutableRefObject<boolean>,
 ): boolean {
-	let isManualDot = false;
-	if (text.length > 0 && text.length <= 19) {
-		if (text[2] === '.' && !isThirdDotManual.current) {
-			isManualDot = true;
-			isThirdDotManual.current = true;
-		} else {
-			isThirdDotManual.current = false;
-		}
-		if (text[5] === '.' && !isFifthDotManual.current) {
-			isManualDot = true;
-			isFifthDotManual.current = true;
-		} else {
-			isFifthDotManual.current = false;
-		}
-		// Bei Timestamp (`DD.MM.YYYY HH:MM:SS`) stehen die Doppelpunkte bei Index 13 und 16 (0-basiert)
-		if (text[13] === ':' && !isSecondLastColonManual.current) {
-			isManualDot = true;
-			isSecondLastColonManual.current = true;
-		} else {
-			isSecondLastColonManual.current = false;
-		}
-		if (text[16] === ':' && !isLastColonManual.current) {
-			isManualDot = true;
-			isLastColonManual.current = true;
-		} else {
-			isLastColonManual.current = false;
-		}
+	if (text.length === 0 || text.length > 19) {
+		return false;
 	}
-	return isManualDot;
+	const isThirdDotManualNow = detectManualSeparatorAt(text, 2, '.', isThirdDotManual);
+	const isFifthDotManualNow = detectManualSeparatorAt(text, 5, '.', isFifthDotManual);
+	// Bei Timestamp (`DD.MM.YYYY HH:MM:SS`) stehen die Doppelpunkte bei Index 13 und 16 (0-basiert)
+	const isSecondLastColonManualNow = detectManualSeparatorAt(text, 13, ':', isSecondLastColonManual);
+	const isLastColonManualNow = detectManualSeparatorAt(text, 16, ':', isLastColonManual);
+	return isThirdDotManualNow || isFifthDotManualNow || isSecondLastColonManualNow || isLastColonManualNow;
 }
 
 const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {

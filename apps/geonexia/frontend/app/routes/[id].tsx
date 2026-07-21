@@ -1196,7 +1196,7 @@ export default function RouteDetailScreen() {
 		);
 	}
 
-	const { activeTiles, routeInitialCenter, infoRows, lastInfoIdx, addModeHasAnchor } = computeRouteDetailDerivedState(
+	const { routeInitialCenter, infoRows, lastInfoIdx, addModeHasAnchor } = computeRouteDetailDerivedState(
 		route,
 		isEditing,
 		editedHexTiles,
