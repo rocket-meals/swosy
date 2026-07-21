@@ -33,7 +33,7 @@ export const useGeonexiaAlert = () => {
 						else textColor = '#2563eb';
 						return (
 							<TouchableOpacity
-								key={idx}
+								key={btn.text}
 								onPress={() => {
 									close();
 									btn.onPress?.();

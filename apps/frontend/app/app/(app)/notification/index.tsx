@@ -152,13 +152,13 @@ const NotificationScreen = () => {
 					>
 						{translate(TranslationKeys.foods)}
 					</Text>
-					{foodWithFeedback?.map((item, index) => (
+					{foodWithFeedback?.map((item) => (
 							<View
 								style={{
 									...styles.infoRow,
 									backgroundColor: theme.screen.iconBg,
 								}}
-								key={index}
+								key={item.id ?? item.feedback?.food}
 							>
 								<View style={styles.iconLabelContainer}>
 									<Text

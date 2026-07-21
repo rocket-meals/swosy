@@ -75,7 +75,7 @@ const Index = () => {
 			) : (
 				<>
 					<Text style={{ ...styles.groupHeading, color: theme.screen.text }}>{translate(TranslationKeys.my_support_tickets)}</Text>
-					<View style={[styles.section, { width: sectionWidth }]}>{allTickets?.map((item, index: number) => <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="bell" size={24} color={theme.screen.icon} />} label={item?.title ?? undefined} value={item?.date_created ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm') : 'N/A'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.push(`/feedback-support?app_feedbacks_id=${item.id}`)} groupPosition={getTicketGroupPosition(index, allTickets?.length ?? 0)} />)}</View>
+					<View style={[styles.section, { width: sectionWidth }]}>{allTickets?.map((item, index: number) => <SettingsList key={item.id} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="bell" size={24} color={theme.screen.icon} />} label={item?.title ?? undefined} value={item?.date_created ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm') : 'N/A'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.push(`/feedback-support?app_feedbacks_id=${item.id}`)} groupPosition={getTicketGroupPosition(index, allTickets?.length ?? 0)} />)}</View>
 				</>
 			)}
 		</ScrollView>

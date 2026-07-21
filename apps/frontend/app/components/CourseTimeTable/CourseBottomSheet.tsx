@@ -304,7 +304,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						<View style={styles.weekdayView}>
 							{colorData.map((color, index) => (
 								<TouchableOpacity
-									key={index}
+									key={`${color}-${index}`}
 									onPress={() => handleColorPress(color)}
 									style={[
 										styles.box,

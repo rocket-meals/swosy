@@ -62,8 +62,7 @@ der Git-/PR-Historie.
 
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
-component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
-(39x).
+component" (97x), TODO-Kommentare (39x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 „Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
@@ -84,6 +83,26 @@ extrahiert — außer bei den Forst-Billboard-Blöcken, die sich in einem Detail
 unterscheiden (der kleine Baum an der `MIDDLE`-Ankerposition wird nur in
 `_layout.tsx` und `settings/index.tsx` gesetzt, nicht in `activities/index.tsx`);
 dieser Unterschied wurde unverändert beibehalten, kein Verhalten angeglichen.
+
+„Array index in keys" (60x) ist als dritter Fall abgearbeitet: 46 Stellen bekamen
+ein stabiles bzw. zusammengesetztes Key-Feld (z. B. `item.id`, `item.label`,
+`day.id`; bei Datensätzen ohne eigene ID wie SonarCloud-Map-Features ein
+zusammengesetzter Key aus `class`/`subclass`/`name` + Index als Tie-Breaker für
+echte Duplikate). Bei drei Markierungs-Listen (`list-day-screen`,
+`list-week-screen/details`, `labels`) wurde dazu die geteilte
+Marking-Transform-Funktion um das ursprüngliche `id`-Feld ergänzt, das vorher
+beim Umformen in die Anzeige-Struktur verloren ging.
+
+14 Stellen wurden bewusst unverändert gelassen (Index-Key ist hier vertretbar,
+da die Liste statisch bzw. nie umsortiert/gefiltert wird): Debug-Log-Anzeigen
+(`seaphara`, `RateAppSettingsItem`, `3d-kyle-test`, `map/index.tsx`,
+`expo-update-test`), reine Paginierungs-Punkte und feste Hexagon-Geometrie
+(geonexia `onboarding`, `index.tsx`s `HEX_POLYGON_POINTS`), ein In-Place
+mutiertes Memory-Spielfeld (`game-ideas`), aus statischem Text abgeleitete
+Markdown-Zeilen (`DataAccess.tsx`, `course-timetable/index.tsx`) sowie die
+URL-Liste in `rss-feed-config/index.tsx` (nur Anhängen/Editieren, kein
+Löschen/Umsortieren vorhanden — vor einer Restrukturierung zu ID-Objekten
+erst klären, ob Löschen/Umsortieren tatsächlich nie kommen soll).
 
 ## Hinweise
 

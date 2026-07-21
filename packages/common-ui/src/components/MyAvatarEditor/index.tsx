@@ -2371,7 +2371,7 @@ const QuickstartDebugSection: React.FC<QuickstartDebugSectionProps> = ({
 			<View style={styles.debugFallbackRow}>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
-						key={index}
+						key={`${presetConfig.style}-${index}`}
 						style={[styles.debugFallbackButton, { backgroundColor: buttonBg }]}
 						onPress={() => {
 							onDebugEvent?.(`debug:fallback-preset press index=${index}`);
@@ -2431,7 +2431,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 			>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
-						key={index}
+						key={`${presetConfig.style}-${index}`}
 						// Debug: red border = the touchable's actual layout box (the touch target).
 						// If it doesn't line up with the yellow-bordered avatar view, hit-testing
 						// and visuals have drifted apart (the "tap only works at the bottom edge"

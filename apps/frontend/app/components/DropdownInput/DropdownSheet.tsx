@@ -94,7 +94,7 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
           const active = !customSelected && value.trim().length === 0;
           return (
             <TouchableOpacity
-              key={`deselect-${index}`}
+              key={item.kind}
               style={[styles.optionRow, { backgroundColor: active ? primaryColor : theme.screen.iconBg }]}
               onPress={handleDeselect}
               disabled={isDisabled}
@@ -110,7 +110,7 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
         if (item.kind === 'custom') {
           return (
             <TouchableOpacity
-              key={`custom-${index}`}
+              key={item.kind}
               style={[styles.optionRow, { backgroundColor: customSelected ? primaryColor : theme.screen.iconBg }]}
               onPress={handleSelectCustom}
               disabled={isDisabled}
@@ -125,7 +125,7 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
         }
         if (item.kind === 'customInput') {
           return (
-            <View key={`custom-input-${index}`} style={{ width: '100%', marginBottom: 2 }}>
+            <View key={item.kind} style={{ width: '100%', marginBottom: 2 }}>
               <SingleLineInput
                 id="custom"
                 value={customValue}
