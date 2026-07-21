@@ -68,6 +68,35 @@ function getOrCreate(records: Record<string, HexTileRecord>, h3Index: string): H
 	return records[h3Index];
 }
 
+/**
+ * Set or clear the legacy per-anchor flat-rendering flag on a record. Kept as
+ * its own function (with a type that doesn't carry the field's `@deprecated`
+ * tag) since writing this field is the intentional backward-compat behaviour
+ * of `setBillboardFlatAtAnchor`, not a mistaken use of a deprecated API.
+ */
+function setLegacyBillboardFlatAtAnchor(rec: { billboardsFlat?: Record<string, boolean> }, anchorColor: string, flat: boolean): void {
+	rec.billboardsFlat ??= {};
+	if (!flat) {
+		delete rec.billboardsFlat[anchorColor];
+	} else {
+		rec.billboardsFlat[anchorColor] = true;
+	}
+}
+
+/**
+ * Apply the legacy `billboardAnchorColor`/`billboardsFlat` fields from an
+ * imported customization payload, when present. Kept as its own function
+ * (with a type that doesn't carry the fields' `@deprecated` tag) since this
+ * is the intentional backward-compat import path for old customization data.
+ */
+function applyLegacyCustomizationFields(
+	rec: { billboardAnchorColor?: string | null; billboardsFlat?: Record<string, boolean> },
+	customization: { billboardAnchorColor?: string | null; billboardsFlat?: Record<string, boolean> },
+): void {
+	if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
+	if (customization.billboardsFlat !== undefined) rec.billboardsFlat = customization.billboardsFlat;
+}
+
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
 const hexTileSlice = createSlice({
@@ -196,12 +225,7 @@ const hexTileSlice = createSlice({
 		) {
 			const { h3Index, anchorColor, flat } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);
-			rec.billboardsFlat ??= {};
-			if (!flat) {
-				delete rec.billboardsFlat[anchorColor];
-			} else {
-				rec.billboardsFlat[anchorColor] = true;
-			}
+			setLegacyBillboardFlatAtAnchor(rec, anchorColor, flat);
 		},
 
 		/**
@@ -237,9 +261,8 @@ const hexTileSlice = createSlice({
 				const rec = getOrCreate(state.records, h3Index);
 				if (customization.tileImage !== undefined) rec.tileImage = customization.tileImage;
 				if (customization.billboard !== undefined) rec.billboard = customization.billboard;
-				if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
+				applyLegacyCustomizationFields(rec, customization);
 				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
-				if (customization.billboardsFlat !== undefined) rec.billboardsFlat = customization.billboardsFlat;
 				if (customization.billboardsTexture !== undefined) rec.billboardsTexture = customization.billboardsTexture;
 			}
 		},

@@ -317,6 +317,10 @@ const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
 // Minimum rendered pixel size for billboard icons so that sprites at very small
 // H3 resolutions or low user-scale settings remain visible and tappable.
 const BILLBOARD_MIN_SIZE_PX = 8;
+// Logical icon size (px) a billboard sprite is rasterized at; iconSizeAtRefZoom is
+// desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE. Keep in sync with BILLBOARD_ICON_SIZE
+// in the MapLibre HTML.
+const BILLBOARD_STANDARD_ICON_SIZE = 128;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -417,6 +421,54 @@ function computeMaxGridDistanceToCorners(bounds: ViewportBounds, h3Res: number, 
  * (colorIndex 0) and the 6 ring children get red, yellow, green, blue,
  * purple, orange (colorIndex 1–6) in ring order.
  */
+/** Build the white center-child feature (colorIndex 0) for one parent cell, or null if it has no boundary. */
+function buildCenterChildFeature(
+	parentCell: string,
+	centerChild: string,
+	parentLevel: number,
+): H3GeoJsonFeature | null {
+	const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
+	if (centerBoundary.length === 0) return null;
+	return {
+		type: 'Feature',
+		geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
+		properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
+	};
+}
+
+/** Build the colored ring-child features (colorIndex 1–6) around one parent cell's center child. */
+function buildRingChildFeatures(
+	parentCell: string,
+	centerChild: string,
+	h3Res: number,
+	parentLevel: number,
+	maxFeatures: number,
+): H3GeoJsonFeature[] {
+	let ringChildren: string[] = [];
+	try {
+		ringChildren = gridRingUnsafe(centerChild, 1).filter(
+			(c) => cellToParent(c, h3Res) === parentCell,
+		);
+	} catch (err) {
+		// gridRingUnsafe can throw for pentagon cells; skip ring for those
+		console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
+	}
+
+	const features: H3GeoJsonFeature[] = [];
+	for (let i = 0; i < ringChildren.length && features.length < maxFeatures; i++) {
+		const child = ringChildren[i];
+		const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+		if (boundary.length > 0) {
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+				properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
+			});
+		}
+	}
+	return features;
+}
+
 function buildHalfResolutionH3Features(
 	parentCells: string[],
 	h3Res: number,
@@ -430,38 +482,10 @@ function buildHalfResolutionH3Features(
 		const centerChild = cellToCenterChild(parentCell, childRes);
 		if (!centerChild) continue;
 
-		// Center child → colorIndex 0 (white)
-		const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
-		if (centerBoundary.length > 0) {
-			features.push({
-				type: 'Feature',
-				geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
-				properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
-			});
-		}
+		const centerFeature = buildCenterChildFeature(parentCell, centerChild, parentLevel);
+		if (centerFeature) features.push(centerFeature);
 
-		// Ring children → colorIndex 1–6
-		let ringChildren: string[] = [];
-		try {
-			ringChildren = gridRingUnsafe(centerChild, 1).filter(
-				(c) => cellToParent(c, h3Res) === parentCell,
-			);
-		} catch (err) {
-			// gridRingUnsafe can throw for pentagon cells; skip ring for those
-			console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
-		}
-		for (let i = 0; i < ringChildren.length; i++) {
-			if (features.length >= H3_MAX_CELLS) break;
-			const child = ringChildren[i];
-			const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
-			if (boundary.length > 0) {
-				features.push({
-					type: 'Feature',
-					geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-					properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
-				});
-			}
-		}
+		features.push(...buildRingChildFeatures(parentCell, centerChild, h3Res, parentLevel, H3_MAX_CELLS - features.length));
 	}
 	return features;
 }
@@ -1051,6 +1075,26 @@ type RouteSegmentAccumulation = {
 	speedDurationSeconds: number;
 };
 
+/** Elevation change between two consecutive points; zero on either side when altitude is missing. */
+function computeElevationDelta(
+	prevAltitude: number | null | undefined,
+	currAltitude: number | null | undefined,
+): { gainM: number; lossM: number } {
+	if (prevAltitude == null || currAltitude == null) {
+		return { gainM: 0, lossM: 0 };
+	}
+	const diff = currAltitude - prevAltitude;
+	return diff > 0 ? { gainM: diff, lossM: 0 } : { gainM: 0, lossM: Math.abs(diff) };
+}
+
+/** Speed for a segment, preferring the GPS-reported speed over the distance/time-derived one. */
+function computeSegmentSpeedKmh(dtSec: number, gpsSpeed: number | null | undefined, segKm: number): number {
+	if (gpsSpeed != null && gpsSpeed >= 0) {
+		return gpsSpeed * 3.6;
+	}
+	return dtSec > 0 ? (segKm / dtSec) * 3600 : 0;
+}
+
 /**
  * Walk consecutive route points accumulating total distance, elevation
  * gain/loss, and the per-segment speed samples (once the GPS warm-up period
@@ -1065,24 +1109,19 @@ function accumulateRouteSegments(points: RoutePoint[], startTimestamp: number): 
 	let speedDurationSeconds = 0;
 
 	for (let i = 1; i < points.length; i++) {
-		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+		const prev = points[i - 1];
+		const curr = points[i];
+		const segKm = haversineKm(prev.lat, prev.lng, curr.lat, curr.lng);
 		distanceKm += segKm;
 
-		if (points[i].altitude != null && points[i - 1].altitude != null) {
-			const diff = (points[i].altitude as number) - (points[i - 1].altitude as number);
-			if (diff > 0) elevationGainM += diff;
-			else elevationLossM += Math.abs(diff);
-		}
+		const { gainM, lossM } = computeElevationDelta(prev.altitude, curr.altitude);
+		elevationGainM += gainM;
+		elevationLossM += lossM;
 
-		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
-		const gpsSpeed = points[i].speed;
-		let segSpeedKmh = 0;
-		if (gpsSpeed != null && gpsSpeed >= 0) {
-			segSpeedKmh = gpsSpeed * 3.6;
-		} else if (dtSec > 0) {
-			segSpeedKmh = (segKm / dtSec) * 3600;
-		}
-		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
+		const dtSec = (curr.timestamp - prev.timestamp) / 1000;
+		const segSpeedKmh = computeSegmentSpeedKmh(dtSec, curr.speed, segKm);
+
+		if (curr.timestamp - startTimestamp >= SPEED_WARMUP_MS) {
 			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
 			speedDistanceKm += segKm;
 			speedDurationSeconds += dtSec;
@@ -2968,6 +3007,94 @@ type TileImageOverlay = {
 	rotation: number;
 };
 
+/** [lat, lng] bounding box spanned by a hex boundary. */
+function computeBoundaryBoundingBox(boundary: [number, number][]): { minLat: number; maxLat: number; minLng: number; maxLng: number } {
+	let minLat = Infinity, maxLat = -Infinity;
+	let minLng = Infinity, maxLng = -Infinity;
+	for (const [lat, lng] of boundary) {
+		if (lat < minLat) minLat = lat;
+		if (lat > maxLat) maxLat = lat;
+		if (lng < minLng) minLng = lng;
+		if (lng > maxLng) maxLng = lng;
+	}
+	return { minLat, maxLat, minLng, maxLng };
+}
+
+/**
+ * Build a single tile's image overlay entry, or null when the tile has no
+ * `tileImage` customization, no matching terrain asset, no resolvable url,
+ * or a degenerate (< 3 vertex) boundary. Extracted from buildTileImageOverlays()
+ * to keep that function's Cognitive Complexity manageable.
+ */
+async function buildTileImageOverlayForTile(
+	h3Index: string,
+	record: HexTileRecord,
+	terrainLookup: Map<string, { moduleId: number; mimeType: string }>,
+	textureAnchors: RootState['hexTextureConfig']['spriteAnchors'],
+	currentHexTextureOpacity: number,
+	loadAssetUrl: (cacheKey: string, moduleId: number, mimeType: string) => Promise<string | null>,
+): Promise<TileImageOverlay | null> {
+	if (!record.tileImage) return null;
+	const terrainEntry = terrainLookup.get(record.tileImage);
+	if (terrainEntry === undefined) return null;
+
+	const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
+	if (!url) return null;
+
+	// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
+	const boundary = cellToBoundary(h3Index) as [number, number][]; // [[lat, lng], ...]
+	if (boundary.length < 3) return null;
+
+	const { minLat, maxLat, minLng, maxLng } = computeBoundaryBoundingBox(boundary);
+	// Compute the geographic bearing (azimuth) from the hex center to its first
+	// vertex. Math.cos(centerLat) corrects the longitude delta for the fact that
+	// 1° of longitude covers less ground at higher latitudes. atan2(x, y) with
+	// (dlng, dlat) gives the angle measured clockwise from North, which is the
+	// standard geographic convention (0 = North, π/2 = East).
+	const centerLat = (minLat + maxLat) / 2;
+	const centerLng = (minLng + maxLng) / 2;
+	const v0 = boundary[0];
+	const dlat = v0[0] - centerLat;
+	const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
+	const rotation = Math.atan2(dlng, dlat); // radians CW from North
+
+	// Apply per-terrain anchor/scale overrides from hex texture config.
+	const terrainOverride = textureAnchors[record.tileImage];
+	const texAnchorX = terrainOverride?.anchorX ?? 0.5;
+	const texAnchorY = terrainOverride?.anchorY ?? 0.5;
+	const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
+	const bboxW = maxLng - minLng;
+	const bboxH = maxLat - minLat;
+	// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
+	// portion of the texture (matching the HexFieldPreview behaviour).
+	const scaledW = bboxW * texScale;
+	const scaledH = bboxH * texScale;
+	// Pin the anchor fraction of the image to the hex center.
+	// This keeps the texture centred at scale 1 and lets the anchor
+	// shift which part of the image is visible at other scales.
+	// centerLng/centerLat are already computed above for the rotation calc.
+	const adjMinLng = centerLng - texAnchorX * scaledW;
+	const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
+	const adjMinLat = centerLat - texAnchorY * scaledH;
+	const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
+
+	return {
+		id: `tile-img-${h3Index}`,
+		url,
+		// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
+		coordinates: [
+			[adjMinLng, adjMaxLat],
+			[adjMaxLng, adjMaxLat],
+			[adjMaxLng, adjMinLat],
+			[adjMinLng, adjMinLat],
+		],
+		opacity: currentHexTextureOpacity,
+		// Actual hex vertices in [lng, lat] for canvas polygon clipping.
+		polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
+		rotation,
+	};
+}
+
 /**
  * Build the tile-image overlays (per customized hex tile) sent to the map as
  * MapLibre image sources, one per tile that has a `tileImage` customization.
@@ -2989,74 +3116,8 @@ async function buildTileImageOverlays(
 	const imageOverlays: TileImageOverlay[] = [];
 
 	for (const [h3Index, record] of Object.entries(records)) {
-		// ── Tile image overlay ──────────────────────────────────────────────
-		if (record.tileImage) {
-			const terrainEntry = terrainLookup.get(record.tileImage);
-			if (terrainEntry !== undefined) {
-				const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
-				if (url) {
-					// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
-					const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-					if (boundary.length >= 3) {
-						let minLat = Infinity, maxLat = -Infinity;
-						let minLng = Infinity, maxLng = -Infinity;
-						for (const [lat, lng] of boundary) {
-							if (lat < minLat) minLat = lat;
-							if (lat > maxLat) maxLat = lat;
-							if (lng < minLng) minLng = lng;
-							if (lng > maxLng) maxLng = lng;
-						}
-						// Compute the geographic bearing (azimuth) from the hex center to its first
-						// vertex. Math.cos(centerLat) corrects the longitude delta for the fact that
-						// 1° of longitude covers less ground at higher latitudes. atan2(x, y) with
-						// (dlng, dlat) gives the angle measured clockwise from North, which is the
-						// standard geographic convention (0 = North, π/2 = East).
-						const centerLat = (minLat + maxLat) / 2;
-						const centerLng = (minLng + maxLng) / 2;
-						const v0 = boundary[0];
-						const dlat = v0[0] - centerLat;
-						const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
-						const rotation = Math.atan2(dlng, dlat); // radians CW from North
-
-						// Apply per-terrain anchor/scale overrides from hex texture config.
-						const terrainOverride = textureAnchors[record.tileImage];
-						const texAnchorX = terrainOverride?.anchorX ?? 0.5;
-						const texAnchorY = terrainOverride?.anchorY ?? 0.5;
-						const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
-						const bboxW = maxLng - minLng;
-						const bboxH = maxLat - minLat;
-						// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
-						// portion of the texture (matching the HexFieldPreview behaviour).
-						const scaledW = bboxW * texScale;
-						const scaledH = bboxH * texScale;
-						// Pin the anchor fraction of the image to the hex center.
-						// This keeps the texture centred at scale 1 and lets the anchor
-						// shift which part of the image is visible at other scales.
-						// centerLng/centerLat are already computed above for the rotation calc.
-						const adjMinLng = centerLng - texAnchorX * scaledW;
-						const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
-						const adjMinLat = centerLat - texAnchorY * scaledH;
-						const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
-
-						imageOverlays.push({
-							id: `tile-img-${h3Index}`,
-							url,
-							// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
-							coordinates: [
-								[adjMinLng, adjMaxLat],
-								[adjMaxLng, adjMaxLat],
-								[adjMaxLng, adjMinLat],
-								[adjMinLng, adjMinLat],
-							],
-							opacity: currentHexTextureOpacity,
-							// Actual hex vertices in [lng, lat] for canvas polygon clipping.
-							polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
-							rotation,
-						});
-					}
-				}
-			}
-		}
+		const overlay = await buildTileImageOverlayForTile(h3Index, record, terrainLookup, textureAnchors, currentHexTextureOpacity, loadAssetUrl);
+		if (overlay) imageOverlays.push(overlay);
 	}
 
 	return imageOverlays;
@@ -3092,6 +3153,181 @@ type BillboardOverlaysResult = {
  * icon-size zoom expression scales it correctly at all zoom levels.
  * NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
  */
+/** Per-tile geometry shared by every billboard anchor resolved on that tile. */
+type BillboardTileGeometry = {
+	boundary: [number, number][];
+	n: number;
+	centerLng: number;
+	centerLat: number;
+	edgeLengthRatio: number;
+};
+
+/** External dependencies needed to resolve a billboard sprite's asset/url/size. */
+type BillboardResolverDeps = {
+	spriteAnchors: RootState['billboardConfig']['spriteAnchors'];
+	billboardScaleRef: React.MutableRefObject<number>;
+	loadAssetUrl: (cacheKey: string, moduleId: number, mimeType: string) => Promise<string | null>;
+};
+
+type ResolvedBillboardSprite = {
+	iconKey: string;
+	url: string;
+	anchorX: number;
+	anchorY: number;
+	iconSizeAtRefZoom: number;
+	lng: number;
+	lat: number;
+};
+
+/**
+ * Resolve the sprite/position/size data shared by Hex Texture Adaptions and Hex
+ * Objects for one billboard anchor. Returns null when the billboard key can't be
+ * parsed or its asset url can't be loaded. Billboard pixel size is determined by
+ * the sprite's scaleFactor, the user-adjustable billboard scale multiplier, AND
+ * the H3 edge length ratio relative to the reference resolution (10) — this
+ * makes billboards larger on bigger hexagons and smaller on smaller ones.
+ */
+async function resolveBillboardSprite(
+	anchorColor: string,
+	billboardKey: string,
+	geometry: BillboardTileGeometry,
+	deps: BillboardResolverDeps,
+): Promise<ResolvedBillboardSprite | null> {
+	const parsed = parseBillboardKey(billboardKey);
+	if (!parsed) return null;
+	const { sprite, idx } = parsed;
+	const url = await deps.loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+	if (!url) return null;
+
+	const { boundary, n, centerLng, centerLat, edgeLengthRatio } = geometry;
+	const anchorOverride = deps.spriteAnchors[idx];
+	const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+	const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+	const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
+	const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+	const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+		BILLBOARD_UNIT_PX * sprite.scaleFactor * deps.billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+	));
+	const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+	return { iconKey: `billboard-${billboardKey}`, url, anchorX, anchorY, iconSizeAtRefZoom, lng, lat };
+}
+
+/** Build one Hex Texture Adaption billboard feature (always flat, rotated by anchor angle). */
+async function buildTextureAdaptionBillboardFeature(
+	anchorColor: string,
+	billboardKey: string,
+	geometry: BillboardTileGeometry,
+	deps: BillboardResolverDeps,
+	currentHexTextureAdaptionOpacity: number,
+	billboardImages: Record<string, { url: string }>,
+): Promise<BillboardFeature | null> {
+	const resolved = await resolveBillboardSprite(anchorColor, billboardKey, geometry, deps);
+	if (!resolved) return null;
+
+	if (!billboardImages[resolved.iconKey]) {
+		billboardImages[resolved.iconKey] = { url: resolved.url };
+	}
+	// Hex Texture Adaptions are always flat and rotated by the position angle.
+	const textureRotation = getAnchorAngleDeg(anchorColor);
+	return {
+		type: 'Feature',
+		geometry: { type: 'Point', coordinates: [resolved.lng, resolved.lat] },
+		properties: {
+			iconKey: resolved.iconKey, iconSizeAtRefZoom: resolved.iconSizeAtRefZoom,
+			anchorX: resolved.anchorX, anchorY: resolved.anchorY,
+			flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation,
+		},
+	};
+}
+
+/** Build one Hex Object billboard feature (face-camera by default; legacy per-anchor flat flag respected). */
+async function buildHexObjectBillboardFeature(
+	anchorColor: string,
+	billboardKey: string,
+	geometry: BillboardTileGeometry,
+	deps: BillboardResolverDeps,
+	currentHexObjectOpacity: number,
+	effectiveFlat: Record<string, boolean>,
+	billboardImages: Record<string, { url: string }>,
+): Promise<BillboardFeature | null> {
+	const resolved = await resolveBillboardSprite(anchorColor, billboardKey, geometry, deps);
+	if (!resolved) return null;
+
+	// Hex Objects are face-camera by default; legacy per-anchor flat flag
+	// is still respected for backward compatibility with existing data.
+	const flat = effectiveFlat[anchorColor] === true;
+	if (!billboardImages[resolved.iconKey]) {
+		billboardImages[resolved.iconKey] = { url: resolved.url };
+	}
+	return {
+		type: 'Feature',
+		geometry: { type: 'Point', coordinates: [resolved.lng, resolved.lat] },
+		properties: {
+			iconKey: resolved.iconKey, iconSizeAtRefZoom: resolved.iconSizeAtRefZoom,
+			anchorX: resolved.anchorX, anchorY: resolved.anchorY,
+			flat, opacity: currentHexObjectOpacity,
+		},
+	};
+}
+
+/**
+ * Build every billboard feature (Hex Texture Adaptions + Hex Objects) for one
+ * tile, or an empty array if the tile has neither and/or has a degenerate boundary.
+ */
+async function collectTileBillboardFeatures(
+	h3Index: string,
+	record: HexTileRecord,
+	deps: BillboardResolverDeps,
+	currentHexTextureAdaptionOpacity: number,
+	currentHexObjectOpacity: number,
+	billboardImages: Record<string, { url: string }>,
+): Promise<BillboardFeature[]> {
+	// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
+	const effectiveBillboards = getEffectiveBillboards(record);
+	const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
+	// Per-anchor flat flags (legacy; used only for old `billboards` data).
+	const effectiveFlat = getEffectiveBillboardsFlat(record);
+
+	const hasBillboards = Object.keys(effectiveBillboards).length > 0;
+	const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
+	if (!hasBillboards && !hasTextureAdaptions) return [];
+
+	// Compute hex boundary (centroid + vertices) once per tile.
+	const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER) as [number, number][]; // [[lng, lat], ...]
+	const n = boundary.length - 1;
+	if (n <= 0) return [];
+	let sumLng = 0, sumLat = 0;
+	for (let j = 0; j < n; j++) {
+		const [bLng, bLat] = boundary[j];
+		sumLng += bLng;
+		sumLat += bLat;
+	}
+	const centerLng = sumLng / n;
+	const centerLat = sumLat / n;
+
+	// Size constants for this tile's resolution (shared across all anchors).
+	const cellRes = getResolution(h3Index);
+	const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
+	const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
+	const geometry: BillboardTileGeometry = { boundary, n, centerLng, centerLat, edgeLengthRatio };
+
+	const features: BillboardFeature[] = [];
+	for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
+		const feature = await buildTextureAdaptionBillboardFeature(
+			anchorColor, billboardKey, geometry, deps, currentHexTextureAdaptionOpacity, billboardImages,
+		);
+		if (feature) features.push(feature);
+	}
+	for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
+		const feature = await buildHexObjectBillboardFeature(
+			anchorColor, billboardKey, geometry, deps, currentHexObjectOpacity, effectiveFlat, billboardImages,
+		);
+		if (feature) features.push(feature);
+	}
+	return features;
+}
+
 async function buildBillboardOverlays(
 	records: Record<string, HexTileRecord>,
 	spriteAnchors: RootState['billboardConfig']['spriteAnchors'],
@@ -3100,109 +3336,15 @@ async function buildBillboardOverlays(
 	currentHexObjectOpacity: number,
 	loadAssetUrl: (cacheKey: string, moduleId: number, mimeType: string) => Promise<string | null>,
 ): Promise<BillboardOverlaysResult> {
-	// Billboard pixel size is determined by the sprite's scaleFactor, the
-	// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
-	// relative to the reference resolution (10). This makes billboards larger on
-	// bigger hexagons and smaller on smaller ones.
-	// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
-	// at the reference resolution.
-	const BILLBOARD_STANDARD_ICON_SIZE = 128;
-
 	const billboardImages: Record<string, { url: string }> = {};
 	const billboardFeatures: BillboardFeature[] = [];
+	const deps: BillboardResolverDeps = { spriteAnchors, billboardScaleRef, loadAssetUrl };
 
 	for (const [h3Index, record] of Object.entries(records)) {
-		// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
-		const effectiveBillboards = getEffectiveBillboards(record);
-		const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
-		// Per-anchor flat flags (legacy; used only for old `billboards` data).
-		const effectiveFlat = getEffectiveBillboardsFlat(record);
-
-		const hasBillboards = Object.keys(effectiveBillboards).length > 0;
-		const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
-		if (!hasBillboards && !hasTextureAdaptions) continue;
-
-		// Compute hex boundary (centroid + vertices) once per tile.
-		const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
-		let sumLng = 0, sumLat = 0;
-		const n = boundary.length - 1;
-		if (n <= 0) continue;
-		for (let j = 0; j < n; j++) {
-			const [bLng, bLat] = boundary[j] as [number, number];
-			sumLng += bLng;
-			sumLat += bLat;
-		}
-		const centerLng = sumLng / n;
-		const centerLat = sumLat / n;
-
-		// Size constants for this tile's resolution (shared across all anchors).
-		const cellRes = getResolution(h3Index);
-		const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
-		const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
-
-		// ── Hex Texture Adaptions (always flat on the map surface) ────────────
-		for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
-			const parsed = parseBillboardKey(billboardKey);
-			if (!parsed) continue;
-			const { sprite, idx } = parsed;
-			const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
-			if (!url) continue;
-
-			const iconKey = `billboard-${billboardKey}`;
-			const anchorOverride = spriteAnchors[idx];
-			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-			const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
-			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
-			));
-			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
-
-			if (!billboardImages[iconKey]) {
-				billboardImages[iconKey] = { url };
-			}
-			// Hex Texture Adaptions are always flat and rotated by the position angle.
-			const textureRotation = getAnchorAngleDeg(anchorColor);
-			billboardFeatures.push({
-				type: 'Feature',
-				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation },
-			});
-		}
-
-		// ── Hex Objects (face-camera; legacy billboardsFlat flag still respected) ──
-		for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
-			const parsed = parseBillboardKey(billboardKey);
-			if (!parsed) continue;
-			const { sprite, idx } = parsed;
-			const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
-			if (!url) continue;
-
-			const iconKey = `billboard-${billboardKey}`;
-			const anchorOverride = spriteAnchors[idx];
-			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-			const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
-			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
-			));
-			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
-
-			// Hex Objects are face-camera by default; legacy per-anchor flat flag
-			// is still respected for backward compatibility with existing data.
-			const flat = effectiveFlat[anchorColor] === true;
-
-			if (!billboardImages[iconKey]) {
-				billboardImages[iconKey] = { url };
-			}
-			billboardFeatures.push({
-				type: 'Feature',
-				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat, opacity: currentHexObjectOpacity },
-			});
-		}
+		const features = await collectTileBillboardFeatures(
+			h3Index, record, deps, currentHexTextureAdaptionOpacity, currentHexObjectOpacity, billboardImages,
+		);
+		billboardFeatures.push(...features);
 	}
 
 	return { images: billboardImages, features: billboardFeatures };
@@ -3272,16 +3414,20 @@ function handleMapViewportChanged(
 
 /** Handles the 'HexTileClicked' map message: dispatches to whichever click
  * mode (set-home, coloring, magnify, or default tile-info) is currently active. */
-function handleHexTileClicked(
-	clickedMsg: { h3Index?: string; mapFeatures?: MapFeatureInfo[] },
-	isSettingHomeRef: React.MutableRefObject<boolean>,
-	setIsSettingHome: (val: boolean) => void,
-	coloringTileImageRef: React.MutableRefObject<string | null>,
-	isMagnifyModeRef: React.MutableRefObject<boolean>,
-	showMagnifyHexTileModal: (h3Index: string) => void,
-	showHexTileModal: (h3Index: string) => void,
-	dispatch: AppDispatch,
-): void {
+function handleHexTileClicked(options: {
+	clickedMsg: { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
+	isSettingHomeRef: React.MutableRefObject<boolean>;
+	setIsSettingHome: (val: boolean) => void;
+	coloringTileImageRef: React.MutableRefObject<string | null>;
+	isMagnifyModeRef: React.MutableRefObject<boolean>;
+	showMagnifyHexTileModal: (h3Index: string) => void;
+	showHexTileModal: (h3Index: string) => void;
+	dispatch: AppDispatch;
+}): void {
+	const {
+		clickedMsg, isSettingHomeRef, setIsSettingHome, coloringTileImageRef,
+		isMagnifyModeRef, showMagnifyHexTileModal, showHexTileModal, dispatch,
+	} = options;
 	if (clickedMsg.h3Index) {
 		if (isSettingHomeRef.current) {
 			// Set-home mode: place castle2 at the center of the selected tile
@@ -3329,16 +3475,20 @@ function handleMapMeasurePoint(
 /** Handles a location update while a recording is paused: updates the visual
  * player marker (without recording GPS points or marking hex tiles) and keeps
  * the GPS speed-filter reference in sync. */
-function applyPausedLocationUpdate(
-	point: RoutePoint,
-	fromJoystick: boolean,
-	appActive: boolean,
-	movedPlayerManuallyRef: React.MutableRefObject<boolean>,
-	debugPlayerPositionRef: React.MutableRefObject<{ lat: number; lng: number } | null>,
-	lastAcceptedGpsPointRef: React.MutableRefObject<RoutePoint | null>,
-	mapRef: React.MutableRefObject<MyMapHandle | null>,
-	centerMapOnPosition: (pos: { lat: number; lng: number }, zoom?: number) => void,
-): void {
+function applyPausedLocationUpdate(options: {
+	point: RoutePoint;
+	fromJoystick: boolean;
+	appActive: boolean;
+	movedPlayerManuallyRef: React.MutableRefObject<boolean>;
+	debugPlayerPositionRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
+	lastAcceptedGpsPointRef: React.MutableRefObject<RoutePoint | null>;
+	mapRef: React.MutableRefObject<MyMapHandle | null>;
+	centerMapOnPosition: (pos: { lat: number; lng: number }, zoom?: number) => void;
+}): void {
+	const {
+		point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef,
+		lastAcceptedGpsPointRef, mapRef, centerMapOnPosition,
+	} = options;
 	// For real GPS: skip if the user already overrode the position with the
 	// joystick before pausing – this mirrors the active-recording behaviour and
 	// prevents GPS from snapping the marker back while the user navigates
@@ -3420,6 +3570,108 @@ function maybeFilterGpsPoint(
 	return false;
 }
 
+/** Marks a single H3 cell as visited (if not already) and dispatches markVisited. */
+function markHexCellVisited(
+	cell: string,
+	visitedHexIdsRef: React.MutableRefObject<Set<string>>,
+	orderedHexTilesRef: React.MutableRefObject<string[]>,
+	dispatch: AppDispatch,
+	timestamp: number,
+): void {
+	if (visitedHexIdsRef.current.has(cell)) return;
+	visitedHexIdsRef.current.add(cell);
+	orderedHexTilesRef.current.push(cell);
+	dispatch(markVisited({ h3Indices: [cell], timestamp }));
+}
+
+/**
+ * Fill in all H3 cells on the straight-line path between lastCell and cell (GPS
+ * gap interpolation), marking newly-visited intermediate cells and dispatching
+ * their walked edges. This handles GPS dropouts where the device had no signal
+ * for several updates: tiles the user actually passed through are still
+ * counted as visited. Only fills when the gap is within a reasonable bound
+ * (GPS_PATH_INTERPOLATION_MAX_CELLS) to avoid marking thousands of tiles on a
+ * very long GPS outage.
+ */
+function fillHexGapCells(
+	lastCell: string,
+	cell: string,
+	visitedHexIdsRef: React.MutableRefObject<Set<string>>,
+	orderedHexTilesRef: React.MutableRefObject<string[]>,
+	dispatch: AppDispatch,
+	timestamp: number,
+): void {
+	try {
+		const pathCells = gridPathCells(lastCell, cell);
+		// pathCells[0] is lastCell (already visited), pathCells[last] is `cell`
+		// (processed separately by the caller). pathCells.length - 2 is the number
+		// of intermediate cells (excludes first and last).
+		if (pathCells.length - 2 > GPS_PATH_INTERPOLATION_MAX_CELLS) return;
+
+		const newEdges: string[] = [];
+		for (let i = 0; i < pathCells.length - 1; i++) {
+			const a = pathCells[i];
+			const b = pathCells[i + 1];
+			newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+			if (i > 0) {
+				// Intermediate cell (not pathCells[0] which is lastCell, already visited)
+				markHexCellVisited(pathCells[i], visitedHexIdsRef, orderedHexTilesRef, dispatch, timestamp);
+			}
+		}
+		if (newEdges.length > 0) {
+			dispatch(addWalkedEdges(newEdges));
+		}
+	} catch (pathErr) {
+		// gridPathCells can throw when the two cells are on different
+		// icosahedron faces – log at warn level for diagnosability and continue.
+		console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
+	}
+}
+
+/**
+ * Computes the walked edge(s) between the last and new red-line cell, falling
+ * back to a single direct edge if gridPathCells throws (different icosahedron faces).
+ */
+function computeRedLineEdges(lastRedLineCell: string, redLineCell: string): string[] {
+	try {
+		const redLinePathCells = gridPathCells(lastRedLineCell, redLineCell);
+		if (redLinePathCells.length - 2 > GPS_PATH_INTERPOLATION_MAX_CELLS) {
+			return [];
+		}
+		const edges: string[] = [];
+		for (let i = 0; i < redLinePathCells.length - 1; i++) {
+			const a = redLinePathCells[i];
+			const b = redLinePathCells[i + 1];
+			edges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+		}
+		return edges;
+	} catch {
+		return [lastRedLineCell < redLineCell ? `${lastRedLineCell}:${redLineCell}` : `${redLineCell}:${lastRedLineCell}`];
+	}
+}
+
+/** Tracks the finer red-line cell transition for the red walk-path line, dispatching its walked edge(s). */
+function trackRedLineWalkEdge(
+	point: RoutePoint,
+	lastRedLineCellRef: React.MutableRefObject<string | null>,
+	dispatch: AppDispatch,
+): void {
+	try {
+		const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
+		if (!redLineCell || redLineCell === lastRedLineCellRef.current) return;
+
+		if (lastRedLineCellRef.current) {
+			const newRedLineEdges = computeRedLineEdges(lastRedLineCellRef.current, redLineCell);
+			if (newRedLineEdges.length > 0) {
+				dispatch(addWalkedEdgesRedLine(newRedLineEdges));
+			}
+		}
+		lastRedLineCellRef.current = redLineCell;
+	} catch {
+		// latLngToCell can throw for invalid coordinates; skip silently
+	}
+}
+
 /** Tracks the H3 cell (and finer red-line cell) visited by this GPS/joystick
  * point: fills in gap cells across GPS dropouts, dispatches markVisited for
  * newly-visited cells, and records walked edges for both the standard and
@@ -3433,102 +3685,51 @@ function trackVisitedHexCells(
 	lastRedLineCellRef: React.MutableRefObject<string | null>,
 	dispatch: AppDispatch,
 ): void {
-	if (isH3Available()) {
-		try {
-			// Use the same base integer resolution as buildH3GeoJson so that the
-			// visited cell ID matches the keys in the GeoJSON and the Redux records.
-			// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
-			// as the base and subdivides into children; visits are tracked at the base
-			// (parent) resolution so the colour update propagates to all sub-tiles.
-			const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
-			const cell = latLngToCell(point.lat, point.lng, h3Res);
-			if (cell) {
-				// ── GPS gap interpolation ─────────────────────────────────────────
-				// When moving from lastCellRef to the new cell, fill in all H3 cells
-				// on the straight-line path between them. This handles GPS dropouts
-				// where the device had no signal for several updates: tiles the user
-				// actually passed through are still counted as visited.
-				if (lastCellRef.current && cell !== lastCellRef.current) {
-					try {
-						const pathCells = gridPathCells(lastCellRef.current, cell);
-						// pathCells[0] is lastCellRef (already visited), pathCells[last] is
-						// `cell` which will be processed below. Only fill when the gap is
-						// within a reasonable bound to avoid marking thousands of tiles on a
-						// very long GPS outage.
-						// pathCells.length - 2 is the number of intermediate cells (excludes
-						// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
-						// exactly that many intermediate cells at most.
-						if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-							const newEdges: string[] = [];
-							for (let i = 0; i < pathCells.length - 1; i++) {
-								const a = pathCells[i];
-								const b = pathCells[i + 1];
-								newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-								if (i > 0) {
-									// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
-									if (!visitedHexIdsRef.current.has(pathCells[i])) {
-										visitedHexIdsRef.current.add(pathCells[i]);
-										orderedHexTilesRef.current.push(pathCells[i]);
-										dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
-									}
-								}
-							}
-							if (newEdges.length > 0) {
-								dispatch(addWalkedEdges(newEdges));
-							}
-						}
-					} catch (pathErr) {
-						// gridPathCells can throw when the two cells are on different
-						// icosahedron faces – log at warn level for diagnosability and continue.
-						console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
-					}
-				}
+	if (!isH3Available()) return;
+	try {
+		// Use the same base integer resolution as buildH3GeoJson so that the
+		// visited cell ID matches the keys in the GeoJSON and the Redux records.
+		// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
+		// as the base and subdivides into children; visits are tracked at the base
+		// (parent) resolution so the colour update propagates to all sub-tiles.
+		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const cell = latLngToCell(point.lat, point.lng, h3Res);
+		if (!cell) return;
 
-				// Only count each tile once per run so the level can rise by at most
-				// one step during a single activity.
-				if (!visitedHexIdsRef.current.has(cell)) {
-					visitedHexIdsRef.current.add(cell);
-					orderedHexTilesRef.current.push(cell);
-					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
-				}
-				if (cell !== lastCellRef.current) {
-					lastCellRef.current = cell;
-				}
-
-				// ── Red-line walk-path edge tracking ────────────────────────────────
-				// Track finer red-line cell transitions for the red walk-path line.
-				try {
-					const redLineCell = latLngToCell(point.lat, point.lng, RED_LINE_GRID_RESOLUTION);
-					if (redLineCell && redLineCell !== lastRedLineCellRef.current) {
-						if (lastRedLineCellRef.current) {
-							const newRedLineEdges: string[] = [];
-							try {
-								const redLinePathCells = gridPathCells(lastRedLineCellRef.current, redLineCell);
-								if (redLinePathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-									for (let i = 0; i < redLinePathCells.length - 1; i++) {
-										const a = redLinePathCells[i];
-										const b = redLinePathCells[i + 1];
-										newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-									}
-								}
-							} catch {
-								const a = lastRedLineCellRef.current;
-								const b = redLineCell;
-								newRedLineEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
-							}
-							if (newRedLineEdges.length > 0) {
-								dispatch(addWalkedEdgesRedLine(newRedLineEdges));
-							}
-						}
-						lastRedLineCellRef.current = redLineCell;
-					}
-				} catch {
-					// latLngToCell can throw for invalid coordinates; skip silently
-				}
-			}
-		} catch (err) {
-			console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
+		// ── GPS gap interpolation ─────────────────────────────────────────
+		// When moving from lastCellRef to the new cell, fill in all H3 cells
+		// on the straight-line path between them.
+		if (lastCellRef.current && cell !== lastCellRef.current) {
+			fillHexGapCells(lastCellRef.current, cell, visitedHexIdsRef, orderedHexTilesRef, dispatch, point.timestamp);
 		}
+
+		// Only count each tile once per run so the level can rise by at most
+		// one step during a single activity.
+		markHexCellVisited(cell, visitedHexIdsRef, orderedHexTilesRef, dispatch, point.timestamp);
+		if (cell !== lastCellRef.current) {
+			lastCellRef.current = cell;
+		}
+
+		// ── Red-line walk-path edge tracking ────────────────────────────────
+		// Track finer red-line cell transitions for the red walk-path line.
+		trackRedLineWalkEdge(point, lastRedLineCellRef, dispatch);
+	} catch (err) {
+		console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
+	}
+}
+
+/** Speaks a TTS announcement, swallowing and logging (rather than throwing) any error. */
+function trySpeakAnnouncement(
+	text: string,
+	langCode: string,
+	options: Parameters<typeof speakAnnouncement>[2],
+	source: string,
+	logContext: string,
+): void {
+	try {
+		speakAnnouncement(text, langCode, options, source);
+	} catch (err) {
+		console.warn(`[RecordScreen] ${logContext} failed:`, err);
 	}
 }
 
@@ -3556,29 +3757,87 @@ function announceKmMilestoneIfNeeded(
 			announcePace: curSs.announcePace,
 			announceSpeedKmh: curSs.announceSpeed,
 		});
-		try {
-			speakAnnouncement(text, langCode, {
-				rate: speechRateToNumber(curSs.speechRate),
-			}, 'km_milestone');
-		} catch (err) {
-			console.warn('[RecordScreen] Km milestone announcement failed:', err);
-		}
+		trySpeakAnnouncement(text, langCode, { rate: speechRateToNumber(curSs.speechRate) }, 'km_milestone', 'Km milestone announcement');
 	}
+}
+
+/** Instantaneous pace (min/km) from GPS speed, or average pace as a fallback when GPS speed is unavailable/too low. */
+function computeCurrentPaceMinPerKm(point: RoutePoint, elapsedSec: number, liveDistanceKm: number): number | null {
+	if (point.speed != null && point.speed > 0.5) {
+		return 1000 / (point.speed * 60); // instantaneous pace: min/km from m/s
+	}
+	if (elapsedSec > 0) {
+		return elapsedSec / 60 / liveDistanceKm; // average fallback
+	}
+	return null;
+}
+
+/** Determines the pace-hint state for the current pace. Lower pace value = faster running. */
+function computePaceHintState(
+	currentPace: number,
+	fasterBound: number,
+	slowerBound: number,
+	paceHintFasterEnabled: boolean,
+	paceHintSlowerEnabled: boolean,
+): PaceHintState {
+	if (paceHintFasterEnabled && currentPace < fasterBound) return 'too_fast';
+	if (paceHintSlowerEnabled && currentPace > slowerBound) return 'too_slow';
+	return 'on_target';
+}
+
+/** Speaks the "too fast"/"too slow" transition announcement (only on transition from on_target, respecting the cooldown). */
+function announcePaceHintTransitionIfDue(
+	next: PaceHintState,
+	prev: PaceHintState,
+	currentPace: number,
+	targetPace: number,
+	curSs: SpeechSettingsState,
+	locale: string,
+	langCode: string,
+	lastPaceHintTimeRef: React.MutableRefObject<number>,
+	paceHintCooldownMs: number,
+): void {
+	const now = Date.now();
+	if (next === 'on_target' || prev !== 'on_target' || now - lastPaceHintTimeRef.current < paceHintCooldownMs) return;
+
+	const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
+	trySpeakAnnouncement(text, langCode, {
+		volume: curSs.volume,
+		rate: speechRateToNumber(curSs.speechRate),
+		useApplicationAudioSession: curSs.duckMusicDuringTTS,
+	}, 'pace_hint', 'Pace hint announcement');
+	lastPaceHintTimeRef.current = now;
+}
+
+/** Speaks the "Zielgeschwindigkeit erreicht" announcement when returning to on_target after a warning state. */
+function announceOnTargetIfDue(next: PaceHintState, prev: PaceHintState, curSs: SpeechSettingsState, locale: string, langCode: string): void {
+	if (next !== 'on_target' || prev === 'on_target') return;
+	const text = buildOnTargetAnnouncement(locale);
+	trySpeakAnnouncement(text, langCode, {
+		volume: curSs.volume,
+		rate: speechRateToNumber(curSs.speechRate),
+		useApplicationAudioSession: curSs.duckMusicDuringTTS,
+	}, 'pace_hint_on_target', 'On-target announcement');
 }
 
 /** Evaluates and (if needed) speaks a pace-hint transition announcement
  * ("too fast" / "too slow" / back to on-target), with hysteresis thresholds
  * and a cooldown between announcements. */
-function evaluatePaceHintAnnouncement(
-	point: RoutePoint,
-	liveDistanceKm: number,
-	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>,
-	startTimeRef: React.MutableRefObject<number>,
-	accumulatedSecondsRef: React.MutableRefObject<number>,
-	paceHintStateRef: React.MutableRefObject<PaceHintState>,
-	lastPaceHintTimeRef: React.MutableRefObject<number>,
-	paceHintCooldownMs: number,
-): void {
+function evaluatePaceHintAnnouncement(options: {
+	point: RoutePoint;
+	liveDistanceKm: number;
+	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>;
+	startTimeRef: React.MutableRefObject<number>;
+	accumulatedSecondsRef: React.MutableRefObject<number>;
+	paceHintStateRef: React.MutableRefObject<PaceHintState>;
+	lastPaceHintTimeRef: React.MutableRefObject<number>;
+	paceHintCooldownMs: number;
+}): void {
+	const {
+		point, liveDistanceKm, speechSettingsRef, startTimeRef, accumulatedSecondsRef,
+		paceHintStateRef, lastPaceHintTimeRef, paceHintCooldownMs,
+	} = options;
+
 	if (!speechSettingsRef.current.enabled || liveDistanceKm <= 0) return;
 	const curSs = speechSettingsRef.current;
 	if (!curSs.paceTargetEnabled) return;
@@ -3589,71 +3848,31 @@ function evaluatePaceHintAnnouncement(
 	const elapsedSec = startTimeRef.current > 0
 		? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 		: accumulatedSecondsRef.current;
-	let currentPace: number | null = null;
-	if (point.speed != null && point.speed > 0.5) {
-		currentPace = 1000 / (point.speed * 60); // instantaneous pace: min/km from m/s
-	} else if (elapsedSec > 0) {
-		currentPace = elapsedSec / 60 / liveDistanceKm; // average fallback
-	}
-	if (currentPace != null) {
-		const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
-		const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
-		const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
+	const currentPace = computeCurrentPaceMinPerKm(point, elapsedSec, liveDistanceKm);
+	if (currentPace == null) return;
 
-		// Lower pace value = faster running.  Thresholds are subtracted/added
-		// from the target to define the acceptable range boundaries.
-		const fasterBound = targetPace - fasterThreshold;
-		const slowerBound = targetPace + slowerThreshold;
+	const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
+	const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
+	const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
 
-		const prev = paceHintStateRef.current;
-		let next: PaceHintState = 'on_target';
+	// Lower pace value = faster running.  Thresholds are subtracted/added
+	// from the target to define the acceptable range boundaries.
+	const fasterBound = targetPace - fasterThreshold;
+	const slowerBound = targetPace + slowerThreshold;
 
-		if (curSs.paceHintFasterEnabled && currentPace < fasterBound) {
-			next = 'too_fast';
-		} else if (curSs.paceHintSlowerEnabled && currentPace > slowerBound) {
-			next = 'too_slow';
-		}
+	const prev = paceHintStateRef.current;
+	const next = computePaceHintState(currentPace, fasterBound, slowerBound, curSs.paceHintFasterEnabled, curSs.paceHintSlowerEnabled);
 
-		const now = Date.now();
-		const locale = getLocales()[0]?.languageTag ?? 'en-US';
-		const langCode = locale.split('-')[0].toLowerCase();
+	const locale = getLocales()[0]?.languageTag ?? 'en-US';
+	const langCode = locale.split('-')[0].toLowerCase();
 
-		// Announce "too fast" / "too slow" only on transition from on_target.
-		if (
-			next !== 'on_target' &&
-			prev === 'on_target' &&
-			now - lastPaceHintTimeRef.current >= paceHintCooldownMs
-		) {
-			const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
-			try {
-				speakAnnouncement(text, langCode, {
-					volume: curSs.volume,
-					rate: speechRateToNumber(curSs.speechRate),
-					useApplicationAudioSession: curSs.duckMusicDuringTTS,
-				}, 'pace_hint');
-			} catch (err) {
-				console.warn('[RecordScreen] Pace hint announcement failed:', err);
-			}
-			lastPaceHintTimeRef.current = now;
-		}
+	// Announce "too fast" / "too slow" only on transition from on_target.
+	announcePaceHintTransitionIfDue(next, prev, currentPace, targetPace, curSs, locale, langCode, lastPaceHintTimeRef, paceHintCooldownMs);
 
-		// Announce "Zielgeschwindigkeit erreicht" when returning to on_target
-		// after a warning state.
-		if (next === 'on_target' && prev !== 'on_target') {
-			const text = buildOnTargetAnnouncement(locale);
-			try {
-				speakAnnouncement(text, langCode, {
-					volume: curSs.volume,
-					rate: speechRateToNumber(curSs.speechRate),
-					useApplicationAudioSession: curSs.duckMusicDuringTTS,
-				}, 'pace_hint_on_target');
-			} catch (err) {
-				console.warn('[RecordScreen] On-target announcement failed:', err);
-			}
-		}
+	// Announce "Zielgeschwindigkeit erreicht" when returning to on_target after a warning state.
+	announceOnTargetIfDue(next, prev, curSs, locale, langCode);
 
-		paceHintStateRef.current = next;
-	}
+	paceHintStateRef.current = next;
 }
 
 /** Refreshes the H3 hex-tile and walk-path GeoJSON (plus the search highlight
@@ -3687,18 +3906,22 @@ function refreshHexDisplayForViewport(
 
 /** Persists a recording snapshot for crash recovery, throttled to at most once
  * every 10 seconds while actively (non-paused) recording. */
-function persistRecordingSnapshotIfDue(
-	isRecordingRef: React.MutableRefObject<boolean>,
-	isPausedRef: React.MutableRefObject<boolean>,
-	lastSnapshotSaveRef: React.MutableRefObject<number>,
-	startTimeRef: React.MutableRefObject<number>,
-	accumulatedSecondsRef: React.MutableRefObject<number>,
-	routePointsRef: React.MutableRefObject<RoutePoint[]>,
-	orderedHexTilesRef: React.MutableRefObject<string[]>,
-	h3ResolutionRef: React.MutableRefObject<number>,
-	selectedSportTypeRef: React.MutableRefObject<SportType>,
-	selectedRouteRef: React.MutableRefObject<SavedRoute | null>,
-): void {
+function persistRecordingSnapshotIfDue(options: {
+	isRecordingRef: React.MutableRefObject<boolean>;
+	isPausedRef: React.MutableRefObject<boolean>;
+	lastSnapshotSaveRef: React.MutableRefObject<number>;
+	startTimeRef: React.MutableRefObject<number>;
+	accumulatedSecondsRef: React.MutableRefObject<number>;
+	routePointsRef: React.MutableRefObject<RoutePoint[]>;
+	orderedHexTilesRef: React.MutableRefObject<string[]>;
+	h3ResolutionRef: React.MutableRefObject<number>;
+	selectedSportTypeRef: React.MutableRefObject<SportType>;
+	selectedRouteRef: React.MutableRefObject<SavedRoute | null>;
+}): void {
+	const {
+		isRecordingRef, isPausedRef, lastSnapshotSaveRef, startTimeRef, accumulatedSecondsRef,
+		routePointsRef, orderedHexTilesRef, h3ResolutionRef, selectedSportTypeRef, selectedRouteRef,
+	} = options;
 	if (isRecordingRef.current && !isPausedRef.current) {
 		const now = Date.now();
 		// Save a snapshot at most every 10 seconds to limit I/O.
@@ -5109,7 +5332,10 @@ export default function RecordScreen() {
 			handleMapViewportChanged(vp, selectedRouteRef, isRecordingRef, debugViewportRef, mapRef, refreshNormalTileDisplay);
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
-			handleHexTileClicked(clickedMsg, isSettingHomeRef, setIsSettingHome, coloringTileImageRef, isMagnifyModeRef, showMagnifyHexTileModal, showHexTileModal, dispatch);
+			handleHexTileClicked({
+				clickedMsg, isSettingHomeRef, setIsSettingHome, coloringTileImageRef,
+				isMagnifyModeRef, showMagnifyHexTileModal, showHexTileModal, dispatch,
+			});
 		} else if (msg.tag === 'MapMeasurePoint') {
 			const ptMsg = msg as { lat: number; lng: number };
 			handleMapMeasurePoint(ptMsg, isMeasureModeRef, measureWaypointsRef, mapRef);
@@ -5253,7 +5479,10 @@ export default function RecordScreen() {
 		// AppState 'active' handler re-syncs the display on return.
 		const appActive = AppState.currentState === 'active';
 		if (isPausedRef.current) {
-			applyPausedLocationUpdate(point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef, lastAcceptedGpsPointRef, mapRef, centerMapOnPosition);
+			applyPausedLocationUpdate({
+				point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef,
+				lastAcceptedGpsPointRef, mapRef, centerMapOnPosition,
+			});
 			return;
 		}
 
@@ -5299,7 +5528,10 @@ export default function RecordScreen() {
 		announceKmMilestoneIfNeeded(d, speechSettingsRef, lastAnnouncedKmRef, startTimeRef, accumulatedSecondsRef);
 
 		// ── Pace hint announcements with hysteresis threshold ────────────
-		evaluatePaceHintAnnouncement(point, d, speechSettingsRef, startTimeRef, accumulatedSecondsRef, paceHintStateRef, lastPaceHintTimeRef, PACE_HINT_COOLDOWN_MS);
+		evaluatePaceHintAnnouncement({
+			point, liveDistanceKm: d, speechSettingsRef, startTimeRef, accumulatedSecondsRef,
+			paceHintStateRef, lastPaceHintTimeRef, paceHintCooldownMs: PACE_HINT_COOLDOWN_MS,
+		});
 
 		if (appActive && point.speed != null && point.speed >= 0) {
 			setLiveSpeedKmh(point.speed * 3.6);
@@ -5322,7 +5554,10 @@ export default function RecordScreen() {
 		refreshHexDisplayForViewport(appActive, debugViewportRef, mapRef, h3ResolutionRef, showGridAlwaysRef, h3MinZoomRef, refreshSearchHighlight);
 
 		// ── Periodically persist a recording snapshot for crash recovery ──
-		persistRecordingSnapshotIfDue(isRecordingRef, isPausedRef, lastSnapshotSaveRef, startTimeRef, accumulatedSecondsRef, routePointsRef, orderedHexTilesRef, h3ResolutionRef, selectedSportTypeRef, selectedRouteRef);
+		persistRecordingSnapshotIfDue({
+			isRecordingRef, isPausedRef, lastSnapshotSaveRef, startTimeRef, accumulatedSecondsRef,
+			routePointsRef, orderedHexTilesRef, h3ResolutionRef, selectedSportTypeRef, selectedRouteRef,
+		});
 	}, [centerMapOnPosition, sendRouteToMap, dispatch, refreshSearchHighlight]);
 
 	// Moves the player to a new position (used by the debug gamepad).

@@ -176,41 +176,45 @@ function isValidReferer(referer: string): boolean {
  * @param myDatabaseHelper Helper used to load the redirect whitelist app setting
  * @returns True if the redirect is valid/allowed
  */
-async function resolveRedirectUrlValidity(redirect: unknown, myDatabaseHelper: MyDatabaseHelper): Promise<boolean> {
-  if (!!redirect && typeof redirect === 'string') {
-    let redirectUrl = getValidUrl(redirect);
-
-    if (redirectUrl) {
-      const redirect_whitelist = await myDatabaseHelper.getAppSettingsHelper().getRedirectWhitelist();
-      if (redirect_whitelist) {
-        let foundValidRedirect = false;
-        if (redirect_whitelist.length === 0) {
-          foundValidRedirect = true; // no whitelist means all redirects are allowed
-        }
-
-        for (let i = 0; i < redirect_whitelist.length && !foundValidRedirect; i++) {
-          // iterate over the whitelist as long as we haven't found a valid redirect
-          let redirect_whitelist_entry = redirect_whitelist[i];
-          try {
-            if (isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry, redirectUrl)) {
-              foundValidRedirect = true;
-              break;
-            }
-          } catch (e) {
-            console.log('Error in redirect with token endpoint');
-            console.log('redirectUrl: ' + redirectUrl);
-            console.log('redirect_whitelist_entry: ' + redirect_whitelist_entry);
-            console.log(e);
-          }
-        }
-
-        return foundValidRedirect;
+/**
+ * Iterate over the redirect whitelist and check whether any entry allows the given redirect URL.
+ * Errors thrown while checking a single entry are logged and treated as "does not match".
+ */
+function isRedirectUrlAllowedByAnyWhitelistEntry(redirect_whitelist: string[], redirectUrl: URL): boolean {
+  for (let redirect_whitelist_entry of redirect_whitelist) {
+    try {
+      if (isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry, redirectUrl)) {
+        return true;
       }
-      return true; // no whitelist configured means all redirects are allowed
+    } catch (e) {
+      console.log('Error in redirect with token endpoint');
+      console.log('redirectUrl: ' + redirectUrl);
+      console.log('redirect_whitelist_entry: ' + redirect_whitelist_entry);
+      console.log(e);
     }
+  }
+  return false;
+}
+
+async function resolveRedirectUrlValidity(redirect: unknown, myDatabaseHelper: MyDatabaseHelper): Promise<boolean> {
+  if (!redirect || typeof redirect !== 'string') {
+    return false; // no redirect URL found
+  }
+
+  const redirectUrl = getValidUrl(redirect);
+  if (!redirectUrl) {
     return false; // no valid redirect URL found
   }
-  return false; // no redirect URL found
+
+  const redirect_whitelist = await myDatabaseHelper.getAppSettingsHelper().getRedirectWhitelist();
+  if (!redirect_whitelist) {
+    return true; // no whitelist configured means all redirects are allowed
+  }
+  if (redirect_whitelist.length === 0) {
+    return true; // no whitelist means all redirects are allowed
+  }
+
+  return isRedirectUrlAllowedByAnyWhitelistEntry(redirect_whitelist, redirectUrl);
 }
 
 /**

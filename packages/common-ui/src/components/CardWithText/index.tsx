@@ -105,12 +105,8 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 		? [styles.imageContainer, ...(imageContainerStyle as StyleProp<ViewStyle>[])]
 		: [styles.imageContainer, imageContainerStyle as StyleProp<ViewStyle>];
 
-	let resolvedAspectRatio: number | undefined = 1;
-	if (aspectRatio === false) {
-		resolvedAspectRatio = undefined;
-	} else if (typeof aspectRatio === 'number') {
-		resolvedAspectRatio = aspectRatio;
-	}
+	const resolvedAspectRatio: number | undefined =
+		aspectRatio === false ? undefined : typeof aspectRatio === 'number' ? aspectRatio : 1;
 
 	let imageContent: React.ReactNode = null;
 	if (imageSource) {

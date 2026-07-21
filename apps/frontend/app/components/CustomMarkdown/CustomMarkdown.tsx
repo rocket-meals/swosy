@@ -93,7 +93,7 @@ const applyHeadingToStack = (
 };
 
 // Try to match the line against the inline content patterns (image/email/location/link).
-const matchInlineContentItem = (trimmedForMatch: string, indentLength: number): any | null => {
+const matchInlineContentItem = (trimmedForMatch: string, indentLength: number): any => {
 	const imageMatch = CONTENT_PATTERNS.image.exec(trimmedForMatch);
 	if (imageMatch) {
 		return {

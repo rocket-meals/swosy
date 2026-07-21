@@ -161,6 +161,15 @@ export type SavedActivity = RedLineRouteFields &
 		isManual?: boolean;
 	};
 
+/**
+ * Return the effective set of enclosed hex tile IDs for an activity, preferring
+ * the current `enclosedHexTiles` field and falling back to the legacy
+ * `hexTilesEnclosed` field for activities saved by older app versions.
+ */
+export function getEffectiveEnclosedHexTiles(activity: { enclosedHexTiles?: string[]; hexTilesEnclosed?: string[] }): string[] {
+	return activity.enclosedHexTiles ?? activity.hexTilesEnclosed ?? [];
+}
+
 // ─── Storage keys ─────────────────────────────────────────────────────────────
 
 // One key per activity, plus an index key listing which activity IDs exist

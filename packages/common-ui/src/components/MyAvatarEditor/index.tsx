@@ -712,11 +712,14 @@ function randomizeColorOptions(
 	return randomOptions;
 }
 
+/** A single avatar option's randomized value: a color list, or a preserved boolean/numeric setting. */
+type AvatarRandomOptionValue = string[] | boolean | number;
+
 // For Micah: coordinate eyebrowsColor (= hairColor) and facialHairColor (one step lighter).
 // Mutates randomOptions in place, matching the calling convention of the other randomize* helpers.
 function applyMicahColorCoordination(
 	style: AvatarStyle,
-	randomOptions: Record<string, string[] | boolean | number>,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
 	hiddenPropKeys: Set<string>,
 ): void {
 	if (style !== AvatarStyle.MICAH) return;
@@ -738,7 +741,7 @@ function applyMicahColorCoordination(
 // so that user-set positioning/orientation is not lost on randomize. Mutates randomOptions in place.
 function preservePositioningOptions(
 	config: AvatarConfig,
-	randomOptions: Record<string, string[] | boolean | number>,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
 ): void {
 	const preserveKeys: string[] = [
 		AvatarPropKey.OpenPeeps.FLIP,
@@ -759,7 +762,7 @@ function preservePositioningOptions(
 // even in debug mode where applyHiddenProps is skipped. Mutates randomOptions in place.
 function applyHiddenPropsToRandomOptions(
 	hiddenProps: Record<string, string | undefined> | undefined,
-	randomOptions: Record<string, string[] | boolean | number>,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
 ): void {
 	if (!hiddenProps) return;
 	for (const [key, value] of Object.entries(hiddenProps)) {
@@ -1276,7 +1279,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		const newComponentOptions = getStyleComponentOptions(config.style);
 		const newColorKeys = getStyleColorKeys(config.style);
 		const newProbabilityKeys = getStyleProbabilityKeys(config.style);
-		const randomOptions: Record<string, string[] | boolean | number> = {
+		const randomOptions: Record<string, AvatarRandomOptionValue> = {
 			...randomizeComponentOptions(config.style, newComponentOptions, newProbabilityKeys),
 			...randomizeColorOptions(config.style, newColorKeys, hiddenPropKeys),
 		};

@@ -74,25 +74,23 @@ async function enforceDailyMailLimitAndNotify(
   }
 }
 
-function extractDirectusFileIdsFromAttachments(input: Partial<DatabaseTypes.Mails>): string[] {
-  let directus_files_ids: string[] = [];
-  if (input.attachments) {
-    // @ts-ignore - create is not always defined
-    let attachments_create = input.attachments.create;
-    if (attachments_create) {
-      for (let attachment of attachments_create) {
-        let directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
-        if (directus_files_id_raw) {
-          if (typeof directus_files_id_raw === 'string') {
-            directus_files_ids.push(directus_files_id_raw);
-          } else {
-            directus_files_ids.push(directus_files_id_raw.id);
-          }
-        }
-      }
-    }
+function extractDirectusFileIdFromAttachment(attachment: any): string | undefined {
+  const directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
+  if (!directus_files_id_raw) {
+    return undefined;
   }
-  return directus_files_ids;
+  return typeof directus_files_id_raw === 'string' ? directus_files_id_raw : directus_files_id_raw.id;
+}
+
+function extractDirectusFileIdsFromAttachments(input: Partial<DatabaseTypes.Mails>): string[] {
+  // @ts-ignore - create is not always defined
+  const attachments_create: any[] | undefined = input.attachments?.create;
+  if (!attachments_create) {
+    return [];
+  }
+  return attachments_create
+    .map(extractDirectusFileIdFromAttachment)
+    .filter((id): id is string => !!id);
 }
 
 async function buildAttachmentsAndDownloadLinks(

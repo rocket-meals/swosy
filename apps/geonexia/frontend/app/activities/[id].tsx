@@ -102,6 +102,26 @@ function filterUnrealisticPoints(points: RoutePoint[], maxSpeedKmh: number): Rou
 	return result;
 }
 
+/** Elevation change between two consecutive points; zero on either side when altitude is missing. */
+function computeElevationDelta(
+	prevAltitude: number | null | undefined,
+	currAltitude: number | null | undefined,
+): { gainM: number; lossM: number } {
+	if (prevAltitude == null || currAltitude == null) {
+		return { gainM: 0, lossM: 0 };
+	}
+	const diff = currAltitude - prevAltitude;
+	return diff > 0 ? { gainM: diff, lossM: 0 } : { gainM: 0, lossM: Math.abs(diff) };
+}
+
+/** Speed for a segment, preferring the GPS-reported speed over the distance/time-derived one. */
+function computeSegmentSpeedKmh(prev: RoutePoint, curr: RoutePoint, segKm: number): number {
+	const dtSec = (curr.timestamp - prev.timestamp) / 1000;
+	const derivedSpeedKmh = dtSec > 0 ? (segKm / dtSec) * 3600 : 0;
+	const gpsSpeed = curr.speed;
+	return gpsSpeed != null && gpsSpeed >= 0 ? gpsSpeed * 3.6 : derivedSpeedKmh;
+}
+
 /**
  * Accumulate distance, elevation change and per-segment speeds across the
  * given points. Extracted from computeActivityStats() to keep that function's
@@ -116,21 +136,17 @@ function accumulateDistanceElevationAndSpeeds(
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
 	for (let i = 1; i < points.length; i++) {
-		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+		const prev = points[i - 1];
+		const curr = points[i];
+		const segKm = haversineKm(prev.lat, prev.lng, curr.lat, curr.lng);
 		distanceKm += segKm;
-		if (points[i].altitude != null && points[i - 1].altitude != null) {
-			const diff = (points[i].altitude as number) - (points[i - 1].altitude as number);
-			if (diff > 0) elevationGainM += diff;
-			else elevationLossM += Math.abs(diff);
-		}
-		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
-		const gpsSpeed = points[i].speed;
-		const derivedSpeedKmh = dtSec > 0 ? (segKm / dtSec) * 3600 : 0;
-		const segSpeedKmh =
-			gpsSpeed != null && gpsSpeed >= 0
-				? gpsSpeed * 3.6
-				: derivedSpeedKmh;
-		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS && segSpeedKmh > 0) {
+
+		const { gainM, lossM } = computeElevationDelta(prev.altitude, curr.altitude);
+		elevationGainM += gainM;
+		elevationLossM += lossM;
+
+		const segSpeedKmh = computeSegmentSpeedKmh(prev, curr, segKm);
+		if (curr.timestamp - startTimestamp >= SPEED_WARMUP_MS && segSpeedKmh > 0) {
 			speedsKmh.push(segSpeedKmh);
 		}
 	}
@@ -615,6 +631,47 @@ const routeAssignStyles = StyleSheet.create({
 const H3_GEOJSON_ORDER = true;
 const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 
+/** Mark all cells on the H3 grid path between two adjacent visited cells, unless the gap is too large. */
+function addInterpolatedCellsIfClose(
+	lastCell: string,
+	cell: string,
+	maxInterpolationCells: number,
+	visitedCells: Set<string>,
+): void {
+	try {
+		const pathCells = gridPathCells(lastCell, cell);
+		if (pathCells.length - 2 > maxInterpolationCells) {
+			return;
+		}
+		for (const c of pathCells) visitedCells.add(c);
+	} catch {
+		// Different icosahedron faces; just mark the two endpoints
+	}
+}
+
+/** Resolve a single GPS point to its H3 cell, mark it (and any interpolated gap cells) as visited. */
+function visitHexCellForPoint(
+	point: RoutePoint,
+	h3Resolution: number,
+	lastCell: string | null,
+	maxInterpolationCells: number,
+	visitedCells: Set<string>,
+): string | null {
+	try {
+		const cell = latLngToCell(point.lat, point.lng, h3Resolution);
+		if (!cell) {
+			return lastCell;
+		}
+		if (lastCell && cell !== lastCell) {
+			addInterpolatedCellsIfClose(lastCell, cell, maxInterpolationCells, visitedCells);
+		}
+		visitedCells.add(cell);
+		return cell;
+	} catch {
+		return lastCell; // Skip invalid GPS points
+	}
+}
+
 /**
  * Walk the route's GPS points and derive the sequence of unique H3 cells
  * visited, including interpolated cells for GPS gaps. Extracted from
@@ -630,25 +687,7 @@ function computeVisitedHexCells(
 	let lastCell: string | null = null;
 
 	for (const point of routePoints) {
-		try {
-			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
-			if (cell) {
-				if (lastCell && cell !== lastCell) {
-					try {
-						const pathCells = gridPathCells(lastCell, cell);
-						if (pathCells.length - 2 <= maxInterpolationCells) {
-							for (const c of pathCells) visitedCells.add(c);
-						}
-					} catch {
-						// Different icosahedron faces; just mark the two endpoints
-					}
-				}
-				visitedCells.add(cell);
-				lastCell = cell;
-			}
-		} catch {
-			// Skip invalid GPS points
-		}
+		lastCell = visitHexCellForPoint(point, h3Resolution, lastCell, maxInterpolationCells, visitedCells);
 	}
 
 	return visitedCells;
@@ -786,22 +825,25 @@ function migrateActivityStatsQuartiles(a: SavedActivity): SavedActivity {
 }
 
 /**
- * Send the (possibly smoothed) route line to the map, speed-colored when
- * segment data is available. Extracted from the "send route to map" effect
- * to keep its cognitive complexity manageable.
+ * Straßen/Wege mode: the GPS-connected track is not rendered at all. The
+ * road-match effect sends the road-matched line as speed-colored
+ * routeSegments once the road network has been fetched.
  */
-function sendActivityRouteSegmentsToMap(
+function clearActivityRouteSegmentsOnMap(mapHandle: MyMapHandle): void {
+	mapHandle.sendToMap({ routeSegments: null, routeCoordinates: null });
+}
+
+/**
+ * Send the (possibly smoothed) GPS-connected route line to the map,
+ * speed-colored when segment data is available. Extracted from the "send
+ * route to map" effect to keep its cognitive complexity manageable.
+ */
+function sendActivityGpsRouteSegmentsToMap(
 	mapHandle: MyMapHandle,
 	displayCoords: [number, number][],
-	showRoadMatch: boolean,
 	result: { segments: { coords: number[][]; speedKmh: number }[]; speedRange: unknown } | null,
 ): void {
-	if (showRoadMatch) {
-		// Straßen/Wege mode: the GPS-connected track is not rendered at all.
-		// The road-match effect sends the road-matched line as speed-colored
-		// routeSegments once the road network has been fetched.
-		mapHandle.sendToMap({ routeSegments: null, routeCoordinates: null });
-	} else if (result && result.segments.length > 0) {
+	if (result && result.segments.length > 0) {
 		// Rebuild segments using the (possibly smoothed) display coordinates
 		// while preserving the speed value from each original segment.
 		const smoothedSegments = result.segments.map((seg, i) => ({
@@ -1271,7 +1313,11 @@ export default function ActivityDetailScreen() {
 			: rawCoords;
 
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
-		sendActivityRouteSegmentsToMap(mapRef.current, displayCoords, showRoadMatch, result);
+		if (showRoadMatch) {
+			clearActivityRouteSegmentsOnMap(mapRef.current);
+		} else {
+			sendActivityGpsRouteSegmentsToMap(mapRef.current, displayCoords, result);
+		}
 
 		// Send start point circle (green, on top of the route lines)
 		const pts = activity.routePoints;

@@ -125,7 +125,7 @@ function computeEnclosedTilesForRoute(route: SavedRoute): string[] {
 	const tiles: string[] = [];
 	try {
 		const firstTile = route.hexTiles[0];
-		const lastTile = route.hexTiles[route.hexTiles.length - 1];
+		const lastTile = route.hexTiles.at(-1);
 		if (firstTile && lastTile && route.hexTiles.length >= 3) {
 			const res = getResolution(firstTile);
 
