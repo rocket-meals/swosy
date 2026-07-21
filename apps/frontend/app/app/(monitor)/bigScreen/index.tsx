@@ -25,6 +25,62 @@ export const bigScreenDefaultValues = {
 	showMarkingsOnCard: true,
 };
 
+const resolveBooleanParam = (param: string | string[] | undefined, fallback: boolean) => {
+	if (Array.isArray(param)) {
+		return param[0] === 'true';
+	}
+	if (typeof param === 'string') {
+		return param === 'true';
+	}
+	return fallback;
+};
+
+const resolveCardMarkingSize = (screenWidth: number): number => {
+	if (screenWidth > 1200) {
+		return 100;
+	}
+	if (screenWidth > 900) {
+		return 80;
+	}
+	return 60;
+};
+
+const filterFoodsByParams = (data: any[], params: any) => {
+	let filteredData = data;
+
+	// First filter by foodCategoryIds if exists
+	if (params?.foodCategoryIds) {
+		filteredData = filteredData.filter((food: any) => food?.foodoffer_category === params.foodCategoryIds);
+	}
+
+	// Then filter by foodOfferCategoryIds if exists (using previous filtered results)
+	if (params?.foodOfferCategoryIds) {
+		const offerFiltered = filteredData.filter((food: any) => food?.food?.food_category === params.foodOfferCategoryIds);
+		// Only overwrite if we have results from both filters
+		filteredData = offerFiltered.length > 0 ? offerFiltered : [];
+	}
+
+	return filteredData;
+};
+
+const shouldClearStaleFoods = (referenceTime: number, thirtyMinutesMs: number): boolean => {
+	return Date.now() - referenceTime >= thirtyMinutesMs;
+};
+
+const resolveTargetCategoryId = (filterId: any, fallbackId: any) => {
+	return filterId ? filterId : fallbackId;
+};
+
+const resolveCurrentCategoryFromList = (categoriesList: any[], targetId: any) => {
+	const currentCategory = categoriesList?.filter((category: any) => category?.id === targetId);
+	return currentCategory[0];
+};
+
+const resolveFoodImageSource = (currentFood: any, defaultImage: any) => {
+	const remoteUrl = currentFood?.food?.image_remote_url || getImageUrl(currentFood?.food?.image);
+	return remoteUrl ? { uri: remoteUrl } : { uri: defaultImage };
+};
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.big_screen);
 	const dispatch = useDispatch();
@@ -57,30 +113,12 @@ const Index = () => {
 
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 
-	const resolveBooleanParam = (param: string | string[] | undefined, fallback: boolean) => {
-		if (Array.isArray(param)) {
-			return param[0] === 'true';
-		}
-		if (typeof param === 'string') {
-			return param === 'true';
-		}
-		return fallback;
-	};
-
 	const showMarkingsOnCard = useMemo(
 		() => resolveBooleanParam(params?.showMarkingsOnCard, bigScreenDefaultValues.showMarkingsOnCard),
 		[params?.showMarkingsOnCard]
 	);
 
-	const cardMarkingSize = useMemo(() => {
-		if (screenWidth > 1200) {
-			return 100;
-		}
-		if (screenWidth > 900) {
-			return 80;
-		}
-		return 60;
-	}, [screenWidth]);
+	const cardMarkingSize = useMemo(() => resolveCardMarkingSize(screenWidth), [screenWidth]);
 	const cardMarkings = useMemo(
 		() => currentMarking.filter(mark => mark?.show_on_card),
 		[currentMarking]
@@ -148,19 +186,7 @@ const Index = () => {
 			const todayDate = new Date().toISOString().split('T')[0];
 			const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate);
 
-			let filteredData = foodData?.data || [];
-
-			// First filter by foodCategoryIds if exists
-			if (params?.foodCategoryIds) {
-				filteredData = filteredData.filter((food: any) => food?.foodoffer_category === params.foodCategoryIds);
-			}
-
-			// Then filter by foodOfferCategoryIds if exists (using previous filtered results)
-			if (params?.foodOfferCategoryIds) {
-				const offerFiltered = filteredData.filter((food: any) => food?.food?.food_category === params.foodOfferCategoryIds);
-				// Only overwrite if we have results from both filters
-				filteredData = offerFiltered.length > 0 ? offerFiltered : [];
-			}
+			const filteredData = filterFoodsByParams(foodData?.data || [], params);
 
 			if (filteredData?.length > 0) {
 				setFoods(filteredData);
@@ -170,7 +196,7 @@ const Index = () => {
 				startProgressAnimation();
 			} else {
 				const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
-				if (Date.now() - referenceTime >= THIRTY_MINUTES_MS) {
+				if (shouldClearStaleFoods(referenceTime, THIRTY_MINUTES_MS)) {
 					setFoods([]);
 				}
 			}
@@ -260,13 +286,8 @@ const Index = () => {
 
 	const fetchCurrentFoodCategory = async () => {
 		try {
-			if (params?.foodCategoryIds) {
-				const currentCategory = foodOfferCategories?.filter((category: any) => category?.id === params?.foodCategoryIds);
-				setCurrentFoodCategory(currentCategory[0]);
-			} else {
-				const currentCategory = foodOfferCategories?.filter((category: any) => category?.id === currentFood?.foodoffer_category);
-				setCurrentFoodCategory(currentCategory[0]);
-			}
+			const targetId = resolveTargetCategoryId(params?.foodCategoryIds, currentFood?.foodoffer_category);
+			setCurrentFoodCategory(resolveCurrentCategoryFromList(foodOfferCategories, targetId));
 		} catch (error) {
 			console.error('Error fetching food categories:', error);
 		}
@@ -274,13 +295,8 @@ const Index = () => {
 
 	const fetchCurrentFoodOfferCategory = async () => {
 		try {
-			if (params?.foodOfferCategoryIds) {
-				const currentCategory = foodCategories?.filter((category: any) => category?.id === params?.foodOfferCategoryIds);
-				setCurrentFoodOfferCategory(currentCategory[0]);
-			} else {
-				const currentCategory = foodCategories?.filter((category: any) => category?.id === currentFood?.food?.food_category);
-				setCurrentFoodOfferCategory(currentCategory[0]);
-			}
+			const targetId = resolveTargetCategoryId(params?.foodOfferCategoryIds, currentFood?.food?.food_category);
+			setCurrentFoodOfferCategory(resolveCurrentCategoryFromList(foodCategories, targetId));
 		} catch (error) {
 			console.error('Error fetching food categories:', error);
 		}
@@ -326,12 +342,7 @@ const Index = () => {
 		}).start();
 	};
 
-	const imageSource =
-		currentFood?.food?.image_remote_url || getImageUrl(currentFood?.food?.image)
-			? {
-					uri: currentFood?.food?.image_remote_url || getImageUrl(currentFood?.food?.image),
-				}
-			: { uri: defaultImage };
+	const imageSource = resolveFoodImageSource(currentFood, defaultImage);
 
 	const renderFoodImage = (containerStyle: { width: number; height: number; backgroundColor?: string }) => (
 		<View style={[styles.imageWrapper, containerStyle]}>

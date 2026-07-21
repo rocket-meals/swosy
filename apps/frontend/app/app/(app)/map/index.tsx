@@ -689,6 +689,101 @@ function createBuildingMarkerSvg(params: {
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
+function computePoiIconOverrides(
+	poiEnabled: boolean,
+	barriersEnabled: boolean,
+	parkingEnabled: boolean,
+	poiSubSettings: Record<string, boolean>,
+): Record<string, string | null> {
+	const overrides: Record<string, string | null> = {};
+	if (poiEnabled) {
+		POI_SUBTYPES.forEach(({ key }) => {
+			if (!(poiSubSettings[key] ?? true)) {
+				overrides[key] = null;
+			}
+		});
+	}
+	if (!barriersEnabled) {
+		BARRIER_ICON_KEYS.forEach((key) => {
+			overrides[key] = null;
+		});
+	}
+	if (!parkingEnabled) {
+		PARKING_ICON_KEYS.forEach((key) => {
+			overrides[key] = null;
+		});
+	}
+	return overrides;
+}
+
+function handleMapComponentMounted(params: {
+	mapMountedRef: React.MutableRefObject<boolean>;
+	gameModeRef: React.MutableRefObject<boolean>;
+	setGameMapReady: (ready: boolean) => void;
+	sendGameInitData: () => void;
+	pendingNavigateRef: React.MutableRefObject<boolean>;
+	sendMapData: () => void;
+	sendToMapRef: React.MutableRefObject<(data: object) => void>;
+	peopleCountRef: React.MutableRefObject<number>;
+	peopleModeRef: React.MutableRefObject<boolean>;
+	intelligentMovementRef: React.MutableRefObject<boolean>;
+	carModeRef: React.MutableRefObject<boolean>;
+	showSettingsRef: React.MutableRefObject<Record<string, boolean>>;
+	poiSubSettingsRef: React.MutableRefObject<Record<string, boolean>>;
+	addLog: (entry: string) => void;
+}): void {
+	const {
+		mapMountedRef,
+		gameModeRef,
+		setGameMapReady,
+		sendGameInitData,
+		pendingNavigateRef,
+		sendMapData,
+		sendToMapRef,
+		peopleCountRef,
+		peopleModeRef,
+		intelligentMovementRef,
+		carModeRef,
+		showSettingsRef,
+		poiSubSettingsRef,
+		addLog,
+	} = params;
+
+	mapMountedRef.current = true;
+	if (gameModeRef.current) {
+		setGameMapReady(true);
+		sendGameInitData();
+	} else {
+		pendingNavigateRef.current = true;
+		sendMapData();
+	}
+	sendToMapRef.current({ peopleCount: peopleCountRef.current });
+	if (peopleModeRef.current) {
+		sendToMapRef.current({ peopleMode: true });
+	}
+	if (intelligentMovementRef.current) {
+		sendToMapRef.current({ intelligentMovement: true });
+	}
+	if (carModeRef.current) {
+		sendToMapRef.current({ carMode: true });
+	}
+	// Send the emoji map so the HTML has no hardcoded emoji data
+	sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
+	const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+	Object.entries(GROUP_MAP).forEach(([key, group]) => {
+		if (!(showSettingsRef.current[key] ?? key !== 'barriers')) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
+		}
+	});
+	// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
+	const poiEnabled = showSettingsRef.current.poi ?? true;
+	const barriersEnabled = showSettingsRef.current.barriers ?? false;
+	const parkingEnabled = showSettingsRef.current.parking ?? true;
+	const initialPoiOverrides = computePoiIconOverrides(poiEnabled, barriersEnabled, parkingEnabled, poiSubSettingsRef.current);
+	sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
+	addLog('MapComponentMounted');
+}
+
 function resolveMapOverlayStyle(
 	gameMode: boolean,
 	headingUpMode: boolean,
@@ -1252,24 +1347,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		const poiEnabled = showSettings.poi ?? true;
 		const barriersEnabled = showSettings.barriers ?? false;
 		const parkingEnabled = showSettings.parking ?? true;
-		const overrides: Record<string, string | null> = {};
-		if (poiEnabled) {
-			POI_SUBTYPES.forEach(({ key }) => {
-				if (!(poiSubSettings[key] ?? true)) {
-					overrides[key] = null;
-				}
-			});
-		}
-		if (!barriersEnabled) {
-			BARRIER_ICON_KEYS.forEach((key) => {
-				overrides[key] = null;
-			});
-		}
-		if (!parkingEnabled) {
-			PARKING_ICON_KEYS.forEach((key) => {
-				overrides[key] = null;
-			});
-		}
+		const overrides = computePoiIconOverrides(poiEnabled, barriersEnabled, parkingEnabled, poiSubSettings);
 		sendToMapRef.current({ poiIconOverrides: overrides });
 	}, [showSettings, poiSubSettings]);
 
@@ -1329,56 +1407,22 @@ const OsmVectorMapScreen: React.FC = () => {
 		(data: object) => {
 			const d = data as any;
 			if (d.tag === 'MapComponentMounted') {
-				mapMountedRef.current = true;
-				if (gameModeRef.current) {
-					setGameMapReady(true);
-					sendGameInitData();
-				} else {
-					pendingNavigateRef.current = true;
-					sendMapData();
-				}
-				sendToMapRef.current({ peopleCount: peopleCountRef.current });
-				if (peopleModeRef.current) {
-					sendToMapRef.current({ peopleMode: true });
-				}
-				if (intelligentMovementRef.current) {
-					sendToMapRef.current({ intelligentMovement: true });
-				}
-				if (carModeRef.current) {
-					sendToMapRef.current({ carMode: true });
-				}
-				// Send the emoji map so the HTML has no hardcoded emoji data
-				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
-				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
-				Object.entries(GROUP_MAP).forEach(([key, group]) => {
-					if (!(showSettingsRef.current[key] ?? key !== 'barriers')) {
-						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
-					}
+				handleMapComponentMounted({
+					mapMountedRef,
+					gameModeRef,
+					setGameMapReady,
+					sendGameInitData,
+					pendingNavigateRef,
+					sendMapData,
+					sendToMapRef,
+					peopleCountRef,
+					peopleModeRef,
+					intelligentMovementRef,
+					carModeRef,
+					showSettingsRef,
+					poiSubSettingsRef,
+					addLog,
 				});
-				// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
-				const poiEnabled = showSettingsRef.current.poi ?? true;
-				const barriersEnabled = showSettingsRef.current.barriers ?? false;
-				const parkingEnabled = showSettingsRef.current.parking ?? true;
-				const initialPoiOverrides: Record<string, string | null> = {};
-				if (poiEnabled) {
-					POI_SUBTYPES.forEach(({ key }) => {
-						if (!(poiSubSettingsRef.current[key] ?? true)) {
-							initialPoiOverrides[key] = null;
-						}
-					});
-				}
-				if (!barriersEnabled) {
-					BARRIER_ICON_KEYS.forEach((key) => {
-						initialPoiOverrides[key] = null;
-					});
-				}
-				if (!parkingEnabled) {
-					PARKING_ICON_KEYS.forEach((key) => {
-						initialPoiOverrides[key] = null;
-					});
-				}
-				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
-				addLog('MapComponentMounted');
 				return;
 			}
 			if (d.tag === 'onZoomEnd') {

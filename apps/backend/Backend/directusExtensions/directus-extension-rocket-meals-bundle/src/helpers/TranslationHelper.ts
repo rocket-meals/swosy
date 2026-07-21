@@ -175,11 +175,49 @@ export class TranslationHelper {
 
     let existingTranslations = itemWithTranslations?.translations || [];
 
-    let existingTranslationsDifferentFromParsing = false;
-    let newTranslationsFromParsing = false;
-
     // find the existing language which is source for translations
     let defaultLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper.LANGUAGE_CODE_DE;
+    let usedLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, defaultLanguageCodeForSourceTranslation);
+
+    const { existingTranslationsDifferentFromParsing } = TranslationHelper._collectUpdateTranslationsFromExisting(
+      existingTranslations,
+      translationsFromParsing,
+      usedLanguageCodeForSourceTranslation,
+      remaining_translationsFromParsing,
+      updateTranslations
+    );
+
+    //check remaining translationsFromParsing, then put into createTranslations
+    const newTranslationsFromParsing = TranslationHelper._collectCreateTranslationsFromRemaining(
+      remaining_translationsFromParsing,
+      translationsFromParsing,
+      items_primary_field_in_translation_table,
+      item,
+      createTranslations
+    );
+
+    let updateObject = {
+      translations: {
+        create: createTranslations,
+        update: updateTranslations,
+        delete: deleteTranslations,
+      },
+    };
+
+    let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
+
+    return {
+      updateObject: updateObject,
+      updateNeeded: updateNeeded,
+    };
+  }
+
+  /**
+   * Finds the language code of the existing translation that is marked as
+   * `be_source_for_translations`. Falls back to the given default language code
+   * when none is found or the found language code is not a string.
+   */
+  static _resolveSourceLanguageCodeForTranslations(existingTranslations: ExistingTranslation[], defaultLanguageCodeForSourceTranslation: LanguageCodesType): LanguageCodesType {
     let usedLanguageCodeForSourceTranslation: LanguageCodesType = defaultLanguageCodeForSourceTranslation;
     for (let existingTranslation of existingTranslations) {
       if (existingTranslation?.be_source_for_translations) {
@@ -190,6 +228,29 @@ export class TranslationHelper {
         }
       }
     }
+    return usedLanguageCodeForSourceTranslation;
+  }
+
+  /**
+   * Iterates over the existing translations and, for every one that also has a
+   * translation from parsing, either pushes an update (when there is a significant
+   * change) into `updateTranslations`, or does nothing (when the translation is
+   * unchanged). For every existing translation whose language code was handled here
+   * (whether updated or not, or not provided by the parser), the matching key is
+   * removed from `remaining_translationsFromParsing` so it will not be treated as a
+   * new translation later.
+   *
+   * Mutates `remaining_translationsFromParsing` and `updateTranslations` in place,
+   * mirroring the original inline loop's behavior.
+   */
+  static _collectUpdateTranslationsFromExisting<E extends ExistingTranslation>(
+    existingTranslations: ExistingTranslation[],
+    translationsFromParsing: TranslationsFromParsingType,
+    usedLanguageCodeForSourceTranslation: LanguageCodesType,
+    remaining_translationsFromParsing: any, // kept as `any` to match the loosely-typed work copy (JSON.parse(JSON.stringify(...))) from the caller
+    updateTranslations: ExistingTranslation[]
+  ): { existingTranslationsDifferentFromParsing: boolean } {
+    let existingTranslationsDifferentFromParsing = false;
 
     for (let existingTranslation of existingTranslations) {
       //check all existing translations
@@ -236,7 +297,27 @@ export class TranslationHelper {
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
       }
     }
-    //check remaining translationsFromParsing, then put into createTranslations
+
+    return { existingTranslationsDifferentFromParsing };
+  }
+
+  /**
+   * Iterates over the language keys still remaining in `remaining_translationsFromParsing`
+   * (i.e. languages from parsing that were not matched to an existing translation) and
+   * pushes a create-object for each one into `createTranslations`. Returns whether any
+   * new translation was found.
+   *
+   * Mutates `createTranslations` in place, mirroring the original inline loop's behavior.
+   */
+  static _collectCreateTranslationsFromRemaining<T extends ItemWithExistingTranslations, E extends ExistingTranslation>(
+    remaining_translationsFromParsing: TranslationsFromParsingType,
+    translationsFromParsing: TranslationsFromParsingType,
+    items_primary_field_in_translation_table: TranslationRelationField<E>,
+    item: T,
+    createTranslations: NewTranslationForCreation[]
+  ): boolean {
+    let newTranslationsFromParsing = false;
+
     let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
     for (let i = 0; i < remaining_languageKeys?.length; i++) {
       let remaining_languageKey = remaining_languageKeys[i] as LanguageCodesType | undefined;
@@ -264,19 +345,6 @@ export class TranslationHelper {
       }
     }
 
-    let updateObject = {
-      translations: {
-        create: createTranslations,
-        update: updateTranslations,
-        delete: deleteTranslations,
-      },
-    };
-
-    let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
-
-    return {
-      updateObject: updateObject,
-      updateNeeded: updateNeeded,
-    };
+    return newTranslationsFromParsing;
   }
 }

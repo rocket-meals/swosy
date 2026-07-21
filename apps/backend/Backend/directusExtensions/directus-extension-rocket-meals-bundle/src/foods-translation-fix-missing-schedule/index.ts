@@ -290,26 +290,8 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       }
 
       // Resolve the language code for this translation entry.
-      const languageField = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
-      if (!languageField) {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id +
-          ': Skipped – could not detect language field. Keys: [' + Object.keys(translation).join(', ') + ']'
-        );
-        continue;
-      }
-      const languageCodeValue = translation[languageField as keyof DatabaseTypes.FoodsTranslations];
-      let languageCode: string | undefined;
-      if (typeof languageCodeValue === 'string') {
-        languageCode = languageCodeValue;
-      } else if (languageCodeValue && typeof languageCodeValue === 'object' && 'code' in (languageCodeValue as any)) {
-        languageCode = (languageCodeValue as any).code;
-      }
+      const languageCode = await this.resolveTranslationLanguageCode(food, translation, context);
       if (!languageCode) {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id +
-          ': Skipped – could not resolve language code. Raw value: ' + JSON.stringify(languageCodeValue)
-        );
         continue;
       }
 
@@ -334,78 +316,22 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         'Attempting translation for field(s): [' + fieldsToAttempt.join(', ') + ']'
       );
 
-      const translatedItem: any = {};
-
-      for (const field of fieldsToAttempt) {
-        if (attempted >= remainingCapacity) {
-          await context.logger.appendLog(
-            'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-            'Stopping mid-translation – reached remaining capacity of ' + remainingCapacity + '.'
-          );
-          break;
-        }
-
-        const sourceValue = (sourceTranslation as any)[field];
-        attempted++;
-
-        try {
-          await context.logger.appendLog(
-            'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-            'Translating field "' + field + '" from "' + sourceLanguageCode + '" to "' + languageCode + '", ' +
-            'source value="' + String(sourceValue).substring(0, 80) + '"'
-          );
-
-          const translatedValue = await translator.translate({
-            text: sourceValue,
-            source_language: sourceLanguageCode,
-            destination_language: languageCode,
-          });
-
-          if (translatedValue) {
-            translatedItem[field] = translatedValue;
-            await context.logger.appendLog(
-              'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-              'Field "' + field + '" → "' + String(translatedValue).substring(0, 80) + '"'
-            );
-          } else {
-            await context.logger.appendLog(
-              'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-              'Field "' + field + '" translator returned null/undefined – ' + getTranslationNullReason(languageCode)
-            );
-          }
-        } catch (err: any) {
-          await context.logger.appendLog(
-            'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-            'Error translating field "' + field + '": ' + err.toString()
-          );
-        }
-      }
+      const translateResult = await this.translateFieldsForTranslation(
+        food, translation, sourceTranslation, sourceLanguageCode, languageCode,
+        fieldsToAttempt, translator, context, attempted, remainingCapacity
+      );
+      const translatedItem = translateResult.translatedItem;
+      attempted = translateResult.attempted;
 
       translatedItem[FIELD_LANGUAGES_ID_OR_CODE] = {code: languageCode};
       translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
       translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
 
-      if (fieldsToTranslate.some(field => translatedItem[field])) {
-        const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(
-          CollectionNames.FOODS
-        );
-        await foodsUpdateHelper.updateOne(food.id, {
-          translations: {
-            create: [],
-            update: [{...translation, ...translatedItem, id: translation.id}],
-            delete: [],
-          },
-        } as any);
+      const wasSaved = await this.saveTranslatedItemIfNeeded(
+        food, translation, translatedItem, fieldsToTranslate, languageCode, context
+      );
+      if (wasSaved) {
         fixed++;
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-          'Saved. translatedItem=' + JSON.stringify(translatedItem)
-        );
-      } else {
-        await context.logger.appendLog(
-          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
-          'Nothing to save – translator returned no usable values. translatedItem=' + JSON.stringify(translatedItem)
-        );
       }
     }
 
@@ -414,6 +340,143 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       'attempted ' + attempted + ' operation(s).'
     );
     return {fixed, attempted};
+  }
+
+  /**
+   * Detects and resolves the language code for a single translation entry, logging (and
+   * returning `undefined` for) any case where the language field or its value can't be resolved.
+   */
+  private async resolveTranslationLanguageCode(
+    food: DatabaseTypes.Foods,
+    translation: DatabaseTypes.FoodsTranslations,
+    context: WorkflowRunContext,
+  ): Promise<string | undefined> {
+    const languageField = DirectusCollectionTranslator.detectLanguagesIdOrCodeField(translation);
+    if (!languageField) {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id +
+        ': Skipped – could not detect language field. Keys: [' + Object.keys(translation).join(', ') + ']'
+      );
+      return undefined;
+    }
+    const languageCodeValue = translation[languageField as keyof DatabaseTypes.FoodsTranslations];
+    let languageCode: string | undefined;
+    if (typeof languageCodeValue === 'string') {
+      languageCode = languageCodeValue;
+    } else if (languageCodeValue && typeof languageCodeValue === 'object' && 'code' in (languageCodeValue as any)) {
+      languageCode = (languageCodeValue as any).code;
+    }
+    if (!languageCode) {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id +
+        ': Skipped – could not resolve language code. Raw value: ' + JSON.stringify(languageCodeValue)
+      );
+      return undefined;
+    }
+    return languageCode;
+  }
+
+  /**
+   * Attempts to translate `fieldsToAttempt` for a single translation entry, respecting the
+   * remaining capacity. Returns the partially-built translated item and the updated attempted count.
+   */
+  private async translateFieldsForTranslation(
+    food: DatabaseTypes.Foods,
+    translation: DatabaseTypes.FoodsTranslations,
+    sourceTranslation: DatabaseTypes.FoodsTranslations,
+    sourceLanguageCode: string | undefined,
+    languageCode: string,
+    fieldsToAttempt: string[],
+    translator: Translator,
+    context: WorkflowRunContext,
+    attempted: number,
+    remainingCapacity: number,
+  ): Promise<{translatedItem: any; attempted: number}> {
+    const translatedItem: any = {};
+
+    for (const field of fieldsToAttempt) {
+      if (attempted >= remainingCapacity) {
+        await context.logger.appendLog(
+          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+          'Stopping mid-translation – reached remaining capacity of ' + remainingCapacity + '.'
+        );
+        break;
+      }
+
+      const sourceValue = (sourceTranslation as any)[field];
+      attempted++;
+
+      try {
+        await context.logger.appendLog(
+          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+          'Translating field "' + field + '" from "' + sourceLanguageCode + '" to "' + languageCode + '", ' +
+          'source value="' + String(sourceValue).substring(0, 80) + '"'
+        );
+
+        const translatedValue = await translator.translate({
+          text: sourceValue,
+          source_language: sourceLanguageCode,
+          destination_language: languageCode,
+        });
+
+        if (translatedValue) {
+          translatedItem[field] = translatedValue;
+          await context.logger.appendLog(
+            'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+            'Field "' + field + '" → "' + String(translatedValue).substring(0, 80) + '"'
+          );
+        } else {
+          await context.logger.appendLog(
+            'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+            'Field "' + field + '" translator returned null/undefined – ' + getTranslationNullReason(languageCode)
+          );
+        }
+      } catch (err: any) {
+        await context.logger.appendLog(
+          'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+          'Error translating field "' + field + '": ' + err.toString()
+        );
+      }
+    }
+
+    return {translatedItem, attempted};
+  }
+
+  /**
+   * Persists `translatedItem` onto the given translation if it contains any usable translated
+   * field values; otherwise just logs that there was nothing to save. Returns whether it saved.
+   */
+  private async saveTranslatedItemIfNeeded(
+    food: DatabaseTypes.Foods,
+    translation: DatabaseTypes.FoodsTranslations,
+    translatedItem: any,
+    fieldsToTranslate: string[],
+    languageCode: string,
+    context: WorkflowRunContext,
+  ): Promise<boolean> {
+    if (fieldsToTranslate.some(field => translatedItem[field])) {
+      const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(
+        CollectionNames.FOODS
+      );
+      await foodsUpdateHelper.updateOne(food.id, {
+        translations: {
+          create: [],
+          update: [{...translation, ...translatedItem, id: translation.id}],
+          delete: [],
+        },
+      } as any);
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+        'Saved. translatedItem=' + JSON.stringify(translatedItem)
+      );
+      return true;
+    } else {
+      await context.logger.appendLog(
+        'Food ' + food.id + ', translation ' + translation.id + ' (lang=' + languageCode + '): ' +
+        'Nothing to save – translator returned no usable values. translatedItem=' + JSON.stringify(translatedItem)
+      );
+      return false;
+    }
   }
 }
 

@@ -216,6 +216,77 @@ function formatPaceForSpeech(
 }
 
 /**
+ * Format the distance part of a periodic announcement, localised for the
+ * given language code.
+ */
+function resolveDistanceAnnouncementPart(langCode: string, distanceKm: number): string {
+	if (langCode === 'de') {
+		return formatDistanceForSpeech(distanceKm, 'Kilometer', 'Meter');
+	}
+	return formatDistanceForSpeech(distanceKm, 'kilometers', 'meters');
+}
+
+/**
+ * Format the duration part of a periodic announcement, localised for the
+ * given language code.
+ */
+function resolveDurationAnnouncementPart(langCode: string, elapsedSeconds: number): string {
+	const totalSec = Math.round(elapsedSeconds);
+	const h = Math.floor(totalSec / 3600);
+	const m = Math.floor((totalSec % 3600) / 60);
+	const s = totalSec % 60;
+	if (langCode === 'de') {
+		if (h > 0) {
+			return `${h} Stunde${h > 1 ? 'n' : ''} ${m} Minuten ${s} Sekunden`;
+		}
+		return `${m} Minuten ${s} Sekunden`;
+	}
+	if (h > 0) {
+		return `${h} hour${h > 1 ? 's' : ''} ${m} minutes ${s} seconds`;
+	}
+	return `${m} minutes ${s} seconds`;
+}
+
+/**
+ * Format the current-speed part of a periodic announcement, localised for
+ * the given language code. Derives km/h from pace when available so both
+ * metrics share the same base; falls back to `speedKmh` from stats.
+ * Returns null when no speed value is available.
+ */
+function resolveSpeedAnnouncementPart(
+	langCode: string,
+	paceMinPerKm: number | null,
+	speedKmh: number | null,
+): string | null {
+	const derivedKmh = paceToKmh(paceMinPerKm) ?? speedKmh;
+	if (derivedKmh == null) {
+		return null;
+	}
+	const sp = formatSpeedForSpeech(derivedKmh);
+	if (langCode === 'de') {
+		return `${sp} Kilometer pro Stunde`;
+	}
+	return `${sp} kilometers per hour`;
+}
+
+/**
+ * Format the average-speed part of a periodic announcement, localised for
+ * the given language code. Average speed is always derived from avg pace
+ * (total distance / total time). Returns null when pace is unavailable.
+ */
+function resolveSpeedAvgAnnouncementPart(langCode: string, paceMinPerKm: number | null): string | null {
+	const avgKmh = paceToKmh(paceMinPerKm);
+	if (avgKmh == null) {
+		return null;
+	}
+	const sp = formatSpeedForSpeech(avgKmh);
+	if (langCode === 'de') {
+		return `Durchschnittliche Geschwindigkeit: ${sp} Kilometer pro Stunde`;
+	}
+	return `Average speed: ${sp} kilometers per hour`;
+}
+
+/**
  * Build a localised TTS announcement for periodic (time-based) updates during
  * recording.  Only the content toggles that are enabled are included.
  *
@@ -238,12 +309,7 @@ export function buildPeriodicAnnouncement(
 	const parts: string[] = [];
 
 	if (content.announceDistance) {
-		const d = stats.distanceKm;
-		if (langCode === 'de') {
-			parts.push(formatDistanceForSpeech(d, 'Kilometer', 'Meter'));
-		} else {
-			parts.push(formatDistanceForSpeech(d, 'kilometers', 'meters'));
-		}
+		parts.push(resolveDistanceAnnouncementPart(langCode, stats.distanceKm));
 	}
 
 	if (content.announcePace && stats.paceMinPerKm != null) {
@@ -255,46 +321,20 @@ export function buildPeriodicAnnouncement(
 	}
 
 	if (content.announceDuration) {
-		const totalSec = Math.round(stats.elapsedSeconds);
-		const h = Math.floor(totalSec / 3600);
-		const m = Math.floor((totalSec % 3600) / 60);
-		const s = totalSec % 60;
-		if (langCode === 'de') {
-			if (h > 0) {
-				parts.push(`${h} Stunde${h > 1 ? 'n' : ''} ${m} Minuten ${s} Sekunden`);
-			} else {
-				parts.push(`${m} Minuten ${s} Sekunden`);
-			}
-		} else if (h > 0) {
-			parts.push(`${h} hour${h > 1 ? 's' : ''} ${m} minutes ${s} seconds`);
-		} else {
-			parts.push(`${m} minutes ${s} seconds`);
-		}
+		parts.push(resolveDurationAnnouncementPart(langCode, stats.elapsedSeconds));
 	}
 
 	if (content.announceSpeed) {
-		// Derive km/h from pace when available so both metrics share the same base.
-		const derivedKmh = paceToKmh(stats.paceMinPerKm) ?? stats.speedKmh;
-		if (derivedKmh != null) {
-			const sp = formatSpeedForSpeech(derivedKmh);
-			if (langCode === 'de') {
-				parts.push(`${sp} Kilometer pro Stunde`);
-			} else {
-				parts.push(`${sp} kilometers per hour`);
-			}
+		const speedPart = resolveSpeedAnnouncementPart(langCode, stats.paceMinPerKm, stats.speedKmh);
+		if (speedPart != null) {
+			parts.push(speedPart);
 		}
 	}
 
 	if (content.announceSpeedAvg) {
-		// Average speed is always derived from avg pace (total distance / total time).
-		const avgKmh = paceToKmh(stats.paceMinPerKm);
-		if (avgKmh != null) {
-			const sp = formatSpeedForSpeech(avgKmh);
-			if (langCode === 'de') {
-				parts.push(`Durchschnittliche Geschwindigkeit: ${sp} Kilometer pro Stunde`);
-			} else {
-				parts.push(`Average speed: ${sp} kilometers per hour`);
-			}
+		const speedAvgPart = resolveSpeedAvgAnnouncementPart(langCode, stats.paceMinPerKm);
+		if (speedAvgPart != null) {
+			parts.push(speedAvgPart);
 		}
 	}
 

@@ -252,6 +252,205 @@ async function resolveInitialFieldValue(
 	return defaultValue || null;
 }
 
+/**
+ * Resolve the Directus folder IDs used for image/file uploads during
+ * submission, re-fetching them if either wasn't already resolved at mount.
+ */
+async function resolveUploadFolderIds(
+	imageFolderIdState: string | null,
+	filesFolderIdState: string | null
+): Promise<{ imageFolderId: string | null; filesFolderId: string | null }> {
+	let imageFolderId: string | null = imageFolderIdState;
+	let filesFolderId: string | null = filesFolderIdState;
+	if (imageFolderId === null || filesFolderId === null) {
+		try {
+			const formAnswerFields: any = await fetchSpecificField('form_answers');
+			imageFolderId = imageFolderId ?? formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+			filesFolderId = filesFolderId ?? formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+		} catch {
+			// silently ignore, upload without folder
+		}
+	}
+	return { imageFolderId, filesFolderId };
+}
+
+/**
+ * Validate that all currently-visible required fields have a value, toasting
+ * an error for each missing one. Returns true if any field failed validation.
+ */
+function validateRequiredFormAnswers(
+	formAnswers: DatabaseTypes.FormAnswers[],
+	formData: { [key: string]: { value: any; error: string; custom_type?: string } },
+	getAnswerValueFn: (answer: DatabaseTypes.FormAnswers) => any,
+	language: string,
+	toastFn: (message: string, type: string) => void
+): boolean {
+	let hasError = false;
+	for (const answer of formAnswers) {
+		const formField = answer?.form_field as DatabaseTypes.FormFields;
+		if (!formField?.is_required) continue;
+		if (!isAnswerVisible(answer, formAnswers, getAnswerValueFn)) continue;
+		const value = formData[String(answer?.id)]?.value;
+		if (!value || (typeof value === 'string' && value.trim() === '')) {
+			hasError = true;
+			const fieldName = formField?.translations?.length > 0 ? getFromCategoryTranslation(formField.translations, language) : formField?.alias;
+			toastFn(`Field "${fieldName}" is required`, 'error');
+		}
+	}
+	return hasError;
+}
+
+// Maps a tri-state 0/1 UI value to the stored boolean for value_boolean answers.
+function buildBooleanFieldUpdate(value: any): Record<string, any> {
+	let booleanValue: boolean | null = null;
+	if (value === 0) {
+		booleanValue = false;
+	} else if (value === 1) {
+		booleanValue = true;
+	}
+	return { value_boolean: booleanValue };
+}
+
+/**
+ * Build the value_image update payload for a form answer submission.
+ * Handles new uploads (including signature base64 uris and deleting the
+ * previous signature file) and explicit clearing of the image.
+ */
+async function buildImageFieldUpdate(
+	value: any,
+	custom_id: string | undefined,
+	offlineMode: boolean,
+	answer: DatabaseTypes.FormAnswers,
+	imageFolderId: string | null,
+	uploadFileFn: (value: any, folderId?: string | null) => Promise<any>
+): Promise<Record<string, any>> {
+	if (value?.name) {
+		// New file: for signature fields delete the old Directus file first (online mode only)
+		if (custom_id === 'signature' && !offlineMode) {
+			const originalFileId = (answer as any)?.value_image;
+			if (originalFileId) {
+				try {
+					await deleteDirectusFile(String(originalFileId));
+				} catch (e) {
+					console.warn('Could not delete old signature file:', e);
+				}
+			}
+		}
+		if (custom_id === 'signature') {
+			// Signatures: send base64 data URI directly — the backend
+			// base64-file-upload-hook will create the Directus file automatically.
+			const base64DataUri = await toBase64DataUri(value);
+			return { value_image: base64DataUri };
+		}
+		// Regular images: upload the file first, then store the file ID
+		const directusFileId = await uploadFileFn(value, imageFolderId);
+		return { value_image: directusFileId };
+	}
+
+	if (value === null || value === undefined) {
+		// Image/signature cleared — explicitly set to null
+		if (custom_id === 'signature' && !offlineMode) {
+			const originalFileId = (answer as any)?.value_image;
+			if (originalFileId) {
+				try {
+					await deleteDirectusFile(String(originalFileId));
+				} catch (e) {
+					console.warn('Could not delete old signature file:', e);
+				}
+			}
+		}
+		return { value_image: null };
+	}
+
+	// existing URL unchanged — no update needed
+	return {};
+}
+
+/**
+ * Build the value_files update payload for a form answer submission,
+ * uploading newly added files and detecting removed file relations.
+ */
+async function buildFilesFieldUpdate(
+	value: any,
+	answer: DatabaseTypes.FormAnswers,
+	filesFolderId: string | null,
+	uploadFileFn: (value: any, folderId?: string | null) => Promise<any>
+): Promise<Record<string, any>> {
+	if (!(Array.isArray(value) && value.length > 0)) {
+		// All files cleared — explicitly set to empty
+		return { value_files: [] };
+	}
+
+	const newFiles = value.filter((file: any) => !file?.edit);
+	const existingFileIds = new Set(value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean));
+
+	// Detect deleted relations by comparing current files with original answer files
+	const originalValueFiles: any[] = (answer as any).value_files || [];
+	const deletedRelationIds = originalValueFiles
+		.filter((orig: any) => orig?.directus_files_id && !existingFileIds.has(orig.directus_files_id))
+		.map((orig: any) => orig.id)
+		.filter(Boolean);
+
+	if (newFiles.length === 0 && deletedRelationIds.length === 0) {
+		// only unchanged existing files, no action needed
+		return {};
+	}
+
+	const uploadedFileIds = newFiles.length > 0
+		? await Promise.all(newFiles.map(async (file: any) => await uploadFileFn(file, filesFolderId)))
+		: [];
+
+	const valueFilesUpdate: Record<string, any> = {};
+	const validUploadIds = uploadedFileIds.filter(Boolean);
+	if (validUploadIds.length > 0) {
+		valueFilesUpdate.create = validUploadIds.map(fileId => ({ directus_files_id: fileId }));
+	}
+	if (deletedRelationIds.length > 0) {
+		valueFilesUpdate.delete = deletedRelationIds;
+	}
+	return { value_files: valueFilesUpdate };
+}
+
+/**
+ * Build the per-custom-type updated value fields for a single form answer
+ * during submission (mirrors the field's storage column: value_string,
+ * value_number, value_boolean, value_custom, value_date, value_image or value_files).
+ */
+async function buildUpdatedValueFieldsForAnswer(
+	custom_type: string | undefined,
+	custom_id: string | undefined,
+	value: any,
+	formateDate: string | null | undefined,
+	answer: DatabaseTypes.FormAnswers,
+	offlineMode: boolean,
+	imageFolderId: string | null,
+	filesFolderId: string | null,
+	uploadFileFn: (value: any, folderId?: string | null) => Promise<any>
+): Promise<Record<string, any>> {
+	if (custom_type === 'value_string') {
+		return { value_string: value };
+	}
+	if (custom_type === 'value_number') {
+		return { value_number: value ? value.replace(',', '.') : null };
+	}
+	if (custom_type === 'value_boolean') {
+		return buildBooleanFieldUpdate(value);
+	}
+	if (custom_type === 'value_custom') {
+		return { value_custom: value };
+	}
+	if (custom_type === 'value_date') {
+		return { value_date: formateDate };
+	}
+	if (custom_type === 'value_image') {
+		return buildImageFieldUpdate(value, custom_id, offlineMode, answer, imageFolderId, uploadFileFn);
+	}
+	if (custom_type === 'value_files') {
+		return buildFilesFieldUpdate(value, answer, filesFolderId, uploadFileFn);
+	}
+	return {};
+}
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -696,33 +895,12 @@ const Index = () => {
 
 	const handleFormSubmission = async () => {
 		setSubmissionLoading(true);
-		let hasError = false;
 
 		// Use folder IDs already fetched at component mount; re-fetch if either is still null
-		let imageFolderId: string | null = imageFolderIdState;
-		let filesFolderId: string | null = filesFolderIdState;
-		if (imageFolderId === null || filesFolderId === null) {
-			try {
-				const formAnswerFields: any = await fetchSpecificField('form_answers');
-				imageFolderId = imageFolderId ?? formAnswerFields?.value_image?.meta?.options?.folder ?? null;
-				filesFolderId = filesFolderId ?? formAnswerFields?.value_files?.meta?.options?.folder ?? null;
-			} catch {
-				// silently ignore, upload without folder
-			}
-		}
+		const { imageFolderId, filesFolderId } = await resolveUploadFolderIds(imageFolderIdState, filesFolderIdState);
 
 		// Validate required fields that are currently visible in the form
-		for (const answer of formAnswers) {
-			const formField = answer?.form_field as DatabaseTypes.FormFields;
-			if (!formField?.is_required) continue;
-			if (!isAnswerVisible(answer, formAnswers, getAnswerValue)) continue;
-			const value = formData[String(answer?.id)]?.value;
-			if (!value || (typeof value === 'string' && value.trim() === '')) {
-				hasError = true;
-				const fieldName = formField?.translations?.length > 0 ? getFromCategoryTranslation(formField.translations, language) : formField?.alias;
-				toast(`Field "${fieldName}" is required`, 'error');
-			}
-		}
+		const hasError = validateRequiredFormAnswers(formAnswers, formData, getAnswerValue, language, toast);
 
 		if (hasError) {
 			setSubmissionLoading(false);
@@ -745,98 +923,18 @@ const Index = () => {
 					formateDate = formatDateForSubmission(fieldType, value);
 				}
 
-				let updatedValueFields: Record<string, any> = {};
-				if (custom_type === 'value_string') {
-					updatedValueFields = { value_string: value };
-				} else if (custom_type === 'value_number') {
-					updatedValueFields = {
-						value_number: value ? value.replace(',', '.') : null,
-					};
-				} else if (custom_type === 'value_boolean') {
-					let booleanValue: boolean | null = null;
-					if (value === 0) {
-						booleanValue = false;
-					} else if (value === 1) {
-						booleanValue = true;
-					}
-					updatedValueFields = {
-						value_boolean: booleanValue,
-					};
-				} else if (custom_type === 'value_custom') {
-					updatedValueFields = { value_custom: value };
-				} else if (custom_type === 'value_date') {
-					updatedValueFields = { value_date: formateDate };
-				} else if (custom_type === 'value_image') {
-					if (value?.name) {
-						// New file: for signature fields delete the old Directus file first (online mode only)
-						if (custom_id === 'signature' && !offlineMode) {
-							const originalFileId = (answer as any)?.value_image;
-							if (originalFileId) {
-								try {
-									await deleteDirectusFile(String(originalFileId));
-								} catch (e) {
-									console.warn('Could not delete old signature file:', e);
-								}
-							}
-						}
-						if (custom_id === 'signature') {
-							// Signatures: send base64 data URI directly — the backend
-							// base64-file-upload-hook will create the Directus file automatically.
-							const base64DataUri = await toBase64DataUri(value);
-							updatedValueFields = { value_image: base64DataUri };
-						} else {
-							// Regular images: upload the file first, then store the file ID
-							const directusFileId = await getDirectusUploadId(value, imageFolderId);
-							updatedValueFields = { value_image: directusFileId };
-						}
-					} else if (value === null || value === undefined) {
-						// Image/signature cleared — explicitly set to null
-						if (custom_id === 'signature' && !offlineMode) {
-							const originalFileId = (answer as any)?.value_image;
-							if (originalFileId) {
-								try {
-									await deleteDirectusFile(String(originalFileId));
-								} catch (e) {
-									console.warn('Could not delete old signature file:', e);
-								}
-							}
-						}
-						updatedValueFields = { value_image: null };
-					}
-					// else: existing URL unchanged — no update needed
-				} else if (custom_type === 'value_files') {
-					if (Array.isArray(value) && value.length > 0) {
-						const newFiles = value.filter((file: any) => !file?.edit);
-						const existingFileIds = new Set(value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean));
+				const updatedValueFields = await buildUpdatedValueFieldsForAnswer(
+					custom_type,
+					custom_id,
+					value,
+					formateDate,
+					answer,
+					offlineMode,
+					imageFolderId,
+					filesFolderId,
+					getDirectusUploadId
+				);
 
-						// Detect deleted relations by comparing current files with original answer files
-						const originalValueFiles: any[] = (answer as any).value_files || [];
-						const deletedRelationIds = originalValueFiles
-							.filter((orig: any) => orig?.directus_files_id && !existingFileIds.has(orig.directus_files_id))
-							.map((orig: any) => orig.id)
-							.filter(Boolean);
-
-						if (newFiles.length > 0 || deletedRelationIds.length > 0) {
-							const uploadedFileIds = newFiles.length > 0
-								? await Promise.all(newFiles.map(async (file: any) => await getDirectusUploadId(file, filesFolderId)))
-								: [];
-
-							const valueFilesUpdate: Record<string, any> = {};
-							const validUploadIds = uploadedFileIds.filter(Boolean);
-							if (validUploadIds.length > 0) {
-								valueFilesUpdate.create = validUploadIds.map(fileId => ({ directus_files_id: fileId }));
-							}
-							if (deletedRelationIds.length > 0) {
-								valueFilesUpdate.delete = deletedRelationIds;
-							}
-							updatedValueFields = { value_files: valueFilesUpdate };
-						}
-						// else: only unchanged existing files, no action needed
-					} else {
-						// All files cleared — explicitly set to empty
-						updatedValueFields = { value_files: [] };
-					}
-				}
 				return {
 					id: fieldId,
 					...updatedValueFields,

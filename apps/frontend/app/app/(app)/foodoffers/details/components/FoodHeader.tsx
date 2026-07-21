@@ -46,6 +46,57 @@ function makeStarRatingTrigger(onPress: () => void, filled: boolean, color: stri
     );
 }
 
+// Resolves the average rating value to display, mirroring the previous inline
+// `(a || b) && numToOneDecimal(a || b)` expression used in both the web and
+// mobile render branches of FoodHeader.
+function resolveDisplayRating(foodDetails: any) {
+    const rating = foodDetails?.rating_average || foodDetails?.rating_average_legacy;
+    return rating && numToOneDecimal(rating);
+}
+
+// Renders the "average rating" badge (star icon + numeric value) shown when
+// `foods_ratings_average_display` is enabled. Extracted so the surrounding
+// web/mobile render branches don't each carry this conditional inline.
+const RatingAverageBadge = ({
+    appSettings,
+    foodDetails,
+    theme,
+    foodsAreaColor,
+    viewStyle,
+    textStyle,
+    starSize,
+}: {
+    appSettings: any;
+    foodDetails: any;
+    theme: any;
+    foodsAreaColor: string;
+    viewStyle: any;
+    textStyle: any;
+    starSize: number;
+}) => {
+    if (!appSettings?.foods_ratings_average_display) {
+        return null;
+    }
+    return (
+        <View
+            style={[
+                viewStyle,
+                { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
+            ]}
+        >
+            <AntDesign name="star" size={starSize} color={foodsAreaColor} />
+            <Text
+                style={[
+                    textStyle,
+                    { color: theme.screen.text }
+                ]}
+            >
+                {resolveDisplayRating(foodDetails)}
+            </Text>
+        </View>
+    );
+};
+
 const FoodHeader = ({
     foodDetails,
     screenWidth,
@@ -145,27 +196,15 @@ const FoodHeader = ({
                         ]}
                     >
                         <View style={styles.fullWidthEnd}>
-                            {appSettings?.foods_ratings_average_display && (
-                                <View
-                                    style={[
-                                        styles.ratingView,
-                                        { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
-                                    ]}
-                                >
-                                    <AntDesign name="star" size={22} color={foodsAreaColor} />
-                                    <Text
-                                        style={[
-                                            styles.totalRating,
-                                            { color: theme.screen.text }
-                                        ]}
-                                    >
-                                        {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
-                                            numToOneDecimal(
-                                                foodDetails?.rating_average || foodDetails?.rating_average_legacy
-                                            )}
-                                    </Text>
-                                </View>
-                            )}
+                            <RatingAverageBadge
+                                appSettings={appSettings}
+                                foodDetails={foodDetails}
+                                theme={theme}
+                                foodsAreaColor={foodsAreaColor}
+                                viewStyle={styles.ratingView}
+                                textStyle={styles.totalRating}
+                                starSize={22}
+                            />
                         </View>
                         <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
                             <SettingsList
@@ -219,27 +258,15 @@ const FoodHeader = ({
                 <View style={styles.mobileDetailsHeader}>
                     <View style={styles.row}>
                         <View />
-                        {appSettings?.foods_ratings_average_display && (
-                            <View
-                                style={[
-                                    styles.mobileRatingView,
-                                    { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
-                                ]}
-                            >
-                                <AntDesign name="star" size={18} color={foodsAreaColor} />
-                                <Text
-                                    style={[
-                                        styles.mobileTotalRating,
-                                        { color: theme.screen.text }
-                                    ]}
-                                >
-                                    {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
-                                        numToOneDecimal(
-                                            foodDetails?.rating_average || foodDetails?.rating_average_legacy
-                                        )}
-                                </Text>
-                            </View>
-                        )}
+                        <RatingAverageBadge
+                            appSettings={appSettings}
+                            foodDetails={foodDetails}
+                            theme={theme}
+                            foodsAreaColor={foodsAreaColor}
+                            viewStyle={styles.mobileRatingView}
+                            textStyle={styles.mobileTotalRating}
+                            starSize={18}
+                        />
                     </View>
                 </View>
                 <View style={styles.mobileDetailsFooter}></View>

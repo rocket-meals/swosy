@@ -102,21 +102,19 @@ function filterUnrealisticPoints(points: RoutePoint[], maxSpeedKmh: number): Rou
 	return result;
 }
 
-function computeActivityStats(points: RoutePoint[]): RunStats {
-	if (points.length < 2) {
-		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
-		return {
-			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
-			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0, medianSpeedKmh: 0,
-			q1SpeedKmh: 0, q3SpeedKmh: 0,
-			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
-		};
-	}
+/**
+ * Accumulate distance, elevation change and per-segment speeds across the
+ * given points. Extracted from computeActivityStats() to keep that function's
+ * cognitive complexity manageable.
+ */
+function accumulateDistanceElevationAndSpeeds(
+	points: RoutePoint[],
+	startTimestamp: number,
+): { distanceKm: number; elevationGainM: number; elevationLossM: number; speedsKmh: number[] } {
 	let distanceKm = 0;
 	let elevationGainM = 0;
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
-	const startTimestamp = points[0].timestamp;
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
 		distanceKm += segKm;
@@ -136,15 +134,41 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 			speedsKmh.push(segSpeedKmh);
 		}
 	}
-	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
-	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	return { distanceKm, elevationGainM, elevationLossM, speedsKmh };
+}
+
+/**
+ * Smooth the given speed samples with a trailing moving-average window.
+ * Extracted from computeActivityStats() to keep that function's cognitive
+ * complexity manageable.
+ */
+function computeWindowedSpeeds(speedsKmh: number[], windowSize: number): number[] {
 	const windowedSpeeds: number[] = [];
 	let windowSum = 0;
 	for (let i = 0; i < speedsKmh.length; i++) {
 		windowSum += speedsKmh[i];
-		if (i >= SPEED_WINDOW_SIZE) windowSum -= speedsKmh[i - SPEED_WINDOW_SIZE];
-		windowedSpeeds.push(windowSum / Math.min(i + 1, SPEED_WINDOW_SIZE));
+		if (i >= windowSize) windowSum -= speedsKmh[i - windowSize];
+		windowedSpeeds.push(windowSum / Math.min(i + 1, windowSize));
 	}
+	return windowedSpeeds;
+}
+
+function computeActivityStats(points: RoutePoint[]): RunStats {
+	if (points.length < 2) {
+		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
+		return {
+			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
+			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0, medianSpeedKmh: 0,
+			q1SpeedKmh: 0, q3SpeedKmh: 0,
+			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
+		};
+	}
+	const startTimestamp = points[0].timestamp;
+	const { distanceKm, elevationGainM, elevationLossM, speedsKmh } =
+		accumulateDistanceElevationAndSpeeds(points, startTimestamp);
+	const durationSeconds = (points.at(-1)!.timestamp - points[0].timestamp) / 1000;
+	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	const windowedSpeeds = computeWindowedSpeeds(speedsKmh, SPEED_WINDOW_SIZE);
 	// min/max/median/q1/q3 AND avg all come from the same windowed speed samples,
 	// so they can never contradict each other (e.g. avg ending up below min, which
 	// happened when avg was separately computed as a raw distance/time ratio while
@@ -592,19 +616,16 @@ const H3_GEOJSON_ORDER = true;
 const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 
 /**
- * Derive the sequence of unique H3 cells visited during an activity, including
- * interpolated cells for GPS gaps, and build a hexTileGeoJSON with one polygon
- * per visited cell (at `h3Resolution`, typically h10), colored by its level
- * from the global Redux store.
+ * Walk the route's GPS points and derive the sequence of unique H3 cells
+ * visited, including interpolated cells for GPS gaps. Extracted from
+ * buildActivityHexGeoJson() to keep that function's cognitive complexity
+ * manageable.
  */
-function buildActivityHexGeoJson(
+function computeVisitedHexCells(
 	routePoints: RoutePoint[],
 	h3Resolution: number,
-	hexTileRecords: Record<string, HexTileRecord>,
-): {
-	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
-} {
-	// h10 tile tracking
+	maxInterpolationCells: number,
+): Set<string> {
 	const visitedCells = new Set<string>();
 	let lastCell: string | null = null;
 
@@ -615,8 +636,8 @@ function buildActivityHexGeoJson(
 				if (lastCell && cell !== lastCell) {
 					try {
 						const pathCells = gridPathCells(lastCell, cell);
-						if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
-							for (const cell of pathCells) visitedCells.add(cell);
+						if (pathCells.length - 2 <= maxInterpolationCells) {
+							for (const c of pathCells) visitedCells.add(c);
 						}
 					} catch {
 						// Different icosahedron faces; just mark the two endpoints
@@ -630,9 +651,21 @@ function buildActivityHexGeoJson(
 		}
 	}
 
-	// Build hex tile polygon features (h10)
+	return visitedCells;
+}
+
+/**
+ * Build one hex tile GeoJSON polygon Feature per given H3 cell, colored by
+ * its level from the global Redux store. Extracted from
+ * buildActivityHexGeoJson() (and reused for the manual-activity variant) to
+ * keep the cognitive complexity of its callers manageable.
+ */
+function buildHexTileFeaturesFromCells(
+	cells: Iterable<string>,
+	hexTileRecords: Record<string, HexTileRecord>,
+): object[] {
 	const tileFeatures: object[] = [];
-	for (const cell of visitedCells) {
+	for (const cell of cells) {
 		try {
 			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
 			if (boundary.length === 0) continue;
@@ -646,6 +679,24 @@ function buildActivityHexGeoJson(
 			// Skip invalid cells
 		}
 	}
+	return tileFeatures;
+}
+
+/**
+ * Derive the sequence of unique H3 cells visited during an activity, including
+ * interpolated cells for GPS gaps, and build a hexTileGeoJSON with one polygon
+ * per visited cell (at `h3Resolution`, typically h10), colored by its level
+ * from the global Redux store.
+ */
+function buildActivityHexGeoJson(
+	routePoints: RoutePoint[],
+	h3Resolution: number,
+	hexTileRecords: Record<string, HexTileRecord>,
+): {
+	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
+} {
+	const visitedCells = computeVisitedHexCells(routePoints, h3Resolution, ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS);
+	const tileFeatures = buildHexTileFeaturesFromCells(visitedCells, hexTileRecords);
 
 	return {
 		hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures },
@@ -688,6 +739,200 @@ function ActivityDetailBackHeaderButton({ color, onPress }: Readonly<{ color: st
 
 function makeActivityDetailHeaderLeft(color: string, onPress: () => void) {
 	return () => <ActivityDetailBackHeaderButton color={color} onPress={onPress} />;
+}
+
+/**
+ * Migrate an activity saved before the `computed` field was introduced by
+ * deriving and persisting it. Returns the activity unchanged if migration is
+ * not applicable or fails. Extracted from the activity-loading effect to keep
+ * its cognitive complexity manageable.
+ */
+async function migrateActivityComputedField(a: SavedActivity): Promise<SavedActivity> {
+	if (a.computed || (a.hexTilesOrdered?.length ?? 0) === 0 || !isH3Available()) {
+		return a;
+	}
+	try {
+		const h3Res = a.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+		const enclosed = a.hexTilesOrdered!.length >= MIN_TILES_FOR_ENCLOSED_POLYGON
+			? findEnclosedCellsFromHexTiles(
+				buildFullRouteTileIds(a.hexTilesOrdered!, a.routePoints, h3Res),
+				h3Res,
+			)
+			: (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []);
+		const computedData = computeActivityData(a, enclosed);
+		const updated = { ...a, computed: computedData };
+		saveActivity(updated);
+		return updated;
+	} catch {
+		// Migration failed; continue without computed
+		return a;
+	}
+}
+
+/**
+ * Migrate an activity saved before the speed boxplot quartiles were
+ * introduced by deriving and persisting them. Returns the activity unchanged
+ * if migration is not applicable. Extracted from the activity-loading effect
+ * to keep its cognitive complexity manageable.
+ */
+function migrateActivityStatsQuartiles(a: SavedActivity): SavedActivity {
+	if (a.stats.q1SpeedKmh !== undefined && a.stats.q3SpeedKmh !== undefined) {
+		return a;
+	}
+	const { q1SpeedKmh, q3SpeedKmh } = computeActivityStats(a.routePoints);
+	const updated = { ...a, stats: { ...a.stats, q1SpeedKmh, q3SpeedKmh } };
+	saveActivity(updated);
+	return updated;
+}
+
+/**
+ * Send the (possibly smoothed) route line to the map, speed-colored when
+ * segment data is available. Extracted from the "send route to map" effect
+ * to keep its cognitive complexity manageable.
+ */
+function sendActivityRouteSegmentsToMap(
+	mapHandle: MyMapHandle,
+	displayCoords: [number, number][],
+	showRoadMatch: boolean,
+	result: { segments: { coords: number[][]; speedKmh: number }[]; speedRange: unknown } | null,
+): void {
+	if (showRoadMatch) {
+		// Straßen/Wege mode: the GPS-connected track is not rendered at all.
+		// The road-match effect sends the road-matched line as speed-colored
+		// routeSegments once the road network has been fetched.
+		mapHandle.sendToMap({ routeSegments: null, routeCoordinates: null });
+	} else if (result && result.segments.length > 0) {
+		// Rebuild segments using the (possibly smoothed) display coordinates
+		// while preserving the speed value from each original segment.
+		const smoothedSegments = result.segments.map((seg, i) => ({
+			...seg,
+			coords: [displayCoords[i], displayCoords[i + 1]] as [[number, number], [number, number]],
+		}));
+		mapHandle.sendToMap({ routeSegments: smoothedSegments, routeSpeedRange: result.speedRange });
+	} else {
+		// Fallback: plain route without speed coloring
+		mapHandle.sendToMap({ routeCoordinates: displayCoords });
+	}
+}
+
+/**
+ * Send hex tile GeoJSON to the map, either derived from the GPS route or (for
+ * manual activities without GPS points) from the ordered hex tile list.
+ * Extracted from the "send route to map" effect to keep its cognitive
+ * complexity manageable.
+ */
+function sendActivityHexTileGeoJsonToMap(
+	mapHandle: MyMapHandle,
+	activity: SavedActivity,
+	hexTileRecords: Record<string, HexTileRecord>,
+): void {
+	if (isH3Available() && activity.routePoints.length > 0) {
+		try {
+			const h3Res = activity.h3Resolution ?? 10;
+			const { hexTileGeoJson } = buildActivityHexGeoJson(
+				activity.routePoints,
+				h3Res,
+				hexTileRecords,
+			);
+			mapHandle.sendToMap({ hexTileGeoJson });
+		} catch (err) {
+			console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
+		}
+	} else if (isH3Available() && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0) {
+		// Manual activity has no GPS points – build the hex tile GeoJSON
+		// directly from the ordered hex tile list.
+		try {
+			const tileFeatures = buildHexTileFeaturesFromCells(activity.hexTilesOrdered!, hexTileRecords);
+			mapHandle.sendToMap({ hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures } });
+		} catch (err) {
+			console.warn('[ActivityDetailScreen] Failed to build manual activity hex GeoJSON:', err);
+		}
+	}
+}
+
+/**
+ * Compute the camera fit (center + fitBounds/mapCenterPosition map message)
+ * for an activity's route, falling back to the hex tile bounding box for
+ * manual activities without GPS points. Returns null when there is nothing
+ * to fit to. Extracted from the "send route to map" effect to keep its
+ * cognitive complexity manageable.
+ */
+function computeActivityCameraFit(
+	activity: SavedActivity,
+	computeRouteBoundsFn: (points: RoutePoint[]) => { minLat: number; maxLat: number; minLng: number; maxLng: number } | null,
+): { center: { lat: number; lng: number }; mapMessage: Record<string, unknown> } | null {
+	const points = activity.routePoints;
+	if (points.length >= 2) {
+		const bounds = computeRouteBoundsFn(points)!;
+		const { minLat, maxLat, minLng, maxLng } = bounds;
+		const center = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+		// Expand the bounding box to 1.5× the route span so the route is
+		// not clipped at the edges (adds 25 % padding on every side).
+		// Use at least 0.001 deg (~100 m) so very short routes don't get
+		// a degenerate zero-size bounding box that fitBounds ignores.
+		const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+		const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+		return {
+			center,
+			mapMessage: {
+				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+				fitBoundsPadding: 20,
+				pitch: 45,
+				bearing: 0,
+			},
+		};
+	}
+	if (points.length === 1) {
+		const center = { lat: points[0].lat, lng: points[0].lng };
+		return {
+			center,
+			mapMessage: { mapCenterPosition: center, pitch: 45, bearing: 0 },
+		};
+	}
+	if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 1) {
+		// Manual activity: fit the camera to the hex tile bounding box
+		const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
+		if (hexBounds) {
+			const { minLat, maxLat, minLng, maxLng } = hexBounds;
+			const center = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+			const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+			const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+			return {
+				center,
+				mapMessage: {
+					fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+					fitBoundsPadding: 20,
+					pitch: 45,
+					bearing: 0,
+				},
+			};
+		}
+	}
+	return null;
+}
+
+/**
+ * Load the saved routes and find the best matching route for the given
+ * activity, for pre-filling the route-assignment modal. Returns empty
+ * results on error (the modal is then shown with empty routes). Extracted
+ * from the activity-loading effect to keep its cognitive complexity
+ * manageable.
+ */
+async function resolveRouteAssignmentCandidates(
+	a: SavedActivity,
+): Promise<{ routes: SavedRoute[]; bestMatch: RouteMatchResult | null }> {
+	let routes: SavedRoute[] = [];
+	let bestMatch: RouteMatchResult | null = null;
+	try {
+		routes = await loadRoutes();
+		if (a.hexTilesOrdered && a.hexTilesOrdered.length > 0 && a.h3Resolution != null) {
+			const matches = findMatchingRoutes(a.hexTilesOrdered, routes, a.h3Resolution);
+			bestMatch = matches.length > 0 ? matches[0] : null;
+		}
+	} catch {
+		// Show modal with empty routes on error
+	}
+	return { routes, bestMatch };
 }
 
 export default function ActivityDetailScreen() {
@@ -806,29 +1051,10 @@ export default function ActivityDetailScreen() {
 
 				// Migrate activities saved before the computed field was introduced.
 				// Compute and persist it so subsequent loads skip this step.
-				if (!a.computed && (a.hexTilesOrdered?.length ?? 0) > 0 && isH3Available()) {
-					try {
-						const h3Res = a.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-						const enclosed = a.hexTilesOrdered!.length >= MIN_TILES_FOR_ENCLOSED_POLYGON
-							? findEnclosedCellsFromHexTiles(
-								buildFullRouteTileIds(a.hexTilesOrdered!, a.routePoints, h3Res),
-								h3Res,
-							)
-							: (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []);
-						const computedData = computeActivityData(a, enclosed);
-						a = { ...a, computed: computedData };
-						saveActivity(a);
-					} catch {
-						// Migration failed; continue without computed
-					}
-				}
+				a = await migrateActivityComputedField(a);
 
 				// Migrate activities saved before the speed boxplot quartiles were introduced.
-				if (a.stats.q1SpeedKmh === undefined || a.stats.q3SpeedKmh === undefined) {
-					const { q1SpeedKmh, q3SpeedKmh } = computeActivityStats(a.routePoints);
-					a = { ...a, stats: { ...a.stats, q1SpeedKmh, q3SpeedKmh } };
-					saveActivity(a);
-				}
+				a = migrateActivityStatsQuartiles(a);
 
 				setActivity(a);
 
@@ -842,17 +1068,7 @@ export default function ActivityDetailScreen() {
 				// If routeId has never been decided, load routes and show assignment modal
 				if (a.routeId === undefined && !routeModalShownRef.current) {
 					routeModalShownRef.current = true;
-					let routes: SavedRoute[] = [];
-					let bestMatch: RouteMatchResult | null = null;
-					try {
-						routes = await loadRoutes();
-						if (a.hexTilesOrdered && a.hexTilesOrdered.length > 0 && a.h3Resolution != null) {
-							const matches = findMatchingRoutes(a.hexTilesOrdered, routes, a.h3Resolution);
-							bestMatch = matches.length > 0 ? matches[0] : null;
-						}
-					} catch {
-						// Show modal with empty routes on error
-					}
+					const { routes, bestMatch } = await resolveRouteAssignmentCandidates(a);
 					showRouteModal({
 						title: '🗺️ Route zuordnen',
 						children: (
@@ -1055,23 +1271,7 @@ export default function ActivityDetailScreen() {
 			: rawCoords;
 
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
-		if (showRoadMatch) {
-			// Straßen/Wege mode: the GPS-connected track is not rendered at all.
-			// The road-match effect below sends the road-matched line as
-			// speed-colored routeSegments once the road network has been fetched.
-			mapRef.current.sendToMap({ routeSegments: null, routeCoordinates: null });
-		} else if (result && result.segments.length > 0) {
-			// Rebuild segments using the (possibly smoothed) display coordinates
-			// while preserving the speed value from each original segment.
-			const smoothedSegments = result.segments.map((seg, i) => ({
-				...seg,
-				coords: [displayCoords[i], displayCoords[i + 1]] as [[number, number], [number, number]],
-			}));
-			mapRef.current.sendToMap({ routeSegments: smoothedSegments, routeSpeedRange: result.speedRange });
-		} else {
-			// Fallback: plain route without speed coloring
-			mapRef.current.sendToMap({ routeCoordinates: displayCoords });
-		}
+		sendActivityRouteSegmentsToMap(mapRef.current, displayCoords, showRoadMatch, result);
 
 		// Send start point circle (green, on top of the route lines)
 		const pts = activity.routePoints;
@@ -1095,84 +1295,13 @@ export default function ActivityDetailScreen() {
 		// Send hex tile GeoJSON so the activity screen shows the same hexagon
 		// visualization as the main map, but only for the tiles that were
 		// visited during this specific activity.
-		if (isH3Available() && activity.routePoints.length > 0) {
-			try {
-				const h3Res = activity.h3Resolution ?? 10;
-				const { hexTileGeoJson } = buildActivityHexGeoJson(
-					activity.routePoints,
-					h3Res,
-					hexTileRecords,
-				);
-				mapRef.current.sendToMap({ hexTileGeoJson });
-			} catch (err) {
-				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
-			}
-		} else if (isH3Available() && activity.isManual && (activity.hexTilesOrdered?.length ?? 0) > 0) {
-			// Manual activity has no GPS points – build the hex tile GeoJSON
-			// directly from the ordered hex tile list.
-			try {
-				const hexTiles = activity.hexTilesOrdered!;
-				const tileFeatures: object[] = [];
-				for (const cell of hexTiles) {
-					try {
-						const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-						if (boundary.length === 0) continue;
-						const level = hexTileRecords[cell]?.level ?? 0;
-						tileFeatures.push({
-							type: 'Feature',
-							geometry: { type: 'Polygon', coordinates: [boundary] },
-							properties: { h3Index: cell, level },
-						});
-					} catch {
-						// Skip invalid cells
-					}
-				}
-				mapRef.current.sendToMap({ hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures } });
-			} catch (err) {
-				console.warn('[ActivityDetailScreen] Failed to build manual activity hex GeoJSON:', err);
-			}
-		}
+		sendActivityHexTileGeoJsonToMap(mapRef.current, activity, hexTileRecords);
 
 		// Fit the camera to the full route extent
-		const points = activity.routePoints;
-		if (points.length >= 2) {
-			const bounds = computeRouteBounds(points)!;
-			const { minLat, maxLat, minLng, maxLng } = bounds;
-			routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-			// Expand the bounding box to 1.5× the route span so the route is
-			// not clipped at the edges (adds 25 % padding on every side).
-			// Use at least 0.001 deg (~100 m) so very short routes don't get
-			// a degenerate zero-size bounding box that fitBounds ignores.
-			const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
-			const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
-			mapRef.current.sendToMap({
-				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
-				fitBoundsPadding: 20,
-				pitch: 45,
-				bearing: 0,
-			});
-		} else if (points.length === 1) {
-			routeCenterRef.current = { lat: points[0].lat, lng: points[0].lng };
-			mapRef.current.sendToMap({
-				mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
-				pitch: 45,
-				bearing: 0,
-			});
-		} else if (activity.isManual && (activity.hexTilesOrdered?.length ?? 0) >= 1) {
-			// Manual activity: fit the camera to the hex tile bounding box
-			const hexBounds = computeHexBounds(activity.hexTilesOrdered!);
-			if (hexBounds) {
-				const { minLat, maxLat, minLng, maxLng } = hexBounds;
-				routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
-				const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
-				const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
-				mapRef.current.sendToMap({
-					fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
-					fitBoundsPadding: 20,
-					pitch: 45,
-					bearing: 0,
-				});
-			}
+		const cameraFit = computeActivityCameraFit(activity, computeRouteBounds);
+		if (cameraFit) {
+			routeCenterRef.current = cameraFit.center;
+			mapRef.current.sendToMap(cameraFit.mapMessage);
 		}
 
 		// Start smooth auto-rotate after the fitBounds animation finishes.

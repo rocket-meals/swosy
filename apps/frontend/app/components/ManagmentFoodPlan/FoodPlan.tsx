@@ -5,6 +5,101 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from './styles';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 
+const renderItemDetailInputs = (
+	item: any,
+	theme: any,
+	windowWidth: number,
+	selectedCanteen: any,
+	selectedValue: string,
+	selectedValuNext: string,
+	nextFoodInterval: string,
+	foodOffer: string
+) => (
+	<>
+		{item.name === 'Canteen' && (
+			<TextInput
+				style={[
+					styles.textInput,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.icon,
+						fontSize: windowWidth > 600 ? 18 : 16,
+						width: windowWidth > 600 ? 200 : 120,
+					},
+				]}
+				editable={false}
+				pointerEvents="none"
+				value={selectedCanteen?.alias || undefined}
+			/>
+		)}
+		{item.name === 'Speiseangebot Kategorie (optional)' && (
+			<TextInput
+				style={[
+					styles.textInput,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.iconBg,
+						fontSize: windowWidth > 600 ? 18 : 16,
+						width: windowWidth > 600 ? 200 : 120,
+					},
+				]}
+				editable={false}
+				pointerEvents="none"
+				value={selectedValue}
+			/>
+		)}
+		{item.name === 'Speise Kategorie (optional)' && (
+			<TextInput
+				style={{
+					backgroundColor: theme.screen.iconBg,
+					marginRight: 10,
+					textAlign: 'right',
+					color: theme.screen.text,
+					fontSize: windowWidth > 600 ? 18 : 16,
+					width: windowWidth > 600 ? 200 : 120,
+				}}
+				editable={false}
+				pointerEvents="none"
+				value={selectedValuNext}
+			/>
+		)}
+		{item.name === 'Next Food Interval' && (
+			<TextInput
+				style={[
+					styles.textInput,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.iconBg,
+						fontSize: windowWidth > 600 ? 18 : 16,
+						width: windowWidth > 600 ? 200 : 120,
+					},
+				]}
+				editable={false}
+				pointerEvents="none"
+				value={nextFoodInterval}
+			/>
+		)}
+		{item.name === 'Refresh Food Offers Interval' && (
+			<TextInput
+				style={[
+					styles.textInput,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.iconBg,
+						fontSize: windowWidth > 600 ? 18 : 16,
+						width: windowWidth > 600 ? 200 : 120,
+					},
+				]}
+				editable={false}
+				pointerEvents="none"
+				value={foodOffer}
+			/>
+		)}
+
+		<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
+	</>
+);
+
 const FoodPlan = ({ data, onPressItem, selectedValue, selectedValuNext, nextFoodInterval, foodOffer, intervalNext, refreshData }: { data: any[]; onPressItem: (item: any) => void; selectedValue: string; selectedValuNext: string; nextFoodInterval: string; foodOffer: string; intervalNext: string; refreshData: string }) => {
 	const { theme } = useTheme();
 
@@ -69,89 +164,7 @@ const FoodPlan = ({ data, onPressItem, selectedValue, selectedValuNext, nextFood
 								}}
 							/>
 						) : (
-							<>
-								{item.name === 'Canteen' && (
-									<TextInput
-										style={[
-											styles.textInput,
-											{
-												color: theme.screen.text,
-												backgroundColor: theme.screen.icon,
-												fontSize: windowWidth > 600 ? 18 : 16,
-												width: windowWidth > 600 ? 200 : 120,
-											},
-										]}
-										editable={false}
-										pointerEvents="none"
-										value={selectedCanteen?.alias || undefined}
-									/>
-								)}
-								{item.name === 'Speiseangebot Kategorie (optional)' && (
-									<TextInput
-										style={[
-											styles.textInput,
-											{
-												color: theme.screen.text,
-												backgroundColor: theme.screen.iconBg,
-												fontSize: windowWidth > 600 ? 18 : 16,
-												width: windowWidth > 600 ? 200 : 120,
-											},
-										]}
-										editable={false}
-										pointerEvents="none"
-										value={selectedValue}
-									/>
-								)}
-								{item.name === 'Speise Kategorie (optional)' && (
-									<TextInput
-										style={{
-											backgroundColor: theme.screen.iconBg,
-											marginRight: 10,
-											textAlign: 'right',
-											color: theme.screen.text,
-											fontSize: windowWidth > 600 ? 18 : 16,
-											width: windowWidth > 600 ? 200 : 120,
-										}}
-										editable={false}
-										pointerEvents="none"
-										value={selectedValuNext}
-									/>
-								)}
-								{item.name === 'Next Food Interval' && (
-									<TextInput
-										style={[
-											styles.textInput,
-											{
-												color: theme.screen.text,
-												backgroundColor: theme.screen.iconBg,
-												fontSize: windowWidth > 600 ? 18 : 16,
-												width: windowWidth > 600 ? 200 : 120,
-											},
-										]}
-										editable={false}
-										pointerEvents="none"
-										value={nextFoodInterval}
-									/>
-								)}
-								{item.name === 'Refresh Food Offers Interval' && (
-									<TextInput
-										style={[
-											styles.textInput,
-											{
-												color: theme.screen.text,
-												backgroundColor: theme.screen.iconBg,
-												fontSize: windowWidth > 600 ? 18 : 16,
-												width: windowWidth > 600 ? 200 : 120,
-											},
-										]}
-										editable={false}
-										pointerEvents="none"
-										value={foodOffer}
-									/>
-								)}
-
-								<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
-							</>
+							renderItemDetailInputs(item, theme, windowWidth, selectedCanteen, selectedValue, selectedValuNext, nextFoodInterval, foodOffer)
 						)}
 					</View>
 				</TouchableOpacity>

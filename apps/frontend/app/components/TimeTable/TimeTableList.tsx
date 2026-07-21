@@ -7,6 +7,64 @@ import { Feather, FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@e
 import { TimeTableListProps } from './types';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
+type TimeTableListRowTheme = {
+	screen: {
+		icon: string;
+		text: string;
+	};
+};
+
+const renderTimeTableListRow = (
+	icon: React.ReactNode,
+	labelText: string,
+	valueText: string,
+	windowWidth: number,
+	theme: TimeTableListRowTheme,
+	key: string
+) => {
+	return (
+		<TouchableOpacity
+			key={key}
+			style={{
+				...styles.list,
+				paddingHorizontal: isWeb ? 20 : 10,
+			}}
+		>
+			<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
+				{icon}
+				<Text
+					style={{
+						...styles.label,
+						color: theme.screen.text,
+						fontSize: windowWidth > 500 ? 16 : 13,
+					}}
+				>
+					{labelText}
+				</Text>
+			</View>
+			<View
+				style={{
+					...styles.col,
+					gap: isWeb ? 10 : 5,
+					alignItems: 'center',
+					justifyContent: 'flex-end',
+				}}
+			>
+				<Text
+					style={{
+						...styles.value,
+						color: theme.screen.text,
+						fontSize: windowWidth > 500 ? 16 : 13,
+					}}
+				>
+					{valueText}
+				</Text>
+				<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
+			</View>
+		</TouchableOpacity>
+	);
+};
+
 const TimeTableList: React.FC<TimeTableListProps> = ({ leftIcon, label, rightIcon, value, handleFunction }) => {
 	const { theme } = useTheme();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
@@ -24,235 +82,57 @@ const TimeTableList: React.FC<TimeTableListProps> = ({ leftIcon, label, rightIco
 
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<MaterialCommunityIcons name="tag-text-outline" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Title
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						New
-					</Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<MaterialCommunityIcons name="tag-text-outline" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Location
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					></Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<MaterialIcons name="color-lens" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Colors
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						#fff
-					</Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
+			{renderTimeTableListRow(
+				<MaterialCommunityIcons name="tag-text-outline" size={24} color={theme.screen.icon} />,
+				'Title',
+				'New',
+				windowWidth,
+				theme,
+				'title'
+			)}
+			{renderTimeTableListRow(
+				<MaterialCommunityIcons name="tag-text-outline" size={24} color={theme.screen.icon} />,
+				'Location',
+				'',
+				windowWidth,
+				theme,
+				'location'
+			)}
+			{renderTimeTableListRow(
+				<MaterialIcons name="color-lens" size={24} color={theme.screen.icon} />,
+				'Colors',
+				'#fff',
+				windowWidth,
+				theme,
+				'colors'
+			)}
 
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<MaterialCommunityIcons name="clock-start" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Start Time
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						08:00
-					</Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
+			{renderTimeTableListRow(
+				<MaterialCommunityIcons name="clock-start" size={24} color={theme.screen.icon} />,
+				'Start Time',
+				'08:00',
+				windowWidth,
+				theme,
+				'start-time'
+			)}
 
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<MaterialCommunityIcons name="clock-end" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						End Time
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						10:00
-					</Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
+			{renderTimeTableListRow(
+				<MaterialCommunityIcons name="clock-end" size={24} color={theme.screen.icon} />,
+				'End Time',
+				'10:00',
+				windowWidth,
+				theme,
+				'end-time'
+			)}
 
-			<TouchableOpacity
-				style={{
-					...styles.list,
-					paddingHorizontal: isWeb ? 20 : 10,
-				}}
-			>
-				<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
-					<Feather name="calendar" size={24} color={theme.screen.icon} />
-					<Text
-						style={{
-							...styles.label,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Week Days
-					</Text>
-				</View>
-				<View
-					style={{
-						...styles.col,
-						gap: isWeb ? 10 : 5,
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-					}}
-				>
-					<Text
-						style={{
-							...styles.value,
-							color: theme.screen.text,
-							fontSize: windowWidth > 500 ? 16 : 13,
-						}}
-					>
-						Monday
-					</Text>
-					<FontAwesome5 name="pen" size={20} color={theme.screen.icon} />
-				</View>
-			</TouchableOpacity>
+			{renderTimeTableListRow(
+				<Feather name="calendar" size={24} color={theme.screen.icon} />,
+				'Week Days',
+				'Monday',
+				windowWidth,
+				theme,
+				'week-days'
+			)}
 
 			{/* <TouchableOpacity
         style={{
