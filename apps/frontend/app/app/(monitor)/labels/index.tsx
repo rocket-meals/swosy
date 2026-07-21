@@ -83,11 +83,11 @@ const Index = () => {
 			<LabelHeader Label={translate(TranslationKeys.markings)} />
 
 			<View style={styles.gridContainer}>
-				{chunkedMarkings?.map((chunk, chunkIndex) => (
-						<View key={chunkIndex} style={styles.mainContainer}>
+				{chunkedMarkings?.map((chunk) => (
+						<View key={chunk[0]?.id} style={styles.mainContainer}>
 							{chunk.map((marking, index) => (
 								<MarkingItem
-									key={index}
+									key={marking.id}
 									marking={marking}
 									index={index}
 									onPress={() => {

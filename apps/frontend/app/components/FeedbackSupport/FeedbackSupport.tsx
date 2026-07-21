@@ -89,9 +89,9 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 								}));
 							}
 						}}
-						key={idx}
+						key={iconName}
 					>
-						<MaterialCommunityIcons key={idx} name={iconName as any} size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
+						<MaterialCommunityIcons name={iconName as any} size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
 					</TouchableOpacity>
 					);
 				})}

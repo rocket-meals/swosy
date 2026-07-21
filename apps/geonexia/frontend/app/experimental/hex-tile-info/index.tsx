@@ -282,7 +282,7 @@ export default function HexTileInfoScreen() {
 						<SettingsListGroupTitle title="Straßen" />
 						{streets.map((f, idx) => (
 							<SettingsList
-								key={`street-${idx}`}
+								key={`street-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 								iconBgColor="#f97316"
 								leftIcon={<MaterialIcons name="directions" size={22} color="#ffffff" />}
 								label={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
@@ -298,7 +298,7 @@ export default function HexTileInfoScreen() {
 						<SettingsListGroupTitle title="Gewässer" />
 						{waterways.map((f, idx) => (
 							<SettingsList
-								key={`water-${idx}`}
+								key={`water-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 								iconBgColor="#3b82f6"
 								leftIcon={<MaterialIcons name="water" size={22} color="#ffffff" />}
 								label={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
@@ -314,7 +314,7 @@ export default function HexTileInfoScreen() {
 						<SettingsListGroupTitle title="Gebäude" />
 						{buildings.map((f, idx) => (
 							<SettingsList
-								key={`building-${idx}`}
+								key={`building-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 								iconBgColor="#8b5cf6"
 								leftIcon={<MaterialIcons name="apartment" size={22} color="#ffffff" />}
 								label={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
@@ -330,7 +330,7 @@ export default function HexTileInfoScreen() {
 						<SettingsListGroupTitle title="Points of Interest" />
 						{pois.map((f, idx) => (
 							<SettingsList
-								key={`poi-${idx}`}
+								key={`poi-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 								iconBgColor="#10b981"
 								leftIcon={<MaterialIcons name="place" size={22} color="#ffffff" />}
 								label={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}

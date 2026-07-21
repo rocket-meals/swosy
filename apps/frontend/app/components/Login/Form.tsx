@@ -140,9 +140,9 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 			</View>
 			<View style={{ width: '100%' }}>
 				<View style={styles.firstRow}>
-					{providers?.map((provider: any, index: number) => (
+					{providers?.map((provider: any) => (
 							<TouchableOpacity
-								key={index}
+								key={provider?.name}
 								style={{
 									...styles.button,
 									borderColor: theme.login.border,

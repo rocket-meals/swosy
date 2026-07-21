@@ -239,9 +239,9 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 				<ScrollView horizontal style={{}} contentContainerStyle={{ flexDirection: 'column' }}>
 					<View style={styles.headerRow}>
 						{/* Empty space for time column */}
-						{reorderedDays?.map((day, index) => (
+						{reorderedDays?.map((day) => (
 								<View
-									key={index}
+									key={day.id}
 									style={{
 										...styles.dayHeader,
 										backgroundColor: theme.header.background,
@@ -261,9 +261,9 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 					</View>
 
 					<View style={styles.tableContent}>
-						{reorderedDays?.map((day, dayIndex) => (
+						{reorderedDays?.map((day) => (
 							<View
-								key={dayIndex}
+								key={day.id}
 								style={{
 									position: 'relative',
 									width: getColumnWidth(),
@@ -272,8 +272,8 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 								}}
 							>
 								{/* Render the grid layout */}
-								{timeSlots.map((time, index) => (
-									<View key={index} style={styles.slot} />
+								{timeSlots.map((time) => (
+									<View key={time} style={styles.slot} />
 								))}
 
 								{/* Render the events for the current day */}

@@ -113,8 +113,8 @@ const DebugLogout = () => {
 		>
 			<View style={{ ...styles.content }}>
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.debug_logout)}</Text>
-				{steps.map((step, index) => (
-					<TouchableOpacity key={index} style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={step.action}>
+				{steps.map((step) => (
+					<TouchableOpacity key={step.label} style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={step.action}>
 						<Text style={{ ...styles.body, color: theme.screen.text }}>{step.label}</Text>
 					</TouchableOpacity>
 				))}

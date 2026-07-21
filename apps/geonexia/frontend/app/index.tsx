@@ -2123,7 +2123,7 @@ function HexTileInfoContent({ h3Index }: Readonly<{ h3Index: string }>) {
 				<>
 					{mapFeatures.map((feature, idx) => (
 						<SettingsList
-							key={idx}
+							key={`${feature.layerId ?? ''}-${feature.class ?? ''}-${feature.subclass ?? ''}-${feature.name ?? ''}-${idx}`}
 							leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
 							iconBackgroundColor={PRIMARY_COLOR}
 							title={feature.name ?? feature.layerId ?? `Feature ${idx + 1}`}
@@ -2290,7 +2290,7 @@ function MagnifyModalContent({ h3Index }: Readonly<{ h3Index: string }>) {
 					<SettingsListGroupTitle title="Straßen" />
 					{streets.map((f, idx) => (
 						<SettingsList
-							key={`street-${idx}`}
+							key={`street-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 							leftIcon={<MaterialIcons name="directions" size={20} color="#ffffff" />}
 							iconBackgroundColor="#f97316"
 							title={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
@@ -2305,7 +2305,7 @@ function MagnifyModalContent({ h3Index }: Readonly<{ h3Index: string }>) {
 					<SettingsListGroupTitle title="Gewässer" />
 					{waterways.map((f, idx) => (
 						<SettingsList
-							key={`water-${idx}`}
+							key={`water-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 							leftIcon={<MaterialIcons name="water" size={20} color="#ffffff" />}
 							iconBackgroundColor="#3b82f6"
 							title={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
@@ -2320,7 +2320,7 @@ function MagnifyModalContent({ h3Index }: Readonly<{ h3Index: string }>) {
 					<SettingsListGroupTitle title="Gebäude" />
 					{buildings.map((f, idx) => (
 						<SettingsList
-							key={`building-${idx}`}
+							key={`building-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 							leftIcon={<MaterialIcons name="apartment" size={20} color="#ffffff" />}
 							iconBackgroundColor="#8b5cf6"
 							title={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
@@ -2335,7 +2335,7 @@ function MagnifyModalContent({ h3Index }: Readonly<{ h3Index: string }>) {
 					<SettingsListGroupTitle title="Points of Interest" />
 					{pois.map((f, idx) => (
 						<SettingsList
-							key={`poi-${idx}`}
+							key={`poi-${f.class ?? ''}-${f.subclass ?? ''}-${f.name ?? ''}-${idx}`}
 							leftIcon={<MaterialIcons name="place" size={20} color="#ffffff" />}
 							iconBackgroundColor="#10b981"
 							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}

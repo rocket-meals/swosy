@@ -187,7 +187,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 			<ScrollView style={{ width: '100%', maxHeight: 300 }} nestedScrollEnabled>
 				{value &&
 					value?.length > 0 &&
-					value.map((item: any, index: number) => {
+					value.map((item: any) => {
 						if (!item?.image && item?.name) {
 							return (
 								<View
@@ -195,7 +195,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 										...styles.fileNameContainer,
 										backgroundColor: theme.screen.iconBg,
 									}}
-									key={index}
+									key={item?.image ?? item?.name}
 								>
 									<Text style={{ ...styles.fileName, color: theme.screen.text }}>{item?.name}</Text>
 									<TouchableOpacity style={{ padding: 5 }} onPress={() => deleteFile(item)}>
@@ -210,7 +210,7 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offli
 									style={{
 										...styles.fileContainer,
 									}}
-									key={index}
+									key={item?.image ?? item?.name}
 								>
 									<TouchableOpacity
 										style={{

@@ -446,7 +446,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			} else if (idx === total - 1) {
 				groupPosition = 'bottom';
 			}
-			return <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} groupPosition={groupPosition} isAccountRequired={!user?.id} />;
+			return <CanteenFeedbackLabels key={`fl-${label.id}`} label={label} date={item.date} groupPosition={groupPosition} isAccountRequired={!user?.id} />;
 		});
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);

@@ -35,6 +35,7 @@ const buildFoodMarkingEntry = (food: any, markings: any[] | undefined, markingGr
 	filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
 
 	return filteredMarkings.map((item: any) => ({
+		id: item?.id,
 		image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },
 		bgColor: item?.background_color,
 		color: myContrastColor(item?.background_color, theme, mode === 'dark'),
@@ -43,14 +44,14 @@ const buildFoodMarkingEntry = (food: any, markings: any[] | undefined, markingGr
 	}));
 };
 
-const renderMarkingIcon = (marking: any, idx: number) => {
+const renderMarkingIcon = (marking: any) => {
 	const iconParts = marking?.icon?.split(':') || [];
 	const [library, name] = iconParts;
 	const Icon = library && iconLibraries[library];
 	if (marking?.icon) {
 		return (
 			<View
-				key={idx}
+				key={marking.id}
 				style={{
 					...styles.iconMarking,
 					backgroundColor: marking?.bgColor,
@@ -65,7 +66,7 @@ const renderMarkingIcon = (marking: any, idx: number) => {
 	if (!marking?.image?.uri && marking?.shortCode) {
 		return (
 			<View
-				key={idx}
+				key={marking.id}
 				style={{
 					...styles.shortCode,
 					backgroundColor: marking?.bgColor,
@@ -88,7 +89,7 @@ const renderMarkingIcon = (marking: any, idx: number) => {
 	if (marking?.image?.uri) {
 		return (
 			<Image
-				key={idx}
+				key={marking.id}
 				source={marking.image.uri}
 				style={{
 					backgroundColor: marking?.bgColor,
@@ -507,6 +508,7 @@ const Index = () => {
 
 								return (
 									<View
+										key={date}
 										style={{
 											width: '100%',
 											// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
@@ -515,7 +517,6 @@ const Index = () => {
 										}}
 									>
 										<View
-											key={index}
 											style={{
 												...styles.dataRow,
 												// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers

@@ -473,6 +473,7 @@ const Index = () => {
 				filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
 
 				let dummyMarkings = filteredMarkings.map((item: any) => ({
+					id: item?.id,
 					image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },
 					bgColor: item?.background_color,
 					color: myContrastColor(item?.background_color, theme, mode === 'dark'),
@@ -639,10 +640,10 @@ const Index = () => {
 						</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.name + '%') as DimensionValue }]}>{translate(TranslationKeys.foodname)}</Text>
 						<Text style={[styles.headerCell, { color: contrastColor }, { width: (columnPercentages.markings + '%') as DimensionValue }]}>{translate(TranslationKeys.markings)}</Text>
-						{foodAttributesColumn?.map((column: any, colIdx: number) => {
+						{foodAttributesColumn?.map((column: any) => {
 								const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributesColumn.length).toFixed(2);
 								return (
-									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={`header-attr-${colIdx}`}>
+									<Text style={[styles.headerCell, { color: contrastColor }, { width: (attributeColumnWidth + '%') as DimensionValue }]} key={`header-attr-${column}`}>
 										{column}
 									</Text>
 								);
@@ -716,7 +717,7 @@ const Index = () => {
 														},
 													]}
 												>
-													{foodMarkings[item.id]?.map((m: any, idx: number) => {
+													{foodMarkings[item.id]?.map((m: any) => {
 															const marking = {
 																icon: m.icon,
 																short_code: m.shortCode,
@@ -724,7 +725,7 @@ const Index = () => {
 																background_color: m.bgColor,
 																hide_border: m.hide_border,
 															} as any;
-															return <MarkingIcon key={idx} marking={marking} size={24} color={m.color} compact />;
+															return <MarkingIcon key={m.id} marking={marking} size={24} color={m.color} compact />;
 														})}
 												</View>
 												{mainFoodAttributes?.[item?.id]?.map((attr: any, attrIdx: number) => {
@@ -853,7 +854,7 @@ const Index = () => {
 													},
 												]}
 											>
-												{optionalFoodMarkings[item.id]?.map((mark: any, idx: number) => {
+												{optionalFoodMarkings[item.id]?.map((mark: any) => {
 														const marking = {
 															icon: mark.icon,
 															short_code: mark.shortCode,
@@ -861,7 +862,7 @@ const Index = () => {
 															background_color: mark.bgColor,
 															hide_border: mark.hide_border,
 														} as any;
-														return <MarkingIcon key={idx} marking={marking} size={24} color={mark.color} compact />;
+														return <MarkingIcon key={mark.id} marking={marking} size={24} color={mark.color} compact />;
 													})}
 											</View>
 											{optionalFoodAttributes?.[item?.id]?.map((attr: any, attrIdx: number) => {
@@ -950,13 +951,13 @@ const Index = () => {
 					}}
 				>
 					<View style={[styles.gridContainer, { backgroundColor: theme.screen.background }]}>
-						{chunkedMarkings?.map((chunk, chunkIndex) => (
-								<View key={chunkIndex} style={styles.mainContainer}>
-									{chunk.map((marking: any, index: any) => {
+						{chunkedMarkings?.map((chunk) => (
+								<View key={chunk[0]?.id} style={styles.mainContainer}>
+									{chunk.map((marking: any) => {
 										const markingText = getTextFromTranslation(marking?.translations, language);
 										const MarkingColor = myContrastColor(marking?.background_color, theme, mode === 'dark');
 										return (
-											<View key={index} style={styles.iconText}>
+											<View key={marking.id} style={styles.iconText}>
 												<MarkingIcon
 													marking={
 														{

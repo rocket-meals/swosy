@@ -131,7 +131,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 						} else if (last) {
 							groupPosition = 'bottom';
 						}
-						return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={item.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(item)} groupPosition={groupPosition as any} />;
+						return <SettingsList key={item.label} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={item.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(item)} groupPosition={groupPosition as any} />;
 					})}
 
 					{/* Device Data List */}
@@ -148,7 +148,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                                                 } else if (last) {
                                                         groupPosition = 'bottom';
                                                 }
-                                                return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
+                                                return <SettingsList key={data.label} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
                                         })}
                                 </View>
                         </ScrollView>
