@@ -910,44 +910,73 @@ function computeCountsAndLevelForRecord(rec: HexTileRecord): void {
  * `records` in place, including creating neighbour records that did not
  * previously exist.
  */
-function computeAvenueCounts(records: Record<string, HexTileRecord>): void {
-	if (!isH3Available()) return;
-
-	// Build a map from hexId → set of activity IDs that walked on OR enclosed it.
+/** Map from hexId → set of activity IDs that walked on OR enclosed it. */
+function buildVisitedActivitiesMap(records: Record<string, HexTileRecord>): Map<string, Set<string>> {
 	const visitedActsMap = new Map<string, Set<string>>();
 	for (const [hexId, rec] of Object.entries(records)) {
-		if (rec.visitCount > 0 || rec.enclosedCount > 0) {
-			const refs: ActivityReference[] = rec.activityReferences ?? [];
-			visitedActsMap.set(
-				hexId,
-				new Set(refs.map((r) => r.activityId)),
-			);
-		}
+		if (rec.visitCount <= 0 && rec.enclosedCount <= 0) continue;
+		const refs: ActivityReference[] = rec.activityReferences ?? [];
+		visitedActsMap.set(hexId, new Set(refs.map((r) => r.activityId)));
 	}
+	return visitedActsMap;
+}
 
-	// Ensure that every ring-1 neighbor of a visited tile has a record so
-	// that its avenueCount is computed and stored even when the tile itself
-	// was never walked or enclosed.
-	for (const hexId of visitedActsMap.keys()) {
+/**
+ * Ensure that every ring-1 neighbor of a visited tile has a record so that its
+ * avenueCount is computed and stored even when the tile itself was never
+ * walked or enclosed.
+ */
+function ensureAvenueNeighborRecordsExist(records: Record<string, HexTileRecord>, visitedHexIds: Iterable<string>): void {
+	for (const hexId of visitedHexIds) {
 		const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
 		for (const neighbor of neighbors) {
 			getOrCreateRecord(records, neighbor);
 		}
 	}
+}
+
+/** Union of the activity IDs from a tile's ring-1 neighbours that walked on/enclosed them. */
+function computeAvenueActivitiesForTile(hexId: string, visitedActsMap: Map<string, Set<string>>): Set<string> {
+	const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+	const avenueActivities = new Set<string>();
+	for (const neighbor of neighbors) {
+		const neighborActs = visitedActsMap.get(neighbor);
+		if (!neighborActs) continue;
+		for (const actId of neighborActs) {
+			avenueActivities.add(actId);
+		}
+	}
+	return avenueActivities;
+}
+
+function computeAvenueCounts(records: Record<string, HexTileRecord>): void {
+	if (!isH3Available()) return;
+
+	const visitedActsMap = buildVisitedActivitiesMap(records);
+	// Ensure neighbor records exist before iterating records below, so their avenueCount is set too.
+	ensureAvenueNeighborRecordsExist(records, visitedActsMap.keys());
 
 	// For every tile, union the activity sets of its walked neighbours.
 	for (const [hexId, rec] of Object.entries(records)) {
-		const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-		const avenueActivities = new Set<string>();
-		for (const neighbor of neighbors) {
-			const neighborActs = visitedActsMap.get(neighbor);
-			if (neighborActs) {
-				for (const actId of neighborActs) {
-					avenueActivities.add(actId);
-				}
-			}
-		}
-		rec.avenueCount = avenueActivities.size;
+		rec.avenueCount = computeAvenueActivitiesForTile(hexId, visitedActsMap).size;
+	}
+}
+
+/**
+ * Place a path object (flat) at each MIDDLE ring anchor of a visited tile that
+ * faces a walked neighbor tile, indicating the route direction.
+ */
+function applyPathBillboardsForVisitedTile(hexId: string, rec: HexTileRecord, edgeSet: Set<string>): void {
+	if (!isH3Available()) return;
+	const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+	for (const neighbor of neighbors) {
+		const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
+		if (!edgeSet.has(edgeStr)) continue;
+		const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
+		if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
+		const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
+		rec.billboardsTexture ??= {};
+		rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
 	}
 }
 
@@ -966,22 +995,10 @@ function applyTileImageAndBillboardsForRecord(
 	if (rec.visitCount > 0) {
 		// Visited tile → dirt terrain
 		rec.tileImage = TILE_IMAGE_DIRT;
-
-		// Place a path object (flat) at each MIDDLE ring anchor that faces a
-		// walked neighbor tile, indicating the route direction.
-		if (isH3Available()) {
-			const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-			for (const neighbor of neighbors) {
-				const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
-				if (!edgeSet.has(edgeStr)) continue;
-				const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
-				if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
-				const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
-				rec.billboardsTexture ??= {};
-				rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
-			}
-		}
-	} else if (rec.enclosedCount > 0) {
+		applyPathBillboardsForVisitedTile(hexId, rec, edgeSet);
+		return;
+	}
+	if (rec.enclosedCount > 0) {
 		// Enclosed but not visited → grass terrain; forest
 		// trees only when the feature cache confirms a forest / wooded area.
 		rec.tileImage = TILE_IMAGE_GRASS;
