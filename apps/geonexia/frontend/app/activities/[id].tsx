@@ -15,7 +15,7 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, Settings
 import { computeBoxplotStats } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
+import { deleteActivity, getEffectiveEnclosedHexTiles, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
@@ -797,7 +797,7 @@ async function migrateActivityComputedField(a: SavedActivity): Promise<SavedActi
 				buildFullRouteTileIds(a.hexTilesOrdered!, a.routePoints, h3Res),
 				h3Res,
 			)
-			: (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []);
+			: getEffectiveEnclosedHexTiles(a);
 		const computedData = computeActivityData(a, enclosed);
 		const updated = { ...a, computed: computedData };
 		saveActivity(updated);

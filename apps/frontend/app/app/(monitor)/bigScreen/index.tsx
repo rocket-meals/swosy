@@ -81,6 +81,51 @@ const resolveFoodImageSource = (currentFood: any, defaultImage: any) => {
 	return remoteUrl ? { uri: remoteUrl } : { uri: defaultImage };
 };
 
+// Clears the auto-refresh interval ref if one is running. Extracted since this
+// was duplicated between the "restart interval" and cleanup paths.
+const clearRefreshInterval = (refreshIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>): void => {
+	if (refreshIntervalRef.current) {
+		clearInterval(refreshIntervalRef.current);
+	}
+};
+
+// Runs the periodic food-offers refresh, skipping the network call while offline.
+const fetchFoodsIfConnected = (isConnected: boolean, fetchFoods: () => void): void => {
+	if (isConnected) {
+		fetchFoods();
+	} else {
+		console.log('Offline: Skipping API call');
+	}
+};
+
+// Finds the canteen matching `canteensId` in `canteens`, or null if not applicable/found.
+const resolveSelectedCanteen = (canteensId: any, canteens: any[] | undefined): any | null => {
+	if (!canteensId || !canteens || canteens.length === 0) return null;
+	const foundCanteen = canteens.find((canteen: any) => canteen.id === canteensId);
+	if (!foundCanteen) {
+		console.warn('Canteen not found for ID:', canteensId);
+		return null;
+	}
+	return foundCanteen;
+};
+
+// Resolves the logo style for the current window width.
+const computeLogoStyle = (width: number) => {
+	const logoHeightForWideScreen = width > 600 ? 75 : 70;
+	return {
+		width: width < 600 ? 150 : 300,
+		height: width < 600 ? 70 : logoHeightForWideScreen,
+		marginRight: width > 600 ? 20 : 10,
+	};
+};
+
+// Resolves the markings shown on the current food's card.
+const resolveMarkingsForFood = (currentFood: any, markings: DatabaseTypes.Markings[] | undefined): DatabaseTypes.Markings[] => {
+	if (!currentFood?.markings || !markings) return [];
+	const markingIds = currentFood.markings.map((mark: any) => mark.markings_id);
+	return markings.filter((mark: any) => markingIds?.includes(mark.id));
+};
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.big_screen);
 	const dispatch = useDispatch();
@@ -164,14 +209,9 @@ const Index = () => {
 	}, [foodCategories, foodOfferCategories]);
 
 	const fetchSelectedCanteen = useCallback(() => {
-		if (!params?.canteens_id || !canteens || canteens.length === 0) return;
-
-		const foundCanteen = canteens?.find((canteen: any) => canteen.id === params?.canteens_id);
-
+		const foundCanteen = resolveSelectedCanteen(params?.canteens_id, canteens);
 		if (foundCanteen) {
 			setSelectedCanteen(foundCanteen);
-		} else {
-			console.warn('Canteen not found for ID:', params?.canteens_id);
 		}
 	}, [params?.canteens_id, canteens]);
 
@@ -207,26 +247,14 @@ const Index = () => {
 
 	useEffect(() => {
 		if (params?.refreshFoodOffersIntervalInSeconds) {
-			if (refreshIntervalRef.current) {
-				clearInterval(refreshIntervalRef.current);
-			}
+			clearRefreshInterval(refreshIntervalRef);
 
 			refreshIntervalRef.current = setInterval(
-				() => {
-					if (isConnected) {
-						fetchFoods();
-					} else {
-						console.log('Offline: Skipping API call');
-					}
-				},
+				() => fetchFoodsIfConnected(isConnected, fetchFoods),
 				Number(params.refreshFoodOffersIntervalInSeconds) * 1000
 			);
 
-			return () => {
-				if (refreshIntervalRef.current) {
-					clearInterval(refreshIntervalRef.current);
-				}
-			};
+			return () => clearRefreshInterval(refreshIntervalRef);
 		}
 	}, [params?.refreshFoodOffersIntervalInSeconds]);
 
@@ -255,12 +283,7 @@ const Index = () => {
 	}, [foods, params.nextFoodIntervalInSeconds]);
 
 	const updateLogoStyle = useCallback(() => {
-		const logoHeightForWideScreen = width > 600 ? 75 : 70;
-		setLogoStyle({
-			width: width < 600 ? 150 : 300,
-			height: width < 600 ? 70 : logoHeightForWideScreen,
-			marginRight: width > 600 ? 20 : 10,
-		});
+		setLogoStyle(computeLogoStyle(width));
 	}, [width]);
 
 	useEffect(() => {
@@ -303,15 +326,7 @@ const Index = () => {
 	};
 
 	const fetchMarkingLabels = useCallback(() => {
-		if (!currentFood?.markings || !markings) {
-			setCurrentMarking([]);
-			return;
-		}
-
-		const markingIds = currentFood?.markings?.map((mark: any) => mark.markings_id);
-
-		const filteredMarkings = markings?.filter((mark: any) => markingIds?.includes(mark.id)) || [];
-		setCurrentMarking(filteredMarkings);
+		setCurrentMarking(resolveMarkingsForFood(currentFood, markings));
 	}, [currentFood, markings]);
 
 	useEffect(() => {

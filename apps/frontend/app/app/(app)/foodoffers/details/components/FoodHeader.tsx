@@ -97,6 +97,29 @@ const RatingAverageBadge = ({
     );
 };
 
+// Resolves the web-layout style lists that vary by breakpoint (isLargeScreen/isMediumScreen),
+// so the render branch below only reads pre-computed values instead of repeating each ternary
+// (some, like the isLargeScreen-based featured-container style, were previously duplicated inline).
+function computeFoodHeaderWebLayout(isLargeScreen: boolean, isMediumScreen: boolean, containerWidth: string | number | undefined) {
+    return {
+        featuredContainerStyle: [styles.featuredContainer, isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall],
+        foodDetailStyle: [styles.foodDetail, isLargeScreen ? styles.foodDetailLarge : styles.foodDetailSmall],
+        detailsContainerStyle: [
+            styles.detailsContainer,
+            isLargeScreen ? styles.detailsContainerLarge : styles.detailsContainerSmall,
+            isMediumScreen ? styles.paddingHorizontalMedium : styles.paddingHorizontalNone,
+        ],
+        ratingListWrapperStyle: isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth as any } : null],
+        foodHeadingStyle: [
+            styles.foodHeading,
+            styles.widthFull,
+            isLargeScreen ? styles.textLeft : styles.textCenter,
+            styles.flexColumn,
+            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium,
+        ],
+    };
+}
+
 const FoodHeader = ({
     foodDetails,
     screenWidth,
@@ -157,20 +180,11 @@ const FoodHeader = ({
     ), [renderStarItem]);
 
     if (isWeb) {
+        const webLayout = computeFoodHeaderWebLayout(isLargeScreen, isMediumScreen, containerWidth);
         return (
             <>
-                <View
-                    style={[
-                        styles.featuredContainer,
-                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
-                    ]}
-                >
-                    <View
-                        style={[
-                            styles.foodDetail,
-                            isLargeScreen ? styles.foodDetailLarge : styles.foodDetailSmall
-                        ]}
-                    >
+                <View style={webLayout.featuredContainerStyle}>
+                    <View style={webLayout.foodDetailStyle}>
                         <View
                         style={[
                             styles.imageContainer,
@@ -188,13 +202,7 @@ const FoodHeader = ({
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View
-                        style={[
-                            styles.detailsContainer,
-                            isLargeScreen ? styles.detailsContainerLarge : styles.detailsContainerSmall,
-                            isMediumScreen ? styles.paddingHorizontalMedium : styles.paddingHorizontalNone
-                        ]}
-                    >
+                    <View style={webLayout.detailsContainerStyle}>
                         <View style={styles.fullWidthEnd}>
                             <RatingAverageBadge
                                 appSettings={appSettings}
@@ -206,7 +214,7 @@ const FoodHeader = ({
                                 starSize={22}
                             />
                         </View>
-                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
+                        <View style={webLayout.ratingListWrapperStyle}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
                                 iconBgColor={foodsAreaColor}
@@ -220,22 +228,8 @@ const FoodHeader = ({
                         </View>
                     </View>
                 </View>
-                <View
-                    style={[
-                        styles.featuredContainer,
-                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.foodHeading,
-                            styles.widthFull,
-                            { color: theme.screen.text },
-                            isLargeScreen ? styles.textLeft : styles.textCenter,
-                            styles.flexColumn,
-                            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium
-                        ]}
-                    >
+                <View style={webLayout.featuredContainerStyle}>
+                    <Text style={[...webLayout.foodHeadingStyle, { color: theme.screen.text }]}>
                         {foodDetails?.name}
                     </Text>
                 </View>

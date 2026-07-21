@@ -324,16 +324,20 @@ const Index = () => {
 		setIsShowingCachedData(false);
 		setHasLoadError(false);
 
-		// When offline mode is active, use cache directly without attempting API call
-		if (offlineMode) {
-			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
-			const filtered = filterCachedSubmissions(cached, selectedOption, query);
-			const sortedResult = sortFormSubmissions(filtered, sortOption);
+		// Apply an already-sorted result in either append or replace mode, per this call's `append` flag.
+		const applySortedResult = (sortedResult: DatabaseTypes.FormSubmissions[]) => {
 			if (append) {
 				appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
 			} else {
 				replaceSortedSubmissions(setFormSubmissions, sortedResult);
 			}
+		};
+
+		// When offline mode is active, use cache directly without attempting API call
+		if (offlineMode) {
+			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
+			const filtered = filterCachedSubmissions(cached, selectedOption, query);
+			applySortedResult(sortFormSubmissions(filtered, sortOption));
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
 			return;
@@ -347,24 +351,14 @@ const Index = () => {
 			})) as DatabaseTypes.FormSubmissions[];
 
 			if (result) {
-				const sortedResult = sortFormSubmissions(result, sortOption);
-				if (append) {
-					appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
-				} else {
-					replaceSortedSubmissions(setFormSubmissions, sortedResult);
-				}
+				applySortedResult(sortFormSubmissions(result, sortOption));
 			}
 		} catch (error) {
 			// Network failed – fall back to locally cached submissions for this form
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			if (cached.length > 0) {
 				const filtered = filterCachedSubmissions(cached, selectedOption, query);
-				const sortedResult = sortFormSubmissions(filtered, sortOption);
-				if (append) {
-					appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
-				} else {
-					replaceSortedSubmissions(setFormSubmissions, sortedResult);
-				}
+				applySortedResult(sortFormSubmissions(filtered, sortOption));
 				setIsShowingCachedData(true);
 			} else {
 				console.error('Error fetching form submissions', error);

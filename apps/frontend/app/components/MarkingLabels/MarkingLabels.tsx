@@ -233,10 +233,11 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
-			(like ? setLikeLoading : setDislikeLoading)(true);
+			const setLoadingState = like ? setLikeLoading : setDislikeLoading;
+			setLoadingState(true);
 			if (isAnonymousUser) {
 				handleAnonymousMarking(like);
-				(like ? setLikeLoading : setDislikeLoading)(false);
+				setLoadingState(false);
 			} else {
 				try {
 					const likeStats = ownMarking?.like === like ? null : like;
@@ -250,12 +251,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
 						fetchProfile();
-						(like ? setLikeLoading : setDislikeLoading)(false);
+						setLoadingState(false);
 					}
 				} catch (error) {
 					console.error('Error updating marking:', error);
 				} finally {
-					(like ? setLikeLoading : setDislikeLoading)(false);
+					setLoadingState(false);
 				}
 			}
 		},

@@ -70,6 +70,64 @@ function resolveAccountRequiredBorderStyle(
 		: { borderWidth: 2 };
 }
 
+/** Resolves the press handler: the account-required callback when gated, otherwise the regular onPress/handleFunction. */
+function resolvePressHandler(
+	isAccountRequired: boolean,
+	onAccountRequired: (() => void) | undefined,
+	settingsCtxOnAccountRequired: (() => void) | undefined,
+	onPress: (() => void) | undefined,
+	handleFunction: (() => void) | undefined,
+): (() => void) | undefined {
+	if (isAccountRequired) {
+		return onAccountRequired ?? settingsCtxOnAccountRequired;
+	}
+	return onPress || handleFunction;
+}
+
+/** Builds the row container's style list from its optional overrides and the computed group-position style. */
+function computeContainerStyles(
+	backgroundColor: string | undefined,
+	defaultBackgroundColor: string,
+	width: SettingsListProps['width'],
+	borderColor: string | undefined,
+	borderWidth: number | undefined,
+	borderStyle: ViewStyle['borderStyle'] | undefined,
+	groupContainerStyle: ViewStyle | null,
+): ViewStyle[] {
+	const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: backgroundColor ?? defaultBackgroundColor } as ViewStyle];
+	if (width !== undefined) {
+		containerStyles.push({ width });
+	}
+	if (borderColor) {
+		containerStyles.push({ borderColor, borderWidth: borderWidth ?? StyleSheet.hairlineWidth, borderStyle: borderStyle ?? 'solid' });
+	}
+	if (groupContainerStyle) {
+		containerStyles.push(groupContainerStyle);
+	}
+	return containerStyles;
+}
+
+/** Builds the left-icon wrapper's style list, adding the transparent-background override when applicable. */
+function computeIconWrapperStyles(iconBg: string): ViewStyle[] {
+	const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
+	if (iconBg?.toLowerCase() === 'transparent') {
+		iconWrapperStyles.push(styles.transparentIconWrapper);
+	}
+	return iconWrapperStyles;
+}
+
+/** Resolves the value text's container/text/font-size styles for the stacked vs. inline layout. */
+function computeValueDisplayStyles(
+	stackedValue: boolean,
+	valueFontSize: number | undefined,
+): { valueContainerStyle: ViewStyle; valueStackedStyle: TextStyle | null; valueFontSizeStyle: TextStyle | null } {
+	return {
+		valueContainerStyle: stackedValue ? styles.valueContainerStacked : styles.valueContainer,
+		valueStackedStyle: stackedValue ? styles.valueStacked : null,
+		valueFontSizeStyle: valueFontSize ? { fontSize: valueFontSize } : null,
+	};
+}
+
 const SettingsList: React.FC<SettingsListProps> = ({
 	leftIcon,
 	leftIconComponent,
@@ -107,9 +165,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	const settingsCtx = useSettingsContext();
 	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
 
-	const pressHandler = isAccountRequired
-		? (onAccountRequired ?? settingsCtx?.onAccountRequired)
-		: (onPress || handleFunction);
+	const pressHandler = resolvePressHandler(isAccountRequired, onAccountRequired, settingsCtx?.onAccountRequired, onPress, handleFunction);
 	const Container: any = pressHandler ? TouchableOpacity : View;
 	const iconBg = iconBackgroundColor || iconBgColor || resolvedPrimaryColor;
 	const iconColor = myContrastColor(iconBg, theme, isDark);
@@ -123,27 +179,10 @@ const SettingsList: React.FC<SettingsListProps> = ({
 		renderedLeftIcon = React.cloneElement(leftIcon as any, { color: iconColor });
 	}
 
-	const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: backgroundColor ?? theme.screen.iconBg } as ViewStyle];
-	if (width !== undefined) {
-		containerStyles.push({ width });
-	}
-	if (borderColor) {
-		containerStyles.push({ borderColor, borderWidth: borderWidth ?? StyleSheet.hairlineWidth, borderStyle: borderStyle ?? 'solid' });
-	}
-	const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
-
-	if (iconBg?.toLowerCase() === 'transparent') {
-		iconWrapperStyles.push(styles.transparentIconWrapper);
-	}
-
 	const { groupContainerStyle, wrapperBorderRadius } = computeGroupPositionStyles(groupPosition);
-	if (groupContainerStyle) {
-		containerStyles.push(groupContainerStyle);
-	}
-
-	const valueContainerStyle = stackedValue ? styles.valueContainerStacked : styles.valueContainer;
-	const valueStackedStyle = stackedValue ? styles.valueStacked : null;
-	const valueFontSizeStyle = valueFontSize ? { fontSize: valueFontSize } : null;
+	const containerStyles = computeContainerStyles(backgroundColor, theme.screen.iconBg, width, borderColor, borderWidth, borderStyle, groupContainerStyle);
+	const iconWrapperStyles = computeIconWrapperStyles(iconBg);
+	const { valueContainerStyle, valueStackedStyle, valueFontSizeStyle } = computeValueDisplayStyles(stackedValue, valueFontSize);
 
 	const leftIconContent: React.ReactNode = computeLeftIconContent(
 		showIconWrapper,
