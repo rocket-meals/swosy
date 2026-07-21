@@ -1,2 +1,4 @@
 Key,Message,Component,Line
+"AZ-FpAU0cjTW3YD8DI-3","Omitting ""--ignore-scripts"" allows lifecycle scripts to run during package installation.","rocket-meals_rocket-meals:apps/backend/Dockerfile",36
+"AZ-FpAU0cjTW3YD8DI-4","Omitting ""--ignore-scripts"" allows lifecycle scripts to run during package installation.","rocket-meals_rocket-meals:apps/backend/Dockerfile",37
 "AZ9_onhR-TchFAS-K2Wg","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:scripts/count-sonar-maintainability-issues.js",93
