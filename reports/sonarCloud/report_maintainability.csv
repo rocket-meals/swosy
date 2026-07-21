@@ -121,7 +121,6 @@ Key,Message,Component,Line
 "AZ1LvL92mmXMTKdZFLyJ","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",586
 "AZ1Lp0nFX1wrgZnAE3lk","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",231
 "AZ1Lp0nFX1wrgZnAE3lm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",722
-"AZ1K-dD74NxuHIExGuuK","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",86
 "AZ1LC7BJFtVQsuyyBkDa","Refactor this function to reduce its Cognitive Complexity from 120 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",681
 "AZ1I9Kfp9DoLcXMmfUtv","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",309
 "AZ1GDyfOxSn_iKVSgNMQ","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",77
@@ -151,8 +150,6 @@ Key,Message,Component,Line
 "AZ08T2xTsbZkP7zZX_Gj","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",231
 "AZ08FJNucusPjCU6Qfeq","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",600
 "AZ08FJKpcusPjCU6Qfep","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/store.ts",94
-"AZ07NsdWvIUCM9FwEyPs","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",147
-"AZ07NsdWvIUCM9FwEyPt","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",160
 "AZ055ZZlPU4l3pg_Zryp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",188
 "AZ055ZX9PU4l3pg_Zryo","Remove this redundant type alias and replace its occurrences with ""boolean"".","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TTSStorage.ts",3
 "AZ05li8OkGZROQtBFiA6","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1952
@@ -467,9 +464,6 @@ Key,Message,Component,Line
 "AZkUSu_GS4VhJojFFAPv","Replace this ""Boolean"" wrapper object with primitive type ""boolean"".","rocket-meals_rocket-meals:apps/frontend/app/components/Login/types.ts",14
 "AZkUSu-IS4VhJojFFAPt","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/Login/Form.tsx",145
 "AZkUSvc9S4VhJojFFCTR","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/lastUpdatedReducer.ts",7
-"AZ07NsdWvIUCM9FwEyPp","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",98
-"AZ07NsdWvIUCM9FwEyPq","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",127
-"AZ07NsdWvIUCM9FwEyPr","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",139
 "AZkUSvPSS4VhJojFFAbn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/_layout.tsx",26
 "AZkUSvL-S4VhJojFFAW0","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",108
 "AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",114
@@ -573,8 +567,6 @@ Key,Message,Component,Line
 "AZkUSvy2S4VhJojFFCke","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/proof-key-code-exchange-endpoint/index.ts",387
 "AZkUSvzqS4VhJojFFClV","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts",250
 "AZkUSvpWS4VhJojFFCac","Review this redundant assignment: ""usedParser"" already holds the assigned value along all execution paths.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/index.ts",44
-"AZnlPd9GjqHa6CjL-2XS","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",9
-"AZnlPd9GjqHa6CjL-2XT","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",23
 "AZkUSv1cS4VhJojFFCrs","Replace deprecated instructions with an up-to-date equivalent.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/Dockerfile",8
 "AZkUSvxIS4VhJojFFCiB","Rename class ""DemoNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/DemoNews_Parser.ts",6
 "AZkUSv02S4VhJojFFCrf","Replace the unused loop index ""level"" with ""_"".","rocket-meals_rocket-meals:apps/backend/Backend/scripts/getBase64IconForMail.py",51
@@ -583,18 +575,6 @@ Key,Message,Component,Line
 "AZkUSvhOS4VhJojFFCXO","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",167
 "AZkUSvhOS4VhJojFFCXP","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",203
 "AZkUSvuzS4VhJojFFCfG","Rename class ""StudentenwerkHannoverNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/hannover/StudentenwerkHannoverNews_Parser.ts",13
-"AZnlPd9VjqHa6CjL-2XV","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/genSSO_Apple.sh",4
-"AZnlPd9VjqHa6CjL-2XW","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/genSSO_Apple.sh",104
-"AZnlPd9VjqHa6CjL-2XX","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/genSSO_Apple.sh",123
-"AZ07NsdWvIUCM9FwEyPl","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",4
-"AZ07NsdWvIUCM9FwEyPm","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",19
-"AZ07NsdWvIUCM9FwEyPn","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",46
-"AZ07NsdWvIUCM9FwEyPo","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",68
-"AZ07NsdWvIUCM9FwEyPu","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",184
-"AZnlPeBljqHa6CjL-2Xa","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",4
-"AZnlPeBljqHa6CjL-2Xb","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",11
-"AZnlPeBljqHa6CjL-2Xc","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",33
-"AZnlPeBljqHa6CjL-2Xd","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",39
 "AZkUSvsCS4VhJojFFCcq","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",72
 "AZkUSvgPS4VhJojFFCW0","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",236
 "AZ5JdNiSjvp1UF7n1YmG","Prefer top-level await over using a promise chain.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",631
