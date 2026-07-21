@@ -144,20 +144,12 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		}
 	};
 
-	const setLikeDislikeLoading = (like: boolean, value: boolean) => {
-		if (like) {
-			setLikeLoading(value);
-		} else {
-			setDislikeLoading(value);
-		}
-	};
-
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
-			setLikeDislikeLoading(like, true);
+			(like ? setLikeLoading : setDislikeLoading)(true);
 			if (isAnonymousUser) {
 				handleAnonymousMarking(like);
-				setLikeDislikeLoading(like, false);
+				(like ? setLikeLoading : setDislikeLoading)(false);
 			} else {
 				try {
 					const profileData = buildUpdatedProfileData(profile, ownMarking, like, markingId);
@@ -167,12 +159,12 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
 						fetchProfile();
-						setLikeDislikeLoading(like, false);
+						(like ? setLikeLoading : setDislikeLoading)(false);
 					}
 				} catch (error) {
 					console.error('Error updating marking:', error);
 				} finally {
-					setLikeDislikeLoading(like, false);
+					(like ? setLikeLoading : setDislikeLoading)(false);
 				}
 			}
 		},

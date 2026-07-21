@@ -5,16 +5,25 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from './styles';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 
-const renderItemDetailInputs = (
-	item: any,
-	theme: any,
-	windowWidth: number,
-	selectedCanteen: any,
-	selectedValue: string,
-	selectedValuNext: string,
-	nextFoodInterval: string,
-	foodOffer: string
-) => (
+const renderItemDetailInputs = ({
+	item,
+	theme,
+	windowWidth,
+	selectedCanteen,
+	selectedValue,
+	selectedValuNext,
+	nextFoodInterval,
+	foodOffer,
+}: {
+	item: any;
+	theme: any;
+	windowWidth: number;
+	selectedCanteen: any;
+	selectedValue: string;
+	selectedValuNext: string;
+	nextFoodInterval: string;
+	foodOffer: string;
+}) => (
 	<>
 		{item.name === 'Canteen' && (
 			<TextInput
@@ -164,7 +173,7 @@ const FoodPlan = ({ data, onPressItem, selectedValue, selectedValuNext, nextFood
 								}}
 							/>
 						) : (
-							renderItemDetailInputs(item, theme, windowWidth, selectedCanteen, selectedValue, selectedValuNext, nextFoodInterval, foodOffer)
+							renderItemDetailInputs({ item, theme, windowWidth, selectedCanteen, selectedValue, selectedValuNext, nextFoodInterval, foodOffer })
 						)}
 					</View>
 				</TouchableOpacity>

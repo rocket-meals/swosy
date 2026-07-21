@@ -94,23 +94,27 @@ function filterCachedSubmissions(
 }
 
 /**
- * Apply a (already sorted) submissions result to state, either replacing the
- * current list or appending to it (re-sorting the merged list afterwards).
- * Extracted since this append/replace decision was repeated three times
- * inside loadFormSubmissions.
+ * Merge a (already sorted) submissions result into the current list and re-sort
+ * the merged list. Extracted since this was repeated three times inside loadFormSubmissions.
  */
-function applySortedSubmissions(
+function appendSortedSubmissions(
 	setFormSubmissions: React.Dispatch<React.SetStateAction<DatabaseTypes.FormSubmissions[]>>,
 	sortFormSubmissions: (submissions: DatabaseTypes.FormSubmissions[], option: FormSubmissionSortOption) => DatabaseTypes.FormSubmissions[],
 	sortedResult: DatabaseTypes.FormSubmissions[],
-	sortOption: FormSubmissionSortOption,
-	append: boolean
+	sortOption: FormSubmissionSortOption
 ): void {
-	if (append) {
-		setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
-	} else {
-		setFormSubmissions(sortedResult);
-	}
+	setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
+}
+
+/**
+ * Replace the current submissions list with a (already sorted) result.
+ * Extracted since this was repeated three times inside loadFormSubmissions.
+ */
+function replaceSortedSubmissions(
+	setFormSubmissions: React.Dispatch<React.SetStateAction<DatabaseTypes.FormSubmissions[]>>,
+	sortedResult: DatabaseTypes.FormSubmissions[]
+): void {
+	setFormSubmissions(sortedResult);
 }
 
 const Index = () => {
@@ -325,7 +329,11 @@ const Index = () => {
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			const filtered = filterCachedSubmissions(cached, selectedOption, query);
 			const sortedResult = sortFormSubmissions(filtered, sortOption);
-			applySortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption, append);
+			if (append) {
+				appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
+			} else {
+				replaceSortedSubmissions(setFormSubmissions, sortedResult);
+			}
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
 			return;
@@ -340,7 +348,11 @@ const Index = () => {
 
 			if (result) {
 				const sortedResult = sortFormSubmissions(result, sortOption);
-				applySortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption, append);
+				if (append) {
+					appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
+				} else {
+					replaceSortedSubmissions(setFormSubmissions, sortedResult);
+				}
 			}
 		} catch (error) {
 			// Network failed – fall back to locally cached submissions for this form
@@ -348,7 +360,11 @@ const Index = () => {
 			if (cached.length > 0) {
 				const filtered = filterCachedSubmissions(cached, selectedOption, query);
 				const sortedResult = sortFormSubmissions(filtered, sortOption);
-				applySortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption, append);
+				if (append) {
+					appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
+				} else {
+					replaceSortedSubmissions(setFormSubmissions, sortedResult);
+				}
 				setIsShowingCachedData(true);
 			} else {
 				console.error('Error fetching form submissions', error);

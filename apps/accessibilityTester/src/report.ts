@@ -230,9 +230,7 @@ export function generateMarkdownReport(report: AccessibilityReport): string {
   }
 
   const ruleCounts = computeRuleCounts(report.screens);
-  lines.push(...buildRuleCountsSectionLines(ruleCounts));
-
-  lines.push('', '## Details per screen');
+  lines.push(...buildRuleCountsSectionLines(ruleCounts), '', '## Details per screen');
   for (const screen of sortedScreens) {
     lines.push(...buildScreenDetailLines(screen));
   }

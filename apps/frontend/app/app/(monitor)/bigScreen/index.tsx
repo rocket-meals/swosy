@@ -68,7 +68,7 @@ const shouldClearStaleFoods = (referenceTime: number, thirtyMinutesMs: number): 
 };
 
 const resolveTargetCategoryId = (filterId: any, fallbackId: any) => {
-	return filterId ? filterId : fallbackId;
+	return filterId || fallbackId;
 };
 
 const resolveCurrentCategoryFromList = (categoriesList: any[], targetId: any) => {

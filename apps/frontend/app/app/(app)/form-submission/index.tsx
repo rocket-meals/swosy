@@ -312,6 +312,29 @@ function buildBooleanFieldUpdate(value: any): Record<string, any> {
 }
 
 /**
+ * For signature fields (online mode only), delete the previously-stored Directus file
+ * before it gets replaced or cleared. No-op for non-signature fields or offline mode.
+ */
+async function deleteOldSignatureFileIfNeeded(
+	custom_id: string | undefined,
+	offlineMode: boolean,
+	answer: DatabaseTypes.FormAnswers
+): Promise<void> {
+	if (custom_id !== 'signature' || offlineMode) {
+		return;
+	}
+	const originalFileId = (answer as any)?.value_image;
+	if (!originalFileId) {
+		return;
+	}
+	try {
+		await deleteDirectusFile(String(originalFileId));
+	} catch (e) {
+		console.warn('Could not delete old signature file:', e);
+	}
+}
+
+/**
  * Build the value_image update payload for a form answer submission.
  * Handles new uploads (including signature base64 uris and deleting the
  * previous signature file) and explicit clearing of the image.
@@ -326,16 +349,7 @@ async function buildImageFieldUpdate(
 ): Promise<Record<string, any>> {
 	if (value?.name) {
 		// New file: for signature fields delete the old Directus file first (online mode only)
-		if (custom_id === 'signature' && !offlineMode) {
-			const originalFileId = (answer as any)?.value_image;
-			if (originalFileId) {
-				try {
-					await deleteDirectusFile(String(originalFileId));
-				} catch (e) {
-					console.warn('Could not delete old signature file:', e);
-				}
-			}
-		}
+		await deleteOldSignatureFileIfNeeded(custom_id, offlineMode, answer);
 		if (custom_id === 'signature') {
 			// Signatures: send base64 data URI directly — the backend
 			// base64-file-upload-hook will create the Directus file automatically.
@@ -349,16 +363,7 @@ async function buildImageFieldUpdate(
 
 	if (value === null || value === undefined) {
 		// Image/signature cleared — explicitly set to null
-		if (custom_id === 'signature' && !offlineMode) {
-			const originalFileId = (answer as any)?.value_image;
-			if (originalFileId) {
-				try {
-					await deleteDirectusFile(String(originalFileId));
-				} catch (e) {
-					console.warn('Could not delete old signature file:', e);
-				}
-			}
-		}
+		await deleteOldSignatureFileIfNeeded(custom_id, offlineMode, answer);
 		return { value_image: null };
 	}
 
@@ -416,17 +421,18 @@ async function buildFilesFieldUpdate(
  * during submission (mirrors the field's storage column: value_string,
  * value_number, value_boolean, value_custom, value_date, value_image or value_files).
  */
-async function buildUpdatedValueFieldsForAnswer(
-	custom_type: string | undefined,
-	custom_id: string | undefined,
-	value: any,
-	formateDate: string | null | undefined,
-	answer: DatabaseTypes.FormAnswers,
-	offlineMode: boolean,
-	imageFolderId: string | null,
-	filesFolderId: string | null,
-	uploadFileFn: (value: any, folderId?: string | null) => Promise<any>
-): Promise<Record<string, any>> {
+async function buildUpdatedValueFieldsForAnswer(options: {
+	custom_type: string | undefined;
+	custom_id: string | undefined;
+	value: any;
+	formateDate: string | null | undefined;
+	answer: DatabaseTypes.FormAnswers;
+	offlineMode: boolean;
+	imageFolderId: string | null;
+	filesFolderId: string | null;
+	uploadFileFn: (value: any, folderId?: string | null) => Promise<any>;
+}): Promise<Record<string, any>> {
+	const { custom_type, custom_id, value, formateDate, answer, offlineMode, imageFolderId, filesFolderId, uploadFileFn } = options;
 	if (custom_type === 'value_string') {
 		return { value_string: value };
 	}
@@ -923,7 +929,7 @@ const Index = () => {
 					formateDate = formatDateForSubmission(fieldType, value);
 				}
 
-				const updatedValueFields = await buildUpdatedValueFieldsForAnswer(
+				const updatedValueFields = await buildUpdatedValueFieldsForAnswer({
 					custom_type,
 					custom_id,
 					value,
@@ -932,8 +938,8 @@ const Index = () => {
 					offlineMode,
 					imageFolderId,
 					filesFolderId,
-					getDirectusUploadId
-				);
+					uploadFileFn: getDirectusUploadId,
+				});
 
 				return {
 					id: fieldId,

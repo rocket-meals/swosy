@@ -316,10 +316,10 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
         'Attempting translation for field(s): [' + fieldsToAttempt.join(', ') + ']'
       );
 
-      const translateResult = await this.translateFieldsForTranslation(
+      const translateResult = await this.translateFieldsForTranslation({
         food, translation, sourceTranslation, sourceLanguageCode, languageCode,
-        fieldsToAttempt, translator, context, attempted, remainingCapacity
-      );
+        fieldsToAttempt, translator, context, attempted, remainingCapacity,
+      });
       const translatedItem = translateResult.translatedItem;
       attempted = translateResult.attempted;
 
@@ -380,18 +380,23 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
    * Attempts to translate `fieldsToAttempt` for a single translation entry, respecting the
    * remaining capacity. Returns the partially-built translated item and the updated attempted count.
    */
-  private async translateFieldsForTranslation(
-    food: DatabaseTypes.Foods,
-    translation: DatabaseTypes.FoodsTranslations,
-    sourceTranslation: DatabaseTypes.FoodsTranslations,
-    sourceLanguageCode: string | undefined,
-    languageCode: string,
-    fieldsToAttempt: string[],
-    translator: Translator,
-    context: WorkflowRunContext,
-    attempted: number,
-    remainingCapacity: number,
-  ): Promise<{translatedItem: any; attempted: number}> {
+  private async translateFieldsForTranslation(options: {
+    food: DatabaseTypes.Foods;
+    translation: DatabaseTypes.FoodsTranslations;
+    sourceTranslation: DatabaseTypes.FoodsTranslations;
+    sourceLanguageCode: string | undefined;
+    languageCode: string;
+    fieldsToAttempt: string[];
+    translator: Translator;
+    context: WorkflowRunContext;
+    attempted: number;
+    remainingCapacity: number;
+  }): Promise<{translatedItem: any; attempted: number}> {
+    const {
+      food, translation, sourceTranslation, sourceLanguageCode, languageCode,
+      fieldsToAttempt, translator, context, remainingCapacity,
+    } = options;
+    let {attempted} = options;
     const translatedItem: any = {};
 
     for (const field of fieldsToAttempt) {
