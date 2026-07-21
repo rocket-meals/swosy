@@ -23,20 +23,32 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 
 		return () => subscription?.remove();
 	}, []);
+
+	const isWide = screenWidth > 950;
+	const flexDirection = isWide ? 'row' : 'column';
+	const cardHeight = isWide ? 180 : 190;
+	const imageSize = isWide ? 178 : 90;
+	const contentPadding = isWide ? 15 : 5;
+	const contentMarginTop = isWide ? 0 : 10;
+	const rowMarginBottom = isWide ? 20 : 10;
+	const colGap = isWide ? 10 : 5;
+	const iconSize = isWide ? 24 : 20;
+	const fontSize = isWide ? 18 : 12;
+
 	return (
 		<View
 			style={{
 				...styles.container,
 				borderColor: theme.screen.icon,
-				flexDirection: screenWidth > 950 ? 'row' : 'column',
-				height: screenWidth > 950 ? 180 : 190,
+				flexDirection,
+				height: cardHeight,
 			}}
 		>
 			<View
 				style={{
 					...styles.imageContainer,
-					width: screenWidth > 950 ? 178 : 90,
-					height: screenWidth > 950 ? 178 : 90,
+					width: imageSize,
+					height: imageSize,
 				}}
 			>
 				<MyImage
@@ -59,18 +71,18 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 			<View
 				style={{
 					...styles.ratingContainer,
-					padding: screenWidth > 950 ? 15 : 5,
-					marginTop: screenWidth > 950 ? 0 : 10,
+					padding: contentPadding,
+					marginTop: contentMarginTop,
 				}}
 			>
-				<View style={{ ...styles.row, marginBottom: screenWidth > 950 ? 20 : 10 }}>
-					<View style={{ ...styles.col, gap: screenWidth > 950 ? 10 : 5 }}>
-						<MaterialCommunityIcons name="chart-bar" color={theme.screen.icon} size={screenWidth > 950 ? 24 : 20} />
+				<View style={{ ...styles.row, marginBottom: rowMarginBottom }}>
+					<View style={{ ...styles.col, gap: colGap }}>
+						<MaterialCommunityIcons name="chart-bar" color={theme.screen.icon} size={iconSize} />
 						<Text
 							style={{
 								...styles.label,
 								color: theme.screen.text,
-								fontSize: screenWidth > 950 ? 18 : 12,
+								fontSize,
 							}}
 						>
 							Number of Ratings
@@ -80,20 +92,20 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 						style={{
 							...styles.value,
 							color: theme.screen.text,
-							fontSize: screenWidth > 950 ? 18 : 12,
+							fontSize,
 						}}
 					>
 						{food?.rating_amount}
 					</Text>
 				</View>
-				<View style={{ ...styles.row, marginBottom: screenWidth > 950 ? 20 : 10 }}>
-					<View style={{ ...styles.col, gap: screenWidth > 950 ? 10 : 5 }}>
-						<MaterialCommunityIcons name="chart-areaspline" color={theme.screen.icon} size={screenWidth > 950 ? 24 : 20} />
+				<View style={{ ...styles.row, marginBottom: rowMarginBottom }}>
+					<View style={{ ...styles.col, gap: colGap }}>
+						<MaterialCommunityIcons name="chart-areaspline" color={theme.screen.icon} size={iconSize} />
 						<Text
 							style={{
 								...styles.label,
 								color: theme.screen.text,
-								fontSize: screenWidth > 950 ? 18 : 12,
+								fontSize,
 							}}
 						>
 							Average Rating
@@ -103,7 +115,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 						style={{
 							...styles.value,
 							color: theme.screen.text,
-							fontSize: screenWidth > 950 ? 18 : 12,
+							fontSize,
 						}}
 					>
 						{food?.rating_average?.toFixed(2)}

@@ -26,7 +26,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainAssetEntry } from '../assets/terrainAssets';
 import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, getPentagons } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, getPentagons, type CoordPair } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import type { MapFeatureInfo } from '../helpers/RouteNameSuggestionHelper';
 import type { ViewportBounds } from '../helpers/ViewportBounds';
@@ -111,6 +111,104 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
 function getAnchorAngleDeg(anchorPosition: string): number {
 	const match = /_(\d+)$/.exec(anchorPosition);
 	return match ? (240 - Number.parseInt(match[1], 10) + 360) % 360 : 0;
+}
+
+// Geometric lookup for all 12 degree positions (index = degree / 30).
+// type 'vertex': use boundary[idx] directly.
+// type 'edge':   midpoint of boundary[idx] and boundary[(idx+1)%n].
+const DEGREE_POSITION_GEO: Array<{ type: 'vertex' | 'edge'; idx: number }> = [
+	{ type: 'vertex', idx: 0 },  // 0°   vertex[0] top
+	{ type: 'edge',   idx: 0 },  // 30°  edge[0] (vertex[0]→vertex[1])
+	{ type: 'vertex', idx: 1 },  // 60°  vertex[1]
+	{ type: 'edge',   idx: 1 },  // 90°  edge[1]
+	{ type: 'vertex', idx: 2 },  // 120° vertex[2]
+	{ type: 'edge',   idx: 2 },  // 150° edge[2]
+	{ type: 'vertex', idx: 3 },  // 180° vertex[3]
+	{ type: 'edge',   idx: 3 },  // 210° edge[3]
+	{ type: 'vertex', idx: 4 },  // 240° vertex[4]
+	{ type: 'edge',   idx: 4 },  // 270° edge[4]
+	{ type: 'vertex', idx: 5 },  // 300° vertex[5]
+	{ type: 'edge',   idx: 5 },  // 330° edge[5] (vertex[5]→vertex[0])
+];
+
+// OUTER ring: 12 positions at 0°, 30°, …, 330°
+const OUTER_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+	BillboardAnchorPosition.OUTER_0_DEGREE,
+	BillboardAnchorPosition.OUTER_30_DEGREE,
+	BillboardAnchorPosition.OUTER_60_DEGREE,
+	BillboardAnchorPosition.OUTER_90_DEGREE,
+	BillboardAnchorPosition.OUTER_120_DEGREE,
+	BillboardAnchorPosition.OUTER_150_DEGREE,
+	BillboardAnchorPosition.OUTER_180_DEGREE,
+	BillboardAnchorPosition.OUTER_210_DEGREE,
+	BillboardAnchorPosition.OUTER_240_DEGREE,
+	BillboardAnchorPosition.OUTER_270_DEGREE,
+	BillboardAnchorPosition.OUTER_300_DEGREE,
+	BillboardAnchorPosition.OUTER_330_DEGREE,
+];
+
+// MIDDLE ring: 12 positions at 0°, 30°, …, 330°
+const MIDDLE_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+	BillboardAnchorPosition.MIDDLE_0_DEGREE,
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,
+	BillboardAnchorPosition.MIDDLE_60_DEGREE,
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,
+	BillboardAnchorPosition.MIDDLE_120_DEGREE,
+	BillboardAnchorPosition.MIDDLE_150_DEGREE,
+	BillboardAnchorPosition.MIDDLE_180_DEGREE,
+	BillboardAnchorPosition.MIDDLE_210_DEGREE,
+	BillboardAnchorPosition.MIDDLE_240_DEGREE,
+	BillboardAnchorPosition.MIDDLE_270_DEGREE,
+	BillboardAnchorPosition.MIDDLE_300_DEGREE,
+	BillboardAnchorPosition.MIDDLE_330_DEGREE,
+];
+
+/**
+ * Resolve the geographic [lng, lat] for a given anchor position string.
+ */
+function resolveAnchorPosition(
+	anchorColor: string,
+	boundary: CoordPair[],
+	n: number,
+	centerLng: number,
+	centerLat: number,
+): [number, number] {
+	let lng = centerLng;
+	let lat = centerLat;
+	const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+	const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+	if (outerIdx >= 0) {
+		// H3's cellToBoundary places boundary[0] at the visual 300° position.
+		// Positions are reflected across the 300°–120° axis: the formula
+		// (10 - idx + 12) % 12 applies both the boundary[0] offset and the
+		// axis reflection in one step.
+		const geo = DEGREE_POSITION_GEO[(10 - outerIdx + 12) % 12];
+		if (geo.type === 'vertex' && geo.idx < n) {
+			[lng, lat] = boundary[geo.idx] as [number, number];
+		} else if (geo.type === 'edge' && geo.idx < n) {
+			const [lng1, lat1] = boundary[geo.idx] as [number, number];
+			const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
+			lng = (lng1 + lng2) / 2;
+			lat = (lat1 + lat2) / 2;
+		}
+	} else if (middleIdx >= 0) {
+		// Same reflection formula as for the outer ring.
+		const geo = DEGREE_POSITION_GEO[(10 - middleIdx + 12) % 12];
+		let outerLng = centerLng;
+		let outerLat = centerLat;
+		if (geo.type === 'vertex' && geo.idx < n) {
+			[outerLng, outerLat] = boundary[geo.idx] as [number, number];
+		} else if (geo.type === 'edge' && geo.idx < n) {
+			const [lng1, lat1] = boundary[geo.idx] as [number, number];
+			const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
+			outerLng = (lng1 + lng2) / 2;
+			outerLat = (lat1 + lat2) / 2;
+		}
+		lng = (centerLng + outerLng) / 2;
+		lat = (centerLat + outerLat) / 2;
+	}
+	// else: CENTER → use centerLng/centerLat (already set above)
+	return [lng, lat];
 }
 
 /**
@@ -3066,56 +3164,6 @@ export default function RecordScreen() {
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
-		// Geometric lookup for all 12 degree positions (index = degree / 30).
-		// type 'vertex': use boundary[idx] directly.
-		// type 'edge':   midpoint of boundary[idx] and boundary[(idx+1)%n].
-		const DEGREE_POSITION_GEO: Array<{ type: 'vertex' | 'edge'; idx: number }> = [
-			{ type: 'vertex', idx: 0 },  // 0°   vertex[0] top
-			{ type: 'edge',   idx: 0 },  // 30°  edge[0] (vertex[0]→vertex[1])
-			{ type: 'vertex', idx: 1 },  // 60°  vertex[1]
-			{ type: 'edge',   idx: 1 },  // 90°  edge[1]
-			{ type: 'vertex', idx: 2 },  // 120° vertex[2]
-			{ type: 'edge',   idx: 2 },  // 150° edge[2]
-			{ type: 'vertex', idx: 3 },  // 180° vertex[3]
-			{ type: 'edge',   idx: 3 },  // 210° edge[3]
-			{ type: 'vertex', idx: 4 },  // 240° vertex[4]
-			{ type: 'edge',   idx: 4 },  // 270° edge[4]
-			{ type: 'vertex', idx: 5 },  // 300° vertex[5]
-			{ type: 'edge',   idx: 5 },  // 330° edge[5] (vertex[5]→vertex[0])
-		];
-
-		// OUTER ring: 12 positions at 0°, 30°, …, 330°
-		const OUTER_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
-			BillboardAnchorPosition.OUTER_0_DEGREE,
-			BillboardAnchorPosition.OUTER_30_DEGREE,
-			BillboardAnchorPosition.OUTER_60_DEGREE,
-			BillboardAnchorPosition.OUTER_90_DEGREE,
-			BillboardAnchorPosition.OUTER_120_DEGREE,
-			BillboardAnchorPosition.OUTER_150_DEGREE,
-			BillboardAnchorPosition.OUTER_180_DEGREE,
-			BillboardAnchorPosition.OUTER_210_DEGREE,
-			BillboardAnchorPosition.OUTER_240_DEGREE,
-			BillboardAnchorPosition.OUTER_270_DEGREE,
-			BillboardAnchorPosition.OUTER_300_DEGREE,
-			BillboardAnchorPosition.OUTER_330_DEGREE,
-		];
-
-		// MIDDLE ring: 12 positions at 0°, 30°, …, 330°
-		const MIDDLE_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
-			BillboardAnchorPosition.MIDDLE_0_DEGREE,
-			BillboardAnchorPosition.MIDDLE_30_DEGREE,
-			BillboardAnchorPosition.MIDDLE_60_DEGREE,
-			BillboardAnchorPosition.MIDDLE_90_DEGREE,
-			BillboardAnchorPosition.MIDDLE_120_DEGREE,
-			BillboardAnchorPosition.MIDDLE_150_DEGREE,
-			BillboardAnchorPosition.MIDDLE_180_DEGREE,
-			BillboardAnchorPosition.MIDDLE_210_DEGREE,
-			BillboardAnchorPosition.MIDDLE_240_DEGREE,
-			BillboardAnchorPosition.MIDDLE_270_DEGREE,
-			BillboardAnchorPosition.MIDDLE_300_DEGREE,
-			BillboardAnchorPosition.MIDDLE_330_DEGREE,
-		];
-
 		for (const [h3Index, record] of Object.entries(records)) {
 			// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
 			const effectiveBillboards = getEffectiveBillboards(record);
@@ -3145,48 +3193,6 @@ export default function RecordScreen() {
 			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
 			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
 
-			/**
-			 * Resolve the geographic [lng, lat] for a given anchor position string.
-			 */
-			function resolveAnchorPosition(anchorColor: string): [number, number] {
-				let lng = centerLng;
-				let lat = centerLat;
-				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
-				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
-				if (outerIdx >= 0) {
-					// H3's cellToBoundary places boundary[0] at the visual 300° position.
-					// Positions are reflected across the 300°–120° axis: the formula
-					// (10 - idx + 12) % 12 applies both the boundary[0] offset and the
-					// axis reflection in one step.
-					const geo = DEGREE_POSITION_GEO[(10 - outerIdx + 12) % 12];
-					if (geo.type === 'vertex' && geo.idx < n) {
-						[lng, lat] = boundary[geo.idx] as [number, number];
-					} else if (geo.type === 'edge' && geo.idx < n) {
-						const [lng1, lat1] = boundary[geo.idx] as [number, number];
-						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
-						lng = (lng1 + lng2) / 2;
-						lat = (lat1 + lat2) / 2;
-					}
-				} else if (middleIdx >= 0) {
-					// Same reflection formula as for the outer ring.
-					const geo = DEGREE_POSITION_GEO[(10 - middleIdx + 12) % 12];
-					let outerLng = centerLng;
-					let outerLat = centerLat;
-					if (geo.type === 'vertex' && geo.idx < n) {
-						[outerLng, outerLat] = boundary[geo.idx] as [number, number];
-					} else if (geo.type === 'edge' && geo.idx < n) {
-						const [lng1, lat1] = boundary[geo.idx] as [number, number];
-						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
-						outerLng = (lng1 + lng2) / 2;
-						outerLat = (lat1 + lat2) / 2;
-					}
-					lng = (centerLng + outerLng) / 2;
-					lat = (centerLat + outerLat) / 2;
-				}
-				// else: CENTER → use centerLng/centerLat (already set above)
-				return [lng, lat];
-			}
-
 			// ── Hex Texture Adaptions (always flat on the map surface) ────────────
 			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
 				const parsed = parseBillboardKey(billboardKey);
@@ -3199,7 +3205,7 @@ export default function RecordScreen() {
 				const anchorOverride = spriteAnchors[idx];
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-				const [lng, lat] = resolveAnchorPosition(anchorColor);
+				const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
 				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
 				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
 					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
@@ -3230,7 +3236,7 @@ export default function RecordScreen() {
 				const anchorOverride = spriteAnchors[idx];
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-				const [lng, lat] = resolveAnchorPosition(anchorColor);
+				const [lng, lat] = resolveAnchorPosition(anchorColor, boundary, n, centerLng, centerLat);
 				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
 				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
 					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,

@@ -27,8 +27,8 @@ export type AggregateQuery<CollectionScheme> = {
 };
 
 export class CollectionHelper<CollectionScheme> {
-private collection: string;
-	private _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
+	private readonly collection: string;
+	private readonly _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
 
 	constructor(collection: string, client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) {
 		this.collection = collection;

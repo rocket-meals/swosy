@@ -35,17 +35,17 @@ export type EmailDownloadLink = {
   url: string;
 };
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
+function getTodayRangeIso(): { startOfDayIso: string; startOfNextDayIso: string } {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfNextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return {
+    startOfDayIso: startOfDay.toISOString(),
+    startOfNextDayIso: startOfNextDay.toISOString(),
+  };
+}
 
-  function getTodayRangeIso(): { startOfDayIso: string; startOfNextDayIso: string } {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfNextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    return {
-      startOfDayIso: startOfDay.toISOString(),
-      startOfNextDayIso: startOfNextDay.toISOString(),
-    };
-  }
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
 
   async function sendMail(options: EmailOptions) {
     let { MailService } = apiContext.services;

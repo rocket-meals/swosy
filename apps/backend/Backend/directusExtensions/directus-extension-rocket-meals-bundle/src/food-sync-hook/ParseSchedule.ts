@@ -938,7 +938,17 @@ export class ParseSchedule {
     };
   }
 
-  getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject, dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>, resultHash: string) {
+  getFoodofferToCreate(params: {
+    foodofferForParser: FoodoffersTypeForParser,
+    canteen: DatabaseTypes.Canteens,
+    markings: DatabaseTypes.Markings[],
+    food: DatabaseTypes.Foods,
+    foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined,
+    helperObject: FoodCreationHelperObject,
+    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
+    resultHash: string,
+  }) {
+    const { foodofferForParser, canteen, markings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash } = params;
     let food_id = foodofferForParser.food_id;
     const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
@@ -1082,7 +1092,7 @@ export class ParseSchedule {
       if (canteenFound && foodFound && !foodIsArchived) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
         const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
-        let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash);
+        let foodOfferToCreate = this.getFoodofferToCreate({ foodofferForParser, canteen, markings: filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash });
         foodoffersToCreate.push(foodOfferToCreate);
       } else if (foodIsArchived) {
         await this.context.logger.appendLog('Skip Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - food has status archived - food_id: ' + food_id);
