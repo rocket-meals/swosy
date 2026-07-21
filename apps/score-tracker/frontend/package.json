@@ -12,7 +12,16 @@
     "generate:eas": "ts-node --project ../scripts/tsconfig.json ../scripts/generate-eas-config.ts",
     "maestro:generate": "ts-node --project ../maestro-tests/tsconfig.json ../maestro-tests/generate.ts",
     "maestro": "bash ../run-maestro-web-test.sh",
-    "maestro:runOnly": "bash ../run-maestro-web-test.sh --skip-generate"
+    "maestro:runOnly": "bash ../run-maestro-web-test.sh --skip-generate",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "resolver": "<rootDir>/jest.resolver.js",
+    "moduleNameMapper": {
+      "expo-modules-core/src/web/index\\.web": "<rootDir>/emptyModule.js",
+      "expo-modules-core/src/uuid/uuid\\.web": "<rootDir>/emptyModule.js"
+    }
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
@@ -53,6 +62,8 @@
     "@types/node": "^24.9.1",
     "@types/react": "~19.0.0",
     "@types/react-native": "^0.73.0",
+    "jest": "^29.2.1",
+    "jest-expo": "~53.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
