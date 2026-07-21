@@ -63,13 +63,27 @@ der Git-/PR-Historie.
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
-(39x), Funktions-Verschachtelung (35x).
+(39x).
 Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 „Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
 gemeldeten Catch-Blöcke (leer, nur Kommentar, oder Rethrow ohne Original-Error)
 protokollieren jetzt den tatsächlichen Fehler bzw. reichen ihn in der Fehlermeldung
 weiter, ohne das bestehende Fallback-/Swallow-Verhalten zu ändern.
+
+„Funktions-Verschachtelung" (35x, „not nest functions more than 4 levels deep")
+ist als zweiter Fall abgearbeitet: die jeweils innerste verschachtelte Funktion
+wurde in eine benannte Funktion auf Modul- oder Komponentenebene extrahiert
+(Closures als explizite Parameter), ohne die Logik zu verändern. Wo mehrere
+Stellen im selben oder in Schwesterdateien exakt denselben Block dupliziert
+hatten (`ExpoUpdateLoader`, das Forst-Billboard-Fire-and-forget in
+`apps/geonexia/frontend/app/{_layout,activities/index,settings/index}.tsx`, der
+`onDone`-Handler in `activities/[id].tsx`, der Terrain-Kategorie-Picker in
+`apps/geonexia/frontend/app/index.tsx`), wurde je ein gemeinsamer Helper
+extrahiert — außer bei den Forst-Billboard-Blöcken, die sich in einem Detail
+unterscheiden (der kleine Baum an der `MIDDLE`-Ankerposition wird nur in
+`_layout.tsx` und `settings/index.tsx` gesetzt, nicht in `activities/index.tsx`);
+dieser Unterschied wurde unverändert beibehalten, kein Verhalten angeglichen.
 
 ## Hinweise
 

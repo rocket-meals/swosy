@@ -27,6 +27,10 @@ const LOCATION_LINK_DESTINATION_PATTERN = new RegExp(String.raw`\((${UriScheme.G
 export const sanitizeLocationLinkWhitespace = (sourceContent: string) =>
 	sourceContent.replace(LOCATION_LINK_DESTINATION_PATTERN, (_match, scheme, coordinates) => `(${scheme}${coordinates.replace(/\s+/g, '')})`);
 
+function openLinkSafely(url: string) {
+	Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
+}
+
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
@@ -127,7 +131,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 
 			const handlePress = () => {
 				if (finalHref) {
-					Linking.openURL(finalHref).catch(err => console.error('Failed to open URL:', err));
+					openLinkSafely(finalHref);
 				}
 			};
 

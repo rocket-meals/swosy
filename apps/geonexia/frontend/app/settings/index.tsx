@@ -264,6 +264,47 @@ function TTSLogContent({
 	);
 }
 
+// Fire-and-forget: fetch features for enclosed tiles that are not yet in the
+// feature cache, then apply forest trees.
+async function applyForestBillboardsForUncachedTiles(records: Record<string, any>, hexTileFeatureCache: HexTileFeatureCache, dispatch: AppDispatch) {
+	try {
+		const tilesWithoutCache = Object.entries(records)
+			.filter(([hexId, rec]) =>
+				rec.enclosedCount > 0 &&
+				!rec.walkedOn &&
+				!hexTileFeatureCache[hexId],
+			)
+			.map(([hexId]) => hexId);
+		if (tilesWithoutCache.length === 0) return;
+		const newEntries: HexTileFeatureCache = {};
+		for (const hexId of tilesWithoutCache) {
+			try {
+				const features = await queryTileFeaturesForHexCell(hexId);
+				newEntries[hexId] = features;
+				if (hasForestFeature(features)) {
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_PINE_TREE_LARGE,
+					}));
+					// Also place the small tree at a MIDDLE ring position,
+					// matching the full checkAndApplyForest behaviour.
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: getSmallTreeAnchorForHexId(hexId),
+						billboard: BILLBOARD_PINE_TREE_SMALL,
+					}));
+				}
+			} catch {
+				// ignore per-cell errors
+			}
+		}
+		await mergeHexTileFeatureCache(newEntries);
+	} catch (err) {
+		console.warn('[Rebuild] Feature cache update failed:', err);
+	}
+}
+
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
@@ -554,44 +595,7 @@ export default function SettingsScreen() {
 						dispatch(loadWalkedEdgesState(walkedEdges));
 						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
-						void (async () => {
-							try {
-								const tilesWithoutCache = Object.entries(records)
-									.filter(([hexId, rec]) =>
-										rec.enclosedCount > 0 &&
-										!rec.walkedOn &&
-										!hexTileFeatureCache[hexId],
-									)
-									.map(([hexId]) => hexId);
-								if (tilesWithoutCache.length === 0) return;
-								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of tilesWithoutCache) {
-									try {
-										const features = await queryTileFeaturesForHexCell(hexId);
-										newEntries[hexId] = features;
-										if (hasForestFeature(features)) {
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: BillboardAnchorPosition.CENTER,
-												billboard: BILLBOARD_PINE_TREE_LARGE,
-											}));
-											// Also place the small tree at a MIDDLE ring position,
-											// matching the full checkAndApplyForest behaviour.
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: getSmallTreeAnchorForHexId(hexId),
-												billboard: BILLBOARD_PINE_TREE_SMALL,
-											}));
-										}
-									} catch {
-										// ignore per-cell errors
-									}
-								}
-								await mergeHexTileFeatureCache(newEntries);
-							} catch (err) {
-								console.warn('[Rebuild] Feature cache update failed:', err);
-							}
-						})();
+						void applyForestBillboardsForUncachedTiles(records, hexTileFeatureCache, dispatch);
 
 						const count = allActivities.length;
 						showAlert('Welt neu aufgebaut', `Karte aus ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'} neu aufgebaut.`);

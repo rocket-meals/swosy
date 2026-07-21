@@ -605,6 +605,7 @@ export default function GameScreen() {
 	const navigation = useNavigation();
 
 	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
+	const toggleEditingPlayers = useCallback(() => setIsEditingPlayers(v => !v), []);
 
 	// Leaving the setup phase always drops back into the scoreboard view.
 	const prevStatusRef = useRef(status);
@@ -837,7 +838,7 @@ export default function GameScreen() {
 					{status === 'active' && (
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
-							onPress={() => setIsEditingPlayers((v) => !v)}
+							onPress={toggleEditingPlayers}
 							style={styles.headerButton}
 						>
 							<Ionicons

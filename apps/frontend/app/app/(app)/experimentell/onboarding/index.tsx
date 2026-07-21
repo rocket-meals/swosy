@@ -239,6 +239,28 @@ const OnboardingScreen = () => {
 		loadProfileAvatars();
 	}, []);
 
+	// Fades a slot out, swaps in the avatar at poolIdx, fades back in, then calls onComplete.
+	const performAvatarSwap = useCallback((slot: number, poolIdx: number, onComplete: () => void) => {
+		Animated.timing(slotOpacities[slot], {
+			toValue: 0,
+			duration: AVATAR_FADE_DURATION,
+			useNativeDriver: true,
+		}).start(() => {
+			setSlotAvatars(prev => {
+				const next = [...prev];
+				next[slot] = avatarPoolRef.current[poolIdx];
+				return next;
+			});
+			nextPoolIndexRef.current += 1;
+			nextSlotRef.current += 1;
+			Animated.timing(slotOpacities[slot], {
+				toValue: 1,
+				duration: AVATAR_FADE_DURATION,
+				useNativeDriver: true,
+			}).start(onComplete);
+		});
+	}, [slotOpacities]);
+
 	// Avatar carousel: one slot swaps at a time, every AVATAR_SLOT_INTERVAL ms.
 	// Only starts once server avatars are available. Stops when all server avatars
 	// have been shown (wraps around only if the pool is larger than AVATARS_TOTAL).
@@ -254,33 +276,16 @@ const OnboardingScreen = () => {
 			const slot = nextSlotRef.current % AVATARS_TOTAL;
 			const poolIdx = nextPoolIndexRef.current;
 
-			Animated.timing(slotOpacities[slot], {
-				toValue: 0,
-				duration: AVATAR_FADE_DURATION,
-				useNativeDriver: true,
-			}).start(() => {
-				setSlotAvatars(prev => {
-					const next = [...prev];
-					next[slot] = pool[poolIdx];
-					return next;
-				});
-				nextPoolIndexRef.current += 1;
-				nextSlotRef.current += 1;
-				Animated.timing(slotOpacities[slot], {
-					toValue: 1,
-					duration: AVATAR_FADE_DURATION,
-					useNativeDriver: true,
-				}).start(() => {
-					// Only schedule next swap if there are more server avatars to show
-					if (nextPoolIndexRef.current < avatarPoolRef.current.length) {
-						timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
-					}
-				});
+			performAvatarSwap(slot, poolIdx, () => {
+				// Only schedule next swap if there are more server avatars to show
+				if (nextPoolIndexRef.current < avatarPoolRef.current.length) {
+					timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
+				}
 			});
 		};
 		timer = setTimeout(swapNext, AVATAR_SLOT_INTERVAL);
 		return () => clearTimeout(timer);
-	}, [hasServerAvatars, slotOpacities]);
+	}, [hasServerAvatars, performAvatarSwap]);
 
 	// ── User count animation ──────────────────────────────────────────────────
 	// Smoothly animates to a new target value: fast approach, slow last 5 units.

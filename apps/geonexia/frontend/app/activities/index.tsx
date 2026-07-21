@@ -349,6 +349,39 @@ function RouteSelectionContent({
 	);
 }
 
+// Fire-and-forget: fetch map features for enclosed-only tiles that have no
+// cached feature data yet, so the pine tree billboard can be applied even
+// when the feature cache was empty or incomplete.
+async function applyForestBillboardsForUncachedTiles(records: Record<string, any>, hexTileFeatureCache: HexTileFeatureCache, dispatch: AppDispatch) {
+	try {
+		const enclosedWithoutCache = Object.entries(records)
+			.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
+			.map(([hexId]) => hexId);
+
+		if (enclosedWithoutCache.length === 0) return;
+
+		const newEntries: HexTileFeatureCache = {};
+		for (const hexId of enclosedWithoutCache) {
+			try {
+				const features = await queryTileFeaturesForHexCell(hexId);
+				newEntries[hexId] = features;
+				if (hasForestFeature(features)) {
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_PINE_TREE_LARGE,
+					}));
+				}
+			} catch {
+				// ignore per-cell errors
+			}
+		}
+		await mergeHexTileFeatureCache(newEntries);
+	} catch (err) {
+		console.warn('[Rebuild] Feature cache update failed:', err);
+	}
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -619,38 +652,7 @@ export default function ActivitiesScreen() {
 						dispatch(loadWalkedEdgesState(walkedEdges));
 						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
-						// Fire-and-forget: fetch map features for enclosed-only tiles that
-						// have no cached feature data yet, so the pine tree billboard can be
-						// applied even when the feature cache was empty or incomplete.
-						void (async () => {
-							try {
-								const enclosedWithoutCache = Object.entries(records)
-									.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
-									.map(([hexId]) => hexId);
-
-								if (enclosedWithoutCache.length === 0) return;
-
-								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of enclosedWithoutCache) {
-									try {
-										const features = await queryTileFeaturesForHexCell(hexId);
-										newEntries[hexId] = features;
-										if (hasForestFeature(features)) {
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: BillboardAnchorPosition.CENTER,
-												billboard: BILLBOARD_PINE_TREE_LARGE,
-											}));
-										}
-									} catch {
-										// ignore per-cell errors
-									}
-								}
-								await mergeHexTileFeatureCache(newEntries);
-							} catch (err) {
-								console.warn('[Rebuild] Feature cache update failed:', err);
-							}
-						})();
+						void applyForestBillboardsForUncachedTiles(records, hexTileFeatureCache, dispatch);
 
 						const count = allActivities.length;
 						showAlert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
@@ -687,6 +689,42 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, handleImportFromFile, closeImportModal, theme]);
 
+	// Persists a manually-entered activity, links it to its route, applies its
+	// hex tiles/edges to the in-memory map state, then closes the modal and navigates to it.
+	const handleManualActivitySave = useCallback((activity: SavedActivity, selectedRoute: SavedRoute) => {
+		saveActivity(activity);
+		// Add activity ID to route.activityIds
+		const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
+		const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
+		saveRoute(updatedRoute);
+		setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
+		setActivities((prev) => [activity, ...prev]);
+		// Apply the route's hex tiles and edges to the in-memory map state
+		if (isH3Available() && selectedRoute.hexTiles.length > 0) {
+			dispatch(startRun());
+			dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
+			// Apply enclosed tiles so the map rebuild produces the correct terrain
+			const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
+			if (enclosed.length > 0) {
+				dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
+			}
+			// Record hex-to-hex transitions so walk path spokes are drawn
+			const hexTilesOrdered = activity.hexTilesOrdered ?? selectedRoute.hexTiles;
+			const edges = computeEdgesFromHexTiles(hexTilesOrdered);
+			if (edges.length > 0) {
+				dispatch(addWalkedEdges(edges));
+			}
+			// Record red-line edges using the activity's already-computed
+			// red-line route points (synthesized in handleSave).
+			const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
+			if (edgesRedLine.length > 0) {
+				dispatch(addWalkedEdgesRedLine(edgesRedLine));
+			}
+		}
+		closeManualModal();
+		router.push(`/activities/${activity.id}`);
+	}, [dispatch, router, closeManualModal]);
+
 	const openManualActivityModal = useCallback(() => {
 		if (routes.length === 0) {
 			showAlert('Keine Routen', 'Erstelle zuerst eine Route, bevor du eine manuelle Aktivität hinzufügen kannst.');
@@ -706,39 +744,7 @@ export default function ActivitiesScreen() {
 							children: (
 								<ManualActivityDurationContent
 									route={selectedRoute}
-									onSave={(activity) => {
-										saveActivity(activity);
-										// Add activity ID to route.activityIds
-										const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
-										const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
-										saveRoute(updatedRoute);
-										setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
-										setActivities((prev) => [activity, ...prev]);
-										// Apply the route's hex tiles and edges to the in-memory map state
-										if (isH3Available() && selectedRoute.hexTiles.length > 0) {
-											dispatch(startRun());
-											dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
-											// Apply enclosed tiles so the map rebuild produces the correct terrain
-											const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
-											if (enclosed.length > 0) {
-												dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
-											}
-											// Record hex-to-hex transitions so walk path spokes are drawn
-											const hexTilesOrdered = activity.hexTilesOrdered ?? selectedRoute.hexTiles;
-											const edges = computeEdgesFromHexTiles(hexTilesOrdered);
-											if (edges.length > 0) {
-												dispatch(addWalkedEdges(edges));
-											}
-											// Record red-line edges using the activity's already-computed
-											// red-line route points (synthesized in handleSave).
-											const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
-											if (edgesRedLine.length > 0) {
-												dispatch(addWalkedEdgesRedLine(edgesRedLine));
-											}
-										}
-										closeManualModal();
-										router.push(`/activities/${activity.id}`);
-									}}
+									onSave={(activity) => handleManualActivitySave(activity, selectedRoute)}
 									onClose={closeManualModal}
 									theme={theme}
 								/>

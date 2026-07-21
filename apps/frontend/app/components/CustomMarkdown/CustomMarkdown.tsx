@@ -10,164 +10,165 @@ import { useTheme } from '@/hooks/useTheme';
 import { StringHelper } from 'repo-depkit-common';
 import { resolveLocationHref } from '@/helper/MarkdownLinkHelper';
 
+// Regex patterns for different content types
+const CONTENT_PATTERNS = {
+	email: /\[([^\]]+)]\((mailto:[^)]+)\)/,
+	location: /\[([^\]]+)]\(((?:geo|maps):[^)]+)\)/i,
+	link: /\[([^\]]+)]\((https?:\/\/[^)]+)\)/,
+	image: /!\[([^\]]*)]\(([^)]+)\)/,
+	heading: /^#{1,3}\s*(.*)$/,
+};
+
+// Process markdown content into a structured format
+const processMarkdownContent = (lines: string[]) => {
+	const result: any[] = [];
+	const stack: Array<{ level: number; items: any[] }> = [{ level: 0, items: result }];
+	let currentParagraph: Array<{ text: string; indent: number }> = [];
+
+	const flushTextContent = () => {
+		if (currentParagraph.length) {
+			const minIndent = Math.min(...currentParagraph.map(item => item.indent));
+			const textContent = currentParagraph.map(item => item.text).join('\n');
+			stack.at(-1)!.items.push({
+				type: 'text',
+				content: textContent,
+				indent: Number.isFinite(minIndent) ? minIndent : 0,
+			});
+			currentParagraph = [];
+		}
+	};
+
+	for (let i = 0; i < lines.length; i += 1) {
+		const line = lines[i];
+		const normalizedLine = StringHelper.replaceAllLiteralWithOptions({ str: line, find: '\t', replace: '    ' });
+		const indentLength = normalizedLine.match(/^\s*/)?.[0].length ?? 0;
+		const trimmedLine = line.trim();
+
+		const headingMatch = CONTENT_PATTERNS.heading.exec(trimmedLine);
+		if (headingMatch) {
+			flushTextContent();
+
+			const level = headingMatch[0].match(/#/g)?.length || 1;
+			const headerText = headingMatch[1].trim();
+
+			if (level === 1) {
+				while (stack.length > 1) {
+					stack.pop();
+				}
+
+				stack.at(-1)!.items.push({
+					type: 'heading',
+					content: headerText,
+					level,
+				});
+				continue;
+			}
+
+			while (stack.length > 1 && stack.at(-1)!.level >= level) {
+				stack.pop();
+			}
+
+			let startCollapsed = false;
+			for (let lookahead = i + 1; lookahead < lines.length; lookahead += 1) {
+				const lookLine = lines[lookahead];
+				if (lookLine.trim() === '') {
+					continue;
+				}
+				const lookNormalized = StringHelper.replaceAllLiteralWithOptions({ str: lookLine, find: '\t', replace: '    ' });
+				const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
+				startCollapsed = lookIndent > 0;
+				break;
+			}
+
+			const newSection = {
+				type: 'collapsible',
+				header: headerText,
+				items: [],
+				level,
+				startCollapsed,
+			};
+
+			stack.at(-1)!.items.push(newSection);
+			stack.push({ level, items: newSection.items });
+			continue;
+		}
+
+		if (trimmedLine === '') {
+			flushTextContent();
+			stack.at(-1)!.items.push({ type: 'emptyLine' });
+			continue;
+		}
+
+		const trimmedForMatch = trimmedLine;
+
+		if (CONTENT_PATTERNS.image.test(trimmedForMatch)) {
+			flushTextContent();
+			const match = CONTENT_PATTERNS.image.exec(trimmedForMatch);
+			stack.at(-1)!.items.push({
+				type: 'image',
+				altText: match?.[1] || '',
+				url: match?.[2] || '',
+				indent: indentLength,
+			});
+			continue;
+		}
+
+		if (CONTENT_PATTERNS.email.test(trimmedForMatch)) {
+			flushTextContent();
+			const match = CONTENT_PATTERNS.email.exec(trimmedForMatch);
+			stack.at(-1)!.items.push({
+				type: 'email',
+				displayText: match?.[1],
+				email: match?.[2],
+				indent: indentLength,
+			});
+			continue;
+		}
+
+		if (CONTENT_PATTERNS.location.test(trimmedForMatch)) {
+			flushTextContent();
+			const match = CONTENT_PATTERNS.location.exec(trimmedForMatch);
+			stack.at(-1)!.items.push({
+				type: 'location',
+				displayText: match?.[1],
+				url: match?.[2],
+				indent: indentLength,
+			});
+			continue;
+		}
+
+		if (CONTENT_PATTERNS.link.test(trimmedForMatch)) {
+			flushTextContent();
+			const match = CONTENT_PATTERNS.link.exec(trimmedForMatch);
+			stack.at(-1)!.items.push({
+				type: 'link',
+				displayText: match?.[1],
+				url: match?.[2],
+				indent: indentLength,
+			});
+			continue;
+		}
+
+		currentParagraph.push({
+			text: trimmedLine,
+			indent: indentLength,
+		});
+	}
+
+	flushTextContent();
+	return result;
+};
+
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
 	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 
 	const getContent = () => {
-		// Regex patterns for different content types
-		const contentPatterns = {
-			email: /\[([^\]]+)]\((mailto:[^)]+)\)/,
-			location: /\[([^\]]+)]\(((?:geo|maps):[^)]+)\)/i,
-			link: /\[([^\]]+)]\((https?:\/\/[^)]+)\)/,
-			image: /!\[([^\]]*)]\(([^)]+)\)/,
-			heading: /^#{1,3}\s*(.*)$/,
-		};
-
 		if (content) {
 			const rawText = content;
 			const lines = rawText.split('\n');
 
 			const contrastColor = myContrastColor(backgroundColor || primaryColor, theme, mode === 'dark');
-			// Process content into a structured format
-			const processContent = (lines: string[]) => {
-				const result: any[] = [];
-				const stack: Array<{ level: number; items: any[] }> = [{ level: 0, items: result }];
-				let currentParagraph: Array<{ text: string; indent: number }> = [];
-
-				const flushTextContent = () => {
-					if (currentParagraph.length) {
-						const minIndent = Math.min(...currentParagraph.map(item => item.indent));
-						const textContent = currentParagraph.map(item => item.text).join('\n');
-						stack.at(-1)!.items.push({
-							type: 'text',
-							content: textContent,
-							indent: Number.isFinite(minIndent) ? minIndent : 0,
-						});
-						currentParagraph = [];
-					}
-				};
-
-				for (let i = 0; i < lines.length; i += 1) {
-					const line = lines[i];
-					const normalizedLine = StringHelper.replaceAllLiteralWithOptions({ str: line, find: '\t', replace: '    ' });
-					const indentLength = normalizedLine.match(/^\s*/)?.[0].length ?? 0;
-					const trimmedLine = line.trim();
-
-					const headingMatch = contentPatterns.heading.exec(trimmedLine);
-					if (headingMatch) {
-						flushTextContent();
-
-						const level = headingMatch[0].match(/#/g)?.length || 1;
-						const headerText = headingMatch[1].trim();
-
-						if (level === 1) {
-							while (stack.length > 1) {
-								stack.pop();
-							}
-
-							stack.at(-1)!.items.push({
-								type: 'heading',
-								content: headerText,
-								level,
-							});
-							continue;
-						}
-
-						while (stack.length > 1 && stack.at(-1)!.level >= level) {
-							stack.pop();
-						}
-
-						let startCollapsed = false;
-						for (let lookahead = i + 1; lookahead < lines.length; lookahead += 1) {
-							const lookLine = lines[lookahead];
-							if (lookLine.trim() === '') {
-								continue;
-							}
-							const lookNormalized = StringHelper.replaceAllLiteralWithOptions({ str: lookLine, find: '\t', replace: '    ' });
-							const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
-							startCollapsed = lookIndent > 0;
-							break;
-						}
-
-						const newSection = {
-							type: 'collapsible',
-							header: headerText,
-							items: [],
-							level,
-							startCollapsed,
-						};
-
-						stack.at(-1)!.items.push(newSection);
-						stack.push({ level, items: newSection.items });
-						continue;
-					}
-
-					if (trimmedLine === '') {
-						flushTextContent();
-						stack.at(-1)!.items.push({ type: 'emptyLine' });
-						continue;
-					}
-
-					const trimmedForMatch = trimmedLine;
-
-					if (contentPatterns.image.test(trimmedForMatch)) {
-						flushTextContent();
-						const match = contentPatterns.image.exec(trimmedForMatch);
-						stack.at(-1)!.items.push({
-							type: 'image',
-							altText: match?.[1] || '',
-							url: match?.[2] || '',
-							indent: indentLength,
-						});
-						continue;
-					}
-
-					if (contentPatterns.email.test(trimmedForMatch)) {
-						flushTextContent();
-						const match = contentPatterns.email.exec(trimmedForMatch);
-						stack.at(-1)!.items.push({
-							type: 'email',
-							displayText: match?.[1],
-							email: match?.[2],
-							indent: indentLength,
-						});
-						continue;
-					}
-
-					if (contentPatterns.location.test(trimmedForMatch)) {
-						flushTextContent();
-						const match = contentPatterns.location.exec(trimmedForMatch);
-						stack.at(-1)!.items.push({
-							type: 'location',
-							displayText: match?.[1],
-							url: match?.[2],
-							indent: indentLength,
-						});
-						continue;
-					}
-
-					if (contentPatterns.link.test(trimmedForMatch)) {
-						flushTextContent();
-						const match = contentPatterns.link.exec(trimmedForMatch);
-						stack.at(-1)!.items.push({
-							type: 'link',
-							displayText: match?.[1],
-							url: match?.[2],
-							indent: indentLength,
-						});
-						continue;
-					}
-
-					currentParagraph.push({
-						text: trimmedLine,
-						indent: indentLength,
-					});
-				}
-
-				flushTextContent();
-				return result;
-			};
 
 			const calculateMarginLeft = (level: number, indent = 0) => level * 16 + indent * 4;
 
@@ -320,7 +321,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 				return items.map((item, index) => renderContentItem(item, level, index));
 			};
 
-			const hierarchicalContent = processContent(lines);
+			const hierarchicalContent = processMarkdownContent(lines);
 			return <View style={{ paddingBottom: 20 }}>{renderContent(hierarchicalContent)}</View>;
 		}
 
