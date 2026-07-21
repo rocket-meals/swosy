@@ -84,14 +84,14 @@ Maintainability-Issues weiter", ist genau dieser Ablauf gemeint.
 
 Neu abgearbeitete Typen bitte hier ergänzen.
 
-**Übersprungen (Stand 2026-07-21, individuelle Refactorings statt mechanischer Fixes):**
+**Noch offen (Stand 2026-07-21, brauchen individuelle Refactorings statt mechanischer Fixes):**
 „Cognitive Complexity" (109x), „Move this component definition out of the parent
 component" (97x), „Array index in keys" (60x, braucht stabile IDs), TODO-Kommentare
 (39x), Funktions-Verschachtelung (35x), Exception-Handling (23x), „Default parameters
 should be last" (20x, ändert Aufrufer), `await` auf Non-Promise (16x, Prüfung pro
 Stelle nötig), Parameter-Reihenfolge (16x, ausschließlich `hashHelper.ts` — Reihenfolge
 könnte algorithmisch beabsichtigt sein, braucht manuelle Prüfung).
-Diese Typen in kleinen, thematisch gruppierten PRs separat angehen.
+Diese Typen in kleinen, thematisch gruppierten PRs angehen.
 
 ## Hinweise
 
