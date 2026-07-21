@@ -10,9 +10,9 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { Platform } from 'react-native';
 import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
-const extractRawExpoToken = (token: string | null) => {
+export const extractRawExpoToken = (token: string | null) => {
 	if (!token) return null;
-	const m = /\[(.+?)\]/.exec(String(token));
+	const m = /\[([^\]]{1,200})\]/.exec(String(token));
 	return m ? m[1] : token;
 };
 

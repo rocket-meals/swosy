@@ -37,7 +37,7 @@ export class FoodWebParserAachenParseHtml {
 
     const paragraphText = paragraph.text().trim();
     // extract all codes and descriptions from the paragraph text
-    const regex = /\(([^)]+)\)\s*([^,(]+)/g;
+    const regex = /\(([^)]{1,20})\)\s{0,10}([^,(]{1,200})/g;
     let match;
     while ((match = regex.exec(paragraphText)) !== null) {
       const code = match[1]!.trim(); // e.g. "A", "A1", "1"

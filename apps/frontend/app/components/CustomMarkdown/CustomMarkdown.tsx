@@ -11,12 +11,12 @@ import { StringHelper } from 'repo-depkit-common';
 import { resolveLocationHref } from '@/helper/MarkdownLinkHelper';
 
 // Regex patterns for different content types
-const CONTENT_PATTERNS = {
-	email: /\[([^\]]+)]\((mailto:[^)]+)\)/,
-	location: /\[([^\]]+)]\(((?:geo|maps):[^)]+)\)/i,
-	link: /\[([^\]]+)]\((https?:\/\/[^)]+)\)/,
+export const CONTENT_PATTERNS = {
+	email: /\[([^\]]{1,500})]\((mailto:[^)]{1,2000})\)/,
+	location: /\[([^\]]{1,500})]\(((?:geo|maps):[^)]{1,2000})\)/i,
+	link: /\[([^\]]{1,500})]\((https?:\/\/[^)]{1,2000})\)/,
 	image: /!\[([^\]]*)]\(([^)]+)\)/,
-	heading: /^#{1,3}\s*(.*)$/,
+	heading: /^#{1,3}\s{0,20}(.{0,5000})$/,
 };
 
 // Flush the buffered paragraph lines into the current stack frame's items.

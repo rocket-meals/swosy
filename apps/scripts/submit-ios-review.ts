@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
+import { base64url } from './base64url';
 
 const API_BASE = 'https://api.appstoreconnect.apple.com/v1';
 
@@ -20,11 +21,6 @@ type JsonApiDocument = {
   data?: JsonApiResource | JsonApiResource[];
   included?: JsonApiResource[];
 };
-
-function base64url(input: Buffer | string): string {
-  const buffer = typeof input === 'string' ? Buffer.from(input) : input;
-  return buffer.toString('base64').replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
-}
 
 function createAppStoreConnectToken(keyId: string, issuerId: string, privateKeyPath: string): string {
   const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
