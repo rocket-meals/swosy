@@ -12,7 +12,7 @@ const DIRECTUS_COLLECTION_PREFIX = 'directus_';
  * Special field types in Directus that hold a reference to a single file or
  * a many-to-many files relationship.
  */
-const FILE_FIELD_SPECIALS = ['file', 'files'];
+const FILE_FIELD_SPECIALS = new Set(['file', 'files']);
 
 /**
  * Register filter hooks that convert base64 data-URI values into uploaded
@@ -65,7 +65,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(
 
       for (const field of fields) {
         const special: string[] = field?.meta?.special ?? [];
-        const hasFileSpecial = special.some(s => FILE_FIELD_SPECIALS.includes(s));
+        const hasFileSpecial = special.some(s => FILE_FIELD_SPECIALS.has(s));
         if (hasFileSpecial) {
           registerBase64FilterHook(registerFunctions, apiContext, collectionName, field.field);
         }

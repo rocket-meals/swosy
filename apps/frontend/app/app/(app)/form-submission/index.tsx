@@ -750,12 +750,12 @@ const Index = () => {
 				} else if (custom_type === 'value_files') {
 					if (Array.isArray(value) && value.length > 0) {
 						const newFiles = value.filter((file: any) => !file?.edit);
-						const existingFileIds = value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean);
+						const existingFileIds = new Set(value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean));
 
 						// Detect deleted relations by comparing current files with original answer files
 						const originalValueFiles: any[] = (answer as any).value_files || [];
 						const deletedRelationIds = originalValueFiles
-							.filter((orig: any) => orig?.directus_files_id && !existingFileIds.includes(orig.directus_files_id))
+							.filter((orig: any) => orig?.directus_files_id && !existingFileIds.has(orig.directus_files_id))
 							.map((orig: any) => orig.id)
 							.filter(Boolean);
 

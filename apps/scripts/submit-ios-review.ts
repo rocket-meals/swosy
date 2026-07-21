@@ -4,10 +4,10 @@ import * as fs from 'node:fs';
 const API_BASE = 'https://api.appstoreconnect.apple.com/v1';
 
 // https://developer.apple.com/documentation/appstoreconnectapi/appstoreversionstate
-const SUBMITTABLE_APP_VERSION_STATES = ['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'INVALID_BINARY'];
+const SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'INVALID_BINARY']);
 
 // https://developer.apple.com/documentation/appstoreconnectapi/reviewsubmission
-const NON_TERMINAL_REVIEW_SUBMISSION_STATES = ['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'UNRESOLVED_ISSUES', 'CANCELING', 'COMPLETING'];
+const NON_TERMINAL_REVIEW_SUBMISSION_STATES = new Set(['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'UNRESOLVED_ISSUES', 'CANCELING', 'COMPLETING']);
 
 type JsonApiResource = {
   type: string;
@@ -23,7 +23,7 @@ type JsonApiDocument = {
 
 function base64url(input: Buffer | string): string {
   const buffer = typeof input === 'string' ? Buffer.from(input) : input;
-  return buffer.toString('base64').replaceAll(/\+/g, '-').replaceAll(/\//g, '_').replace(/=+$/, '');
+  return buffer.toString('base64').replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
 }
 
 function createAppStoreConnectToken(keyId: string, issuerId: string, privateKeyPath: string): string {
@@ -131,7 +131,7 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
   const exactMatch = versions.find(v => v.attributes?.versionString === versionString);
   if (exactMatch) {
     const state = exactMatch.attributes?.appStoreState as string;
-    if (!SUBMITTABLE_APP_VERSION_STATES.includes(state)) {
+    if (!SUBMITTABLE_APP_VERSION_STATES.has(state)) {
       throw new Error(
         `App Store Version ${versionString} existiert bereits mit Status "${state}" und kann nicht automatisch eingereicht werden. Bitte manuell in App Store Connect prüfen.`
       );
@@ -139,7 +139,7 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
     return exactMatch.id;
   }
 
-  const editableVersion = versions.find(v => SUBMITTABLE_APP_VERSION_STATES.includes(v.attributes?.appStoreState as string));
+  const editableVersion = versions.find(v => SUBMITTABLE_APP_VERSION_STATES.has(v.attributes?.appStoreState as string));
   if (editableVersion) {
     console.log(`   Benenne vorhandene Entwurfsversion "${editableVersion.attributes?.versionString}" (${editableVersion.id}) zu "${versionString}" um ...`);
     await ascRequest(token, 'PATCH', `/appStoreVersions/${editableVersion.id}`, {
@@ -213,7 +213,7 @@ async function findReusableReviewSubmission(token: string, appId: string): Promi
   const result = await ascRequest(token, 'GET', `/reviewSubmissions?${query}`);
   const submissions = asArray(result.data);
 
-  const active = submissions.find(submission => NON_TERMINAL_REVIEW_SUBMISSION_STATES.includes(submission.attributes?.state as string));
+  const active = submissions.find(submission => NON_TERMINAL_REVIEW_SUBMISSION_STATES.has(submission.attributes?.state as string));
   if (!active) return undefined;
 
   const state = active.attributes?.state as string;

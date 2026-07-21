@@ -87,7 +87,7 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] =
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
 
-const GPS_PRESET_SECONDS = [1, 5, 15];
+const GPS_PRESET_SECONDS = new Set([1, 5, 15]);
 
 const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[] = [
 	{ id: 1, label: '1s', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
@@ -96,7 +96,7 @@ const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[]
 ];
 
 function gpsIntervalLabel(seconds: number): string {
-	if (GPS_PRESET_SECONDS.includes(seconds)) return `${seconds}s`;
+	if (GPS_PRESET_SECONDS.has(seconds)) return `${seconds}s`;
 	return `Custom (${seconds}s)`;
 }
 
@@ -125,7 +125,7 @@ function GpsIntervalContent({
 	selectedSeconds: number;
 	onSelect: (seconds: number) => void;
 }>) {
-	const isPreset = GPS_PRESET_SECONDS.includes(selectedSeconds);
+	const isPreset = GPS_PRESET_SECONDS.has(selectedSeconds);
 
 	return (
 		<>
