@@ -15,7 +15,7 @@ import {
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteAllActivities, loadActivities, saveActivity } from '../../helpers/ActivityStorage';
+import { deleteAllActivities, loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available } from '../../helpers/H3Helper';
 import {
@@ -305,6 +305,47 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 	}
 }
 
+/**
+ * Migrate a single saved activity so it has up-to-date `computed` enclosed-tile
+ * data, deriving it from the recorded route when missing, and persist the
+ * activity if anything changed. Mutates `activity` in place (matching the
+ * existing migration behaviour) and saves it via `saveActivity`.
+ */
+async function migrateActivityEnclosedTiles(activity: SavedActivity): Promise<void> {
+	let updated = false;
+	let enclosedTiles: string[] =
+		activity.computed?.enclosedHexTiles ??
+		activity.enclosedHexTiles ??
+		activity.hexTilesEnclosed ??
+		[];
+	if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+		const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+		enclosedTiles = findEnclosedCellsFromHexTiles(
+			buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+			h3Res,
+		);
+	}
+	if (!activity.computed) {
+		activity.computed = computeActivityData(activity, enclosedTiles);
+		activity.enclosedTileCount ??= enclosedTiles.length;
+		updated = true;
+	} else if (
+		!Array.isArray(activity.computed.enclosedHexTiles) ||
+		(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+	) {
+		activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+		activity.enclosedTileCount ??= enclosedTiles.length;
+		updated = true;
+	}
+	if (updated) {
+		try {
+			await saveActivity(activity);
+		} catch (err) {
+			console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
+		}
+	}
+}
+
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
@@ -551,38 +592,7 @@ export default function SettingsScreen() {
 						}
 
 						for (const activity of allActivities) {
-							let updated = false;
-							let enclosedTiles: string[] =
-								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
-							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
-								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-								enclosedTiles = findEnclosedCellsFromHexTiles(
-									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
-									h3Res,
-								);
-							}
-							if (!activity.computed) {
-								activity.computed = computeActivityData(activity, enclosedTiles);
-								activity.enclosedTileCount ??= enclosedTiles.length;
-								updated = true;
-							} else if (
-								!Array.isArray(activity.computed.enclosedHexTiles) ||
-								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
-							) {
-								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
-								activity.enclosedTileCount ??= enclosedTiles.length;
-								updated = true;
-							}
-							if (updated) {
-								try {
-									await saveActivity(activity);
-								} catch (err) {
-									console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
-								}
-							}
+							await migrateActivityEnclosedTiles(activity);
 						}
 
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);

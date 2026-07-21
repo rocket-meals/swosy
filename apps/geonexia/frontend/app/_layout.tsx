@@ -22,6 +22,7 @@ import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechS
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
 import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
 import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
+import type { PlayerInformation } from '../helpers/PlayerInformationStorage';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWalkedEdgesRedLine, loadDevWalkedEdgesRedLine, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesRedLine, saveDevWalkedEdgesRedLine, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
@@ -406,6 +407,59 @@ async function applyForestBillboardsForUncachedTiles(records: Record<string, any
 	}
 }
 
+/**
+ * If the stored world-building ID is stale (player is in/was in a different
+ * world than the one the persisted hex tile state was built for), rebuild the
+ * hex tile map from all saved activities and persist/dispatch the rebuilt
+ * state. Returns `true` if the rebuild path fully handled the state (caller
+ * should stop and not fall through to dispatching the existing persisted
+ * state), `false` otherwise (no rebuild needed/possible).
+ */
+async function rebuildWorldFromActivitiesIfStale(
+	storedBuildingId: number | null,
+	isDevMode: boolean,
+	playerInfo: PlayerInformation,
+): Promise<boolean> {
+	if (storedBuildingId === WORLD_BUILDING_ID || !isH3Available()) return false;
+
+	try {
+		const allActivities = await loadActivities();
+		if (allActivities.length > 0) {
+			const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+			const hexTileFeatureCache = await loadHexTileFeatureCache();
+			const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
+			const routes = await loadRoutes();
+			applyRouteBenches(rebuiltRecords, sorted, routes);
+			if (isDevMode) {
+				saveDevHexTileState(rebuiltRecords);
+				saveDevWalkedEdges(rebuiltEdges);
+				saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				saveDevWorldBuildingId(WORLD_BUILDING_ID);
+			} else {
+				saveHexTileState(rebuiltRecords);
+				saveWalkedEdges(rebuiltEdges);
+				saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				saveWorldBuildingId(WORLD_BUILDING_ID);
+			}
+			store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
+			// Fire-and-forget: fetch features for enclosed tiles
+			// that are not yet in the feature cache, then apply forest trees.
+			void applyForestBillboardsForUncachedTiles(rebuiltRecords, hexTileFeatureCache);
+			return true;
+		}
+	} catch (err) {
+		console.warn('[Layout] Failed to rebuild world from activities:', err);
+	}
+	// No activities or rebuild failed – still update the stored ID so we
+	// don't attempt a rebuild on every subsequent launch.
+	if (isDevMode) {
+		saveDevWorldBuildingId(WORLD_BUILDING_ID);
+	} else {
+		saveWorldBuildingId(WORLD_BUILDING_ID);
+	}
+	return false;
+}
+
 export default function Layout() {
 	useEffect(() => {
 		(async () => {
@@ -420,43 +474,7 @@ export default function Layout() {
 
 			store.dispatch(loadPersistedPlayerInformation(playerInfo));
 
-			if (storedBuildingId !== WORLD_BUILDING_ID && isH3Available()) {
-				try {
-					const allActivities = await loadActivities();
-					if (allActivities.length > 0) {
-						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
-						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
-						const routes = await loadRoutes();
-						applyRouteBenches(rebuiltRecords, sorted, routes);
-						if (isDevMode) {
-							saveDevHexTileState(rebuiltRecords);
-							saveDevWalkedEdges(rebuiltEdges);
-							saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
-							saveDevWorldBuildingId(WORLD_BUILDING_ID);
-						} else {
-							saveHexTileState(rebuiltRecords);
-							saveWalkedEdges(rebuiltEdges);
-							saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
-							saveWorldBuildingId(WORLD_BUILDING_ID);
-						}
-						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
-						// Fire-and-forget: fetch features for enclosed tiles
-						// that are not yet in the feature cache, then apply forest trees.
-						void applyForestBillboardsForUncachedTiles(rebuiltRecords, hexTileFeatureCache);
-						return;
-					}
-				} catch (err) {
-					console.warn('[Layout] Failed to rebuild world from activities:', err);
-				}
-				// No activities or rebuild failed – still update the stored ID so we
-				// don't attempt a rebuild on every subsequent launch.
-				if (isDevMode) {
-					saveDevWorldBuildingId(WORLD_BUILDING_ID);
-				} else {
-					saveWorldBuildingId(WORLD_BUILDING_ID);
-				}
-			}
+			if (await rebuildWorldFromActivitiesIfStale(storedBuildingId, isDevMode, playerInfo)) return;
 
 			store.dispatch(setDevMode({ isDevMode, records, walkedEdges, walkedEdgesRedLine }));
 			// Fire-and-forget: apply forest trees to enclosed tiles that are

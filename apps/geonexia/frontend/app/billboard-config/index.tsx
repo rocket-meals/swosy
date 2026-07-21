@@ -34,6 +34,30 @@ function clampAnchor(value: number): number {
 	return Math.max(0, Math.min(1, Math.round(value * ANCHOR_PRECISION) / ANCHOR_PRECISION));
 }
 
+/** Compute the anchor-dot and crosshair overlay position for a billboard preview. */
+function computeBillboardAnchorOverlay(
+	anchorX: number,
+	anchorY: number,
+	dims: { width: number; height: number } | undefined,
+): { dotLeft: number; dotTop: number; crosshairLeft: number; crosshairTop: number } {
+	const bounds = dims
+		? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
+		: null;
+	const dotLeft = bounds
+		? bounds.offsetX + anchorX * bounds.displayW - ANCHOR_DOT_SIZE / 2
+		: anchorX * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+	const dotTop = bounds
+		? bounds.offsetY + anchorY * bounds.displayH - ANCHOR_DOT_SIZE / 2
+		: anchorY * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+	const crosshairLeft = bounds
+		? bounds.offsetX + anchorX * bounds.displayW
+		: anchorX * PREVIEW_HEIGHT;
+	const crosshairTop = bounds
+		? bounds.offsetY + anchorY * bounds.displayH
+		: anchorY * PREVIEW_HEIGHT;
+	return { dotLeft, dotTop, crosshairLeft, crosshairTop };
+}
+
 /** Compute the actual rendered image bounds inside a contain-mode container. */
 function getContainBounds(
 	naturalWidth: number,
@@ -49,24 +73,36 @@ function getContainBounds(
 	return { displayW, displayH, offsetX, offsetY };
 }
 
+/** Collect all billboard keys referenced by a hex tile record (new map field + legacy field). */
+function collectBillboardKeysFromRecord(record: HexTileRecord): string[] {
+	const billboardKeys: string[] = [];
+	if (record.billboards) {
+		for (const bk of Object.values(record.billboards)) {
+			if (bk) billboardKeys.push(bk);
+		}
+	} else if (record.billboard) {
+		billboardKeys.push(record.billboard);
+	}
+	return billboardKeys;
+}
+
+/** Parse the object-sprite index out of a billboard key like "objects:3", or null if it isn't one. */
+function parseObjectSpriteIndex(bk: string): number | null {
+	const colonIdx = bk.indexOf(':');
+	if (colonIdx < 0 || bk.slice(0, colonIdx) !== 'objects') return null;
+	const idx = Number.parseInt(bk.slice(colonIdx + 1), 10);
+	if (!OBJECT_SPRITES[idx]) return null;
+	return idx;
+}
+
 /** Count of placed billboards per sprite index (from hex tile records). */
 function buildPlacedCountMap(records: Record<string, HexTileRecord>): Map<number, number> {
 	const countMap = new Map<number, number>();
 	for (const record of Object.values(records)) {
-		// Collect all billboard keys from the new billboards map and the legacy field.
-		const billboardKeys: string[] = [];
-		if (record.billboards) {
-			for (const bk of Object.values(record.billboards)) {
-				if (bk) billboardKeys.push(bk);
-			}
-		} else if (record.billboard) {
-			billboardKeys.push(record.billboard);
-		}
+		const billboardKeys = collectBillboardKeysFromRecord(record);
 		for (const bk of billboardKeys) {
-			const colonIdx = bk.indexOf(':');
-			if (colonIdx < 0 || bk.slice(0, colonIdx) !== 'objects') continue;
-			const idx = Number.parseInt(bk.slice(colonIdx + 1), 10);
-			if (!OBJECT_SPRITES[idx]) continue;
+			const idx = parseObjectSpriteIndex(bk);
+			if (idx === null) continue;
 			countMap.set(idx, (countMap.get(idx) ?? 0) + 1);
 		}
 	}
@@ -449,21 +485,7 @@ export default function BillboardConfigScreen() {
 				const dims = imageDims[spriteIndex];
 				const count = placedCountMap.get(spriteIndex) ?? 0;
 				// Compute actual image bounds within the square preview container for overlay positioning.
-				const bounds = dims
-					? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
-					: null;
-				const dotLeft = bounds
-					? bounds.offsetX + anchorX * bounds.displayW - ANCHOR_DOT_SIZE / 2
-					: anchorX * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
-				const dotTop = bounds
-					? bounds.offsetY + anchorY * bounds.displayH - ANCHOR_DOT_SIZE / 2
-					: anchorY * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
-				const crosshairLeft = bounds
-					? bounds.offsetX + anchorX * bounds.displayW
-					: anchorX * PREVIEW_HEIGHT;
-				const crosshairTop = bounds
-					? bounds.offsetY + anchorY * bounds.displayH
-					: anchorY * PREVIEW_HEIGHT;
+				const { dotLeft, dotTop, crosshairLeft, crosshairTop } = computeBillboardAnchorOverlay(anchorX, anchorY, dims);
 
 				return (
 					<>

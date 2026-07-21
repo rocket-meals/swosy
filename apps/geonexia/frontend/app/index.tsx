@@ -518,6 +518,29 @@ type WalkPathFeatureCollection = {
  * Each edge in `walkedEdges`/`walkedEdgesRedLine` is stored as "cellA:cellB" with
  * the lexicographically smaller index first.
  */
+/**
+ * Whether both endpoints of an edge (or their h10 parents, for red-line edges)
+ * are visible in the given viewport cell set.
+ */
+function isEdgeVisibleInViewport(
+	cellA: string,
+	cellB: string,
+	useRedLine: boolean | undefined,
+	viewportSet: Set<string>,
+	parentRes: number,
+): boolean {
+	if (useRedLine) {
+		try {
+			const parentA = cellToParent(cellA, parentRes);
+			const parentB = cellToParent(cellB, parentRes);
+			return viewportSet.has(parentA) && viewportSet.has(parentB);
+		} catch {
+			return false;
+		}
+	}
+	return viewportSet.has(cellA) && viewportSet.has(cellB);
+}
+
 function buildWalkPathGeoJson(
 	viewportCells: string[],
 	walkedEdges: string[],
@@ -539,17 +562,7 @@ function buildWalkPathGeoJson(
 		const cellB = edge.slice(colonIdx + 1);
 		// Only draw if both endpoints (or their h10 parents for red-line edges) are
 		// visible in the current viewport.
-		if (useRedLine) {
-			try {
-				const parentA = cellToParent(cellA, parentRes);
-				const parentB = cellToParent(cellB, parentRes);
-				if (!viewportSet.has(parentA) || !viewportSet.has(parentB)) continue;
-			} catch {
-				continue;
-			}
-		} else if (!viewportSet.has(cellA) || !viewportSet.has(cellB)) {
-			continue;
-		}
+		if (!isEdgeVisibleInViewport(cellA, cellB, useRedLine, viewportSet, parentRes)) continue;
 		try {
 			const [aLat, aLng] = cellToLatLng(cellA);
 			const [bLat, bLng] = cellToLatLng(cellB);
@@ -1973,6 +1986,42 @@ const hexPickerStyles = StyleSheet.create({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Build the stat rows shown for a hex tile in `HexTileInfoContent`: base H3/record
+ * stats plus, if the cell has a resolvable parent, its parent-cell rows appended.
+ */
+function buildHexTileInfoRows(
+	h3Index: string,
+	record: HexTileRecord | null,
+	parentInfo: { parentIndex: string; childNumber: number | null; totalChildren: number } | null,
+): { label: string; value: string }[] {
+	let walkedOnValue = '⬜ No';
+	if (record) {
+		walkedOnValue = record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)';
+	}
+
+	const parentRows: { label: string; value: string }[] = [];
+	if (parentInfo) {
+		const childNumberValue = parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—';
+		parentRows.push(
+			{ label: 'Parent H3', value: parentInfo.parentIndex },
+			{ label: 'Nr. im Parent', value: childNumberValue },
+		);
+	}
+
+	return [
+		{ label: 'H3 Index', value: h3Index },
+		{ label: 'Level', value: record ? String(record.level) : '0' },
+		{ label: 'Walked On', value: walkedOnValue },
+		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
+		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
+		{ label: 'Avenue Count', value: record ? String(record.avenueCount) : '0' },
+		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
+		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
+		...parentRows,
+	];
+}
+
 function HexTileInfoContent({ h3Index }: Readonly<{ h3Index: string }>) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -2024,31 +2073,7 @@ function HexTileInfoContent({ h3Index }: Readonly<{ h3Index: string }>) {
 		};
 	}, [h3Index]);
 
-	let walkedOnValue = '⬜ No';
-	if (record) {
-		walkedOnValue = record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)';
-	}
-
-	const parentRows: { label: string; value: string }[] = [];
-	if (parentInfo) {
-		const childNumberValue = parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—';
-		parentRows.push(
-			{ label: 'Parent H3', value: parentInfo.parentIndex },
-			{ label: 'Nr. im Parent', value: childNumberValue },
-		);
-	}
-
-	const infoRows: { label: string; value: string }[] = [
-		{ label: 'H3 Index', value: h3Index },
-		{ label: 'Level', value: record ? String(record.level) : '0' },
-		{ label: 'Walked On', value: walkedOnValue },
-		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
-		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
-		{ label: 'Avenue Count', value: record ? String(record.avenueCount) : '0' },
-		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
-		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
-		...parentRows,
-	];
+	const infoRows = buildHexTileInfoRows(h3Index, record, parentInfo);
 
 	const openTileSelection = useCallback(() => {
 		showModal({
@@ -2580,6 +2605,73 @@ function MapSearchModalContent({ availableKeys }: Readonly<{ availableKeys: stri
  * @returns A new `RoutePoint[]` array containing the original points plus
  *          synthetic points for the gap, or `null` if reconstruction is not possible.
  */
+/**
+ * Resolve hex-center coordinates for each gap tile and the cumulative
+ * great-circle distance along that path, starting from `startLat`/`startLng`.
+ */
+function computeGapTileCoordsAndDistance(
+	gapTiles: string[],
+	startLat: number,
+	startLng: number,
+): { gapCoords: Array<[number, number]>; totalGapKm: number } {
+	const gapCoords: Array<[number, number]> = [];
+	let prevLat = startLat;
+	let prevLng = startLng;
+	let totalGapKm = 0;
+	for (const hexId of gapTiles) {
+		const [lat, lng] = cellToLatLng(hexId);
+		gapCoords.push([lat, lng]);
+		if (lat !== 0 || lng !== 0) {
+			totalGapKm += haversineKm(prevLat, prevLng, lat, lng);
+			prevLat = lat;
+			prevLng = lng;
+		}
+	}
+	return { gapCoords, totalGapKm };
+}
+
+/**
+ * Generate synthetic GPS points along the gap tiles' hex-center coordinates,
+ * distributing the available time budget (`gapMs`) proportionally to distance
+ * so the last synthetic point lands exactly at the end of that budget.
+ */
+function buildSyntheticGapPoints(
+	gapTiles: string[],
+	gapCoords: Array<[number, number]>,
+	totalGapKm: number,
+	gapMs: number,
+	startLat: number,
+	startLng: number,
+	startTimestamp: number,
+	avgSpeedMs: number,
+): RoutePoint[] {
+	let prevLat = startLat;
+	let prevLng = startLng;
+	let currentTimestamp = startTimestamp;
+	const syntheticPoints: RoutePoint[] = [];
+
+	for (let i = 0; i < gapTiles.length; i++) {
+		const [lat, lng] = gapCoords[i];
+		if (lat === 0 && lng === 0) continue;
+		const segmentKm = haversineKm(prevLat, prevLng, lat, lng);
+		const segmentMs = totalGapKm > 0
+			? (segmentKm / totalGapKm) * gapMs
+			: gapMs / gapTiles.length;
+		currentTimestamp += segmentMs;
+		syntheticPoints.push({
+			lat,
+			lng,
+			altitude: null,
+			speed: avgSpeedMs, // m/s, as per the Location API convention
+			timestamp: currentTimestamp,
+			interpolated: true,
+		});
+		prevLat = lat;
+		prevLng = lng;
+	}
+	return syntheticPoints;
+}
+
 function reconstructInterruptedRoute(
 	snapshot: InterruptedRecordingSnapshot,
 	route: SavedRoute,
@@ -2630,19 +2722,7 @@ function reconstructInterruptedRoute(
 	// Pre-pass: resolve hex-center coordinates and total gap distance so the
 	// remaining time budget (lastRecordedPoint → nowMs) can be distributed
 	// proportionally to distance across the synthetic points.
-	const gapCoords: Array<[number, number]> = [];
-	let prevLat = lastRecordedPoint.lat;
-	let prevLng = lastRecordedPoint.lng;
-	let totalGapKm = 0;
-	for (const hexId of gapTiles) {
-		const [lat, lng] = cellToLatLng(hexId);
-		gapCoords.push([lat, lng]);
-		if (lat !== 0 || lng !== 0) {
-			totalGapKm += haversineKm(prevLat, prevLng, lat, lng);
-			prevLat = lat;
-			prevLng = lng;
-		}
-	}
+	const { gapCoords, totalGapKm } = computeGapTileCoordsAndDistance(gapTiles, lastRecordedPoint.lat, lastRecordedPoint.lng);
 
 	// Time budget available for the interpolated section.
 	const gapMs = nowMs - lastRecordedPoint.timestamp;
@@ -2650,32 +2730,16 @@ function reconstructInterruptedRoute(
 	// Generate interpolated GPS points along the gap tiles using their hex
 	// center coordinates. Each point is flagged as `interpolated: true` to
 	// indicate it was synthetically created to compensate for the GPS gap.
-	prevLat = lastRecordedPoint.lat;
-	prevLng = lastRecordedPoint.lng;
-	let currentTimestamp = lastRecordedPoint.timestamp;
-	const syntheticPoints: RoutePoint[] = [];
-
-	for (let i = 0; i < gapTiles.length; i++) {
-		const [lat, lng] = gapCoords[i];
-		if (lat === 0 && lng === 0) continue;
-		const segmentKm = haversineKm(prevLat, prevLng, lat, lng);
-		// Distribute timestamps proportionally to distance so the last synthetic
-		// point lands exactly at nowMs.
-		const segmentMs = totalGapKm > 0
-			? (segmentKm / totalGapKm) * gapMs
-			: gapMs / gapTiles.length;
-		currentTimestamp += segmentMs;
-		syntheticPoints.push({
-			lat,
-			lng,
-			altitude: null,
-			speed: avgSpeedMs, // m/s, as per the Location API convention
-			timestamp: currentTimestamp,
-			interpolated: true,
-		});
-		prevLat = lat;
-		prevLng = lng;
-	}
+	const syntheticPoints = buildSyntheticGapPoints(
+		gapTiles,
+		gapCoords,
+		totalGapKm,
+		gapMs,
+		lastRecordedPoint.lat,
+		lastRecordedPoint.lng,
+		lastRecordedPoint.timestamp,
+		avgSpeedMs,
+	);
 
 	return [...snapshot.routePoints, ...syntheticPoints];
 }

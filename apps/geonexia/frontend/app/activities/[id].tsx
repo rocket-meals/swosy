@@ -652,6 +652,28 @@ function buildActivityHexGeoJson(
 	};
 }
 
+/**
+ * Compute the lat/lng bounding box covering all boundary points of the given
+ * H3 cells, used to filter GPS points/roads/ways for test-case export.
+ */
+function computeSelectedHexTilesBounds(selectedHexIds: string[]): {
+	minLat: number;
+	maxLat: number;
+	minLng: number;
+	maxLng: number;
+} {
+	let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+	for (const h3Index of selectedHexIds) {
+		for (const [lat, lng] of cellToBoundary(h3Index)) {
+			if (lat < minLat) minLat = lat;
+			if (lat > maxLat) maxLat = lat;
+			if (lng < minLng) minLng = lng;
+			if (lng > maxLng) maxLng = lng;
+		}
+	}
+	return { minLat, maxLat, minLng, maxLng };
+}
+
 function ActivityDetailBackHeaderButton({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
 	return (
 		<TouchableOpacity
@@ -997,15 +1019,7 @@ export default function ActivityDetailScreen() {
 	const handleExportTestCase = useCallback(async () => {
 		if (!activity || selectedHexIds.length === 0) return;
 
-		let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
-		for (const h3Index of selectedHexIds) {
-			for (const [lat, lng] of cellToBoundary(h3Index)) {
-				if (lat < minLat) minLat = lat;
-				if (lat > maxLat) maxLat = lat;
-				if (lng < minLng) minLng = lng;
-				if (lng > maxLng) maxLng = lng;
-			}
-		}
+		const { minLat, maxLat, minLng, maxLng } = computeSelectedHexTilesBounds(selectedHexIds);
 		const inBounds = (lat: number, lng: number) => lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
 
 		const filteredRoutePoints = activity.routePoints.filter((p) => inBounds(p.lat, p.lng));
