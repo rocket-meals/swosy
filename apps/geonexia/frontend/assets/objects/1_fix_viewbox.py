@@ -168,7 +168,7 @@ def path_points(d: str) -> List[Tuple[float, float]]:
                 points.append((x, y))
                 cx, cy = x, y
             case 'a':
-                (rx, ry, xrot, laf, sf, dx, dy), i = _consume(tokens, 7, i)
+                (_, _, _, _, _, dx, dy), i = _consume(tokens, 7, i)
                 cx += dx; cy += dy
                 points.append((cx, cy))
 
