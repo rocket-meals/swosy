@@ -8,7 +8,6 @@ export class AvatarHelper {
    */
   static async deleteAvatarOfUser(myDatabaseHelper: MyDatabaseHelper, userId: string) {
     const database = myDatabaseHelper?.eventContext?.database || myDatabaseHelper?.apiContext.database;
-    // TODO: check if we can use instead of database the userService to handle/manipulate users
 
     const filesService = myDatabaseHelper.getFilesHelper();
     if (!userId) {

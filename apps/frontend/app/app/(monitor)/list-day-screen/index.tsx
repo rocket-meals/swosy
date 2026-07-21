@@ -466,8 +466,8 @@ const Index = () => {
 			foodList.forEach((food: any) => {
 				// Deduplicate marking IDs to prevent the same marking appearing twice
 				const markingIdsRaw = food?.markings?.map((mark: any) => mark.markings_id) || [];
-				const markingIds = [...new Set(markingIdsRaw)];
-				let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
+				const markingIds = new Set(markingIdsRaw);
+				let filteredMarkings = markings?.filter((mark: any) => markingIds.has(mark.id)) || [];
 
 				// Sort the filtered markings using sortMarkingsByGroup
 				filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);

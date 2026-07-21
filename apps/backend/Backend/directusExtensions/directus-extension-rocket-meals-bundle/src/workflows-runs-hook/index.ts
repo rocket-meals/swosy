@@ -320,7 +320,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     console.log('WorkflowRun created');
     if (input.state === undefined) {
       // default state is "running"
-      // TODO: Fetch database schema and look what the default value is
       input.state = WORKFLOW_RUN_STATE.RUNNING;
     }
 

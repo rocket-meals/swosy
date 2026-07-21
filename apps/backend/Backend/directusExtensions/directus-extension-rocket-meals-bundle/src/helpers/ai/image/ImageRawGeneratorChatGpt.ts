@@ -54,7 +54,6 @@ enum ChatGptImage_MODEL_DallE3_GenerationOptionImageSize {
 
 
 /**
- * TODO: Check prompt with: https://platform.openai.com/docs/guides/moderation omni-moderation model
  * Coole idee eigentlich
  */
 

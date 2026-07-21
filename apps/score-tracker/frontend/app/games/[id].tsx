@@ -226,7 +226,7 @@ function MatchParticipants({ players }: Readonly<{ players: GameHistoryPlayerEnt
 	);
 }
 
-function GameDetailBackButton({ color }: { color: string }) {
+function GameDetailBackButton({ color }: Readonly<{ color: string }>) {
 	return (
 		<TouchableOpacity
 			nativeID={ComponentIds.GAME_DETAIL_BACK_BUTTON}

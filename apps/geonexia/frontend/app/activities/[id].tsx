@@ -652,7 +652,7 @@ function buildActivityHexGeoJson(
 	};
 }
 
-function ActivityDetailBackHeaderButton({ color, onPress }: { color: string; onPress: () => void }) {
+function ActivityDetailBackHeaderButton({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
 	return (
 		<TouchableOpacity
 			onPress={onPress}

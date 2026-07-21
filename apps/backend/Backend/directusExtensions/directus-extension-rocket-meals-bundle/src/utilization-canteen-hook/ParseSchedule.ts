@@ -247,7 +247,6 @@ export class ParseSchedule {
 
   /**
    * Simple prediction for the utilization of a canteen, assuming the same utilization as last week
-   * TODO: Implement a more sophisticated prediction
    * @param utilization_group
    * @param cashregisters
    * @param canteen

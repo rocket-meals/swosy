@@ -24,7 +24,6 @@ export type CachedUserInformation = DatabaseTypes.DirectusUsers | undefined;
 // export function useCurrentUserRaw(): [CachedUserInformation | null | undefined, (newValue: CachedUserInformation) => void] {
 // 	const [cachedUser, setCachedUser] = useCachedUserRaw()
 // 	const [currentUser, setCurrentUser] = useSyncState<CachedUserInformation>(NonPersistentStore.currentUser)
-// 	// TODO: Update cached user
 // 	const setUserWithCache = (newValue: any) => {
 // 		setCurrentUser((currentValue) => {
 // 			return newValue
@@ -57,14 +56,12 @@ export function useIsCurrentUserAnonymous() {
 
 export function getAnonymousUser(): any {
 	return {
-		// TODO: Add some default values
 		id: null,
 	};
 }
 
 // export function useCurrentUser(): [DatabaseTypes.DirectusUsers | undefined, (newValue: any) => void] {
 // 	const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
-// 	// TODO: Update cached user
 // 	const setUserWithCache = (newValue: any) => {
 // 		setCurrentUserRaw(
 // 			{

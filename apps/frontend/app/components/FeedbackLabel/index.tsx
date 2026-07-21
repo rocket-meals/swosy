@@ -58,9 +58,9 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 		}
 		let likeStats = null;
 		if (isLike === true && like === true) {
-			likeStats = null;
+			// likeStats already null
 		} else if (isLike === false && like === false) {
-			likeStats = null;
+			// likeStats already null
 		} else {
 			likeStats = isLike;
 		}

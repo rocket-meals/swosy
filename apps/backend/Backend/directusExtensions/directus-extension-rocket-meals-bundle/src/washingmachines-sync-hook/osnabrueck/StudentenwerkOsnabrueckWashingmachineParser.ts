@@ -33,8 +33,6 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
           date.setMinutes(date.getMinutes() + washer.expectedFreeTimeInMinutes);
           date_finished = DateHelper.formatDateToIso8601WithoutTimezone(date);
           //console.log("Washer " + washer.terminalNr + " " + washer.automateNr + " expected free time: " + washer.expectedFreeTimeInMinutes + " Date finished: " + date_finished);
-        } else {
-          date_finished = null;
         }
 
         let washingmachine: WashingmachinesTypeForParserOmmited = {

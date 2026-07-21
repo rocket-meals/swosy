@@ -87,7 +87,6 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
     let accountability: Accountability = {
       role: role_admin_id,
       user: adminUser.id,
-      // TODO: Test if this works without the roles array
       // @ts-ignore
       roles: [role_admin_id],
       admin: true,

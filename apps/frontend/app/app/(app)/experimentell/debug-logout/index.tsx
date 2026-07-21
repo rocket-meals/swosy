@@ -93,9 +93,9 @@ const DebugLogout = () => {
 	];
 
 	const myTestLogout = async () => {
-		const exclude = ['CLEAR_ANONYMOUSLY', 'ON_LOGOUT', 'RESET_STORE'];
+		const exclude = new Set(['CLEAR_ANONYMOUSLY', 'ON_LOGOUT', 'RESET_STORE']);
 		for (const step of steps) {
-			if (exclude.includes(step.label)) continue;
+			if (exclude.has(step.label)) continue;
 			const result = step.action() as any;
 			if (result && typeof result === 'object' && typeof result.then === 'function') {
 				await result;

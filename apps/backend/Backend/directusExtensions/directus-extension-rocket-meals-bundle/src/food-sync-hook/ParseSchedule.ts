@@ -218,8 +218,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for food categories here, similar to markings
     }
   }
 
@@ -253,8 +251,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for foodoffer categories here, similar to markings
     }
   }
 
@@ -842,7 +838,7 @@ export class ParseSchedule {
         await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
         await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
 
-        await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
+        await this.updateFoodBasicFields(basicFoodData);
         await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
 
         await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
@@ -1181,7 +1177,9 @@ export class ParseSchedule {
   }
 
   async updateMarkingTranslations(marking: DatabaseTypes.Markings, markingJSON: MarkingsTypeForParser) {
-    await TranslationHelper.updateItemTranslations<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(marking, {
+    let itemService = this.context.myDatabaseHelper.getMarkingsHelper();
+    let markingWithTranslations = await itemService.readOneWithTranslations(marking.id);
+    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(markingWithTranslations, {
       translationsFromParsing: markingJSON.translations,
       items_primary_field_in_translation_table: 'markings_id',
       itemsTablename: CollectionNames.MARKINGS,

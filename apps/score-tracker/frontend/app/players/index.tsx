@@ -277,7 +277,7 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 
 // ─── Players (friends) screen ─────────────────────────────────────────────────
 
-function PlayersHeaderRight({ color, onPress }: { color: string; onPress: () => void }) {
+function PlayersHeaderRight({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
 	return (
 		<TouchableOpacity
 			nativeID={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}

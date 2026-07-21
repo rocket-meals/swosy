@@ -61,8 +61,52 @@ bzw. dem nächsten SonarCloud-Scan. Details zu bereits gefixten Typen stehen in
 der Git-/PR-Historie.
 
 **Brauchen individuelle Refactorings statt mechanischer Fixes (Stand 2026-07-21):**
-„Cognitive Complexity" (109x), TODO-Kommentare (39x).
-Diese Typen in kleinen, thematisch gruppierten PRs angehen.
+„Cognitive Complexity" (109x). Diesen Typ in kleinen, thematisch gruppierten PRs angehen.
+
+„Move this component definition out of the parent component" ist trotz der
+weiter unten dokumentierten Abarbeitung erneut mit 67 Vorkommen im aktuellen
+CSV vertreten (Stand 2026-07-21). Vermutlich sind seit der letzten
+Abarbeitung neue Stellen (oder durch Codeänderungen verschobene Zeilen)
+hinzugekommen — vor der nächsten Runde die aktuelle CSV neu durchsehen statt
+sich auf die alte "komplett abgearbeitet"-Notiz weiter unten zu verlassen.
+
+TODO-Kommentare (36x, Regel „Complete the task associated to this TODO
+comment") werden **nicht mehr hier gefixt**, sondern in Tracking-Issue
+[#3984](https://github.com/rocket-meals/rocket-meals/issues/3984) verschoben:
+Für jede der 36 Stellen enthält das Issue einen GitHub-Permalink (Datei +
+Zeile zum Stand des Commits, an dem die TODOs entfernt wurden) sowie den
+ursprünglichen Kommentartext. Die TODO-Zeilen selbst wurden aus dem Code
+entfernt (nur der Kommentar, keine Logik geändert) — das eigentliche
+Nachholen der Arbeit passiert über das Issue, nicht über diesen Workflow.
+
+Am 2026-07-21 zusätzlich mechanisch abgearbeitet:
+- **„Mark the props of the component as read-only"** (7x): die betroffenen
+  Komponenten-Parameter wurden in `Readonly<{...}>` gewrappt (bestehende
+  Konvention im Repo für Inline-Prop-Typen).
+- **„`X` should be a `Set`..."** (9x) und **„This pattern can be replaced
+  with 'X'"** (10x, redundante Ein-Zeichen-Regex-Zeichenklassen): Arrays, die
+  nur für Existenzprüfungen genutzt werden, wurden zu `Set` +
+  `.has(...)` konvertiert (jede Fundstelle wurde vorher auf inkompatible
+  Array-only-Nutzung wie Indexzugriff/`.length`/Sortierung geprüft); die
+  Regex-Zeichenklassen (`[/]`, `["]`, `[+]`, …) wurden durch das
+  literale/escapte Zeichen ersetzt.
+- **„Review this redundant assignment..."** (9x): 8 von 9 Stellen waren
+  echte tote Zuweisungen (Variable wird auf allen Pfaden mit demselben Wert
+  belegt, den sie schon hält) und wurden entfernt.
+  `packages/common-ui/src/components/CardWithText/index.tsx:112` wurde
+  **bewusst unverändert gelassen** — dort wird `resolvedAspectRatio` aus dem
+  `aspectRatio`-Prop (beliebige Zahl, nicht nur der Default `1`) neu belegt;
+  die Werte stimmen nur zufällig für quadratische Verhältnisse überein,
+  Entfernen würde individuelle Aspect-Ratios stillschweigend brechen.
+- **„'X' is deprecated"** (3 von 18x): nur die mechanisch sicheren Stellen —
+  `hashHelper.ts` (`.substr` → `.slice`) sowie die zwei Aufrufstellen von
+  `TranslationHelper.updateItemTranslations` mit veralteter Signatur
+  (`food-sync-hook/ParseSchedule.ts:1184`,
+  `news-sync-hook/NewsParseSchedule.ts:72`). Die übrigen 15 Stellen
+  (Cesium-Deprecations `hexTilesEnclosed`/`billboardsFlat`/
+  `billboardAnchorColor` in Geonexia, `CollectionHelper`-Methoden,
+  `newWindow.document.write`) brauchen fachliche Migration und wurden
+  bewusst nicht angefasst.
 
 „Exception-Handling" (23x) ist als erster dieser schweren Fälle abgearbeitet: alle
 gemeldeten Catch-Blöcke (leer, nur Kommentar, oder Rethrow ohne Original-Error)

@@ -54,7 +54,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     const schema = await getSchema();
     let mailService: MailServiceType = new MailService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
     return await mailService.send(options);
@@ -70,7 +70,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
 
   // filter all update actions where from value running to start want to change, since this is not allowed
   filter<Partial<DatabaseTypes.Mails>>(CollectionNames.MAILS + '.items.create', async (input: Partial<DatabaseTypes.Mails>, meta, eventContext) => {
-    // TODO: Maybe outsource this into a workflow instead of a filter
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const mailsHelper = myDatabaseHelper.getMailsHelper();
 
@@ -180,7 +179,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
             let name = direcuts_file.filename_disk || direcuts_file.filename_download || 'file';
             let shareLink = await filesHelper.createDirectusFilesShareLink({
               directus_files_id: directus_files_id,
-              // TODO: hier noch die Mail_id mitgeben, geht aber nur nach dem erstellen der mail oder im workflow
               name: name,
             });
             if (shareLink) {

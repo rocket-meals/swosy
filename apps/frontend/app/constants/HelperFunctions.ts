@@ -42,7 +42,6 @@ export function isOnGithubPages() {
 	return false;
 }
 
-// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
 export function reloadAndRemoveParamsForGithubPages() {
 	window.location.replace(window.location.origin + window.location.pathname);
 }

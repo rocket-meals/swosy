@@ -587,13 +587,13 @@ function GameHeaderRight({
 	isEditingPlayers,
 	onToggleEditingPlayers,
 	onOpenSettings,
-}: {
+}: Readonly<{
 	color: string;
 	isActive: boolean;
 	isEditingPlayers: boolean;
 	onToggleEditingPlayers: () => void;
 	onOpenSettings: () => void;
-}) {
+}>) {
 	return (
 		<View style={styles.headerButtons}>
 			{isActive && (
