@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-21T21:49:20.330Z",
+  "report_timestamp": "2026-07-21T23:05:14.224Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,35 +8,35 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 106,
-          "average": 1.5534987041836357,
-          "amountSavedValuesForKeys": 4196,
+          "average": 1.5533013648100331,
+          "amountSavedValuesForKeys": 4211,
           "amountKeys": 29
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 75,
-          "average": 2.319268635724332,
-          "amountSavedValuesForKeys": 1649,
+          "average": 2.313202247191011,
+          "amountSavedValuesForKeys": 1647,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 106,
-          "average": 1.5680119581464873,
-          "amountSavedValuesForKeys": 4196,
+          "average": 1.567758749069248,
+          "amountSavedValuesForKeys": 4211,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4670,
-        "detection_time_ms": 94,
+        "ast_generation_time_ms": 4757,
+        "detection_time_ms": 93,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 134.4,
-          "os_memory_free": 14887563264,
+          "os_uptime": 153.82,
+          "os_memory_free": 14894809088,
           "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -46,27 +46,27 @@
     },
     "amount_classes_or_interfaces_with_data_clumps": 25,
     "amount_files_with_data_clumps": 21,
-    "amount_methods_with_data_clumps": 11,
+    "amount_methods_with_data_clumps": 10,
     "fields_to_fields_data_clump": 28,
     "parameters_to_fields_data_clump": 1,
-    "parameters_to_parameters_data_clump": 14,
-    "amount_data_clumps": 43
+    "parameters_to_parameters_data_clump": 10,
+    "amount_data_clumps": 39
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5cd669a80140f431ea155e91f6253fead983749e",
-    "project_commit_hash": "5cd669a80140f431ea155e91f6253fead983749e",
+    "project_version": "a92a25e5c1a7e1e96ba8f64fd61543d19d4a36b3",
+    "project_commit_hash": "a92a25e5c1a7e1e96ba8f64fd61543d19d4a36b3",
     "project_tag": null,
-    "project_commit_date": "1784670438",
+    "project_commit_date": "1784674982",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 569,
-    "number_of_classes_or_interfaces": 1214,
-    "number_of_methods": 1460,
-    "number_of_data_fields": 4196,
-    "number_of_method_parameters": 1649
+    "number_of_classes_or_interfaces": 1218,
+    "number_of_methods": 1462,
+    "number_of_data_fields": 4211,
+    "number_of_method_parameters": 1647
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -626,216 +626,94 @@
         "cluster_type": 1
       }
     },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslatorcontextremainingCapacity": {
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-foodfieldsToTranslatecontext": {
       "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslatorcontextremainingCapacity",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-foodfieldsToTranslatecontext",
       "probability": 1,
       "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
       "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
       "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "fixTranslationsForFood",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood",
+      "from_method_name": "logSourceFieldValues",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues",
       "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
       "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
       "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "translateFieldsForTranslation",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
+      "to_method_name": "saveTranslatedItemIfNeeded",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded",
       "data_clump_type": "parameters_to_parameters_data_clump",
       "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/food",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/food": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/food",
           "name": "food",
           "type": "DatabaseTypes.Foods",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food",
             "name": "food",
             "type": "DatabaseTypes.Foods",
             "modifiers": [],
             "position": {
-              "startLine": 384,
+              "startLine": 493,
               "startColumn": 5,
-              "endLine": 384,
+              "endLine": 493,
               "endColumn": 30
             }
           },
           "position": {
-            "startLine": 209,
+            "startLine": 203,
             "startColumn": 5,
-            "endLine": 209,
+            "endLine": 203,
             "endColumn": 30
           }
         },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/translator": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/translator",
-          "name": "translator",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator\").Translator",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/fieldsToTranslate": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/fieldsToTranslate",
+          "name": "fieldsToTranslate",
+          "type": "string[]",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translator",
-            "name": "translator",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator\").Translator",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/fieldsToTranslate",
+            "name": "fieldsToTranslate",
+            "type": "string[]",
             "modifiers": [],
             "position": {
-              "startLine": 390,
+              "startLine": 496,
               "startColumn": 5,
-              "endLine": 390,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 210,
-            "startColumn": 5,
-            "endLine": 210,
-            "endColumn": 27
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 391,
-              "startColumn": 5,
-              "endLine": 391,
+              "endLine": 496,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 212,
+            "startLine": 205,
             "startColumn": 5,
-            "endLine": 212,
+            "endLine": 205,
             "endColumn": 32
           }
         },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/remainingCapacity": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/remainingCapacity",
-          "name": "remainingCapacity",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/remainingCapacity",
-            "name": "remainingCapacity",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 393,
-              "startColumn": 5,
-              "endLine": 393,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 213,
-            "startColumn": 5,
-            "endLine": 213,
-            "endColumn": 30
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslationcontext": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslationcontext",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "resolveTranslationLanguageCode",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "translateFieldsForTranslation",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/food",
-          "name": "food",
-          "type": "DatabaseTypes.Foods",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
-            "name": "food",
-            "type": "DatabaseTypes.Foods",
-            "modifiers": [],
-            "position": {
-              "startLine": 384,
-              "startColumn": 5,
-              "endLine": 384,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 350,
-            "startColumn": 5,
-            "endLine": 350,
-            "endColumn": 30
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/translation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/translation",
-          "name": "translation",
-          "type": "DatabaseTypes.FoodsTranslations",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation",
-            "name": "translation",
-            "type": "DatabaseTypes.FoodsTranslations",
-            "modifiers": [],
-            "position": {
-              "startLine": 385,
-              "startColumn": 5,
-              "endLine": 385,
-              "endColumn": 49
-            }
-          },
-          "position": {
-            "startLine": 351,
-            "startColumn": 5,
-            "endLine": 351,
-            "endColumn": 49
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/context",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/context": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/context",
           "name": "context",
           "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context",
             "name": "context",
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 391,
+              "startLine": 498,
               "startColumn": 5,
-              "endLine": 391,
+              "endLine": 498,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 352,
+            "startLine": 206,
             "startColumn": 5,
-            "endLine": 352,
+            "endLine": 206,
             "endColumn": 32
           }
         }
@@ -873,16 +751,16 @@
             "type": "DatabaseTypes.Foods",
             "modifiers": [],
             "position": {
-              "startLine": 450,
+              "startLine": 493,
               "startColumn": 5,
-              "endLine": 450,
+              "endLine": 493,
               "endColumn": 30
             }
           },
           "position": {
-            "startLine": 350,
+            "startLine": 388,
             "startColumn": 5,
-            "endLine": 350,
+            "endLine": 388,
             "endColumn": 30
           }
         },
@@ -898,16 +776,16 @@
             "type": "DatabaseTypes.FoodsTranslations",
             "modifiers": [],
             "position": {
-              "startLine": 451,
+              "startLine": 494,
               "startColumn": 5,
-              "endLine": 451,
+              "endLine": 494,
               "endColumn": 49
             }
           },
           "position": {
-            "startLine": 351,
+            "startLine": 389,
             "startColumn": 5,
-            "endLine": 351,
+            "endLine": 389,
             "endColumn": 49
           }
         },
@@ -923,235 +801,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 455,
+              "startLine": 498,
               "startColumn": 5,
-              "endLine": 455,
+              "endLine": 498,
               "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 352,
-            "startColumn": 5,
-            "endLine": 352,
-            "endColumn": 32
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood-foodtranslatorcontextremainingCapacity": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood-foodtranslatorcontextremainingCapacity",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "translateFieldsForTranslation",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "fixTranslationsForFood",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
-          "name": "food",
-          "type": "DatabaseTypes.Foods",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/food",
-            "name": "food",
-            "type": "DatabaseTypes.Foods",
-            "modifiers": [],
-            "position": {
-              "startLine": 209,
-              "startColumn": 5,
-              "endLine": 209,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 384,
-            "startColumn": 5,
-            "endLine": 384,
-            "endColumn": 30
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translator": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translator",
-          "name": "translator",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator\").Translator",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/translator",
-            "name": "translator",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator\").Translator",
-            "modifiers": [],
-            "position": {
-              "startLine": 210,
-              "startColumn": 5,
-              "endLine": 210,
-              "endColumn": 27
             }
           },
           "position": {
             "startLine": 390,
             "startColumn": 5,
             "endLine": 390,
-            "endColumn": 27
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 212,
-              "startColumn": 5,
-              "endLine": 212,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 391,
-            "startColumn": 5,
-            "endLine": 391,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/remainingCapacity": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/remainingCapacity",
-          "name": "remainingCapacity",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/fixTranslationsForFood/parameter/remainingCapacity",
-            "name": "remainingCapacity",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 213,
-              "startColumn": 5,
-              "endLine": 213,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 393,
-            "startColumn": 5,
-            "endLine": 393,
-            "endColumn": 30
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode-foodtranslationcontext": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode-foodtranslationcontext",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "translateFieldsForTranslation",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "resolveTranslationLanguageCode",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
-          "name": "food",
-          "type": "DatabaseTypes.Foods",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/food",
-            "name": "food",
-            "type": "DatabaseTypes.Foods",
-            "modifiers": [],
-            "position": {
-              "startLine": 350,
-              "startColumn": 5,
-              "endLine": 350,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 384,
-            "startColumn": 5,
-            "endLine": 384,
-            "endColumn": 30
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation",
-          "name": "translation",
-          "type": "DatabaseTypes.FoodsTranslations",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/translation",
-            "name": "translation",
-            "type": "DatabaseTypes.FoodsTranslations",
-            "modifiers": [],
-            "position": {
-              "startLine": 351,
-              "startColumn": 5,
-              "endLine": 351,
-              "endColumn": 49
-            }
-          },
-          "position": {
-            "startLine": 385,
-            "startColumn": 5,
-            "endLine": 385,
-            "endColumn": 49
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/resolveTranslationLanguageCode/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 352,
-              "startColumn": 5,
-              "endLine": 352,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 391,
-            "startColumn": 5,
-            "endLine": 391,
             "endColumn": 32
           }
         }
@@ -1161,119 +820,94 @@
         "cluster_type": 1
       }
     },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-foodtranslationlanguageCodecontext": {
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues-foodfieldsToTranslatecontext": {
       "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-foodtranslationlanguageCodecontext",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues-foodfieldsToTranslatecontext",
       "probability": 1,
       "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
       "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
       "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "translateFieldsForTranslation",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
+      "from_method_name": "saveTranslatedItemIfNeeded",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded",
       "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
       "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
       "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "saveTranslatedItemIfNeeded",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded",
+      "to_method_name": "logSourceFieldValues",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues",
       "data_clump_type": "parameters_to_parameters_data_clump",
       "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food",
           "name": "food",
           "type": "DatabaseTypes.Foods",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/food",
             "name": "food",
             "type": "DatabaseTypes.Foods",
             "modifiers": [],
             "position": {
-              "startLine": 450,
+              "startLine": 203,
               "startColumn": 5,
-              "endLine": 450,
+              "endLine": 203,
               "endColumn": 30
             }
           },
           "position": {
-            "startLine": 384,
+            "startLine": 493,
             "startColumn": 5,
-            "endLine": 384,
+            "endLine": 493,
             "endColumn": 30
           }
         },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation",
-          "name": "translation",
-          "type": "DatabaseTypes.FoodsTranslations",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/fieldsToTranslate": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/fieldsToTranslate",
+          "name": "fieldsToTranslate",
+          "type": "string[]",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/translation",
-            "name": "translation",
-            "type": "DatabaseTypes.FoodsTranslations",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/fieldsToTranslate",
+            "name": "fieldsToTranslate",
+            "type": "string[]",
             "modifiers": [],
             "position": {
-              "startLine": 451,
+              "startLine": 205,
               "startColumn": 5,
-              "endLine": 451,
-              "endColumn": 49
+              "endLine": 205,
+              "endColumn": 32
             }
           },
           "position": {
-            "startLine": 385,
+            "startLine": 496,
             "startColumn": 5,
-            "endLine": 385,
-            "endColumn": 49
+            "endLine": 496,
+            "endColumn": 32
           }
         },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/languageCode": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/languageCode",
-          "name": "languageCode",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/languageCode",
-            "name": "languageCode",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 454,
-              "startColumn": 5,
-              "endLine": 454,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 388,
-            "startColumn": 5,
-            "endLine": 388,
-            "endColumn": 25
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context",
           "name": "context",
           "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context",
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/logSourceFieldValues/parameter/context",
             "name": "context",
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 455,
+              "startLine": 206,
               "startColumn": 5,
-              "endLine": 455,
+              "endLine": 206,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 391,
+            "startLine": 498,
             "startColumn": 5,
-            "endLine": 391,
+            "endLine": 498,
             "endColumn": 32
           }
         }
@@ -1311,16 +945,16 @@
             "type": "DatabaseTypes.Foods",
             "modifiers": [],
             "position": {
-              "startLine": 350,
+              "startLine": 388,
               "startColumn": 5,
-              "endLine": 350,
+              "endLine": 388,
               "endColumn": 30
             }
           },
           "position": {
-            "startLine": 450,
+            "startLine": 493,
             "startColumn": 5,
-            "endLine": 450,
+            "endLine": 493,
             "endColumn": 30
           }
         },
@@ -1336,16 +970,16 @@
             "type": "DatabaseTypes.FoodsTranslations",
             "modifiers": [],
             "position": {
-              "startLine": 351,
+              "startLine": 389,
               "startColumn": 5,
-              "endLine": 351,
+              "endLine": 389,
               "endColumn": 49
             }
           },
           "position": {
-            "startLine": 451,
+            "startLine": 494,
             "startColumn": 5,
-            "endLine": 451,
+            "endLine": 494,
             "endColumn": 49
           }
         },
@@ -1361,138 +995,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 352,
+              "startLine": 390,
               "startColumn": 5,
-              "endLine": 352,
+              "endLine": 390,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 455,
+            "startLine": 498,
             "startColumn": 5,
-            "endLine": 455,
-            "endColumn": 32
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslationlanguageCodecontext": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation-foodtranslationlanguageCodecontext",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "from_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "from_method_name": "saveTranslatedItemIfNeeded",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts",
-      "to_class_or_interface_name": "FoodsTranslationFixMissingWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow",
-      "to_method_name": "translateFieldsForTranslation",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/food",
-          "name": "food",
-          "type": "DatabaseTypes.Foods",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/food",
-            "name": "food",
-            "type": "DatabaseTypes.Foods",
-            "modifiers": [],
-            "position": {
-              "startLine": 384,
-              "startColumn": 5,
-              "endLine": 384,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 450,
-            "startColumn": 5,
-            "endLine": 450,
-            "endColumn": 30
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/translation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/translation",
-          "name": "translation",
-          "type": "DatabaseTypes.FoodsTranslations",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/translation",
-            "name": "translation",
-            "type": "DatabaseTypes.FoodsTranslations",
-            "modifiers": [],
-            "position": {
-              "startLine": 385,
-              "startColumn": 5,
-              "endLine": 385,
-              "endColumn": 49
-            }
-          },
-          "position": {
-            "startLine": 451,
-            "startColumn": 5,
-            "endLine": 451,
-            "endColumn": 49
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/languageCode": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/languageCode",
-          "name": "languageCode",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/languageCode",
-            "name": "languageCode",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 388,
-              "startColumn": 5,
-              "endLine": 388,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 454,
-            "startColumn": 5,
-            "endLine": 454,
-            "endColumn": 25
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/saveTranslatedItemIfNeeded/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/foods-translation-fix-missing-schedule/index.ts/class/FoodsTranslationFixMissingWorkflow/method/translateFieldsForTranslation/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 391,
-              "startColumn": 5,
-              "endLine": 391,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 455,
-            "startColumn": 5,
-            "endLine": 455,
+            "endLine": 498,
             "endColumn": 32
           }
         }
@@ -2162,9 +1674,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 2960,
+              "startLine": 2999,
               "startColumn": 2,
-              "endLine": 2960,
+              "endLine": 2999,
               "endColumn": 13
             }
           },
@@ -2187,9 +1699,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 2963,
+              "startLine": 3002,
               "startColumn": 2,
-              "endLine": 2963,
+              "endLine": 3002,
               "endColumn": 18
             }
           },
@@ -2212,9 +1724,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 2961,
+              "startLine": 3000,
               "startColumn": 2,
-              "endLine": 2961,
+              "endLine": 3000,
               "endColumn": 14
             }
           },
@@ -2363,9 +1875,9 @@
             }
           },
           "position": {
-            "startLine": 2960,
+            "startLine": 2999,
             "startColumn": 2,
-            "endLine": 2960,
+            "endLine": 2999,
             "endColumn": 13
           }
         },
@@ -2388,9 +1900,9 @@
             }
           },
           "position": {
-            "startLine": 2961,
+            "startLine": 3000,
             "startColumn": 2,
-            "endLine": 2961,
+            "endLine": 3000,
             "endColumn": 14
           }
         },
@@ -2413,9 +1925,9 @@
             }
           },
           "position": {
-            "startLine": 2963,
+            "startLine": 3002,
             "startColumn": 2,
-            "endLine": 2963,
+            "endLine": 3002,
             "endColumn": 18
           }
         }
