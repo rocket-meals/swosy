@@ -74,6 +74,29 @@ const DEFAULT_ITEMS: FeatureWishItem[] = [
 ];
 
 const STATUS_PUBLISHED = 'published';
+
+function applyLikeToggle(
+	id: string,
+	setLikedIds: React.Dispatch<React.SetStateAction<Set<string>>>,
+	setItems: React.Dispatch<React.SetStateAction<FeatureWishItem[]>>
+) {
+	setLikedIds(prev => {
+		const wasLiked = prev.has(id);
+		const next = new Set(prev);
+		if (wasLiked) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		setItems(prevItems =>
+			prevItems.map(item => {
+				if (item.id !== id) return item;
+				return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
+			})
+		);
+		return next;
+	});
+}
 const STATUS_DRAFT = 'draft';
 
 const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
@@ -123,22 +146,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	}, [items, activeFilter, searchText]);
 
 	const handleLike = useCallback((id: string) => {
-		setLikedIds((prev) => {
-			const wasLiked = prev.has(id);
-			const next = new Set(prev);
-			if (wasLiked) {
-				next.delete(id);
-			} else {
-				next.add(id);
-			}
-			setItems((prevItems) =>
-				prevItems.map((item) => {
-					if (item.id !== id) return item;
-					return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
-				})
-			);
-			return next;
-		});
+		applyLikeToggle(id, setLikedIds, setItems);
 	}, []);
 
 	const handleApprove = useCallback(

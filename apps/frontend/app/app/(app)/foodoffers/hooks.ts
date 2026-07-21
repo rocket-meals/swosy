@@ -116,6 +116,24 @@ export const useFoodOffersData = (
         return prefetchedFoodOffers[getCacheKey(canteenId, date)];
     }, [prefetchedFoodOffers]);
 
+    const prefetchNextDay = useCallback((canteenId: string, date: string) => {
+        const nextCacheKey = getCacheKey(canteenId, date);
+
+        // Check if already fetched or in progress to prevent duplicate calls
+        if (prefetchedKeys.current.has(nextCacheKey) || prefetchedFoodOffers[nextCacheKey]) return;
+
+        prefetchedKeys.current.add(nextCacheKey);
+        fetchFoodOffersByCanteen(canteenId, date)
+            .then(res => {
+                const offers = res?.data || [];
+                setPrefetchedFoodOffers(p => ({ ...p, [nextCacheKey]: offers }));
+            })
+            .catch(e => {
+                console.error('Error prefetching Food Offers:', e);
+                prefetchedKeys.current.delete(nextCacheKey); // Allow retry on error
+            });
+    }, [prefetchedFoodOffers]);
+
     const updateSort = useCallback((id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
         const { profile, languageCode } = stateRef.current;
         const state = store.getState() as RootState;
@@ -173,24 +191,10 @@ export const useFoodOffersData = (
         runAfterInteractions(() => {
             for (let i = 1; i <= 2; i++) {
                 const date = format(addDays(parseDateOnly(selectedDate), i), 'yyyy-MM-dd');
-                const nextCacheKey = getCacheKey(canteenId, date);
-                
-                // Check if already fetched or in progress to prevent duplicate calls
-                if (!prefetchedKeys.current.has(nextCacheKey) && !prefetchedFoodOffers[nextCacheKey]) {
-                    prefetchedKeys.current.add(nextCacheKey);
-                    fetchFoodOffersByCanteen(canteenId, date)
-                        .then(res => {
-                            const offers = res?.data || [];
-                            setPrefetchedFoodOffers(p => ({ ...p, [nextCacheKey]: offers }));
-                        })
-                        .catch(e => {
-                            console.error('Error prefetching Food Offers:', e);
-                            prefetchedKeys.current.delete(nextCacheKey); // Allow retry on error
-                        });
-                }
+                prefetchNextDay(canteenId, date);
             }
         });
-    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch, currentFoodOffers]);
+    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchNextDay, updateSort, sortBy, dispatch, currentFoodOffers]);
 
     const fetchCanteenLabels = useCallback(async () => {
         try {

@@ -150,6 +150,46 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 		openSheet();
 	};
 
+	const renderDayEvent = (event: EventTypes, eventIndex: number, dayEvents: EventTypes[]) => {
+		// Find overlapping events
+		const overlappingEvents = dayEvents.filter((e, i) => i !== eventIndex && new Date(`1970-01-01T${e.startTime}:00Z`).getTime() < new Date(`1970-01-01T${event.endTime}:00Z`).getTime() && new Date(`1970-01-01T${e.endTime}:00Z`).getTime() > new Date(`1970-01-01T${event.startTime}:00Z`).getTime());
+
+		// Calculate horizontal position and width
+		const overlapCount = overlappingEvents.length + 1; // Include the current event
+		const eventWidth = getColumnWidth() / overlapCount; // Divide width equally
+		const horizontalPosition = (eventIndex % overlapCount) * eventWidth; // Position side by side
+
+		return (
+			<CustomTooltip
+				key={event.id}
+				placement="top"
+				trigger={triggerProps => (
+					<TouchableOpacity
+						{...triggerProps}
+						style={{
+							...styles.slotEvent,
+							backgroundColor: event.color,
+							borderColor: event.color,
+							height: calculateHeight(event.startTime, event.endTime),
+							top: calculateTopPosition(event.startTime),
+							width: eventWidth - 4, // Add some spacing
+							left: horizontalPosition,
+						}}
+						onPress={() => handleUpdateEvent(event)}
+					>
+						<Text style={styles.eventText}>{event.title}</Text>
+					</TouchableOpacity>
+				)}
+			>
+				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+						{`${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`}
+					</TooltipText>
+				</TooltipContent>
+			</CustomTooltip>
+		);
+	};
+
 	const reorderedDays = useMemo(() => {
 		if (!days) return [];
 		const firstDayIndex = days.findIndex(day => day.id.toLocaleLowerCase() === firstDayOfTheWeek.id);
@@ -240,45 +280,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 								{events
 										?.filter(event => event?.day?.toLocaleLowerCase() === day.id) // Filter events for the current day
 										.sort((a, b) => new Date(`1970-01-01T${a.startTime}:00Z`).getTime() - new Date(`1970-01-01T${b.startTime}:00Z`).getTime()) // Sort events by start time
-										.map((event, eventIndex, dayEvents) => {
-											// Find overlapping events
-											const overlappingEvents = dayEvents.filter((e, i) => i !== eventIndex && new Date(`1970-01-01T${e.startTime}:00Z`).getTime() < new Date(`1970-01-01T${event.endTime}:00Z`).getTime() && new Date(`1970-01-01T${e.endTime}:00Z`).getTime() > new Date(`1970-01-01T${event.startTime}:00Z`).getTime());
-
-											// Calculate horizontal position and width
-											const overlapCount = overlappingEvents.length + 1; // Include the current event
-											const eventWidth = getColumnWidth() / overlapCount; // Divide width equally
-											const horizontalPosition = (eventIndex % overlapCount) * eventWidth; // Position side by side
-
-											return (
-												<CustomTooltip
-													key={event.id}
-													placement="top"
-													trigger={triggerProps => (
-														<TouchableOpacity
-															{...triggerProps}
-															style={{
-																...styles.slotEvent,
-																backgroundColor: event.color,
-																borderColor: event.color,
-																height: calculateHeight(event.startTime, event.endTime),
-																top: calculateTopPosition(event.startTime),
-																width: eventWidth - 4, // Add some spacing
-																left: horizontalPosition,
-															}}
-															onPress={() => handleUpdateEvent(event)}
-														>
-															<Text style={styles.eventText}>{event.title}</Text>
-														</TouchableOpacity>
-													)}
-												>
-													<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-														<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-															{`${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`}
-														</TooltipText>
-													</TooltipContent>
-												</CustomTooltip>
-											);
-										})}
+										.map(renderDayEvent)}
 							</View>
 						))}
 					</View>

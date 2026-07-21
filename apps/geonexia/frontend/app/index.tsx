@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainAssetEntry } from '../assets/terrainAssets';
 import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, getPentagons } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
@@ -122,6 +122,27 @@ function getListGroupPosition(index: number, length: number): 'top' | 'middle' |
 	if (index === 0) return 'top';
 	if (index === length - 1) return 'bottom';
 	return 'middle';
+}
+
+/**
+ * Renders the shared "terrain category -> entries" grid used by both the tile-image
+ * and tile-color pickers; each caller supplies its own per-entry row (selection state
+ * and onPress differ between the two pickers).
+ */
+function renderTerrainCategoryList(renderEntry: (entry: TerrainAssetEntry, position: 'top' | 'middle' | 'bottom' | 'single') => React.ReactNode) {
+	return (
+		<View style={{ paddingBottom: 20 }}>
+			{TERRAIN_CATEGORIES.map((cat) => {
+				const entries = TERRAIN_ASSETS[cat];
+				return (
+					<View key={cat}>
+						<SettingsListGroupTitle title={cat} />
+						{entries.map((entry, i) => renderEntry(entry, getListGroupPosition(i, entries.length)))}
+					</View>
+				);
+			})}
+		</View>
+	);
 }
 
 /** Locale-independent code unit comparison for deterministic string sorting. */
@@ -1933,38 +1954,23 @@ function HexTileInfoContent({ h3Index }: Readonly<{ h3Index: string }>) {
 		showModal({
 			title: '🌿 Select Tile Image',
 			onClose: closeModal,
-			children: (
-				<View style={{ paddingBottom: 20 }}>
-					{TERRAIN_CATEGORIES.map((cat) => {
-						const entries = TERRAIN_ASSETS[cat];
-						return (
-							<View key={cat}>
-								<SettingsListGroupTitle title={cat} />
-								{entries.map((entry, i) => {
-									const position = getListGroupPosition(i, entries.length);
-									return (
-										<SettingsListHexTile
-											key={entry.key}
-											tileImageKey={entry.key}
-											title={entry.key.split('/').pop() ?? entry.key}
-											isSelected={currentTileImage === entry.key}
-											selectionColor={PRIMARY_COLOR}
-											onPress={() => {
-												dispatch(setHexTileCustomization({
-													h3Index,
-													tileImage: currentTileImage === entry.key ? null : entry.key,
-												}));
-												closeModal();
-											}}
-											groupPosition={position}
-										/>
-									);
-								})}
-							</View>
-						);
-					})}
-				</View>
-			),
+			children: renderTerrainCategoryList((entry, position) => (
+				<SettingsListHexTile
+					key={entry.key}
+					tileImageKey={entry.key}
+					title={entry.key.split('/').pop() ?? entry.key}
+					isSelected={currentTileImage === entry.key}
+					selectionColor={PRIMARY_COLOR}
+					onPress={() => {
+						dispatch(setHexTileCustomization({
+							h3Index,
+							tileImage: currentTileImage === entry.key ? null : entry.key,
+						}));
+						closeModal();
+					}}
+					groupPosition={position}
+				/>
+			)),
 		});
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
@@ -2408,6 +2414,11 @@ const magnifyStyles = StyleSheet.create({
  * Converts a MapFeatureInfo into a display key used for search filtering.
  * Format: "class/subclass" when both are present, otherwise whichever is non-null.
  */
+function cellHasEnabledFeature(cell: string, cache: Map<string, MapFeatureInfo[]>, enabledKeys: string[]): boolean {
+	const features = cache.get(cell) ?? [];
+	return features.some((f) => enabledKeys.includes(featureToSearchKey(f)));
+}
+
 function featureToSearchKey(f: { class: string | null; subclass: string | null; layerId: string | null }): string {
 	const parts = [f.class, f.subclass].filter((v): v is string => v !== null && v.length > 0);
 	if (parts.length > 0) return parts.join('/');
@@ -3413,10 +3424,7 @@ export default function RecordScreen() {
 					}
 				}),
 			);
-			const matchingCells = cells.filter((cell) => {
-				const features = cache.get(cell) ?? [];
-				return features.some((f) => enabledKeys.includes(featureToSearchKey(f)));
-			});
+			const matchingCells = cells.filter((cell) => cellHasEnabledFeature(cell, cache, enabledKeys));
 			const highlightFeatures = matchingCells.map((h3Index) => {
 				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
 				return {
@@ -3956,35 +3964,20 @@ export default function RecordScreen() {
 				}
 				closeColoringModal();
 			},
-			children: (
-				<View style={{ paddingBottom: 20 }}>
-					{TERRAIN_CATEGORIES.map((cat) => {
-						const entries = TERRAIN_ASSETS[cat];
-						return (
-							<View key={cat}>
-								<SettingsListGroupTitle title={cat} />
-								{entries.map((entry, i) => {
-									const position = getListGroupPosition(i, entries.length);
-									return (
-										<SettingsListSelectOptionSingle
-											key={entry.key}
-											label={entry.key.split('/').pop() ?? entry.key}
-											isSelected={coloringTileImageRef.current === entry.key}
-											selectionColor={PRIMARY_COLOR}
-											onPress={() => {
-												coloringSelectionMadeRef.current = true;
-												setColoringTileImage(entry.key);
-												closeColoringModal();
-											}}
-											groupPosition={position}
-										/>
-									);
-								})}
-							</View>
-						);
-					})}
-				</View>
-			),
+			children: renderTerrainCategoryList((entry, position) => (
+				<SettingsListSelectOptionSingle
+					key={entry.key}
+					label={entry.key.split('/').pop() ?? entry.key}
+					isSelected={coloringTileImageRef.current === entry.key}
+					selectionColor={PRIMARY_COLOR}
+					onPress={() => {
+						coloringSelectionMadeRef.current = true;
+						setColoringTileImage(entry.key);
+						closeColoringModal();
+					}}
+					groupPosition={position}
+				/>
+			)),
 		});
 	}, [showColoringModal, closeColoringModal]);
 

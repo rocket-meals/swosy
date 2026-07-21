@@ -50,42 +50,44 @@ const FoodHeader = ({
     const imageRemoteUrl = useMemo(() => foodDetails?.image_remote_url || initialImageRemoteUrl, [foodDetails?.image_remote_url, initialImageRemoteUrl]);
     const imageAssetId = useMemo(() => foodDetails?.image || initialImageAssetId, [foodDetails?.image, initialImageAssetId]);
 
-    const renderRatingStars = useCallback(() => (
-        <View style={isWeb ? styles.stars : styles.mobileStars}>
-            {Array.from({ length: 5 }).map((_, index) => (
-                <React.Fragment key={index}>
-                    {isWeb ? (
-                        <CustomTooltip
-                            placement="top"
-                            trigger={(triggerProps) => (
-                                <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
-                                    <MaterialIcons
-                                        name={previousFeedback?.rating > index ? 'star' : 'star-border'}
-                                        size={22}
-                                        color={foodsAreaColor}
-                                    />
-                                </IconButton>
-                            )}
-                        >
-                            <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-                                <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-                                    {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
-                                </TooltipText>
-                            </TooltipContent>
-                        </CustomTooltip>
-                    ) : (
-                        <TouchableOpacity onPress={() => rateFood(index + 1)}>
+    const renderStarItem = useCallback((index: number) => (
+        <React.Fragment key={index}>
+            {isWeb ? (
+                <CustomTooltip
+                    placement="top"
+                    trigger={(triggerProps) => (
+                        <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
                             <MaterialIcons
                                 name={previousFeedback?.rating > index ? 'star' : 'star-border'}
-                                size={20}
+                                size={22}
                                 color={foodsAreaColor}
                             />
-                        </TouchableOpacity>
+                        </IconButton>
                     )}
-                </React.Fragment>
-            ))}
+                >
+                    <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+                        <TooltipText fontSize="$sm" color={theme.tooltip.text}>
+                            {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
+                        </TooltipText>
+                    </TooltipContent>
+                </CustomTooltip>
+            ) : (
+                <TouchableOpacity onPress={() => rateFood(index + 1)}>
+                    <MaterialIcons
+                        name={previousFeedback?.rating > index ? 'star' : 'star-border'}
+                        size={20}
+                        color={foodsAreaColor}
+                    />
+                </TouchableOpacity>
+            )}
+        </React.Fragment>
+    ), [previousFeedback?.rating, foodsAreaColor, rateFood, theme, translate]);
+
+    const renderRatingStars = useCallback(() => (
+        <View style={isWeb ? styles.stars : styles.mobileStars}>
+            {Array.from({ length: 5 }).map((_, index) => renderStarItem(index))}
         </View>
-    ), [isWeb, previousFeedback?.rating, foodsAreaColor, rateFood, theme, translate]);
+    ), [renderStarItem]);
 
     if (isWeb) {
         return (

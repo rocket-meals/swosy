@@ -679,6 +679,21 @@ export default function ActivityDetailScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
+
+	// Shared onDone handler for RouteAssignmentModalContent: applies the user's route
+	// choice, refreshes the assigned-route display and the saved-routes list, then closes.
+	const handleRouteAssignmentDone = useCallback((updated: SavedActivity) => {
+		setActivity(updated);
+		if (typeof updated.routeId === 'string') {
+			loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+		} else {
+			setAssignedRoute(updated.routeId === null ? null : undefined);
+		}
+		loadRoutes().then(setSavedRoutes).catch(() => {});
+		closeRouteModal();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	const isDebugMode = useDebugMode();
 	const { showAlert } = useGeonexiaAlert();
 	const { show: showDebugModal } = useMyScrollViewModal();
@@ -815,16 +830,7 @@ export default function ActivityDetailScreen() {
 								activity={a}
 								savedRoutes={routes}
 								bestMatch={bestMatch}
-								onDone={(updated) => {
-									setActivity(updated);
-									if (typeof updated.routeId === 'string') {
-										loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
-									} else {
-										setAssignedRoute(updated.routeId === null ? null : undefined);
-									}
-									loadRoutes().then(setSavedRoutes).catch(() => {});
-									closeRouteModal();
-								}}
+								onDone={handleRouteAssignmentDone}
 								theme={theme}
 							/>
 						),
@@ -1298,22 +1304,13 @@ export default function ActivityDetailScreen() {
 						activity={activity}
 						savedRoutes={routes}
 						bestMatch={bestMatch}
-						onDone={(updated) => {
-							setActivity(updated);
-							if (typeof updated.routeId === 'string') {
-								loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
-							} else {
-								setAssignedRoute(updated.routeId === null ? null : undefined);
-							}
-							loadRoutes().then(setSavedRoutes).catch(() => {});
-							closeRouteModal();
-						}}
+						onDone={handleRouteAssignmentDone}
 						theme={theme}
 					/>
 				),
 			});
 		}).catch(() => {});
-	}, [activity, showRouteModal, closeRouteModal, theme]);
+	}, [activity, showRouteModal, closeRouteModal, theme, handleRouteAssignmentDone]);
 
 	const handleFilterUnrealisticPoints = useCallback(() => {
 		if (!activity) return;
