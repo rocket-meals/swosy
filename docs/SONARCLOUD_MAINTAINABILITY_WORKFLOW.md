@@ -551,6 +551,314 @@ verifiziert (gleicher Fehler vor und nach dem Diff).
 insbesondere die großen React-Komponenten und `ActivityMapRebuildHelper.ts`/
 `geonexia/app/index.tsx` mit mehreren Funktionen > 80).
 
+## Am 2026-07-21 (fünfte Runde): Restfunde erneut geprüft + zweiter, größerer Cognitive-Complexity-Schwung
+
+Ausgangspunkt war die aktuelle CSV mit 165 Vorkommen (Stand des letzten
+CI-Scans): 101x „Cognitive Complexity", 16x Argument-Reihenfolge, 15x
+„Array index in keys", 12x „ist deprecated", 5x „unused local variable", 3x
+„not always return the same value", 3x „Signatur ... ist deprecated", 2x
+„node:buffer", 1x „negative index" sowie 1x „redundant assignment". Vor dem
+Fixen wurde jede der neun kleineren Kategorien (#2–#10) Stelle für Stelle neu
+geprüft, da mehrere frühere Runden bereits denselben Rest-Effekt hatten wie
+beim 67x wiederaufgetauchten „Move component"-Fund: Die CSV zeigt den Stand
+des letzten Scans, nicht den aktuellen Code. Ergebnis dieser Prüfung:
+
+**Tatsächlich neu gefixt (9 Stellen):**
+- **„Replace the unused local variable" (5x)**, `1_fix_viewbox.py:171`: der
+  `case 'a':`-Zweig (relativer Elliptic-Arc-Token, kleingeschrieben) war ein
+  zweiter, offenbar nachträglich ergänzter Arc-Fall neben dem bereits in
+  einer früheren Runde auf `_`-Platzhalter umgestellten `case 'A':`-Zweig
+  (Großbuchstabe, absolut) — `(rx, ry, xrot, laf, sf, dx, dy)` zu
+  `(_, _, _, _, _, dx, dy)` geändert (nur `dx`/`dy` werden tatsächlich
+  gebraucht); mehrfache `_` in einem Python-Tuple-Unpacking sind zulässig,
+  exakt wie im bereits vorhandenen `case 'A':`-Zweig.
+- **„Prefer negative index over length minus index" (1x)**,
+  `hashHelper.ts:71`: `wordToHexValue_temp.slice(wordToHexValue_temp.length -
+  2, wordToHexValue_temp.length)` zu `.slice(-2)` — `wordToHexValue_temp` hat
+  hier immer mindestens 2 Zeichen (`'0' + lByte.toString(16)`), identisches
+  Ergebnis. (Eine frühere Rundennotiz zu „`.slice(-2)` in `hashHelper.ts`"
+  bezog sich auf eine andere Stelle in derselben Datei und hatte diese
+  Fundstelle nicht mit abgedeckt — daher war sie weiterhin im CSV.)
+- **„Refactor this function to not always return the same value" (3x)**:
+  - `hex-tile-info/index.tsx` und `SpeechSettingsModal.tsx` (je 1x): beide
+    hatten am Ende der Screen-Komponente exakt denselben toten Rest-Code
+    `if (Platform.OS === 'web') return content; return content;` — beide
+    Zweige geben denselben Wert zurück, die Plattform-Prüfung hatte keinerlei
+    Wirkung mehr (vermutlich Überbleibsel einer früheren Web/Native-Unterscheidung,
+    die zusammengeführt wurde). Zu einem einzigen `return content;` vereinfacht;
+    dadurch wurde `Platform` in beiden Dateien ungenutzt und der Import entfernt.
+  - `foodoffers-components-hook/index.ts:10` (1x): der Delete-Filter-Hook
+    hatte einen frühen `return payloadModifiable;` bei ungültigem Payload und
+    denselben `return payloadModifiable;` erneut am Funktionsende — auf einen
+    einzigen `return`-Ausstiegspunkt umgestellt (die gesamte Delete-Logik läuft
+    jetzt in einem `if (junctionIds && ...)`-Block, danach ein einziges
+    `return payloadModifiable;`); Verhalten unverändert, der Hook gibt weiterhin
+    immer das unveränderte Payload zurück (reiner Passthrough-Filter mit
+    Seiteneffekt).
+
+**Erneut geprüft und weiterhin bewusst unverändert (49 Stellen, entsprechen
+exakt der bereits in früheren Runden dokumentierten Begründung):**
+- **„Arguments ... same names but not the same order" (16x)**,
+  durchgehend `hashHelper.ts:93-153` (die `_FF`/`_GG`/`_HH`/`_II`-MD5-Runden):
+  bereits vor der ersten dokumentierten Runde (Commit `eb72cb6`, vor den vier
+  im oberen Teil dieses Dokuments beschriebenen Runden) als False Positive
+  identifiziert und mit einem erklärenden `NOSONAR`-Kommentar versehen (die
+  `(a,b,c,d)`-Rotation ist die Standard-MD5-Rundenstruktur, kein
+  Vertauschungs-Bug). Kommentar ist weiterhin vorhanden, Code unverändert —
+  die 16 CSV-Einträge sind derselbe Stale-CSV-Effekt wie beim „Move
+  component"-Fund weiter oben.
+- **„Do not use Array index in keys" (15x)**: alle 15 Stellen einzeln erneut
+  geöffnet und geprüft — sie entsprechen exakt den bereits weiter oben
+  dokumentierten Fällen (Debug-Log-Anzeigen in `seaphara`,
+  `RateAppSettingsItem`, `3d-kyle-test`, `map/index.tsx`,
+  `expo-update-test`; statische Hexagon-Geometrie/Paginierung in
+  `onboarding` und geonexia `index.tsx`; das In-Place mutierte
+  `game-ideas`-Spielfeld; aus statischem Text abgeleitete Markdown-Zeilen in
+  `DataAccess.tsx` und `course-timetable/index.tsx`; die
+  Nur-Anhängen/Editieren-URL-Liste in `rss-feed-config/index.tsx`) —
+  weiterhin bewusst unverändert.
+- **„'X' is deprecated" (12x)**: `hexTilesEnclosed` (5x: `activities/[id].tsx`,
+  `settings/index.tsx` 2x, `activities/index.tsx`,
+  `ActivityMapRebuildHelper.ts`), `billboardsFlat` (4x) und
+  `billboardAnchorColor` (3x, beide in `hexTileSlice.ts`). Genauer geprüft als
+  in früheren Runden dokumentiert: es handelt sich nicht um Cesium-API-Deprecations,
+  sondern um **interne Legacy-Felder einer laufenden Datenmigration** —
+  `hexTilesEnclosed` ist das alte Feld, `enclosedHexTiles` das neue (siehe
+  `ActivityStorage.ts:125` und die Fallback-Kette
+  `a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []` in `activities/[id].tsx`);
+  `billboardsFlat`/`billboardAnchorColor` sind die Vorgängerfelder der neuen
+  `billboards`-Map in `hexTileSlice.ts`, inklusive expliziter Migrationslogik
+  beim ersten Schreibzugriff (`setBillboardAtAnchor`). Diese Felder werden für
+  Altbestände (bereits gespeicherte Aktivitäten/Kacheln ohne die neuen Felder)
+  weiterhin gebraucht — Entfernen ohne vollständige Datenmigration würde
+  Altbestände brechen. Bewusst unverändert, wie in früheren Runden.
+- **„Signatur ... ist deprecated" (3x)**: `CollectionHelper.getCollectionTypeAlias`/
+  `getCollectionPropertyDetails` (nur für Jest-Tests gedacht, siehe
+  bestehender `@deprecated`-Kommentar) und `newWindow.document.write` in
+  `list-week-screen/details/index.tsx` (Druckfenster-HTML, funktional korrekt,
+  Ersatz bräuchte eine größere Umstellung des Druckfenster-Mechanismus) —
+  beide bereits in früheren Runden dokumentiert, unverändert bestätigt.
+- **„Prefer `node:buffer` over `buffer`" (2x)**, `form-queue/index.tsx` und
+  `form-submission/index.tsx` (beide `apps/frontend`): weiterhin `from
+  'buffer'`, wie in Runde 3 begründet (Metro/Expo unterstützt das
+  `node:`-Schema nicht) — bestätigt, keine anderen (Backend-seitigen)
+  Vorkommen in der aktuellen CSV.
+- **„Review this redundant assignment" (1x)**, `CardWithText/index.tsx:112`:
+  weiterhin exakt derselbe Fall wie in der ersten Runde dokumentiert
+  (`resolvedAspectRatio` wird aus dem `aspectRatio`-Prop neu belegt, Entfernen
+  würde individuelle Aspect-Ratios brechen) — unverändert bestätigt.
+
+### Zweiter Cognitive-Complexity-Schwung (43 Funktionen, Komplexität 16–21)
+
+Nach den kleinen Fixes wurde der Cognitive-Complexity-Berg fortgesetzt,
+diesmal alle 43 CSV-Fundstellen mit einer gemeldeten Komplexität von 16 bis
+21 (die nächstniedrigeren nach der ersten Runde in der vorigen Sektion).
+Gleiche Methode wie beim ersten Schwung: pro Funktion ein bis zwei
+zusammenhängende innere Blöcke in benannte Hilfsfunktionen mit expliziten
+Parametern extrahiert (keine Closures), Kontrollfluss/Fachlogik unverändert.
+Aus Parallelisierungsgründen wurde die Arbeit auf fünf Bereiche aufgeteilt
+(Backend-Extension, zwei Frontend-Cluster, Geonexia, Score-Tracker/
+Common-UI); alle Diffs wurden im Anschluss vollständig gegengelesen.
+
+**Backend-Extension (6 Funktionen):**
+- `ParseSchedule.ts` (`food-sync-hook`, 2 Funktionen): die Delete-/Create-Liste
+  für `attribute_values` in `resolveAttributeValueIdsToDelete`/
+  `buildAttributeValuesToCreate` aufgeteilt (16→..); die Markierungs-Dict-
+  Erzeugung und -Anwendung in `resolveMarkingExternalIdentifierToMarkingDict`/
+  `resolveMarkingsForFood` extrahiert (17→..).
+- `RegisterHookCreateFormSubmissionsFormAnswers.ts` (17→..): Aufbau des
+  Feld-ID-Dicts (`buildFormAnswerFieldIdsDict`) und Ergänzen fehlender
+  Formularfeld-Antworten (`appendMissingFormFieldAnswers`) extrahiert.
+- `AssetHelperDirectusBackend.ts` (19→..): Query-Parameter-Aufbau für
+  Directus-Thumbnail-Transformationen in `buildAssetTransformQueryParams`
+  extrahiert.
+- `HannoverTL1HousingFileReader.ts` (21→..): Datei-Einlesen/Encoding-Erkennung
+  (`readAndDecodeFileContent`) von der CSV-Parse-/Datumskorrektur-Logik
+  (`buildImportHousingContracts`) getrennt.
+- `utilization-canteen-hook/ParseSchedule.ts` (21→..): Finden-oder-Anlegen des
+  Utilization-Eintrags (`findOrCreateUtilizationEntryForInterval`) von der
+  Forecast-/Ist-Wert-Anwendung (`applyUtilizationForecastOrActual`) getrennt.
+
+**Frontend, Cluster „form-submission" (6 Funktionen):**
+- `chats/details/index.tsx` (16→..): die vier identischen
+  `if (isMounted) { setLinkedFoodFeedback(...) }`-Guards in
+  `setLinkedFoodFeedbackIfMounted` gebündelt.
+- `feedback-support/index.tsx` (19→..): Default-Werte-Übernahme
+  (`applyDefaultFeedbackValues`) und Fehlerbehandlung beim Submit
+  (`reportFeedbackSubmissionError`) extrahiert.
+- `form-submission/index.tsx` (3 Funktionen): Sperr-Status-Handling
+  (`applyFormSubmissionLockState`, 17→..) und Feld-Wert-Auflösung beim
+  Editieren (`resolveInitialFieldValue`, 18→..) extrahiert; bei der dritten
+  Stelle (18→.., Icon-Auflösung in der Antworten-Liste) wurde zusätzlich eine
+  bereits vorhandene, aber an dieser Stelle noch nicht genutzte
+  `isAnswerVisible`-Funktion (oben in derselben Datei) wiederverwendet statt
+  eine weitere Kopie der Sichtbarkeits-Logik zu erzeugen — beide Implementierungen
+  wurden Zeile für Zeile auf Äquivalenz geprüft (u. a. das scheinbar
+  abweichende `referencedField || item?.form_field` im Original ist wegen der
+  vorherigen `isFormFieldEntity`-Prüfung immer identisch zu `item?.form_field`,
+  also keine Verhaltensänderung); zusätzlich `resolveFieldIcon` für die
+  Icon-Auflösung selbst extrahiert.
+- `form-submissions/index.tsx` (19→..): Inhalt der Liste (Loading/Liste/
+  Leerzustand) in `resolveSubmissionsContent` extrahiert; zusätzlich das
+  wiederholte `screenWidth > 768`-Breakpoint-Muster (analog zum
+  `StatisticsCard`-Vorbild aus der ersten Cognitive-Complexity-Runde) auf
+  einmalig berechnete benannte Werte reduziert.
+
+**Frontend, weitere Komponenten (14 Funktionen):**
+- `map/index.tsx` (16→..): die acht unabhängigen Overlay-Farb-/Positions-
+  Berechnungen (Kompass, Standort, Rotations-Buttons) in
+  `resolveMapOverlayStyle` gebündelt.
+- `map/components/JoggingOverlay.tsx` (21→..): die Pro-Segment-Berechnung
+  (Distanz, Höhenmeter, Geschwindigkeit) aus der Statistik-Schleife in
+  `accumulateSegmentStats` extrahiert.
+- `settings/index.tsx` (21→..): zwei Label-Auflösungen
+  (`resolveColorSchemeLabel`, `resolveDrawerPositionLabel`) extrahiert. **Nur
+  teilweise wirksam:** Diese Funktion ist ein sehr großer, JSX-lastiger
+  `useMemo`-Block mit Dutzenden weiterer Ternaries/`&&`-Bedingungen über
+  mehrere hundert Zeilen; die beiden extrahierten Label-Ketten sind nur ein
+  kleiner Teil der Gesamtkomplexität. Ob die Funktion dadurch tatsächlich
+  unter 15 fällt, kann ohne echten SonarCloud-Rescan nicht sicher bestätigt
+  werden — für eine vollständige Lösung wäre eine größere, gezieltere
+  Aufteilung nötig (z. B. je Settings-Sektion eine eigene Builder-Funktion);
+  als Kandidat für eine Folge-Runde vormerken, falls der nächste Scan die
+  Stelle weiterhin meldet.
+- `CustomStackHeader.tsx` (19→..): die 13-fache `if/else if`-Kette zur
+  Bestimmung des Rücksprungziels in `resolveGoBackTarget` extrahiert.
+- `DateTimeInputs/index.tsx` (2 Funktionen, 17→.. und 21→..): die manuelle
+  Trennzeichen-Erkennung (Punkte/Doppelpunkt) für die Datum-Zeit- bzw.
+  Timestamp-Eingabe in `detectManualDateTimeSeparator`/
+  `detectManualTimestampSeparator` extrahiert.
+- `FileUpload.tsx` (19→..): das entfernte Löschen einer Formular-Datei-Relation
+  (Fetch, Relation finden, Directus-Update) in `deleteRemoteFormAnswerFile`
+  extrahiert.
+- `FoodOffersScrollList/index.tsx` (19→..): Hintergrund-Refresh mit
+  Offline-Hinweis-Timer (`refreshFoodOffersInBackground`) und
+  Vollständig-neu-Laden ohne Cache (`loadFoodOffersFullyFresh`) extrahiert.
+- `HoursSheet.tsx` (22→.., aus der CSV mit gemeldeter Ausgangs-Complexity 22
+  eingeordnet): das 3x identisch dupliziert vorkommende Befüllen von
+  `groupedTimes` in `flushGroupedTimeRanges` gebündelt sowie der
+  Zeitbereichs-Vergleich in `haveSameTimeRanges` extrahiert.
+- `ImageManagementSheet.tsx` (17→..) und `useMyScrollviewDirectusImageEditModal.tsx`
+  (18→..): jeweils Bild-Verkleinerung (`resizeImageIfTooLarge`) und
+  FormData-Aufbau inkl. Web-XHR-Blob-Pfad (`buildImageFormData`) extrahiert
+  (in beiden Dateien inhaltlich identisch, aber bewusst nicht in eine geteilte
+  Datei zusammengeführt, um den Diff auf die gemeldeten Stellen zu
+  beschränken).
+- `ImageUpload.tsx` (17→..): das entfernte Löschen eines Formular-Bildes
+  (Fetch, Datei löschen, Relation lösen) in `deleteRemoteFormAnswerImage`
+  extrahiert.
+- `MarkingIcon/index.tsx` (20→..): die reine Werte-Auflösung (Bild/Icon/Text-
+  Variante, Container-Style, Compact-Skalierungsfaktoren) in
+  `resolveMarkingIconPresentation` extrahiert; der `useMyContrastColor`-Hook-
+  Aufruf und das frühe `if (!marking) return null;` blieben unverändert vor
+  dem Extraktionsaufruf (Rules-of-Hooks-konform).
+- `NewsItem.tsx` (18→..): analog zum `StatisticsCard`-Vorbild alle
+  `screenWidth > 768`/`> 900`-Breakpoint-Werte in `resolveNewsItemLayout`
+  gebündelt statt bis zu zehnfach dupliziert.
+
+**Geonexia (13 Funktionen):**
+- `app/index.tsx` (3 Funktionen): Sichtbarkeitsprüfung einer Kanten-Endpunkt-
+  Kombination im Viewport (`isEdgeVisibleInViewport`, 16→..), Aufbau der
+  Info-Zeilen für die Hex-Tile-Info-Karte (`buildHexTileInfoRows`, 16→..)
+  sowie — für die unterbrochene-Aufzeichnung-Rekonstruktion — die
+  Hex-Mittelpunkt-Koordinaten-/Distanz-Berechnung
+  (`computeGapTileCoordsAndDistance`) und die synthetische-GPS-Punkte-
+  Erzeugung (`buildSyntheticGapPoints`) getrennt (21→..).
+- `billboard-config/index.tsx` (2 Funktionen): Anker-Overlay-Position
+  (`computeBillboardAnchorOverlay`, 16→..) sowie Billboard-Schlüssel-Sammlung
+  (`collectBillboardKeysFromRecord`) und Objekt-Sprite-Index-Parsing
+  (`parseObjectSpriteIndex`) aus der Platzierungs-Zählung extrahiert (19→..).
+- `hex-texture-config/index.tsx` (2 Funktionen): dieselbe Anker-Overlay-
+  Position (`computeTextureAnchorOverlay`, 16→..) sowie Boundary-Bounding-Box
+  (`computeBoundaryLatLngBounds`) und Nord-Ausrichtungs-Rotation
+  (`computeNorthAlignedRotation`) aus dem Preview-Overlay-Aufbau extrahiert
+  (17→..).
+- `settings/index.tsx` (16→..): die Pro-Aktivität-Migrationslogik für
+  eingeschlossene Kacheln (`migrateActivityEnclosedTiles`) aus der
+  Rebuild-Schleife extrahiert.
+- `activities/[id].tsx` (16→..): Bounding-Box-Berechnung für den
+  Testfall-Export (`computeSelectedHexTilesBounds`) extrahiert.
+- `_layout.tsx` (17→..): den kompletten „Welt neu aufbauen, falls
+  Gebäude-ID veraltet"-Block in `rebuildWorldFromActivitiesIfStale`
+  extrahiert (Rückgabewert `boolean` ersetzt das ursprüngliche `return` in
+  der aufrufenden `useEffect`, um denselben Early-Exit beizubehalten).
+- `routes/[id].tsx` (17→..): abgeleitete Anzeige-Werte (aktive Kachelliste,
+  Karten-Mittelpunkt, Info-Zeilen, Anker-Auswahl-Status) in
+  `computeRouteDetailDerivedState` gebündelt. **Ebenfalls nur teilweise
+  wirksam** wie bei `settings/index.tsx` (Frontend) oben: die extrahierte
+  reine Werte-Berechnung enthält nur wenige Bedingungen, während die
+  restliche Komplexität vermutlich im anschließenden, hier unverändert
+  gelassenen JSX-Render-Teil (Editier-/Anker-Modus-Overlays) liegt — Kandidat
+  für eine gezieltere Folge-Extraktion, falls der nächste Scan hier weiterhin
+  meldet.
+- `ActivityMapRebuildHelper.ts` (19→.., nur diese eine Funktion in der Datei
+  angefasst, die übrigen bis zu 120 bleiben unverändert): Suchradius-
+  Berechnung aus der Bounding-Box (`computeSearchRadiusFromBoundingBoxCorners`)
+  und Polygon-Filterung der Kandidaten-Zellen (`filterCellsInsidePolygon`) aus
+  `findEnclosedCellsFromHexTiles` extrahiert.
+- `RoadMatchHelper.ts` (20→..): Geometrie-zu-Linien-Normalisierung
+  (`geometryToLines`) und Straßen-Extraktion aus dem Vector-Tile-Layer
+  (`extractRoadWaysFromLayer`) aus `fetchRoadWaysForTile` extrahiert
+  (zusätzlich `VectorTileFeature`/`VectorTileLayer`-Typen aus
+  `@mapbox/vector-tile` importiert, um die neuen Funktionssignaturen zu
+  typisieren).
+
+**Score-Tracker / Common-UI (4 Funktionen):**
+- `store/store.ts` (17→..): die 5x identisch duplizierte
+  Debounce-Timer-Logik (`clearTimeout`+`setTimeout`) in
+  `scheduleDebouncedSave` gebündelt (Timer-Handle wird explizit
+  zurückgegeben statt über eine Closure auf die Modul-Variable
+  zuzugreifen).
+- `app/index.tsx` (18→..): Label für den „Nächste Runde"-Button
+  (`resolveNextRoundLabel`) sowie eine Reihe rein darstellungsbezogener
+  abgeleiteter Werte (Spieltyp-Zeile, Sieger-Zusatztext, Opacities) in
+  `resolveGameScreenDisplayValues` extrahiert.
+- `GameRules.ts` (18→..): die Validierung der skalaren Preset-Felder (alles
+  außer den verschachtelten `rules`) in einen eigenen Type-Guard
+  `isValidGamePresetScalarFields` ausgelagert.
+- `packages/common-ui/MyAvatarEditor/index.tsx` (17→.., nur diese Funktion
+  angefasst, die zweite ~40-Complexity-Funktion in derselben Datei bleibt
+  unverändert): Farb-Attribut-Defaults (`computeColorAttributeDefaults`) und
+  stil-spezifische numerische Defaults (`computeStyleNumericDefaults`) aus
+  `getDefaultOptionsForStyle` extrahiert.
+
+### Verifizierung
+
+- `tsc --noEmit`-Baseline-Diff für alle vier betroffenen Frontend-Workspaces
+  (`apps/frontend/app`, `apps/geonexia/frontend`, `apps/score-tracker/frontend`,
+  inkl. `packages/common-ui` als deren Workspace-Abhängigkeit) sowie
+  `yarn typecheck` für die Backend-Extension: durchgehend keine neuen
+  Fehler, nur Zeilennummern-Verschiebungen bei denselben vorbestehenden
+  (unabhängigen) Fehlern wie vor dieser Runde.
+- Bestehende Tests ausgeführt: Backend-Extension
+  `TestHannoverHousing.ts`, `FoodParserHelper.test.ts` und
+  `ParseScheduleSyncDiff.test.ts` (17 Tests, alle grün).
+  `ActivityMapRebuildHelper.test.ts` und `RouteNameSuggestionHelper.test.ts`
+  (Geonexia) sowie `sqliteStorage.test.ts` und
+  `FoodOffersCacheHelper.test.ts` (Frontend) schlagen weiterhin mit
+  demselben umgebungsbedingten Jest/Expo-Fehler fehl (`expo-modules-core`
+  EventEmitter-/Modul-Setup in dieser Sandbox) — per `git stash`/`git stash
+  pop` gegen den unveränderten Stand verifiziert: identischer Fehler vor und
+  nach dieser Runde, also nicht durch diese Änderung verursacht. Für
+  Score-Tracker existieren keine Testdateien.
+- Alle 40 geänderten Dateien wurden zusätzlich manuell Zeile für Zeile
+  gegengelesen (nicht nur per Typecheck), um zu verifizieren, dass es sich
+  ausschließlich um Extraktionen mit expliziten Parametern handelt und keine
+  Kontrollfluss-/Fachlogik verändert wurde.
+
+**Bilanz dieser Runde:** 9 echte mechanische Fixes + 43 Cognitive-Complexity-
+Extraktionen = 52 neu bearbeitete Fundstellen (deutlich weniger als die grob
+anvisierten „~100", da sich herausstellte, dass der Großteil der
+mechanischen Restfunde bereits in früheren Runden erledigt und nur durch den
+CI-Scan-Stand im CSV weiterhin sichtbar war — siehe oben). **Noch offen für
+weitere Runden:** ca. 58 der 101 Cognitive-Complexity-Funde aus dieser Runde
+(101 − 43), die übrigen reichen weiterhin bis zu 201 und brauchen fachliche
+Einzelbetrachtung (insbesondere `geonexia/app/index.tsx` und
+`ActivityMapRebuildHelper.ts` mit mehreren Funktionen > 80, siehe oben).
+Zusätzlich zwei Stellen aus dieser Runde (`settings/index.tsx` im
+Frontend, `routes/[id].tsx` in Geonexia) vormerken, falls der nächste Scan
+sie trotz der durchgeführten Extraktion weiterhin meldet.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
