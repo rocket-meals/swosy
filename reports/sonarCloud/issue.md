@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 14 | 14 |
+| 🔒 Security | 3 | 3 |
+| 🐛 Reliability | 0 | 0 |
+| 🔧 Maintainability | 6 | 6 |
 
-**Total issues:** 19
+**Total issues:** 9
 
 ---
 
-## 🔒 Security (4/4)
+## 🔒 Security (3/3)
 
 - **Omitting "--ignore-scripts" allows lifecycle scripts to run during package installation.**
   apps/backend/Dockerfile:36
@@ -22,53 +22,15 @@
   apps/backend/Dockerfile:37
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Dockerfile#L37
 
-- **Make sure that using this pseudorandom number generator is safe here.**
-  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:51
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L51
-
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
   scripts/count-sonar-maintainability-issues.js:93
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L93
 
-## 🐛 Reliability (1/1)
+## 🔧 Maintainability (6/6)
 
-- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  apps/frontend/app/constants/MarkdownPatterns.ts:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
-
-## 🔧 Maintainability (14/14)
-
-- **Move this array "sort" operation to a separate statement or replace it with "toSorted".**
-  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:51
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L51
-
-- **Prefer `node:buffer` over `buffer`.**
-  apps/frontend/app/app/(app)/form-queue/index.tsx:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-queue/index.tsx#L20
-
-- **Prefer `node:buffer` over `buffer`.**
-  apps/frontend/app/app/(app)/form-submission/index.tsx:42
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submission/index.tsx#L42
-
-- **Provide multiple methods instead of using "append" to determine which action to take.**
-  apps/frontend/app/app/(app)/form-submissions/index.tsx:329
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L329
-
-- **Provide multiple methods instead of using "isConnected" to determine which action to take.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:94
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L94
-
-- **'any' overrides all other types in this union type.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:102
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L102
-
-- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:129
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L129
-
-- **The signature '(...text: string[]): void | undefined' of 'newWindow.document.write' is deprecated.**
-  apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx:417
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx#L417
+- **Async arrow function has too many parameters (8). Maximum allowed is 7.**
+  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:193
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L193
 
 - **Move this component definition out of the parent component and pass data as props.**
   apps/frontend/app/components/FoodItem/FoodItem.tsx:324
@@ -78,17 +40,13 @@
   apps/frontend/app/helper/animationHelper.ts:175
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L175
 
-- **Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.**
+- **Simplify this regular expression to reduce its complexity from 30 to the 20 allowed.**
   apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/assets/objects/1_fix_viewbox.py#L28
 
-- **The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionTypeAlias' is deprecated.**
-  packages/common-backend/src/CollectionHelper.ts:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-backend/src/CollectionHelper.ts#L35
-
-- **The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionPropertyDetails' is deprecated.**
-  packages/common-backend/src/CollectionHelper.ts:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-backend/src/CollectionHelper.ts#L60
+- **Use `export…from` to re-export `MyBuffer`.**
+  packages/common-ui/src/helpers/MyBuffer.ts:10
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/helpers/MyBuffer.ts#L10
 
 - **Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.**
   packages/common/src/DateHelper.ts:414
