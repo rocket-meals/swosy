@@ -12,12 +12,15 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const repoRoot = path.resolve(__dirname, '..');
-const csvPath = path.resolve(process.argv[2] || path.join(repoRoot, 'reports', 'sonarCloud', 'report_maintainability.csv'));
+const repoRoot = fs.realpathSync(path.resolve(__dirname, '..'));
+const requestedPath = path.resolve(process.argv[2] || path.join(repoRoot, 'reports', 'sonarCloud', 'report_maintainability.csv'));
 const topN = Number.parseInt(process.argv[3] || '10', 10);
 
-// Reject any path (e.g. from a mistaken or malicious CLI argument) that resolves
-// outside the repository, before touching the file system.
+// Canonicalize (resolve symlinks) before validating, so a symlink inside the
+// repo that points outside it can't be used to bypass the containment check
+// below, then reject anything that resolves outside the repository - before
+// touching the file system any further.
+const csvPath = fs.realpathSync(requestedPath);
 if (csvPath !== repoRoot && !csvPath.startsWith(repoRoot + path.sep)) {
     console.error(`Refusing to read a path outside the repository: ${csvPath}`);
     process.exit(1);
