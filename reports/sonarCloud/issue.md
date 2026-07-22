@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 3 | 3 |
+| 🔒 Security | 4 | 4 |
 | 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 44 | 44 |
+| 🔧 Maintainability | 30 | 30 |
 
-**Total issues:** 48
+**Total issues:** 35
 
 ---
 
-## 🔒 Security (3/3)
+## 🔒 Security (4/4)
 
 - **Omitting "--ignore-scripts" allows lifecycle scripts to run during package installation.**
   apps/backend/Dockerfile:36
@@ -21,6 +21,10 @@
 - **Omitting "--ignore-scripts" allows lifecycle scripts to run during package installation.**
   apps/backend/Dockerfile:37
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Dockerfile#L37
+
+- **Make sure that using this pseudorandom number generator is safe here.**
+  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:51
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L51
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
   scripts/count-sonar-maintainability-issues.js:93
@@ -32,27 +36,11 @@
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
 
-## 🔧 Maintainability (44/44)
+## 🔧 Maintainability (30/30)
 
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/course-timetable/index.tsx:91
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L91
-
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/course-timetable/index.tsx:97
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/course-timetable/index.tsx#L97
-
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx:181
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx#L181
-
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:148
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L148
-
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:152
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L152
+- **Move this array "sort" operation to a separate statement or replace it with "toSorted".**
+  apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:51
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx#L51
 
 - **Prefer `node:buffer` over `buffer`.**
   apps/frontend/app/app/(app)/form-queue/index.tsx:20
@@ -65,10 +53,6 @@
 - **Provide multiple methods instead of using "append" to determine which action to take.**
   apps/frontend/app/app/(app)/form-submissions/index.tsx:329
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/form-submissions/index.tsx#L329
-
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(app)/map/index.tsx:1750
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/index.tsx#L1750
 
 - **Provide multiple methods instead of using "isConnected" to determine which action to take.**
   apps/frontend/app/app/(monitor)/bigScreen/index.tsx:94
@@ -86,29 +70,9 @@
   apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx:417
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx#L417
 
-- **Do not use Array index in keys**
-  apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx#L31
-
-- **Do not use Array index in keys**
-  apps/frontend/app/components/DataAcces/DataAccess.tsx:25
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DataAcces/DataAccess.tsx#L25
-
-- **Do not use Array index in keys**
-  apps/frontend/app/components/DataAcces/DataAccess.tsx:31
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DataAcces/DataAccess.tsx#L31
-
-- **Do not use Array index in keys**
-  apps/frontend/app/components/DataAcces/DataAccess.tsx:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DataAcces/DataAccess.tsx#L19
-
 - **Move this component definition out of the parent component and pass data as props.**
   apps/frontend/app/components/FoodItem/FoodItem.tsx:324
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L324
-
-- **Do not use Array index in keys**
-  apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx:101
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx#L101
 
 - **Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.**
   apps/frontend/app/helper/animationHelper.ts:175
@@ -177,22 +141,6 @@
 - **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
   apps/frontend/app/helper/hashHelper.ts:153
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L153
-
-- **Do not use Array index in keys**
-  apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx:415
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx#L415
-
-- **Do not use Array index in keys**
-  apps/geonexia/frontend/app/experimental/onboarding/index.tsx:402
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/onboarding/index.tsx#L402
-
-- **Do not use Array index in keys**
-  apps/geonexia/frontend/app/experimental/seaphara/index.tsx:416
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/experimental/seaphara/index.tsx#L416
-
-- **Do not use Array index in keys**
-  apps/geonexia/frontend/app/index.tsx:1992
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1992
 
 - **Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.**
   apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28

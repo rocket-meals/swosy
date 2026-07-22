@@ -1,21 +1,12 @@
 Key,Message,Component,Line
+"AZ-IpLUYkIHhbILj9pyL","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",51
 "AZ-IOoVicRmzc0-YlkXD","Provide multiple methods instead of using ""append"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",329
 "AZ-IOoeGcRmzc0-YlkXE","Provide multiple methods instead of using ""isConnected"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",94
 "AZ-IOoeGcRmzc0-YlkXF","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",102
-"AZ2dsUdPLVHN2p9NjR1S","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",416
-"AZ2dkkUv3GBU49WbMwdE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",101
-"AZ2aKN1GQ7FHawfCon5a","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx",415
-"AZ1TdZ_pIh8m09xZ03NJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",402
-"AZ02tSEbU7rlc86SOrCp","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1992
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
 "AZ0Tpk4Nufp2jxPAhSyL","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",20
-"AZ0Tpk31ufp2jxPAhSyE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",1750
 "AZ5JdOxPjvp1UF7n1YmM","Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",414
-"AZ0TpkqPufp2jxPAhSuo","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx",181
-"AZkUSvK8S4VhJojFFAWW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",148
 "AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",129
-"AZkUSvHUS4VhJojFFATX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",25
-"AZkUSvHUS4VhJojFFATY","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",31
 "AZkUSvUYS4VhJojFFAhq","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",93
 "AZkUSvUYS4VhJojFFAhr","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",97
 "AZkUSvUYS4VhJojFFAhs","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",101
@@ -35,11 +26,6 @@ Key,Message,Component,Line
 "AZ0TpmOQufp2jxPAhTMo","The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionTypeAlias' is deprecated.","rocket-meals_rocket-meals:packages/common-backend/src/CollectionHelper.ts",35
 "AZ0TpmOQufp2jxPAhTMp","The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionPropertyDetails' is deprecated.","rocket-meals_rocket-meals:packages/common-backend/src/CollectionHelper.ts",60
 "AZkUSvDUS4VhJojFFARx","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",324
-"AZkUSvK8S4VhJojFFAWX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",152
-"AZkUSvQ4S4VhJojFFAdm","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/rss-feed-config/index.tsx",31
-"AZkUSvL-S4VhJojFFAW0","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",91
-"AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",97
 "AZlyj_Yk0YdgFOBafBLm","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",42
 "AZkUSvRPS4VhJojFFAeO","The signature '(...text: string[]): void | undefined' of 'newWindow.document.write' is deprecated.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx",417
-"AZkUSvHUS4VhJojFFATW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",19
 "AZlyj_mS0YdgFOBafBMN","Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",175
