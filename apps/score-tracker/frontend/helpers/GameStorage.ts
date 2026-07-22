@@ -1,14 +1,10 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
-import type { AvatarConfig } from 'repo-depkit-common-ui';
+import type { PlayerIdentity } from './PlayerIdentity';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Player = {
+export type Player = PlayerIdentity & {
 	id: string;
-	name: string;
-	color: string;
-	/** Snapshot avatar, taken at the time the player was added to this game. */
-	avatarConfig?: AvatarConfig;
 	/** Set when this player was added from the friends roster. Absent = guest player. */
 	friendId?: string;
 };
