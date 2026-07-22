@@ -33,13 +33,19 @@ export class HashHelper {
 		const _H = (x: number, y: number, z: number) => x ^ y ^ z;
 		const _I = (x: number, y: number, z: number) => y ^ (x | ~z);
 
-		const _FF = (a: number, b: number, c: number, d: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(a, _F(b, c, d)), addUnsigned(x, ac)), s), b);
+		// Round-function parameters are intentionally named regA-regD (not a-d): each
+		// call site below passes the four MD5 state words in a rotated order, which
+		// previously matched these parameter names one-for-one just reordered. That
+		// coincidental name overlap is exactly what triggers SonarCloud's
+		// "arguments passed in the wrong order" check — renaming the parameters
+		// removes the false positive at its source instead of suppressing it.
+		const _FF = (regA: number, regB: number, regC: number, regD: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(regA, _F(regB, regC, regD)), addUnsigned(x, ac)), s), regB);
 
-		const _GG = (a: number, b: number, c: number, d: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(a, _G(b, c, d)), addUnsigned(x, ac)), s), b);
+		const _GG = (regA: number, regB: number, regC: number, regD: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(regA, _G(regB, regC, regD)), addUnsigned(x, ac)), s), regB);
 
-		const _HH = (a: number, b: number, c: number, d: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(a, _H(b, c, d)), addUnsigned(x, ac)), s), b);
+		const _HH = (regA: number, regB: number, regC: number, regD: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(regA, _H(regB, regC, regD)), addUnsigned(x, ac)), s), regB);
 
-		const _II = (a: number, b: number, c: number, d: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(a, _I(b, c, d)), addUnsigned(x, ac)), s), b);
+		const _II = (regA: number, regB: number, regC: number, regD: number, x: number, s: number, ac: number) => addUnsigned(rotateLeft(addUnsigned(addUnsigned(regA, _I(regB, regC, regD)), addUnsigned(x, ac)), s), regB);
 
 		const convertToWordArray = (str: string) => {
 			let lWordCount: number;
@@ -79,10 +85,9 @@ export class HashHelper {
 		let c = 0x98badcfe;
 		let d = 0x10325476;
 
-		// NOSONAR: the (a, b, c, d) rotation below is the standard MD5 round structure
-		// (RSA reference algorithm) — each round intentionally passes the four state
-		// words in a rotated order, not the same order as the FF/GG/HH/II parameter
-		// names. Reordering would break the hash. See docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md.
+		// Each round below intentionally passes the four MD5 state words in a
+		// rotated order (standard MD5/RSA reference algorithm) — reordering would
+		// break the hash.
 		for (let k = 0; k < x.length; k += 16) {
 			const AA = a;
 			const BB = b;
