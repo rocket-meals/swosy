@@ -1729,6 +1729,50 @@ wieder auf 0 bringen. Security: alle 3 aktuellen Funde behoben (2 echte
 Fixes ohne Funktionsverlust, 1 echter Fix mit neuer, für Agentic-/LLM-Nutzung
 relevanter Pfad-Validierung).
 
+## Am 2026-07-22 (fünfzehnte Runde): Pfad-Validierung um Symlink-Kanonisierung ergänzt
+
+Ausgangspunkt: Maintainability und Reliability beide bei **0**. Security
+zeigte 1 verbliebenen Fund — an derselben Stelle wie in der vierzehnten
+Runde (`scripts/count-sonar-maintainability-issues.js`), aber mit
+präziserer Meldung: „A path canonicalized from CLI-controlled data must be
+validated before use." Die vorherige Runde hatte `csvPath` per
+`path.resolve(...)` normalisiert und gegen die Repo-Wurzel geprüft — das
+entfernt zwar `.`/`..`-Segmente syntaktisch, löst aber **keine Symlinks**
+auf. Ein Symlink innerhalb des Repos, der auf eine Datei außerhalb zeigt
+(z. B. `reports/sonarCloud/evil.csv -> /etc/passwd`), hätte die Prüfung aus
+der vierzehnten Runde umgangen, da der syntaktisch normalisierte Pfad
+weiterhin innerhalb der Repo-Wurzel liegt — erst beim tatsächlichen Lesen
+löst das Betriebssystem den Symlink auf und liest die externe Datei.
+
+**Fix:** `repoRoot` und der angeforderte Pfad werden jetzt beide per
+`fs.realpathSync(...)` kanonisiert (Symlinks aufgelöst), **bevor** die
+Enthaltenssein-Prüfung läuft; der kanonisierte Pfad ist auch der, der
+anschließend tatsächlich gelesen wird (`fs.readFileSync(csvPath, ...)`),
+nicht nur der syntaktisch normalisierte.
+
+**Verifizierung:**
+- Normale Nutzung (Default-Pfad, expliziter gültiger Pfad innerhalb des
+  Repos) manuell erneut ausgeführt: unverändertes Verhalten.
+- Relative (`../../../../etc/passwd`) und absolute (`/etc/passwd`)
+  Traversal-Versuche: weiterhin mit Exit-Code 1 abgelehnt.
+- **Echter Symlink-Escape-Test:** `ln -sf /etc/passwd
+  reports/sonarCloud/evil-symlink.csv` innerhalb des Repos angelegt und mit
+  diesem Pfad aufgerufen — jetzt korrekt mit Exit-Code 1 abgelehnt (zuvor,
+  vor diesem Fix, hätte die reine `path.resolve`-Prüfung aus der
+  vierzehnten Runde das nicht erkannt, da der Symlink-Pfad selbst innerhalb
+  der Repo-Wurzel liegt). Ein erster Testversuch mit `cp` statt `ln -sf`
+  hatte fälschlich den Zielinhalt in eine echte Datei innerhalb des Repos
+  kopiert (kein tatsächlicher Symlink) und damit keine reale Sicherheitslücke
+  aufgedeckt — nach Korrektur des Testaufbaus (`ln -sf` statt `cp`) bestätigt
+  der Test den Fix wie beschrieben.
+- Nicht-existierender Pfad: wirft weiterhin (wie schon vor jeder dieser
+  Änderungen) eine unbehandelte `ENOENT`-Exception mit Stacktrace — keine
+  Verschlechterung ggü. dem Ausgangszustand, nur jetzt eine Stufe früher
+  (`realpathSync` statt `readFileSync`).
+
+**Bilanz:** Maintainability 0/0, Reliability 0/0, Security 0/0 (nach dem
+nächsten Scan) — alle drei SonarCloud-Kategorien für dieses Repo auf 0.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
