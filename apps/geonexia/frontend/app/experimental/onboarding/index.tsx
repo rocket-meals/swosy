@@ -399,7 +399,7 @@ function ProgressDots({
 		<View style={styles.progressDots}>
 			{Array.from({ length: total }).map((_, i) => (
 				<View
-					key={i}
+					key={`dot-${i}`}
 					style={[
 						styles.dot,
 						{

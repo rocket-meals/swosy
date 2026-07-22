@@ -18,7 +18,8 @@ interface Marking {
 }
 
 interface Card {
-	value: string;
+	id: number;
+	value: string | null; // null marks the single empty slot on the board
 	revealed: boolean;
 	matched: boolean;
 }
@@ -45,15 +46,10 @@ const getRandomPair = (): [Dish, Dish] => {
 	return [shuffled[0], shuffled[1]];
 };
 
-const generateMemoryBoard = (): (Card | null)[] => {
-	const doubled = [...foodIcons, ...foodIcons];
-	const board: (Card | null)[] = doubled.map(v => ({
-		value: v,
-		revealed: false,
-		matched: false,
-	}));
-	board.splice(Math.floor(Math.random() * (board.length + 1)), 0, null);
-	return board.sort(() => Math.random() - 0.5);
+const generateMemoryBoard = (): Card[] => {
+	const values: (string | null)[] = [...foodIcons, ...foodIcons, null];
+	const shuffled = values.sort(() => Math.random() - 0.5);
+	return shuffled.map((value, id) => ({ id, value, revealed: false, matched: false }));
 };
 
 const GameIdeas = () => {
@@ -69,7 +65,7 @@ const GameIdeas = () => {
 
 	const [markingResult, setMarkingResult] = useState<string>('');
 
-	const [board, setBoard] = useState<(Card | null)[]>(generateMemoryBoard());
+	const [board, setBoard] = useState<Card[]>(generateMemoryBoard());
 	const [selected, setSelected] = useState<number[]>([]);
 
 	const mostDisliked = useMemo(() => markings.reduce((a, b) => (a.dislikes > b.dislikes ? a : b), markings[0] || {}), []);
@@ -92,22 +88,22 @@ const GameIdeas = () => {
 
 	const handleCardPress = (index: number) => {
 		const card = board[index];
-		if (!card || card.revealed || card.matched) return;
+		if (card.value === null || card.revealed || card.matched) return;
 		const newBoard = [...board];
 		newBoard[index] = { ...card, revealed: true };
 		const newSelected = [...selected, index];
 		setBoard(newBoard);
 		if (newSelected.length === 2) {
 			const [first, second] = newSelected;
-			if (newBoard[first]?.value === newBoard[second]?.value) {
-				newBoard[first]!.matched = true;
-				newBoard[second]!.matched = true;
+			if (newBoard[first].value === newBoard[second].value) {
+				newBoard[first] = { ...newBoard[first], matched: true };
+				newBoard[second] = { ...newBoard[second], matched: true };
 				setBoard(newBoard);
 			} else {
 				setTimeout(() => {
 					const hidden = [...newBoard];
-					hidden[first] = { ...hidden[first]!, revealed: false };
-					hidden[second] = { ...hidden[second]!, revealed: false };
+					hidden[first] = { ...hidden[first], revealed: false };
+					hidden[second] = { ...hidden[second], revealed: false };
 					setBoard(hidden);
 				}, 800);
 			}
@@ -143,13 +139,13 @@ const GameIdeas = () => {
 
 			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.food_memory_game)}</Text>
 			<View style={styles.memoryContainer}>
-				{board.map((card, idx) =>
-					card ? (
-						<TouchableOpacity key={idx} style={{ ...styles.memoryCard, backgroundColor: theme.screen.iconBg }} onPress={() => handleCardPress(idx)}>
+				{board.map(card =>
+					card.value !== null ? (
+						<TouchableOpacity key={card.id} style={{ ...styles.memoryCard, backgroundColor: theme.screen.iconBg }} onPress={() => handleCardPress(card.id)}>
 							<Text style={{ color: theme.screen.text, fontSize: 24 }}>{card.revealed || card.matched ? card.value : '?'}</Text>
 						</TouchableOpacity>
 					) : (
-						<View key={idx} style={styles.memoryCard} />
+						<View key={card.id} style={styles.memoryCard} />
 					)
 				)}
 			</View>

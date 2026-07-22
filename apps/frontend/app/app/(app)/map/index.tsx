@@ -1747,7 +1747,8 @@ const OsmVectorMapScreen: React.FC = () => {
 									onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
 								>
 									{logEntries.map((entry, i) => (
-										<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+										// eslint-disable-next-line react/no-array-index-key
+										<Text key={`${entry}-${i}`} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
 											{entry}
 										</Text>
 									))}

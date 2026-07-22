@@ -98,7 +98,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 						<Text style={{ color: theme.screen.text, fontSize: 13 }}>No logs yet</Text>
 					) : (
 						debugLogs.map((log, i) => (
-							<Text key={i} style={{ color: theme.screen.text, fontSize: 13 }}>
+							// eslint-disable-next-line react/no-array-index-key
+							<Text key={`${log}-${i}`} style={{ color: theme.screen.text, fontSize: 13 }}>
 								{`${i + 1}. ${log}`}
 							</Text>
 						))

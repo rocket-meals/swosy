@@ -412,7 +412,7 @@ export default function KyleTest3DScreen() {
 					else groupPosition = 'middle';
 					return (
 						<SettingsList
-							key={idx}
+							key={`${entry.message}-${idx}`}
 							iconBgColor={entry.isError ? '#dc2626' : ACCENT_COLOR}
 							leftIcon={
 								<Ionicons

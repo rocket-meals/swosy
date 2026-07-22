@@ -88,13 +88,15 @@ const TimetableScreen = () => {
 		return parts?.map((part, index) => {
 			if (part?.startsWith('**') && part?.endsWith('**')) {
 				return (
-					<Text key={index} style={{ fontWeight: 'bold' }}>
+					// eslint-disable-next-line react/no-array-index-key
+					<Text key={`${index}-${part}`} style={{ fontWeight: 'bold' }}>
 						{part?.slice(2, -2)}
 					</Text>
 				);
 			} else if (part?.startsWith('*') && part?.endsWith('*')) {
 				return (
-					<Text key={index} style={{ fontStyle: 'italic' }}>
+					// eslint-disable-next-line react/no-array-index-key
+					<Text key={`${index}-${part}`} style={{ fontStyle: 'italic' }}>
 						{part?.slice(1, -1)}
 					</Text>
 				);

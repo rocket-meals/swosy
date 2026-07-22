@@ -178,7 +178,8 @@ const ExpoUpdateTest = () => {
                                                 <Text style={{ ...styles.logEntry, color: theme.screen.text }}>No logs yet</Text>
                                         ) : (
                                                 logs.map((log, index) => (
-                                                        <Text key={index} style={{ ...styles.logEntry, color: theme.screen.text }}>
+                                                        // eslint-disable-next-line react/no-array-index-key
+                                                        <Text key={`${log}-${index}`} style={{ ...styles.logEntry, color: theme.screen.text }}>
                                                                 {log}
                                                         </Text>
                                                 ))

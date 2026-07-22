@@ -16,19 +16,22 @@ const parseMarkdown = (text: string, theme: any) => {
 	return text.split('\n').map((line, index) => {
 		if (line.startsWith('## ')) {
 			return (
-				<Text key={index} style={[styles.value, { color: theme.header.text }]}>
+				// eslint-disable-next-line react/no-array-index-key
+				<Text key={`${index}-${line}`} style={[styles.value, { color: theme.header.text }]}>
 					{line.replace('## ', '')}
 				</Text>
 			);
 		} else if (line.startsWith('### ')) {
 			return (
-				<Text key={index} style={[styles.labelParagraph, { color: theme.header.text }]}>
+				// eslint-disable-next-line react/no-array-index-key
+				<Text key={`${index}-${line}`} style={[styles.labelParagraph, { color: theme.header.text }]}>
 					{line.replace('### ', '')}
 				</Text>
 			);
 		} else {
 			return (
-				<Text key={index} style={[styles.titleHeading, { color: theme.header.text }]}>
+				// eslint-disable-next-line react/no-array-index-key
+				<Text key={`${index}-${line}`} style={[styles.titleHeading, { color: theme.header.text }]}>
 					{line}
 				</Text>
 			);

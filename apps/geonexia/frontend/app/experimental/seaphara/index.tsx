@@ -413,7 +413,7 @@ export default function SeapharaScreen() {
 							<Text style={[debugStyles.logLine, { color: theme.screen.text }]}>No logs yet.</Text>
 						) : (
 							logs.map((line, i) => (
-								<Text key={i} style={[debugStyles.logLine, { color: theme.screen.text }]}>
+								<Text key={`${line}-${i}`} style={[debugStyles.logLine, { color: theme.screen.text }]}>
 									{line}
 								</Text>
 							))

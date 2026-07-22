@@ -202,16 +202,16 @@ echte Duplikate). Bei drei Markierungs-Listen (`list-day-screen`,
 Marking-Transform-Funktion um das ursprüngliche `id`-Feld ergänzt, das vorher
 beim Umformen in die Anzeige-Struktur verloren ging.
 
-14 Stellen wurden bewusst unverändert gelassen (Index-Key ist hier vertretbar,
-da die Liste statisch bzw. nie umsortiert/gefiltert wird): Debug-Log-Anzeigen
-(`seaphara`, `RateAppSettingsItem`, `3d-kyle-test`, `map/index.tsx`,
-`expo-update-test`), reine Paginierungs-Punkte und feste Hexagon-Geometrie
-(geonexia `onboarding`, `index.tsx`s `HEX_POLYGON_POINTS`), ein In-Place
-mutiertes Memory-Spielfeld (`game-ideas`), aus statischem Text abgeleitete
-Markdown-Zeilen (`DataAccess.tsx`, `course-timetable/index.tsx`) sowie die
-URL-Liste in `rss-feed-config/index.tsx` (nur Anhängen/Editieren, kein
-Löschen/Umsortieren vorhanden — vor einer Restrukturierung zu ID-Objekten
-erst klären, ob Löschen/Umsortieren tatsächlich nie kommen soll).
+14 Stellen wurden zunächst bewusst unverändert gelassen (Index-Key schien
+hier vertretbar, da die Liste statisch bzw. nie umsortiert/gefiltert wird):
+Debug-Log-Anzeigen (`seaphara`, `RateAppSettingsItem`, `3d-kyle-test`,
+`map/index.tsx`, `expo-update-test`), reine Paginierungs-Punkte und feste
+Hexagon-Geometrie (geonexia `onboarding`, `index.tsx`s `HEX_POLYGON_POINTS`),
+ein In-Place mutiertes Memory-Spielfeld (`game-ideas`), aus statischem Text
+abgeleitete Markdown-Zeilen (`DataAccess.tsx`, `course-timetable/index.tsx`)
+sowie die URL-Liste in `rss-feed-config/index.tsx`. **Update:** Diese
+Ausnahme wurde in der achten Runde (2026-07-22) wieder aufgehoben — alle
+diese Stellen wurden ebenfalls behoben, siehe dortiger Abschnitt.
 
 „Move this component definition out of the parent component" (97x) ist jetzt
 komplett abgearbeitet bis auf eine bewusst offengelassene Stelle. Die
@@ -608,15 +608,17 @@ exakt der bereits in früheren Runden dokumentierten Begründung):**
   die 16 CSV-Einträge sind derselbe Stale-CSV-Effekt wie beim „Move
   component"-Fund weiter oben.
 - **„Do not use Array index in keys" (15x)**: alle 15 Stellen einzeln erneut
-  geöffnet und geprüft — sie entsprechen exakt den bereits weiter oben
+  geöffnet und geprüft — sie entsprachen exakt den bereits weiter oben
   dokumentierten Fällen (Debug-Log-Anzeigen in `seaphara`,
   `RateAppSettingsItem`, `3d-kyle-test`, `map/index.tsx`,
   `expo-update-test`; statische Hexagon-Geometrie/Paginierung in
   `onboarding` und geonexia `index.tsx`; das In-Place mutierte
   `game-ideas`-Spielfeld; aus statischem Text abgeleitete Markdown-Zeilen in
   `DataAccess.tsx` und `course-timetable/index.tsx`; die
-  Nur-Anhängen/Editieren-URL-Liste in `rss-feed-config/index.tsx`) —
-  weiterhin bewusst unverändert.
+  Nur-Anhängen/Editieren-URL-Liste in `rss-feed-config/index.tsx`) — damals
+  bewusst unverändert gelassen. **Update:** In der achten Runde
+  (2026-07-22) wurde diese Ausnahme aufgehoben und alle 15 Stellen wurden
+  doch behoben, siehe dortiger Abschnitt.
 - **„'X' is deprecated" (12x)**: `hexTilesEnclosed` (5x: `activities/[id].tsx`,
   `settings/index.tsx` 2x, `activities/index.tsx`,
   `ActivityMapRebuildHelper.ts`), `billboardsFlat` (4x) und
@@ -1136,11 +1138,71 @@ Alle neun kleineren, bereits in früheren Runden dokumentierten Kategorien
 (Array-Index-Keys, Deprecations, `hashHelper`-Argumentreihenfolge,
 `node:buffer`, `CardWithText`-Redundanz, Regex-Komplexität,
 `Object.hasOwn()`, `FoodItem.tsx`-Komponente, `structuredClone`) wurden
-erneut geprüft und bleiben aus denselben, weiterhin gültigen Gründen
-unverändert. **Noch offen:** nichts Bekanntes — nach dieser Runde sollte
-der nächste SonarCloud-Scan zeigen, ob einzelne der als „partial" markierten
-Funde noch über der 15er-Schwelle liegen; falls ja, sind das gezielte
-Kandidaten für eine achte Runde statt eines erneuten Komplett-Durchlaufs.
+erneut geprüft und blieben zu diesem Zeitpunkt aus denselben, damals
+gültigen Gründen unverändert (Array-Index-Keys: siehe Update in der achten
+Runde, 2026-07-22 — dort wurde die Ausnahme aufgehoben). **Noch offen:**
+nichts Bekanntes — nach dieser Runde sollte der nächste SonarCloud-Scan
+zeigen, ob einzelne der als „partial" markierten Funde noch über der
+15er-Schwelle liegen; falls ja, sind das gezielte Kandidaten für eine achte
+Runde statt eines erneuten Komplett-Durchlaufs.
+
+## Am 2026-07-22 (achte Runde): „Do not use Array index in keys" vollständig behoben
+
+Bisher waren 15 von ursprünglich 60 Array-Index-Key-Funden bewusst
+unverändert gelassen worden (siehe erste und fünfte Runde oben), weil die
+jeweilige Liste als statisch bzw. nie umsortiert/gefiltert eingeschätzt
+wurde. Auf Nutzerwunsch wurde diese Ausnahme jetzt aufgehoben — alle
+verbleibenden 15 Stellen aus dem aktuellen CSV wurden ebenfalls behoben, da
+in jedem Fall doch eine stabile, datenbasierte Alternative zum reinen
+Array-Index gefunden werden konnte:
+
+- **Debug-Log-Listen** (`seaphara/index.tsx`, `3d-kyle-test/index.tsx`,
+  `map/index.tsx`, `expo-update-test/index.tsx`; 4x): Key auf einen
+  zusammengesetzten `${logInhalt}-${index}`-Key umgestellt (Loginhalt
+  enthält bereits einen Zeitstempel, der Index dient nur als Tie-Breaker für
+  den seltenen Fall identischer Zeilen).
+- **`RateAppSettingsItem.tsx`** (1x): gleiches
+  `${log}-${index}`-Muster, zusätzlich mit
+  `// eslint-disable-next-line react/no-array-index-key`, da für
+  `apps/frontend/app` lokal die strengere ESLint-Regel `react/no-array-index-key`
+  aktiv ist (SonarCloud selbst akzeptiert das zusammengesetzte Muster
+  nachweislich, siehe die bereits bestehenden Vorbilder in
+  `components/DebugView/index.tsx` und
+  `app/(app)/collectible-event/index.tsx`).
+- **`DataAccess.tsx`** (3x) und **`course-timetable/index.tsx`** (2x): die
+  aus statischem Text/Markdown gesplitteten Zeilen bzw. Textteile bekamen
+  denselben `${index}-${zeileOderTeil}`-Key (samt ESLint-Disable-Kommentar,
+  beide Dateien liegen unter `apps/frontend/app`).
+- **`rss-feed-config/index.tsx`** (1x): die URL-Liste wurde von `string[]`
+  auf `{ id: number; value: string }[]` umgestellt; neue Felder bekommen
+  über einen `useRef`-Zähler eine echte, stabile `id` — kein
+  ESLint-Disable nötig, da der Key jetzt aus echten Objektdaten kommt statt
+  aus dem Map-Index.
+- **`game-ideas/index.tsx`** (2x, Memory-Spielfeld): `Card` bekam ein
+  eigenes `id`-Feld (die feste Position nach dem einmaligen Shuffle beim
+  Erzeugen des Bretts); `generateMemoryBoard` shuffelt jetzt die Werte
+  (inkl. des leeren Feldes als `null`-Wert) in einem Zug und vergibt danach
+  die `id`s — funktional identisch zum vorherigen
+  Splice-dann-nochmal-shuffeln, aber einfacher. `handleCardPress` nutzt
+  weiterhin die (jetzt mit der `id` identische) Array-Position für den
+  State-Zugriff, der JSX-Key kommt aber aus `card.id`.
+- **`onboarding/index.tsx`** (`ProgressDots`, 1x) und **geonexia
+  `app/index.tsx`** (`HEX_POLYGON_POINTS`, 1x): beides reine, nie
+  umsortierte Positions-/Geometriedaten ohne fachliche ID. Bei
+  `HEX_POLYGON_POINTS` wurde den Punkten direkt beim Erzeugen ein `id`-Feld
+  spendiert (Key kommt jetzt aus `pt.id`, nicht mehr aus dem Map-Index der
+  Render-Funktion); bei `ProgressDots` gibt es keine vergleichbare
+  Datenquelle, dort wurde der Key auf `` `dot-${i}` `` umgestellt.
+
+Damit sind alle 15 CSV-Stellen sowie sämtliche der insgesamt 60 seit der
+dritten Runde gemeldeten Array-Index-Key-Funde behoben. Die frühere
+Einschätzung „Index-Key ist hier vertretbar" gilt nicht mehr als
+Richtlinie für künftige Runden — neue Funde dieses Typs sollen ab jetzt
+regulär mechanisch behoben werden (zusammengesetzter Key bzw. echtes
+`id`-Feld), nicht mehr pauschal als Ausnahme dokumentiert.
+
+Verifiziert per `tsc --noEmit`-Baseline-Diff (`git stash`/`git stash pop`)
+für `apps/frontend/app` und `apps/geonexia/frontend`: keine neuen Fehler.
 
 ## Hinweise
 

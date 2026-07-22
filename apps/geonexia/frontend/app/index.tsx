@@ -1968,6 +1968,7 @@ const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
 	const angle = (Math.PI / 2) - (i * Math.PI) / 3;
 	return {
+		id: i,
 		x: HEX_PICKER_CX + HEX_PICKER_R * Math.cos(angle),
 		y: HEX_PICKER_CY - HEX_PICKER_R * Math.sin(angle),
 	};
@@ -1989,7 +1990,7 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: Readonly<{ sel
 					const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 					return (
 						<View
-							key={i}
+							key={pt.id}
 							pointerEvents="none"
 							style={[
 								hexPickerStyles.hexEdge,
