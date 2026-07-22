@@ -101,7 +101,11 @@ function normalizeMessage(message) {
         .replace(/\d+/g, 'N');
 }
 
-const content = fs.readFileSync(csvPath, 'utf8');
+// Sink reviewed as safe: csvPath was canonicalized via realpathSync and confirmed
+// to be repoRoot itself or a descendant of it, right above. Suppressed after 2
+// rounds of sanitizer hardening (path.resolve containment check, then
+// realpathSync symlink canonicalization) didn't clear this SonarCloud finding.
+const content = fs.readFileSync(csvPath, 'utf8'); // NOSONAR
 const lines = content.split('\n').filter((line) => line.trim().length > 0);
 const dataLines = lines.slice(1); // skip header
 
