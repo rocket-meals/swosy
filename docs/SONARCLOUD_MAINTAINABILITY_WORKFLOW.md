@@ -1598,6 +1598,58 @@ weitere Sonar-Meldungen) + 4 korrekt platzierte `NOSONAR`-Ausblendungen für
 Fälle, die bereits in früheren Runden als „fachlich nicht sinnvoll änderbar"
 verifiziert wurden. Nächster Scan sollte beide CSVs bei 0 zeigen.
 
+## Am 2026-07-22 (dreizehnte Runde): `JSON.parse(JSON.stringify(...))` zentralisiert
+
+Auf Nutzerwunsch (unabhängig von einem konkreten neuen CSV-Fund, analog zur
+elften Runde für `buffer`/`Math.random()`) wurde das
+`JSON.parse(JSON.stringify(...))`-Deep-Clone-Muster in eine zentrale Helper-
+Klasse ausgelagert, statt es an der einzigen bisherigen Stelle
+(`animationHelper.ts`, mit `NOSONAR` aus der zehnten/zwölften Runde) sowie an
+sieben weiteren, bisher unangetasteten Stellen im Backend-Extension-Workspace
+verstreut zu belassen.
+
+- Neue Datei `packages/common/src/CloneHelper.ts` (Klasse `CloneHelper`,
+  statische Methode `deepClone<T>(value: T): T`) — jetzt die **einzige**
+  Stelle im Repo mit einem literalen `JSON.parse(JSON.stringify(...))`-Aufruf
+  und dem zugehörigen `NOSONAR`-Kommentar (SonarCloud empfiehlt pauschal
+  `structuredClone(...)`, das aber in Hermes nicht als globale Funktion
+  implementiert ist — dieselbe Begründung wie in der zehnten Runde für
+  `animationHelper.ts`).
+- Alle acht bisherigen direkten Vorkommen umgestellt: `animationHelper.ts`
+  (Frontend, verliert dadurch seinen lokalen `NOSONAR`-Kommentar aus der
+  zwölften Runde) sowie im Backend-Extension-Workspace `AccountHelper.ts`,
+  `ItemsServiceHelper.ts`, `TranslationHelper.ts` (2x), `DirectusCollectionTranslator.ts`
+  und `food-sync-hook/ParseSchedule.ts`.
+- **Eine Stelle brauchte eine Anpassung über die reine Umbenennung hinaus:**
+  `food-sync-hook/ParseSchedule.ts`s `markingJSONCopy` verließ sich auf die
+  implizite `any`-Typisierung, die `JSON.parse(...)` liefert (Felder werden
+  danach per `delete` entfernt und mit abweichenden Typen überschrieben, um
+  `Partial<Markings>` zu entsprechen). Da `CloneHelper.deepClone<T>` das
+  generische `T` aus dem Argumenttyp ableitet, hätte eine unveränderte
+  Umstellung dort den vorher `any`-typisierten Wert plötzlich streng typisiert
+  und zu echten Compile-Fehlern geführt (`delete` auf ein nicht-optionales
+  Feld, Typkonflikt bei `translations`). Fix: `CloneHelper.deepClone<any>(markingJSON)`
+  — expliziter Typparameter erzwingt weiterhin `any`, identisches Verhalten
+  zur vorherigen `JSON.parse(JSON.stringify(...))`-Stelle.
+- In `TranslationHelper.ts` wurde nebenbei ein jetzt irreführender
+  Kommentar korrigiert (verwies noch auf das alte
+  `JSON.parse(JSON.stringify(...))`-Muster als Begründung für einen
+  bewusst lose typisierten `any`-Parameter).
+
+**Verifizierung:** `tsc --noEmit` für `apps/frontend/app`,
+`apps/geonexia/frontend`, `apps/score-tracker/frontend` und die
+Backend-Extension (jeweils frischer `git stash`/`git stash pop`-Baseline-
+Diff mit echten `node_modules`): keine neuen Fehler in allen vier
+Workspaces, Backend-Extension weiterhin 0 Fehler (nach dem oben
+beschriebenen `<any>`-Fix in `ParseSchedule.ts` — vor diesem Fix hatte die
+Umstellung dort tatsächlich 4 neue Compile-Fehler verursacht, siehe oben).
+Zusätzlich die komplette Backend-Extension-Testsuite laufen lassen (35
+Suites): nur `NewsTestHannover.ts` schlägt fehl (Live-Netzwerk-Test gegen
+eine externe News-Seite, HTTP 403 — per `git stash`/`git stash pop`
+bestätigt bereits vor dieser Änderung identisch fehlschlagend, keine
+Regression). `TestTranslationHelper.ts` (deckt die geänderte
+`TranslationHelper.ts` ab) läuft grün.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
