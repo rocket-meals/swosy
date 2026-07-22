@@ -94,19 +94,6 @@ function filterCachedSubmissions(
 }
 
 /**
- * Merge a (already sorted) submissions result into the current list and re-sort
- * the merged list. Extracted since this was repeated three times inside loadFormSubmissions.
- */
-function appendSortedSubmissions(
-	setFormSubmissions: React.Dispatch<React.SetStateAction<DatabaseTypes.FormSubmissions[]>>,
-	sortFormSubmissions: (submissions: DatabaseTypes.FormSubmissions[], option: FormSubmissionSortOption) => DatabaseTypes.FormSubmissions[],
-	sortedResult: DatabaseTypes.FormSubmissions[],
-	sortOption: FormSubmissionSortOption
-): void {
-	setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
-}
-
-/**
  * Replace the current submissions list with a (already sorted) result.
  * Extracted since this was repeated three times inside loadFormSubmissions.
  */
@@ -318,26 +305,17 @@ const Index = () => {
 		[language]
 	);
 
-	const loadFormSubmissions = async (pageNumber: number, append: boolean = false) => {
+	const loadFormSubmissions = async (pageNumber: number) => {
 		if (!form_id) return;
 		setLoading(true);
 		setIsShowingCachedData(false);
 		setHasLoadError(false);
 
-		// Apply an already-sorted result in either append or replace mode, per this call's `append` flag.
-		const applySortedResult = (sortedResult: DatabaseTypes.FormSubmissions[]) => {
-			if (append) {
-				appendSortedSubmissions(setFormSubmissions, sortFormSubmissions, sortedResult, sortOption);
-			} else {
-				replaceSortedSubmissions(setFormSubmissions, sortedResult);
-			}
-		};
-
 		// When offline mode is active, use cache directly without attempting API call
 		if (offlineMode) {
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			const filtered = filterCachedSubmissions(cached, selectedOption, query);
-			applySortedResult(sortFormSubmissions(filtered, sortOption));
+			replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
 			return;
@@ -351,14 +329,14 @@ const Index = () => {
 			})) as DatabaseTypes.FormSubmissions[];
 
 			if (result) {
-				applySortedResult(sortFormSubmissions(result, sortOption));
+				replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(result, sortOption));
 			}
 		} catch (error) {
 			// Network failed – fall back to locally cached submissions for this form
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			if (cached.length > 0) {
 				const filtered = filterCachedSubmissions(cached, selectedOption, query);
-				applySortedResult(sortFormSubmissions(filtered, sortOption));
+				replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 				setIsShowingCachedData(true);
 			} else {
 				console.error('Error fetching form submissions', error);
@@ -372,7 +350,7 @@ const Index = () => {
 	useFocusEffect(
 		useCallback(() => {
 			if (form_id) {
-				loadFormSubmissions(1, false);
+				loadFormSubmissions(1);
 			}
 			return () => {};
 		}, [form_id, selectedOption, sortOption])
@@ -383,7 +361,7 @@ const Index = () => {
 	}, [sortFormSubmissions, sortOption]);
 
 	const handleSearchFilter = () => {
-		loadFormSubmissions(1, false);
+		loadFormSubmissions(1);
 	};
 
 	useEffect(() => {

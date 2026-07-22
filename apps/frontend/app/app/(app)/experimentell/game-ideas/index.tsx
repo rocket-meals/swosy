@@ -48,8 +48,8 @@ const getRandomPair = (): [Dish, Dish] => {
 
 const generateMemoryBoard = (): Card[] => {
 	const values: (string | null)[] = [...foodIcons, ...foodIcons, null];
-	const shuffled = values.sort(() => Math.random() - 0.5);
-	return shuffled.map((value, id) => ({ id, value, revealed: false, matched: false }));
+	values.sort(() => Math.random() - 0.5);
+	return values.map((value, id) => ({ id, value, revealed: false, matched: false }));
 };
 
 const GameIdeas = () => {

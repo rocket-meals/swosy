@@ -413,9 +413,13 @@ const Index = () => {
       </html>
     `;
 
-			const newWindow = window.open('', '_blank');
-			newWindow?.document.write(html);
-			newWindow?.document.close();
+			// Load the print HTML via a Blob URL instead of `document.write` (deprecated):
+			// opening the window directly at the Blob URL still runs the inline
+			// `window.print()` script once the document has loaded, since the window
+			// navigates to a full HTML document rather than having markup injected.
+			const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+			const newWindow = window.open(blobUrl, '_blank');
+			newWindow?.addEventListener('load', () => URL.revokeObjectURL(blobUrl));
 		}
 	};
 

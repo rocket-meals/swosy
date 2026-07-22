@@ -89,17 +89,8 @@ const clearRefreshInterval = (refreshIntervalRef: React.MutableRefObject<NodeJS.
 	}
 };
 
-// Runs the periodic food-offers refresh, skipping the network call while offline.
-const fetchFoodsIfConnected = (isConnected: boolean, fetchFoods: () => void): void => {
-	if (isConnected) {
-		fetchFoods();
-	} else {
-		console.log('Offline: Skipping API call');
-	}
-};
-
 // Finds the canteen matching `canteensId` in `canteens`, or null if not applicable/found.
-const resolveSelectedCanteen = (canteensId: any, canteens: any[] | undefined): any | null => {
+const resolveSelectedCanteen = (canteensId: any, canteens: any[] | undefined): any => {
 	if (!canteensId || !canteens || canteens.length === 0) return null;
 	const foundCanteen = canteens.find((canteen: any) => canteen.id === canteensId);
 	if (!foundCanteen) {
@@ -124,6 +115,103 @@ const resolveMarkingsForFood = (currentFood: any, markings: DatabaseTypes.Markin
 	if (!currentFood?.markings || !markings) return [];
 	const markingIds = currentFood.markings.map((mark: any) => mark.markings_id);
 	return markings.filter((mark: any) => markingIds?.includes(mark.id));
+};
+
+// Resolves the display label for a (food or food-offer) category: its translation
+// if any exist, otherwise its alias. Shared by both category labels in the header.
+const resolveCategoryLabel = (category: any, language: string): string => {
+	if (category?.translations?.length > 0) {
+		return getTextFromTranslation(category.translations, language);
+	}
+	return category?.alias || '';
+};
+
+// Fetches food categories and stores the result, if any, via `dispatch`.
+const fetchAndSetFoodCategories = async (foodCategoriesHelper: FoodCategoriesHelper, dispatch: (action: any) => void): Promise<void> => {
+	try {
+		const result = (await foodCategoriesHelper.fetchFoodCategories({})) as DatabaseTypes.FoodsCategories[];
+		if (result) {
+			dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
+		}
+	} catch (error) {
+		console.error('Error fetching food categories:', error);
+	}
+};
+
+// Fetches food-offer categories and stores the result, if any, via `dispatch`.
+const fetchAndSetFoodOffersCategories = async (foodOffersCategoriesHelper: FoodOffersCategoriesHelper, dispatch: (action: any) => void): Promise<void> => {
+	try {
+		const result = (await foodOffersCategoriesHelper.fetchFoodOffersCategories({})) as DatabaseTypes.FoodoffersCategories[];
+		if (result) {
+			dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
+		}
+	} catch (error) {
+		console.error('Error fetching food offers categories:', error);
+	}
+};
+
+// Resolves and sets the current food category, given the filter params and current food.
+const fetchAndSetCurrentFoodCategory = (
+	params: any,
+	currentFood: any,
+	foodOfferCategories: any[],
+	setCurrentFoodCategory: (value: any) => void
+): void => {
+	try {
+		const targetId = resolveTargetCategoryId(params?.foodCategoryIds, currentFood?.foodoffer_category);
+		setCurrentFoodCategory(resolveCurrentCategoryFromList(foodOfferCategories, targetId));
+	} catch (error) {
+		console.error('Error fetching food categories:', error);
+	}
+};
+
+// Resolves and sets the current food-offer category, given the filter params and current food.
+const fetchAndSetCurrentFoodOfferCategory = (
+	params: any,
+	currentFood: any,
+	foodCategories: any[],
+	setCurrentFoodOfferCategory: (value: any) => void
+): void => {
+	try {
+		const targetId = resolveTargetCategoryId(params?.foodOfferCategoryIds, currentFood?.food?.food_category);
+		setCurrentFoodOfferCategory(resolveCurrentCategoryFromList(foodCategories, targetId));
+	} catch (error) {
+		console.error('Error fetching food categories:', error);
+	}
+};
+
+// Runs the periodic (or initial) food-offers refresh for the selected canteen.
+const runFoodsRefresh = async (
+	params: any,
+	setFoods: (value: any[]) => void,
+	setCurrentFood: (value: any) => void,
+	setCurrentFoodIndex: (value: number) => void,
+	startProgressAnimation: () => void,
+	lastNonEmptyFoodsFetchTimeRef: React.MutableRefObject<number | null>,
+	mountTimeRef: React.MutableRefObject<number>,
+	thirtyMinutesMs: number
+): Promise<void> => {
+	try {
+		const todayDate = new Date().toISOString().split('T')[0];
+		const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate);
+
+		const filteredData = filterFoodsByParams(foodData?.data || [], params);
+
+		if (filteredData?.length > 0) {
+			setFoods(filteredData);
+			lastNonEmptyFoodsFetchTimeRef.current = Date.now();
+			setCurrentFood(filteredData[0]);
+			setCurrentFoodIndex(0);
+			startProgressAnimation();
+		} else {
+			const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
+			if (shouldClearStaleFoods(referenceTime, thirtyMinutesMs)) {
+				setFoods([]);
+			}
+		}
+	} catch (error) {
+		console.error('Error fetching Food Offers:', error);
+	}
 };
 
 const Index = () => {
@@ -177,34 +265,12 @@ const Index = () => {
 		return () => unsubscribe();
 	}, []);
 
-	const getFoodCategories = async () => {
-		try {
-			const result = (await foodCategoriesHelper.fetchFoodCategories({})) as DatabaseTypes.FoodsCategories[];
-			if (result) {
-				dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
-			}
-		} catch (error) {
-			console.error('Error fetching food categories:', error);
-		}
-	};
-
-	const getFoodOffersCategories = async () => {
-		try {
-			const result = (await foodOffersCategoriesHelper.fetchFoodOffersCategories({})) as DatabaseTypes.FoodoffersCategories[];
-			if (result) {
-				dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
-			}
-		} catch (error) {
-			console.error('Error fetching food offers categories:', error);
-		}
-	};
-
 	useEffect(() => {
 		if (foodCategories.length === 0) {
-			getFoodCategories();
+			fetchAndSetFoodCategories(foodCategoriesHelper, dispatch);
 		}
 		if (foodOfferCategories.length === 0) {
-			getFoodOffersCategories();
+			fetchAndSetFoodOffersCategories(foodOffersCategoriesHelper, dispatch);
 		}
 	}, [foodCategories, foodOfferCategories]);
 
@@ -221,36 +287,21 @@ const Index = () => {
 
 	const THIRTY_MINUTES_MS = 30 * 60 * 1000;
 
-	const fetchFoods = async () => {
-		try {
-			const todayDate = new Date().toISOString().split('T')[0];
-			const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate);
-
-			const filteredData = filterFoodsByParams(foodData?.data || [], params);
-
-			if (filteredData?.length > 0) {
-				setFoods(filteredData);
-				lastNonEmptyFoodsFetchTimeRef.current = Date.now();
-				setCurrentFood(filteredData[0]);
-				setCurrentFoodIndex(0);
-				startProgressAnimation();
-			} else {
-				const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
-				if (shouldClearStaleFoods(referenceTime, THIRTY_MINUTES_MS)) {
-					setFoods([]);
-				}
-			}
-		} catch (error) {
-			console.error('Error fetching Food Offers:', error);
-		}
-	};
+	const fetchFoods = () =>
+		runFoodsRefresh(params, setFoods, setCurrentFood, setCurrentFoodIndex, startProgressAnimation, lastNonEmptyFoodsFetchTimeRef, mountTimeRef, THIRTY_MINUTES_MS);
 
 	useEffect(() => {
 		if (params?.refreshFoodOffersIntervalInSeconds) {
 			clearRefreshInterval(refreshIntervalRef);
 
 			refreshIntervalRef.current = setInterval(
-				() => fetchFoodsIfConnected(isConnected, fetchFoods),
+				() => {
+					if (isConnected) {
+						fetchFoods();
+					} else {
+						console.log('Offline: Skipping API call');
+					}
+				},
 				Number(params.refreshFoodOffersIntervalInSeconds) * 1000
 			);
 
@@ -307,32 +358,14 @@ const Index = () => {
 		return () => clearInterval(interval);
 	}, []);
 
-	const fetchCurrentFoodCategory = async () => {
-		try {
-			const targetId = resolveTargetCategoryId(params?.foodCategoryIds, currentFood?.foodoffer_category);
-			setCurrentFoodCategory(resolveCurrentCategoryFromList(foodOfferCategories, targetId));
-		} catch (error) {
-			console.error('Error fetching food categories:', error);
-		}
-	};
-
-	const fetchCurrentFoodOfferCategory = async () => {
-		try {
-			const targetId = resolveTargetCategoryId(params?.foodOfferCategoryIds, currentFood?.food?.food_category);
-			setCurrentFoodOfferCategory(resolveCurrentCategoryFromList(foodCategories, targetId));
-		} catch (error) {
-			console.error('Error fetching food categories:', error);
-		}
-	};
-
 	const fetchMarkingLabels = useCallback(() => {
 		setCurrentMarking(resolveMarkingsForFood(currentFood, markings));
 	}, [currentFood, markings]);
 
 	useEffect(() => {
 		if (currentFood) {
-			fetchCurrentFoodCategory();
-			fetchCurrentFoodOfferCategory();
+			fetchAndSetCurrentFoodCategory(params, currentFood, foodOfferCategories, setCurrentFoodCategory);
+			fetchAndSetCurrentFoodOfferCategory(params, currentFood, foodCategories, setCurrentFoodOfferCategory);
 			fetchMarkingLabels();
 		}
 	}, [currentFoodIndex, currentFood]);
@@ -372,8 +405,18 @@ const Index = () => {
 		</View>
 	);
 
+	const hasFoods = (foods?.length ?? 0) > 0;
 	const orientationFlexDirection = width > height ? 'row' : 'column';
-	const contentFlexDirection = foods && foods?.length < 1 ? 'column' : orientationFlexDirection;
+	const contentFlexDirection = hasFoods ? orientationFlexDirection : 'column';
+
+	// Precomputed once per render instead of repeating `screenWidth > 600 ? X : Y`
+	// at each of the (many) text elements below.
+	const isWideScreen = screenWidth > 600;
+	const canteenLabelFontSize = isWideScreen ? 22 : 16;
+	const smallTextFontSize = isWideScreen ? 14 : 12;
+	const subHeadingFontSize = isWideScreen ? 24 : 16;
+	const foodTitleFontSize = isWideScreen ? 24 : 18;
+	const priceFontSize = isWideScreen ? 44 : 18;
 
 	return (
 		<ScrollView
@@ -385,7 +428,7 @@ const Index = () => {
 				flexDirection: contentFlexDirection,
 			}}
 		>
-			<View style={[foods && foods?.length > 0 && { flex: 1 }]}>
+			<View style={[hasFoods && { flex: 1 }]}>
 				<View
 					style={{
 						...styles.headerContainer,
@@ -401,7 +444,7 @@ const Index = () => {
 									style={{
 										...styles.label,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 22 : 16,
+										fontSize: canteenLabelFontSize,
 									}}
 								>
 									{selectedCanteen?.alias}
@@ -412,7 +455,7 @@ const Index = () => {
 											style={{
 												...styles.timestamp,
 												color: '#ffffff',
-												fontSize: screenWidth > 600 ? 14 : 12,
+												fontSize: smallTextFontSize,
 											}}
 										>
 											{'Offline'}
@@ -426,7 +469,7 @@ const Index = () => {
 									style={{
 										...styles.timestamp,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 14 : 12,
+										fontSize: smallTextFontSize,
 									}}
 								>
 									{currentTime}
@@ -435,10 +478,10 @@ const Index = () => {
 									style={{
 										...styles.headerFoodLabel,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 14 : 12,
+										fontSize: smallTextFontSize,
 									}}
 								>
-									{foods?.length > 0 ? `${currentFoodIndex + 1} / ${foods?.length} ${translate(TranslationKeys.foods)}` : ''}
+									{hasFoods ? `${currentFoodIndex + 1} / ${foods?.length} ${translate(TranslationKeys.foods)}` : ''}
 								</Text>
 							</View>
 						</View>
@@ -458,7 +501,7 @@ const Index = () => {
 						}}
 					/>
 				</View>
-				{foods && foods?.length > 0 && (
+				{hasFoods && (
 					<>
 						{height > width && (
 							<View style={{ ...styles.col2 }}>
@@ -477,10 +520,10 @@ const Index = () => {
 										style={{
 											...styles.subHeading,
 											color: theme.screen.text,
-											fontSize: screenWidth > 600 ? 24 : 16,
+											fontSize: subHeadingFontSize,
 										}}
 									>
-										{currentFoodCategory && currentFoodCategory?.translations?.length > 0 ? getTextFromTranslation(currentFoodCategory?.translations, language) : currentFoodCategory?.alias || ''}
+										{resolveCategoryLabel(currentFoodCategory, language)}
 									</Text>
 								)}
 								{params?.showFoodofferCategoryName === 'true' && (
@@ -488,10 +531,10 @@ const Index = () => {
 										style={{
 											...styles.subHeading,
 											color: theme.screen.text,
-											fontSize: screenWidth > 600 ? 24 : 16,
+											fontSize: subHeadingFontSize,
 										}}
 									>
-										{currentFoodOfferCategory && currentFoodOfferCategory?.translations?.length > 0 ? getTextFromTranslation(currentFoodOfferCategory?.translations, language) : currentFoodOfferCategory?.alias || ''}
+										{resolveCategoryLabel(currentFoodOfferCategory, language)}
 									</Text>
 								)}
 
@@ -500,7 +543,7 @@ const Index = () => {
 										...styles.heading,
 										color: theme.screen.text,
 										textAlign: 'right',
-										fontSize: screenWidth > 600 ? 24 : 18,
+										fontSize: foodTitleFontSize,
 									}}
 								>
 									{getTextFromTranslation(currentFood?.food?.translations, language)}
@@ -511,7 +554,7 @@ const Index = () => {
 									style={{
 										...styles.subHeading,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 24 : 16,
+										fontSize: subHeadingFontSize,
 									}}
 								>
 									{`${translate(TranslationKeys.price_group_student)}:`}
@@ -520,7 +563,7 @@ const Index = () => {
 									style={{
 										...styles.heading,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 44 : 18,
+										fontSize: priceFontSize,
 									}}
 								>
 									{showFormatedPrice(showDayPlanPrice(currentFood, PriceGroupKey.student))}
@@ -529,7 +572,7 @@ const Index = () => {
 									style={{
 										...styles.body,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 24 : 16,
+										fontSize: subHeadingFontSize,
 									}}
 								>
 									{`${translate(TranslationKeys.price_group_employee)}: `}
@@ -539,7 +582,7 @@ const Index = () => {
 									style={{
 										...styles.body,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 24 : 16,
+										fontSize: subHeadingFontSize,
 									}}
 								>
 									{`${translate(TranslationKeys.price_group_guest)}: `}
@@ -549,7 +592,7 @@ const Index = () => {
 									style={{
 										...styles.body,
 										color: theme.screen.text,
-										fontSize: screenWidth > 600 ? 24 : 16,
+										fontSize: subHeadingFontSize,
 									}}
 								>
 									{`${translate(TranslationKeys.markings)}:`}
@@ -564,7 +607,7 @@ const Index = () => {
 					</>
 				)}
 			</View>
-			{foods && foods?.length > 0 && (
+			{hasFoods && (
 				<>
 					{height < width && (
 						<View style={{ ...styles.col2 }}>
@@ -577,7 +620,7 @@ const Index = () => {
 					)}
 				</>
 			)}
-			{foods && foods?.length < 1 && (
+			{!hasFoods && (
 				<View style={styles.emptyContainer}>
 					<View style={{ flex: 1 }}>
 						<Image source={getAppIconInsideExpoLocalSaved()} resizeMode="cover" />
