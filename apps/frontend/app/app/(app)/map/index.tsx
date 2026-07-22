@@ -850,7 +850,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { translate } = useLanguage();
 	const { addPointsForMapOpen } = useAppRatingScore();
 
-	const [logEntries, setLogEntries] = useState<string[]>([]);
+	const [logEntries, setLogEntries] = useState<{ id: number; text: string }[]>([]);
+	const nextLogEntryIdRef = useRef(0);
 	const logScrollRef = useRef<ScrollView>(null);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -918,7 +919,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const addLog = useCallback((entry: string) => {
 		setLogEntries((prev) => {
-			const next = [...prev, `${new Date().toLocaleTimeString()}: ${entry}`];
+			const next = [...prev, { id: nextLogEntryIdRef.current++, text: `${new Date().toLocaleTimeString()}: ${entry}` }];
 			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
 		});
 	}, []);
@@ -1746,9 +1747,9 @@ const OsmVectorMapScreen: React.FC = () => {
 									style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
 									onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
 								>
-									{logEntries.map((entry, i) => (
-										<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-											{entry}
+									{logEntries.map((entry) => (
+										<Text key={entry.id} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+											{entry.text}
 										</Text>
 									))}
 									{logEntries.length === 0 && (

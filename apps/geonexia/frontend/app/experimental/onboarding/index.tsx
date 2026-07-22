@@ -395,16 +395,18 @@ function ProgressDots({
 	current: number;
 	color: string;
 }>) {
+	const dotPositions = Array.from({ length: total }, (_, id) => id);
+
 	return (
 		<View style={styles.progressDots}>
-			{Array.from({ length: total }).map((_, i) => (
+			{dotPositions.map((id) => (
 				<View
-					key={i}
+					key={id}
 					style={[
 						styles.dot,
 						{
-							backgroundColor: i === current ? color : color + '33',
-							width: i === current ? 20 : 8,
+							backgroundColor: id === current ? color : color + '33',
+							width: id === current ? 20 : 8,
 						},
 					]}
 				/>

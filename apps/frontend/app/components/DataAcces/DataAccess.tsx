@@ -13,22 +13,23 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
 const parseMarkdown = (text: string, theme: any) => {
-	return text.split('\n').map((line, index) => {
+	const lines = text.split('\n').map((line, id) => ({ id, line }));
+	return lines.map(({ id, line }) => {
 		if (line.startsWith('## ')) {
 			return (
-				<Text key={index} style={[styles.value, { color: theme.header.text }]}>
+				<Text key={id} style={[styles.value, { color: theme.header.text }]}>
 					{line.replace('## ', '')}
 				</Text>
 			);
 		} else if (line.startsWith('### ')) {
 			return (
-				<Text key={index} style={[styles.labelParagraph, { color: theme.header.text }]}>
+				<Text key={id} style={[styles.labelParagraph, { color: theme.header.text }]}>
 					{line.replace('### ', '')}
 				</Text>
 			);
 		} else {
 			return (
-				<Text key={index} style={[styles.titleHeading, { color: theme.header.text }]}>
+				<Text key={id} style={[styles.titleHeading, { color: theme.header.text }]}>
 					{line}
 				</Text>
 			);
