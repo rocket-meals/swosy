@@ -5,6 +5,7 @@ import { Accountability, EventContext, PrimaryKey, Query } from '@directus/types
 import { TranslationHelper } from './TranslationHelper';
 import { Knex } from 'knex';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
+import { DeepCopyHelper } from 'repo-depkit-common';
 
 export type OptsCustomType = {
   disableEventEmit: boolean;
@@ -219,7 +220,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     let queriedItems = await this.findItems(search, customOptions);
     let foundItem = queriedItems[0];
 
-    let copiedCreateItem = JSON.parse(JSON.stringify(create));
+    let copiedCreateItem = DeepCopyHelper.deepCopy(create);
     if (!foundItem) {
       copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
       await itemsService.createOne(copiedCreateItem);

@@ -1,3 +1,5 @@
+import { DeepCopyHelper } from 'repo-depkit-common';
+
 export const DEFAULT_COLOR_TO_BE_REPLACED = '#FF00FF';
 export const DEFAULT_COLOR_LIGHTER_TO_BE_REPLACED = '#FFAAFF';
 export const DEFAULT_COLOR_DARKER_TO_BE_REPLACED = '#DD00DD';
@@ -172,6 +174,6 @@ export function replaceLottieColors(lottieJSON: any, primaryColor: string): any 
 	}
 
 	// Deep copy before modifying.
-	const modifiedJSON = JSON.parse(JSON.stringify(lottieJSON));
+	const modifiedJSON = DeepCopyHelper.deepCopy(lottieJSON);
 	return replaceColorsInLottie(modifiedJSON, usedColorReplaceMapAfter);
 }

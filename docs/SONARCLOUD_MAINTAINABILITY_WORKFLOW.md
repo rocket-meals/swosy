@@ -1528,6 +1528,136 @@ zu belassen:
   aus `apps/frontend/app`) zu synchronisieren, damit `yarn install
   --immutable` in der CI nicht bricht.
 
+## Am 2026-07-22 (zwölfte Runde): Reliability auf 0, letzte 6 Maintainability-Funde behoben/ausgeblendet
+
+Ausgangspunkt: frischer CSV-Stand nach der elften Runde — **Reliability: 0
+Funde** (Ziel bereits erreicht). Maintainability: 6 Funde, davon zwei neu
+durch die Zentralisierung der vorherigen Runde selbst verursacht:
+
+- **`bigScreen/index.tsx:193`** („Async arrow function has too many
+  parameters (8)"): `runFoodsRefresh` (in der elften Runde aus dem
+  Komponenten-Body extrahiert) hatte 8 positionale Parameter. Auf ein
+  Options-Objekt (`RunFoodsRefreshOptions`) umgestellt — exakt das bereits
+  in der vierten Runde etablierte Muster (`boundsOverlap`,
+  `getFoodofferToCreate`, `createBuildingMarkerSvg`). Einzige Aufrufstelle
+  entsprechend angepasst.
+- **`MyBuffer.ts:10`** („Use export…from to re-export MyBuffer"):
+  `import { Buffer } from 'buffer'; … export { Buffer as MyBuffer };` zu
+  `export { Buffer as MyBuffer } from 'buffer';` zusammengeführt — der
+  `NOSONAR`-Kommentar für den `buffer`-Import bleibt dabei auf derselben
+  (jetzt einzigen) Zeile.
+- **`1_fix_viewbox.py:28`** (Regex-Komplexität, jetzt „30 to the 20
+  allowed" statt vorher „29"): Die in der zehnten Runde durchgeführte
+  Ambiguitäts-Fix (`\d+\.?\d*` → `\d+(?:\.\d*)?`) hat den von SonarPython
+  gemessenen **Komplexitäts**-Wert (Regel S5843, zählt Quantifizierer/
+  Gruppen/Alternativen — nicht dasselbe wie Backtracking-Ambiguität) durch
+  die zusätzliche Gruppe versehentlich von 29 auf 30 erhöht, statt ihn zu
+  senken. Da frühere Runden (vierte Runde) bereits begründet hatten, dass
+  eine strukturelle Vereinfachung dieses SVG-Pfad-Tokenizers ein reales
+  Risiko für Rand-fälle birgt, wurde hier kein weiterer Simplifizierungs-
+  Versuch unternommen, sondern ein korrekt platzierter `# NOSONAR`-Kommentar
+  auf der Regex-Zeile selbst ergänzt (anders als der ursprüngliche
+  `hashHelper.ts`-Fehler in der neunten Runde, wo der Kommentar nicht auf
+  der gemeldeten Zeile stand). Der bereits verbesserte (unambiguöse) Regex
+  aus der zehnten Runde bleibt erhalten.
+- **`DateHelper.ts:414`** (`Object.hasOwn()`): weiterhin nicht änderbar
+  (ES2019-Backend-Extension-Workspace, siehe zehnte Runde) — jetzt mit
+  korrekt auf der gemeldeten Zeile platziertem `NOSONAR`-Kommentar
+  ausgeblendet, statt nur unverändert und weiterhin im CSV sichtbar zu
+  bleiben.
+- **`FoodItem.tsx:324`** („Move this component definition"): weiterhin der
+  mit Abstand größte Einzelfall (~28 geschlossene Werte, siehe fünfte/
+  zehnte Runde) — jetzt mit `NOSONAR` auf der `trigger={...}`-Zeile
+  ausgeblendet statt nur dokumentiert unverändert gelassen.
+- **`animationHelper.ts:175`** (`structuredClone`): weiterhin nicht
+  änderbar (Hermes implementiert `structuredClone` nicht global, siehe
+  zehnte Runde) — jetzt mit `NOSONAR` ausgeblendet.
+
+Für die letzten vier Fälle gilt: die fachliche Begründung, warum ein
+echter Fix nicht sinnvoll/möglich ist, wurde bereits in früheren Runden
+im Detail hergeleitet und verifiziert (siehe dort) — diese Runde hat nur
+den fehlenden letzten Schritt nachgeholt, die Begründung tatsächlich als
+`NOSONAR` direkt auf der gemeldeten Zeile zu hinterlegen, damit SonarCloud
+die Stelle nicht weiter als offenen Fund führt.
+
+**Verifizierung:** `tsc --noEmit` für `apps/frontend/app`,
+`apps/geonexia/frontend`, `apps/score-tracker/frontend` und die
+Backend-Extension, jeweils gegen einen frischen `git stash`/`git stash
+pop`-Baseline-Diff mit echten (per `yarn install` installierten)
+`node_modules`: keine neuen Fehler in allen vier Workspaces (Backend-
+Extension weiterhin 0 Fehler); die einzige Abweichung im
+`bigScreen/index.tsx`-Diff ist derselbe vorbestehende Typfehler
+(`Dispatch<SetStateAction<never[]>>` nicht zuweisbar zu `(value: any[]) =>
+void`), nur jetzt als „Property"- statt „Argument"-Fehler gemeldet, weil
+aus dem Positions-Argument ein Objekt-Literal-Property wurde. Zusätzlich
+`1_fix_viewbox.py` erneut mit Beispiel-Pfaddaten ausgeführt (unverändertes
+Verhalten, da nur ein Kommentar ergänzt wurde).
+
+**Bilanz:** Reliability 0/0. Maintainability: 2 echte Fixes (zu klein für
+weitere Sonar-Meldungen) + 4 korrekt platzierte `NOSONAR`-Ausblendungen für
+Fälle, die bereits in früheren Runden als „fachlich nicht sinnvoll änderbar"
+verifiziert wurden. Nächster Scan sollte beide CSVs bei 0 zeigen.
+
+## Am 2026-07-22 (dreizehnte Runde): `JSON.parse(JSON.stringify(...))` zentralisiert
+
+Auf Nutzerwunsch (unabhängig von einem konkreten neuen CSV-Fund, analog zur
+elften Runde für `buffer`/`Math.random()`) wurde das
+`JSON.parse(JSON.stringify(...))`-Deep-Clone-Muster in eine zentrale Helper-
+Klasse ausgelagert, statt es an der einzigen bisherigen Stelle
+(`animationHelper.ts`, mit `NOSONAR` aus der zehnten/zwölften Runde) sowie an
+sieben weiteren, bisher unangetasteten Stellen im Backend-Extension-Workspace
+verstreut zu belassen.
+
+- Neue Datei `packages/common/src/DeepCopyHelper.ts` (Klasse `DeepCopyHelper`,
+  statische Methode `deepCopy<T>(value: T): T`) — jetzt die **einzige**
+  Stelle im Repo mit einem literalen `JSON.parse(JSON.stringify(...))`-Aufruf
+  und dem zugehörigen `NOSONAR`-Kommentar (SonarCloud empfiehlt pauschal
+  `structuredClone(...)`, das aber in Hermes nicht als globale Funktion
+  implementiert ist — dieselbe Begründung wie in der zehnten Runde für
+  `animationHelper.ts`).
+- Alle acht bisherigen direkten Vorkommen umgestellt: `animationHelper.ts`
+  (Frontend, verliert dadurch seinen lokalen `NOSONAR`-Kommentar aus der
+  zwölften Runde) sowie im Backend-Extension-Workspace `AccountHelper.ts`,
+  `ItemsServiceHelper.ts`, `TranslationHelper.ts` (2x), `DirectusCollectionTranslator.ts`
+  und `food-sync-hook/ParseSchedule.ts`.
+- **Eine Stelle brauchte eine Anpassung über die reine Umbenennung hinaus:**
+  `food-sync-hook/ParseSchedule.ts`s `markingJSONCopy` verließ sich auf die
+  implizite `any`-Typisierung, die `JSON.parse(...)` liefert (Felder werden
+  danach per `delete` entfernt und mit abweichenden Typen überschrieben, um
+  `Partial<Markings>` zu entsprechen). Da `DeepCopyHelper.deepCopy<T>` das
+  generische `T` aus dem Argumenttyp ableitet, hätte eine unveränderte
+  Umstellung dort den vorher `any`-typisierten Wert plötzlich streng typisiert
+  und zu echten Compile-Fehlern geführt (`delete` auf ein nicht-optionales
+  Feld, Typkonflikt bei `translations`). Fix: `DeepCopyHelper.deepCopy<any>(markingJSON)`
+  — expliziter Typparameter erzwingt weiterhin `any`, identisches Verhalten
+  zur vorherigen `JSON.parse(JSON.stringify(...))`-Stelle.
+- In `TranslationHelper.ts` wurde nebenbei ein jetzt irreführender
+  Kommentar korrigiert (verwies noch auf das alte
+  `JSON.parse(JSON.stringify(...))`-Muster als Begründung für einen
+  bewusst lose typisierten `any`-Parameter).
+
+**Verifizierung:** `tsc --noEmit` für `apps/frontend/app`,
+`apps/geonexia/frontend`, `apps/score-tracker/frontend` und die
+Backend-Extension (jeweils frischer `git stash`/`git stash pop`-Baseline-
+Diff mit echten `node_modules`): keine neuen Fehler in allen vier
+Workspaces, Backend-Extension weiterhin 0 Fehler (nach dem oben
+beschriebenen `<any>`-Fix in `ParseSchedule.ts` — vor diesem Fix hatte die
+Umstellung dort tatsächlich 4 neue Compile-Fehler verursacht, siehe oben).
+Zusätzlich die komplette Backend-Extension-Testsuite laufen lassen (35
+Suites): nur `NewsTestHannover.ts` schlägt fehl (Live-Netzwerk-Test gegen
+eine externe News-Seite, HTTP 403 — per `git stash`/`git stash pop`
+bestätigt bereits vor dieser Änderung identisch fehlschlagend, keine
+Regression). `TestTranslationHelper.ts` (deckt die geänderte
+`TranslationHelper.ts` ab) läuft grün.
+
+**Nachträgliche Umbenennung (noch selbe Runde):** Auf Nutzerwunsch wurde
+`CloneHelper`/`deepClone` konsequent in `DeepCopyHelper`/`deepCopy`
+umbenannt (Datei, Klasse, Methode, alle acht Aufrufstellen sowie die
+Import-Sortierung dort, wo das reine Text-Ersetzen sie durcheinandergebracht
+hatte). Verhalten unverändert, reine Umbenennung — erneut per `tsc --noEmit`
+für alle vier Workspaces sowie den drei bereits oben genannten Test-Suiten
+gegengeprüft.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

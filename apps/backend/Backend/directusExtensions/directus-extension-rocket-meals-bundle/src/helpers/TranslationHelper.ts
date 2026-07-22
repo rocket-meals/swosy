@@ -1,5 +1,5 @@
 import { PrimaryKey } from '@directus/types';
-import { CollectionNames, DatabaseTypes, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
@@ -162,7 +162,7 @@ export class TranslationHelper {
          }
          }
          */
-    let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
+    let remaining_translationsFromParsing = DeepCopyHelper.deepCopy(translationsFromParsing); //make a work copy
     /** remaining_translationsFromParsing is an object with the following structure:
          {
          [TranslationHelper.]: {name ....},
@@ -247,7 +247,7 @@ export class TranslationHelper {
     existingTranslations: ExistingTranslation[],
     translationsFromParsing: TranslationsFromParsingType,
     usedLanguageCodeForSourceTranslation: LanguageCodesType,
-    remaining_translationsFromParsing: any, // kept as `any` to match the loosely-typed work copy (JSON.parse(JSON.stringify(...))) from the caller
+    remaining_translationsFromParsing: any, // kept as `any` since this function deletes keys from it in place
     updateTranslations: ExistingTranslation[]
   ): { existingTranslationsDifferentFromParsing: boolean } {
     let existingTranslationsDifferentFromParsing = false;
@@ -264,7 +264,7 @@ export class TranslationHelper {
       if (translationFromParsing) {
         //we also got a translation from the parse
         /* Update translation */
-        const translationFromParsingCopy = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
+        const translationFromParsingCopy = DeepCopyHelper.deepCopy(translationFromParsing); //make a copy
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
 
         if (TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)) {

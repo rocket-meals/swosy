@@ -5,6 +5,4 @@
 // `import ... from 'node:buffer'` fails to resolve at build time. See
 // docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md for the verification against the
 // actually-resolved metro-resolver source. Hence the NOSONAR below.
-import { Buffer } from 'buffer'; // NOSONAR - Metro has no `node:` scheme support, see comment above
-
-export { Buffer as MyBuffer };
+export { Buffer as MyBuffer } from 'buffer'; // NOSONAR - Metro has no `node:` scheme support, see comment above

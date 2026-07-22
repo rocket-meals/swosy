@@ -1,6 +1,6 @@
 import { Translator } from './Translator';
 import { TranslatorSettings } from './TranslatorSettings';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { SchemaOverview } from '@directus/types';
 import {SchemaHelper} from "../helpers/SchemaHelper";
@@ -105,7 +105,7 @@ export class DirectusCollectionTranslator {
       return payload;
     }
 
-    const workPayload = JSON.parse(JSON.stringify(payload));
+    const workPayload = DeepCopyHelper.deepCopy(payload);
     const schema = await myDatabaseHelper.getSchema();
     const context: TranslationSchemaContext = { schema, collectionName, translation_field };
 

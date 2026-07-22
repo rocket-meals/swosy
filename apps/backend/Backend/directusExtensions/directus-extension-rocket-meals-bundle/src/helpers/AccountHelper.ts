@@ -1,4 +1,5 @@
 import type {Accountability} from "@directus/types";
+import {DeepCopyHelper} from "repo-depkit-common";
 
 /**
  * Helper for Account things
@@ -12,7 +13,7 @@ export class AccountHelper {
   static getAdminAccountability(accountability: Accountability | null | undefined): Accountability {
     let adminAccountAbility: Partial<Accountability> = {}
     if (accountability) {
-      adminAccountAbility = JSON.parse(JSON.stringify(accountability)); //make a copy !
+      adminAccountAbility = DeepCopyHelper.deepCopy(accountability); //make a copy !
     }
     adminAccountAbility.admin = true; //usefull if we realy want to upload something as admin
     return adminAccountAbility as Accountability;
