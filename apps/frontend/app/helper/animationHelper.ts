@@ -171,7 +171,11 @@ export function replaceLottieColors(lottieJSON: any, primaryColor: string): any 
 		return lottieJSON;
 	}
 
-	// Deep copy before modifying.
-	const modifiedJSON = JSON.parse(JSON.stringify(lottieJSON));
+	// Deep copy before modifying. Not using structuredClone(): it is not implemented
+	// as a global in Hermes (React Native's JS engine) - see
+	// docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md for the verification. lottieJSON is
+	// already plain, JSON-serializable data, so JSON.parse(JSON.stringify(...)) is
+	// correct and safe here.
+	const modifiedJSON = JSON.parse(JSON.stringify(lottieJSON)); // NOSONAR - see comment above
 	return replaceColorsInLottie(modifiedJSON, usedColorReplaceMapAfter);
 }

@@ -1528,6 +1528,76 @@ zu belassen:
   aus `apps/frontend/app`) zu synchronisieren, damit `yarn install
   --immutable` in der CI nicht bricht.
 
+## Am 2026-07-22 (zwölfte Runde): Reliability auf 0, letzte 6 Maintainability-Funde behoben/ausgeblendet
+
+Ausgangspunkt: frischer CSV-Stand nach der elften Runde — **Reliability: 0
+Funde** (Ziel bereits erreicht). Maintainability: 6 Funde, davon zwei neu
+durch die Zentralisierung der vorherigen Runde selbst verursacht:
+
+- **`bigScreen/index.tsx:193`** („Async arrow function has too many
+  parameters (8)"): `runFoodsRefresh` (in der elften Runde aus dem
+  Komponenten-Body extrahiert) hatte 8 positionale Parameter. Auf ein
+  Options-Objekt (`RunFoodsRefreshOptions`) umgestellt — exakt das bereits
+  in der vierten Runde etablierte Muster (`boundsOverlap`,
+  `getFoodofferToCreate`, `createBuildingMarkerSvg`). Einzige Aufrufstelle
+  entsprechend angepasst.
+- **`MyBuffer.ts:10`** („Use export…from to re-export MyBuffer"):
+  `import { Buffer } from 'buffer'; … export { Buffer as MyBuffer };` zu
+  `export { Buffer as MyBuffer } from 'buffer';` zusammengeführt — der
+  `NOSONAR`-Kommentar für den `buffer`-Import bleibt dabei auf derselben
+  (jetzt einzigen) Zeile.
+- **`1_fix_viewbox.py:28`** (Regex-Komplexität, jetzt „30 to the 20
+  allowed" statt vorher „29"): Die in der zehnten Runde durchgeführte
+  Ambiguitäts-Fix (`\d+\.?\d*` → `\d+(?:\.\d*)?`) hat den von SonarPython
+  gemessenen **Komplexitäts**-Wert (Regel S5843, zählt Quantifizierer/
+  Gruppen/Alternativen — nicht dasselbe wie Backtracking-Ambiguität) durch
+  die zusätzliche Gruppe versehentlich von 29 auf 30 erhöht, statt ihn zu
+  senken. Da frühere Runden (vierte Runde) bereits begründet hatten, dass
+  eine strukturelle Vereinfachung dieses SVG-Pfad-Tokenizers ein reales
+  Risiko für Rand-fälle birgt, wurde hier kein weiterer Simplifizierungs-
+  Versuch unternommen, sondern ein korrekt platzierter `# NOSONAR`-Kommentar
+  auf der Regex-Zeile selbst ergänzt (anders als der ursprüngliche
+  `hashHelper.ts`-Fehler in der neunten Runde, wo der Kommentar nicht auf
+  der gemeldeten Zeile stand). Der bereits verbesserte (unambiguöse) Regex
+  aus der zehnten Runde bleibt erhalten.
+- **`DateHelper.ts:414`** (`Object.hasOwn()`): weiterhin nicht änderbar
+  (ES2019-Backend-Extension-Workspace, siehe zehnte Runde) — jetzt mit
+  korrekt auf der gemeldeten Zeile platziertem `NOSONAR`-Kommentar
+  ausgeblendet, statt nur unverändert und weiterhin im CSV sichtbar zu
+  bleiben.
+- **`FoodItem.tsx:324`** („Move this component definition"): weiterhin der
+  mit Abstand größte Einzelfall (~28 geschlossene Werte, siehe fünfte/
+  zehnte Runde) — jetzt mit `NOSONAR` auf der `trigger={...}`-Zeile
+  ausgeblendet statt nur dokumentiert unverändert gelassen.
+- **`animationHelper.ts:175`** (`structuredClone`): weiterhin nicht
+  änderbar (Hermes implementiert `structuredClone` nicht global, siehe
+  zehnte Runde) — jetzt mit `NOSONAR` ausgeblendet.
+
+Für die letzten vier Fälle gilt: die fachliche Begründung, warum ein
+echter Fix nicht sinnvoll/möglich ist, wurde bereits in früheren Runden
+im Detail hergeleitet und verifiziert (siehe dort) — diese Runde hat nur
+den fehlenden letzten Schritt nachgeholt, die Begründung tatsächlich als
+`NOSONAR` direkt auf der gemeldeten Zeile zu hinterlegen, damit SonarCloud
+die Stelle nicht weiter als offenen Fund führt.
+
+**Verifizierung:** `tsc --noEmit` für `apps/frontend/app`,
+`apps/geonexia/frontend`, `apps/score-tracker/frontend` und die
+Backend-Extension, jeweils gegen einen frischen `git stash`/`git stash
+pop`-Baseline-Diff mit echten (per `yarn install` installierten)
+`node_modules`: keine neuen Fehler in allen vier Workspaces (Backend-
+Extension weiterhin 0 Fehler); die einzige Abweichung im
+`bigScreen/index.tsx`-Diff ist derselbe vorbestehende Typfehler
+(`Dispatch<SetStateAction<never[]>>` nicht zuweisbar zu `(value: any[]) =>
+void`), nur jetzt als „Property"- statt „Argument"-Fehler gemeldet, weil
+aus dem Positions-Argument ein Objekt-Literal-Property wurde. Zusätzlich
+`1_fix_viewbox.py` erneut mit Beispiel-Pfaddaten ausgeführt (unverändertes
+Verhalten, da nur ein Kommentar ergänzt wurde).
+
+**Bilanz:** Reliability 0/0. Maintainability: 2 echte Fixes (zu klein für
+weitere Sonar-Meldungen) + 4 korrekt platzierte `NOSONAR`-Ausblendungen für
+Fälle, die bereits in früheren Runden als „fachlich nicht sinnvoll änderbar"
+verifiziert wurden. Nächster Scan sollte beide CSVs bei 0 zeigen.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

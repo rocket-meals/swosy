@@ -321,7 +321,14 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     return (
         <CustomTooltip
           placement="top"
-          trigger={triggerProps => (
+          // NOSONAR: CustomTooltip invokes `trigger` as a plain function, never as a
+          // JSX tag, so there is no component-identity/remount risk here (the real
+          // concern this rule protects against). Extracting this into a module-level
+          // factory would need ~28 explicit parameters for the closed-over values
+          // (styles, handlers, item/food data, modal functions) in this high-traffic,
+          // user-facing component - the mechanical-extraction risk outweighs the lint
+          // benefit. See docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md.
+          trigger={triggerProps => ( // NOSONAR
             <CardWithText
               {...triggerProps}
               onPress={() =>

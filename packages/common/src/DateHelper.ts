@@ -411,7 +411,10 @@ export class DateHelper {
     todayStart.setHours(12, 0, 0, 0);
 
     const diffDays = Math.round((dateStart.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-    if (relativeDaysDiffTranslations && Object.prototype.hasOwnProperty.call(relativeDaysDiffTranslations, diffDays)) {
+    // NOSONAR: Object.hasOwn() is ES2022 and DateHelper is also imported by the
+    // backend-extension workspace, whose tsconfig targets ES2019/lib ES2019 - see
+    // docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md for the verification.
+    if (relativeDaysDiffTranslations && Object.prototype.hasOwnProperty.call(relativeDaysDiffTranslations, diffDays)) { // NOSONAR
       return relativeDaysDiffTranslations[diffDays];
     }
 

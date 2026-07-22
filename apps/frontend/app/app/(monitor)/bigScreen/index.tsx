@@ -180,17 +180,28 @@ const fetchAndSetCurrentFoodOfferCategory = (
 	}
 };
 
+type RunFoodsRefreshOptions = {
+	params: any;
+	setFoods: (value: any[]) => void;
+	setCurrentFood: (value: any) => void;
+	setCurrentFoodIndex: (value: number) => void;
+	startProgressAnimation: () => void;
+	lastNonEmptyFoodsFetchTimeRef: React.MutableRefObject<number | null>;
+	mountTimeRef: React.MutableRefObject<number>;
+	thirtyMinutesMs: number;
+};
+
 // Runs the periodic (or initial) food-offers refresh for the selected canteen.
-const runFoodsRefresh = async (
-	params: any,
-	setFoods: (value: any[]) => void,
-	setCurrentFood: (value: any) => void,
-	setCurrentFoodIndex: (value: number) => void,
-	startProgressAnimation: () => void,
-	lastNonEmptyFoodsFetchTimeRef: React.MutableRefObject<number | null>,
-	mountTimeRef: React.MutableRefObject<number>,
-	thirtyMinutesMs: number
-): Promise<void> => {
+const runFoodsRefresh = async ({
+	params,
+	setFoods,
+	setCurrentFood,
+	setCurrentFoodIndex,
+	startProgressAnimation,
+	lastNonEmptyFoodsFetchTimeRef,
+	mountTimeRef,
+	thirtyMinutesMs,
+}: RunFoodsRefreshOptions): Promise<void> => {
 	try {
 		const todayDate = new Date().toISOString().split('T')[0];
 		const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate);
@@ -288,7 +299,16 @@ const Index = () => {
 	const THIRTY_MINUTES_MS = 30 * 60 * 1000;
 
 	const fetchFoods = () =>
-		runFoodsRefresh(params, setFoods, setCurrentFood, setCurrentFoodIndex, startProgressAnimation, lastNonEmptyFoodsFetchTimeRef, mountTimeRef, THIRTY_MINUTES_MS);
+		runFoodsRefresh({
+			params,
+			setFoods,
+			setCurrentFood,
+			setCurrentFoodIndex,
+			startProgressAnimation,
+			lastNonEmptyFoodsFetchTimeRef,
+			mountTimeRef,
+			thirtyMinutesMs: THIRTY_MINUTES_MS,
+		});
 
 	useEffect(() => {
 		if (params?.refreshFoodOffersIntervalInSeconds) {
