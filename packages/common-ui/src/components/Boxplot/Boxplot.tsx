@@ -19,7 +19,8 @@ const DEFAULT_BOX_COLOR = '#22c55e';
 const DEFAULT_HIGH_COLOR = '#3b82f6';
 const DEFAULT_MEDIAN_COLOR = '#ef4444';
 
-export type BoxplotProps = {
+/** Boxplot styling/data props shared by `Boxplot` and `SettingsListBoxplot`. */
+export type BoxplotStyleProps = {
 	stats: BoxplotStats;
 	/** Color of the box (the "normal"/green range). Defaults to green. */
 	boxColor?: string;
@@ -38,6 +39,9 @@ export type BoxplotProps = {
 	medianBandValue?: number;
 	/** Formats a raw value for the min/median/max labels below the plot. Defaults to one decimal place. */
 	formatValue?: (value: number) => string;
+};
+
+export type BoxplotProps = BoxplotStyleProps & {
 	/** Hides the min/median/max labels below the plot when false. Defaults to true. */
 	showLabels?: boolean;
 };

@@ -33,6 +33,17 @@ export type FoodCreationHelperObject = {
   foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict: DictFoodofferCategoriesExternalIdentifiersToFoodofferCategories;
 };
 
+/**
+ * Groups the report data for a single canteen together with the shared creation helper
+ * object, so it can be passed as one parameter object into the per-canteen sync methods.
+ */
+export type CanteenFoodofferSyncGroup = {
+  canteen: DatabaseTypes.Canteens;
+  canteenExternalIdentifier: string;
+  canteenFoodoffers: FoodoffersTypeForParser[];
+  helperObject: FoodCreationHelperObject;
+};
+
 export class ParseSchedule {
   private readonly context: WorkflowRunContext;
   private readonly foodParser: FoodParserInterface | null;
@@ -349,11 +360,12 @@ export class ParseSchedule {
       if (!canteen) continue;
 
       const canteenFoodoffers = foodoffersForParserGroupedByCanteen[canteenExternalIdentifier] || [];
+      const canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup = {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject};
 
       if (canteen.foodoffers_import_without_date) {
-        await this.syncFoodOffersForCanteenWithoutDate(canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject);
+        await this.syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup);
       } else {
-        await this.syncFoodOffersForCanteenByDate(canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject);
+        await this.syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup);
       }
     }
 
@@ -389,7 +401,8 @@ export class ParseSchedule {
    * Syncs foodoffers for an "import without date" canteen: all offers have date=null and are
    * processed as a single group via result_hash diffing.
    */
-  async syncFoodOffersForCanteenWithoutDate(canteen: DatabaseTypes.Canteens, canteenExternalIdentifier: string, canteenFoodoffers: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject): Promise<void> {
+  async syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup): Promise<void> {
+    const {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject} = canteenFoodofferSyncGroup;
     const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
 
     // Import-without-date canteen: all offers have date=null, process as a single group.
@@ -444,7 +457,8 @@ export class ParseSchedule {
    * Syncs foodoffers for a regular (dated) canteen: diffs are computed and applied per date
    * to minimize the deletion window.
    */
-  async syncFoodOffersForCanteenByDate(canteen: DatabaseTypes.Canteens, canteenExternalIdentifier: string, canteenFoodoffers: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject): Promise<void> {
+  async syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup): Promise<void> {
+    const {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject} = canteenFoodofferSyncGroup;
     const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
 
     // Regular canteen: process diffs per date

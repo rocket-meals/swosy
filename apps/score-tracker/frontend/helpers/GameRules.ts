@@ -67,16 +67,18 @@ export type GameRules = {
 	playerOrder?: PlayerOrderRule | null;
 };
 
-/** A shareable game template: everything needed to create a new game type. */
-export type GamePreset = {
+/** Rules/config fields shared between a shareable `GamePreset` and a stored `GameType`. */
+export type GameTypeDefinition = {
 	name: string;
+	/** Emoji shown as the game's "image" in lists and headers (e.g. 🎲). */
 	icon: string;
 	scoringMode: ScoringMode;
+	/** Maximum number of rounds per match. undefined/null = unlimited. */
 	maxRounds?: number | null;
+	/** Total score at which a match ends. undefined/null = unlimited. */
 	maxScore?: number | null;
+	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
 	rules?: GameRules | null;
-	/** How the starting player rotates each round. undefined/absent defaults to 'fixed'. */
-	startingPlayerMode?: StartingPlayerMode;
 	/**
 	 * Content version of this game definition (distinct from `rules.version`,
 	 * the fixed rule-schema version). Bump this yourself when sharing an
@@ -84,6 +86,12 @@ export type GamePreset = {
 	 * Undefined/absent defaults to 1.
 	 */
 	version?: number;
+};
+
+/** A shareable game template: everything needed to create a new game type. */
+export type GamePreset = GameTypeDefinition & {
+	/** How the starting player rotates each round. undefined/absent defaults to 'fixed'. */
+	startingPlayerMode?: StartingPlayerMode;
 };
 
 // ─── Evaluation ───────────────────────────────────────────────────────────────

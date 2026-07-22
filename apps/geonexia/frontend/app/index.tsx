@@ -23,6 +23,7 @@ import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
 import { MathHelper } from 'repo-depkit-common';
+import type { MapOverlayIdentity } from 'repo-depkit-common';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainAssetEntry } from '../assets/terrainAssets';
@@ -2997,11 +2998,8 @@ function InterruptedRecoveryContent({
 // ─── RecordScreen: loadAndSendCustomizations helpers ──────────────────────────
 
 /** Image overlay entry sent to the map for a customized hex tile's terrain texture. */
-type TileImageOverlay = {
-	id: string;
-	url: string;
+type TileImageOverlay = MapOverlayIdentity & {
 	coordinates: [[number, number], [number, number], [number, number], [number, number]];
-	opacity: number;
 	// Actual H3 hex vertices in [lng, lat] order for precise canvas clipping.
 	polygonCoords: [number, number][];
 	// Bearing from hex center to its first vertex (radians, 0 = North, CW positive).

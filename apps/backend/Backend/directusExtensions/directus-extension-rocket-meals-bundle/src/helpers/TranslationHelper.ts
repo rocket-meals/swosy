@@ -89,7 +89,12 @@ export class TranslationHelper {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
     const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     if (itemWithTranslations) {
-      const { updateObject, updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
+      const { updateObject, updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations({
+        itemWithTranslations,
+        item: itemWithTranslations,
+        translationsFromParsing,
+        items_primary_field_in_translation_table,
+      });
 
       if (updateNeeded) {
         //const createTranslations = updateObject.translations.create;
@@ -146,12 +151,13 @@ export class TranslationHelper {
   static async _getUpdateInformationForTranslations<
     T extends ItemWithExistingTranslations, // T must have an id and translations field
     E extends ExistingTranslation, // the collection of the related translations
-  >(
-    itemWithTranslations: T, // the item we want to update the translations for
-    item: T, // the item we want to update the translations for
-    translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
-    items_primary_field_in_translation_table: TranslationRelationField<E> // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
-  ) {
+  >(options: {
+    itemWithTranslations: T; // the item we want to update the translations for
+    item: T; // the item we want to update the translations for
+    translationsFromParsing: TranslationsFromParsingType; // the translations we got from the parser
+    items_primary_field_in_translation_table: TranslationRelationField<E>; // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
+  }) {
+    const { itemWithTranslations, item, translationsFromParsing, items_primary_field_in_translation_table } = options;
     /** translationsFromParsing is an object with the following structure:
          {
          [LanguageCodes.DE]: {
@@ -188,13 +194,13 @@ export class TranslationHelper {
     );
 
     //check remaining translationsFromParsing, then put into createTranslations
-    const newTranslationsFromParsing = TranslationHelper._collectCreateTranslationsFromRemaining(
+    const newTranslationsFromParsing = TranslationHelper._collectCreateTranslationsFromRemaining({
       remaining_translationsFromParsing,
       translationsFromParsing,
       items_primary_field_in_translation_table,
       item,
-      createTranslations
-    );
+      createTranslations,
+    });
 
     let updateObject = {
       translations: {
@@ -309,13 +315,14 @@ export class TranslationHelper {
    *
    * Mutates `createTranslations` in place, mirroring the original inline loop's behavior.
    */
-  static _collectCreateTranslationsFromRemaining<T extends ItemWithExistingTranslations, E extends ExistingTranslation>(
-    remaining_translationsFromParsing: TranslationsFromParsingType,
-    translationsFromParsing: TranslationsFromParsingType,
-    items_primary_field_in_translation_table: TranslationRelationField<E>,
-    item: T,
-    createTranslations: NewTranslationForCreation[]
-  ): boolean {
+  static _collectCreateTranslationsFromRemaining<T extends ItemWithExistingTranslations, E extends ExistingTranslation>(options: {
+    remaining_translationsFromParsing: TranslationsFromParsingType;
+    translationsFromParsing: TranslationsFromParsingType;
+    items_primary_field_in_translation_table: TranslationRelationField<E>;
+    item: T;
+    createTranslations: NewTranslationForCreation[];
+  }): boolean {
+    const { remaining_translationsFromParsing, translationsFromParsing, items_primary_field_in_translation_table, item, createTranslations } = options;
     let newTranslationsFromParsing = false;
 
     let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);

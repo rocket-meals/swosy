@@ -199,12 +199,13 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
   }
 
   /** Logs each source field's value once per food (aids diagnosing DeepL translation issues). */
-  private async logSourceFieldValues(
-    food: DatabaseTypes.Foods,
-    sourceTranslation: DatabaseTypes.FoodsTranslations,
-    fieldsToTranslate: string[],
-    context: WorkflowRunContext,
-  ): Promise<void> {
+  private async logSourceFieldValues(options: {
+    food: DatabaseTypes.Foods;
+    sourceTranslation: DatabaseTypes.FoodsTranslations;
+    fieldsToTranslate: string[];
+    context: WorkflowRunContext;
+  }): Promise<void> {
+    const {food, sourceTranslation, fieldsToTranslate, context} = options;
     for (const field of fieldsToTranslate) {
       const value = (sourceTranslation as any)[field];
       await context.logger.appendLog(
@@ -288,9 +289,9 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
     translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true;
     translatedItem[DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION] = false;
 
-    const wasSaved = await this.saveTranslatedItemIfNeeded(
+    const wasSaved = await this.saveTranslatedItemIfNeeded({
       food, translation, translatedItem, fieldsToTranslate, languageCode, context
-    );
+    });
     return {fixed: wasSaved, attempted: translateResult.attempted};
   }
 
@@ -350,7 +351,7 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
       ', languageField="' + FIELD_LANGUAGES_ID_OR_CODE + '"' +
       ', fieldsToTranslate=[' + fieldsToTranslate.join(', ') + ']'
     );
-    await this.logSourceFieldValues(food, sourceTranslation, fieldsToTranslate, context);
+    await this.logSourceFieldValues({food, sourceTranslation, fieldsToTranslate, context});
 
     let fixed = 0;
     let attempted = 0;
@@ -489,14 +490,15 @@ class FoodsTranslationFixMissingWorkflow extends SingleWorkflowRun {
    * Persists `translatedItem` onto the given translation if it contains any usable translated
    * field values; otherwise just logs that there was nothing to save. Returns whether it saved.
    */
-  private async saveTranslatedItemIfNeeded(
-    food: DatabaseTypes.Foods,
-    translation: DatabaseTypes.FoodsTranslations,
-    translatedItem: any,
-    fieldsToTranslate: string[],
-    languageCode: string,
-    context: WorkflowRunContext,
-  ): Promise<boolean> {
+  private async saveTranslatedItemIfNeeded(options: {
+    food: DatabaseTypes.Foods;
+    translation: DatabaseTypes.FoodsTranslations;
+    translatedItem: any;
+    fieldsToTranslate: string[];
+    languageCode: string;
+    context: WorkflowRunContext;
+  }): Promise<boolean> {
+    const {food, translation, translatedItem, fieldsToTranslate, languageCode, context} = options;
     if (fieldsToTranslate.some(field => translatedItem[field])) {
       const foodsUpdateHelper = context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.Foods>(
         CollectionNames.FOODS

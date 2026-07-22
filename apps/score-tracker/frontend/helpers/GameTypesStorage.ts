@@ -1,27 +1,15 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
-import type { GameRules, StartingPlayerMode } from './GameRules';
+import type { GameTypeDefinition, StartingPlayerMode } from './GameRules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /** Whether the highest or the lowest total score wins a match of this game. */
 export type ScoringMode = 'highWins' | 'lowWins';
 
-export type GameType = {
+export type GameType = GameTypeDefinition & {
 	id: string;
-	name: string;
-	/** Emoji shown as the game's "image" in lists and headers (e.g. 🎲). */
-	icon: string;
-	scoringMode: ScoringMode;
-	/** Maximum number of rounds per match. undefined/null = unlimited. */
-	maxRounds?: number | null;
-	/** Total score at which a match ends. undefined/null = unlimited. */
-	maxScore?: number | null;
-	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
-	rules?: GameRules | null;
 	/** How the starting player rotates each round. undefined/null = 'fixed' (seat 0 always starts). */
 	startingPlayerMode?: StartingPlayerMode | null;
-	/** Content version of this game's definition. undefined defaults to 1. */
-	version?: number;
 	createdAt: number;
 };
 
