@@ -606,7 +606,11 @@ exakt der bereits in früheren Runden dokumentierten Begründung):**
   `(a,b,c,d)`-Rotation ist die Standard-MD5-Rundenstruktur, kein
   Vertauschungs-Bug). Kommentar ist weiterhin vorhanden, Code unverändert —
   die 16 CSV-Einträge sind derselbe Stale-CSV-Effekt wie beim „Move
-  component"-Fund weiter oben.
+  component"-Fund weiter oben. **Update:** Diese Einschätzung war falsch —
+  der `NOSONAR`-Kommentar stand vor der Schleife, nicht auf den 16
+  konkret gemeldeten Zeilen, und hat SonarCloud daher nie tatsächlich
+  unterdrückt (kein Stale-CSV-Effekt). Siehe die spätere, neunte Runde für
+  den echten Fix.
 - **„Do not use Array index in keys" (15x)**: alle 15 Stellen einzeln erneut
   geöffnet und geprüft — sie entsprachen exakt den bereits weiter oben
   dokumentierten Fällen (Debug-Log-Anzeigen in `seaphara`,
@@ -1221,6 +1225,41 @@ dokumentiert und nicht über Text-Konkatenation im Key.
 
 Verifiziert per `tsc --noEmit`-Baseline-Diff (`git stash`/`git stash pop`)
 für `apps/frontend/app` und `apps/geonexia/frontend`: keine neuen Fehler.
+
+## Am 2026-07-22 (neunte Runde): `hashHelper.ts`-Argument-Reihenfolge korrekt behoben
+
+Der aktuelle CSV-Top-Fund war „Arguments 'X' and 'X' have the same names but
+not the same order as the function parameters" (16x), durchgehend
+`hashHelper.ts:93-153` (die `_FF`/`_GG`/`_HH`/`_II`-MD5-Rundenfunktionen).
+Frühere Runden (siehe fünfte Runde oben) hatten das als False Positive
+eingestuft und einen erklärenden `NOSONAR`-Kommentar **vor der Schleife**
+ergänzt — dieser Kommentar stand aber nie auf einer der 16 tatsächlich
+gemeldeten Zeilen, sondern mehrere Zeilen davor (vor `for (let k = ...)`),
+und hat SonarCloud dadurch nie wirklich unterdrückt. Das war also kein
+Stale-CSV-Effekt (wie fälschlich angenommen), sondern ein wirkungsloser
+Suppression-Kommentar.
+
+**Fix:** Statt eines Suppression-Kommentars wurde die eigentliche Ursache
+behoben — die vier Rundenfunktionen `_FF`/`_GG`/`_HH`/`_II` hatten
+Parameter namens `a, b, c, d`, exakt wie die äußeren MD5-Zustandsvariablen.
+Jede Rundenfunktion wird pro Aufruf mit den vier Zustandsvariablen in
+rotierter Reihenfolge aufgerufen (Standard-MD5-Algorithmus, z. B.
+`c = _FF(c, d, a, b, ...)`), was durch die identischen Namen wie ein
+Argument-Vertauschungsbug aussieht. Die Parameter wurden zu `regA, regB,
+regC, regD` umbenannt — dadurch gibt es keine Namensüberschneidung mit den
+äußeren `a/b/c/d` mehr, und SonarCloud hat keine Grundlage mehr, um einen
+Vertauschungsverdacht zu melden. Der alte, wirkungslose `NOSONAR`-Kommentar
+vor der Schleife wurde durch eine kürzere, sachliche Erklärung ersetzt
+(kein `NOSONAR` mehr nötig).
+
+**Verifizierung:** Das Verhalten ist durch die reine Parameter-Umbenennung
+unverändert (Aufrufstellen, Verschachtelung und Reihenfolge der Argumente
+bleiben exakt gleich). Zusätzlich empirisch geprüft: `HashHelper.md5(...)`
+liefert für mehrere Eingaben (leerer String, `"hello"`, Unicode, 1000
+Zeichen) exakt dieselben Hashes wie vor der Änderung (Bit-für-Bit-Vergleich
+Alt- vs. Neu-Implementierung) sowie korrekte MD5-Referenzwerte für
+`""`/`"hello"`/den bekannten Pangram-Testvektor. `tsc --noEmit` für
+`apps/frontend/app`: keine neuen Fehler.
 
 ## Hinweise
 
