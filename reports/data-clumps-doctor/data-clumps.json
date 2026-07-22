@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-22T06:11:54.324Z",
+  "report_timestamp": "2026-07-22T07:02:51.928Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 106,
-          "average": 1.5533013648100331,
-          "amountSavedValuesForKeys": 4211,
+          "average": 1.5547768351161932,
+          "amountSavedValuesForKeys": 4215,
           "amountKeys": 29
         },
         "invertedParameterToMethods": {
@@ -22,25 +22,25 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 106,
-          "average": 1.567758749069248,
-          "amountSavedValuesForKeys": 4211,
+          "average": 1.5692479523454952,
+          "amountSavedValuesForKeys": 4215,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4514,
-        "detection_time_ms": 90,
+        "ast_generation_time_ms": 3798,
+        "detection_time_ms": 77,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 490.79,
-          "os_memory_free": 14889127936,
-          "os_memory_total": 16766414848,
+          "os_uptime": 181.65,
+          "os_memory_free": 14833967104,
+          "os_memory_total": 16765382656,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+          "os_cpu_speed": 3499
         }
       }
     },
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "3904f52cce445f2bb835f1332ece335a268f968d",
-    "project_commit_hash": "3904f52cce445f2bb835f1332ece335a268f968d",
+    "project_version": "7ae0204378a8ce6f972320dfb160e4ed945b3a99",
+    "project_commit_hash": "7ae0204378a8ce6f972320dfb160e4ed945b3a99",
     "project_tag": null,
-    "project_commit_date": "1784700597",
+    "project_commit_date": "1784703664",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 569,
-    "number_of_classes_or_interfaces": 1218,
+    "number_of_files": 570,
+    "number_of_classes_or_interfaces": 1219,
     "number_of_methods": 1462,
-    "number_of_data_fields": 4211,
+    "number_of_data_fields": 4215,
     "number_of_method_parameters": 1647
   },
   "detector": {
@@ -1674,9 +1674,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 2999,
+              "startLine": 3000,
               "startColumn": 2,
-              "endLine": 2999,
+              "endLine": 3000,
               "endColumn": 13
             }
           },
@@ -1699,9 +1699,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 3002,
+              "startLine": 3003,
               "startColumn": 2,
-              "endLine": 3002,
+              "endLine": 3003,
               "endColumn": 18
             }
           },
@@ -1724,9 +1724,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 3000,
+              "startLine": 3001,
               "startColumn": 2,
-              "endLine": 3000,
+              "endLine": 3001,
               "endColumn": 14
             }
           },
@@ -1875,9 +1875,9 @@
             }
           },
           "position": {
-            "startLine": 2999,
+            "startLine": 3000,
             "startColumn": 2,
-            "endLine": 2999,
+            "endLine": 3000,
             "endColumn": 13
           }
         },
@@ -1900,9 +1900,9 @@
             }
           },
           "position": {
-            "startLine": 3000,
+            "startLine": 3001,
             "startColumn": 2,
-            "endLine": 3000,
+            "endLine": 3001,
             "endColumn": 14
           }
         },
@@ -1925,9 +1925,9 @@
             }
           },
           "position": {
-            "startLine": 3002,
+            "startLine": 3003,
             "startColumn": 2,
-            "endLine": 3002,
+            "endLine": 3003,
             "endColumn": 18
           }
         }
