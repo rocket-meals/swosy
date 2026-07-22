@@ -299,13 +299,14 @@ export class DirectusCollectionTranslator {
    * Translates each field in fieldsToTranslate from sourceTranslation using the given translator,
    * for the given destination language_code. Logs and skips fields that fail to translate.
    */
-  private static async translateFields(
-    translator: Translator,
-    fieldsToTranslate: string[],
-    sourceTranslation: any,
-    sourceLanguageCode: string | undefined,
-    language_code: string
-  ): Promise<any> {
+  private static async translateFields(options: {
+    translator: Translator;
+    fieldsToTranslate: string[];
+    sourceTranslation: any;
+    sourceLanguageCode: string | undefined;
+    language_code: string;
+  }): Promise<any> {
+    const { translator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code } = options;
     const translatedItem: any = {};
     for (const field of fieldsToTranslate) {
       const fieldValue = sourceTranslation[field];
@@ -332,7 +333,7 @@ export class DirectusCollectionTranslator {
         console.warn('Translator is not ready - skipping translation for language: ' + language_code);
         // Skip translation attempts since translator cannot translate
       } else {
-        translatedItem = await DirectusCollectionTranslator.translateFields(translator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code);
+        translatedItem = await DirectusCollectionTranslator.translateFields({translator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code});
       }
     }
 

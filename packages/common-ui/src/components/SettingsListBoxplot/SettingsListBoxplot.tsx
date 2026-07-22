@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import type { PropsWithChildren } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { BoxplotStats } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
 import Boxplot from '../Boxplot';
+import type { BoxplotStyleProps } from '../Boxplot';
 import { borderRadiusContainer, horizontalScreenPadding } from '../../constants/ui';
 
 const ICON_WIDTH = 34;
@@ -20,26 +20,9 @@ function defaultBandDescription(format: (value: number) => string, medianBandVal
 	return `Die grüne Box zeigt den Bereich Median ± ${format(medianBandValue)}, der rote Strich ist der Median. Die Antennen an den Enden reichen bis zum kleinsten (rot) bzw. größten (blau) gemessenen Wert.`;
 }
 
-type SettingsListBoxplotOwnProps = {
-	stats: BoxplotStats;
+type SettingsListBoxplotOwnProps = BoxplotStyleProps & {
 	/** Explanation shown below the plot once expanded. Defaults to a generic "how to read a boxplot" text. */
 	description?: string;
-	formatValue?: (value: number) => string;
-	/** Color of the box (the "normal"/green range). Defaults to green. */
-	boxColor?: string;
-	/** Color of the median line inside the box. Defaults to red. */
-	medianColor?: string;
-	/** Color at the min end of the left whisker. Defaults to red. */
-	lowColor?: string;
-	/** Color at the max end of the right whisker. Defaults to blue. */
-	highColor?: string;
-	/**
-	 * When set, the box represents `median ± medianBandValue` instead of the
-	 * statistical `[q1, q3]` quartile range - see `BoxplotProps.medianBandValue`.
-	 * Also changes the expanded stats list to show the resulting green-zone
-	 * boundaries instead of Q1/Q3.
-	 */
-	medianBandValue?: number;
 	/** Whether the explanation is shown initially, without the user tapping the row. Defaults to false. */
 	initiallyExpanded?: boolean;
 };

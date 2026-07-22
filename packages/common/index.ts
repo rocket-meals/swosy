@@ -27,4 +27,6 @@ export * from './src/CustomerAppStoreIds';
 export * from './src/AppleAppStoreConfig';
 export * from './src/DirectusItemStatus';
 export * from './src/GpsRouteTypes';
+export * from './src/MapOverlayTypes';
+export * from './src/UiAccentTypes';
 export * from './src/BoxplotHelper';

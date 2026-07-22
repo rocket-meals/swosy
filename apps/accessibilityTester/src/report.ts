@@ -148,13 +148,9 @@ function buildScreenSummaryTableRow(screen: ScreenResult): string {
   return `| ${escapeMarkdownTableCell(screen.screen)} | ${byImpact.critical} | ${byImpact.serious} | ${byImpact.moderate} | ${byImpact.minor} | ${total} | ${screen.passCount} |`;
 }
 
-interface RuleCountInfo {
-  impact: ImpactLevel;
-  help: string;
-  helpUrl: string;
-  nodeCount: number;
+type RuleCountInfo = Pick<ViolationSummary, 'impact' | 'help' | 'helpUrl' | 'nodeCount'> & {
   screenCount: number;
-}
+};
 
 function computeRuleCounts(screens: ScreenResult[]): Map<string, RuleCountInfo> {
   const ruleCounts = new Map<string, RuleCountInfo>();

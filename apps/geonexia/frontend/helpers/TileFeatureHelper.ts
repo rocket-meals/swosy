@@ -62,8 +62,8 @@ function tileYToLat(yFrac: number, zoom: number): number {
 	return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
 }
 
-/** Axis-aligned geographic bounding box. */
-type BoundingBox = { minLat: number; minLng: number; maxLat: number; maxLng: number };
+/** Axis-aligned geographic bounding box; same shape as {@link LatLngBounds}. */
+type BoundingBox = LatLngBounds;
 
 /** Simple axis-aligned bounding-box overlap check. */
 function boundsOverlap(a: BoundingBox, b: BoundingBox): boolean {

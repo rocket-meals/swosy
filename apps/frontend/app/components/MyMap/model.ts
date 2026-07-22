@@ -1,5 +1,6 @@
 import type { LatLngBoundsLiteral, LatLngLiteral, PointTuple } from 'leaflet';
 import { CircleMarkerProps, CircleProps, PolygonProps, PolylineProps, RectangleProps } from 'react-leaflet';
+import type { MapOverlayIdentity } from 'repo-depkit-common';
 
 export type Dimensions = [width: number, height: number];
 
@@ -28,20 +29,17 @@ export type MapMarker = {
 	title?: string;
 };
 
-export type MapLayer = {
+export type MapLayer = Partial<MapOverlayIdentity> & {
 	attribution?: string;
 	baseLayer?: boolean;
 	baseLayerIsChecked?: boolean;
 	baseLayerName?: string;
 	bounds?: LatLngBoundsLiteral;
-	id?: string;
 	layerType?: MapLayerType;
 	maxNativeZoom?: number;
 	maxZoom?: number;
-	opacity?: number;
 	pane?: string;
 	subLayer?: string;
-	url?: string;
 	zIndex?: number;
 };
 
