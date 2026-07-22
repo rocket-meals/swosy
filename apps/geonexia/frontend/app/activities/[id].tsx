@@ -12,11 +12,10 @@ import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListBoxplot, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
-import { computeBoxplotStats } from 'repo-depkit-common';
+import { computeBoxplotStats, DateHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteActivity, getEffectiveEnclosedHexTiles, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity, WEATHER_TYPES, WeatherType, ActivityRating } from '../../helpers/ActivityStorage';
-import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
@@ -1679,7 +1678,7 @@ export default function ActivityDetailScreen() {
 		{ icon: 'access-time', label: 'Start Time', value: formatTime(activity.startedAt) },
 		{ icon: 'access-time', label: 'End Time', value: formatTime(activity.endedAt) },
 		{ icon: 'straighten', label: 'Distance', value: formatDistance(stats.distanceKm) },
-		{ icon: 'timer', label: 'Duration', value: TimeHelper.formatDuration(stats.durationSeconds) },
+		{ icon: 'timer', label: 'Duration', value: DateHelper.formatDurationFromSeconds(stats.durationSeconds) },
 		{ icon: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) },
 		{ icon: 'speed', label: 'Avg. Speed', value: formatSpeedValue(stats.avgSpeedKmh) },
 		{ icon: 'speed', label: 'Median Speed', value: formatSpeedValue(stats.medianSpeedKmh ?? 0) },

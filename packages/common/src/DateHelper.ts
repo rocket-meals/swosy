@@ -498,6 +498,21 @@ export class DateHelper {
     return readable + ' h';
   }
 
+  /**
+   * Formats a duration given in seconds as "Xm:YYs" below one hour, e.g. "5m:30s",
+   * and as "HHhMMm" from one hour upward, e.g. "01h05m".
+   */
+  static formatDurationFromSeconds(totalSeconds: number) {
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    if (totalMinutes >= 60) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutesLeft = totalMinutes % 60;
+      return `${String(hours).padStart(2, '0')}h${String(minutesLeft).padStart(2, '0')}m`;
+    }
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${totalMinutes}m:${String(seconds).padStart(2, '0')}s`;
+  }
+
   static getDateInMinutes(date: Date, minutes: number) {
     return DateHelper.addMinutes(date, minutes);
   }
