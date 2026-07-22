@@ -25,11 +25,12 @@ PADDING = 10
 
 # ─── SVG path parser ──────────────────────────────────────────────────────────
 
-# NOSONAR: this is the SVG path 'd' attribute tokenizer (command letters + numbers,
+# This is the SVG path 'd' attribute tokenizer (command letters + numbers,
 # including exponential notation, leading/trailing decimal points, and adjacent
 # numbers without separators). A further structural simplification risks subtly
 # changing how those edge cases parse; verified equivalent to the previous, more
 # ambiguous version across 20,000 fuzzed inputs (see docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md).
+# Suppressed below rather than simplified further, for that reason.
 _TOKEN_RE = re.compile(r'([MmZzLlHhVvCcSsQqTtAa])|([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)')  # NOSONAR
 
 
