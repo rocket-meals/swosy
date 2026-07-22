@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
 | 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 30 | 30 |
+| 🔧 Maintainability | 14 | 14 |
 
-**Total issues:** 35
+**Total issues:** 19
 
 ---
 
@@ -36,7 +36,7 @@
   apps/frontend/app/constants/MarkdownPatterns.ts:16
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/MarkdownPatterns.ts#L16
 
-## 🔧 Maintainability (30/30)
+## 🔧 Maintainability (14/14)
 
 - **Move this array "sort" operation to a separate statement or replace it with "toSorted".**
   apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx:51
@@ -77,70 +77,6 @@
 - **Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.**
   apps/frontend/app/helper/animationHelper.ts:175
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L175
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:93
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L93
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:97
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L97
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:101
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L101
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:105
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L105
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:109
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L109
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:113
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L113
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:117
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L117
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:121
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L121
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:125
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L125
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:129
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L129
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:133
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L133
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:137
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L137
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:141
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L141
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:145
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L145
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:149
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L149
-
-- **Arguments 'c' and 'a' have the same names but not the same order as the function parameters.**
-  apps/frontend/app/helper/hashHelper.ts:153
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L153
 
 - **Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.**
   apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28
