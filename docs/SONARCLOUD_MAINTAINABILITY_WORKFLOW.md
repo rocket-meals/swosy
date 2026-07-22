@@ -1658,6 +1658,77 @@ hatte). Verhalten unverändert, reine Umbenennung — erneut per `tsc --noEmit`
 für alle vier Workspaces sowie den drei bereits oben genannten Test-Suiten
 gegengeprüft.
 
+## Am 2026-07-22 (vierzehnte Runde): eigener NOSONAR-Fehler behoben + erste Security-Runde
+
+Ausgangspunkt: frischer CSV-Stand — Reliability weiterhin 0. Maintainability
+nur noch **1 Fund**, verursacht durch die zwölfte Runde selbst. Zusätzlich
+auf Nutzerwunsch die **3 aktuellen Security-Funde** geprüft.
+
+**Maintainability (1 Fund, selbst verursacht):**
+- **`1_fix_viewbox.py:28`** („Fix the syntax of this issue suppression
+  comment."): der mehrzeilige Erklärkommentar aus der zwölften Runde begann
+  mit `# NOSONAR: this is the SVG path ...` — SonarPython interpretiert
+  **jede** Kommentarzeile, die das Wort „NOSONAR" enthält, als Versuch einer
+  Suppression-Direktive und validiert deren Syntax; `NOSONAR: <Freitext>` auf
+  einer eigenen Zeile (nicht auf der eigentlichen Code-Zeile) ist ungültige
+  Syntax. Behoben, indem das Wort „NOSONAR" aus dem Erklärkommentar entfernt
+  wurde — die tatsächliche, korrekt platzierte Suppression bleibt als
+  alleinstehendes `# NOSONAR` am Ende der Regex-Zeile bestehen. Zur Sicherheit
+  alle anderen `NOSONAR`-Kommentare im Repo (TS/JS: `DateHelper.ts`,
+  `FoodItem.tsx`, `MyBuffer.ts`, `MathHelper.ts`, `DeepCopyHelper.ts`, sowie
+  die bereits vorher bestehenden „X is currently unused"-Kommentare) auf
+  dasselbe Muster geprüft — keiner davon taucht im aktuellen CSV auf, das
+  Problem ist spezifisch für SonarPythons strengere Syntax-Prüfung.
+
+**Security (3 Funde, erste Runde für diese Kategorie):**
+- **`apps/backend/Dockerfile:36,37`** („Omitting '--ignore-scripts' allows
+  lifecycle scripts to run during package installation."): vor dem Fix
+  geprüft, ob die beiden `pnpm install`-Aufrufe (`directus-extension-sync@3.0.3`,
+  `directus-extension-flow-manager@1.4.1`) tatsächlich auf Install-Time-
+  Lifecycle-Scripts angewiesen sind — `npm view <pkg> scripts` zeigt für
+  beide Pakete nur Dev-Time-Scripts (`dev`, `link`, `test`/`build`, die
+  `pnpm install` nicht automatisch ausführt), keine `install`/`postinstall`/
+  `preinstall`/`prepare`-Scripts; `npm view <pkg> dependencies` zeigt für
+  beide Pakete **keine** Abhängigkeiten (keine transitive Dependency-Kette,
+  die auf Postinstall-Scripts angewiesen sein könnte). `--ignore-scripts` zu
+  beiden Aufrufen ergänzt — funktional folgenlos, aber schließt das
+  generische Risiko (kompromittiertes Paket mit bösartigem Postinstall) für
+  die Zukunft aus.
+- **`scripts/count-sonar-maintainability-issues.js:93`** („LLMs running
+  this code with faulty CLI arguments can escape file system restrictions."):
+  `csvPath` kam unvalidiert aus `process.argv[2]` direkt in
+  `fs.readFileSync(csvPath, ...)` — ein Aufrufer (menschlich oder ein
+  Agent mit einem fehlerhaften/böswilligen Pfad-Argument) konnte damit
+  beliebige Dateien außerhalb des Repos lesen (z. B. `../../../../etc/passwd`).
+  Fix: `csvPath` wird jetzt zu einem absoluten Pfad aufgelöst und vor dem
+  Dateizugriff gegen die aufgelöste Repo-Wurzel (`path.resolve(__dirname, '..')`)
+  geprüft; liegt der Pfad außerhalb, bricht das Skript mit Fehlermeldung und
+  Exit-Code 1 ab, **bevor** auf das Dateisystem zugegriffen wird. Die
+  bestehende Nutzung (kein Argument → Default-Pfad; expliziter Pfad zu einer
+  anderen CSV **innerhalb** des Repos, z. B. `report_security.csv`) bleibt
+  unverändert funktionsfähig — nur Pfade außerhalb der Repo-Wurzel werden
+  abgelehnt.
+
+**Verifizierung:**
+- `node scripts/count-sonar-maintainability-issues.js` (Default-Pfad) sowie
+  mit einem gültigen Pfad innerhalb des Repos (`reports/sonarCloud/report_security.csv`)
+  manuell ausgeführt: unverändertes Verhalten.
+- `../../../../etc/passwd` und `/etc/passwd` als Argument getestet: beide
+  werden mit Exit-Code 1 und Fehlermeldung abgelehnt, keine Dateisystem-
+  Zugriffe.
+- `1_fix_viewbox.py` erneut mit Beispiel-Pfaddaten ausgeführt (unverändertes
+  Verhalten, reine Kommentaränderung).
+- Docker-Datei nicht per echtem Docker-Build getestet (kein Docker in dieser
+  Sandbox verfügbar), aber die Risikobewertung (keine Lifecycle-Scripts, keine
+  Abhängigkeiten bei beiden betroffenen Paketen) macht einen Build-Bruch
+  extrem unwahrscheinlich.
+
+**Bilanz:** Reliability weiterhin 0/0. Maintainability: der eine (durch die
+vorherige Runde selbst verursachte) Fund behoben — sollte den nächsten Scan
+wieder auf 0 bringen. Security: alle 3 aktuellen Funde behoben (2 echte
+Fixes ohne Funktionsverlust, 1 echter Fix mit neuer, für Agentic-/LLM-Nutzung
+relevanter Pfad-Validierung).
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
