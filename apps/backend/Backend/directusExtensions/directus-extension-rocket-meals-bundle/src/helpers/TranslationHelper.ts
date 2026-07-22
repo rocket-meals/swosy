@@ -1,5 +1,5 @@
 import { PrimaryKey } from '@directus/types';
-import { CloneHelper, CollectionNames, DatabaseTypes, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
@@ -162,7 +162,7 @@ export class TranslationHelper {
          }
          }
          */
-    let remaining_translationsFromParsing = CloneHelper.deepClone(translationsFromParsing); //make a work copy
+    let remaining_translationsFromParsing = DeepCopyHelper.deepCopy(translationsFromParsing); //make a work copy
     /** remaining_translationsFromParsing is an object with the following structure:
          {
          [TranslationHelper.]: {name ....},
@@ -264,7 +264,7 @@ export class TranslationHelper {
       if (translationFromParsing) {
         //we also got a translation from the parse
         /* Update translation */
-        const translationFromParsingCopy = CloneHelper.deepClone(translationFromParsing); //make a copy
+        const translationFromParsingCopy = DeepCopyHelper.deepCopy(translationFromParsing); //make a copy
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
 
         if (TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)) {

@@ -10,7 +10,7 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {TranslationHelper} from '../helpers/TranslationHelper';
-import {CloneHelper, CollectionNames, DatabaseTypes, DateHelper, DirectusItemStatus} from 'repo-depkit-common';
+import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
 import {DictMarkingsExclusions, MarkingFilterHelper} from '../helpers/MarkingFilterHelper';
@@ -1273,7 +1273,7 @@ export class ParseSchedule {
       await this.context.logger.appendLog('Update Marking ' + currentMarking + ' / ' + amountOfMarkings);
       await this.context.logger.appendLog(JSON.stringify(markingJSON, null, 2));
 
-      let markingJSONCopy = CloneHelper.deepClone<any>(markingJSON); // untyped copy: fields are deleted/overwritten below to match Partial<Markings>
+      let markingJSONCopy = DeepCopyHelper.deepCopy<any>(markingJSON); // untyped copy: fields are deleted/overwritten below to match Partial<Markings>
       delete markingJSONCopy.translations; // Remove meals translations, add it later
 
       let markings = await itemService.readByQuery({

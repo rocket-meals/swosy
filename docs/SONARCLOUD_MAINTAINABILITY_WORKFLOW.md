@@ -1608,8 +1608,8 @@ Klasse ausgelagert, statt es an der einzigen bisherigen Stelle
 sieben weiteren, bisher unangetasteten Stellen im Backend-Extension-Workspace
 verstreut zu belassen.
 
-- Neue Datei `packages/common/src/CloneHelper.ts` (Klasse `CloneHelper`,
-  statische Methode `deepClone<T>(value: T): T`) — jetzt die **einzige**
+- Neue Datei `packages/common/src/DeepCopyHelper.ts` (Klasse `DeepCopyHelper`,
+  statische Methode `deepCopy<T>(value: T): T`) — jetzt die **einzige**
   Stelle im Repo mit einem literalen `JSON.parse(JSON.stringify(...))`-Aufruf
   und dem zugehörigen `NOSONAR`-Kommentar (SonarCloud empfiehlt pauschal
   `structuredClone(...)`, das aber in Hermes nicht als globale Funktion
@@ -1624,11 +1624,11 @@ verstreut zu belassen.
   `food-sync-hook/ParseSchedule.ts`s `markingJSONCopy` verließ sich auf die
   implizite `any`-Typisierung, die `JSON.parse(...)` liefert (Felder werden
   danach per `delete` entfernt und mit abweichenden Typen überschrieben, um
-  `Partial<Markings>` zu entsprechen). Da `CloneHelper.deepClone<T>` das
+  `Partial<Markings>` zu entsprechen). Da `DeepCopyHelper.deepCopy<T>` das
   generische `T` aus dem Argumenttyp ableitet, hätte eine unveränderte
   Umstellung dort den vorher `any`-typisierten Wert plötzlich streng typisiert
   und zu echten Compile-Fehlern geführt (`delete` auf ein nicht-optionales
-  Feld, Typkonflikt bei `translations`). Fix: `CloneHelper.deepClone<any>(markingJSON)`
+  Feld, Typkonflikt bei `translations`). Fix: `DeepCopyHelper.deepCopy<any>(markingJSON)`
   — expliziter Typparameter erzwingt weiterhin `any`, identisches Verhalten
   zur vorherigen `JSON.parse(JSON.stringify(...))`-Stelle.
 - In `TranslationHelper.ts` wurde nebenbei ein jetzt irreführender
@@ -1649,6 +1649,14 @@ eine externe News-Seite, HTTP 403 — per `git stash`/`git stash pop`
 bestätigt bereits vor dieser Änderung identisch fehlschlagend, keine
 Regression). `TestTranslationHelper.ts` (deckt die geänderte
 `TranslationHelper.ts` ab) läuft grün.
+
+**Nachträgliche Umbenennung (noch selbe Runde):** Auf Nutzerwunsch wurde
+`CloneHelper`/`deepClone` konsequent in `DeepCopyHelper`/`deepCopy`
+umbenannt (Datei, Klasse, Methode, alle acht Aufrufstellen sowie die
+Import-Sortierung dort, wo das reine Text-Ersetzen sie durcheinandergebracht
+hatte). Verhalten unverändert, reine Umbenennung — erneut per `tsc --noEmit`
+für alle vier Workspaces sowie den drei bereits oben genannten Test-Suiten
+gegengeprüft.
 
 ## Hinweise
 
