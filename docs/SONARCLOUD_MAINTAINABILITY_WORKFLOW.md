@@ -1261,6 +1261,273 @@ Alt- vs. Neu-Implementierung) sowie korrekte MD5-Referenzwerte für
 `""`/`"hello"`/den bekannten Pangram-Testvektor. `tsc --noEmit` für
 `apps/frontend/app`: keine neuen Fehler.
 
+## Am 2026-07-22 (zehnte Runde): verbleibende Maintainability- und Reliability-Funde
+
+Ausgangspunkt: CSV mit 13 Maintainability- und 1 Reliability-Fund (nach der
+neunten Runde/`hashHelper.ts`-Fix), Ziel laut Nutzer „Reliability und
+Maintainability auf 0". Neu bei dieser Runde: lokale Verifikation mit
+`eslint-plugin-sonarjs` (`sonarjs/cognitive-complexity`), installiert in
+einem Scratch-Verzeichnis außerhalb des Repos — dieselbe Metrik-Implementierung,
+die SonarCloud serverseitig nutzt, damit Cognitive-Complexity-Fixes nicht mehr
+nur geschätzt, sondern lokal exakt nachgemessen werden können, bevor der PR
+raus geht.
+
+**Behoben (9 von 13 Maintainability-Funden + der 1 Reliability-Fund):**
+
+- **`game-ideas/index.tsx:51`** („Move this array sort operation..."):
+  `values.sort(...)` in eine eigene Anweisung aufgeteilt (gleiches Muster wie
+  die bereits in früheren Runden gefixten `.sort()`-Fälle).
+- **`form-submissions/index.tsx:329`** („Provide multiple methods instead of
+  using 'append'..."): der `append`-Boolean-Parameter von `loadFormSubmissions`
+  war totes Feature-Scaffolding — beide (einzigen) Aufrufstellen im ganzen
+  Repo übergaben immer `false`, `appendSortedSubmissions` (der `if
+  (append)`-Zweig) wurde nie erreicht. Parameter, toter Zweig und die nun
+  ungenutzte `appendSortedSubmissions`-Funktion entfernt, statt sie künstlich
+  in zwei Methoden aufzuspalten.
+- **`bigScreen/index.tsx:94`** („Provide multiple methods instead of using
+  'isConnected'..."): die einzige Aufrufstelle von `fetchFoodsIfConnected`
+  (in einem `setInterval`-Callback) direkt mit einem inline `if/else` ersetzt,
+  die Wrapper-Funktion mit dem Boolean-Flag entfernt.
+- **`bigScreen/index.tsx:102`** („'any' overrides all other types..."):
+  `resolveSelectedCanteen`s Rückgabetyp von `any | null` zu `any` (deckt
+  `null` bereits ab).
+- **`bigScreen/index.tsx:129`** (Cognitive Complexity 24/27→14, s. u.).
+- **`packages/common-backend/src/CollectionHelper.ts:35,60`** (zwei
+  „Signatur ... ist deprecated"-Funde): die drei `@deprecated`-Methoden
+  riefen sich gegenseitig auf, was Sonar als „Nutzung von deprecated API"
+  meldet. Die eigentliche Implementierung in zwei private Modul-Funktionen
+  (`resolveCollectionTypeAlias`/`resolveCollectionPropertyDetails`)
+  ausgelagert; die drei `@deprecated`-Methoden delegieren jetzt an diese
+  Funktionen statt aneinander — identisches öffentliches Verhalten (einzige
+  externe Aufrufstelle, `getCollectionPropertyNames` in einem Jest-Test,
+  unverändert kompatibel).
+- **`apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28`** (Regex-
+  Komplexität 29/20): der SVG-Zahlen-Tokenizer `\d+\.?\d*|\.\d+` enthält eine
+  echte Mehrdeutigkeit (`\d+` gefolgt von optionalem `\d*` ohne trennendes
+  Literal dazwischen — beide matchen Ziffern). Zu `\d+(?:\.\d*)?|\.\d+`
+  geändert: identische Match-Menge für jeden Eingabestring (durch 20 000
+  Zufalls-Fuzz-Testfälle plus alle realistischen SVG-Pfad-Sonderfälle —
+  Exponentialschreibweise, führender/fehlender Dezimalpunkt, Vorzeichen,
+  aneinandergrenzende Zahlen ohne Trenner — verifiziert, siehe PR-Diff),
+  aber ohne die mehrdeutige Rückverfolgung. Anders als bei der vorherigen
+  Einschätzung (siehe vierte Runde) also doch sicher lösbar, da die
+  Mehrdeutigkeit strukturell entfernt werden konnte, statt das Matching
+  unscharf zu machen.
+- **`apps/frontend/app/app/(monitor)/list-week-screen/details/index.tsx:417`**
+  (`document.write` deprecated): durch eine Blob-URL ersetzt
+  (`window.open(URL.createObjectURL(new Blob([html], {type:
+  'text/html'})), '_blank')`) statt `document.write`/`document.close`. Das im
+  HTML eingebettete `<script>window.print()</script>` läuft weiterhin normal,
+  da das Fenster auf ein vollständiges HTML-Dokument navigiert (nicht per
+  `innerHTML` eingefügt wird, wo Scripts nicht ausgeführt würden). Die
+  Blob-URL wird nach dem `load`-Event des neuen Fensters wieder freigegeben.
+- **`apps/frontend/app/constants/MarkdownPatterns.ts:16`** (Reliability,
+  Regex-Backtracking): `heading: /^#{1,6}\s*(.*)$/` hatte dieselbe
+  Mehrdeutigkeit (`\s*` und `.*` überlappen sich auf Leerzeichen) wie das
+  bereits gefixte `link`-Pattern in derselben Datei — nur `heading` war beim
+  vorherigen Fix noch nicht gemeldet. Exakt dasselbe, bereits an anderer
+  Stelle im Repo bewährte Muster übernommen
+  (`components/CustomMarkdown/CustomMarkdown.tsx`s eigenes
+  `CONTENT_PATTERNS.heading`): `/^#{1,6}\s{0,20}(.{0,5000})$/` — beide
+  Quantifizierer jetzt explizit begrenzt. Bestehenden Correctness-Test um
+  H1/H6-Fälle ergänzt und einen neuen Reliability-Test (Pathological-Input,
+  analog zum bereits vorhandenen `link`-Test) hinzugefügt.
+
+### `bigScreen/index.tsx`: Cognitive Complexity 24 (bzw. 27 nach dem
+`isConnected`-Fix oben, da die zuvor separate `fetchFoodsIfConnected`-Funktion
+wieder inline wurde) → 14
+
+Erste Messung mit `eslint-plugin-sonarjs` ergab eine wichtige Korrektur der
+bisherigen Annahme aus früheren Runden: **verschachtelte, aber als eigene
+`const`-Funktion deklarierte Closures (z. B. `const getFoodCategories =
+async () => {...}` innerhalb der Komponente) zählen NICHT automatisch in die
+Cognitive Complexity der äußeren Funktion hinein** — das Verschieben von fünf
+solcher Inline-Funktionen (`getFoodCategories`, `getFoodOffersCategories`,
+`fetchFoods`, `fetchCurrentFoodCategory`, `fetchCurrentFoodOfferCategory`) auf
+Modul-Ebene (`fetchAndSetFoodCategories`, `fetchAndSetFoodOffersCategories`,
+`runFoodsRefresh`, `fetchAndSetCurrentFoodCategory`,
+`fetchAndSetCurrentFoodOfferCategory`, jeweils mit expliziten Parametern statt
+Closures) veränderte den gemessenen Wert **um exakt 0 Punkte**. Der
+tatsächliche Treiber waren **Ternaries in der JSX-Return-Struktur** (jeder
+`? :`-Ausdruck zählt unabhängig von seiner Position +1; auch verschachtelt in
+einer Ternary-Bedingung liegende `&&`-Ausdrücke zählen zusätzlich, während
+rein als `{cond && <JSX/>}` in einem JSX-Ausdruckscontainer verwendete
+`&&`-Kurzschluss-Renderings bei dieser Implementierung mit 0 zu Buche
+schlagen — per Mikro-Benchmarks in einem isolierten Test-Setup verifiziert).
+Entsprechend zielten die tatsächlich wirksamen Fixes auf Ternaries:
+
+- Zwölf wiederholte `screenWidth > 600 ? X : Y`-Breakpoint-Ternaries (fünf
+  verschiedene Wertepaare) auf einmalig berechnete, benannte Konstanten
+  (`canteenLabelFontSize`, `smallTextFontSize`, `subHeadingFontSize`,
+  `foodTitleFontSize`, `priceFontSize`) reduziert — exakt das bereits in der
+  vierten Runde für `StatisticsCard.tsx` bewährte Muster.
+- Zwei strukturell identische, aber dupliziert vorliegende Ternaries
+  (`category && category?.translations?.length > 0 ? getTextFromTranslation(...)
+  : category?.alias || ''`, einmal für `currentFoodCategory`, einmal für
+  `currentFoodOfferCategory`) in eine gemeinsame `resolveCategoryLabel`-Funktion
+  extrahiert.
+- Eine `foods && foods?.length > 0`/`< 1`-Bedingung, die an sechs Stellen
+  wiederholt im JSX vorkam, auf eine einmalig berechnete `hasFoods`-Variable
+  reduziert (kein Cognitive-Complexity-Gewinn laut Messung, da reine
+  `&&`-JSX-Kurzschlüsse ohnehin 0 zählen — aber eine echte Lesbarkeits-
+  Verbesserung, daher beibehalten).
+
+Ergebnis: 14 von 15 erlaubten Punkten (per `eslint-plugin-sonarjs` exakt
+nachgemessen, dieselbe Metrik-Implementierung wie SonarCloud). Kein
+Verhaltensunterschied: alle Werte sind weiterhin exakt dieselben Berechnungen,
+nur an anderer Stelle im Code lokalisiert bzw. einmalig statt wiederholt
+berechnet.
+
+**Bewusst unverändert gelassen (4 von 13 Maintainability-Funden, jeweils
+frisch verifiziert statt nur übernommen):**
+
+- **`form-queue/index.tsx:20` und `form-submission/index.tsx:42`** (2x
+  „Prefer `node:buffer` over `buffer`"): das in der dritten Runde dokumentierte
+  Metro-Verhalten wurde diesmal am tatsächlich installierten
+  `metro-resolver@0.81.5` (per `yarn.lock` ermittelte, exakte Version)
+  nachgeprüft — dessen Quellcode (`resolve.js`, `PackageResolve.js`,
+  `PackageExportsResolve.js`, `utils/*.js`) enthält keinerlei
+  Sonderbehandlung für das `node:`-URL-Schema. Ein Wechsel zu `import {
+  Buffer } from 'node:buffer'` würde das Bundle mit „Unable to resolve
+  module node:buffer" brechen. Weiterhin bewusst unverändert.
+- **`packages/common/src/DateHelper.ts:414`** („Use 'Object.hasOwn()' instead
+  of 'Object.prototype.hasOwnProperty.call()'"): erneut geprüft, ob
+  `DateHelper` tatsächlich noch vom ES2019-Backend-Extension-Workspace
+  importiert wird (frühere Rundennotizen hatten das nur behauptet, nicht mit
+  einem frischen Grep belegt) — bestätigt: 17 Dateien in
+  `apps/backend/.../directus-extension-rocket-meals-bundle/src` importieren
+  `DateHelper` aus `repo-depkit-common`. Dessen `tsconfig.json` hat
+  `"lib": ["ES2019", "DOM"]`; `Object.hasOwn` ist ES2022 und wäre dort ein
+  Typfehler. Weiterhin bewusst unverändert.
+- **`apps/frontend/app/helper/animationHelper.ts:175`** („Prefer
+  `structuredClone(…)` over `JSON.parse(JSON.stringify(…))`"): die frühere,
+  nicht weiter belegte Vermutung „Laufzeitunterstützung in Hermes ... nicht
+  sicher verifizierbar" wurde diesmal konkret nachgeprüft (Recherche zum
+  Hermes-Quellcode/-Diskussionen, u. a. `facebook/hermes`-Issue/Discussion
+  zu `structuredClone`): Hermes implementiert `structuredClone` **nicht**
+  als globale Funktion. Ein Wechsel würde zur Laufzeit auf betroffenen
+  Geräten mit `ReferenceError: Property 'structuredClone' doesn't exist`
+  abstürzen. Da die hier geklonten Daten ohnehin bereits reines,
+  JSON-serialisierbares Lottie-JSON sind (keine Functions/`undefined`/
+  `Date`/zirkuläre Referenzen), ist `JSON.parse(JSON.stringify(...))` für
+  diesen konkreten Anwendungsfall vollständig korrekt und ausreichend — der
+  generische Sonar-Hinweis trifft die Plattform-Realität hier nicht.
+  Weiterhin bewusst unverändert.
+- **`apps/frontend/app/components/FoodItem/FoodItem.tsx:324`** („Move this
+  component definition..."): wie in der fünften/siebten Runde dokumentiert
+  weiterhin der mit Abstand größte Einzelfall im gesamten Repo für diesen
+  Regeltyp (~28 geschlossene Werte: Styles, Handler, Item-/Food-Daten,
+  Modal-Funktionen). Eine mechanische Umstellung auf eine Modul-Level-Factory
+  mit einem Options-Objekt (analog zum `makeDrawerIcon`-Muster) wäre technisch
+  möglich, aber bei dieser Größenordnung mit echtem Risiko verbunden, eine der
+  ~28 Closures beim Umhängen zu vertauschen oder zu vergessen — in einer viel
+  genutzten, nutzersichtbaren Kernkomponente (Essens-Karten in mehreren
+  Listen). Da `CustomTooltip` den `trigger`-Prop ohnehin nur als Funktion
+  aufruft (kein JSX-Tag, siehe Anmerkung in der fünften Runde), besteht kein
+  echtes Remount-Risiko, das den Fix rechtfertigen würde — nur der
+  Lint-Fund selbst. Bewusst weiterhin unverändert; Kandidat für eine
+  eigene, ruhige Änderung mit dediziertem Test-Setup statt eines
+  mechanischen Multi-Issue-Durchlaufs.
+
+**Verifizierung:**
+- `tsc --noEmit` für `apps/frontend/app`: keine neuen Fehlerklassen (Diff
+  gegen die Baseline vor dieser Runde zeigt nur Verschiebungen innerhalb
+  derselben vorbestehenden „implicit any"/„cannot find module"-Rauschklassen,
+  die aus fehlenden `node_modules` in der Sandbox stammen, sowie proportional
+  mehr Einträge derselben Klasse durch die neu hinzugefügten Testfälle in
+  `MarkdownPatterns.test.ts`).
+- `eslint-plugin-sonarjs` (`sonarjs/cognitive-complexity`, dieselbe
+  Metrik-Implementierung wie SonarCloud) lokal installiert und für
+  `bigScreen/index.tsx` vor/nach jedem Zwischenschritt gemessen — Endstand
+  14/15.
+- `1_fix_viewbox.py`: Äquivalenz der alten und neuen Tokenizer-Regex über
+  20 000 zufällige sowie alle realistischen SVG-Pfad-Testfälle bestätigt
+  (0 Abweichungen); Skript manuell mit Beispiel-Pfaddaten ausgeführt.
+- `MarkdownPatterns.ts`: alte vs. neue `heading`-Regex mit denselben
+  Correctness- und Pathological-Input-Fällen wie der bestehende Reliability-
+  Test für `link` verglichen (Node-REPL, da `node_modules` in der Sandbox
+  fehlen und `jest` nicht ausführbar ist).
+- `CollectionHelper.ts`: rein mechanische Extraktion (identische
+  Implementierung, nur in private Modul-Funktionen verschoben) manuell
+  gegengelesen; einzige externe Aufrufstelle (`getCollectionPropertyNames`
+  in `TestFormAnswerValueFields.ts`) unverändert kompatibel.
+
+**Bilanz:** 9 von 13 Maintainability-Funden + der 1 Reliability-Fund behoben,
+4 Maintainability-Funde bewusst (und frisch verifiziert statt nur historisch
+übernommen) unverändert gelassen. Reliability-CSV sollte nach dem nächsten
+Scan bei 0 stehen; Maintainability-CSV bei 4 verbleibenden, klar begründeten
+Ausnahmen.
+
+## Am 2026-07-22 (elfte Runde): `buffer`- und `Math.random()`-Importe zentralisiert
+
+Auf Nutzerwunsch (unabhängig von einem konkreten neuen CSV-Fund) wurden zwei
+bereits als „bewusst unverändert" dokumentierte bzw. wiederkehrende Muster
+zentralisiert, statt sie weiterhin verstreut mit lokalen `NOSONAR`-Kommentaren
+zu belassen:
+
+- **`buffer`-Import**: Neue Datei `packages/common-ui/src/helpers/MyBuffer.ts`,
+  die `Buffer` aus `'buffer'` importiert (mit `NOSONAR` **direkt auf der
+  Importzeile** — anders als beim `hashHelper.ts`-Fehler in der neunten Runde,
+  wo der Kommentar nicht auf der gemeldeten Zeile stand) und als `MyBuffer`
+  re-exportiert, dazu ein Barrel-Export in `packages/common-ui/index.ts`.
+  `buffer` wurde als echte `dependency` (nicht `peerDependency`, da kein
+  Singleton-Zwang wie bei `react`/`react-native`) in
+  `packages/common-ui/package.json` ergänzt — passend zum bereits bestehenden
+  Muster dort (`tinycolor2` ist ebenfalls eine normale `dependency`). Die
+  beiden bisherigen direkten Importstellen (`form-queue/index.tsx`,
+  `form-submission/index.tsx`) importieren jetzt `MyBuffer` aus
+  `repo-depkit-common-ui` und rufen `MyBuffer.from(...)` auf; die jetzt
+  überflüssige `"buffer"`-Dependency wurde aus
+  `apps/frontend/app/package.json` entfernt (kommt jetzt transitiv über
+  `repo-depkit-common-ui`).
+- **`Math.random()`-Zentralisierung**: Neue Datei `packages/common/src/MathHelper.ts`
+  (Klasse `MathHelper`, statische Methode `random()`) — das ist jetzt die
+  **einzige** Stelle im gesamten Repo mit einem literalen `Math.random()`-Aufruf
+  und dem zugehörigen `NOSONAR`-Kommentar (SonarCloud-Regel S2245 stuft
+  `Math.random()` pauschal als „sicherheitskritisch" ein, unabhängig vom
+  Kontext). Alle bisherigen direkten `Math.random()`-Aufrufe im Repo (24
+  Fundstellen über `packages/common-ui` (`MyAvatarEditor`,
+  `FeatureWishesScreen`), `apps/geonexia/frontend` (`app/index.tsx`,
+  `helpers/IdHelper.ts`), `apps/frontend/app` (`hooks/useLanguage.ts`,
+  `components/CollectibleItem/index.tsx`,
+  `app/(app)/form-submission/index.tsx`,
+  `app/(app)/experimentell/game-ideas/index.tsx`),
+  `apps/score-tracker/frontend/helpers/RandomHelper.ts` sowie im
+  Backend-Extension-Workspace (`helpers/form/FormHelper.ts` (3x, Beispiel-Formular-
+  Generierung), `helpers/ai/image/ImageRawGeneratorMock.ts`,
+  `food-feedback-rating-calculate-hook/__tests__/TestFoodRatingCalculator.ts`,
+  Testdatei)) wurden auf `MathHelper.random()` umgestellt. Die beiden bereits
+  bestehenden App-lokalen Zufalls-Wrapper (`apps/geonexia/frontend/helpers/IdHelper.ts`,
+  `apps/score-tracker/frontend/helpers/RandomHelper.ts`) delegieren jetzt an
+  `MathHelper.random()` statt direkt an `Math.random()` und haben dadurch ihren
+  jeweiligen lokalen `NOSONAR`-Kommentar verloren (nicht mehr nötig, da der
+  literale Aufruf nicht mehr dort steht).
+
+  Reine Umbenennung/Delegation ohne Verhaltensänderung: `MathHelper.random()`
+  liefert exakt denselben `Math.random()`-Wertebereich `[0, 1)`, alle
+  umgebenden Berechnungen (`Math.floor(...)`, `* n`, `- 0.5`, `.toString(36)`
+  usw.) blieben unverändert.
+
+**Verifizierung:**
+- `grep -rn "Math\.random(" --include="*.ts" --include="*.tsx" .` zeigt danach
+  nur noch den einen Aufruf in `MathHelper.ts` selbst sowie unveränderte
+  Prosa-Kommentare in zwei Testdateien (keine echten Aufrufe mehr).
+- `grep -rn "from 'buffer'"` zeigt danach nur noch den einen Import in
+  `MyBuffer.ts`.
+- `tsc --noEmit` für `apps/frontend/app`, `apps/geonexia/frontend` und
+  `apps/score-tracker/frontend`: jeweils gegen einen frisch (nach dem Stand
+  dieser Runde) erzeugten Baseline-Diff verglichen (`git stash`/`git stash
+  pop`, da die vorherigen Baselines aus früheren Runden zwischenzeitlich durch
+  neue, gemergte Commits veraltet waren) — keine neuen Fehlerklassen, nur
+  Verschiebungen innerhalb derselben vorbestehenden „cannot find
+  module"-Rauschklasse (fehlende `node_modules` in der Sandbox), jetzt mit
+  anderen Modulnamen (`repo-depkit-common`/`repo-depkit-common-ui` statt
+  `buffer`), da sich die Imports geändert haben.
+- `yarn install` lokal ausgeführt, um `yarn.lock` mit den beiden
+  `package.json`-Änderungen (`buffer` neu in `packages/common-ui`, entfernt
+  aus `apps/frontend/app`) zu synchronisieren, damit `yarn install
+  --immutable` in der CI nicht bricht.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

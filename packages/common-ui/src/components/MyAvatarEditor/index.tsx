@@ -130,6 +130,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
+import { MathHelper } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
@@ -682,13 +683,13 @@ function randomizeComponentOptions(
 		// For optional components, include "none" as a possible random selection
 		if (probabilityKeys[key]) {
 			const allValues = [NONE_OPTION, ...realValues];
-			const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+			const randomValue = allValues[Math.floor(MathHelper.random() * allValues.length)];
 			if (randomValue !== NONE_OPTION) {
 				randomOptions[key] = [randomValue];
 			}
 			// Probability not stored – renderer derives it from key presence.
 		} else {
-			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			randomOptions[key] = [realValues[Math.floor(MathHelper.random() * realValues.length)]];
 		}
 	}
 	return randomOptions;
@@ -706,7 +707,7 @@ function randomizeColorOptions(
 		// For Micah, eyebrowsColor and facialHairColor are derived from hairColor below
 		if (style === AvatarStyle.MICAH && (key === 'eyebrowsColor' || key === 'facialHairColor')) continue;
 		const presetColors = getPresetColorsForKey(key, style);
-		const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+		const randomColor = presetColors[Math.floor(MathHelper.random() * presetColors.length)];
 		randomOptions[key] = [stripHashPrefix(randomColor)];
 	}
 	return randomOptions;
@@ -2305,17 +2306,17 @@ export function generateRandomAvatarConfig(style: AvatarStyle, size: AvatarSize)
 		}
 		if (probabilityKeys[key]) {
 			const allValues = [NONE_OPTION, ...realValues];
-			const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+			const randomValue = allValues[Math.floor(MathHelper.random() * allValues.length)];
 			if (randomValue !== NONE_OPTION) {
 				randomOptions[key] = [randomValue];
 			}
 		} else {
-			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			randomOptions[key] = [realValues[Math.floor(MathHelper.random() * realValues.length)]];
 		}
 	}
 	for (const key of colorKeys) {
 		const presetColors = getPresetColorsForKey(key, style);
-		const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+		const randomColor = presetColors[Math.floor(MathHelper.random() * presetColors.length)];
 		randomOptions[key] = [stripHashPrefix(randomColor)];
 	}
 	return { style, size, options: randomOptions };

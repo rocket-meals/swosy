@@ -22,6 +22,7 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-ic
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
+import { MathHelper } from 'repo-depkit-common';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainAssetEntry } from '../assets/terrainAssets';
@@ -1046,9 +1047,9 @@ function generateMeasureRoutePoints(
 	for (let i = 0; i < orderedCells.length; i++) {
 		const [cellLat, cellLng] = cellToLatLng(orderedCells[i]);
 		// Add slight coordinate noise to make the synthetic route look organic.
-		const noisyLat = cellLat + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
-		const noisyLng = cellLng + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
-		const speedKmh = Math.max(1, speedBaseKmh + (Math.random() - 0.5) * speedVariationKmh);
+		const noisyLat = cellLat + (MathHelper.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const noisyLng = cellLng + (MathHelper.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const speedKmh = Math.max(1, speedBaseKmh + (MathHelper.random() - 0.5) * speedVariationKmh);
 		points.push({
 			lat: noisyLat,
 			lng: noisyLng,
@@ -5176,7 +5177,7 @@ export default function RecordScreen() {
 	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCells: string[]) => {
 		if (routeCells.length < 2) return;
 		const startTimestamp = Date.now();
-		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
+		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (MathHelper.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
 		const routePoints = generateMeasureRoutePoints(routeCells, speedBaseKmh, MEASURE_SPEED_VARIATION_KMH, startTimestamp);
 		if (routePoints.length < 2) return;
 		const stats = computeStats(routePoints);

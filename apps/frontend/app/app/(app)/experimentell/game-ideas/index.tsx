@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import styles from './styles';
+import { MathHelper } from 'repo-depkit-common';
 
 interface Dish {
 	name: string;
@@ -42,14 +43,14 @@ const markings: Marking[] = [
 const foodIcons = ['🍔', '🍕', '🍣', '🥗', '🍰', '🍟', '🌮', '🍜', '🍩', '🍇', '🍤', '🥐'];
 
 const getRandomPair = (): [Dish, Dish] => {
-	const shuffled = [...dishes].sort(() => Math.random() - 0.5);
+	const shuffled = [...dishes].sort(() => MathHelper.random() - 0.5);
 	return [shuffled[0], shuffled[1]];
 };
 
 const generateMemoryBoard = (): Card[] => {
 	const values: (string | null)[] = [...foodIcons, ...foodIcons, null];
-	const shuffled = values.sort(() => Math.random() - 0.5);
-	return shuffled.map((value, id) => ({ id, value, revealed: false, matched: false }));
+	values.sort(() => MathHelper.random() - 0.5);
+	return values.map((value, id) => ({ id, value, revealed: false, matched: false }));
 };
 
 const GameIdeas = () => {

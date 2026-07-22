@@ -17,7 +17,7 @@ import { FormQueueEntry } from '@/redux/Types/stateTypes';
 import useToast from '@/hooks/useToast';
 import { format, isValid, parse } from 'date-fns';
 import { uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
-import { Buffer } from 'buffer';
+import { MyBuffer } from 'repo-depkit-common-ui';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 
 const resolveDateValueField = (value: any, fieldType: string): Record<string, any> => {
@@ -50,7 +50,7 @@ const resolveImageValueField = async (value: any, fieldId: string, imageFolderId
         try {
             const response = await fetch(value.image);
             const arrayBuffer = await response.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+            const buffer = MyBuffer.from(arrayBuffer);
             const fileData = { name: value.name, type: value.type, buffer: isWeb ? buffer : value.image, edit: true };
             const fileId = isWeb ? await uploadToDirectus(fileData, imageFolderId) : await uploadToDirectusFromMobile(fileData, imageFolderId);
             return { value_image: fileId };
@@ -74,7 +74,7 @@ const resolveFilesValueField = async (value: any, fieldId: string, filesFolderId
                     newFiles.map(async (file: any) => {
                         const response = await fetch(file.image);
                         const arrayBuffer = await response.arrayBuffer();
-                        const buffer = Buffer.from(arrayBuffer);
+                        const buffer = MyBuffer.from(arrayBuffer);
                         const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
                         return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
                     })

@@ -13,7 +13,7 @@ import useToast from '@/hooks/useToast';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import SubmissionWarningModal from '@/components/SubmissionWarningModal/SubmissionWarningModal';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import { DatabaseTypes, FormHelperCommon } from 'repo-depkit-common';
+import { DatabaseTypes, FormHelperCommon, MathHelper } from 'repo-depkit-common';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import MultiLineInput from '@/components/MultiLineInput/MultiLineInput';
 import IBANInput from '@/components/IBANInput/IBANInput';
@@ -39,7 +39,7 @@ import { deleteDirectusFile, excerpt, getFileFromDirectus, getFormValueImageUrl,
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
-import { Buffer } from 'buffer';
+import { MyBuffer } from 'repo-depkit-common-ui';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -856,7 +856,7 @@ const Index = () => {
 	const getDirectusUploadId = async (value: any, folderId?: string | null) => {
 		const response = await fetch(value.image);
 		const arrayBuffer = await response.arrayBuffer();
-		const buffer = Buffer.from(arrayBuffer);
+		const buffer = MyBuffer.from(arrayBuffer);
 		const fileData = {
 			name: value.name,
 			type: value.type,
@@ -879,7 +879,7 @@ const Index = () => {
 			form_id = typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId);
 		}
 		const alias = String(formSubmission?.alias || form_submission_id || '');
-		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${MathHelper.random().toString(36).slice(2)}`;
 		const entry = {
 			id: entryId,
 			form_submission_id: String(form_submission_id),

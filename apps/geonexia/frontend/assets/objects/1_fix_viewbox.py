@@ -25,7 +25,7 @@ PADDING = 10
 
 # ─── SVG path parser ──────────────────────────────────────────────────────────
 
-_TOKEN_RE = re.compile(r'([MmZzLlHhVvCcSsQqTtAa])|([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)')
+_TOKEN_RE = re.compile(r'([MmZzLlHhVvCcSsQqTtAa])|([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)')
 
 
 def _tokenise(d: str) -> List:

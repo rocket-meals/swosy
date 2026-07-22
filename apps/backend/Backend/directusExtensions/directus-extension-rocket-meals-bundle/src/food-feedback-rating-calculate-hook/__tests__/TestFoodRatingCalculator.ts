@@ -1,6 +1,6 @@
 // small jest test
 import { describe, expect, it } from '@jest/globals';
-import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
+import { DatabaseTypes, MathHelper, RatingHelper } from 'repo-depkit-common';
 import { FoodRatingCalculator } from '../FoodRatingCalculator';
 
 describe('FoodRatingCalculator Test', () => {
@@ -226,7 +226,7 @@ describe('FoodRatingCalculator Test', () => {
     let valid_rating_amount = 0;
     let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [];
     for (let i = 0; i < amount_feedbacks; i++) {
-      const random_index = Math.floor(Math.random() * rating_values_valid_and_invalid.length);
+      const random_index = Math.floor(MathHelper.random() * rating_values_valid_and_invalid.length);
       const rating_value = rating_values_valid_and_invalid[random_index];
       foodfeedbacks.push({
         rating: rating_value,
