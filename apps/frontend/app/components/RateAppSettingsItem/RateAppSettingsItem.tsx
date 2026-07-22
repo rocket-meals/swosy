@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -41,7 +41,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 	const { show: showModal } = useMyScrollViewModal();
 	const { wasAskedForRating, requestNativeReview } = useNativeQuickRateApp();
 
-	const [debugLogs, setDebugLogs] = useState<string[]>([]);
+	const [debugLogs, setDebugLogs] = useState<{ id: number; text: string }[]>([]);
+	const nextDebugLogIdRef = useRef(0);
 
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
 	const androidStoreUrl = appSettings?.app_stores_url_to_google;
@@ -50,7 +51,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 
 	const addLog = useCallback(
 		(msg: string) => {
-			setDebugLogs(prev => [...prev, msg]);
+			setDebugLogs(prev => [...prev, { id: nextDebugLogIdRef.current++, text: msg }]);
 			onLog?.(msg);
 		},
 		[onLog]
@@ -98,9 +99,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({
 						<Text style={{ color: theme.screen.text, fontSize: 13 }}>No logs yet</Text>
 					) : (
 						debugLogs.map((log, i) => (
-							// eslint-disable-next-line react/no-array-index-key
-							<Text key={`${log}-${i}`} style={{ color: theme.screen.text, fontSize: 13 }}>
-								{`${i + 1}. ${log}`}
+							<Text key={log.id} style={{ color: theme.screen.text, fontSize: 13 }}>
+								{`${i + 1}. ${log.text}`}
 							</Text>
 						))
 					)}

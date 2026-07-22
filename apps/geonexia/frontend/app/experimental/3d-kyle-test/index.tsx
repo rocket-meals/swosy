@@ -17,7 +17,7 @@ import MODELS, { GlbModelEntry } from '../../../assets/3dModelAssets';
 
 const MAX_DEBUG_LOG_ENTRIES = 20;
 
-type DebugLogEntry = { message: string; isError: boolean };
+type DebugLogEntry = { id: number; message: string; isError: boolean };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -112,6 +112,7 @@ export default function KyleTest3DScreen() {
 	const [showBbox, setShowBbox] = useState(false);
 	const [loadingModel, setLoadingModel] = useState(false);
 	const [debugLog, setDebugLog] = useState<DebugLogEntry[]>([]);
+	const nextDebugLogIdRef = useRef(0);
 
 	// ── Focus / blur map lifecycle ────────────────────────────────────────────
 	useFocusEffect(
@@ -173,7 +174,7 @@ export default function KyleTest3DScreen() {
 			} catch (e) {
 				const msg = `Failed to load model: ${entry.key}: ${e instanceof Error ? e.message : String(e)}`;
 				console.warn('Failed to load 3D model:', e);
-				setDebugLog((prev) => [{ message: msg, isError: true }, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
+				setDebugLog((prev) => [{ id: nextDebugLogIdRef.current++, message: msg, isError: true }, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			} finally {
 				setLoadingModel(false);
 			}
@@ -203,7 +204,7 @@ export default function KyleTest3DScreen() {
 				setMapMounted(true);
 			}
 			if (msg.tag === 'GlbDebugLog' && msg.message) {
-				const entry: DebugLogEntry = { message: msg.message, isError: msg.isError ?? false };
+				const entry: DebugLogEntry = { id: nextDebugLogIdRef.current++, message: msg.message, isError: msg.isError ?? false };
 				setDebugLog((prev) => [entry, ...prev].slice(0, MAX_DEBUG_LOG_ENTRIES));
 			}
 		},
@@ -412,7 +413,7 @@ export default function KyleTest3DScreen() {
 					else groupPosition = 'middle';
 					return (
 						<SettingsList
-							key={`${entry.message}-${idx}`}
+							key={entry.id}
 							iconBgColor={entry.isError ? '#dc2626' : ACCENT_COLOR}
 							leftIcon={
 								<Ionicons

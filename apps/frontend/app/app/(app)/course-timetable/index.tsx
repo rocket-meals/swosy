@@ -83,20 +83,18 @@ const TimetableScreen = () => {
 	};
 
 	const parseMarkdown = (text: string) => {
-		const parts = text?.split(PARSE_MARKDOWN_REGEX);
+		const parts = text?.split(PARSE_MARKDOWN_REGEX).map((part, id) => ({ id, part }));
 
-		return parts?.map((part, index) => {
+		return parts?.map(({ id, part }) => {
 			if (part?.startsWith('**') && part?.endsWith('**')) {
 				return (
-					// eslint-disable-next-line react/no-array-index-key
-					<Text key={`${index}-${part}`} style={{ fontWeight: 'bold' }}>
+					<Text key={id} style={{ fontWeight: 'bold' }}>
 						{part?.slice(2, -2)}
 					</Text>
 				);
 			} else if (part?.startsWith('*') && part?.endsWith('*')) {
 				return (
-					// eslint-disable-next-line react/no-array-index-key
-					<Text key={`${index}-${part}`} style={{ fontStyle: 'italic' }}>
+					<Text key={id} style={{ fontStyle: 'italic' }}>
 						{part?.slice(1, -1)}
 					</Text>
 				);
