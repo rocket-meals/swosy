@@ -3786,17 +3786,20 @@ function computePaceHintState(
 }
 
 /** Speaks the "too fast"/"too slow" transition announcement (only on transition from on_target, respecting the cooldown). */
-function announcePaceHintTransitionIfDue(
-	next: PaceHintState,
-	prev: PaceHintState,
-	currentPace: number,
-	targetPace: number,
-	curSs: SpeechSettingsState,
-	locale: string,
-	langCode: string,
-	lastPaceHintTimeRef: React.MutableRefObject<number>,
-	paceHintCooldownMs: number,
-): void {
+function announcePaceHintTransitionIfDue(options: {
+	next: PaceHintState;
+	prev: PaceHintState;
+	currentPace: number;
+	targetPace: number;
+	curSs: SpeechSettingsState;
+	locale: string;
+	langCode: string;
+	lastPaceHintTimeRef: React.MutableRefObject<number>;
+	paceHintCooldownMs: number;
+}): void {
+	const {
+		next, prev, currentPace, targetPace, curSs, locale, langCode, lastPaceHintTimeRef, paceHintCooldownMs,
+	} = options;
 	const now = Date.now();
 	if (next === 'on_target' || prev !== 'on_target' || now - lastPaceHintTimeRef.current < paceHintCooldownMs) return;
 
@@ -3867,7 +3870,9 @@ function evaluatePaceHintAnnouncement(options: {
 	const langCode = locale.split('-')[0].toLowerCase();
 
 	// Announce "too fast" / "too slow" only on transition from on_target.
-	announcePaceHintTransitionIfDue(next, prev, currentPace, targetPace, curSs, locale, langCode, lastPaceHintTimeRef, paceHintCooldownMs);
+	announcePaceHintTransitionIfDue({
+		next, prev, currentPace, targetPace, curSs, locale, langCode, lastPaceHintTimeRef, paceHintCooldownMs,
+	});
 
 	// Announce "Zielgeschwindigkeit erreicht" when returning to on_target after a warning state.
 	announceOnTargetIfDue(next, prev, curSs, locale, langCode);

@@ -97,6 +97,26 @@ function applyLegacyCustomizationFields(
 	if (customization.billboardsFlat !== undefined) rec.billboardsFlat = customization.billboardsFlat;
 }
 
+/**
+ * Set the legacy `billboardAnchorColor` field on a record. Kept as its own
+ * function (with a type that doesn't carry the field's `@deprecated` tag)
+ * since this is the intentional legacy write path of the deprecated
+ * `setHexTileCustomization` action.
+ */
+function setLegacyBillboardAnchorColor(rec: { billboardAnchorColor?: string | null }, billboardAnchorColor: string | null): void {
+	rec.billboardAnchorColor = billboardAnchorColor;
+}
+
+/**
+ * Read the legacy `billboardAnchorColor` field on a record, falling back to
+ * `CENTER`. Kept as its own function (with a type that doesn't carry the
+ * field's `@deprecated` tag) since this is the intentional one-time
+ * migration read in `setBillboardAtAnchor`.
+ */
+function getLegacyBillboardAnchorColor(rec: { billboardAnchorColor?: string | null }): string {
+	return rec.billboardAnchorColor ?? BillboardAnchorPosition.CENTER;
+}
+
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
 const hexTileSlice = createSlice({
@@ -184,7 +204,7 @@ const hexTileSlice = createSlice({
 			const rec = getOrCreate(state.records, h3Index);
 			if (tileImage !== undefined) rec.tileImage = tileImage;
 			if (billboard !== undefined) rec.billboard = billboard;
-			if (billboardAnchorColor !== undefined) rec.billboardAnchorColor = billboardAnchorColor;
+			if (billboardAnchorColor !== undefined) setLegacyBillboardAnchorColor(rec, billboardAnchorColor);
 		},
 
 		/**
@@ -202,7 +222,7 @@ const hexTileSlice = createSlice({
 				rec.billboards = {};
 				// Migrate legacy single-billboard field if present
 				if (rec.billboard) {
-					const legacyAnchor = rec.billboardAnchorColor ?? BillboardAnchorPosition.CENTER;
+					const legacyAnchor = getLegacyBillboardAnchorColor(rec);
 					rec.billboards[legacyAnchor] = rec.billboard;
 				}
 			}

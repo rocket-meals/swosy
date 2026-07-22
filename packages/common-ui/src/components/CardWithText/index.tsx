@@ -63,6 +63,21 @@ export interface CardWithTextProps extends TouchableOpacityProps {
 	imageAccessibilityLabel?: string;
 }
 
+/**
+ * Resolve the effective image aspect ratio from the `aspectRatio` prop:
+ * `false` disables it (undefined), a number is used as-is, and `true` (or
+ * omitted) falls back to a square (1) aspect ratio.
+ */
+function resolveAspectRatio(aspectRatio: number | boolean): number | undefined {
+	if (aspectRatio === false) {
+		return undefined;
+	}
+	if (typeof aspectRatio === 'number') {
+		return aspectRatio;
+	}
+	return 1;
+}
+
 const CardWithText: React.FC<CardWithTextProps> = ({
 	imageSource,
 	containerStyle,
@@ -105,8 +120,7 @@ const CardWithText: React.FC<CardWithTextProps> = ({
 		? [styles.imageContainer, ...(imageContainerStyle as StyleProp<ViewStyle>[])]
 		: [styles.imageContainer, imageContainerStyle as StyleProp<ViewStyle>];
 
-	const resolvedAspectRatio: number | undefined =
-		aspectRatio === false ? undefined : typeof aspectRatio === 'number' ? aspectRatio : 1;
+	const resolvedAspectRatio = resolveAspectRatio(aspectRatio);
 
 	let imageContent: React.ReactNode = null;
 	if (imageSource) {
