@@ -1,25 +1,19 @@
 Key,Message,Component,Line
-"AZ-G7yOnHEKP2Ptfy9qi","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",321
-"AZ-G7ypRHEKP2Ptfy9qj","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",235
-"AZ-G7zRHHEKP2Ptfy9qk","Function 'announcePaceHintTransitionIfDue' has too many parameters (9). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3789
-"AZ-G7zg0HEKP2Ptfy9ql","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/CardWithText/index.tsx",109
-"AZ8kngTW00wtKe1XsVl1","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",800
+"AZ-IOoVicRmzc0-YlkXD","Provide multiple methods instead of using ""append"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submissions/index.tsx",329
+"AZ-IOoeGcRmzc0-YlkXE","Provide multiple methods instead of using ""isConnected"" to determine which action to take.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",94
+"AZ-IOoeGcRmzc0-YlkXF","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",102
 "AZ2dsUdPLVHN2p9NjR1S","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/seaphara/index.tsx",416
 "AZ2dkkUv3GBU49WbMwdE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/RateAppSettingsItem/RateAppSettingsItem.tsx",101
 "AZ2aKN1GQ7FHawfCon5a","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/3d-kyle-test/index.tsx",415
 "AZ1TdZ_pIh8m09xZ03NJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",402
-"AZ05GDnLoxp4O0LdguSA","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",187
-"AZ05GDnLoxp4O0LdguSB","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",205
 "AZ02tSEbU7rlc86SOrCp","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1992
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
-"AZ0YpBMgLvrw8DEQgX7e","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",105
 "AZ0Tpk4Nufp2jxPAhSyL","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-queue/index.tsx",20
 "AZ0Tpk31ufp2jxPAhSyE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",1750
-"AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",116
 "AZ5JdOxPjvp1UF7n1YmM","Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",414
 "AZ0TpkqPufp2jxPAhSuo","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/expo-update-test/index.tsx",181
 "AZkUSvK8S4VhJojFFAWW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",148
-"AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",84
+"AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",129
 "AZkUSvHUS4VhJojFFATX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",25
 "AZkUSvHUS4VhJojFFATY","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",31
 "AZkUSvUYS4VhJojFFAhq","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",93
