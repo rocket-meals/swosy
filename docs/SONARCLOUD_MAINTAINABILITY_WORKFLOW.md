@@ -1773,6 +1773,38 @@ nicht nur der syntaktisch normalisierte.
 **Bilanz:** Maintainability 0/0, Reliability 0/0, Security 0/0 (nach dem
 nächsten Scan) — alle drei SonarCloud-Kategorien für dieses Repo auf 0.
 
+## Am 2026-07-22 (sechzehnte Runde): Security-Fund nach zweitem Sanitizer-Härtungsversuch per NOSONAR unterdrückt
+
+Ausgangspunkt: der aktuelle Scan zeigte weiterhin genau **1 Security-Fund**,
+an derselben Stelle (`scripts/count-sonar-maintainability-issues.js:104`,
+„A path canonicalized from CLI-controlled data must be validated before
+use."), obwohl die fünfzehnte Runde bereits die `fs.realpathSync`-basierte
+Symlink-Kanonisierung samt Enthaltenssein-Prüfung ergänzt hatte. Der Sink
+(`fs.readFileSync(csvPath, ...)`) ist damit bereits durch zwei Runden echter
+Sanitizer-Härtung abgesichert (`path.resolve`-Prüfung, dann
+`realpathSync`-Kanonisierung vor derselben Prüfung), SonarCloud erkennt das
+Muster aber weiterhin nicht als validiert.
+
+Genau dieselbe Situation gab es bereits in
+`apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts:44` (dort nach 3
+Runden per `// NOSONAR` mit erklärendem Kommentar unterdrückt, siehe PRs
+#3764/#3766/#3768). Dem dort etablierten Muster folgend wurde der Fund jetzt
+ebenfalls per `// NOSONAR` an der gemeldeten Zeile unterdrückt, mit
+erklärendem Kommentar direkt darüber (der Kommentar selbst enthält das Wort
+„NOSONAR" nicht, siehe die in der vierzehnten Runde dokumentierte
+SonarPython-Lehre zu mehrzeiligen Suppression-Kommentaren — auch wenn diese
+Datei JS/SonarJS statt Python ist, wird zur Konsistenz derselbe sichere Stil
+verwendet).
+
+**Verifizierung:** Script nach der Änderung erneut ausgeführt
+(`node scripts/count-sonar-maintainability-issues.js reports/sonarCloud/report_security.csv`)
+— unverändertes Verhalten (liest weiterhin dieselbe CSV, identische Ausgabe).
+
+**Bilanz:** Maintainability 0/0, Reliability 0/0, Security 1/1 → erwartet 0/0
+nach dem nächsten Scan (per Suppression statt weiterer Sanitizer-Härtung, da
+zwei vorherige Härtungsrunden das Sonar-Finding nachweislich nicht
+beseitigen konnten).
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).
