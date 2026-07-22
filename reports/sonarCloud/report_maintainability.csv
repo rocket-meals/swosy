@@ -1,1 +1,4 @@
 Key,Message,Component,Line
+"AZ-LQe6eztpgaD9rLAlI","Remove this redundant type alias and replace its occurrences with ""LatLngBounds"".","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",66
+"AZ-LQfDeztpgaD9rLAlJ","Use `export…from` to re-export `Round`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameSlice.ts",9
+"AZ-LQfDeztpgaD9rLAlK","Use `export…from` to re-export `GameStatus`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameSlice.ts",9
