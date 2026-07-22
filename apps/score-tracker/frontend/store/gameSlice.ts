@@ -6,7 +6,7 @@ import type { Friend } from '../helpers/FriendsStorage';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
 import { generateId } from '../helpers/RandomHelper';
-export type { Player, Round, GameState, GameStatus };
+export type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 

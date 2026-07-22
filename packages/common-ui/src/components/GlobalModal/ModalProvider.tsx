@@ -27,12 +27,8 @@ export type ModalOptions = {
 	onClosed?: (reason: ModalCloseReason) => void;
 };
 
-type ModalStackItem = {
+type ModalStackItem = ModalOptions & {
 	content: ReactNode;
-	backgroundStyle: any;
-	overlayStyle: any;
-	headerBackgroundColor: string | undefined;
-	onClosed?: (reason: ModalCloseReason) => void;
 };
 
 type ModalContextType = {

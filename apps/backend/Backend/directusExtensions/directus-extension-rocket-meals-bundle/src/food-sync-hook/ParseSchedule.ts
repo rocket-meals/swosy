@@ -44,6 +44,17 @@ export type CanteenFoodofferSyncGroup = {
   helperObject: FoodCreationHelperObject;
 };
 
+/**
+ * Groups the data needed to build/apply attribute values for a single food or
+ * foodoffer, shared by `getFoodsOrFoodoffersWithOnlySetAttributesFields` and
+ * `buildAttributeValuesToCreate`.
+ */
+export type AttributeValuesSyncContext = {
+  new_attribute_values: FoodParseFoodAttributesType;
+  dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes;
+  typeHelper: { isFood: boolean; isFoodoffer: boolean };
+};
+
 export class ParseSchedule {
   private readonly context: WorkflowRunContext;
   private readonly foodParser: FoodParserInterface | null;
@@ -744,17 +755,17 @@ export class ParseSchedule {
   }
 
   async updateFoodsAttributesValues(food: DatabaseTypes.Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes) {
-    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes, { isFood: true, isFoodoffer: false });
+    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, { new_attribute_values, dictExternalIdentifierToFoodAttributes, typeHelper: { isFood: true, isFoodoffer: false } });
     await this.context.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields, {
       disableEventEmit: true,
     });
   }
 
-  getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<DatabaseTypes.Foods | DatabaseTypes.Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: { isFood: boolean; isFoodoffer: boolean }): T {
+  getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<DatabaseTypes.Foods | DatabaseTypes.Foodoffers>>(foodOrFoodoffer: T, attributeValuesSyncContext: AttributeValuesSyncContext): T {
     let delteAttributeValuesRaw = foodOrFoodoffer.attribute_values;
     let deleteAttributeValuesIds: any[] = this.resolveAttributeValueIdsToDelete(delteAttributeValuesRaw);
 
-    let createAttributeValues: any[] = this.buildAttributeValuesToCreate(new_attribute_values, dictExternalIdentifierToFoodAttributes, typeHelper, foodOrFoodoffer.id);
+    let createAttributeValues: any[] = this.buildAttributeValuesToCreate(attributeValuesSyncContext, foodOrFoodoffer.id);
     let foodOrFoodofferCopy: T = {} as T;
 
     foodOrFoodofferCopy.attribute_values = {
@@ -781,7 +792,8 @@ export class ParseSchedule {
     return deleteAttributeValuesIds;
   }
 
-  private buildAttributeValuesToCreate(new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: { isFood: boolean; isFoodoffer: boolean }, itemId: any): any[] {
+  private buildAttributeValuesToCreate(attributeValuesSyncContext: AttributeValuesSyncContext, itemId: any): any[] {
+    const { new_attribute_values, dictExternalIdentifierToFoodAttributes, typeHelper } = attributeValuesSyncContext;
     let createAttributeValues: any[] = [];
     for (let new_attribute of new_attribute_values) {
       let external_identifier = new_attribute.external_identifier;
@@ -1033,7 +1045,11 @@ export class ParseSchedule {
       };
     });
 
-    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as DatabaseTypes.Foodoffers, foodofferForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes, { isFood: false, isFoodoffer: true });
+    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as DatabaseTypes.Foodoffers, {
+      new_attribute_values: foodofferForParser.attribute_values,
+      dictExternalIdentifierToFoodAttributes: helperObject.dictExternalIdentifierToFoodAttributes,
+      typeHelper: { isFood: false, isFoodoffer: true },
+    });
 
     let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
       ...foodofferForParser.basicFoodofferData,
