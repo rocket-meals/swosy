@@ -1,7 +1,2 @@
 Key,Message,Component,Line
-"AZ-KQX7C28PW_-Mgl_aP","Async arrow function has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",193
-"AZ-KQZIa28PW_-Mgl_aR","Use `export…from` to re-export `MyBuffer`.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/MyBuffer.ts",10
-"AZ-KQY1928PW_-Mgl_aQ","Simplify this regular expression to reduce its complexity from 30 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
-"AZ5JdOxPjvp1UF7n1YmM","Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",414
-"AZkUSvDUS4VhJojFFARx","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",324
-"AZlyj_mS0YdgFOBafBMN","Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",175
+"AZ-KkArU-Q1ZdEzqHuAH","Fix the syntax of this issue suppression comment.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28

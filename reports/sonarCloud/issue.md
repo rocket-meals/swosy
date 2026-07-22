@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 6 | 6 |
+| 🔧 Maintainability | 1 | 1 |
 
-**Total issues:** 9
+**Total issues:** 4
 
 ---
 
@@ -26,29 +26,9 @@
   scripts/count-sonar-maintainability-issues.js:93
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/count-sonar-maintainability-issues.js#L93
 
-## 🔧 Maintainability (6/6)
+## 🔧 Maintainability (1/1)
 
-- **Async arrow function has too many parameters (8). Maximum allowed is 7.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:193
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L193
-
-- **Move this component definition out of the parent component and pass data as props.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:324
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L324
-
-- **Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.**
-  apps/frontend/app/helper/animationHelper.ts:175
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L175
-
-- **Simplify this regular expression to reduce its complexity from 30 to the 20 allowed.**
+- **Fix the syntax of this issue suppression comment.**
   apps/geonexia/frontend/assets/objects/1_fix_viewbox.py:28
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/assets/objects/1_fix_viewbox.py#L28
-
-- **Use `export…from` to re-export `MyBuffer`.**
-  packages/common-ui/src/helpers/MyBuffer.ts:10
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/helpers/MyBuffer.ts#L10
-
-- **Use 'Object.hasOwn()' instead of 'Object.prototype.hasOwnProperty.call()'.**
-  packages/common/src/DateHelper.ts:414
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/DateHelper.ts#L414
 
