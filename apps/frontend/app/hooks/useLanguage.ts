@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { configureStore } from '@/redux/store';
 import translations from '@/locales/translations.json';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
-import { StringHelper } from 'repo-depkit-common';
+import { StringHelper, MathHelper } from 'repo-depkit-common';
 import { LanguageCode } from '@/constants/SettingData';
 
 const changeLanguage = (language: LanguageCode) => ({
@@ -85,7 +85,7 @@ export const applyGlitchTransformation = (text: string): string => {
 		replace: (word) => {
 			const chars = word.split('');
 			for (let i = chars.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
+				const j = Math.floor(MathHelper.random() * (i + 1));
 				[chars[i], chars[j]] = [chars[j], chars[i]];
 			}
 			return chars.join('');

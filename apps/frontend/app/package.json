@@ -50,7 +50,6 @@
     "@shopify/flash-list": "2.0.2",
     "@types/leaflet": "^1.9.21",
     "axios": "^1.7.7",
-    "buffer": "^6.0.3",
     "date-fns": "^4.1.0",
     "expo": "54.0.20",
     "expo-blur": "~15.0.7",

@@ -1458,6 +1458,76 @@ frisch verifiziert statt nur übernommen):**
 Scan bei 0 stehen; Maintainability-CSV bei 4 verbleibenden, klar begründeten
 Ausnahmen.
 
+## Am 2026-07-22 (elfte Runde): `buffer`- und `Math.random()`-Importe zentralisiert
+
+Auf Nutzerwunsch (unabhängig von einem konkreten neuen CSV-Fund) wurden zwei
+bereits als „bewusst unverändert" dokumentierte bzw. wiederkehrende Muster
+zentralisiert, statt sie weiterhin verstreut mit lokalen `NOSONAR`-Kommentaren
+zu belassen:
+
+- **`buffer`-Import**: Neue Datei `packages/common-ui/src/helpers/MyBuffer.ts`,
+  die `Buffer` aus `'buffer'` importiert (mit `NOSONAR` **direkt auf der
+  Importzeile** — anders als beim `hashHelper.ts`-Fehler in der neunten Runde,
+  wo der Kommentar nicht auf der gemeldeten Zeile stand) und als `MyBuffer`
+  re-exportiert, dazu ein Barrel-Export in `packages/common-ui/index.ts`.
+  `buffer` wurde als echte `dependency` (nicht `peerDependency`, da kein
+  Singleton-Zwang wie bei `react`/`react-native`) in
+  `packages/common-ui/package.json` ergänzt — passend zum bereits bestehenden
+  Muster dort (`tinycolor2` ist ebenfalls eine normale `dependency`). Die
+  beiden bisherigen direkten Importstellen (`form-queue/index.tsx`,
+  `form-submission/index.tsx`) importieren jetzt `MyBuffer` aus
+  `repo-depkit-common-ui` und rufen `MyBuffer.from(...)` auf; die jetzt
+  überflüssige `"buffer"`-Dependency wurde aus
+  `apps/frontend/app/package.json` entfernt (kommt jetzt transitiv über
+  `repo-depkit-common-ui`).
+- **`Math.random()`-Zentralisierung**: Neue Datei `packages/common/src/MathHelper.ts`
+  (Klasse `MathHelper`, statische Methode `random()`) — das ist jetzt die
+  **einzige** Stelle im gesamten Repo mit einem literalen `Math.random()`-Aufruf
+  und dem zugehörigen `NOSONAR`-Kommentar (SonarCloud-Regel S2245 stuft
+  `Math.random()` pauschal als „sicherheitskritisch" ein, unabhängig vom
+  Kontext). Alle bisherigen direkten `Math.random()`-Aufrufe im Repo (24
+  Fundstellen über `packages/common-ui` (`MyAvatarEditor`,
+  `FeatureWishesScreen`), `apps/geonexia/frontend` (`app/index.tsx`,
+  `helpers/IdHelper.ts`), `apps/frontend/app` (`hooks/useLanguage.ts`,
+  `components/CollectibleItem/index.tsx`,
+  `app/(app)/form-submission/index.tsx`,
+  `app/(app)/experimentell/game-ideas/index.tsx`),
+  `apps/score-tracker/frontend/helpers/RandomHelper.ts` sowie im
+  Backend-Extension-Workspace (`helpers/form/FormHelper.ts` (3x, Beispiel-Formular-
+  Generierung), `helpers/ai/image/ImageRawGeneratorMock.ts`,
+  `food-feedback-rating-calculate-hook/__tests__/TestFoodRatingCalculator.ts`,
+  Testdatei)) wurden auf `MathHelper.random()` umgestellt. Die beiden bereits
+  bestehenden App-lokalen Zufalls-Wrapper (`apps/geonexia/frontend/helpers/IdHelper.ts`,
+  `apps/score-tracker/frontend/helpers/RandomHelper.ts`) delegieren jetzt an
+  `MathHelper.random()` statt direkt an `Math.random()` und haben dadurch ihren
+  jeweiligen lokalen `NOSONAR`-Kommentar verloren (nicht mehr nötig, da der
+  literale Aufruf nicht mehr dort steht).
+
+  Reine Umbenennung/Delegation ohne Verhaltensänderung: `MathHelper.random()`
+  liefert exakt denselben `Math.random()`-Wertebereich `[0, 1)`, alle
+  umgebenden Berechnungen (`Math.floor(...)`, `* n`, `- 0.5`, `.toString(36)`
+  usw.) blieben unverändert.
+
+**Verifizierung:**
+- `grep -rn "Math\.random(" --include="*.ts" --include="*.tsx" .` zeigt danach
+  nur noch den einen Aufruf in `MathHelper.ts` selbst sowie unveränderte
+  Prosa-Kommentare in zwei Testdateien (keine echten Aufrufe mehr).
+- `grep -rn "from 'buffer'"` zeigt danach nur noch den einen Import in
+  `MyBuffer.ts`.
+- `tsc --noEmit` für `apps/frontend/app`, `apps/geonexia/frontend` und
+  `apps/score-tracker/frontend`: jeweils gegen einen frisch (nach dem Stand
+  dieser Runde) erzeugten Baseline-Diff verglichen (`git stash`/`git stash
+  pop`, da die vorherigen Baselines aus früheren Runden zwischenzeitlich durch
+  neue, gemergte Commits veraltet waren) — keine neuen Fehlerklassen, nur
+  Verschiebungen innerhalb derselben vorbestehenden „cannot find
+  module"-Rauschklasse (fehlende `node_modules` in der Sandbox), jetzt mit
+  anderen Modulnamen (`repo-depkit-common`/`repo-depkit-common-ui` statt
+  `buffer`), da sich die Imports geändert haben.
+- `yarn install` lokal ausgeführt, um `yarn.lock` mit den beiden
+  `package.json`-Änderungen (`buffer` neu in `packages/common-ui`, entfernt
+  aus `apps/frontend/app`) zu synchronisieren, damit `yarn install
+  --immutable` in der CI nicht bricht.
+
 ## Hinweise
 
 - Die CSV-Reports werden per CI aktualisiert (Commits `chore: update sonarcloud reports`).

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
+import { DatabaseTypes, COLLECTABLE_AT_FIELDS, MathHelper } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useCollectibleDict from '@/hooks/useCollectibleDict';
@@ -67,8 +67,8 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         useEffect(() => {
                 if (collectibleRandomPosition && !isPreview) {
                         setRandomOffset({
-                                x: Math.round(Math.random() * 60 - 30),
-                                y: Math.round(Math.random() * 60 - 30),
+                                x: Math.round(MathHelper.random() * 60 - 30),
+                                y: Math.round(MathHelper.random() * 60 - 30),
                         });
                 } else {
                         setRandomOffset({ x: 0, y: 0 });

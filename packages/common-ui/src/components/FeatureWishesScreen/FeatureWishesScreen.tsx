@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, MathHelper } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -170,7 +170,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	const handleCreate = useCallback(
 		(title: string, description: string) => {
 			const newItem: FeatureWishItem = {
-				id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+				id: `${Date.now()}-${MathHelper.random().toString(36).slice(2, 9)}`,
 				title,
 				description,
 				likes: 0,
