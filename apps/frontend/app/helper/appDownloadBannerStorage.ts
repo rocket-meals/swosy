@@ -35,3 +35,30 @@ export const clearAppDownloadBannerDismissed = (): void => {
 		// ignore - nothing to clear if sessionStorage is unavailable
 	}
 };
+
+// Kiosk latch: kiosk mode is detected from the ?kioskMode=true URL param, which
+// can get lost on internal navigation. The banner must NEVER show on a kiosk
+// device, so once kiosk mode was seen in this browser session we remember it
+// here and keep the banner hidden for the rest of the session.
+// Intentionally NOT cleared in logoutHelper.ts: a kiosk device stays a kiosk
+// device across the auto-logouts between visitors, and this flag only ever
+// hides a promotional banner.
+const KIOSK_SEEN_KEY = 'appDownloadBannerKioskModeSeen';
+
+export const rememberKioskModeForSession = (): void => {
+	try {
+		if (hasSessionStorage()) {
+			sessionStorage.setItem(KIOSK_SEEN_KEY, 'true');
+		}
+	} catch {
+		// sessionStorage unavailable - the URL param check still applies per render
+	}
+};
+
+export const wasKioskModeSeenThisSession = (): boolean => {
+	try {
+		return hasSessionStorage() && sessionStorage.getItem(KIOSK_SEEN_KEY) === 'true';
+	} catch {
+		return false;
+	}
+};

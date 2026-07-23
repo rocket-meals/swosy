@@ -8,7 +8,7 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import { getAppIconInsideExpoLocalSaved, getCustomerConfig } from '@/config';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
-import { dismissAppDownloadBanner, isAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
+import { dismissAppDownloadBanner, isAppDownloadBannerDismissed, rememberKioskModeForSession, wasKioskModeSeenThisSession } from '@/helper/appDownloadBannerStorage';
 
 /**
  * App-store-style "get the app" banner shown at the very top of the web app
@@ -21,7 +21,16 @@ import { dismissAppDownloadBanner, isAppDownloadBannerDismissed } from '@/helper
  */
 const AppDownloadBanner: React.FC = () => {
 	const { translate } = useLanguage();
-	const kioskMode = useKioskMode();
+	// The banner must never appear on kiosk devices. The URL param based hook
+	// only sees the current route, so the ?kioskMode=true param could get lost
+	// on internal navigation - latch it for the whole browser session instead.
+	const kioskModeFromUrl = useKioskMode();
+	useEffect(() => {
+		if (kioskModeFromUrl) {
+			rememberKioskModeForSession();
+		}
+	}, [kioskModeFromUrl]);
+	const kioskMode = kioskModeFromUrl || wasKioskModeSeenThisSession();
 	const { appSettings, serverInfo, primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
 	const loggedIn = useAppSelector(state => state.authReducer.loggedIn);
 	const [dismissed, setDismissed] = useState<boolean>(() => isAppDownloadBannerDismissed());
