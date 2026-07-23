@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppDownloadBanner as CommonUiAppDownloadBanner, getMobileWebPlatform, isIosSafariBrowser } from 'repo-depkit-common-ui';
+import { AppDownloadBanner as CommonUiAppDownloadBanner, getMobileWebPlatform } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useKioskMode from '@/hooks/useKioskMode';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { getAppIconInsideExpoLocalSaved, getCustomerConfig } from '@/config';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { dismissAppDownloadBanner, isAppDownloadBannerDismissed } from '@/helper/appDownloadBannerStorage';
@@ -39,17 +39,12 @@ const AppDownloadBanner: React.FC = () => {
 		wasLoggedInRef.current = loggedIn;
 	}, [loggedIn]);
 
-	const customerConfig = getCustomerConfig();
+	// Reactive to the in-app backend/customer switcher (useCustomerConfigModal),
+	// unlike the static, build-time getCustomerConfig() - so the banner's icon,
+	// name and store links stay correct after switching customers at runtime.
+	const customerConfig = useCustomerConfig();
 
 	const mobilePlatform = useMemo(() => getMobileWebPlatform(), []);
-
-	// Mobile Safari on iOS already shows Apple's native Smart App Banner from
-	// the apple-itunes-app meta tag in app/+html.tsx (see customerConfig.appleAppId).
-	// Showing our own banner there too would stack two banners on top of each
-	// other, so suppress ours in that exact case. Other iOS browsers (Chrome,
-	// Firefox, in-app WebViews, ...) never get that native banner and still
-	// need this one as their only fallback.
-	const nativeSmartAppBannerActive = mobilePlatform === 'ios' && !!customerConfig?.appleAppId && isIosSafariBrowser();
 
 	const storeUrl = useMemo(() => {
 		if (!mobilePlatform) return null;
@@ -85,7 +80,7 @@ const AppDownloadBanner: React.FC = () => {
 	}, [appScheme, storeUrl]);
 
 	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;
-	const iconSource = projectLogo ? { uri: projectLogo } : getAppIconInsideExpoLocalSaved();
+	const iconSource = projectLogo ? { uri: projectLogo } : customerConfig.images.icon_logo_source_get_for_react_native();
 	const projectName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
 
 	return (
@@ -106,7 +101,7 @@ const AppDownloadBanner: React.FC = () => {
 			onOpenStore={handleOpenStore}
 			onOpenApp={handleOpenApp}
 			onDismiss={handleDismiss}
-			visible={!kioskMode && !dismissed && !nativeSmartAppBannerActive}
+			visible={!kioskMode && !dismissed}
 		/>
 	);
 };

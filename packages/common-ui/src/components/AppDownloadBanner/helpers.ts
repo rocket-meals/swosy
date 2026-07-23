@@ -16,20 +16,6 @@ export const getMobileWebPlatform = (): MobileWebPlatform => {
 };
 
 /**
- * True when running in actual Mobile Safari on iOS - the one browser that
- * renders Apple's native Smart App Banner from an apple-itunes-app meta tag.
- * Other iOS browsers (Chrome/CriOS, Firefox/FxiOS, Edge/EdgiOS, Opera/OPiOS,
- * the Google app/GSA, in-app WebViews) all report "Safari" in a WebKit-based
- * UA string but do NOT show that native banner, so they still need the
- * in-app AppDownloadBanner as a fallback.
- */
-export const isIosSafariBrowser = (): boolean => {
-	if (getMobileWebPlatform() !== 'ios') return false;
-	const userAgent = navigator.userAgent || '';
-	return /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA|DuckDuckGo/i.test(userAgent);
-};
-
-/**
  * True when the web app itself already runs as an installed (standalone) web
  * app - either added to the home screen on iOS (navigator.standalone) or
  * installed as a PWA (display-mode: standalone). In that case a download
@@ -62,9 +48,9 @@ type InstalledRelatedApp = { id?: string; platform?: string; url?: string };
  * Detects whether the native (Android) app is installed on the current device.
  * Only works on Android/Chrome and only when the served web app manifest lists
  * the app under related_applications AND the native app declares matching
- * digital asset links - on all other platforms (notably iOS) the result stays
- * 'unknown'. iOS gets its installed-state handling for free via the
- * apple-itunes-app Smart App Banner meta tag instead.
+ * digital asset links - on all other platforms (notably iOS, which offers no
+ * web API for this) the result stays 'unknown' and the banner falls back to
+ * its plain install/open button.
  */
 export const checkNativeAppInstalled = async (androidPackageName?: string): Promise<NativeAppInstalledStatus> => {
 	if (Platform.OS !== 'web' || typeof navigator === 'undefined') return 'unknown';

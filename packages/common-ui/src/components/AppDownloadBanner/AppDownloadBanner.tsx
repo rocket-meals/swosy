@@ -57,10 +57,11 @@ export interface AppDownloadBannerProps {
  *
  * When the native Android app can be positively detected via
  * navigator.getInstalledRelatedApps() the banner switches to an "already
- * installed" appearance (check badge + open label). On iOS this detection is
- * not possible from the web; pair the banner with an apple-itunes-app meta tag
- * so Safari can additionally show its native Smart App Banner with the correct
- * installed state.
+ * installed" appearance (check badge + open label). On iOS there is no web
+ * API for this, so the banner always falls back to its plain install/open
+ * button there - deliberately not paired with an apple-itunes-app meta tag,
+ * since that tag is baked into the HTML at build time and cannot react to an
+ * in-app runtime customer/backend switch the way this component does.
  */
 const AppDownloadBanner: React.FC<AppDownloadBannerProps> = ({
 	texts,

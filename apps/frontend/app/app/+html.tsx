@@ -8,19 +8,23 @@ const customerConfig = getCustomerConfig();
 const basePath = (customerConfig.baseUrl || '') + (process.env.EXPO_PUBLIC_BASE_URL_SUFFIX || '');
 
 /**
- * Custom HTML shell for the static web export (expo-router). Every web page
- * is wrapped with this markup at build time; it only runs in Node.js during
+ * Custom HTML shell for the static web export (expo-router). Every page is
+ * wrapped with this markup at build time; it only runs in Node.js during
  * `expo export` and never in the browser.
  *
- * On top of the default Expo template this adds:
- * - apple-itunes-app meta tag: Safari on iOS shows its native Smart App
- *   Banner for the customer's App Store app and automatically displays
- *   "Open" when the app is already installed - something web code cannot
- *   detect on iOS.
- * - Web app manifest link: enables Android/Chrome install prompts and
- *   related_applications matching, which powers the installed-app detection
- *   (navigator.getInstalledRelatedApps) used by the AppDownloadBanner.
- *   The manifest itself is generated per customer in app.config.ts.
+ * On top of the default Expo template this adds a web app manifest link:
+ * enables Android/Chrome install prompts and related_applications matching,
+ * which powers the installed-app detection (navigator.getInstalledRelatedApps)
+ * used by the AppDownloadBanner. The manifest itself is generated per
+ * customer in app.config.ts.
+ *
+ * Deliberately NOT using an apple-itunes-app meta tag here: it is baked into
+ * the exported HTML at build time for a single customer and can never react
+ * to switching the backend/customer at runtime (see useCustomerConfigModal),
+ * so Safari's native Smart App Banner would show the wrong app after a
+ * switch, and would additionally stack on top of our own AppDownloadBanner
+ * for the build's default customer. iOS installs/opens are handled entirely
+ * by AppDownloadBanner instead, which does react to that runtime switch.
  */
 export default function Root({ children }: PropsWithChildren) {
 	return (
@@ -29,7 +33,6 @@ export default function Root({ children }: PropsWithChildren) {
 				<meta charSet="utf-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge" />
 				<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-				{customerConfig.appleAppId ? <meta name="apple-itunes-app" content={`app-id=${customerConfig.appleAppId}`} /> : null}
 				<link rel="manifest" href={`${basePath}/manifest.json`} />
 
 				{/* Link the ScrollView styles on web to mimic native behavior (disables body scrolling). */}
