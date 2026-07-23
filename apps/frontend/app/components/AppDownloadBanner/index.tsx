@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppDownloadBanner as CommonUiAppDownloadBanner, getMobileWebPlatform } from 'repo-depkit-common-ui';
+import { AppDownloadBanner as CommonUiAppDownloadBanner, getMobileWebPlatform, isIosSafariBrowser } from 'repo-depkit-common-ui';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -42,6 +42,14 @@ const AppDownloadBanner: React.FC = () => {
 	const customerConfig = getCustomerConfig();
 
 	const mobilePlatform = useMemo(() => getMobileWebPlatform(), []);
+
+	// Mobile Safari on iOS already shows Apple's native Smart App Banner from
+	// the apple-itunes-app meta tag in app/+html.tsx (see customerConfig.appleAppId).
+	// Showing our own banner there too would stack two banners on top of each
+	// other, so suppress ours in that exact case. Other iOS browsers (Chrome,
+	// Firefox, in-app WebViews, ...) never get that native banner and still
+	// need this one as their only fallback.
+	const nativeSmartAppBannerActive = mobilePlatform === 'ios' && !!customerConfig?.appleAppId && isIosSafariBrowser();
 
 	const storeUrl = useMemo(() => {
 		if (!mobilePlatform) return null;
@@ -98,7 +106,7 @@ const AppDownloadBanner: React.FC = () => {
 			onOpenStore={handleOpenStore}
 			onOpenApp={handleOpenApp}
 			onDismiss={handleDismiss}
-			visible={!kioskMode && !dismissed}
+			visible={!kioskMode && !dismissed && !nativeSmartAppBannerActive}
 		/>
 	);
 };

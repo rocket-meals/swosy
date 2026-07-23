@@ -16,6 +16,20 @@ export const getMobileWebPlatform = (): MobileWebPlatform => {
 };
 
 /**
+ * True when running in actual Mobile Safari on iOS - the one browser that
+ * renders Apple's native Smart App Banner from an apple-itunes-app meta tag.
+ * Other iOS browsers (Chrome/CriOS, Firefox/FxiOS, Edge/EdgiOS, Opera/OPiOS,
+ * the Google app/GSA, in-app WebViews) all report "Safari" in a WebKit-based
+ * UA string but do NOT show that native banner, so they still need the
+ * in-app AppDownloadBanner as a fallback.
+ */
+export const isIosSafariBrowser = (): boolean => {
+	if (getMobileWebPlatform() !== 'ios') return false;
+	const userAgent = navigator.userAgent || '';
+	return /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA|DuckDuckGo/i.test(userAgent);
+};
+
+/**
  * True when the web app itself already runs as an installed (standalone) web
  * app - either added to the home screen on iOS (navigator.standalone) or
  * installed as a PWA (display-mode: standalone). In that case a download
