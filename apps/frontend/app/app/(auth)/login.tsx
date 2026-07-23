@@ -25,6 +25,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { completeLoginFromDeepLinkCode } from '@/helper/authHelper';
+import LoginDebugPanel from '@/components/Login/LoginDebugPanel';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
@@ -256,6 +257,7 @@ export default function Login() {
 				>
 					<Header />
 					<Form openSheet={openSheet} openAttentionSheet={openAttentionSheet} onSuccess={handleUserLogin} providers={providers} />
+					{!isWeb && <LoginDebugPanel />}
 					<Footer />
 				</View>
 				{isWeb && isWebVisible && (

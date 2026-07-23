@@ -1,5 +1,7 @@
 jest.mock('expo-web-browser', () => ({
 	openAuthSessionAsync: jest.fn(),
+	openBrowserAsync: jest.fn(),
+	dismissBrowser: jest.fn(),
 }));
 
 jest.mock('expo-secure-store', () => {
@@ -33,20 +35,20 @@ type UrlListener = (event: { url: string }) => void;
 
 describe('authHelper native login', () => {
 	let authHelper: typeof import('./authHelper');
-	let WebBrowser: { openAuthSessionAsync: jest.Mock };
+	let WebBrowser: { openAuthSessionAsync: jest.Mock; openBrowserAsync: jest.Mock; dismissBrowser: jest.Mock };
 	let SecureStore: { setItemAsync: jest.Mock; getItemAsync: jest.Mock; deleteItemAsync: jest.Mock };
 	let ApiService: { fetchToken: jest.Mock };
 	let urlListeners: UrlListener[];
 	let removeListenerMock: jest.Mock;
+	let openUrlMock: jest.Mock;
 
 	const emitUrlEvent = (url: string) => {
-		urlListeners.forEach(listener => listener({ url }));
+		[...urlListeners].forEach(listener => listener({ url }));
 	};
 
 	beforeEach(() => {
 		jest.resetModules();
 		jest.clearAllMocks();
-		jest.useRealTimers();
 
 		const reactNative = require('react-native');
 		reactNative.Platform.OS = 'android';
@@ -55,8 +57,15 @@ describe('authHelper native login', () => {
 		removeListenerMock = jest.fn();
 		jest.spyOn(reactNative.Linking, 'addEventListener').mockImplementation(((_type: string, handler: UrlListener) => {
 			urlListeners.push(handler);
-			return { remove: removeListenerMock };
+			return {
+				remove: () => {
+					removeListenerMock();
+					urlListeners = urlListeners.filter(listener => listener !== handler);
+				},
+			};
 		}) as never);
+		openUrlMock = jest.fn(async () => true);
+		jest.spyOn(reactNative.Linking, 'openURL').mockImplementation(openUrlMock as never);
 
 		WebBrowser = require('expo-web-browser');
 		SecureStore = require('expo-secure-store');
@@ -72,44 +81,35 @@ describe('authHelper native login', () => {
 
 		expect(getToken).toHaveBeenCalledTimes(1);
 		expect(getToken).toHaveBeenCalledWith('verifier-success', 'code-success');
-		expect(removeListenerMock).toHaveBeenCalled();
 	});
 
 	// The core Android bug: expo-web-browser's internal race can resolve with
 	// 'dismiss' although the redirect arrived; the deep link event that still
-	// follows must complete the login.
+	// follows must complete the login. The listener stays registered even after
+	// handleNativeLogin returned.
 	it('completes the login via its own listener when the auth session resolves with dismiss', async () => {
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 		const getToken = jest.fn();
-		jest.useFakeTimers();
 
-		const loginPromise = authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-dismiss', getToken);
-		await jest.advanceTimersByTimeAsync(0); // flush until the grace period timer is pending
-
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-dismiss', getToken);
 		expect(getToken).not.toHaveBeenCalled();
+
 		emitUrlEvent(`${REDIRECT_URL}?code=code-dismiss`);
+
 		expect(getToken).toHaveBeenCalledTimes(1);
 		expect(getToken).toHaveBeenCalledWith('verifier-dismiss', 'code-dismiss');
-
-		await jest.advanceTimersByTimeAsync(3000);
-		await loginPromise;
-		expect(removeListenerMock).toHaveBeenCalled();
 	});
 
 	it('ignores events that do not match the redirect url or carry no code', async () => {
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 		const getToken = jest.fn();
-		jest.useFakeTimers();
 
-		const loginPromise = authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-ignore', getToken);
-		await jest.advanceTimersByTimeAsync(0);
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-ignore', getToken);
 
 		emitUrlEvent('other-scheme://login?code=foreign-code');
 		emitUrlEvent(REDIRECT_URL);
-		expect(getToken).not.toHaveBeenCalled();
 
-		await jest.advanceTimersByTimeAsync(3000);
-		await loginPromise;
+		expect(getToken).not.toHaveBeenCalled();
 	});
 
 	it('exchanges a code only once even when listener and session result both deliver it', async () => {
@@ -122,6 +122,59 @@ describe('authHelper native login', () => {
 		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-dup', getToken);
 
 		expect(getToken).toHaveBeenCalledTimes(1);
+	});
+
+	it('replaces the redirect listener on the next login attempt', async () => {
+		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
+		const firstGetToken = jest.fn();
+		const secondGetToken = jest.fn();
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-first', firstGetToken);
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-second', secondGetToken);
+
+		expect(removeListenerMock).toHaveBeenCalledTimes(1);
+		emitUrlEvent(`${REDIRECT_URL}?code=code-second-attempt`);
+
+		expect(firstGetToken).not.toHaveBeenCalled();
+		expect(secondGetToken).toHaveBeenCalledWith('verifier-second', 'code-second-attempt');
+	});
+
+	it('uses the system browser strategy via Linking.openURL and completes through the listener', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.SYSTEM_BROWSER);
+		const getToken = jest.fn();
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-system', getToken);
+
+		expect(openUrlMock).toHaveBeenCalledWith(LOGIN_URL);
+		expect(WebBrowser.openAuthSessionAsync).not.toHaveBeenCalled();
+
+		emitUrlEvent(`${REDIRECT_URL}?code=code-system`);
+		expect(getToken).toHaveBeenCalledWith('verifier-system', 'code-system');
+	});
+
+	it('uses the in-app browser strategy via openBrowserAsync and completes through the listener', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.IN_APP_BROWSER);
+		WebBrowser.openBrowserAsync.mockResolvedValue({ type: 'opened' });
+		const getToken = jest.fn();
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-inapp', getToken);
+
+		expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(LOGIN_URL);
+		expect(WebBrowser.openAuthSessionAsync).not.toHaveBeenCalled();
+
+		emitUrlEvent(`${REDIRECT_URL}?code=code-inapp`);
+		expect(getToken).toHaveBeenCalledWith('verifier-inapp', 'code-inapp');
+		expect(WebBrowser.dismissBrowser).toHaveBeenCalled();
+	});
+
+	it('passes createTask=false for the same-task auth session strategy', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
+		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-task', jest.fn());
+
+		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.objectContaining({ createTask: false }));
+		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.not.objectContaining({ browserPackage: expect.anything() }));
 	});
 
 	it('completes the login from the deep link code with the persisted verifier', async () => {
