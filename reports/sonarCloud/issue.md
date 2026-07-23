@@ -6,23 +6,19 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 3 | 3 |
+| 🔧 Maintainability | 2 | 2 |
 
-**Total issues:** 3
+**Total issues:** 2
 
 ---
 
-## 🔧 Maintainability (3/3)
+## 🔧 Maintainability (2/2)
 
-- **Remove this redundant type alias and replace its occurrences with "LatLngBounds".**
-  apps/geonexia/frontend/helpers/TileFeatureHelper.ts:66
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TileFeatureHelper.ts#L66
+- **Remove this unused import of 'Round'.**
+  apps/score-tracker/frontend/store/gameSlice.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L3
 
-- **Use `export…from` to re-export `Round`.**
-  apps/score-tracker/frontend/store/gameSlice.ts:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L9
-
-- **Use `export…from` to re-export `GameStatus`.**
-  apps/score-tracker/frontend/store/gameSlice.ts:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L9
+- **Remove this unused import of 'GameStatus'.**
+  apps/score-tracker/frontend/store/gameSlice.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L3
 
