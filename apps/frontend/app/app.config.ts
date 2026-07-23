@@ -51,6 +51,16 @@ function writeWebManifest() {
 		});
 	}
 
+	const publicDir = path.join(__dirname, 'public');
+	fs.mkdirSync(publicDir, { recursive: true });
+
+	// Copy the customer's 1024x1024 source icon into public/ so the manifest
+	// can point installers (Chrome's PWA install prompt, Android's app
+	// switcher) to a real high-res icon instead of just the small favicon.
+	const iconSourcePath = path.join(__dirname, customerConfig.images.icon_logo_source_path);
+	const manifestIconName = 'manifest-icon.png';
+	fs.copyFileSync(iconSourcePath, path.join(publicDir, manifestIconName));
+
 	const manifest = {
 		name: customerConfig.projectName,
 		short_name: customerConfig.projectName,
@@ -59,16 +69,17 @@ function writeWebManifest() {
 		display: 'standalone',
 		background_color: '#ffffff',
 		theme_color: '#ffffff',
-		// src is resolved relative to the manifest URL, which sits next to the
-		// favicon generated from the web.favicon config.
-		icons: [{ src: 'favicon.ico', sizes: '48x48', type: 'image/x-icon' }],
+		// src is resolved relative to the manifest URL, which sits next to
+		// index.html and everything else copied into public/.
+		icons: [
+			{ src: 'favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+			{ src: manifestIconName, sizes: '1024x1024', type: 'image/png' },
+		],
 		// Prefer the native store app over a PWA install prompt when we have one.
 		prefer_related_applications: relatedApplications.length > 0,
 		related_applications: relatedApplications,
 	};
 
-	const publicDir = path.join(__dirname, 'public');
-	fs.mkdirSync(publicDir, { recursive: true });
 	fs.writeFileSync(path.join(publicDir, 'manifest.json'), JSON.stringify(manifest, null, '\t') + '\n');
 }
 

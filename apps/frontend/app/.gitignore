@@ -44,3 +44,4 @@ expo-env.d.ts
 # @end expo-cli
 # Web app manifest - generated per customer by app.config.ts on every Expo CLI run
 /public/manifest.json
+/public/manifest-icon.png
