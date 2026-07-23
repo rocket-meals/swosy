@@ -167,14 +167,26 @@ describe('authHelper native login', () => {
 		expect(WebBrowser.dismissBrowser).toHaveBeenCalled();
 	});
 
-	it('passes createTask=false for the same-task auth session strategy', async () => {
-		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
+	// Samsung Internet Custom Tabs in a separate task never deliver the redirect
+	// deep link back to the app, so the default must keep the tab in the app's task.
+	it('defaults to the same-task auth session strategy with createTask=false and no browser package', async () => {
+		expect(authHelper.getSelectedLoginBrowserStrategy()).toBe(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 
 		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-task', jest.fn());
 
 		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.objectContaining({ createTask: false }));
 		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.not.objectContaining({ browserPackage: expect.anything() }));
+	});
+
+	it('passes the preferred browser package for the preferred-browser auth session strategy', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER);
+		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-preferred', jest.fn());
+
+		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.objectContaining({ browserPackage: 'com.android.chrome' }));
+		expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(LOGIN_URL, REDIRECT_URL, expect.not.objectContaining({ createTask: false }));
 	});
 
 	it('completes the login from the deep link code with the persisted verifier', async () => {

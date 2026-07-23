@@ -29,12 +29,17 @@ const CODE_VERIFIER_STORAGE_KEY = 'pkce_pending_code_verifier';
 // Different ways of opening the provider login page, selectable from the
 // login screen's debug panel to find out what works reliably per device.
 export enum LoginBrowserStrategy {
-	// Current default: auth session in a Custom Tab of the preferred browser package.
+	// Auth session in a Custom Tab of the preferred browser package. Broken on
+	// devices where Samsung Internet (com.sec.android.app.sbrowser) is the
+	// preferred browser: its Custom Tab in a separate task never delivers the
+	// redirect deep link back to the app, so the login can never complete.
 	AUTH_SESSION_PREFERRED_BROWSER = 'auth_session_preferred_browser',
 	// Auth session, but let the system pick the browser (no explicit package).
+	// Same Samsung Internet problem as above when it is the default browser.
 	AUTH_SESSION_DEFAULT_BROWSER = 'auth_session_default_browser',
-	// Auth session with createTask=false: the Custom Tab runs inside the app's
-	// own Android task, which changes the AppState/intent timing on return.
+	// Default: auth session with createTask=false - the Custom Tab runs inside
+	// the app's own Android task, which makes the redirect intent reach the app
+	// reliably, including on Samsung Internet devices.
 	AUTH_SESSION_SAME_TASK = 'auth_session_same_task',
 	// Plain in-app browser (openBrowserAsync) without auth session semantics;
 	// relies entirely on the redirect listener / deep link fallback.
@@ -45,14 +50,14 @@ export enum LoginBrowserStrategy {
 }
 
 export const LOGIN_BROWSER_STRATEGY_LABELS: Record<LoginBrowserStrategy, string> = {
-	[LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER]: 'Auth-Session (Standard)',
+	[LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER]: 'Auth-Session (bevorzugter Browser)',
 	[LoginBrowserStrategy.AUTH_SESSION_DEFAULT_BROWSER]: 'Auth-Session (System-Browser-Wahl)',
-	[LoginBrowserStrategy.AUTH_SESSION_SAME_TASK]: 'Auth-Session (gleicher App-Task)',
+	[LoginBrowserStrategy.AUTH_SESSION_SAME_TASK]: 'Auth-Session, gleicher App-Task (Standard)',
 	[LoginBrowserStrategy.IN_APP_BROWSER]: 'In-App-Browser (ohne Auth-Session)',
 	[LoginBrowserStrategy.SYSTEM_BROWSER]: 'System-Browser (App-Wechsel)',
 };
 
-let selectedLoginBrowserStrategy: LoginBrowserStrategy = LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER;
+let selectedLoginBrowserStrategy: LoginBrowserStrategy = LoginBrowserStrategy.AUTH_SESSION_SAME_TASK;
 
 export const getSelectedLoginBrowserStrategy = () => selectedLoginBrowserStrategy;
 
