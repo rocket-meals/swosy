@@ -28,21 +28,26 @@ const CODE_VERIFIER_STORAGE_KEY = 'pkce_pending_code_verifier';
 
 // Different ways of opening the provider login page, selectable from the
 // login screen's debug panel to find out what works reliably per device.
+// Device testing on Samsung devices (Samsung Internet as default browser)
+// showed: both regular auth session variants never deliver the redirect deep
+// link back to the app, and the same-task variant (createTask=false) is flaky
+// (worked once, then hung on the Google page - and Android offers no way to
+// close a Custom Tab programmatically). Only the plain in-app browser and the
+// system browser completed reliably.
 export enum LoginBrowserStrategy {
-	// Auth session in a Custom Tab of the preferred browser package. Broken on
-	// devices where Samsung Internet (com.sec.android.app.sbrowser) is the
-	// preferred browser: its Custom Tab in a separate task never delivers the
-	// redirect deep link back to the app, so the login can never complete.
+	// Auth session in a Custom Tab of the preferred browser package.
+	// Default on iOS (native ASWebAuthenticationSession). On Android broken
+	// with Samsung Internet: the redirect deep link never reaches the app.
 	AUTH_SESSION_PREFERRED_BROWSER = 'auth_session_preferred_browser',
 	// Auth session, but let the system pick the browser (no explicit package).
 	// Same Samsung Internet problem as above when it is the default browser.
 	AUTH_SESSION_DEFAULT_BROWSER = 'auth_session_default_browser',
-	// Default: auth session with createTask=false - the Custom Tab runs inside
-	// the app's own Android task, which makes the redirect intent reach the app
-	// reliably, including on Samsung Internet devices.
+	// Auth session with createTask=false: Custom Tab inside the app's own
+	// Android task. Flaky on Samsung Internet devices, see above.
 	AUTH_SESSION_SAME_TASK = 'auth_session_same_task',
-	// Plain in-app browser (openBrowserAsync) without auth session semantics;
-	// relies entirely on the redirect listener / deep link fallback.
+	// Default on Android: plain in-app browser (openBrowserAsync) without auth
+	// session semantics; relies entirely on the redirect listener / deep link
+	// fallback, which proved reliable on the affected devices.
 	IN_APP_BROWSER = 'in_app_browser',
 	// Full app switch to the system browser via Linking.openURL; return happens
 	// through the deep link only.
@@ -50,14 +55,16 @@ export enum LoginBrowserStrategy {
 }
 
 export const LOGIN_BROWSER_STRATEGY_LABELS: Record<LoginBrowserStrategy, string> = {
-	[LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER]: 'Auth-Session (bevorzugter Browser)',
+	[LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER]: 'Auth-Session, bevorzugter Browser (Standard iOS)',
 	[LoginBrowserStrategy.AUTH_SESSION_DEFAULT_BROWSER]: 'Auth-Session (System-Browser-Wahl)',
-	[LoginBrowserStrategy.AUTH_SESSION_SAME_TASK]: 'Auth-Session, gleicher App-Task (Standard)',
-	[LoginBrowserStrategy.IN_APP_BROWSER]: 'In-App-Browser (ohne Auth-Session)',
+	[LoginBrowserStrategy.AUTH_SESSION_SAME_TASK]: 'Auth-Session (gleicher App-Task)',
+	[LoginBrowserStrategy.IN_APP_BROWSER]: 'In-App-Browser (Standard Android)',
 	[LoginBrowserStrategy.SYSTEM_BROWSER]: 'System-Browser (App-Wechsel)',
 };
 
-let selectedLoginBrowserStrategy: LoginBrowserStrategy = LoginBrowserStrategy.AUTH_SESSION_SAME_TASK;
+const defaultLoginBrowserStrategy = Platform.OS === 'android' ? LoginBrowserStrategy.IN_APP_BROWSER : LoginBrowserStrategy.AUTH_SESSION_PREFERRED_BROWSER;
+
+let selectedLoginBrowserStrategy: LoginBrowserStrategy = defaultLoginBrowserStrategy;
 
 export const getSelectedLoginBrowserStrategy = () => selectedLoginBrowserStrategy;
 

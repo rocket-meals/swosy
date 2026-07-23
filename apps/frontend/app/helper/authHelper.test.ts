@@ -74,6 +74,7 @@ describe('authHelper native login', () => {
 	});
 
 	it('exchanges the code when the auth session resolves with success', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'success', url: `${REDIRECT_URL}?code=code-success` });
 		const getToken = jest.fn();
 
@@ -88,6 +89,7 @@ describe('authHelper native login', () => {
 	// follows must complete the login. The listener stays registered even after
 	// handleNativeLogin returned.
 	it('completes the login via its own listener when the auth session resolves with dismiss', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 		const getToken = jest.fn();
 
@@ -101,6 +103,7 @@ describe('authHelper native login', () => {
 	});
 
 	it('ignores events that do not match the redirect url or carry no code', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 		const getToken = jest.fn();
 
@@ -113,6 +116,7 @@ describe('authHelper native login', () => {
 	});
 
 	it('exchanges a code only once even when listener and session result both deliver it', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockImplementation(async () => {
 			emitUrlEvent(`${REDIRECT_URL}?code=code-dup`);
 			return { type: 'success', url: `${REDIRECT_URL}?code=code-dup` };
@@ -125,6 +129,7 @@ describe('authHelper native login', () => {
 	});
 
 	it('replaces the redirect listener on the next login attempt', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 		const firstGetToken = jest.fn();
 		const secondGetToken = jest.fn();
@@ -167,10 +172,21 @@ describe('authHelper native login', () => {
 		expect(WebBrowser.dismissBrowser).toHaveBeenCalled();
 	});
 
-	// Samsung Internet Custom Tabs in a separate task never deliver the redirect
-	// deep link back to the app, so the default must keep the tab in the app's task.
-	it('defaults to the same-task auth session strategy with createTask=false and no browser package', async () => {
-		expect(authHelper.getSelectedLoginBrowserStrategy()).toBe(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
+	// Samsung Internet Custom Tabs never deliver the redirect deep link back to
+	// the app (and the same-task variant proved flaky), so Android defaults to
+	// the plain in-app browser, which relies on the redirect listener alone.
+	it('defaults to the in-app browser strategy on Android', async () => {
+		expect(authHelper.getSelectedLoginBrowserStrategy()).toBe(authHelper.LoginBrowserStrategy.IN_APP_BROWSER);
+		WebBrowser.openBrowserAsync.mockResolvedValue({ type: 'opened' });
+
+		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-default', jest.fn());
+
+		expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(LOGIN_URL);
+		expect(WebBrowser.openAuthSessionAsync).not.toHaveBeenCalled();
+	});
+
+	it('passes createTask=false for the same-task auth session strategy', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'dismiss' });
 
 		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-task', jest.fn());
@@ -215,6 +231,7 @@ describe('authHelper native login', () => {
 	});
 
 	it('does not exchange a code via deep link that the auth session already handled', async () => {
+		authHelper.setSelectedLoginBrowserStrategy(authHelper.LoginBrowserStrategy.AUTH_SESSION_SAME_TASK);
 		WebBrowser.openAuthSessionAsync.mockResolvedValue({ type: 'success', url: `${REDIRECT_URL}?code=code-both-paths` });
 		const getToken = jest.fn();
 		await authHelper.handleNativeLogin(LOGIN_URL, REDIRECT_URL, 'verifier-both', getToken);
