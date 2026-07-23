@@ -11,7 +11,7 @@ const LINK_SCHEME_PATTERN = String.raw`(?:https?:\/\/|${UriScheme.GEO}|${UriSche
 
 export const markdownContentPatterns: ContentPatterns = {
 	email: new RegExp(String.raw`\[([^\]]+)]\((${UriScheme.MAILTO}[^\)]+)\)`),
-	link: new RegExp(String.raw`\[([^\]]+)]\((${LINK_SCHEME_PATTERN}[^\)]+)\)`),
+	link: new RegExp(String.raw`\[([^\]]{1,500})]\((${LINK_SCHEME_PATTERN}[^\)]{1,2000})\)`),
 	image: /!\[([^\]]*)]\(([^)]+)\)/,
-	heading: /^#{1,6}\s*(.*)$/,
+	heading: /^#{1,6}\s{0,20}(.{0,5000})$/,
 };

@@ -35,6 +35,220 @@ const getSortedBusinessHoursGroups = (groups: { id: string; sort?: number | null
 	});
 };
 
+const buildDayStartAndEndTimeDict = (
+	hoursList: any[],
+	sortedDayKeys: string[]
+): Record<string, { day: string; time_start: number | null; time_end: number | null }[]> => {
+	const dayStartAndEndTimeDict: Record<string, { day: string; time_start: number | null; time_end: number | null }[]> = {};
+
+	hoursList.forEach((entry: any) => {
+		sortedDayKeys.forEach(day => {
+			if (entry[day]) {
+				let timesForDay = dayStartAndEndTimeDict[day] || [];
+
+				let time_start_as_string = entry.time_start; // "08:00:00"
+				let time_end_as_string = entry.time_end; // "20:00:00"
+				if (!time_start_as_string || !time_end_as_string) {
+					timesForDay.push({
+						day,
+						time_start: null,
+						time_end: null,
+					});
+				} else {
+					let time_start_as_seconds = Number.parseInt(time_start_as_string.split(':')[0]) * 3600 + Number.parseInt(time_start_as_string.split(':')[1]) * 60;
+					let time_end_as_seconds = Number.parseInt(time_end_as_string.split(':')[0]) * 3600 + Number.parseInt(time_end_as_string.split(':')[1]) * 60;
+
+					timesForDay.push({
+						day,
+						time_start: time_start_as_seconds,
+						time_end: time_end_as_seconds,
+					});
+				}
+				dayStartAndEndTimeDict[day] = timesForDay;
+			}
+		});
+	});
+
+	return dayStartAndEndTimeDict;
+};
+
+// Group by same time_start and time_end
+// e.g. Monday: 08:00-12:00, 11:00-14:00, 14:00-20:00 ==> 08:00-20:00
+const computeConsecutiveRangesByDay = (
+	sortedDayKeys: string[],
+	dayStartAndEndTimeDict: Record<string, { day: string; time_start: number | null; time_end: number | null }[]>
+): Record<string, { time_start: number | null; time_end: number | null }[]> => {
+	const dayConsecutiveRanges: Record<string, { time_start: number | null; time_end: number | null }[]> = {};
+	// Iterate over each day and its corresponding time ranges
+	sortedDayKeys.forEach(day => {
+		const timeRanges = dayStartAndEndTimeDict[day];
+		if (timeRanges && timeRanges.length > 0) {
+			// sorting the time ranges by time_start
+			timeRanges.sort((a, b) => {
+				if (a.time_start === null || b.time_start === null) {
+					// null will be at the end
+					return a.time_start === null ? 1 : -1;
+				}
+				return a.time_start - b.time_start;
+			});
+			let consecutiveRanges: {
+				time_start: number | null;
+				time_end: number | null;
+			}[] = [];
+			// we now want to find overlapping time ranges for each day
+			let currentRange: {
+				time_start: number | null;
+				time_end: number | null;
+			} | null = null;
+			timeRanges.forEach(timeRange => {
+				const { time_start, time_end } = timeRange;
+				if (currentRange?.time_start == null || currentRange.time_end == null) {
+					currentRange = { time_start, time_end };
+				} else if (time_start === currentRange.time_start && time_end === currentRange.time_end) {
+					// do nothing
+				} else if (time_start === null || time_end === null) {
+					// do nothing
+				} else if (time_start >= currentRange.time_start && time_end <= currentRange.time_end) {
+					// do nothing
+				} else if (time_start < currentRange.time_end && time_end > currentRange.time_end) {
+					currentRange.time_end = time_end;
+				} else if (time_start > currentRange.time_end) {
+					consecutiveRanges.push(currentRange); // push the current range to the consecutive ranges
+					currentRange = { time_start, time_end }; // start a new range
+				}
+			});
+			if (currentRange) {
+				consecutiveRanges.push(currentRange); // push the last range to the consecutive ranges
+			}
+
+			dayConsecutiveRanges[day] = consecutiveRanges;
+		}
+	});
+	return dayConsecutiveRanges;
+};
+
+// Pushes one entry per time range in `timeRanges` into `groupedTimes`, all attributed to `days`.
+const flushGroupedTimeRanges = (
+	timeRanges: { time_start: number | null; time_end: number | null }[],
+	days: string[],
+	groupedTimes: { day: string[]; time_start: string | null; time_end: string | null }[]
+): void => {
+	timeRanges.forEach(timeRange => {
+		groupedTimes.push({
+			day: days,
+			time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
+			time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
+		});
+	});
+};
+
+// Checks whether two lists of time ranges contain the same set of (time_start, time_end) pairs.
+const haveSameTimeRanges = (
+	currentTimeRanges: { time_start: number | null; time_end: number | null }[],
+	previousSavedTimeRanges: { time_start: number | null; time_end: number | null }[]
+): boolean => {
+	let isSameTimeRange = false;
+	if (currentTimeRanges.length === previousSavedTimeRanges.length) {
+		currentTimeRanges.forEach(timeRange => {
+			previousSavedTimeRanges.forEach(previousTimeRange => {
+				if (timeRange.time_start === previousTimeRange.time_start && timeRange.time_end === previousTimeRange.time_end) {
+					isSameTimeRange = true;
+				}
+			});
+		});
+	}
+	return isSameTimeRange;
+};
+
+type TimeRange = { time_start: number | null; time_end: number | null };
+type GroupedTime = { day: string[]; time_start: string | null; time_end: string | null };
+type DayMergeState = { previousSavedTimeRanges: TimeRange[]; previousDaysForTimeRange: string[] };
+
+// Merges one day's consecutive ranges into `groupedTimes`, carrying the running
+// "same time range so far" state forward to the next day via the returned state.
+const mergeDayIntoGroupedTimes = (
+	currentDay: string,
+	currentTimeRanges: TimeRange[] | undefined,
+	isLastDay: boolean,
+	state: DayMergeState,
+	groupedTimes: GroupedTime[]
+): DayMergeState => {
+	let { previousSavedTimeRanges, previousDaysForTimeRange } = state;
+
+	if (!currentTimeRanges || currentTimeRanges.length === 0) {
+		// if we have no time ranges for this day, we can skip it
+		// but we need to check if we have a previous day with time ranges and if so, we need to add it to the groupedTimes
+		if (previousDaysForTimeRange.length > 0 && previousSavedTimeRanges.length > 0) {
+			// we have a previous day with time ranges
+			flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+			previousSavedTimeRanges = [];
+			previousDaysForTimeRange = [];
+		}
+		return { previousSavedTimeRanges, previousDaysForTimeRange };
+	}
+
+	// So we have previous time ranges and now we want to check if the current time ranges are the same as the previous time ranges
+	let isSameTimeRange = haveSameTimeRanges(currentTimeRanges, previousSavedTimeRanges);
+
+	if (isSameTimeRange) {
+		// we have a same time range, so we can add the current day to the previous days
+		previousDaysForTimeRange = [...previousDaysForTimeRange, currentDay];
+	} else {
+		// we have a different time range, so we need to save the previous time ranges and add the current day to the grouped times
+		flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+		previousDaysForTimeRange = [currentDay];
+		previousSavedTimeRanges = currentTimeRanges;
+	}
+
+	// if we are at the last day, we need to add the previous time ranges to the grouped times
+	if (isLastDay) {
+		flushGroupedTimeRanges(previousSavedTimeRanges, previousDaysForTimeRange, groupedTimes);
+	}
+
+	return { previousSavedTimeRanges, previousDaysForTimeRange };
+};
+
+const mergeDaysWithSameTimeRanges = (
+	sortedDayKeys: string[],
+	dayConsecutiveRanges: Record<string, TimeRange[]>
+): GroupedTime[] => {
+	const groupedTimes: GroupedTime[] = [];
+
+	let state: DayMergeState = { previousSavedTimeRanges: [], previousDaysForTimeRange: [] };
+	for (let i = 0; i < sortedDayKeys.length; i++) {
+		let currentDay = sortedDayKeys[i];
+		let currentTimeRanges = dayConsecutiveRanges[currentDay];
+		let isLastDay = i === sortedDayKeys.length - 1;
+		state = mergeDayIntoGroupedTimes(currentDay, currentTimeRanges, isLastDay, state, groupedTimes);
+	}
+
+	return groupedTimes;
+};
+
+// Format time_start and time_end from seconds back to HH:mm:ss
+const formatGroupedTimesInPlace = (groupedTimes: { time_start: string | null; time_end: string | null }[]) => {
+	groupedTimes.forEach(timeRange => {
+		if (timeRange.time_start === null || timeRange.time_end === null) {
+			// do nothing if value is null
+			return;
+		}
+
+		let time_start_in_seconds = Number.parseInt(timeRange.time_start);
+		let time_end_in_seconds = Number.parseInt(timeRange.time_end);
+		let time_start_hours = Math.floor(time_start_in_seconds / 3600);
+		let time_start_minutes = Math.floor((time_start_in_seconds % 3600) / 60);
+		let time_start_seconds = time_start_in_seconds % 60;
+		let time_end_hours = Math.floor(time_end_in_seconds / 3600);
+		let time_end_minutes = Math.floor((time_end_in_seconds % 3600) / 60);
+		let time_end_seconds = time_end_in_seconds % 60;
+		timeRange.time_start = `${String(time_start_hours).padStart(2, '0')}:${String(time_start_minutes).padStart(2, '0')}:${String(time_start_seconds).padStart(2, '0')}`;
+		timeRange.time_end = `${String(time_end_hours).padStart(2, '0')}:${String(time_end_minutes).padStart(2, '0')}:${String(time_end_seconds).padStart(2, '0')}`;
+
+		timeRange.time_start = `${String(time_start_hours).padStart(2, '0')}:${String(time_start_minutes).padStart(2, '0')}:${String(time_start_seconds).padStart(2, '0')}`;
+		timeRange.time_end = `${String(time_end_hours).padStart(2, '0')}:${String(time_end_minutes).padStart(2, '0')}:${String(time_end_seconds).padStart(2, '0')}`;
+	});
+};
+
 export const HoursSheetContent: React.FC = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -140,194 +354,11 @@ export const HoursSheetContent: React.FC = () => {
 
 			Object.entries(groupedByGroupName).forEach(([groupId, groupData]) => {
 				const { name: groupName, hours: hoursList } = groupData;
-				const dayStartAndEndTimeDict: Record<string, { day: string; time_start: number | null; time_end: number | null }[]> = {};
+				const dayStartAndEndTimeDict = buildDayStartAndEndTimeDict(hoursList, sortedDayKeys);
+				const dayConsecutiveRanges = computeConsecutiveRangesByDay(sortedDayKeys, dayStartAndEndTimeDict);
+				const groupedTimes = mergeDaysWithSameTimeRanges(sortedDayKeys, dayConsecutiveRanges);
+				formatGroupedTimesInPlace(groupedTimes);
 
-				hoursList.forEach((entry: any) => {
-					sortedDayKeys.forEach(day => {
-						if (entry[day]) {
-							let timesForDay = dayStartAndEndTimeDict[day] || [];
-
-							let time_start_as_string = entry.time_start; // "08:00:00"
-							let time_end_as_string = entry.time_end; // "20:00:00"
-							if (!time_start_as_string || !time_end_as_string) {
-								timesForDay.push({
-									day,
-									time_start: null,
-									time_end: null,
-								});
-							} else {
-								let time_start_as_seconds = Number.parseInt(time_start_as_string.split(':')[0]) * 3600 + Number.parseInt(time_start_as_string.split(':')[1]) * 60;
-								let time_end_as_seconds = Number.parseInt(time_end_as_string.split(':')[0]) * 3600 + Number.parseInt(time_end_as_string.split(':')[1]) * 60;
-
-								timesForDay.push({
-									day,
-									time_start: time_start_as_seconds,
-									time_end: time_end_as_seconds,
-								});
-							}
-							dayStartAndEndTimeDict[day] = timesForDay;
-						}
-					});
-				});
-
-				// Step 2: Group by same time_start and time_end
-				// e.g. Monday: 08:00-12:00, 11:00-14:00, 14:00-20:00 ==> 08:00-20:00
-				const dayConsecutiveRanges: Record<string, { time_start: number | null; time_end: number | null }[]> = {};
-				// Iterate over each day and its corresponding time ranges
-				sortedDayKeys.forEach(day => {
-					const timeRanges = dayStartAndEndTimeDict[day];
-					if (!timeRanges || timeRanges.length === 0) {
-					} else {
-						// sorting the time ranges by time_start
-						timeRanges.sort((a, b) => {
-							if (a.time_start === null || b.time_start === null) {
-								// null will be at the end
-								return a.time_start === null ? 1 : -1;
-							}
-							return a.time_start - b.time_start;
-						});
-						let consecutiveRanges: {
-							time_start: number | null;
-							time_end: number | null;
-						}[] = [];
-						// we now want to find overlapping time ranges for each day
-						let currentRange: {
-							time_start: number | null;
-							time_end: number | null;
-						} | null = null;
-						timeRanges.forEach(timeRange => {
-							const { time_start, time_end } = timeRange;
-							if (currentRange?.time_start == null || currentRange.time_end == null) {
-								currentRange = { time_start, time_end };
-							} else {
-								let isSame = false;
-								let isBetween = false;
-								let isExtending = false;
-								let isOutside = false;
-								if (time_start === currentRange.time_start && time_end === currentRange.time_end) {
-									isSame = true;
-									// do nothing
-								} else if (time_start === null || time_end === null) {
-									// do nothing
-								} else if (time_start >= currentRange.time_start && time_end <= currentRange.time_end) {
-									isBetween = true;
-									// do nothing
-								} else if (time_start < currentRange.time_end && time_end > currentRange.time_end) {
-									isExtending = true;
-									currentRange.time_end = time_end;
-								} else if (time_start > currentRange.time_end) {
-									isOutside = true;
-									consecutiveRanges.push(currentRange); // push the current range to the consecutive ranges
-									currentRange = { time_start, time_end }; // start a new range
-								}
-							}
-						});
-						if (currentRange) {
-							consecutiveRanges.push(currentRange); // push the last range to the consecutive ranges
-						}
-
-						dayConsecutiveRanges[day] = consecutiveRanges;
-					}
-				});
-				const groupedTimes: {
-					day: string[];
-					time_start: string | null;
-					time_end: string | null;
-				}[] = [];
-
-				let previousSavedTimeRanges: {
-					time_start: number | null;
-					time_end: number | null;
-				}[] = [];
-				let previousDaysForTimeRange: string[] = [];
-				for (let i = 0; i < sortedDayKeys.length; i++) {
-					let currentDay = sortedDayKeys[i];
-					let currentTimeRanges = dayConsecutiveRanges[currentDay];
-					if (!currentTimeRanges || currentTimeRanges.length === 0) {
-						// if we have no time ranges for this day, we can skip it
-						// but we need to check if we have a previous day with time ranges and if so, we need to add it to the groupedTimes
-						if (previousDaysForTimeRange.length > 0 && previousSavedTimeRanges.length > 0) {
-							// we have a previous day with time ranges
-							previousSavedTimeRanges.forEach(timeRange => {
-								groupedTimes.push({
-									day: previousDaysForTimeRange,
-									time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-									time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-								});
-							});
-							previousSavedTimeRanges = [];
-							previousDaysForTimeRange = [];
-						} else {
-							// Do nothing as previous day has handled the time ranges
-						}
-					} else {
-						// So we have previous time ranges and now we want to check if the current time ranges are the same as the previous time ranges
-						let isLastDay = i === sortedDayKeys.length - 1;
-
-						let isSameTimeRange = false;
-
-						if (currentTimeRanges.length === previousSavedTimeRanges.length) {
-							currentTimeRanges.forEach(timeRange => {
-								previousSavedTimeRanges.forEach(previousTimeRange => {
-									if (timeRange.time_start === previousTimeRange.time_start && timeRange.time_end === previousTimeRange.time_end) {
-										isSameTimeRange = true;
-									}
-								});
-							});
-						}
-
-						if (isSameTimeRange) {
-							// we have a same time range, so we can add the current day to the previous days
-							previousDaysForTimeRange.push(currentDay);
-						} else {
-							// we have a different time range, so we need to save the previous time ranges and add the current day to the grouped times
-							previousSavedTimeRanges.forEach(timeRange => {
-								groupedTimes.push({
-									day: previousDaysForTimeRange,
-									time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-									time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-								});
-							});
-							previousDaysForTimeRange = [currentDay];
-							previousSavedTimeRanges = currentTimeRanges;
-						}
-
-						// if we are at the last day, we need to add the previous time ranges to the grouped times
-						if (isLastDay) {
-							previousSavedTimeRanges.forEach(timeRange => {
-								groupedTimes.push({
-									day: previousDaysForTimeRange,
-									time_start: timeRange.time_start === null ? null : timeRange.time_start.toString(),
-									time_end: timeRange.time_end === null ? null : timeRange.time_end.toString(),
-								});
-							});
-						}
-					}
-				}
-
-				// Step 4: Format time_start and time_end from seconds back to HH:mm:ss
-				groupedTimes.forEach(timeRange => {
-					if (timeRange.time_start === null || timeRange.time_end === null) {
-						// do nothing if value is null
-						return;
-					}
-
-					let time_start_in_seconds = Number.parseInt(timeRange.time_start);
-					let time_end_in_seconds = Number.parseInt(timeRange.time_end);
-					let time_start_hours = Math.floor(time_start_in_seconds / 3600);
-					let time_start_minutes = Math.floor((time_start_in_seconds % 3600) / 60);
-					let time_start_seconds = time_start_in_seconds % 60;
-					let time_end_hours = Math.floor(time_end_in_seconds / 3600);
-					let time_end_minutes = Math.floor((time_end_in_seconds % 3600) / 60);
-					let time_end_seconds = time_end_in_seconds % 60;
-					timeRange.time_start = `${String(time_start_hours).padStart(2, '0')}:${String(time_start_minutes).padStart(2, '0')}:${String(time_start_seconds).padStart(2, '0')}`;
-					timeRange.time_end = `${String(time_end_hours).padStart(2, '0')}:${String(time_end_minutes).padStart(2, '0')}:${String(time_end_seconds).padStart(2, '0')}`;
-
-					timeRange.time_start = `${String(time_start_hours).padStart(2, '0')}:${String(time_start_minutes).padStart(2, '0')}:${String(time_start_seconds).padStart(2, '0')}`;
-					timeRange.time_end = `${String(time_end_hours).padStart(2, '0')}:${String(time_end_minutes).padStart(2, '0')}:${String(time_end_seconds).padStart(2, '0')}`;
-				});
-
-				// Step 3: Convert grouped object back to array
 				dayWiseGroupedByGroupName[groupId] = {
 					name: groupName,
 					entries: groupedTimes,
@@ -483,7 +514,7 @@ export const HoursSheetContent: React.FC = () => {
 const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
 	return (
-		<MyScrollViewModal title={translate(TranslationKeys.businesshours)} closeSheet={closeSheet}>
+		<MyScrollViewModal title={translate(TranslationKeys.businesshours)}>
 			<HoursSheetContent />
 		</MyScrollViewModal>
 	);

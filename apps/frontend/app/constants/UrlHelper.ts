@@ -6,7 +6,7 @@ import { EnvHelper } from './EnvHelper';
 
 export class UrlHelper {
 	static createLocalURL(path: string) {
-		const isProduction = EnvHelper.isProduction(); // TODO: Check if issue: https://github.com/rocket-meals/rocket-meals/issues/15 is fixed
+		const isProduction = EnvHelper.isProduction();
 
 		if (Platform.OS !== 'web') {
 			// The base url workaround below is only needed for web builds. In
@@ -17,7 +17,6 @@ export class UrlHelper {
 		}
 
 		if (isProduction) {
-			// TODO: Check if issue: https://github.com/rocket-meals/rocket-meals/issues/15 is fixed
 			const urlWithoutBaseUrl = createURL(path); // createUrl creates a url but without the base url which seems to be a bug
 			// example: path = "/login"
 			// example: urlWithoutBaseUrl = "https://localhost:3000/login"
@@ -32,7 +31,7 @@ export class UrlHelper {
 			return url;
 		} else {
 			const url = createURL(path);
-			// example: url = "localhost:19006/login" TODO: Url does not seem to have the baseUrl but it works in development. Seems to be a bug.
+			// example: url = "localhost:19006/login"
 			return url;
 		}
 	}

@@ -13,6 +13,8 @@ check_imagemagick() {
             exit 1
         fi
     fi
+
+    return $?
 }
 
 # Function to install ImageMagick
@@ -40,6 +42,8 @@ install_imagemagick() {
         echo "Unsupported operating system. Please install ImageMagick manually."
         exit 1
     fi
+
+    return $?
 }
 
 # Function to print usage help
@@ -51,6 +55,8 @@ print_usage() {
     echo "  <path_to_company_logo> Path to the company logo file"
     echo "  [output_folder]        Optional: Path to the output folder. Default is ./app/assets/images/"
     echo "  --project-dir <dir>    Optional: Path to the project directory. Output folder will be <dir>/assets/"
+
+    return $?
 }
 
 # Define default output folder
@@ -68,6 +74,8 @@ SPLASH_SIZE="1155x2500"
 calculate_splash_logo_width() {
     local splash_width=$(echo $SPLASH_SIZE | cut -dx -f1)
     SPLASH_LOGO_WIDTH=$(echo "$splash_width * 0.9" | bc)
+
+    return $?
 }
 
 ## Converts transparent pixels in a PNG from black-transparent (0,0,0,0) to
@@ -93,6 +101,8 @@ convert_transparent_to_white() {
         -delete 0 -compose CopyOpacity -composite \
         -colorspace sRGB \
         PNG32:"$output_path"
+
+    return $?
 }
 
 generate_splash_icon() {
@@ -122,6 +132,8 @@ generate_splash_icon() {
 
     # Also generate splash.png (used by expo-splash-screen)
     cp "$splash_icon_path" "$OUTPUT_FOLDER/splash.png"
+
+    return $?
 }
 
 generate_adaptive_icon() {
@@ -134,6 +146,8 @@ generate_adaptive_icon() {
 
     convert "$icon_path" -resize ${icon_size}x${icon_size} \
         -gravity center -background none -extent $ADAPTIVE_ICON_SIZE "$output_path"
+
+    return $?
 }
 
 generate_adaptive_icon_background() {
@@ -141,6 +155,8 @@ generate_adaptive_icon_background() {
 
     # Erzeuge weißes (nicht transparentes) Bild
     convert -size $ADAPTIVE_ICON_SIZE xc:white "$output_path"
+
+    return $?
 }
 
 # Function to compute SHA-256 hash of a file
@@ -154,6 +170,8 @@ compute_file_hash() {
         echo "ERROR: No SHA-256 hash tool found" >&2
         exit 1
     fi
+
+    return $?
 }
 
 # Function to write hash JSON file for source tracking
@@ -178,6 +196,8 @@ write_hash_file() {
 EOF
 
     echo "Hash file written to $hash_file"
+
+    return $?
 }
 
 # Function to generate images
@@ -212,11 +232,13 @@ generate_images() {
 
     # Write hash file for source tracking
     write_hash_file "$icon_path" "$logo_path"
+
+    return $?
 }
 
 # Main script execution
 if [[ $# -lt 2 ]]; then
-    echo "Error: Missing required arguments."
+    echo "Error: Missing required arguments." >&2
     print_usage
     exit 1
 fi
@@ -230,7 +252,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --project-dir)
             if [[ -z "$2" ]]; then
-                echo "Error: --project-dir requires a directory argument."
+                echo "Error: --project-dir requires a directory argument." >&2
                 print_usage
                 exit 1
             fi

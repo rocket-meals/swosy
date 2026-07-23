@@ -1,10 +1,11 @@
-import { ItemsService, ItemsServiceCreator, MutationOptions, QueryOptions } from './ItemsServiceCreator';
+import { ItemsService, ItemsServiceCreator, QueryOptions } from './ItemsServiceCreator';
 import type { Filter } from '@directus/types/dist/filter';
 import { ApiContext } from './ApiContext';
 import { Accountability, EventContext, PrimaryKey, Query } from '@directus/types';
 import { TranslationHelper } from './TranslationHelper';
 import { Knex } from 'knex';
 import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
+import { DeepCopyHelper } from 'repo-depkit-common';
 
 export type OptsCustomType = {
   disableEventEmit: boolean;
@@ -61,7 +62,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
 
   // async updateOneItemWithoutHookTrigger(item: TypeWithId<Partial<T>>, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void> {
   async updateOneWithoutHookTrigger(data: UpdateOneProps<T>): Promise<void> {
-    let { primary_key, update, optsCustom } = data;
+    let { primary_key, update } = data;
     let database = this.apiContext.database;
     //console.log("Updating item without hook trigger - post");
     await database(this.tablename).update(update).where('id', primary_key);
@@ -219,7 +220,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     let queriedItems = await this.findItems(search, customOptions);
     let foundItem = queriedItems[0];
 
-    let copiedCreateItem = JSON.parse(JSON.stringify(create));
+    let copiedCreateItem = DeepCopyHelper.deepCopy(create);
     if (!foundItem) {
       copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
       await itemsService.createOne(copiedCreateItem);
@@ -318,12 +319,12 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
   accountability: Accountability | null | undefined;
   knex: Knex;
 
-  async createMany(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async createMany(data: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.createMany(data, opts);
   }
 
-  async deleteByQuery(query: Query, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async deleteByQuery(query: Query, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.deleteByQuery(query, opts);
   }
@@ -344,27 +345,27 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     );
   }
 
-  async updateBatch(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateBatch(data: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateBatch(data, opts);
   }
 
-  async updateByQuery(query: Query, data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateByQuery(query: Query, data: Partial<T>, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateByQuery(query, data, opts);
   }
 
-  async updateMany(keys: PrimaryKey[], data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async updateMany(keys: PrimaryKey[], data: Partial<T>, opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.updateMany(keys, data, opts);
   }
 
-  async upsertMany(payloads: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+  async upsertMany(payloads: Partial<T>[], opts?: any): Promise<PrimaryKey[]> {
     let itemsService = await this.getItemsService();
     return await itemsService.upsertMany(payloads, opts);
   }
 
-  async upsertSingleton(data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey> {
+  async upsertSingleton(data: Partial<T>, opts?: any): Promise<PrimaryKey> {
     let itemsService = await this.getItemsService();
     return await itemsService.upsertSingleton(data, opts);
   }

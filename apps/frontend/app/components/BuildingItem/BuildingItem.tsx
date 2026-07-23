@@ -38,6 +38,30 @@ export interface BuildingItemPropsOptimized extends CardLayoutProps {
 	isLastOpened?: boolean;
 }
 
+const NavigationTriggerButton = ({
+	triggerProps,
+	onPress,
+	backgroundColor,
+	iconColor,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	backgroundColor: string;
+	iconColor: string;
+}) => (
+	<IconButton
+		{...triggerProps}
+		style={[styles.navigationButton, { backgroundColor }]}
+		onPress={onPress}
+	>
+		<MaterialCommunityIcons name="navigation-variant" size={20} color={iconColor} />
+	</IconButton>
+);
+
+const makeNavigationTrigger = (onPress: () => void, backgroundColor: string, iconColor: string) => (triggerProps: object) => (
+	<NavigationTriggerButton triggerProps={triggerProps} onPress={onPress} backgroundColor={backgroundColor} iconColor={iconColor} />
+);
+
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 
 	campus, 
 	onEditImage, 
@@ -97,10 +121,6 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 		});
 	}, [campus, openLinkCoordinateModal, translate]);
 
-	const cardWidth = useMemo(() => {
-		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-	}, [amountColumnsForcard, screenWidth]);
-
 	const imageSource = useMemo(() => {
 		if (campus?.image || campus?.image_remote_url) {
 			return { uri: campus?.image_remote_url || getImageUrl(campus?.image) };
@@ -141,18 +161,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 					{isWeb ? (
 						<CustomTooltip
 							placement="top"
-							trigger={innerTriggerProps => (
-								<IconButton
-									{...innerTriggerProps}
-									style={[
-										styles.navigationButton,
-										{ backgroundColor: campus_area_color },
-									]}
-									onPress={handleOpenNavigation}
-								>
-									<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
-								</IconButton>
-							)}
+							trigger={makeNavigationTrigger(handleOpenNavigation, campus_area_color, contrastColor)}
 						>
 							<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 								<TooltipText fontSize="$sm" color={theme.tooltip.text}>

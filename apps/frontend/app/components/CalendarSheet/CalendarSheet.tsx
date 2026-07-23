@@ -208,7 +208,6 @@ const CalendarSheet: React.FC<CalendarSheetProps> = (props) => {
     return (
         <MyScrollViewModal
             title={`${translate(TranslationKeys.select)} : ${translate(TranslationKeys.date)}`}
-            closeSheet={props.closeSheet}
         >
             <CalendarSheetContent {...props} />
         </MyScrollViewModal>

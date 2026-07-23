@@ -5,7 +5,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import ModalTextInput from '@/components/ModalTextInput';
 import { isWeb } from '@/constants/Constants';
-import { sheetProps } from './types';
+import { SheetProps } from './types';
 import { useDispatch } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
@@ -14,7 +14,7 @@ import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 
-const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
+const EditFormSubmissionSheet: React.FC<SheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();

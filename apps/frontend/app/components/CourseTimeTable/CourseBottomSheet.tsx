@@ -37,10 +37,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 		name: 'Mon',
 	});
 	const [windowWidth, setWindowWidth] = useState<number>(Dimensions.get('window').width);
-	const [selectedItem, setSelectedItem] = useState<any | null>(null);
+	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [data, setData] = useState<any[]>(timeTableData);
 	const [inputValue, setInputValue] = useState<string>('');
-	const [selectedColor, setSelectedColor] = useState<string>('');
+	const [selectedColor, setSelectedColor] = useState<string>(''); // NOSONAR: selectedColor is currently unused; remove this comment once it is used
 
 	useEffect(() => {
 		if (isUpdate && timeTableData) {
@@ -61,11 +61,6 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : primaryColor;
 	const contrastColor = myContrastColor(course_timetable_area_color, theme, mode === 'dark');
-	const SheetClose = () => {
-		closeSheet();
-		setSelectedItem(null);
-	};
-
 	const cancleSheet = () => {
 		setSelectedItem(null);
 	};
@@ -73,7 +68,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const handleSavePress = () => {
 		// Function to validate HH:MM format
 		const validateTime = (time: string) => {
-			const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // Regex for HH:MM format
+			const regex = /^([01]?\d|2[0-3]):[0-5]\d$/; // Regex for HH:MM format
 			return regex.test(time);
 		};
 
@@ -309,7 +304,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						<View style={styles.weekdayView}>
 							{colorData.map((color, index) => (
 								<TouchableOpacity
-									key={index}
+									key={`${color}-${index}`}
 									onPress={() => handleColorPress(color)}
 									style={[
 										styles.box,

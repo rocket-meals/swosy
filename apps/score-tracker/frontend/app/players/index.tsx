@@ -277,6 +277,22 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 
 // ─── Players (friends) screen ─────────────────────────────────────────────────
 
+function PlayersHeaderRight({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
+	return (
+		<TouchableOpacity
+			nativeID={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}
+			onPress={onPress}
+			style={styles.headerButton}
+		>
+			<Ionicons name="settings-outline" size={22} color={color} />
+		</TouchableOpacity>
+	);
+}
+
+function makePlayersHeaderRight(color: string, onPress: () => void) {
+	return () => <PlayersHeaderRight color={color} onPress={onPress} />;
+}
+
 export default function PlayersScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -329,15 +345,7 @@ export default function PlayersScreen() {
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => (
-				<TouchableOpacity
-					nativeID={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}
-					onPress={handleOpenOptionsModal}
-					style={styles.headerButton}
-				>
-					<Ionicons name="settings-outline" size={22} color={theme.header.text} />
-				</TouchableOpacity>
-			),
+			headerRight: makePlayersHeaderRight(theme.header.text, handleOpenOptionsModal),
 		});
 	}, [navigation, theme.header.text, handleOpenOptionsModal]);
 

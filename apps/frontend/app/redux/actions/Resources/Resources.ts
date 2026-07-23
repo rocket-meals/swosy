@@ -5,6 +5,6 @@ export const imageAPI = async (id: string) => {
 		const response = await axios.get(`assets/${id}`);
 		return response.data;
 	} catch (error) {
-		throw new Error(`Error fetching image with ID: ${id}`);
+		throw new Error(`Error fetching image with ID: ${id}: ${(error as Error).message}`);
 	}
 };

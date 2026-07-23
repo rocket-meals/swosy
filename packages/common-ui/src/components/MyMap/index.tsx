@@ -7,7 +7,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Location from 'expo-location';
 import { StringHelper } from 'repo-depkit-common';
 import { LIBERTY_STYLE_URL, MAP_STYLE_DEFINITIONS } from './MyMapHelper';
-import type { MyMapHandle, MyMapProps, MyMapCoreProps } from './MyMapHelper';
+import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 function escapeHtml(text: string): string {
 	let result = StringHelper.replaceAllLiteralWithOptions({ str: text, find: '&', replace: '&amp;' });
@@ -16,6 +16,89 @@ function escapeHtml(text: string): string {
 	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '"', replace: '&quot;' });
 	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: "'", replace: '&#39;' });
 	return result;
+}
+
+/** Patch the map's initial center/zoom/pitch into the bundled HTML template. */
+function applyInitialPositionPatch(
+	htmlContent: string,
+	initialCenter: { lat: number; lng: number } | undefined,
+	initialZoom: number | undefined,
+	initialPitch: number | undefined,
+): string {
+	if (initialCenter) {
+		const zoomArg = initialZoom !== undefined ? `${initialZoom}` : 'null';
+		const pitchArg = initialPitch !== undefined ? `${initialPitch}` : 'null';
+		const pitchSuffix = initialPitch !== undefined ? `, ${initialPitch}` : '';
+		// Replace the try/else branch (native path: no URL query params present)
+		htmlContent = StringHelper.replaceAllLiteralWithOptions({
+			str: htmlContent,
+			find: 'initMap(null, null, null, styleParam);',
+			replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}, ${pitchArg}, styleParam);`,
+		});
+		// Also replace the catch-block fallback (defensive)
+		return StringHelper.replaceAllLiteralWithOptions({
+			str: htmlContent,
+			find: 'initMap(null, null);',
+			replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}${pitchSuffix});`,
+		});
+	}
+	if (initialZoom !== undefined) {
+		// Replace both the try/else branch and catch fallback
+		htmlContent = StringHelper.replaceAllLiteralWithOptions({
+			str: htmlContent,
+			find: 'initMap(null, null, null, styleParam);',
+			replace: `initMap(null, ${initialZoom}, null, styleParam);`,
+		});
+		return StringHelper.replaceAllLiteralWithOptions({
+			str: htmlContent,
+			find: 'initMap(null, null);',
+			replace: `initMap(null, ${initialZoom});`,
+		});
+	}
+	return htmlContent;
+}
+
+/**
+ * Inject the initial map style URL so the first tile load uses the correct style
+ * without a visible switch after MapComponentMounted.
+ */
+function applyInitialStylePatch(htmlContent: string, initialStyleKey: MyMapProps['mapStyleKey']): string {
+	const def = initialStyleKey ? MAP_STYLE_DEFINITIONS[initialStyleKey] : undefined;
+	if (def && def.styleUrl !== LIBERTY_STYLE_URL) {
+		return StringHelper.replaceAllLiteralWithOptions({
+			str: htmlContent,
+			find: `'${LIBERTY_STYLE_URL}'`,
+			replace: `'${def.styleUrl}'`,
+		});
+	}
+	return htmlContent;
+}
+
+function applyLoadingTextPatch(htmlContent: string, loadingText: string | undefined): string {
+	if (!loadingText) return htmlContent;
+	return StringHelper.replaceAllLiteralWithOptions({
+		str: htmlContent,
+		find: '<span id="loading-text">Loading vector map…</span>',
+		replace: `<span id="loading-text">${escapeHtml(loadingText)}</span>`,
+	});
+}
+
+function applyInjectScriptPatch(htmlContent: string, injectScript: string | undefined): string {
+	if (!injectScript) return htmlContent;
+	return StringHelper.replaceAllLiteralWithOptions({
+		str: htmlContent,
+		find: '// INJECT_SCRIPT_HERE',
+		replace: injectScript,
+	});
+}
+
+function applyHideLegalInfoPatch(htmlContent: string, hideLegalInfo: boolean | undefined): string {
+	if (!hideLegalInfo) return htmlContent;
+	return StringHelper.replaceAllLiteralWithOptions({
+		str: htmlContent,
+		find: '/* INJECT_STYLE_HERE */',
+		replace: '.maplibregl-ctrl-attrib { display: none !important; }',
+	});
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
@@ -47,69 +130,11 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				const htmlAsset = Asset.fromModule(require('../../../assets/maplibre/index.html'));
 				await htmlAsset.downloadAsync();
 				let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-				if (initialCenter) {
-					const zoomArg = initialZoom !== undefined ? `${initialZoom}` : 'null';
-					const pitchArg = initialPitch !== undefined ? `${initialPitch}` : 'null';
-					const pitchSuffix = initialPitch !== undefined ? `, ${initialPitch}` : '';
-					// Replace the try/else branch (native path: no URL query params present)
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: 'initMap(null, null, null, styleParam);',
-						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}, ${pitchArg}, styleParam);`,
-					});
-					// Also replace the catch-block fallback (defensive)
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: 'initMap(null, null);',
-						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}${pitchSuffix});`,
-					});
-				} else if (initialZoom !== undefined) {
-					// Replace both the try/else branch and catch fallback
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: 'initMap(null, null, null, styleParam);',
-						replace: `initMap(null, ${initialZoom}, null, styleParam);`,
-					});
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: 'initMap(null, null);',
-						replace: `initMap(null, ${initialZoom});`,
-					});
-				}
-				// Inject the initial map style URL so the first tile load uses the correct style
-				// without a visible switch after MapComponentMounted.
-				const initialStyleKey = mapStyleKeyRef.current;
-				if (initialStyleKey) {
-					const def = MAP_STYLE_DEFINITIONS[initialStyleKey];
-					if (def && def.styleUrl !== LIBERTY_STYLE_URL) {
-						htmlContent = StringHelper.replaceAllLiteralWithOptions({
-							str: htmlContent,
-							find: `'${LIBERTY_STYLE_URL}'`,
-							replace: `'${def.styleUrl}'`,
-						});
-					}
-				}
-				if (loadingText) {
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: '<span id="loading-text">Loading vector map…</span>',
-						replace: `<span id="loading-text">${escapeHtml(loadingText)}</span>`,
-					});
-				}
-				if (injectScript) {
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: '// INJECT_SCRIPT_HERE',
-						replace: injectScript,
-					});
-				}
-				if (hideLegalInfo) {
-					htmlContent = StringHelper.replaceAllLiteralWithOptions({
-						str: htmlContent,
-						find: '/* INJECT_STYLE_HERE */',
-						replace: '.maplibregl-ctrl-attrib { display: none !important; }',
-					});
-				}
+				htmlContent = applyInitialPositionPatch(htmlContent, initialCenter, initialZoom, initialPitch);
+				htmlContent = applyInitialStylePatch(htmlContent, mapStyleKeyRef.current);
+				htmlContent = applyLoadingTextPatch(htmlContent, loadingText);
+				htmlContent = applyInjectScriptPatch(htmlContent, injectScript);
+				htmlContent = applyHideLegalInfoPatch(htmlContent, hideLegalInfo);
 				if (isMounted) {
 					// Write the (possibly patched) HTML to a local cache file so the WebView can be
 					// loaded from a file:// URI instead of inline HTML.  A file:// origin allows the
@@ -268,7 +293,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 );
 
 export default MyMap;
-export type { MyMapHandle, MyMapProps, MyMapCoreProps };
+export type { MyMapHandle, MyMapProps };
+export type { MyMapCoreProps } from './MyMapHelper';
 
 const styles = StyleSheet.create({
 	container: {

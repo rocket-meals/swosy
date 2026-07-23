@@ -9,6 +9,43 @@ import { parse, format } from 'date-fns';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import { StringHelper } from 'repo-depkit-common';
 
+/**
+ * Checks whether the user manually typed one of the separator characters
+ * (the two dots or the last colon) of a "DD.MM.YYYY HH:MM" value at the
+ * position it would also appear at after auto-formatting, and updates the
+ * "manual" refs accordingly so auto-formatting doesn't fight the user's input.
+ */
+function detectManualDateTimeSeparator(
+	text: string,
+	isThirdDotManual: React.MutableRefObject<boolean>,
+	isFifthDotManual: React.MutableRefObject<boolean>,
+	isLastColonManual: React.MutableRefObject<boolean>,
+): boolean {
+	let isManualDot = false;
+	if (text.length > 0 && text.length <= 16) {
+		if (text[2] === '.' && !isThirdDotManual.current) {
+			isManualDot = true;
+			isThirdDotManual.current = true;
+		} else {
+			isThirdDotManual.current = false;
+		}
+		if (text[5] === '.' && !isFifthDotManual.current) {
+			isManualDot = true;
+			isFifthDotManual.current = true;
+		} else {
+			isFifthDotManual.current = false;
+		}
+		// Der Doppelpunkt zwischen Stunde und Minute steht bei Index 13 (0-basiert)
+		if (text[13] === ':' && !isLastColonManual.current) {
+			isManualDot = true;
+			isLastColonManual.current = true;
+		} else {
+			isLastColonManual.current = false;
+		}
+	}
+	return isManualDot;
+}
+
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
 	const previousValue = useRef<string>(value);
@@ -51,28 +88,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 	};
 
 	const validateDateTime = (text: string) => {
-		let isManualDot = false;
-		if (text.length > 0 && text.length <= 16) {
-			if (text[2] === '.' && !isThirdDotManual.current) {
-				isManualDot = true;
-				isThirdDotManual.current = true;
-			} else {
-				isThirdDotManual.current = false;
-			}
-			if (text[5] === '.' && !isFifthDotManual.current) {
-				isManualDot = true;
-				isFifthDotManual.current = true;
-			} else {
-				isFifthDotManual.current = false;
-			}
-			// Der Doppelpunkt zwischen Stunde und Minute steht bei Index 13 (0-basiert)
-			if (text[13] === ':' && !isLastColonManual.current) {
-				isManualDot = true;
-				isLastColonManual.current = true;
-			} else {
-				isLastColonManual.current = false;
-			}
-		}
+		const isManualDot = detectManualDateTimeSeparator(text, isThirdDotManual, isFifthDotManual, isLastColonManual);
 
 		const formattedText = isManualDot ? text : formatDateTimeInput(text);
 
@@ -95,7 +111,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
 				sel = parsed.toISOString().split('T')[0];
 			} catch (e) {
-				// ignore
+				console.warn('DateTimeInputs: could not parse local date/time value', localValue, e);
 			}
 		}
 
@@ -114,7 +130,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 					onChange(id, formatted, custom_type);
 					onError(id, '');
 				} catch (e) {
-					// ignore
+					console.warn('DateTimeInputs: could not parse selected date/time', dateString, e);
 				}
 			},
 		});
@@ -208,7 +224,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
 				sel = parsed.toISOString().split('T')[0];
 			} catch (e) {
-				// ignore
+				console.warn('DateTimeInputs: could not parse local date value', localValue, e);
 			}
 		}
 
@@ -222,7 +238,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 					onChange(id, formatted, custom_type);
 					onError(id, '');
 				} catch (e) {
-					// ignore
+					console.warn('DateTimeInputs: could not parse selected date', dateString, e);
 				}
 			},
 		});
@@ -405,6 +421,46 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	);
 };
 
+// Checks a single separator position against its expected character, updating `wasManualRef`
+// to reflect whether it was just manually typed (true) or is no longer present (false).
+function detectManualSeparatorAt(
+	text: string,
+	index: number,
+	expectedChar: string,
+	wasManualRef: React.MutableRefObject<boolean>,
+): boolean {
+	if (text[index] === expectedChar && !wasManualRef.current) {
+		wasManualRef.current = true;
+		return true;
+	}
+	wasManualRef.current = false;
+	return false;
+}
+
+/**
+ * Checks whether the user manually typed one of the separator characters
+ * (the two dots or the two colons) of a "DD.MM.YYYY HH:MM:SS" value at the
+ * position it would also appear at after auto-formatting, and updates the
+ * "manual" refs accordingly so auto-formatting doesn't fight the user's input.
+ */
+function detectManualTimestampSeparator(
+	text: string,
+	isThirdDotManual: React.MutableRefObject<boolean>,
+	isFifthDotManual: React.MutableRefObject<boolean>,
+	isSecondLastColonManual: React.MutableRefObject<boolean>,
+	isLastColonManual: React.MutableRefObject<boolean>,
+): boolean {
+	if (text.length === 0 || text.length > 19) {
+		return false;
+	}
+	const isThirdDotManualNow = detectManualSeparatorAt(text, 2, '.', isThirdDotManual);
+	const isFifthDotManualNow = detectManualSeparatorAt(text, 5, '.', isFifthDotManual);
+	// Bei Timestamp (`DD.MM.YYYY HH:MM:SS`) stehen die Doppelpunkte bei Index 13 und 16 (0-basiert)
+	const isSecondLastColonManualNow = detectManualSeparatorAt(text, 13, ':', isSecondLastColonManual);
+	const isLastColonManualNow = detectManualSeparatorAt(text, 16, ':', isLastColonManual);
+	return isThirdDotManualNow || isFifthDotManualNow || isSecondLastColonManualNow || isLastColonManualNow;
+}
+
 const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
 	const previousValue = useRef<string>(value);
@@ -448,34 +504,13 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 	};
 
 	const validateTimestamp = (text: string) => {
-		let isManualDot = false;
-		if (text.length > 0 && text.length <= 19) {
-			if (text[2] === '.' && !isThirdDotManual.current) {
-				isManualDot = true;
-				isThirdDotManual.current = true;
-			} else {
-				isThirdDotManual.current = false;
-			}
-			if (text[5] === '.' && !isFifthDotManual.current) {
-				isManualDot = true;
-				isFifthDotManual.current = true;
-			} else {
-				isFifthDotManual.current = false;
-			}
-			// Bei Timestamp (`DD.MM.YYYY HH:MM:SS`) stehen die Doppelpunkte bei Index 13 und 16 (0-basiert)
-			if (text[13] === ':' && !isSecondLastColonManual.current) {
-				isManualDot = true;
-				isSecondLastColonManual.current = true;
-			} else {
-				isSecondLastColonManual.current = false;
-			}
-			if (text[16] === ':' && !isLastColonManual.current) {
-				isManualDot = true;
-				isLastColonManual.current = true;
-			} else {
-				isLastColonManual.current = false;
-			}
-		}
+		const isManualDot = detectManualTimestampSeparator(
+			text,
+			isThirdDotManual,
+			isFifthDotManual,
+			isSecondLastColonManual,
+			isLastColonManual,
+		);
 
 		const formattedText = isManualDot ? text : formatTimestampInput(text);
 

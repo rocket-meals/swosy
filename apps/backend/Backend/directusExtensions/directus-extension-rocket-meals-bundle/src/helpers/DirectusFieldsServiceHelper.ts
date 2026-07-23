@@ -17,7 +17,7 @@ export class DirectusFieldsServiceHelper {
     // @ts-ignore - workaround for typescript error
     return new FieldsService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }

@@ -15,6 +15,27 @@ interface AttributeItemProps {
 	groupPosition: GroupPosition;
 }
 
+/** Resolve the displayed value from a number/string attribute value, with prefix/suffix applied. */
+function resolveAttributeValue(attr: any, prefix: string, suffix: string): string | undefined {
+	let value: string | undefined;
+	if (attr?.number_value !== null && attr?.number_value !== undefined) {
+		value = formatFoodInformationValue(attr?.number_value, suffix) ?? undefined;
+	} else if (attr?.string_value) {
+		value = `${attr?.string_value}${suffix}`;
+	}
+	if (prefix && value) {
+		value = `${prefix} ${value}`;
+	}
+	return value;
+}
+
+/** Parse a `library:name` icon key (as used for `icon_expo`/`icon_value`) into its icon component and name. */
+function resolveIconFromKey(iconKey: string | undefined): { Icon: any; name: string | undefined } {
+	const [library, name] = iconKey?.split(':') || [];
+	const Icon = library && iconLibraries[library];
+	return { Icon, name };
+}
+
 const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) => {
 	const { theme } = useTheme();
 	const { language, selectedTheme: mode } = useAppSelector((state) => state.settings);
@@ -26,31 +47,18 @@ const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) =>
 	const label = attr?.food_attribute?.translations ? getFoodAttributesTranslation(attr?.food_attribute?.translations, language) : '';
 	const iconColor = useMyContrastColor(backgroundColor, theme, mode === 'dark');
 
-	let value: string | undefined;
-	if (attr?.number_value !== null && attr?.number_value !== undefined) {
-		value = formatFoodInformationValue(attr?.number_value, suffix) ?? undefined;
-	} else if (attr?.string_value) {
-		value = `${attr?.string_value}${suffix}`;
-	}
-
-	if (prefix && value) {
-		value = `${prefix} ${value}`;
-	}
+	const value = resolveAttributeValue(attr, prefix, suffix);
 
 	if (!(label || value) || status !== 'published') {
 		return null;
 	}
 
-	const iconParts = attr?.food_attribute?.icon_expo?.split(':') || [];
-	const [library, name] = iconParts;
-	const Icon = library && iconLibraries[library];
+	const { Icon, name } = resolveIconFromKey(attr?.food_attribute?.icon_expo);
 
 	const imageUri = attr?.food_attribute?.image_remote_url || getImageUrl(attr?.food_attribute?.image);
 	const imageSource = imageUri ? { uri: imageUri } : null;
 
-	const attributeIconParts = attr?.icon_value?.split(':') || [];
-	const [attributeIconLibrary, attributeIconName] = attributeIconParts;
-	const AttributeIcon = attributeIconLibrary && iconLibraries[attributeIconLibrary];
+	const { Icon: AttributeIcon, name: attributeIconName } = resolveIconFromKey(attr?.icon_value);
 	const attributeIconColor = attr?.color_value || theme.screen.text;
 
 	const leftIconComponent =

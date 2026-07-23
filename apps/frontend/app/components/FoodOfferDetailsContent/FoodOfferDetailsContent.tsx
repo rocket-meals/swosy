@@ -79,7 +79,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
 
     const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-    const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
+    const [, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 
     const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
@@ -256,8 +256,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             } else {
                 containerWidth = '80%';
             }
-        } else {
-            containerWidth = '100%';
         }
         return containerWidth;
     }, [screenWidth]);
@@ -324,20 +322,16 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             if (isAndroid()) {
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
-                } else {
-                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                        requestDeviceNotificationPermission();
-                    }
+                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                    requestDeviceNotificationPermission();
                 }
             }
             if (isIOS()) {
                 const result = await NotificationHelper.requestDeviceNotificationPermission();
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
-                } else {
-                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-                        requestDeviceNotificationPermission();
-                    }
+                } else if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                    requestDeviceNotificationPermission();
                 }
             }
         } else {

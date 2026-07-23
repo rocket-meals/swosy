@@ -5,6 +5,49 @@ import { RegisterFunctions } from '@directus/extensions';
 import { ApiContext } from '../helpers/ApiContext';
 
 /**
+ * Builds a dict mapping a form_field id to the already passed form_answer for that field.
+ * @param passedCreateFormAnswers the form_answers already passed in the create payload
+ */
+function buildFormAnswerFieldIdsDict(passedCreateFormAnswers: Partial<DatabaseTypes.FormAnswers>[]): { [key: string]: Partial<DatabaseTypes.FormAnswers> } {
+  let passedCreateFormAnswerFieldIdsDict: {
+    [key: string]: Partial<DatabaseTypes.FormAnswers>;
+  } = {};
+  for (let formAnswer of passedCreateFormAnswers) {
+    let formFieldOfFormAnswer = formAnswer.form_field;
+    let formFieldIdOfFormAnswer: string | undefined = undefined;
+    if (typeof formFieldOfFormAnswer === 'string') {
+      formFieldIdOfFormAnswer = formFieldOfFormAnswer;
+    } else if (formFieldOfFormAnswer && typeof formFieldOfFormAnswer === 'object') {
+      formFieldIdOfFormAnswer = formFieldOfFormAnswer.id;
+    }
+    if (formFieldIdOfFormAnswer) {
+      passedCreateFormAnswerFieldIdsDict[formFieldIdOfFormAnswer] = formAnswer;
+    }
+  }
+  return passedCreateFormAnswerFieldIdsDict;
+}
+
+/**
+ * Appends a form_answer stub for every form_field that is not yet present in passedCreateFormAnswerFieldIdsDict.
+ * Mutates and returns createFields (same semantics as the original inline loop).
+ * @param createFields the list to append missing form_field answers to
+ * @param form_fields all form_fields of the form
+ * @param passedCreateFormAnswerFieldIdsDict dict of form_field id to already passed form_answer
+ */
+function appendMissingFormFieldAnswers(createFields: Partial<DatabaseTypes.FormAnswers>[], form_fields: DatabaseTypes.FormFields[], passedCreateFormAnswerFieldIdsDict: { [key: string]: Partial<DatabaseTypes.FormAnswers> }): Partial<DatabaseTypes.FormAnswers>[] {
+  for (let form_field of form_fields) {
+    if (passedCreateFormAnswerFieldIdsDict[form_field.id]) {
+      continue; // we already have a form_answer for this form_field
+    } else {
+      createFields.push({
+        form_field: form_field.id,
+      });
+    }
+  }
+  return createFields;
+}
+
+/**
  * This function registers a hook to create form_answers for a form_submission before it is created. So that the form_answers are created according to the selected form.
  * @param registerFunctions
  * @param apiContext
@@ -34,22 +77,10 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
 
     // Check which form_answers are already passed
     // @ts-ignore - this way directus will create the relation
-    let passedCreateFormAnswers: Partial<FormAnswers>[] = input.form_answers?.create || [];
+    let passedCreateFormAnswers: Partial<DatabaseTypes.FormAnswers>[] = input.form_answers?.create || [];
     let passedCreateFormAnswerFieldIdsDict: {
       [key: string]: Partial<DatabaseTypes.FormAnswers>;
-    } = {};
-    for (let formAnswer of passedCreateFormAnswers) {
-      let formFieldOfFormAnswer = formAnswer.form_field;
-      let formFieldIdOfFormAnswer: string | undefined = undefined;
-      if (typeof formFieldOfFormAnswer === 'string') {
-        formFieldIdOfFormAnswer = formFieldOfFormAnswer;
-      } else if (formFieldOfFormAnswer && typeof formFieldOfFormAnswer === 'object') {
-        formFieldIdOfFormAnswer = formFieldOfFormAnswer.id;
-      }
-      if (formFieldIdOfFormAnswer) {
-        passedCreateFormAnswerFieldIdsDict[formFieldIdOfFormAnswer] = formAnswer;
-      }
-    }
+    } = buildFormAnswerFieldIdsDict(passedCreateFormAnswers);
 
     // so now we have the form_id. We can now get the form and all form_fields
     let form = await myDatabaseHelper.getFormsHelper().findFirstItem({
@@ -63,16 +94,7 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
     });
 
     // now we want to add all form_fields that are not yet in the passedCreateFormAnswers
-    let createFields: Partial<DatabaseTypes.FormAnswers>[] = passedCreateFormAnswers;
-    for (let form_field of form_fields) {
-      if (passedCreateFormAnswerFieldIdsDict[form_field.id]) {
-        continue; // we already have a form_answer for this form_field
-      } else {
-        createFields.push({
-          form_field: form_field.id,
-        });
-      }
-    }
+    let createFields: Partial<DatabaseTypes.FormAnswers>[] = appendMissingFormFieldAnswers(passedCreateFormAnswers, form_fields, passedCreateFormAnswerFieldIdsDict);
 
     // Set the computed form_answers to the input
     input.form_answers = {

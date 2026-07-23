@@ -3,14 +3,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAppSelector } from '@/redux/hooks';
-import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const { weekPlan } = useAppSelector((state) => state.management);
 	const [headerVisible, setHeaderVisible] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const isMobile = screenWidth < 800;
@@ -19,10 +16,6 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 
 	const handleScanHelpClick = () => {
 		setHeaderVisible(false);
-	};
-
-	const handleSecondaryClick = () => {
-		setHeaderVisible(true);
 	};
 
 	useEffect(() => {
@@ -55,7 +48,7 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 								<MaterialIcons name="calendar-month" size={24} color={theme.screen.icon} />
 							</TouchableOpacity>
 							{isWeb && (
-								<TouchableOpacity onPress={handlePrint}>
+								<TouchableOpacity nativeID={ComponentIds.MONITOR_LIST_WEEK_PRINT_BUTTON} onPress={handlePrint}>
 									<Ionicons name="print-outline" size={24} color={theme.screen.icon} />
 								</TouchableOpacity>
 							)}

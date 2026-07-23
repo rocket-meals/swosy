@@ -207,7 +207,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
       diskSpaceDict: FileDiskSpaceDict;
     }
   ): Promise<string[]> {
-    const { context, filesHelper, dict, diskSpaceDict } = params;
+    const { filesHelper, dict, diskSpaceDict } = params;
     const unreferencedFiles: string[] = [];
     for (const fileId in dict) {
       const file = await filesHelper.readOne(fileId);

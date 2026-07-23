@@ -26,8 +26,7 @@ const LoginHeader = () => {
 	function useDeviceLocaleCodesWithoutRegionCode(): string[] {
 		let localeCodes: string[] = [];
 
-		for (let i = 0; i < locales.length; i++) {
-			let locale = locales[i];
+		for (const locale of locales) {
 			localeCodes.push(locale.languageTag);
 		}
 
@@ -59,13 +58,11 @@ const LoginHeader = () => {
 					payload: 'right',
 				});
 			}
-		} else {
-			if (language === LanguageCode.AR) {
-				dispatch({
-					type: SET_DRAWER_POSITION,
-					payload: 'right',
-				});
-			}
+		} else if (language === LanguageCode.AR) {
+			dispatch({
+				type: SET_DRAWER_POSITION,
+				payload: 'right',
+			});
 		}
 	}, []);
 

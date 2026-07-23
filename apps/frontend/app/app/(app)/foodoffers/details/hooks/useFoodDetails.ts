@@ -11,6 +11,60 @@ interface UseFoodDetailsProps {
     initialFoodId?: string | string[];
 }
 
+const findTranslationForLanguage = (
+    translations: DatabaseTypes.FoodsTranslations[] | undefined | null,
+    languageCode: string | undefined
+) => {
+    return translations?.find(
+        (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
+    );
+};
+
+const applyFoodOfferDetailsResponse = (
+    foodData: any,
+    languageCode: string | undefined,
+    translateDynamic: (value: any) => any,
+    setFoodDetails: (value: any) => void,
+    setFoodAttributes: (value: any) => void
+) => {
+    if (!foodData?.data) return;
+
+    const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+
+    const translation = findTranslationForLanguage(food?.translations, languageCode);
+    setFoodDetails({
+        ...food,
+        foodoffer_category,
+        name: translation ? translateDynamic(translation.name) : null,
+    });
+    if (attribute_values) {
+        setFoodAttributes(attribute_values);
+    }
+};
+
+const applyFoodDetailsResponse = (
+    foodData: any,
+    languageCode: string | undefined,
+    translateDynamic: (value: any) => any,
+    setFoodDetails: (value: any) => void,
+    setFoodAttributes: (value: any) => void
+) => {
+    if (!foodData?.data) return;
+
+    const food = foodData.data;
+    const translation = findTranslationForLanguage(food?.translations, languageCode);
+    const rawName = translation?.name ?? food?.name ?? null;
+    setFoodDetails({
+        ...food,
+        name: rawName ? translateDynamic(rawName) : null,
+    });
+
+    const attributes = food?.attribute_values || food?.foods_attributes_values;
+    if (attributes) {
+        setFoodAttributes(attributes);
+    }
+};
+
 export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) => {
     const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
@@ -28,39 +82,10 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
         try {
             if (id) {
                 const foodData = await fetchFoodOffersDetailsById(id.toString());
-                if (foodData?.data) {
-                    const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
-
-                    const translation = food?.translations?.find(
-                        (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
-                    );
-                    setFoodDetails({
-                        ...food,
-                        foodoffer_category,
-                        name: translation ? translateDynamic(translation.name) : null,
-                    });
-                    if (attribute_values) {
-                        setFoodAttributes(attribute_values);
-                    }
-                }
+                applyFoodOfferDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
             } else if (foodId) {
                 const foodData = await fetchFoodDetailsById(foodId.toString());
-                if (foodData?.data) {
-                    const food = foodData.data;
-                    const translation = food?.translations?.find(
-                        (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
-                    );
-                    const rawName = translation?.name ?? food?.name ?? null;
-                    setFoodDetails({
-                        ...food,
-                        name: rawName ? translateDynamic(rawName) : null,
-                    });
-
-                    const attributes = food?.attribute_values || food?.foods_attributes_values;
-                    if (attributes) {
-                        setFoodAttributes(attributes);
-                    }
-                }
+                applyFoodDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
             }
         } catch (e: any) {
             console.error('Error fetching food details: ', e);

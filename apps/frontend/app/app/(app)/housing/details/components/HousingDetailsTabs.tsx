@@ -17,6 +17,36 @@ interface HousingDetailsTabsProps extends TabsStyleProps {
 	apartmentDetails: DatabaseTypes.Apartments | null;
 }
 
+const TabIconButton = ({
+	triggerProps,
+	onPress,
+	isActive,
+	activeStyle,
+	inactiveStyle,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	isActive: boolean;
+	activeStyle: any;
+	inactiveStyle: any;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} style={[styles.tab, isActive ? activeStyle : inactiveStyle]} onPress={onPress}>
+		{children}
+	</IconButton>
+);
+
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeTabTrigger(onPress: () => void, isActive: boolean, activeStyle: any, inactiveStyle: any, icon: React.ReactNode) {
+	return (triggerProps: object) => (
+		<TabIconButton triggerProps={triggerProps} onPress={onPress} isActive={isActive} activeStyle={activeStyle} inactiveStyle={inactiveStyle}>
+			{icon}
+		</TabIconButton>
+	);
+}
+
 const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 	activeTab,
 	setActiveTab,
@@ -35,17 +65,12 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 		<CustomTooltip
 			key={key}
 			placement="top"
-			trigger={(triggerProps) => (
-				<IconButton
-					{...triggerProps}
-					style={[
-						styles.tab,
-						activeTab === key ? themeStyles : { backgroundColor: theme.screen.iconBg },
-					]}
-					onPress={() => setActiveTab(key)}
-				>
-					{icon}
-				</IconButton>
+			trigger={makeTabTrigger(
+				() => setActiveTab(key),
+				activeTab === key,
+				themeStyles,
+				{ backgroundColor: theme.screen.iconBg },
+				icon
 			)}
 		>
 			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

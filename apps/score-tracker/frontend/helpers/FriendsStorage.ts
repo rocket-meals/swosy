@@ -1,13 +1,10 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
-import type { AvatarConfig } from 'repo-depkit-common-ui';
+import type { PlayerIdentity } from './PlayerIdentity';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Friend = {
+export type Friend = PlayerIdentity & {
 	id: string;
-	name: string;
-	color: string;
-	avatarConfig?: AvatarConfig;
 	createdAt: number;
 };
 

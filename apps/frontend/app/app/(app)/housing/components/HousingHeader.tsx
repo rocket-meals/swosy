@@ -15,8 +15,42 @@ import styles from '../styles';
 interface HousingHeaderProps {
 	theme: any;
 	translate: (key: string) => string;
-	drawerPosition: 'left' | 'right' | 'system' | string;
+	drawerPosition: string;
 	openHousingSortingModal: () => void;
+}
+
+const HeaderIconButton = ({
+	triggerProps,
+	onPress,
+	nativeID,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	nativeID?: string;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} nativeID={nativeID}>
+		{children}
+	</IconButton>
+);
+
+// Factories returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeMenuTrigger(onToggleDrawer: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onToggleDrawer} nativeID={ComponentIds.OPEN_DRAWER}>
+			<Ionicons name="menu" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
+}
+
+function makeSortTrigger(onSort: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onSort}>
+			<MaterialIcons name="sort" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
 }
 
 const HousingHeader: React.FC<HousingHeaderProps> = ({
@@ -55,16 +89,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 				>
 					<CustomTooltip
 						placement="top"
-						trigger={(triggerProps) => (
-							<IconButton
-								{...triggerProps}
-								onPress={() => navigation.toggleDrawer()}
-								style={{ padding: 10 }}
-								nativeID={ComponentIds.OPEN_DRAWER}
-							>
-								<Ionicons name="menu" size={24} color={theme.header.text} />
-							</IconButton>
-						)}
+						trigger={makeMenuTrigger(() => navigation.toggleDrawer(), theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -80,15 +105,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 				<View style={[styles.col2, { gap: isWeb ? 30 : 15 }]}>
 					<CustomTooltip
 						placement="top"
-						trigger={(triggerProps) => (
-							<IconButton
-								{...triggerProps}
-								onPress={openHousingSortingModal}
-								style={{ padding: 10 }}
-							>
-								<MaterialIcons name="sort" size={24} color={theme.header.text} />
-							</IconButton>
-						)}
+						trigger={makeSortTrigger(openHousingSortingModal, theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

@@ -50,6 +50,7 @@ import { setColumnsPortrait, setColumnsLandscape } from '../store/appSettingsSli
 import type { AppDispatch, RootState } from '../store/store';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Player } from '../helpers/GameStorage';
+import type { GameType } from '../helpers/GameTypesStorage';
 import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
@@ -581,6 +582,118 @@ function GameTypeSelectSection({ onDone }: Readonly<{ onDone: () => void }>) {
 
 // ─── Game Screen ──────────────────────────────────────────────────────────────
 
+function GameHeaderRight({
+	color,
+	isActive,
+	isEditingPlayers,
+	onToggleEditingPlayers,
+	onOpenSettings,
+}: Readonly<{
+	color: string;
+	isActive: boolean;
+	isEditingPlayers: boolean;
+	onToggleEditingPlayers: () => void;
+	onOpenSettings: () => void;
+}>) {
+	return (
+		<View style={styles.headerButtons}>
+			{isActive && (
+				<TouchableOpacity
+					nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
+					onPress={onToggleEditingPlayers}
+					style={styles.headerButton}
+				>
+					<Ionicons
+						name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
+						size={22}
+						color={color}
+					/>
+				</TouchableOpacity>
+			)}
+			<TouchableOpacity
+				nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
+				onPress={onOpenSettings}
+				style={styles.headerButton}
+			>
+				<Ionicons name="settings-outline" size={22} color={color} />
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+function makeGameHeaderRight(
+	color: string,
+	isActive: boolean,
+	isEditingPlayers: boolean,
+	onToggleEditingPlayers: () => void,
+	onOpenSettings: () => void,
+) {
+	return () => (
+		<GameHeaderRight
+			color={color}
+			isActive={isActive}
+			isEditingPlayers={isEditingPlayers}
+			onToggleEditingPlayers={onToggleEditingPlayers}
+			onOpenSettings={onOpenSettings}
+		/>
+	);
+}
+
+/** Label for the "next round" navigation button. */
+function resolveNextRoundLabel(matchFinished: boolean, maxRounds: number | null, currentRoundNumber: number): string {
+	if (matchFinished) {
+		return 'Spiel beendet';
+	} else if (maxRounds != null && currentRoundNumber >= maxRounds) {
+		return 'Letzte Runde';
+	}
+	return `Runde ${currentRoundNumber + 1}`;
+}
+
+/**
+ * Derived, purely presentational values for the setup-row/finished-banner/
+ * round-nav bar, computed from state that's already resolved earlier in
+ * `GameScreen`. Extracted so the many independent ternaries don't all count
+ * toward `GameScreen`'s own cognitive complexity.
+ */
+function resolveGameScreenDisplayValues({
+	selectedGameType,
+	leaderId,
+	players,
+	currentRoundIndex,
+	maxRounds,
+	isLastPossibleRound,
+}: {
+	selectedGameType: GameType | undefined;
+	leaderId: string | null;
+	players: Player[];
+	currentRoundIndex: number;
+	maxRounds: number | null;
+	isLastPossibleRound: boolean;
+}) {
+	const gameTypeRowValue = selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel';
+	const gameTypeRowIconComponent = selectedGameType ? (
+		<View style={styles.gameTypeIconWrapper}>
+			<GameTypeIcon icon={selectedGameType.icon} size={40} />
+		</View>
+	) : undefined;
+	const gameTypeRowLeftIcon = selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />;
+	const finishedBannerWinnerSuffix = leaderId ? ` von ${players.find((p) => p.id === leaderId)?.name}` : '';
+	const startButtonOpacity = players.length === 0 ? 0.5 : 1;
+	const prevRoundOpacity = currentRoundIndex === 0 ? 0.4 : 1;
+	const maxRoundsSuffix = maxRounds != null ? ` / ${maxRounds}` : '';
+	const nextRoundOpacity = isLastPossibleRound ? 0.4 : 1;
+	return {
+		gameTypeRowValue,
+		gameTypeRowIconComponent,
+		gameTypeRowLeftIcon,
+		finishedBannerWinnerSuffix,
+		startButtonOpacity,
+		prevRoundOpacity,
+		maxRoundsSuffix,
+		nextRoundOpacity,
+	};
+}
+
 export default function GameScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -605,6 +718,7 @@ export default function GameScreen() {
 	const navigation = useNavigation();
 
 	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
+	const toggleEditingPlayers = useCallback(() => setIsEditingPlayers(v => !v), []);
 
 	// Leaving the setup phase always drops back into the scoreboard view.
 	const prevStatusRef = useRef(status);
@@ -681,12 +795,7 @@ export default function GameScreen() {
 		(matchFinished && currentRoundIndex >= rounds.length - 1) || (maxRounds != null && currentRoundNumber >= maxRounds);
 
 	// Label for the "next round" navigation button
-	let nextRoundLabel = `Runde ${currentRoundNumber + 1}`;
-	if (matchFinished) {
-		nextRoundLabel = 'Spiel beendet';
-	} else if (maxRounds != null && currentRoundNumber >= maxRounds) {
-		nextRoundLabel = 'Letzte Runde';
-	}
+	const nextRoundLabel = resolveNextRoundLabel(matchFinished, maxRounds, currentRoundNumber);
 
 	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
@@ -832,29 +941,12 @@ export default function GameScreen() {
 		navigation.setOptions({
 			// Show which game is being played right in the header
 			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
-			headerRight: () => (
-				<View style={styles.headerButtons}>
-					{status === 'active' && (
-						<TouchableOpacity
-							nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
-							onPress={() => setIsEditingPlayers((v) => !v)}
-							style={styles.headerButton}
-						>
-							<Ionicons
-								name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
-								size={22}
-								color={theme.header.text}
-							/>
-						</TouchableOpacity>
-					)}
-					<TouchableOpacity
-						nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
-						onPress={handleOpenSettingsModal}
-						style={styles.headerButton}
-					>
-						<Ionicons name="settings-outline" size={22} color={theme.header.text} />
-					</TouchableOpacity>
-				</View>
+			headerRight: makeGameHeaderRight(
+				theme.header.text,
+				status === 'active',
+				isEditingPlayers,
+				toggleEditingPlayers,
+				handleOpenSettingsModal,
 			),
 		});
 	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal, selectedGameType]);
@@ -924,18 +1016,23 @@ export default function GameScreen() {
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
-	const gameTypeRowValue = selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel';
-	const gameTypeRowIconComponent = selectedGameType ? (
-		<View style={styles.gameTypeIconWrapper}>
-			<GameTypeIcon icon={selectedGameType.icon} size={40} />
-		</View>
-	) : undefined;
-	const gameTypeRowLeftIcon = selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />;
-	const finishedBannerWinnerSuffix = leaderId ? ` von ${players.find((p) => p.id === leaderId)?.name}` : '';
-	const startButtonOpacity = players.length === 0 ? 0.5 : 1;
-	const prevRoundOpacity = currentRoundIndex === 0 ? 0.4 : 1;
-	const maxRoundsSuffix = maxRounds != null ? ` / ${maxRounds}` : '';
-	const nextRoundOpacity = isLastPossibleRound ? 0.4 : 1;
+	const {
+		gameTypeRowValue,
+		gameTypeRowIconComponent,
+		gameTypeRowLeftIcon,
+		finishedBannerWinnerSuffix,
+		startButtonOpacity,
+		prevRoundOpacity,
+		maxRoundsSuffix,
+		nextRoundOpacity,
+	} = resolveGameScreenDisplayValues({
+		selectedGameType,
+		leaderId,
+		players,
+		currentRoundIndex,
+		maxRounds,
+		isLastPossibleRound,
+	});
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>

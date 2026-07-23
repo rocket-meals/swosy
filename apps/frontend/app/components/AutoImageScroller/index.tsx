@@ -35,9 +35,7 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({ images, numColumn
 		const pxPerSecond = (speedPercent / 100) * screenHeight;
 
 		const step = (time: number) => {
-			if (lastTime === null) {
-				lastTime = time;
-			}
+			lastTime ??= time;
 			const delta = time - lastTime;
 			lastTime = time;
 			const distance = (pxPerSecond * delta) / 1000;

@@ -82,3 +82,34 @@ describe('FoodTL1Parser Test', () => {
     expect(allExternalIdentifiersFound).toBe(true);
   });
 });
+
+describe('FoodTL1Parser regex reliability (SonarCloud: super-linear regex backtracking)', () => {
+  // Both `getFoodNutritionAttributeValuesFromRawTL1Foodoffer` (kcal extraction) and
+  // `getMarkingLabelsDictFromFoodName` (marking extraction) previously used unbounded
+  // regex quantifiers (`.* kcal` / `[^)]+`), flagged by SonarCloud for super-linear
+  // runtime due to backtracking. Both are now bounded ({1,50} / {1,100}).
+
+  it('kcal extraction stays fast for a long value with no "(... kcal" match', () => {
+    const pathological: RawTL1FoodofferType = {
+      [FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD]: `Brennwert=612 kJ (${'0'.repeat(1_000_000)}`,
+    };
+
+    const start = Date.now();
+    const parsedFoodAttributes = FoodTL1Parser.getFoodNutritionAttributeValuesFromRawTL1Foodoffer(pathological);
+    const durationMs = Date.now() - start;
+
+    expect(parsedFoodAttributes.some((a) => a.external_identifier === FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER)).toBe(false);
+    expect(durationMs).toBeLessThan(500);
+  });
+
+  it('marking extraction stays fast for a long name with an unterminated parenthesis', () => {
+    const pathological = `Strawberries (${'g'.repeat(1_000_000)}`;
+
+    const start = Date.now();
+    const markingLabelsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(pathological);
+    const durationMs = Date.now() - start;
+
+    expect(markingLabelsDict).toEqual({});
+    expect(durationMs).toBeLessThan(500);
+  });
+});

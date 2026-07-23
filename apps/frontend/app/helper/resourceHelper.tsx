@@ -26,17 +26,17 @@ const getIconComponent = (iconString: string, iconColor: string): JSX.Element | 
 };
 
 interface Translation {
-	languages_code: string;
-	text?: string;
-	name?: string;
-	content?: string;
-	description?: string;
-	title?: string;
+	languages_code: string | DatabaseTypes.Languages | null;
+	text?: string | null;
+	name?: string | null;
+	content?: string | null;
+	description?: string | null;
+	title?: string | null;
 }
 
-const getTextFromTranslation = (translations: Array<Translation | any>, languageCode: string): string => {
+const getTextFromTranslation = (translations: Array<Partial<Translation>> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
+	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
 	return translation?.text || translation?.name || translation?.content || '';
 };
 
@@ -52,17 +52,17 @@ export const getDetailedDescriptionTranslation = (translations: Array<any>, lang
 	return translation?.detailed_description || '';
 };
 
-export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.FormCategoriesTranslations | DatabaseTypes.FormsTranslations | DatabaseTypes.FormFieldsTranslations>, languageCode: string): string => {
+const getNameFromTranslation = (translations: Array<{ languages_code?: string | DatabaseTypes.Languages | null; name?: string | null }> | null | undefined, languageCode: string): string => {
 	if (!translations || translations.length === 0) return '';
 	const translation = translations.find(t => (t.languages_code as string)?.split('-')[0] === languageCode);
 	return translation?.name || '';
 };
 
-export const getFoodAttributesTranslation = (translations: Array<DatabaseTypes.FoodsAttributesTranslations | Translation | any>, languageCode: string): string => {
-	if (!translations || translations.length === 0) return '';
-	const translation = translations.find(t => t.languages_code?.split('-')[0] === languageCode);
-	return translation?.name || '';
-};
+export const getFromCategoryTranslation = (translations: Array<DatabaseTypes.FormCategoriesTranslations | DatabaseTypes.FormsTranslations | DatabaseTypes.FormFieldsTranslations>, languageCode: string): string =>
+	getNameFromTranslation(translations, languageCode);
+
+export const getFoodAttributesTranslation = (translations: Array<Partial<DatabaseTypes.FoodsAttributesTranslations> | Partial<Translation>> | null | undefined, languageCode: string): string =>
+	getNameFromTranslation(translations, languageCode);
 
 const getFoodCategoryName = (categories: DatabaseTypes.FoodsCategories[], category: string | DatabaseTypes.FoodsCategories | null | undefined, languageCode: string): string => {
 	if (!category) return '';
@@ -219,11 +219,13 @@ export const getNewsTranslationByLanguageCode = (translations: DatabaseTypes.New
 };
 
 export const getCollectibleEventTranslation = (
-        translations: DatabaseTypes.CollectibleEventsTranslations[] = [],
+        translations: DatabaseTypes.CollectibleEventsTranslations[] | undefined,
         languageCode: string,
         fallbackTitle?: string | null,
         fallbackDescription?: string | null
 ) => {
+        translations = translations ?? [];
+
         const title = getDirectusTranslation({ languageCode }, translations as any, 'title', false, fallbackTitle || '');
         const description = getDirectusTranslation(
                 { languageCode },

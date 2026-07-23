@@ -69,12 +69,10 @@ function getMarkingParser(): MarkingParserInterface | null {
 
   const MARKING_SYNC_MODE = EnvVariableHelper.getMarkingSyncMode();
 
-  switch (MARKING_SYNC_MODE) {
-    case 'TL1CSV': {
-      /* TL1 CSV FILE */
-      const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFileEncoding();
-      return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
-    }
+  if (MARKING_SYNC_MODE === 'TL1CSV') {
+    /* TL1 CSV FILE */
+    const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFileEncoding();
+    return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
   }
 
   return null;

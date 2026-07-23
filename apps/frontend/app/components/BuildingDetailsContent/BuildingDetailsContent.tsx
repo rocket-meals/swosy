@@ -50,7 +50,12 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
 
     const organisationsDict = useMemo(
         () => organisations.reduce<Record<string, DatabaseTypes.Organizations>>(
-            (acc, org) => { if (org.id) acc[org.id] = org; return acc; },
+            (acc, org) => {
+                if (org.id) {
+                    acc[org.id] = org;
+                }
+                return acc;
+            },
             {}
         ),
         [organisations]

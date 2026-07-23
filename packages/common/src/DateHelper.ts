@@ -88,8 +88,7 @@ export class DateHelper {
   static getWeekdayByIndex(weekdayNumber: number): Weekday {
     const modulo = weekdayNumber % 7;
     const enumValues = DateHelper.getWeekdayEnumsValues();
-    for (let i = 0; i < enumValues.length; i++) {
-      const weekdayEnum = enumValues[i];
+    for (const weekdayEnum of enumValues) {
       if (weekdayEnum) {
         const weekdayIndex = DateHelper.getWeekdayIndex(weekdayEnum);
         if (weekdayIndex === modulo) {
@@ -167,8 +166,7 @@ export class DateHelper {
     const weekdayIndex = date.getDay();
     const weekdayEnums = DateHelper.getWeekdayEnumsValues();
     const indexToWeekdayEnum: { [index: number]: Weekday } = {};
-    for (let i = 0; i < weekdayEnums.length; i++) {
-      const weekdayEnum = weekdayEnums[i];
+    for (const weekdayEnum of weekdayEnums) {
       if (weekdayEnum) {
         const weekdayEnumIndex = DateHelper.getWeekdayIndex(weekdayEnum);
         indexToWeekdayEnum[weekdayEnumIndex] = weekdayEnum;
@@ -413,7 +411,10 @@ export class DateHelper {
     todayStart.setHours(12, 0, 0, 0);
 
     const diffDays = Math.round((dateStart.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-    if (relativeDaysDiffTranslations && Object.prototype.hasOwnProperty.call(relativeDaysDiffTranslations, diffDays)) {
+    // NOSONAR: Object.hasOwn() is ES2022 and DateHelper is also imported by the
+    // backend-extension workspace, whose tsconfig targets ES2019/lib ES2019 - see
+    // docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md for the verification.
+    if (relativeDaysDiffTranslations && Object.prototype.hasOwnProperty.call(relativeDaysDiffTranslations, diffDays)) { // NOSONAR
       return relativeDaysDiffTranslations[diffDays];
     }
 
@@ -497,10 +498,23 @@ export class DateHelper {
     return readable + ' h';
   }
 
+  /**
+   * Formats a duration given in seconds as "Xm:YYs" below one hour, e.g. "5m:30s",
+   * and as "HHhMMm" from one hour upward, e.g. "01h05m".
+   */
+  static formatDurationFromSeconds(totalSeconds: number) {
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    if (totalMinutes >= 60) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutesLeft = totalMinutes % 60;
+      return `${String(hours).padStart(2, '0')}h${String(minutesLeft).padStart(2, '0')}m`;
+    }
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${totalMinutes}m:${String(seconds).padStart(2, '0')}s`;
+  }
+
   static getDateInMinutes(date: Date, minutes: number) {
-    const tempDate = new Date(date);
-    tempDate.setMinutes(tempDate.getMinutes() + minutes);
-    return tempDate;
+    return DateHelper.addMinutes(date, minutes);
   }
 
   static getCurrentDateInMinutes(minutes: number) {

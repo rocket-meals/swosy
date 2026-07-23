@@ -19,8 +19,8 @@ const httpsAgent = new https.Agent({
 /**
  * Configuration for collections and modules
  */
-const requiredModules = ['flow-manager', 'schema-management-module', 'generate-types'];
-const collectionsToSkip = ['2-wikis.json'];
+const requiredModules = new Set(['flow-manager', 'schema-management-module', 'generate-types']);
+const collectionsToSkip = new Set(['2-wikis.json']);
 
 // Load directus .env file
 const currentPackageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, './package.json'), 'utf8'));
@@ -247,8 +247,8 @@ const enableRequiredSettings = async headers => {
     const module = modules[moduleIndex];
     // module.id comes from the Directus API response; strip control/newline characters
     // before logging so it can't be used to forge fake log lines (log injection).
-    const safeModuleId = String(module.id).replace(/[\r\n\t\x00-\x1f]/g, '');
-    if (requiredModules.includes(module.id)) {
+    const safeModuleId = String(module.id).replace(/[\x00-\x1f]/g, '');
+    if (requiredModules.has(module.id)) {
       if (!module.enabled) {
         console.log(` -  Enabling ${safeModuleId}`);
         modules[moduleIndex].enabled = true;
@@ -479,7 +479,7 @@ const saveCollections = async headers => {
   collections = collections.filter(file => !file.endsWith('.DS_Store'));
 
   for (const collection of collections) {
-    if (collectionsToSkip.includes(collection)) {
+    if (collectionsToSkip.has(collection)) {
       console.log(` -  Skipping ignored collection: ${collection}`);
       continue;
     }
@@ -593,7 +593,7 @@ const fetchGetOptions = (headers, method) => {
 
 // Refactored fetch GET function
 const fetchGetResponse = async (url, headers) => {
-  let headersObject = undefined;
+  let headersObject;
   if (headers) {
     headersObject = { Cookie: headers.get('cookie') };
   }
@@ -626,11 +626,17 @@ const fetchPatchResponse = async (url, headers, body) => {
 
 // Command-line argument processing
 if (process.argv[2] === 'push') {
-  mainPush()
-    .then(() => process.exit(0))
-    .catch(console.error);
+  try {
+    await mainPush();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+  }
 } else if (process.argv[2] === 'pull') {
-  mainPull()
-    .then(() => process.exit(0))
-    .catch(console.error);
+  try {
+    await mainPull();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+  }
 }

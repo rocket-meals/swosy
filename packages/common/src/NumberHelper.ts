@@ -35,7 +35,7 @@ export class NumberHelper {
       if (!integerPart) {
         formattedValue = `0${fractionsSeparator}${fractionPart || ''}`;
       } else {
-        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        const formattedInteger = NumberHelper.insertThousandsSeparators(integerPart, thousandsSeparator);
         formattedValue = fractionPart ? `${formattedInteger}${fractionsSeparator}${fractionPart}` : formattedInteger;
       }
     }
@@ -43,6 +43,23 @@ export class NumberHelper {
     // Add unit suffix if provided
     const suffix = unit ? StringHelper.NONBREAKING_SPACE + unit : '';
     return formattedValue + suffix;
+  }
+
+  // Inserts a separator every 3 digits from the right (e.g. "1234567" -> "1,234,567").
+  // Implemented without regex to avoid the super-linear backtracking of the previous
+  // `\B(?=(\d{3})+(?!\d))` lookahead-based approach on long digit runs.
+  static insertThousandsSeparators(integerPart: string, separator: string): string {
+    const isNegative = integerPart.startsWith('-');
+    const digits = isNegative ? integerPart.slice(1) : integerPart;
+    let grouped = '';
+    for (let i = 0; i < digits.length; i++) {
+      const remainingDigits = digits.length - i;
+      if (i > 0 && remainingDigits % 3 === 0) {
+        grouped += separator;
+      }
+      grouped += digits[i];
+    }
+    return (isNegative ? '-' : '') + grouped;
   }
 
   // Formats a number with compact abbreviations: up to 999 shown as-is,

@@ -7,7 +7,6 @@ import { HashHelper } from '../helpers/HashHelper';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 
 export class NewsParseSchedule {
-  //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
   private readonly context: WorkflowRunContext;
   private readonly parser: NewsParserInterface;
 
@@ -59,7 +58,7 @@ export class NewsParseSchedule {
   }
 
   async findOrCreateSingleNews(newsJSON: NewsTypeForParser) {
-    let itemService = await this.context.myDatabaseHelper.getNewsHelper();
+    let itemService = this.context.myDatabaseHelper.getNewsHelper();
 
     const searchJson = {
       external_identifier: newsJSON?.basicNews.external_identifier,
@@ -69,7 +68,9 @@ export class NewsParseSchedule {
   }
 
   async updateNewsTranslations(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {
-    await TranslationHelper.updateItemTranslations(item, {
+    let itemService = this.context.myDatabaseHelper.getNewsHelper();
+    let itemWithTranslations = await itemService.readOneWithTranslations(item.id);
+    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, {
       translationsFromParsing: newsJSON.translations,
       items_primary_field_in_translation_table: 'news_id',
       itemsTablename: CollectionNames.NEWS,

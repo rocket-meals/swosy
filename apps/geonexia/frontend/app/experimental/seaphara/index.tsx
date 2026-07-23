@@ -161,10 +161,11 @@ export default function SeapharaScreen() {
 	const speedMultiplierRef = useRef(1.0);
 
 	// Debug logs – last 30 entries
-	const debugLogsRef = useRef<string[]>([]);
+	const debugLogsRef = useRef<{ id: number; text: string }[]>([]);
+	const nextDebugLogIdRef = useRef(0);
 	const addDebugLog = useCallback((msg: string) => {
 		const ts = new Date().toLocaleTimeString();
-		debugLogsRef.current = [...debugLogsRef.current.slice(-29), `[${ts}] ${msg}`];
+		debugLogsRef.current = [...debugLogsRef.current.slice(-29), { id: nextDebugLogIdRef.current++, text: `[${ts}] ${msg}` }];
 	}, []);
 
 	const { theme } = useTheme();
@@ -412,9 +413,9 @@ export default function SeapharaScreen() {
 						{logs.length === 0 ? (
 							<Text style={[debugStyles.logLine, { color: theme.screen.text }]}>No logs yet.</Text>
 						) : (
-							logs.map((line, i) => (
-								<Text key={i} style={[debugStyles.logLine, { color: theme.screen.text }]}>
-									{line}
+							logs.map((log) => (
+								<Text key={log.id} style={[debugStyles.logLine, { color: theme.screen.text }]}>
+									{log.text}
 								</Text>
 							))
 						)}

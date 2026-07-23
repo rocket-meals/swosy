@@ -1,10 +1,10 @@
 import { PrimaryKey } from '@directus/types';
-import { CollectionNames, DatabaseTypes, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper, LanguageCodes, LanguageCodesType } from 'repo-depkit-common';
 
 import { MyDatabaseHelper } from './MyDatabaseHelper';
 
-const FIELD_TRANSLATION_LANGUAGE_CODE = 'languages_code'; // TODO Import from directus-extension-auto-translation package the field name
-const FIELD_LANGUAGE_ID = 'code'; // TODO Import from directus-extension-auto-translation package the field name
+const FIELD_TRANSLATION_LANGUAGE_CODE = 'languages_code';
+const FIELD_LANGUAGE_ID = 'code';
 
 export type ExistingTranslation = {
   be_source_for_translations?: boolean | null;
@@ -87,9 +87,14 @@ export class TranslationHelper {
     config: TranslationUpdateConfig<E>
   ) {
     const { translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper } = config;
-    const specificItemServiceReader = await myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
+    const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     if (itemWithTranslations) {
-      const { updateObject: updateObject, updateNeeded: updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
+      const { updateObject, updateNeeded } = await TranslationHelper._getUpdateInformationForTranslations({
+        itemWithTranslations,
+        item: itemWithTranslations,
+        translationsFromParsing,
+        items_primary_field_in_translation_table,
+      });
 
       if (updateNeeded) {
         //const createTranslations = updateObject.translations.create;
@@ -136,7 +141,7 @@ export class TranslationHelper {
     config: TranslationUpdateConfig<E>
   ) {
     const { itemsTablename, myDatabaseHelper } = config;
-    const specificItemServiceReader = await myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
+    const specificItemServiceReader = myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
     let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {
       ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
     }); // Bottleneck HERE. Takes on average 1.0s
@@ -146,12 +151,13 @@ export class TranslationHelper {
   static async _getUpdateInformationForTranslations<
     T extends ItemWithExistingTranslations, // T must have an id and translations field
     E extends ExistingTranslation, // the collection of the related translations
-  >(
-    itemWithTranslations: T, // the item we want to update the translations for
-    item: T, // the item we want to update the translations for
-    translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
-    items_primary_field_in_translation_table: TranslationRelationField<E> // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
-  ) {
+  >(options: {
+    itemWithTranslations: T; // the item we want to update the translations for
+    item: T; // the item we want to update the translations for
+    translationsFromParsing: TranslationsFromParsingType; // the translations we got from the parser
+    items_primary_field_in_translation_table: TranslationRelationField<E>; // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
+  }) {
+    const { itemWithTranslations, item, translationsFromParsing, items_primary_field_in_translation_table } = options;
     /** translationsFromParsing is an object with the following structure:
          {
          [LanguageCodes.DE]: {
@@ -162,7 +168,7 @@ export class TranslationHelper {
          }
          }
          */
-    let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
+    let remaining_translationsFromParsing = DeepCopyHelper.deepCopy(translationsFromParsing); //make a work copy
     /** remaining_translationsFromParsing is an object with the following structure:
          {
          [TranslationHelper.]: {name ....},
@@ -175,11 +181,49 @@ export class TranslationHelper {
 
     let existingTranslations = itemWithTranslations?.translations || [];
 
-    let existingTranslationsDifferentFromParsing = false;
-    let newTranslationsFromParsing = false;
-
     // find the existing language which is source for translations
     let defaultLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper.LANGUAGE_CODE_DE;
+    let usedLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper._resolveSourceLanguageCodeForTranslations(existingTranslations, defaultLanguageCodeForSourceTranslation);
+
+    const { existingTranslationsDifferentFromParsing } = TranslationHelper._collectUpdateTranslationsFromExisting(
+      existingTranslations,
+      translationsFromParsing,
+      usedLanguageCodeForSourceTranslation,
+      remaining_translationsFromParsing,
+      updateTranslations
+    );
+
+    //check remaining translationsFromParsing, then put into createTranslations
+    const newTranslationsFromParsing = TranslationHelper._collectCreateTranslationsFromRemaining({
+      remaining_translationsFromParsing,
+      translationsFromParsing,
+      items_primary_field_in_translation_table,
+      item,
+      createTranslations,
+    });
+
+    let updateObject = {
+      translations: {
+        create: createTranslations,
+        update: updateTranslations,
+        delete: deleteTranslations,
+      },
+    };
+
+    let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
+
+    return {
+      updateObject: updateObject,
+      updateNeeded: updateNeeded,
+    };
+  }
+
+  /**
+   * Finds the language code of the existing translation that is marked as
+   * `be_source_for_translations`. Falls back to the given default language code
+   * when none is found or the found language code is not a string.
+   */
+  static _resolveSourceLanguageCodeForTranslations(existingTranslations: ExistingTranslation[], defaultLanguageCodeForSourceTranslation: LanguageCodesType): LanguageCodesType {
     let usedLanguageCodeForSourceTranslation: LanguageCodesType = defaultLanguageCodeForSourceTranslation;
     for (let existingTranslation of existingTranslations) {
       if (existingTranslation?.be_source_for_translations) {
@@ -190,6 +234,29 @@ export class TranslationHelper {
         }
       }
     }
+    return usedLanguageCodeForSourceTranslation;
+  }
+
+  /**
+   * Iterates over the existing translations and, for every one that also has a
+   * translation from parsing, either pushes an update (when there is a significant
+   * change) into `updateTranslations`, or does nothing (when the translation is
+   * unchanged). For every existing translation whose language code was handled here
+   * (whether updated or not, or not provided by the parser), the matching key is
+   * removed from `remaining_translationsFromParsing` so it will not be treated as a
+   * new translation later.
+   *
+   * Mutates `remaining_translationsFromParsing` and `updateTranslations` in place,
+   * mirroring the original inline loop's behavior.
+   */
+  static _collectUpdateTranslationsFromExisting<E extends ExistingTranslation>(
+    existingTranslations: ExistingTranslation[],
+    translationsFromParsing: TranslationsFromParsingType,
+    usedLanguageCodeForSourceTranslation: LanguageCodesType,
+    remaining_translationsFromParsing: any, // kept as `any` since this function deletes keys from it in place
+    updateTranslations: ExistingTranslation[]
+  ): { existingTranslationsDifferentFromParsing: boolean } {
+    let existingTranslationsDifferentFromParsing = false;
 
     for (let existingTranslation of existingTranslations) {
       //check all existing translations
@@ -203,7 +270,7 @@ export class TranslationHelper {
       if (translationFromParsing) {
         //we also got a translation from the parse
         /* Update translation */
-        const translationFromParsingCopy = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
+        const translationFromParsingCopy = DeepCopyHelper.deepCopy(translationFromParsing); //make a copy
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
 
         if (TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)) {
@@ -233,11 +300,31 @@ export class TranslationHelper {
         }
       } else {
         //the parser dont provide a translation, we should delete it?
-        //TODO check if translation was generated or manually typed
         delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
       }
     }
-    //check remaining translationsFromParsing, then put into createTranslations
+
+    return { existingTranslationsDifferentFromParsing };
+  }
+
+  /**
+   * Iterates over the language keys still remaining in `remaining_translationsFromParsing`
+   * (i.e. languages from parsing that were not matched to an existing translation) and
+   * pushes a create-object for each one into `createTranslations`. Returns whether any
+   * new translation was found.
+   *
+   * Mutates `createTranslations` in place, mirroring the original inline loop's behavior.
+   */
+  static _collectCreateTranslationsFromRemaining<T extends ItemWithExistingTranslations, E extends ExistingTranslation>(options: {
+    remaining_translationsFromParsing: TranslationsFromParsingType;
+    translationsFromParsing: TranslationsFromParsingType;
+    items_primary_field_in_translation_table: TranslationRelationField<E>;
+    item: T;
+    createTranslations: NewTranslationForCreation[];
+  }): boolean {
+    const { remaining_translationsFromParsing, translationsFromParsing, items_primary_field_in_translation_table, item, createTranslations } = options;
+    let newTranslationsFromParsing = false;
+
     let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
     for (let i = 0; i < remaining_languageKeys?.length; i++) {
       let remaining_languageKey = remaining_languageKeys[i] as LanguageCodesType | undefined;
@@ -265,19 +352,6 @@ export class TranslationHelper {
       }
     }
 
-    let updateObject = {
-      translations: {
-        create: createTranslations,
-        update: updateTranslations,
-        delete: deleteTranslations,
-      },
-    };
-
-    let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
-
-    return {
-      updateObject: updateObject,
-      updateNeeded: updateNeeded,
-    };
+    return newTranslationsFromParsing;
   }
 }

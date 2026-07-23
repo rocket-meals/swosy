@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Updates from 'expo-updates';
@@ -24,11 +24,12 @@ const ExpoUpdateTest = () => {
         const { translate } = useLanguage();
         const { isSmartPhone } = usePlatformHelper();
 
-        const [logs, setLogs] = useState<string[]>([]);
+        const [logs, setLogs] = useState<{ id: number; text: string }[]>([]);
+        const nextLogIdRef = useRef(0);
         const [running, setRunning] = useState<StepKey | null>(null);
 
         const appendLog = useCallback((message: string) => {
-                setLogs(prev => [`${new Date().toLocaleTimeString()} – ${message}`, ...prev]);
+                setLogs(prev => [{ id: nextLogIdRef.current++, text: `${new Date().toLocaleTimeString()} – ${message}` }, ...prev]);
         }, []);
 
         const guardMobileRuntime = useCallback(() => {
@@ -177,9 +178,9 @@ const ExpoUpdateTest = () => {
                                         {logs.length === 0 ? (
                                                 <Text style={{ ...styles.logEntry, color: theme.screen.text }}>No logs yet</Text>
                                         ) : (
-                                                logs.map((log, index) => (
-                                                        <Text key={index} style={{ ...styles.logEntry, color: theme.screen.text }}>
-                                                                {log}
+                                                logs.map((log) => (
+                                                        <Text key={log.id} style={{ ...styles.logEntry, color: theme.screen.text }}>
+                                                                {log.text}
                                                         </Text>
                                                 ))
                                         )}

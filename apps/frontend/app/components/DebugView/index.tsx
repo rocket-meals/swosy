@@ -2,6 +2,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
+import type { LabeledAccentProps } from 'repo-depkit-common';
 import { useTheme } from '@/hooks/useTheme';
 import useDebugMode from '@/hooks/useDebugMode';
 import { useAppSelector } from '@/redux/hooks';
@@ -9,12 +10,9 @@ import styles from './styles';
 
 export type DebugLog = string | { message: string; timestamp?: string | Date };
 
-export type DebugAction = {
-        label: string;
+export type DebugAction = LabeledAccentProps & {
         onPress?: () => void;
         icon?: keyof typeof MaterialCommunityIcons.glyphMap;
-        backgroundColor?: string;
-        borderColor?: string;
         textColor?: string;
         disabled?: boolean;
 };

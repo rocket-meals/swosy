@@ -8,7 +8,7 @@ export type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in' |
 export type Query<CollectionScheme> = {
 	fields?: (keyof CollectionScheme | string)[] | null;
 	sort?: (keyof CollectionScheme | string)[] | null;
-	filter?: any | null;
+	filter?: Record<string, any> | null;
 	deep?: Record<string, Query<CollectionScheme>> | null;
 	limit?: number | null;
 	offset?: number | null;
@@ -27,8 +27,8 @@ export type AggregateQuery<CollectionScheme> = {
 };
 
 export class CollectionHelper<CollectionScheme> {
-private collection: string;
-	private _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
+	private readonly collection: string;
+	private readonly _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
 
 	constructor(collection: string, client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) {
 		this.collection = collection;

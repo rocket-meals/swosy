@@ -10,13 +10,13 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { Platform } from 'react-native';
 import { markOnboardingShouldBeShownAfterLogin } from '@/helper/onboardingIntentHelper';
 
-const extractRawExpoToken = (token: string | null) => {
+export const extractRawExpoToken = (token: string | null) => {
 	if (!token) return null;
-	const m = /\[(.+?)\]/.exec(String(token));
+	const m = /\[([^\]]{1,200})\]/.exec(String(token));
 	return m ? m[1] : token;
 };
 
-async function savePushTokenToAPI(opts: { token: string | null; profile: DatabaseTypes.Profiles | any; dispatch: any }) {
+async function savePushTokenToAPI(opts: { token: string | null; profile: Partial<DatabaseTypes.Profiles>; dispatch: any }) {
 	const { token, profile, dispatch } = opts;
 	if (!token) {
 		return;
@@ -65,7 +65,6 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Databas
 				type: UPDATE_PROFILE,
 				payload: updated,
 			});
-		} else {
 		}
 	} catch (e) {
 		console.error('Error in savePushTokenToAPI:', e);

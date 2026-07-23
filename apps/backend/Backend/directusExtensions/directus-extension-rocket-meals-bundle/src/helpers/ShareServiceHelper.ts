@@ -52,7 +52,7 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
   }
 
   async createShareLink(options: CreateShareLinkOptions): Promise<string | null> {
-    let usersHelper = await this.myDatabaseHelper.getUsersHelper();
+    let usersHelper = this.myDatabaseHelper.getUsersHelper();
     let adminEmail = EnvVariableHelper.getAdminEmail();
     let adminUser = await usersHelper.findFirstItem({
       email: adminEmail,
@@ -87,7 +87,6 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
     let accountability: Accountability = {
       role: role_admin_id,
       user: adminUser.id,
-      // TODO: Test if this works without the roles array
       // @ts-ignore
       roles: [role_admin_id],
       admin: true,

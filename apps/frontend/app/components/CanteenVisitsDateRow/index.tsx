@@ -54,7 +54,7 @@ export const CanteenVisitDetailsModalContent: React.FC<CanteenVisitDetailsModalC
 	const [toggling, setToggling] = useState(false);
 	const { checkAndShowAppRating } = useCheckAppRateAsking();
 
-	const { counts, ownVisit, setOwnVisit, fetchData } = useCanteenVisitData({
+	const { counts, ownVisit, fetchData } = useCanteenVisitData({
 		canteenId,
 		date,
 		profileId,

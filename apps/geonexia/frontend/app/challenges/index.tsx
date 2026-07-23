@@ -38,6 +38,69 @@ function roundToHalf(km: number): number {
   return Math.round(km * 2) / 2;
 }
 
+/** Max additional km a single week's total distance may grow by. */
+const MAX_WEEKLY_INCREASE_KM = 5;
+
+interface WeekComputation {
+  newTotal: number;
+  newLongest: number;
+  debugInfo: string;
+}
+
+function computeVolumeWeek(prev: PrevState, isSecondBlock: boolean, inputDebug: string): WeekComputation {
+  const pct = isSecondBlock ? 0.10 : 0.08;
+  const increase = Math.min(prev.totalKm * pct, MAX_WEEKLY_INCREASE_KM);
+  const newTotal = roundToHalf(prev.totalKm + increase);
+  const longestIncrease = isSecondBlock ? 0.03 : 0.02;
+  const newLongest = roundToHalf(Math.min(prev.longestKm * (1 + longestIncrease), newTotal * 0.40));
+  const debugInfo =
+    `${inputDebug}\n` +
+    `Block ${isSecondBlock ? '2' : '1'} | ` +
+    `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
+    `Langer Lauf: ${prev.longestKm} × ${(1 + longestIncrease).toFixed(2)} = ${newLongest} km (max 40% von ${newTotal} km)`;
+  return { newTotal, newLongest, debugInfo };
+}
+
+function computeLongRunWeek(prev: PrevState, isSecondBlock: boolean, inputDebug: string): WeekComputation {
+  const pct = isSecondBlock ? 0.12 : 0.10;
+  let newTotal: number;
+  const newLongest = roundToHalf(prev.longestKm * (1 + pct));
+  const diff = newLongest - prev.longestKm;
+  newTotal = roundToHalf(Math.min(prev.totalKm + diff, prev.totalKm + MAX_WEEKLY_INCREASE_KM));
+  if (newLongest > newTotal * 0.40) {
+    newTotal = roundToHalf(newLongest / 0.40);
+  }
+  const debugInfo =
+    `${inputDebug}\n` +
+    `Block ${isSecondBlock ? '2' : '1'} | ` +
+    `Langer Lauf: ${prev.longestKm} × ${(1 + pct).toFixed(2)} = ${newLongest} km (+${diff.toFixed(1)} km) | ` +
+    `Gesamt: ${newTotal} km (Diff + Total, max +5 km, LR ≤ 40%)`;
+  return { newTotal, newLongest, debugInfo };
+}
+
+function computeStabilizationWeek(prev: PrevState, isSecondBlock: boolean, inputDebug: string): WeekComputation {
+  const pct = isSecondBlock ? 0.05 : 0.03;
+  const increase = Math.min(prev.totalKm * pct, MAX_WEEKLY_INCREASE_KM);
+  const newTotal = roundToHalf(prev.totalKm + increase);
+  const newLongest = prev.longestKm;
+  const debugInfo =
+    `${inputDebug}\n` +
+    `Block ${isSecondBlock ? '2' : '1'} | ` +
+    `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
+    `Langer Lauf: ${newLongest} km (unverändert)`;
+  return { newTotal, newLongest, debugInfo };
+}
+
+function computeDeloadWeek(prev: PrevState, inputDebug: string): WeekComputation {
+  const newTotal = roundToHalf(prev.totalKm * 0.75);
+  const newLongest = roundToHalf(prev.longestKm * 0.80);
+  const debugInfo =
+    `${inputDebug}\n` +
+    `Gesamt: ${prev.totalKm} × 0.75 = ${newTotal} km | ` +
+    `Langer Lauf: ${prev.longestKm} × 0.80 = ${newLongest} km`;
+  return { newTotal, newLongest, debugInfo };
+}
+
 /**
  * Compute the challenge for a given week index (1 = KW 1 of the year).
  * Returns the challenge description and the resulting state to carry forward.
@@ -58,7 +121,6 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
   const mod = weekIndex % 4;
   const posIn8 = ((weekIndex - 1) % 8) + 1; // 1–8
   const isSecondBlock = posIn8 >= 5;
-  const MAX_WEEKLY_INCREASE_KM = 5;
 
   let type: ChallengeType;
   if (mod === 0) type = 'deload';
@@ -68,61 +130,25 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
 
   const inputDebug = `Eingabe: Gesamt ${prev.totalKm} km | LR ${prev.longestKm} km | KW-Index ${weekIndex}`;
 
-  let newTotal: number;
-  let newLongest: number;
-  let debugInfo: string;
-
+  let computation: WeekComputation;
   switch (type) {
-    case 'volume': {
-      const pct = isSecondBlock ? 0.10 : 0.08;
-      const increase = Math.min(prev.totalKm * pct, MAX_WEEKLY_INCREASE_KM);
-      newTotal = roundToHalf(prev.totalKm + increase);
-      const longestIncrease = isSecondBlock ? 0.03 : 0.02;
-      newLongest = roundToHalf(Math.min(prev.longestKm * (1 + longestIncrease), newTotal * 0.40));
-      debugInfo =
-        `${inputDebug}\n` +
-        `Block ${isSecondBlock ? '2' : '1'} | ` +
-        `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
-        `Langer Lauf: ${prev.longestKm} × ${(1 + longestIncrease).toFixed(2)} = ${newLongest} km (max 40% von ${newTotal} km)`;
+    case 'volume':
+      computation = computeVolumeWeek(prev, isSecondBlock, inputDebug);
       break;
-    }
-    case 'long-run': {
-      const pct = isSecondBlock ? 0.12 : 0.10;
-      newLongest = roundToHalf(prev.longestKm * (1 + pct));
-      const diff = newLongest - prev.longestKm;
-      newTotal = roundToHalf(Math.min(prev.totalKm + diff, prev.totalKm + MAX_WEEKLY_INCREASE_KM));
-      if (newLongest > newTotal * 0.40) {
-        newTotal = roundToHalf(newLongest / 0.40);
-      }
-      debugInfo =
-        `${inputDebug}\n` +
-        `Block ${isSecondBlock ? '2' : '1'} | ` +
-        `Langer Lauf: ${prev.longestKm} × ${(1 + pct).toFixed(2)} = ${newLongest} km (+${diff.toFixed(1)} km) | ` +
-        `Gesamt: ${newTotal} km (Diff + Total, max +5 km, LR ≤ 40%)`;
+    case 'long-run':
+      computation = computeLongRunWeek(prev, isSecondBlock, inputDebug);
       break;
-    }
-    case 'stabilization': {
-      const pct = isSecondBlock ? 0.05 : 0.03;
-      const increase = Math.min(prev.totalKm * pct, MAX_WEEKLY_INCREASE_KM);
-      newTotal = roundToHalf(prev.totalKm + increase);
-      newLongest = prev.longestKm;
-      debugInfo =
-        `${inputDebug}\n` +
-        `Block ${isSecondBlock ? '2' : '1'} | ` +
-        `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
-        `Langer Lauf: ${newLongest} km (unverändert)`;
+    case 'stabilization':
+      computation = computeStabilizationWeek(prev, isSecondBlock, inputDebug);
       break;
-    }
-    case 'deload': {
-      newTotal = roundToHalf(prev.totalKm * 0.75);
-      newLongest = roundToHalf(prev.longestKm * 0.80);
-      debugInfo =
-        `${inputDebug}\n` +
-        `Gesamt: ${prev.totalKm} × 0.75 = ${newTotal} km | ` +
-        `Langer Lauf: ${prev.longestKm} × 0.80 = ${newLongest} km`;
+    case 'deload':
+      computation = computeDeloadWeek(prev, inputDebug);
       break;
-    }
   }
+
+  let newTotal = computation.newTotal;
+  let newLongest = computation.newLongest;
+  const debugInfo = computation.debugInfo;
 
   // Hard constraint: longest run must not exceed 40 % of total distance
   if (newLongest > newTotal * 0.40) {

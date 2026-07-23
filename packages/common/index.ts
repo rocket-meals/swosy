@@ -1,6 +1,8 @@
 export * from './src/StringHelper';
 export * from './src/DateHelper';
 export * from './src/NumberHelper';
+export * from './src/MathHelper';
+export * from './src/DeepCopyHelper';
 export * as DatabaseTypes from './src/databaseTypes/types';
 export * from './src/databaseTypes/CollectionNames';
 export * from './src/AppLinks';
@@ -25,4 +27,6 @@ export * from './src/CustomerAppStoreIds';
 export * from './src/AppleAppStoreConfig';
 export * from './src/DirectusItemStatus';
 export * from './src/GpsRouteTypes';
+export * from './src/MapOverlayTypes';
+export * from './src/UiAccentTypes';
 export * from './src/BoxplotHelper';

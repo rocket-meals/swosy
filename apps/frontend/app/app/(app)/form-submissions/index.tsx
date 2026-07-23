@@ -33,6 +33,77 @@ type FormSubmissionListRow =
 			submission: DatabaseTypes.FormSubmissions;
 	  };
 
+/**
+ * Resolve the main list area content: loading indicator, the actual list,
+ * or an empty-state message. Called directly (not rendered as a JSX tag),
+ * so it does not introduce a new component identity.
+ */
+function resolveSubmissionsContent(
+	loading: boolean,
+	formSubmissions: DatabaseTypes.FormSubmissions[],
+	listData: FormSubmissionListRow[],
+	renderItem: (info: { item: FormSubmissionListRow }) => React.ReactElement,
+	theme: any,
+	translate: (key: string) => string
+): React.ReactNode {
+	if (loading) {
+		return (
+			<View
+				style={{
+					height: 200,
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<ActivityIndicator size={30} color={theme.screen.text} />
+			</View>
+		);
+	}
+
+	if (formSubmissions?.length > 0) {
+		return <FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />;
+	}
+
+	return (
+		<View style={{ padding: 20, alignItems: 'center' }}>
+			<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
+		</View>
+	);
+}
+
+/**
+ * Filter cached (offline) form submissions by the currently selected state
+ * and the free-text alias query. Mirrors the filtering previously inlined in
+ * both the offline branch and the network-error fallback branch of
+ * loadFormSubmissions.
+ */
+function filterCachedSubmissions(
+	cached: DatabaseTypes.FormSubmissions[],
+	selectedOption: string,
+	query: string
+): DatabaseTypes.FormSubmissions[] {
+	const filterState = selectedOption || 'draft';
+	const filterQuery = query ? query.trim().toLowerCase() : '';
+
+	return cached.filter((s: DatabaseTypes.FormSubmissions) => {
+		const stateMatch = s.state === filterState;
+		const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
+		return stateMatch && aliasMatch;
+	});
+}
+
+/**
+ * Replace the current submissions list with a (already sorted) result.
+ * Extracted since this was repeated three times inside loadFormSubmissions.
+ */
+function replaceSortedSubmissions(
+	setFormSubmissions: React.Dispatch<React.SetStateAction<DatabaseTypes.FormSubmissions[]>>,
+	sortedResult: DatabaseTypes.FormSubmissions[]
+): void {
+	setFormSubmissions(sortedResult);
+}
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_submission);
 	const { translate } = useLanguage();
@@ -206,38 +277,35 @@ const Index = () => {
 			const normalizedLocale = language || undefined;
 			const sortedSubmissions = [...submissions];
 
-			switch (option) {
-				case 'alphabetical':
-				default:
-					sortedSubmissions.sort((first, second) => {
-						const firstAlias = (first.alias || '').trim();
-						const secondAlias = (second.alias || '').trim();
+			// 'alphabetical' is currently the only supported option; any other
+			// value falls back to the same alphabetical sort.
+			sortedSubmissions.sort((first, second) => {
+				const firstAlias = (first.alias || '').trim();
+				const secondAlias = (second.alias || '').trim();
 
-						if (!firstAlias && !secondAlias) {
-							return 0;
-						}
+				if (!firstAlias && !secondAlias) {
+					return 0;
+				}
 
-						if (!firstAlias) {
-							return 1;
-						}
+				if (!firstAlias) {
+					return 1;
+				}
 
-						if (!secondAlias) {
-							return -1;
-						}
+				if (!secondAlias) {
+					return -1;
+				}
 
-						return firstAlias.localeCompare(secondAlias, normalizedLocale, {
-							sensitivity: 'base',
-						});
-					});
-					break;
-			}
+				return firstAlias.localeCompare(secondAlias, normalizedLocale, {
+					sensitivity: 'base',
+				});
+			});
 
 			return sortedSubmissions;
 		},
 		[language]
 	);
 
-	const loadFormSubmissions = async (pageNumber: number, append: boolean = false) => {
+	const loadFormSubmissions = async (pageNumber: number) => {
 		if (!form_id) return;
 		setLoading(true);
 		setIsShowingCachedData(false);
@@ -246,19 +314,8 @@ const Index = () => {
 		// When offline mode is active, use cache directly without attempting API call
 		if (offlineMode) {
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
-			const filterState = selectedOption || 'draft';
-			const filterQuery = query ? query.trim().toLowerCase() : '';
-			const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
-				const stateMatch = s.state === filterState;
-				const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
-				return stateMatch && aliasMatch;
-			});
-			const sortedResult = sortFormSubmissions(filtered, sortOption);
-			if (append) {
-				setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
-			} else {
-				setFormSubmissions(sortedResult);
-			}
+			const filtered = filterCachedSubmissions(cached, selectedOption, query);
+			replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
 			return;
@@ -272,33 +329,14 @@ const Index = () => {
 			})) as DatabaseTypes.FormSubmissions[];
 
 			if (result) {
-				const sortedResult = sortFormSubmissions(result, sortOption);
-				if (append) {
-					setFormSubmissions(prev => {
-						const merged = [...(prev || []), ...sortedResult];
-						return sortFormSubmissions(merged, sortOption);
-					});
-				} else {
-					setFormSubmissions(sortedResult);
-				}
+				replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(result, sortOption));
 			}
 		} catch (error) {
 			// Network failed – fall back to locally cached submissions for this form
 			const cached = cachedFormData?.[String(form_id)]?.submissions || [];
 			if (cached.length > 0) {
-				const filterState = selectedOption || 'draft';
-				const filterQuery = query ? query.trim().toLowerCase() : '';
-				const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
-					const stateMatch = s.state === filterState;
-					const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
-					return stateMatch && aliasMatch;
-				});
-				const sortedResult = sortFormSubmissions(filtered, sortOption);
-				if (append) {
-					setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
-				} else {
-					setFormSubmissions(sortedResult);
-				}
+				const filtered = filterCachedSubmissions(cached, selectedOption, query);
+				replaceSortedSubmissions(setFormSubmissions, sortFormSubmissions(filtered, sortOption));
 				setIsShowingCachedData(true);
 			} else {
 				console.error('Error fetching form submissions', error);
@@ -312,7 +350,7 @@ const Index = () => {
 	useFocusEffect(
 		useCallback(() => {
 			if (form_id) {
-				loadFormSubmissions(1, false);
+				loadFormSubmissions(1);
 			}
 			return () => {};
 		}, [form_id, selectedOption, sortOption])
@@ -323,7 +361,7 @@ const Index = () => {
 	}, [sortFormSubmissions, sortOption]);
 
 	const handleSearchFilter = () => {
-		loadFormSubmissions(1, false);
+		loadFormSubmissions(1);
 	};
 
 	useEffect(() => {
@@ -407,29 +445,16 @@ const Index = () => {
 		headingExcerptLength = 80;
 	}
 
-	let submissionsContent: React.ReactNode;
-	if (loading) {
-		submissionsContent = (
-			<View
-				style={{
-					height: 200,
-					width: '100%',
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<ActivityIndicator size={30} color={theme.screen.text} />
-			</View>
-		);
-	} else if (formSubmissions?.length > 0) {
-		submissionsContent = <FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />;
-	} else {
-		submissionsContent = (
-			<View style={{ padding: 20, alignItems: 'center' }}>
-				<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
-			</View>
-		);
-	}
+	const submissionsContent: React.ReactNode = resolveSubmissionsContent(loading, formSubmissions, listData, renderItem, theme, translate);
+
+	const isWideHeader = screenWidth > 768;
+	const headerRowFlexDirection = drawerPosition === 'right' ? 'row-reverse' : 'row';
+	const headerRowGap = isWideHeader ? 20 : 10;
+	const searchContainerWidth = isWideHeader ? '60%' : '90%';
+	const searchContainerVerticalSpacing = isWideHeader ? 20 : 0;
+	const searchInputWidth = isWideHeader ? '90%' : '85%';
+	const searchButtonWidth = isWideHeader ? '10%' : '15%';
+	const contentWrapperWidth = isWideHeader ? '70%' : '90%';
 
 	return (
 		<View
@@ -443,29 +468,23 @@ const Index = () => {
 					...styles.header,
 					backgroundColor: theme.header.background,
 					paddingHorizontal: isWeb ? 20 : 10,
-					gap: screenWidth > 768 ? 20 : 10,
+					gap: headerRowGap,
 				}}
 			>
 				<View
 					style={[
 						styles.row,
 						{
-							flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+							flexDirection: headerRowFlexDirection,
 						},
 					]}
 				>
 					<View
 						style={[
 							styles.col1,
-							screenWidth > 768
-								? {
-										gap: 20,
-									}
-								: {
-										gap: 10,
-									},
+							{ gap: headerRowGap },
 							{
-								flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+								flexDirection: headerRowFlexDirection,
 							},
 						]}
 					>
@@ -550,15 +569,15 @@ const Index = () => {
 				<View
 					style={{
 						...styles.searchContainer,
-						width: screenWidth > 768 ? '60%' : '90%',
-						marginTop: screenWidth > 768 ? 20 : 0,
-						marginBottom: screenWidth > 768 ? 20 : 0,
+						width: searchContainerWidth,
+						marginTop: searchContainerVerticalSpacing,
+						marginBottom: searchContainerVerticalSpacing,
 					}}
 				>
 					<TextInput
 						style={{
 							...styles.searchInput,
-							width: screenWidth > 768 ? '90%' : '85%',
+							width: searchInputWidth,
 							color: theme.screen.text,
 						}}
 						cursorColor={theme.screen.text}
@@ -571,7 +590,7 @@ const Index = () => {
 						style={{
 							...styles.searchButton,
 							backgroundColor: theme.screen.iconBg,
-							width: screenWidth > 768 ? '10%' : '15%',
+							width: searchButtonWidth,
 						}}
 						onPress={handleSearchFilter}
 					>
@@ -588,7 +607,7 @@ const Index = () => {
 				alignItems: 'center',
 			}}
 		>
-			<View style={{ flex: 1, width: screenWidth > 768 ? '70%' : '90%' }}>
+			<View style={{ flex: 1, width: contentWrapperWidth }}>
 				{submissionsContent}
 			</View>
 		</View>

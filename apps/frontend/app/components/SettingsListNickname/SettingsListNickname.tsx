@@ -37,11 +37,6 @@ const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ groupPositi
 
         const trimmedValue = useMemo(() => value?.trim?.() ?? '', [value]);
 
-        const disableSave = useMemo(
-                () => trimmedValue === (currentNickname?.trim?.() ?? ''),
-                [currentNickname, trimmedValue]
-        );
-
         const handleSave = useCallback(async (savedValue: string) => {
                 const nextNickname = savedValue?.trim?.() ?? trimmedValue;
                 if (isRegisteredUser) {

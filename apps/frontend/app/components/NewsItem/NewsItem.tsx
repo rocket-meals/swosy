@@ -12,6 +12,87 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 
+const ReadMoreTriggerButton = ({
+	triggerProps,
+	onPress,
+	backgroundColor,
+	textColor,
+	width,
+	label,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	backgroundColor: string;
+	textColor: string;
+	width: number | string;
+	label: string;
+}) => (
+	<TouchableOpacity
+		{...triggerProps}
+		style={{
+			...styles.readMoreButton,
+			backgroundColor,
+			width,
+		}}
+		onPress={onPress}
+	>
+		<Text style={{ ...styles.readMore, color: textColor }}>{label}</Text>
+		<FontAwesome6 name="arrow-up-right-from-square" size={20} color={textColor} />
+	</TouchableOpacity>
+);
+
+const makeReadMoreTrigger = (props: Readonly<{
+	onPress: () => void;
+	backgroundColor: string;
+	textColor: string;
+	width: number | string;
+	label: string;
+}>) => (triggerProps: object) => <ReadMoreTriggerButton triggerProps={triggerProps} {...props} />;
+
+const NEWS_ITEM_WIDE_BREAKPOINT = 768;
+const NEWS_ITEM_EXTRA_WIDE_BREAKPOINT = 900;
+
+const NEWS_ITEM_NARROW_LAYOUT = {
+	imageContainerWidth: '100%' as const,
+	newsContentWidth: '100%' as const,
+	cardFlexDirection: 'column' as const,
+	imageHeight: 180,
+	contentJustifyContent: 'flex-start' as const,
+	contentPadding: 0,
+	headerMarginTop: 5,
+	headerFlexDirection: 'column' as const,
+	titleWidth: '100%' as const,
+	dateWidth: '100%' as const,
+	actionAlignItems: 'center' as const,
+	readMoreWidth: '100%' as number | string,
+};
+
+/**
+ * Resolves all the screenWidth-dependent layout values used by NewsItem's
+ * JSX, so the `screenWidth > 768` breakpoint check isn't repeated ~10x.
+ */
+function resolveNewsItemLayout(screenWidth: number) {
+	if (screenWidth <= NEWS_ITEM_WIDE_BREAKPOINT) {
+		return NEWS_ITEM_NARROW_LAYOUT;
+	}
+
+	const isExtraWide = screenWidth > NEWS_ITEM_EXTRA_WIDE_BREAKPOINT;
+	return {
+		imageContainerWidth: isExtraWide ? ('20%' as const) : ('30%' as const),
+		newsContentWidth: isExtraWide ? ('79%' as const) : ('69%' as const),
+		cardFlexDirection: 'row' as const,
+		imageHeight: 220,
+		contentJustifyContent: 'space-between' as const,
+		contentPadding: 10,
+		headerMarginTop: 10,
+		headerFlexDirection: 'row' as const,
+		titleWidth: '80%' as const,
+		dateWidth: '20%' as const,
+		actionAlignItems: 'flex-start' as const,
+		readMoreWidth: 210 as number | string,
+	};
+}
+
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
@@ -48,20 +129,26 @@ const NewsItem: React.FC<any> = ({ news }) => {
 		}
 	};
 
-	let imageContainerWidth: '20%' | '30%' | '100%' = '100%';
-	if (screenWidth > 768) {
-		imageContainerWidth = screenWidth > 900 ? '20%' : '30%';
-	}
-	let newsContentWidth: '79%' | '69%' | '100%' = '100%';
-	if (screenWidth > 768) {
-		newsContentWidth = screenWidth > 900 ? '79%' : '69%';
-	}
+	const {
+		imageContainerWidth,
+		newsContentWidth,
+		cardFlexDirection,
+		imageHeight,
+		contentJustifyContent,
+		contentPadding,
+		headerMarginTop,
+		headerFlexDirection,
+		titleWidth,
+		dateWidth,
+		actionAlignItems,
+		readMoreWidth,
+	} = resolveNewsItemLayout(screenWidth);
 
 	return (
 		<View
 			style={{
 				...styles.card,
-				flexDirection: screenWidth > 768 ? 'row' : 'column',
+				flexDirection: cardFlexDirection,
 				backgroundColor: theme.screen.iconBg,
 			}}
 		>
@@ -69,7 +156,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				style={{
 					...styles.imageContainer,
 					width: imageContainerWidth,
-					height: screenWidth > 768 ? 220 : 180,
+					height: imageHeight,
 				}}
 			>
 				<Image
@@ -82,8 +169,8 @@ const NewsItem: React.FC<any> = ({ news }) => {
 			<View
 				style={{
 					width: newsContentWidth,
-					justifyContent: screenWidth > 768 ? 'space-between' : 'flex-start',
-					padding: screenWidth > 768 ? 10 : 0,
+					justifyContent: contentJustifyContent,
+					padding: contentPadding,
 				}}
 			>
 				<View
@@ -94,16 +181,16 @@ const NewsItem: React.FC<any> = ({ news }) => {
 					<View
 						style={{
 							...styles.newsHeader,
-							marginTop: screenWidth > 768 ? 10 : 5,
+							marginTop: headerMarginTop,
 							marginBottom: 10,
-							flexDirection: screenWidth > 768 ? 'row' : 'column',
+							flexDirection: headerFlexDirection,
 						}}
 					>
 						<Text
 							style={{
 								...styles.newsHeading,
 								color: theme.screen.text,
-								width: screenWidth > 768 ? '80%' : '100%',
+								width: titleWidth,
 							}}
 						>
 							{title}
@@ -112,7 +199,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 							style={{
 								...styles.newsDate,
 								color: theme.screen.text,
-								width: screenWidth > 768 ? '20%' : '100%',
+								width: dateWidth,
 								textAlign: 'right',
 							}}
 						>
@@ -124,25 +211,18 @@ const NewsItem: React.FC<any> = ({ news }) => {
 				<View
 					style={{
 						...styles.actionContainer,
-						alignItems: screenWidth > 768 ? 'flex-start' : 'center',
+						alignItems: actionAlignItems,
 					}}
 				>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-							<TouchableOpacity
-								{...triggerProps}
-								style={{
-									...styles.readMoreButton,
-									backgroundColor: news_area_color,
-									width: screenWidth > 768 ? 210 : '100%',
-								}}
-								onPress={handleNewsDetails}
-							>
-								<Text style={{ ...styles.readMore, color: contrastColor }}>{translate(TranslationKeys.read_more)}</Text>
-								<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />
-							</TouchableOpacity>
-						)}
+						trigger={makeReadMoreTrigger({
+							onPress: handleNewsDetails,
+							backgroundColor: news_area_color,
+							textColor: contrastColor,
+							width: readMoreWidth,
+							label: translate(TranslationKeys.read_more),
+						})}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

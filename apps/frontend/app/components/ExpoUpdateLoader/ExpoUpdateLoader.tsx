@@ -13,6 +13,10 @@ interface ExpoUpdateLoaderProps {
 
 const TIMEOUT_MS = 10000; // 10 Sekunden
 
+function createTimeoutPromise(ms: number): Promise<null> {
+	return new Promise<null>(resolve => setTimeout(() => resolve(null), ms));
+}
+
 const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 	const { isSmartPhone } = usePlatformHelper();
 	const { translate } = useLanguage();
@@ -28,7 +32,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 				return;
 			}
 
-			const timeoutPromise = new Promise<null>(resolve => setTimeout(() => resolve(null), TIMEOUT_MS));
+			const timeoutPromise = createTimeoutPromise(TIMEOUT_MS);
 
 			try {
 				setStatus(TranslationKeys.CHECK_FOR_APP_UPDATES);

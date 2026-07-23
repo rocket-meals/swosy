@@ -15,7 +15,7 @@ import SettingsListActivity from '../../components/SettingsListActivity';
 import CalendarDatePickerContent from '../../components/CalendarDatePicker';
 import { useDispatch } from 'react-redux';
 
-import { loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
+import { getEffectiveEnclosedHexTiles, loadActivities, saveActivity, SavedActivity, RoutePoint } from '../../helpers/ActivityStorage';
 import { generateRandomIdSuffix } from '../../helpers/IdHelper';
 import { loadRoutes, saveRoute, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, computeRouteLengthKm } from '../../helpers/H3Helper';
@@ -349,6 +349,164 @@ function RouteSelectionContent({
 	);
 }
 
+// Fire-and-forget: fetch map features for enclosed-only tiles that have no
+// cached feature data yet, so the pine tree billboard can be applied even
+// when the feature cache was empty or incomplete.
+async function applyForestBillboardsForUncachedTiles(records: Record<string, any>, hexTileFeatureCache: HexTileFeatureCache, dispatch: AppDispatch) {
+	try {
+		const enclosedWithoutCache = Object.entries(records)
+			.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
+			.map(([hexId]) => hexId);
+
+		if (enclosedWithoutCache.length === 0) return;
+
+		const newEntries: HexTileFeatureCache = {};
+		for (const hexId of enclosedWithoutCache) {
+			try {
+				const features = await queryTileFeaturesForHexCell(hexId);
+				newEntries[hexId] = features;
+				if (hasForestFeature(features)) {
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_PINE_TREE_LARGE,
+					}));
+				}
+			} catch {
+				// ignore per-cell errors
+			}
+		}
+		await mergeHexTileFeatureCache(newEntries);
+	} catch (err) {
+		console.warn('[Rebuild] Feature cache update failed:', err);
+	}
+}
+
+function ActivitiesHeaderRight({ onRebuild, onExport, onImport }: Readonly<{ onRebuild: () => void; onExport: () => void; onImport: () => void }>) {
+	return (
+		<View style={styles.headerButtons}>
+			<TouchableOpacity onPress={onRebuild} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+			<TouchableOpacity onPress={onExport} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+			<TouchableOpacity onPress={onImport} style={styles.headerImportButton} activeOpacity={0.7}>
+				<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+function makeActivitiesHeaderRight(onRebuild: () => void, onExport: () => void, onImport: () => void) {
+	return () => <ActivitiesHeaderRight onRebuild={onRebuild} onExport={onExport} onImport={onImport} />;
+}
+
+// ─── Import helpers ────────────────────────────────────────────────────────
+
+/**
+ * Normalizes the parsed import payload into a raw activities array plus any
+ * exported routes. Supports three formats:
+ *  1. New: { activities: [...], routes: [...] }
+ *  2. Old: [...] (array of activities)
+ *  3. Old: single activity object
+ */
+function extractImportedActivitiesAndRoutes(parsed: unknown): { rawActivities: unknown[]; exportedRoutes: SavedRoute[] } {
+	if (
+		typeof parsed === 'object' &&
+		parsed !== null &&
+		!Array.isArray(parsed) &&
+		Array.isArray((parsed as Record<string, unknown>).activities)
+	) {
+		const wrapper = parsed as Record<string, unknown>;
+		const rawActivities = wrapper.activities as unknown[];
+		const exportedRoutes = Array.isArray(wrapper.routes) ? (wrapper.routes as SavedRoute[]) : [];
+		return { rawActivities, exportedRoutes };
+	}
+	return { rawActivities: Array.isArray(parsed) ? parsed : [parsed], exportedRoutes: [] };
+}
+
+/** Validates that every raw imported entry looks like a SavedActivity. Returns null if any entry is invalid. */
+function validateImportedActivities(rawActivities: unknown[]): SavedActivity[] | null {
+	const validActivities: SavedActivity[] = [];
+	for (const item of rawActivities) {
+		const activity = item as SavedActivity;
+		if (
+			typeof activity.id !== 'string' ||
+			typeof activity.startedAt !== 'number' ||
+			!Array.isArray(activity.routePoints)
+		) {
+			return null;
+		}
+		validActivities.push(activity);
+	}
+	return validActivities;
+}
+
+/**
+ * Resolves (or creates) the route an imported activity should link to, mutating
+ * `existingRoutes` in place when a route is matched or newly created. Returns the
+ * resolved routeId together with the (possibly incremented) routeIdOffset used to
+ * keep generated route ids unique within a single import batch.
+ */
+function resolveRouteForImportedActivity(
+	activity: SavedActivity,
+	existingRoutes: SavedRoute[],
+	exportedRouteMap: Map<string, SavedRoute>,
+	routeIdOffset: number,
+): { routeId: string | null | undefined; routeIdOffset: number } {
+	const hexTiles = activity.hexTilesOrdered ?? [];
+	const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+	let routeId: string | null | undefined = activity.routeId;
+
+	if (hexTiles.length > 0 && isH3Available()) {
+		const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
+		if (match) {
+			// Link to the existing matching route.
+			routeId = match.route.id;
+			const updatedRoute: SavedRoute = {
+				...match.route,
+				activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
+			};
+			saveRoute(updatedRoute);
+			const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
+			if (idx >= 0) existingRoutes[idx] = updatedRoute;
+		} else {
+			// No matching route on this device — create one from the imported tiles.
+			// Prefer the exported route's name when available.
+			const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
+			const d = new Date(activity.startedAt);
+			const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+			const routePoints =
+				activity.routePoints.length > 0
+					? activity.routePoints
+					: synthesizeManualActivityRoutePoints(
+						hexTiles,
+						activity.startedAt,
+						(activity.endedAt - activity.startedAt),
+						activity.stats.distanceKm,
+					);
+			const newRoute: SavedRoute = {
+				id: String(Date.now() + routeIdOffset++),
+				name,
+				hexTiles,
+				h3Resolution: h3Res,
+				createdAt: activity.startedAt,
+				sportType: activity.sportType,
+				walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
+				walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
+				walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
+				activityIds: [activity.id],
+			};
+			saveRoute(newRoute);
+			existingRoutes.push(newRoute);
+			routeId = newRoute.id;
+		}
+	}
+
+	return { routeId, routeIdOffset };
+}
+
 // ─── Activities Screen ────────────────────────────────────────────────────────
 
 export default function ActivitiesScreen() {
@@ -402,39 +560,12 @@ export default function ActivitiesScreen() {
 			return;
 		}
 
-		// Support three formats:
-		//  1. New: { activities: [...], routes: [...] }
-		//  2. Old: [...] (array of activities)
-		//  3. Old: single activity object
-		let rawActivities: unknown[];
-		let exportedRoutes: SavedRoute[] = [];
-		if (
-			typeof parsed === 'object' &&
-			parsed !== null &&
-			!Array.isArray(parsed) &&
-			Array.isArray((parsed as Record<string, unknown>).activities)
-		) {
-			const wrapper = parsed as Record<string, unknown>;
-			rawActivities = wrapper.activities as unknown[];
-			if (Array.isArray(wrapper.routes)) {
-				exportedRoutes = wrapper.routes as SavedRoute[];
-			}
-		} else {
-			rawActivities = Array.isArray(parsed) ? parsed : [parsed];
-		}
+		const { rawActivities, exportedRoutes } = extractImportedActivitiesAndRoutes(parsed);
 
-		const validActivities: SavedActivity[] = [];
-		for (const item of rawActivities) {
-			const activity = item as SavedActivity;
-			if (
-				typeof activity.id !== 'string' ||
-				typeof activity.startedAt !== 'number' ||
-				!Array.isArray(activity.routePoints)
-			) {
-				showAlert('Import Failed', 'One or more entries do not look like valid activities.');
-				return;
-			}
-			validActivities.push(activity);
+		const validActivities = validateImportedActivities(rawActivities);
+		if (!validActivities) {
+			showAlert('Import Failed', 'One or more entries do not look like valid activities.');
+			return;
 		}
 
 		// Build a lookup map for exported route names so new routes inherit the
@@ -447,54 +578,9 @@ export default function ActivitiesScreen() {
 		let routeIdOffset = 0;
 
 		for (const activity of validActivities) {
-			const hexTiles = activity.hexTilesOrdered ?? [];
-			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-			let routeId: string | null | undefined = activity.routeId;
-
-			if (hexTiles.length > 0 && isH3Available()) {
-				const match = findMatchingRoutes(hexTiles, existingRoutes, h3Res)[0];
-				if (match) {
-					// Link to the existing matching route.
-					routeId = match.route.id;
-					const updatedRoute: SavedRoute = {
-						...match.route,
-						activityIds: [...new Set([...(match.route.activityIds ?? []), activity.id])],
-					};
-					saveRoute(updatedRoute);
-					const idx = existingRoutes.findIndex((r) => r.id === match.route.id);
-					if (idx >= 0) existingRoutes[idx] = updatedRoute;
-				} else {
-					// No matching route on this device — create one from the imported tiles.
-					// Prefer the exported route's name when available.
-					const exportedRoute = activity.routeId ? exportedRouteMap.get(activity.routeId) : undefined;
-					const d = new Date(activity.startedAt);
-					const name = exportedRoute?.name ?? `Route ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
-					const routePoints =
-						activity.routePoints.length > 0
-							? activity.routePoints
-							: synthesizeManualActivityRoutePoints(
-								hexTiles,
-								activity.startedAt,
-								(activity.endedAt - activity.startedAt),
-								activity.stats.distanceKm,
-							);
-					const newRoute: SavedRoute = {
-						id: String(Date.now() + routeIdOffset++),
-						name,
-						hexTiles,
-						h3Resolution: h3Res,
-						createdAt: activity.startedAt,
-						sportType: activity.sportType,
-						walkedEdges: computeEdgesFromRoutePoints(routePoints, h3Res),
-						walkedEdgesRedLine: computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION),
-						walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
-						activityIds: [activity.id],
-					};
-					saveRoute(newRoute);
-					existingRoutes.push(newRoute);
-					routeId = newRoute.id;
-				}
-			}
+			const resolved = resolveRouteForImportedActivity(activity, existingRoutes, exportedRouteMap, routeIdOffset);
+			const { routeId } = resolved;
+			routeIdOffset = resolved.routeIdOffset;
 
 			const activityToSave: SavedActivity =
 				routeId !== activity.routeId ? { ...activity, routeId } : activity;
@@ -582,16 +668,12 @@ export default function ActivitiesScreen() {
 							} else {
 								enclosedTiles =
 									activity.computed?.enclosedHexTiles ??
-									activity.enclosedHexTiles ??
-									activity.hexTilesEnclosed ??
-									[];
+									getEffectiveEnclosedHexTiles(activity);
 							}
 
 							if (!activity.computed) {
 								activity.computed = computeActivityData(activity, enclosedTiles);
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount ??= enclosedTiles.length;
 								updated = true;
 							} else if (
 								!Array.isArray(activity.computed.enclosedHexTiles) ||
@@ -621,38 +703,7 @@ export default function ActivitiesScreen() {
 						dispatch(loadWalkedEdgesState(walkedEdges));
 						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
-						// Fire-and-forget: fetch map features for enclosed-only tiles that
-						// have no cached feature data yet, so the pine tree billboard can be
-						// applied even when the feature cache was empty or incomplete.
-						void (async () => {
-							try {
-								const enclosedWithoutCache = Object.entries(records)
-									.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
-									.map(([hexId]) => hexId);
-
-								if (enclosedWithoutCache.length === 0) return;
-
-								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of enclosedWithoutCache) {
-									try {
-										const features = await queryTileFeaturesForHexCell(hexId);
-										newEntries[hexId] = features;
-										if (hasForestFeature(features)) {
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: BillboardAnchorPosition.CENTER,
-												billboard: BILLBOARD_PINE_TREE_LARGE,
-											}));
-										}
-									} catch {
-										// ignore per-cell errors
-									}
-								}
-								await mergeHexTileFeatureCache(newEntries);
-							} catch (err) {
-								console.warn('[Rebuild] Feature cache update failed:', err);
-							}
-						})();
+						void applyForestBillboardsForUncachedTiles(records, hexTileFeatureCache, dispatch);
 
 						const count = allActivities.length;
 						showAlert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
@@ -689,6 +740,42 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, handleImportFromFile, closeImportModal, theme]);
 
+	// Persists a manually-entered activity, links it to its route, applies its
+	// hex tiles/edges to the in-memory map state, then closes the modal and navigates to it.
+	const handleManualActivitySave = useCallback((activity: SavedActivity, selectedRoute: SavedRoute) => {
+		saveActivity(activity);
+		// Add activity ID to route.activityIds
+		const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
+		const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
+		saveRoute(updatedRoute);
+		setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
+		setActivities((prev) => [activity, ...prev]);
+		// Apply the route's hex tiles and edges to the in-memory map state
+		if (isH3Available() && selectedRoute.hexTiles.length > 0) {
+			dispatch(startRun());
+			dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
+			// Apply enclosed tiles so the map rebuild produces the correct terrain
+			const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
+			if (enclosed.length > 0) {
+				dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
+			}
+			// Record hex-to-hex transitions so walk path spokes are drawn
+			const hexTilesOrdered = activity.hexTilesOrdered ?? selectedRoute.hexTiles;
+			const edges = computeEdgesFromHexTiles(hexTilesOrdered);
+			if (edges.length > 0) {
+				dispatch(addWalkedEdges(edges));
+			}
+			// Record red-line edges using the activity's already-computed
+			// red-line route points (synthesized in handleSave).
+			const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
+			if (edgesRedLine.length > 0) {
+				dispatch(addWalkedEdgesRedLine(edgesRedLine));
+			}
+		}
+		closeManualModal();
+		router.push(`/activities/${activity.id}`);
+	}, [dispatch, router, closeManualModal]);
+
 	const openManualActivityModal = useCallback(() => {
 		if (routes.length === 0) {
 			showAlert('Keine Routen', 'Erstelle zuerst eine Route, bevor du eine manuelle Aktivität hinzufügen kannst.');
@@ -708,39 +795,7 @@ export default function ActivitiesScreen() {
 							children: (
 								<ManualActivityDurationContent
 									route={selectedRoute}
-									onSave={(activity) => {
-										saveActivity(activity);
-										// Add activity ID to route.activityIds
-										const updatedIds = [...new Set([...(selectedRoute.activityIds ?? []), activity.id])];
-										const updatedRoute = { ...selectedRoute, activityIds: updatedIds };
-										saveRoute(updatedRoute);
-										setRoutes((prev) => prev.map((r) => r.id === updatedRoute.id ? updatedRoute : r));
-										setActivities((prev) => [activity, ...prev]);
-										// Apply the route's hex tiles and edges to the in-memory map state
-										if (isH3Available() && selectedRoute.hexTiles.length > 0) {
-											dispatch(startRun());
-											dispatch(markVisited({ h3Indices: selectedRoute.hexTiles, timestamp: activity.startedAt }));
-											// Apply enclosed tiles so the map rebuild produces the correct terrain
-											const enclosed = activity.computed?.enclosedHexTiles ?? activity.enclosedHexTiles ?? [];
-											if (enclosed.length > 0) {
-												dispatch(markEnclosed({ h3Indices: enclosed, timestamp: activity.startedAt }));
-											}
-											// Record hex-to-hex transitions so walk path spokes are drawn
-											const hexTilesOrdered = activity.hexTilesOrdered ?? selectedRoute.hexTiles;
-											const edges = computeEdgesFromHexTiles(hexTilesOrdered);
-											if (edges.length > 0) {
-												dispatch(addWalkedEdges(edges));
-											}
-											// Record red-line edges using the activity's already-computed
-											// red-line route points (synthesized in handleSave).
-											const edgesRedLine = computeEdgesFromRoutePoints(activity.routePoints, RED_LINE_GRID_RESOLUTION);
-											if (edgesRedLine.length > 0) {
-												dispatch(addWalkedEdgesRedLine(edgesRedLine));
-											}
-										}
-										closeManualModal();
-										router.push(`/activities/${activity.id}`);
-									}}
+									onSave={(activity) => handleManualActivitySave(activity, selectedRoute)}
 									onClose={closeManualModal}
 									theme={theme}
 								/>
@@ -757,19 +812,7 @@ export default function ActivitiesScreen() {
 	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: () => (
-				<View style={styles.headerButtons}>
-					<TouchableOpacity onPress={handleRebuildMap} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
-						<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
-					</TouchableOpacity>
-				</View>
-			),
+			headerRight: makeActivitiesHeaderRight(handleRebuildMap, handleExportAll, openImportModal),
 		});
 	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 

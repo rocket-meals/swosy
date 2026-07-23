@@ -29,7 +29,6 @@ import * as Location from 'expo-location';
 import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import { MapStyleKey, SettingsListMyMapThemeSelection, MAP_STYLE_DEFINITIONS } from 'repo-depkit-common-ui';
-import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
@@ -628,7 +627,7 @@ function getFirstOrganisationFromDict(
 	return orgs && orgs.length > 0 ? orgs[0] : null;
 }
 
-function createBuildingMarkerSvg(
+function createBuildingMarkerSvg(params: {
 	externalIdentifier?: string | null,
 	markerColor?: string | null,
 	markerLabel?: string | null,
@@ -639,7 +638,19 @@ function createBuildingMarkerSvg(
 	fallbackLabelColor?: string | null,
 	alias?: string | null,
 	showLabel?: boolean,
-): string {
+}): string {
+	const {
+		externalIdentifier,
+		markerColor,
+		markerLabel,
+		markerLabelColor,
+		orgMarkerColor,
+		orgMarkerLabelColor,
+		fallbackColor,
+		fallbackLabelColor,
+		alias,
+		showLabel,
+	} = params;
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
@@ -676,6 +687,128 @@ function createBuildingMarkerSvg(
 		}
 	}
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
+}
+
+function computePoiIconOverrides(
+	poiEnabled: boolean,
+	barriersEnabled: boolean,
+	parkingEnabled: boolean,
+	poiSubSettings: Record<string, boolean>,
+): Record<string, string | null> {
+	const overrides: Record<string, string | null> = {};
+	if (poiEnabled) {
+		POI_SUBTYPES.forEach(({ key }) => {
+			if (!(poiSubSettings[key] ?? true)) {
+				overrides[key] = null;
+			}
+		});
+	}
+	if (!barriersEnabled) {
+		BARRIER_ICON_KEYS.forEach((key) => {
+			overrides[key] = null;
+		});
+	}
+	if (!parkingEnabled) {
+		PARKING_ICON_KEYS.forEach((key) => {
+			overrides[key] = null;
+		});
+	}
+	return overrides;
+}
+
+function handleMapComponentMounted(params: {
+	mapMountedRef: React.MutableRefObject<boolean>;
+	gameModeRef: React.MutableRefObject<boolean>;
+	setGameMapReady: (ready: boolean) => void;
+	sendGameInitData: () => void;
+	pendingNavigateRef: React.MutableRefObject<boolean>;
+	sendMapData: () => void;
+	sendToMapRef: React.MutableRefObject<(data: object) => void>;
+	peopleCountRef: React.MutableRefObject<number>;
+	peopleModeRef: React.MutableRefObject<boolean>;
+	intelligentMovementRef: React.MutableRefObject<boolean>;
+	carModeRef: React.MutableRefObject<boolean>;
+	showSettingsRef: React.MutableRefObject<Record<string, boolean>>;
+	poiSubSettingsRef: React.MutableRefObject<Record<string, boolean>>;
+	addLog: (entry: string) => void;
+}): void {
+	const {
+		mapMountedRef,
+		gameModeRef,
+		setGameMapReady,
+		sendGameInitData,
+		pendingNavigateRef,
+		sendMapData,
+		sendToMapRef,
+		peopleCountRef,
+		peopleModeRef,
+		intelligentMovementRef,
+		carModeRef,
+		showSettingsRef,
+		poiSubSettingsRef,
+		addLog,
+	} = params;
+
+	mapMountedRef.current = true;
+	if (gameModeRef.current) {
+		setGameMapReady(true);
+		sendGameInitData();
+	} else {
+		pendingNavigateRef.current = true;
+		sendMapData();
+	}
+	sendToMapRef.current({ peopleCount: peopleCountRef.current });
+	if (peopleModeRef.current) {
+		sendToMapRef.current({ peopleMode: true });
+	}
+	if (intelligentMovementRef.current) {
+		sendToMapRef.current({ intelligentMovement: true });
+	}
+	if (carModeRef.current) {
+		sendToMapRef.current({ carMode: true });
+	}
+	// Send the emoji map so the HTML has no hardcoded emoji data
+	sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
+	const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+	Object.entries(GROUP_MAP).forEach(([key, group]) => {
+		if (!(showSettingsRef.current[key] ?? key !== 'barriers')) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
+		}
+	});
+	// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
+	const poiEnabled = showSettingsRef.current.poi ?? true;
+	const barriersEnabled = showSettingsRef.current.barriers ?? false;
+	const parkingEnabled = showSettingsRef.current.parking ?? true;
+	const initialPoiOverrides = computePoiIconOverrides(poiEnabled, barriersEnabled, parkingEnabled, poiSubSettingsRef.current);
+	sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
+	addLog('MapComponentMounted');
+}
+
+function resolveMapOverlayStyle(
+	gameMode: boolean,
+	headingUpMode: boolean,
+	theme: ReturnType<typeof useTheme>['theme'],
+	userLocation: { lat: number; lng: number } | null,
+	autoRotateSpeed: number,
+) {
+	const initialMapPitch = gameMode ? GAME_MODE_PITCH : INITIAL_PITCH;
+	const compassBackgroundColor = headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee');
+	const compassIconColor = headingUpMode ? 'white' : theme.screen.icon;
+	const locationIconColor = userLocation ? '#1a73e8' : theme.screen.icon;
+	const rotateLeftBackgroundColor = autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateLeftIconColor = autoRotateSpeed < 0 ? 'white' : theme.screen.icon;
+	const rotateRightBackgroundColor = autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
+	const rotateRightIconColor = autoRotateSpeed > 0 ? 'white' : theme.screen.icon;
+	return {
+		initialMapPitch,
+		compassBackgroundColor,
+		compassIconColor,
+		locationIconColor,
+		rotateLeftBackgroundColor,
+		rotateLeftIconColor,
+		rotateRightBackgroundColor,
+		rotateRightIconColor,
+	};
 }
 
 const OsmVectorMapScreen: React.FC = () => {
@@ -717,7 +850,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { translate } = useLanguage();
 	const { addPointsForMapOpen } = useAppRatingScore();
 
-	const [logEntries, setLogEntries] = useState<string[]>([]);
+	const [logEntries, setLogEntries] = useState<{ id: number; text: string }[]>([]);
+	const nextLogEntryIdRef = useRef(0);
 	const logScrollRef = useRef<ScrollView>(null);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -785,7 +919,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const addLog = useCallback((entry: string) => {
 		setLogEntries((prev) => {
-			const next = [...prev, `${new Date().toLocaleTimeString()}: ${entry}`];
+			const next = [...prev, { id: nextLogEntryIdRef.current++, text: `${new Date().toLocaleTimeString()}: ${entry}` }];
 			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
 		});
 	}, []);
@@ -950,18 +1084,18 @@ const OsmVectorMapScreen: React.FC = () => {
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: createBuildingMarkerSvg(
-						building.external_identifier,
-						building.map_marker_color,
-						building.map_marker_label,
-						building.map_marker_label_color,
-						firstOrg?.map_marker_color ?? null,
-						firstOrg?.map_marker_label_color ?? null,
-						primaryColor,
-						primaryColorContrastColor,
-						building.alias,
-						showMarkerLabels,
-					),
+					icon: createBuildingMarkerSvg({
+						externalIdentifier: building.external_identifier,
+						markerColor: building.map_marker_color,
+						markerLabel: building.map_marker_label,
+						markerLabelColor: building.map_marker_label_color,
+						orgMarkerColor: firstOrg?.map_marker_color ?? null,
+						orgMarkerLabelColor: firstOrg?.map_marker_label_color ?? null,
+						fallbackColor: primaryColor,
+						fallbackLabelColor: primaryColorContrastColor,
+						alias: building.alias,
+						showLabel: showMarkerLabels,
+					}),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
@@ -1167,14 +1301,6 @@ const OsmVectorMapScreen: React.FC = () => {
 		setAutoRotateSpeed((s) => s + AUTO_ROTATE_SPEED_STEP);
 	}, []);
 
-	const handleManualRotateLeft1 = useCallback(() => {
-		sendToMapRef.current({ bearingDelta: -1, easeAnimation: true, easeDuration: 200 });
-	}, []);
-
-	const handleManualRotateRight1 = useCallback(() => {
-		sendToMapRef.current({ bearingDelta: 1, easeAnimation: true, easeDuration: 200 });
-	}, []);
-
 	const handleToggleFullscreen = useCallback(() => {
 		setIsFullscreen((prev) => !prev);
 	}, []);
@@ -1222,24 +1348,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		const poiEnabled = showSettings.poi ?? true;
 		const barriersEnabled = showSettings.barriers ?? false;
 		const parkingEnabled = showSettings.parking ?? true;
-		const overrides: Record<string, string | null> = {};
-		if (poiEnabled) {
-			POI_SUBTYPES.forEach(({ key }) => {
-				if (!(poiSubSettings[key] ?? true)) {
-					overrides[key] = null;
-				}
-			});
-		}
-		if (!barriersEnabled) {
-			BARRIER_ICON_KEYS.forEach((key) => {
-				overrides[key] = null;
-			});
-		}
-		if (!parkingEnabled) {
-			PARKING_ICON_KEYS.forEach((key) => {
-				overrides[key] = null;
-			});
-		}
+		const overrides = computePoiIconOverrides(poiEnabled, barriersEnabled, parkingEnabled, poiSubSettings);
 		sendToMapRef.current({ poiIconOverrides: overrides });
 	}, [showSettings, poiSubSettings]);
 
@@ -1279,7 +1388,8 @@ const OsmVectorMapScreen: React.FC = () => {
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
-			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+			const coordsText = lat !== null ? ` (${lat}, ${lng})` : '';
+			addLog(`Marker clicked: ${title}${coordsText}`);
 
 			if (coords?.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
@@ -1298,56 +1408,22 @@ const OsmVectorMapScreen: React.FC = () => {
 		(data: object) => {
 			const d = data as any;
 			if (d.tag === 'MapComponentMounted') {
-				mapMountedRef.current = true;
-				if (gameModeRef.current) {
-					setGameMapReady(true);
-					sendGameInitData();
-				} else {
-					pendingNavigateRef.current = true;
-					sendMapData();
-				}
-				sendToMapRef.current({ peopleCount: peopleCountRef.current });
-				if (peopleModeRef.current) {
-					sendToMapRef.current({ peopleMode: true });
-				}
-				if (intelligentMovementRef.current) {
-					sendToMapRef.current({ intelligentMovement: true });
-				}
-				if (carModeRef.current) {
-					sendToMapRef.current({ carMode: true });
-				}
-				// Send the emoji map so the HTML has no hardcoded emoji data
-				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
-				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
-				Object.entries(GROUP_MAP).forEach(([key, group]) => {
-					if (!(showSettingsRef.current[key] ?? key !== 'barriers')) {
-						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
-					}
+				handleMapComponentMounted({
+					mapMountedRef,
+					gameModeRef,
+					setGameMapReady,
+					sendGameInitData,
+					pendingNavigateRef,
+					sendMapData,
+					sendToMapRef,
+					peopleCountRef,
+					peopleModeRef,
+					intelligentMovementRef,
+					carModeRef,
+					showSettingsRef,
+					poiSubSettingsRef,
+					addLog,
 				});
-				// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
-				const poiEnabled = showSettingsRef.current.poi ?? true;
-				const barriersEnabled = showSettingsRef.current.barriers ?? false;
-				const parkingEnabled = showSettingsRef.current.parking ?? true;
-				const initialPoiOverrides: Record<string, string | null> = {};
-				if (poiEnabled) {
-					POI_SUBTYPES.forEach(({ key }) => {
-						if (!(poiSubSettingsRef.current[key] ?? true)) {
-							initialPoiOverrides[key] = null;
-						}
-					});
-				}
-				if (!barriersEnabled) {
-					BARRIER_ICON_KEYS.forEach((key) => {
-						initialPoiOverrides[key] = null;
-					});
-				}
-				if (!parkingEnabled) {
-					PARKING_ICON_KEYS.forEach((key) => {
-						initialPoiOverrides[key] = null;
-					});
-				}
-				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
-				addLog('MapComponentMounted');
 				return;
 			}
 			if (d.tag === 'onZoomEnd') {
@@ -1513,14 +1589,16 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	const initialMapPitch = gameMode ? GAME_MODE_PITCH : INITIAL_PITCH;
-	const compassBackgroundColor = headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee');
-	const compassIconColor = headingUpMode ? 'white' : theme.screen.icon;
-	const locationIconColor = userLocation ? '#1a73e8' : theme.screen.icon;
-	const rotateLeftBackgroundColor = autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
-	const rotateLeftIconColor = autoRotateSpeed < 0 ? 'white' : theme.screen.icon;
-	const rotateRightBackgroundColor = autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background;
-	const rotateRightIconColor = autoRotateSpeed > 0 ? 'white' : theme.screen.icon;
+	const {
+		initialMapPitch,
+		compassBackgroundColor,
+		compassIconColor,
+		locationIconColor,
+		rotateLeftBackgroundColor,
+		rotateLeftIconColor,
+		rotateRightBackgroundColor,
+		rotateRightIconColor,
+	} = resolveMapOverlayStyle(gameMode, headingUpMode, theme, userLocation, autoRotateSpeed);
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
@@ -1663,17 +1741,15 @@ const OsmVectorMapScreen: React.FC = () => {
 									</TouchableOpacity>
 								)}
 							</View>
-							{/* Jogging route recorder */}
-							<JoggingOverlay mapRef={myMapRef} />
 							<DebugView title="Map Log">
 								<ScrollView
 									ref={logScrollRef}
 									style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
 									onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
 								>
-									{logEntries.map((entry, i) => (
-										<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-											{entry}
+									{logEntries.map((entry) => (
+										<Text key={entry.id} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+											{entry.text}
 										</Text>
 									))}
 									{logEntries.length === 0 && (

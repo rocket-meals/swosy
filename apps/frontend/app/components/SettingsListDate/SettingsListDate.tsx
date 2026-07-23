@@ -34,7 +34,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 				const parsed = parse(value, 'dd.MM.yyyy', new Date());
 				selectedDate = parsed.toISOString().split('T')[0];
 			} catch (e) {
-				// ignore
+				console.warn('SettingsListDate: could not parse date value', value, e);
 			}
 		}
 
@@ -47,7 +47,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 					onChange(id, formatted, custom_type);
 					onError(id, '');
 				} catch (e) {
-					// ignore
+					console.warn('SettingsListDate: could not parse selected date', dateString, e);
 				}
 			},
 		});

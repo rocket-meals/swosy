@@ -15,14 +15,19 @@ interface MarkingIconProps {
 	compact?: boolean;
 }
 
-const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color, compact = false }) => {
-	const { theme } = useTheme();
-	const { selectedTheme: mode } = useAppSelector((state) => state.settings);
-
+/**
+ * Resolves all the pure, non-rendering values MarkingIcon's JSX needs
+ * (which image/icon/text-only variant to show, the shared container style,
+ * and the compact-mode scale factors) from the marking + display props.
+ */
+function resolveMarkingIconPresentation(
+	marking: DatabaseTypes.Markings,
+	size: number,
+	color: string | undefined,
+	contrast: string,
+	compact: boolean
+) {
 	const bgColor = marking?.background_color;
-	const contrast = useMyContrastColor(bgColor, theme, mode === 'dark');
-
-	if (!marking) return null;
 
 	let markingImage: { uri: string | undefined } | null = null;
 	if (marking.image_remote_url) {
@@ -59,6 +64,21 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color, co
 	const textScale = compact ? 0.5 : 0.65;
 	const lineHeightScale = compact ? 0.75 : 0.8;
 	const imageScale = compact ? 0.8 : 1;
+
+	return { bgColor, markingImage, textColor, Icon, iconName, containerStyle, iconScale, textScale, lineHeightScale, imageScale };
+}
+
+const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color, compact = false }) => {
+	const { theme } = useTheme();
+	const { selectedTheme: mode } = useAppSelector((state) => state.settings);
+
+	const bgColor = marking?.background_color;
+	const contrast = useMyContrastColor(bgColor, theme, mode === 'dark');
+
+	if (!marking) return null;
+
+	const { markingImage, textColor, Icon, iconName, containerStyle, iconScale, textScale, lineHeightScale, imageScale } =
+		resolveMarkingIconPresentation(marking, size, color, contrast, compact);
 
 	if (markingImage?.uri) {
 		return (

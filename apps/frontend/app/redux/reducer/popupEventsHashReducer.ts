@@ -4,7 +4,9 @@ const initialState = {
 	hashValue: '',
 };
 
-const popupEventsHashReducer = (state = initialState, actions: any) => {
+const popupEventsHashReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_POPUP_EVENTS_HASH: {
 			return {

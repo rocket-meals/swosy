@@ -72,4 +72,4 @@ function main() {
 	console.log(`EAS config generated at ${TARGET_FILE}`);
 }
 
-void main();
+main();

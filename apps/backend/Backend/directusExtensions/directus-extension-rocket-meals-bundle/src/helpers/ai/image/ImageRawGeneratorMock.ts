@@ -1,4 +1,5 @@
 import {ImageRawGeneratorInterface} from "./ImageRawGenerator";
+import {MathHelper} from "repo-depkit-common";
 
 export type ImageRawGeneratorMockProps = {
   simulateDelay?: boolean;
@@ -16,7 +17,7 @@ export class ImageRawGeneratorMock implements ImageRawGeneratorInterface {
     // simulate delay
 
     if(this.props?.simulateDelay){
-      let defaultSimlatedDelayMs = 5000 + Math.random() * 5000; // 5-10 seconds
+      let defaultSimlatedDelayMs = 5000 + MathHelper.random() * 5000; // 5-10 seconds
       let simlatedDelayMs = defaultSimlatedDelayMs;
       // allow "0" delay ms
       if(this.props?.simulateDelayMs !== undefined){

@@ -17,7 +17,7 @@
 
 import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available, cellToParent, cellToChildren, cellToCenterChild, getResolution, gridPathCells } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
-import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
+import { ComputedActivityData, ComputedHexTileEntry, getEffectiveEnclosedHexTiles, RoutePoint, SavedActivity } from './ActivityStorage';
 import type { SavedRoute } from './RouteStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
@@ -228,6 +228,50 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * list so that the closing segment is included in the polygon and the
  * adjacency check succeeds.
  */
+/**
+ * Compute the grid-distance search radius (in hex rings) that covers all of
+ * the given bounding-box corner coordinates from `centerCell`, used to size
+ * the `gridDisk` search for enclosed cells.
+ */
+function computeSearchRadiusFromBoundingBoxCorners(
+	corners: Array<[number, number]>,
+	centerCell: string,
+	h3Res: number,
+): number {
+	let maxK = 0;
+	for (const [lat, lng] of corners) {
+		try {
+			const cornerCell = latLngToCell(lat, lng, h3Res);
+			const dist = gridDistance(centerCell, cornerCell);
+			if (dist > maxK) maxK = dist;
+		} catch {
+			// ignore
+		}
+	}
+	return maxK;
+}
+
+/** From a set of candidate cells, return those not already visited whose centroid falls inside `polygon`. */
+function filterCellsInsidePolygon(
+	candidates: string[],
+	visitedSet: Set<string>,
+	polygon: Array<[number, number]>,
+): string[] {
+	const enclosed: string[] = [];
+	for (const cell of candidates) {
+		if (visitedSet.has(cell)) continue;
+		try {
+			const [cellLat, cellLng] = cellToLatLng(cell);
+			if (pointInPolygon(cellLng, cellLat, polygon)) {
+				enclosed.push(cell);
+			}
+		} catch {
+			// ignore invalid cells
+		}
+	}
+	return enclosed;
+}
+
 export function findEnclosedCellsFromHexTiles(
 	visitedHexIds: string[],
 	resolution: number,
@@ -265,38 +309,17 @@ export function findEnclosedCellsFromHexTiles(
 	const centerLng = (maxLng + minLng) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
 
-	let maxK = 0;
 	const corners: Array<[number, number]> = [
 		[maxLat, maxLng],
 		[maxLat, minLng],
 		[minLat, maxLng],
 		[minLat, minLng],
 	];
-	for (const [lat, lng] of corners) {
-		try {
-			const cornerCell = latLngToCell(lat, lng, h3Res);
-			const dist = gridDistance(centerCell, cornerCell);
-			if (dist > maxK) maxK = dist;
-		} catch {
-			// ignore
-		}
-	}
+	const maxK = computeSearchRadiusFromBoundingBoxCorners(corners, centerCell, h3Res);
 
 	const visitedSet = new Set(visitedHexIds);
 	const candidates = gridDisk(centerCell, Math.min(maxK + 1, MAX_GRID_DISK_RADIUS));
-	const enclosed: string[] = [];
-	for (const cell of candidates) {
-		if (visitedSet.has(cell)) continue;
-		try {
-			const [cellLat, cellLng] = cellToLatLng(cell);
-			if (pointInPolygon(cellLng, cellLat, polygon)) {
-				enclosed.push(cell);
-			}
-		} catch {
-			// ignore invalid cells
-		}
-	}
-	return enclosed;
+	return filterCellsInsidePolygon(candidates, visitedSet, polygon);
 }
 
 /**
@@ -372,7 +395,7 @@ export function hasForestFeature(features: MapFeatureInfo[]): boolean {
 export function getSmallTreeAnchorForHexId(hexId: string): BillboardAnchorPosition {
 	let hash = 0;
 	for (let i = 0; i < hexId.length; i++) {
-		hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
+		hash = (hash * 31 + (hexId.codePointAt(i) ?? 0)) >>> 0;
 	}
 	return MIDDLE_RING_BY_DEGREE[hash % MIDDLE_RING_BY_DEGREE.length];
 }
@@ -396,7 +419,7 @@ export function checkAndApplyForest(
 	features: MapFeatureInfo[] | undefined,
 ): void {
 	if (!features || !hasForestFeature(features)) return;
-	if (!rec.billboards) rec.billboards = {};
+	rec.billboards ??= {};
 
 	// Large tree at the hex centroid.
 	rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_PINE_TREE_LARGE;
@@ -526,28 +549,18 @@ function computeParentInfo(
  * @param distanceKm       Route distance in km (used to derive avg speed).
  * @returns Array of synthetic `RoutePoint` values tagged `interpolated: true`.
  */
-export function synthesizeManualActivityRoutePoints(
-	hexTilesOrdered: string[],
-	startedAt: number,
-	durationMs: number,
-	distanceKm: number,
-): RoutePoint[] {
-	if (hexTilesOrdered.length === 0 || durationMs <= 0 || !isH3Available()) return [];
-
-	const durationSeconds = durationMs / 1000;
-	const avgSpeedMps = distanceKm > 0 && durationSeconds > 0
-		? (distanceKm * 1000) / durationSeconds
-		: 0;
-
-	// Build a fine-grained red-line path:
-	//  1. Convert every h10 tile to its center-child at RED_LINE_GRID_RESOLUTION.
-	//  2. Between consecutive red-line cells, fill in intermediate cells using
-	//     gridPathCells so the synthetic route points follow the actual red-line
-	//     grid instead of jumping from h10 centre to h10 centre.
+/**
+ * Build a fine-grained red-line path from the ordered h10 hex tiles:
+ *  1. Convert every h10 tile to its center-child at RED_LINE_GRID_RESOLUTION.
+ *  2. Between consecutive red-line cells, fill in intermediate cells using
+ *     gridPathCells so the synthetic route points follow the actual red-line
+ *     grid instead of jumping from h10 centre to h10 centre.
+ */
+function buildRedLinePathFromHexTiles(hexTilesOrdered: string[]): string[] {
 	const redLinePath: string[] = [];
-	for (let i = 0; i < hexTilesOrdered.length; i++) {
+	for (const hexTile of hexTilesOrdered) {
 		try {
-			const redLineCell = cellToCenterChild(hexTilesOrdered[i], RED_LINE_GRID_RESOLUTION) || hexTilesOrdered[i];
+			const redLineCell = cellToCenterChild(hexTile, RED_LINE_GRID_RESOLUTION) || hexTile;
 			if (redLinePath.length === 0) {
 				redLinePath.push(redLineCell);
 			} else {
@@ -568,10 +581,20 @@ export function synthesizeManualActivityRoutePoints(
 			// skip invalid cells
 		}
 	}
+	return redLinePath;
+}
 
-	if (redLinePath.length === 0) return [];
-
-	// Distribute timestamps evenly: first point at startedAt, last at startedAt + durationMs.
+/**
+ * Convert a red-line cell path into timestamped `RoutePoint`s, distributing
+ * timestamps evenly so the first point is at `startedAt` and the last is at
+ * `startedAt + durationMs`.
+ */
+function buildRoutePointsFromRedLinePath(
+	redLinePath: string[],
+	startedAt: number,
+	durationMs: number,
+	avgSpeedMps: number,
+): RoutePoint[] {
 	const step = redLinePath.length > 1 ? durationMs / (redLinePath.length - 1) : 0;
 
 	const points: RoutePoint[] = [];
@@ -591,6 +614,26 @@ export function synthesizeManualActivityRoutePoints(
 		}
 	}
 	return points;
+}
+
+export function synthesizeManualActivityRoutePoints(
+	hexTilesOrdered: string[],
+	startedAt: number,
+	durationMs: number,
+	distanceKm: number,
+): RoutePoint[] {
+	if (hexTilesOrdered.length === 0 || durationMs <= 0 || !isH3Available()) return [];
+
+	const durationSeconds = durationMs / 1000;
+	const avgSpeedMps = distanceKm > 0 && durationSeconds > 0
+		? (distanceKm * 1000) / durationSeconds
+		: 0;
+
+	const redLinePath = buildRedLinePathFromHexTiles(hexTilesOrdered);
+
+	if (redLinePath.length === 0) return [];
+
+	return buildRoutePointsFromRedLinePath(redLinePath, startedAt, durationMs, avgSpeedMps);
 }
 
 /**
@@ -678,6 +721,331 @@ export function computeActivityData(
  *          loaded into the Redux hex-tile slice via `loadPersistedState` /
  *          `loadWalkedEdgesState` / `loadWalkedEdgesRedLineState`.
  */
+/**
+ * Derive the ordered list of visited hex-tile entries for an activity.
+ * Prefers the pre-computed field; falls back to the raw ordered list for
+ * activities saved before the computed field was introduced.  For
+ * backward-compat, also accepts the legacy `orderedHexTiles` field name.
+ */
+function deriveOrderedHexTiles(activity: SavedActivity): ComputedHexTileEntry[] {
+	return (
+		activity.computed?.hexTilesVisited ??
+		(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
+		(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }))
+	);
+}
+
+/**
+ * Always recompute enclosed tiles from the route when enough walked tiles
+ * are available.  This ensures that stale stored values (e.g. an activity
+ * that was recorded with a closed loop but later the route was found to be
+ * open) are corrected: if the route does not form a closed loop, the
+ * recomputation returns [] and overrides the stored (now-incorrect) data.
+ * Include tiles derived from interpolated GPS points so that routes
+ * completed via route interpolation produce a properly closed polygon.
+ */
+function computeEnclosedHexTilesForActivity(activity: SavedActivity): string[] {
+	if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
+		const visitedIds = activity.hexTilesOrdered ?? [];
+		const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+		const fullRouteIds = buildFullRouteTileIds(visitedIds, activity.routePoints, h3Res);
+		return findEnclosedCellsFromHexTiles(fullRouteIds, h3Res);
+	}
+	// Not enough walked tiles to form a polygon; fall back to any stored
+	// value for legacy activities that pre-date hexTilesOrdered.
+	return activity.computed?.enclosedHexTiles ?? getEffectiveEnclosedHexTiles(activity);
+}
+
+/** Pre-build a map for O(1) lookup of an activity's existing per-tile references. */
+function buildActivityReferenceMap(
+	records: Record<string, HexTileRecord>,
+	activityId: string,
+): Map<string, ActivityReference> {
+	const refByHexId = new Map<string, ActivityReference>();
+	for (const rec of Object.values(records)) {
+		if (!rec.activityReferences) continue;
+		const ref = rec.activityReferences.find(
+			(r: ActivityReference) => r.activityId === activityId,
+		);
+		if (ref) refByHexId.set(rec.h3Index, ref);
+	}
+	return refByHexId;
+}
+
+/**
+ * Process visited (walked) tiles for one activity: updates timestamps,
+ * merges activity references, and builds walked edges from consecutive tile
+ * pairs.  Mutates `records` and `edgeSet` in place.
+ */
+function processVisitedTiles(
+	orderedHexTiles: ComputedHexTileEntry[],
+	activityId: string,
+	endedAt: number,
+	records: Record<string, HexTileRecord>,
+	refByHexId: Map<string, ActivityReference>,
+	edgeSet: Set<string>,
+): void {
+	for (let i = 0; i < orderedHexTiles.length; i++) {
+		const { hexId } = orderedHexTiles[i];
+		const rec = getOrCreateRecord(records, hexId);
+
+		// Update timestamps
+		if (rec.lastVisitedAt === null || endedAt > rec.lastVisitedAt) {
+			rec.lastVisitedAt = endedAt;
+		}
+
+		// Add or merge the activity reference
+		rec.activityReferences ??= [];
+		const existingRef = refByHexId.get(hexId);
+		if (existingRef) {
+			existingRef.walkedIndex = i;
+		} else {
+			const newRef: ActivityReference = { activityId, walkedIndex: i };
+			rec.activityReferences.push(newRef);
+			refByHexId.set(hexId, newRef);
+		}
+
+		// Build walked edges from consecutive tile pairs
+		if (i > 0) {
+			const prev = orderedHexTiles[i - 1].hexId;
+			const edge = prev < hexId ? `${prev}:${hexId}` : `${hexId}:${prev}`;
+			edgeSet.add(edge);
+		}
+	}
+}
+
+/**
+ * Compute red-line walked edges for one activity, using GPS route points
+ * when available and synthesizing them for manual activities.  Mutates
+ * `edgeSetRedLine` in place.
+ */
+function computeRedLineEdgesForActivity(
+	activity: SavedActivity,
+	orderedHexTiles: ComputedHexTileEntry[],
+	edgeSetRedLine: Set<string>,
+): void {
+	if (!isH3Available()) return;
+	const hexTilesOrdered = orderedHexTiles.map((e) => e.hexId);
+	const routePoints = activity.routePoints.length > 0
+		? activity.routePoints
+		: synthesizeManualActivityRoutePoints(
+			hexTilesOrdered,
+			activity.startedAt,
+			activity.endedAt - activity.startedAt,
+			activity.distanceKm,
+		);
+	if (routePoints.length > 0) {
+		const redLineEdges = computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION);
+		for (const edge of redLineEdges) edgeSetRedLine.add(edge);
+	}
+}
+
+/**
+ * Process enclosed tiles for one activity: updates timestamps and merges
+ * activity references.  Mutates `records` in place.
+ */
+function processEnclosedTiles(
+	enclosedHexTiles: string[],
+	activityId: string,
+	endedAt: number,
+	records: Record<string, HexTileRecord>,
+	refByHexId: Map<string, ActivityReference>,
+): void {
+	for (let i = 0; i < enclosedHexTiles.length; i++) {
+		const hexId = enclosedHexTiles[i];
+		const rec = getOrCreateRecord(records, hexId);
+
+		// Update timestamps
+		if (rec.lastEnclosedAt === null || endedAt > rec.lastEnclosedAt) {
+			rec.lastEnclosedAt = endedAt;
+		}
+
+		// Add or merge the activity reference
+		rec.activityReferences ??= [];
+		const existingRef = refByHexId.get(hexId);
+		if (existingRef) {
+			existingRef.enclosedIndex = i;
+		} else {
+			const newRef: ActivityReference = { activityId, enclosedIndex: i };
+			rec.activityReferences.push(newRef);
+			refByHexId.set(hexId, newRef);
+		}
+	}
+}
+
+/**
+ * Compute `visitCount`, `enclosedCount`, `walkedOn` and `level` for a single
+ * record from its accumulated `activityReferences`.
+ */
+function computeCountsAndLevelForRecord(rec: HexTileRecord): void {
+	const refs: ActivityReference[] = rec.activityReferences ?? [];
+
+	// Count distinct activities that visited / enclosed this tile.
+	const visitedActivities = new Set(
+		refs.filter((r) => r.walkedIndex !== undefined).map((r) => r.activityId),
+	);
+	const enclosedActivities = new Set(
+		refs.filter((r) => r.enclosedIndex !== undefined).map((r) => r.activityId),
+	);
+
+	rec.visitCount = visitedActivities.size;
+	rec.enclosedCount = enclosedActivities.size;
+	rec.walkedOn = rec.visitCount > 0;
+	rec.level = computeHexTileLevel(rec);
+}
+
+/**
+ * Compute `avenueCount` for every tile: the number of distinct activities
+ * that visited (i.e. walked on or enclosed) at least one immediately
+ * neighbouring tile (ring-1 H3 disk, excl. self).
+ *
+ * Must be called after `visitCount`/`enclosedCount` are fully populated on
+ * every record (via `computeCountsAndLevelForRecord`) so that the per-tile
+ * activity-ID sets are already available via `activityReferences`.  Mutates
+ * `records` in place, including creating neighbour records that did not
+ * previously exist.
+ */
+/** Map from hexId → set of activity IDs that walked on OR enclosed it. */
+function buildVisitedActivitiesMap(records: Record<string, HexTileRecord>): Map<string, Set<string>> {
+	const visitedActsMap = new Map<string, Set<string>>();
+	for (const [hexId, rec] of Object.entries(records)) {
+		if (rec.visitCount <= 0 && rec.enclosedCount <= 0) continue;
+		const refs: ActivityReference[] = rec.activityReferences ?? [];
+		visitedActsMap.set(hexId, new Set(refs.map((r) => r.activityId)));
+	}
+	return visitedActsMap;
+}
+
+/**
+ * Ensure that every ring-1 neighbor of a visited tile has a record so that its
+ * avenueCount is computed and stored even when the tile itself was never
+ * walked or enclosed.
+ */
+function ensureAvenueNeighborRecordsExist(records: Record<string, HexTileRecord>, visitedHexIds: Iterable<string>): void {
+	for (const hexId of visitedHexIds) {
+		const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+		for (const neighbor of neighbors) {
+			getOrCreateRecord(records, neighbor);
+		}
+	}
+}
+
+/** Union of the activity IDs from a tile's ring-1 neighbours that walked on/enclosed them. */
+function computeAvenueActivitiesForTile(hexId: string, visitedActsMap: Map<string, Set<string>>): Set<string> {
+	const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+	const avenueActivities = new Set<string>();
+	for (const neighbor of neighbors) {
+		const neighborActs = visitedActsMap.get(neighbor);
+		if (!neighborActs) continue;
+		for (const actId of neighborActs) {
+			avenueActivities.add(actId);
+		}
+	}
+	return avenueActivities;
+}
+
+function computeAvenueCounts(records: Record<string, HexTileRecord>): void {
+	if (!isH3Available()) return;
+
+	const visitedActsMap = buildVisitedActivitiesMap(records);
+	// Ensure neighbor records exist before iterating records below, so their avenueCount is set too.
+	ensureAvenueNeighborRecordsExist(records, visitedActsMap.keys());
+
+	// For every tile, union the activity sets of its walked neighbours.
+	for (const [hexId, rec] of Object.entries(records)) {
+		rec.avenueCount = computeAvenueActivitiesForTile(hexId, visitedActsMap).size;
+	}
+}
+
+/**
+ * Place a path object (flat) at each MIDDLE ring anchor of a visited tile that
+ * faces a walked neighbor tile, indicating the route direction.
+ */
+function applyPathBillboardsForVisitedTile(hexId: string, rec: HexTileRecord, edgeSet: Set<string>): void {
+	if (!isH3Available()) return;
+	const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+	for (const neighbor of neighbors) {
+		const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
+		if (!edgeSet.has(edgeStr)) continue;
+		const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
+		if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
+		const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
+		rec.billboardsTexture ??= {};
+		rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
+	}
+}
+
+/**
+ * Apply automatic tile-image and billboard assignments to a single record.
+ * Must be called after all counts (`visitCount`/`enclosedCount`) are fully
+ * computed, so it is safe to query neighbour tiles' state when deciding
+ * whether to place trees / path billboards.
+ */
+function applyTileImageAndBillboardsForRecord(
+	hexId: string,
+	rec: HexTileRecord,
+	edgeSet: Set<string>,
+	hexTileFeatureCache: HexTileFeatureCache,
+): void {
+	if (rec.visitCount > 0) {
+		// Visited tile → dirt terrain
+		rec.tileImage = TILE_IMAGE_DIRT;
+		applyPathBillboardsForVisitedTile(hexId, rec, edgeSet);
+		return;
+	}
+	if (rec.enclosedCount > 0) {
+		// Enclosed but not visited → grass terrain; forest
+		// trees only when the feature cache confirms a forest / wooded area.
+		rec.tileImage = TILE_IMAGE_GRASS;
+		checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
+		// Override tileImage to stone when the feature cache confirms rocky
+		// ground (pebble-stone terrain).  This is a tileImage-level change only –
+		// not a billboard (hex object) and not a texture adaption (hex texture).
+		// Note: pebbleStone runs after forest so the stone terrain wins when
+		// both features are present.  In practice, ROCK and WOOD landcovers
+		// are mutually exclusive in OpenMapTiles data, so this scenario does
+		// not occur on real tiles.
+		checkAndApplyPebbleStone(rec, hexTileFeatureCache[hexId]);
+	}
+}
+
+/**
+ * Populate `parentH3Index` and `parentChildIndex` for every tile in
+ * `records`, and ensure ancestor records (up to resolution 0) also exist in
+ * `records` with their own parent info.  Ancestor records added here have
+ * level 0 and no visit/enclosure data; they serve purely as hierarchy
+ * metadata.  Mutates `records` in place.
+ */
+function populateParentChain(records: Record<string, HexTileRecord>): void {
+	if (!isH3Available()) return;
+
+	// Snapshot the keys so that newly created ancestor records are also
+	// processed (we iterate until no new keys are added).
+	let keysToProcess = Object.keys(records);
+	while (keysToProcess.length > 0) {
+		const nextKeys: string[] = [];
+		for (const h3Index of keysToProcess) {
+			const rec = records[h3Index];
+			// Skip tiles whose parent info is already set.
+			if (rec.parentH3Index !== undefined) continue;
+			const info = computeParentInfo(h3Index);
+			if (!info) {
+				rec.parentH3Index = null;
+				rec.parentChildIndex = null;
+				continue;
+			}
+			rec.parentH3Index = info.parentH3Index;
+			rec.parentChildIndex = info.parentChildIndex;
+			// Create the parent record if it does not yet exist.
+			if (!records[info.parentH3Index]) {
+				getOrCreateRecord(records, info.parentH3Index);
+				nextKeys.push(info.parentH3Index);
+			}
+		}
+		keysToProcess = nextKeys;
+	}
+}
+
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
 	hexTileFeatureCache: HexTileFeatureCache = {},
@@ -692,116 +1060,18 @@ export function rebuildMapFromActivities(
 		const endedAt = activity.endedAt;
 
 		// ── Derive the ordered and enclosed tile lists ────────────────────────
-		// Prefer the pre-computed field; fall back to the raw ordered list for
-		// activities saved before the computed field was introduced.
-		// For backward-compat, also accept the legacy `orderedHexTiles` field name.
-		const orderedHexTiles: ComputedHexTileEntry[] =
-			activity.computed?.hexTilesVisited ??
-			(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
-			(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
-
-		// Always recompute enclosed tiles from the route when enough walked tiles
-		// are available.  This ensures that stale stored values (e.g. an activity
-		// that was recorded with a closed loop but later the route was found to be
-		// open) are corrected: if the route does not form a closed loop, the
-		// recomputation returns [] and overrides the stored (now-incorrect) data.
-		// Include tiles derived from interpolated GPS points so that routes
-		// completed via route interpolation produce a properly closed polygon.
-		let enclosedHexTiles: string[];
-		if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
-			const visitedIds = activity.hexTilesOrdered ?? [];
-			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-			const fullRouteIds = buildFullRouteTileIds(visitedIds, activity.routePoints, h3Res);
-			enclosedHexTiles = findEnclosedCellsFromHexTiles(fullRouteIds, h3Res);
-		} else {
-			// Not enough walked tiles to form a polygon; fall back to any stored
-			// value for legacy activities that pre-date hexTilesOrdered.
-			enclosedHexTiles =
-				activity.computed?.enclosedHexTiles ??
-				activity.enclosedHexTiles ??
-				activity.hexTilesEnclosed ??
-				[];
-		}
+		const orderedHexTiles = deriveOrderedHexTiles(activity);
+		const enclosedHexTiles = computeEnclosedHexTilesForActivity(activity);
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
-		// Pre-build a map for O(1) lookup of existing references for this activity.
-		const refByHexId = new Map<string, ActivityReference>();
-		for (const rec of Object.values(records)) {
-			if (!rec.activityReferences) continue;
-			const ref = rec.activityReferences.find(
-				(r: ActivityReference) => r.activityId === activityId,
-			);
-			if (ref) refByHexId.set(rec.h3Index, ref);
-		}
-
-		for (let i = 0; i < orderedHexTiles.length; i++) {
-			const { hexId } = orderedHexTiles[i];
-			const rec = getOrCreateRecord(records, hexId);
-
-			// Update timestamps
-			if (rec.lastVisitedAt === null || endedAt > rec.lastVisitedAt) {
-				rec.lastVisitedAt = endedAt;
-			}
-
-			// Add or merge the activity reference
-			if (!rec.activityReferences) rec.activityReferences = [];
-			const existingRef = refByHexId.get(hexId);
-			if (existingRef) {
-				existingRef.walkedIndex = i;
-			} else {
-				const newRef: ActivityReference = { activityId, walkedIndex: i };
-				rec.activityReferences.push(newRef);
-				refByHexId.set(hexId, newRef);
-			}
-
-			// Build walked edges from consecutive tile pairs
-			if (i > 0) {
-				const prev = orderedHexTiles[i - 1].hexId;
-				const edge = prev < hexId ? `${prev}:${hexId}` : `${hexId}:${prev}`;
-				edgeSet.add(edge);
-			}
-		}
+		const refByHexId = buildActivityReferenceMap(records, activityId);
+		processVisitedTiles(orderedHexTiles, activityId, endedAt, records, refByHexId, edgeSet);
 
 		// ── Compute red-line walked edges for this activity ──────────────────
-		// Use GPS route points when available; synthesize them for manual activities.
-		if (isH3Available()) {
-			const hexTilesOrdered = orderedHexTiles.map((e) => e.hexId);
-			const routePoints = activity.routePoints.length > 0
-				? activity.routePoints
-				: synthesizeManualActivityRoutePoints(
-					hexTilesOrdered,
-					activity.startedAt,
-					activity.endedAt - activity.startedAt,
-					activity.distanceKm,
-				);
-			if (routePoints.length > 0) {
-				const redLineEdges = computeEdgesFromRoutePoints(routePoints, RED_LINE_GRID_RESOLUTION);
-				for (const edge of redLineEdges) edgeSetRedLine.add(edge);
-			}
-		}
+		computeRedLineEdgesForActivity(activity, orderedHexTiles, edgeSetRedLine);
 
 		// ── Process enclosed tiles ────────────────────────────────────────────
-		for (let i = 0; i < enclosedHexTiles.length; i++) {
-			const hexId = enclosedHexTiles[i];
-			const rec = getOrCreateRecord(records, hexId);
-
-			// Update timestamps
-			if (rec.lastEnclosedAt === null || endedAt > rec.lastEnclosedAt) {
-				rec.lastEnclosedAt = endedAt;
-			}
-
-			// Add or merge the activity reference
-			if (!rec.activityReferences) rec.activityReferences = [];
-			const existingRef = refByHexId.get(hexId);
-			if (existingRef) {
-				existingRef.enclosedIndex = i;
-			} else {
-				const newRef: ActivityReference = { activityId, enclosedIndex: i };
-				rec.activityReferences.push(newRef);
-				refByHexId.set(hexId, newRef);
-			}
-		}
-
+		processEnclosedTiles(enclosedHexTiles, activityId, endedAt, records, refByHexId);
 	}
 
 	// ── Second pass (2a): compute counts and levels for ALL tiles first ───────
@@ -809,146 +1079,26 @@ export function rebuildMapFromActivities(
 	// visitCount are fully populated before the terrain/tree assignment pass
 	// (2b) reads those values on neighbour tiles.
 	for (const rec of Object.values(records)) {
-		const refs: ActivityReference[] = rec.activityReferences ?? [];
-
-		// Count distinct activities that visited / enclosed this tile.
-		const visitedActivities = new Set(
-			refs.filter((r) => r.walkedIndex !== undefined).map((r) => r.activityId),
-		);
-		const enclosedActivities = new Set(
-			refs.filter((r) => r.enclosedIndex !== undefined).map((r) => r.activityId),
-		);
-
-		rec.visitCount = visitedActivities.size;
-		rec.enclosedCount = enclosedActivities.size;
-		rec.walkedOn = rec.visitCount > 0;
-		rec.level = computeHexTileLevel(rec);
+		computeCountsAndLevelForRecord(rec);
 	}
 
 	// ── Second pass (2a.5): compute avenueCount ───────────────────────────────
-	// avenueCount for a tile = number of distinct activities that visited (i.e.
-	// walked on or enclosed) at least one immediately neighbouring tile
-	// (ring-1 H3 disk, excl. self).
-	// This is computed after visitCount/enclosedCount are fully populated so
-	// that the per-tile activity-ID sets are already available via
-	// activityReferences.
-	if (isH3Available()) {
-		// Build a map from hexId → set of activity IDs that walked on OR enclosed it.
-		const visitedActsMap = new Map<string, Set<string>>();
-		for (const [hexId, rec] of Object.entries(records)) {
-			if (rec.visitCount > 0 || rec.enclosedCount > 0) {
-				const refs: ActivityReference[] = rec.activityReferences ?? [];
-				visitedActsMap.set(
-					hexId,
-					new Set(refs.map((r) => r.activityId)),
-				);
-			}
-		}
-
-		// Ensure that every ring-1 neighbor of a visited tile has a record so
-		// that its avenueCount is computed and stored even when the tile itself
-		// was never walked or enclosed.
-		for (const hexId of visitedActsMap.keys()) {
-			const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-			for (const neighbor of neighbors) {
-				getOrCreateRecord(records, neighbor);
-			}
-		}
-
-		// For every tile, union the activity sets of its walked neighbours.
-		for (const [hexId, rec] of Object.entries(records)) {
-			const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-			const avenueActivities = new Set<string>();
-			for (const neighbor of neighbors) {
-				const neighborActs = visitedActsMap.get(neighbor);
-				if (neighborActs) {
-					for (const actId of neighborActs) {
-						avenueActivities.add(actId);
-					}
-				}
-			}
-			rec.avenueCount = avenueActivities.size;
-		}
-	}
+	computeAvenueCounts(records);
 
 	// ── Second pass (2b): apply tile-image and billboard assignments ──────────
-	// All counts are now fully computed, so it is safe to query neighbour
-	// tiles' enclosedCount when deciding whether to place trees.
 	for (const [hexId, rec] of Object.entries(records)) {
-		// Apply automatic tile-image and billboard assignments.
-		if (rec.visitCount > 0) {
-			// Visited tile → dirt terrain
-			rec.tileImage = TILE_IMAGE_DIRT;
-
-			// Place a path object (flat) at each MIDDLE ring anchor that faces a
-			// walked neighbor tile, indicating the route direction.
-			if (isH3Available()) {
-				const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-				for (const neighbor of neighbors) {
-					const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
-					if (!edgeSet.has(edgeStr)) continue;
-					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
-					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
-					const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
-					if (!rec.billboardsTexture) rec.billboardsTexture = {};
-					rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
-				}
-			}
-		} else if (rec.enclosedCount > 0) {
-			// Enclosed but not visited → grass terrain; forest
-			// trees only when the feature cache confirms a forest / wooded area.
-			rec.tileImage = TILE_IMAGE_GRASS;
-			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
-			// Override tileImage to stone when the feature cache confirms rocky
-			// ground (pebble-stone terrain).  This is a tileImage-level change only –
-			// not a billboard (hex object) and not a texture adaption (hex texture).
-			// Note: pebbleStone runs after forest so the stone terrain wins when
-			// both features are present.  In practice, ROCK and WOOD landcovers
-			// are mutually exclusive in OpenMapTiles data, so this scenario does
-			// not occur on real tiles.
-			checkAndApplyPebbleStone(rec, hexTileFeatureCache[hexId]);
-		}
+		applyTileImageAndBillboardsForRecord(hexId, rec, edgeSet, hexTileFeatureCache);
 	}
 
 	// Apply home tile castle2 billboard if a home tile is set.
 	if (homeHexTile) {
 		const homeRec = getOrCreateRecord(records, homeHexTile);
-		if (!homeRec.billboards) homeRec.billboards = {};
+		homeRec.billboards ??= {};
 		homeRec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_CASTLE2;
 	}
 
 	// ── Fourth pass: populate parent chain for all tiles ─────────────────────
-	// For every tile in `records`, set `parentH3Index` and `parentChildIndex`,
-	// and ensure ancestor records (up to resolution 0) also exist in `records`
-	// with their own parent info.  Ancestor records added here have level 0 and
-	// no visit/enclosure data; they serve purely as hierarchy metadata.
-	if (isH3Available()) {
-		// Snapshot the keys so that newly created ancestor records are also
-		// processed (we iterate until no new keys are added).
-		let keysToProcess = Object.keys(records);
-		while (keysToProcess.length > 0) {
-			const nextKeys: string[] = [];
-			for (const h3Index of keysToProcess) {
-				const rec = records[h3Index];
-				// Skip tiles whose parent info is already set.
-				if (rec.parentH3Index !== undefined) continue;
-				const info = computeParentInfo(h3Index);
-				if (!info) {
-					rec.parentH3Index = null;
-					rec.parentChildIndex = null;
-					continue;
-				}
-				rec.parentH3Index = info.parentH3Index;
-				rec.parentChildIndex = info.parentChildIndex;
-				// Create the parent record if it does not yet exist.
-				if (!records[info.parentH3Index]) {
-					getOrCreateRecord(records, info.parentH3Index);
-					nextKeys.push(info.parentH3Index);
-				}
-			}
-			keysToProcess = nextKeys;
-		}
-	}
+	populateParentChain(records);
 
 	return { records, walkedEdges: Array.from(edgeSet), walkedEdgesRedLine: Array.from(edgeSetRedLine) };
 }
@@ -980,6 +1130,67 @@ const BENCH_MAX_ACTIVITIES_PER_ROUTE = 5;
  * @param activities All saved activities (used to look up route membership).
  * @param routes     All saved routes.
  */
+/**
+ * Accumulate per-hex average-speed totals across a route's qualifying
+ * activities, excluding each activity's first/last visited tile and the
+ * route-level excluded tiles.  Skips activities without speed data (legacy
+ * activities) and activities with fewer than 3 visited tiles.
+ */
+function accumulateRouteHexSpeedTotals(
+	routeActivities: SavedActivity[],
+	routeExcluded: Set<string>,
+): { hexSpeedSum: Record<string, number>; hexActivityCount: Record<string, number> } {
+	const hexSpeedSum: Record<string, number> = {};
+	const hexActivityCount: Record<string, number> = {};
+
+	for (const activity of routeActivities) {
+		// Skip activities without speed data – a zero-speed fallback would
+		// artificially rank tiles from legacy activities as the slowest.
+		if (!activity.computed?.hexTilesVisited) continue;
+		const hexTilesVisited = activity.computed.hexTilesVisited;
+
+		// Need at least 3 tiles so there is at least one tile remaining after
+		// excluding the first and last.
+		if (hexTilesVisited.length < 3) continue;
+
+		// Exclude first and last tiles of this activity's visited sequence.
+		const activityExcluded = new Set<string>([
+			hexTilesVisited[0].hexId,
+			hexTilesVisited[hexTilesVisited.length - 1].hexId,
+		]);
+
+		for (const { hexId, avgSpeedKmh } of hexTilesVisited) {
+			if (activityExcluded.has(hexId)) continue;
+			if (routeExcluded.has(hexId)) continue;
+			hexSpeedSum[hexId] = (hexSpeedSum[hexId] ?? 0) + avgSpeedKmh;
+			hexActivityCount[hexId] = (hexActivityCount[hexId] ?? 0) + 1;
+		}
+	}
+
+	return { hexSpeedSum, hexActivityCount };
+}
+
+/**
+ * Place a bench billboard on the first candidate (already sorted
+ * slowest-first) that is a dirt tile with no existing CENTER billboard.
+ * Mutates `records` in place.
+ */
+function placeBenchOnSlowestDirtTile(
+	candidates: Array<{ hexId: string; meanSpeed: number }>,
+	records: Record<string, HexTileRecord>,
+): void {
+	for (const { hexId } of candidates) {
+		const rec = records[hexId];
+		if (!rec) continue;
+		if (rec.tileImage !== TILE_IMAGE_DIRT) continue;
+		if (rec.billboards?.[BillboardAnchorPosition.CENTER]) continue;
+
+		rec.billboards ??= {};
+		rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_BENCH;
+		break;
+	}
+}
+
 export function applyRouteBenches(
 	records: Record<string, HexTileRecord>,
 	activities: SavedActivity[],
@@ -1004,32 +1215,7 @@ export function applyRouteBenches(
 		if (routeActivities.length === 0) continue;
 
 		// Accumulate average speed per hex tile across activities.
-		const hexSpeedSum: Record<string, number> = {};
-		const hexActivityCount: Record<string, number> = {};
-
-		for (const activity of routeActivities) {
-			// Skip activities without speed data – a zero-speed fallback would
-			// artificially rank tiles from legacy activities as the slowest.
-			if (!activity.computed?.hexTilesVisited) continue;
-			const hexTilesVisited = activity.computed.hexTilesVisited;
-
-			// Need at least 3 tiles so there is at least one tile remaining after
-			// excluding the first and last.
-			if (hexTilesVisited.length < 3) continue;
-
-			// Exclude first and last tiles of this activity's visited sequence.
-			const activityExcluded = new Set<string>([
-				hexTilesVisited[0].hexId,
-				hexTilesVisited[hexTilesVisited.length - 1].hexId,
-			]);
-
-			for (const { hexId, avgSpeedKmh } of hexTilesVisited) {
-				if (activityExcluded.has(hexId)) continue;
-				if (routeExcluded.has(hexId)) continue;
-				hexSpeedSum[hexId] = (hexSpeedSum[hexId] ?? 0) + avgSpeedKmh;
-				hexActivityCount[hexId] = (hexActivityCount[hexId] ?? 0) + 1;
-			}
-		}
+		const { hexSpeedSum, hexActivityCount } = accumulateRouteHexSpeedTotals(routeActivities, routeExcluded);
 
 		// Sort eligible tiles by mean speed ascending (slowest first).
 		const candidates = Object.keys(hexSpeedSum)
@@ -1040,15 +1226,6 @@ export function applyRouteBenches(
 			.sort((a, b) => a.meanSpeed - b.meanSpeed);
 
 		// Place bench on the first dirt tile that has no CENTER billboard yet.
-		for (const { hexId } of candidates) {
-			const rec = records[hexId];
-			if (!rec) continue;
-			if (rec.tileImage !== TILE_IMAGE_DIRT) continue;
-			if (rec.billboards?.[BillboardAnchorPosition.CENTER]) continue;
-
-			if (!rec.billboards) rec.billboards = {};
-			rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_BENCH;
-			break;
-		}
+		placeBenchOnSlowestDirtTile(candidates, records);
 	}
 }

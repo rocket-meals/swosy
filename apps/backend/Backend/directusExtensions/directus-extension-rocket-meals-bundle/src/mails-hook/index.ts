@@ -35,17 +35,120 @@ export type EmailDownloadLink = {
   url: string;
 };
 
-export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
+function getTodayRangeIso(): { startOfDayIso: string; startOfNextDayIso: string } {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfNextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return {
+    startOfDayIso: startOfDay.toISOString(),
+    startOfNextDayIso: startOfNextDay.toISOString(),
+  };
+}
 
-  function getTodayRangeIso(): { startOfDayIso: string; startOfNextDayIso: string } {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfNextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    return {
-      startOfDayIso: startOfDay.toISOString(),
-      startOfNextDayIso: startOfNextDay.toISOString(),
-    };
+async function enforceDailyMailLimitAndNotify(
+  todayMailCount: number,
+  input: Partial<DatabaseTypes.Mails>,
+  sendMail: (options: EmailOptions) => Promise<any>
+): Promise<void> {
+  if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
+    const isSupportMail = input.recipient === MailAdresses.SupportMail;
+    const exceedsSupportLimit = !isSupportMail || todayMailCount > DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1;
+    if (exceedsSupportLimit) {
+      const effectiveLimit = isSupportMail ? DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT : DAILY_MAIL_LIMIT;
+      throw new Error(`Daily mail limit reached (${effectiveLimit}).`);
+    }
   }
+
+  if (todayMailCount === DAILY_MAIL_LIMIT - 1) {
+    await sendMail({
+      to: MailAdresses.SupportMail,
+      subject: `Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT})`,
+      text: `Das Tageslimit von ${DAILY_MAIL_LIMIT} Mails wurde erreicht. Weitere Mails werden heute blockiert.`,
+    });
+  } else if (todayMailCount === DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1) {
+    await sendMail({
+      to: MailAdresses.SupportMail,
+      subject: `Support-Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT})`,
+      text: `Das erhöhte Tageslimit von ${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT} Mails für die Support-Adresse wurde erreicht. Weitere Mails werden heute blockiert.`,
+    });
+  }
+}
+
+function extractDirectusFileIdFromAttachment(attachment: any): string | undefined {
+  const directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
+  if (!directus_files_id_raw) {
+    return undefined;
+  }
+  return typeof directus_files_id_raw === 'string' ? directus_files_id_raw : directus_files_id_raw.id;
+}
+
+function extractDirectusFileIdsFromAttachments(input: Partial<DatabaseTypes.Mails>): string[] {
+  // @ts-ignore - create is not always defined
+  const attachments_create: any[] | undefined = input.attachments?.create;
+  if (!attachments_create) {
+    return [];
+  }
+  return attachments_create
+    .map(extractDirectusFileIdFromAttachment)
+    .filter((id): id is string => !!id);
+}
+
+async function buildAttachmentsAndDownloadLinks(
+  filesHelper: any,
+  directus_files_ids: string[],
+  send_attachments_as_links: boolean | null | undefined
+): Promise<{ attachments: MailAttachment[]; downloadLinks: EmailDownloadLink[] }> {
+  let attachments: MailAttachment[] = [];
+  let downloadLinks: EmailDownloadLink[] = [];
+  for (let directus_files_id of directus_files_ids) {
+    try {
+      let direcuts_file = await filesHelper.readOne(directus_files_id);
+      // filename_disk is the name of the file on the server - its cryptic
+      if (send_attachments_as_links) {
+        let name = direcuts_file.filename_disk || direcuts_file.filename_download || 'file';
+        let shareLink = await filesHelper.createDirectusFilesShareLink({
+          directus_files_id: directus_files_id,
+          name: name,
+        });
+        if (shareLink) {
+          downloadLinks.push({
+            name: name,
+            url: shareLink,
+          });
+        }
+      } else {
+        // https://github.com/directus/directus/issues/23937
+        // https://nodemailer.com/message/attachments/
+        let buffer = await filesHelper.readFileContent(directus_files_id);
+        attachments.push({
+          filename: direcuts_file.filename_download,
+          content: buffer,
+        });
+      }
+    } catch (error: any) {
+      console.error('Filter: Error reading file: ', error);
+    }
+  }
+  return { attachments, downloadLinks };
+}
+
+function appendDownloadLinksToMarkdown(markdown_content: string | null | undefined, downloadLinks: EmailDownloadLink[]): string | null | undefined {
+  if (downloadLinks.length > 0) {
+    markdown_content += '\n\n';
+    markdown_content += `
+Sie können die Anhänge über folgende Links herunterladen:
+
+					`;
+    for (let downloadLink of downloadLinks) {
+      markdown_content += `
+[${downloadLink.name}](${downloadLink.url})
+					`;
+    }
+  }
+  return markdown_content;
+}
+
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
 
   async function sendMail(options: EmailOptions) {
     let { MailService } = apiContext.services;
@@ -54,7 +157,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     const schema = await getSchema();
     let mailService: MailServiceType = new MailService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
     return await mailService.send(options);
@@ -70,7 +173,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
 
   // filter all update actions where from value running to start want to change, since this is not allowed
   filter<Partial<DatabaseTypes.Mails>>(CollectionNames.MAILS + '.items.create', async (input: Partial<DatabaseTypes.Mails>, meta, eventContext) => {
-    // TODO: Maybe outsource this into a workflow instead of a filter
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const mailsHelper = myDatabaseHelper.getMailsHelper();
 
@@ -92,28 +194,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       },
     });
 
-    if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
-      const isSupportMail = input.recipient === MailAdresses.SupportMail;
-      const exceedsSupportLimit = !isSupportMail || todayMailCount > DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1;
-      if (exceedsSupportLimit) {
-        const effectiveLimit = isSupportMail ? DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT : DAILY_MAIL_LIMIT;
-        throw new Error(`Daily mail limit reached (${effectiveLimit}).`);
-      }
-    }
-
-    if (todayMailCount === DAILY_MAIL_LIMIT - 1) {
-      await sendMail({
-        to: MailAdresses.SupportMail,
-        subject: `Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT})`,
-        text: `Das Tageslimit von ${DAILY_MAIL_LIMIT} Mails wurde erreicht. Weitere Mails werden heute blockiert.`,
-      });
-    } else if (todayMailCount === DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1) {
-      await sendMail({
-        to: MailAdresses.SupportMail,
-        subject: `Support-Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT})`,
-        text: `Das erhöhte Tageslimit von ${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT} Mails für die Support-Adresse wurde erreicht. Weitere Mails werden heute blockiert.`,
-      });
-    }
+    await enforceDailyMailLimitAndNotify(todayMailCount, input, sendMail);
 
     //console.log("Filter: Mails create: ", input);
     input.send_status = MAIL_SEND_STATUS.PENDING;
@@ -152,70 +233,14 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       //  "template_name": "base-german-markdown-content"
       //}
 
-      let directus_files_ids: string[] = [];
-      if (input.attachments) {
-        // @ts-ignore - create is not always defined
-        let attachments_create = input.attachments.create;
-        if (attachments_create) {
-          for (let attachment of attachments_create) {
-            let directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
-            if (directus_files_id_raw) {
-              if (typeof directus_files_id_raw === 'string') {
-                directus_files_ids.push(directus_files_id_raw);
-              } else {
-                directus_files_ids.push(directus_files_id_raw.id);
-              }
-            }
-          }
-        }
-      }
+      let directus_files_ids: string[] = extractDirectusFileIdsFromAttachments(input);
 
       let filesHelper = myDatabaseHelper.getFilesHelper();
-      let downloadLinks: EmailDownloadLink[] = [];
-      for (let directus_files_id of directus_files_ids) {
-        try {
-          let direcuts_file = await filesHelper.readOne(directus_files_id);
-          // filename_disk is the name of the file on the server - its cryptic
-          if (send_attachments_as_links) {
-            let name = direcuts_file.filename_disk || direcuts_file.filename_download || 'file';
-            let shareLink = await filesHelper.createDirectusFilesShareLink({
-              directus_files_id: directus_files_id,
-              // TODO: hier noch die Mail_id mitgeben, geht aber nur nach dem erstellen der mail oder im workflow
-              name: name,
-            });
-            if (shareLink) {
-              downloadLinks.push({
-                name: name,
-                url: shareLink,
-              });
-            }
-          } else {
-            // https://github.com/directus/directus/issues/23937
-            // https://nodemailer.com/message/attachments/
-            let buffer = await filesHelper.readFileContent(directus_files_id);
-            attachments.push({
-              filename: direcuts_file.filename_download,
-              content: buffer,
-            });
-          }
-        } catch (error: any) {
-          console.error('Filter: Error reading file: ', error);
-        }
-      }
+      const attachmentsResult = await buildAttachmentsAndDownloadLinks(filesHelper, directus_files_ids, send_attachments_as_links);
+      attachments = attachmentsResult.attachments;
+      let downloadLinks: EmailDownloadLink[] = attachmentsResult.downloadLinks;
 
-      let markdown_content = input.markdown_content;
-      if (downloadLinks.length > 0) {
-        markdown_content += '\n\n';
-        markdown_content += `
-Sie können die Anhänge über folgende Links herunterladen:
-
-					`;
-        for (let downloadLink of downloadLinks) {
-          markdown_content += `
-[${downloadLink.name}](${downloadLink.url})
-					`;
-        }
-      }
+      let markdown_content = appendDownloadLinksToMarkdown(input.markdown_content, downloadLinks);
       input.markdown_content = markdown_content;
 
       let data = MailHelper.getHtmlTemplateDataFromMail(input);

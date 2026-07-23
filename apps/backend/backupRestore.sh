@@ -15,6 +15,8 @@ get_docker_compose_cmd() {
         echo "Neither docker-compose nor docker compose is available. Please install one of them."
         exit 1
     fi
+
+    return $?
 }
 
 DOCKER_COMPOSE_CMD=$(get_docker_compose_cmd)
@@ -63,6 +65,8 @@ select_backup() {
             echo "Invalid selection. Please try again."
         fi
     done
+
+    return $?
 }
 
 # Main entry point

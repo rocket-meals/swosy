@@ -22,6 +22,51 @@ interface MapHeaderProps {
 	isFilterActive?: boolean;
 }
 
+const HeaderIconButton = ({
+	triggerProps,
+	onPress,
+	nativeID,
+	children,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	nativeID?: string;
+	children: React.ReactNode;
+}) => (
+	<IconButton {...triggerProps} onPress={onPress} style={styles.iconButton} nativeID={nativeID}>
+		{children}
+	</IconButton>
+);
+
+// Factories returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeMenuTrigger(onPress: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onPress} nativeID={ComponentIds.OPEN_DRAWER}>
+			<Ionicons name="menu" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
+}
+
+function makeFilterTrigger(onPress: () => void, iconColor: string, isFilterActive?: boolean) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onPress}>
+			<View style={styles.filterIconWrapper}>
+				<FontAwesome name="filter" size={24} color={iconColor} />
+				{isFilterActive && <View style={styles.filterBadge} />}
+			</View>
+		</HeaderIconButton>
+	);
+}
+
+function makeSettingsTrigger(onPress: () => void, iconColor: string) {
+	return (triggerProps: object) => (
+		<HeaderIconButton triggerProps={triggerProps} onPress={onPress}>
+			<Ionicons name="settings-outline" size={24} color={iconColor} />
+		</HeaderIconButton>
+	);
+}
+
 const MapHeader: React.FC<MapHeaderProps> = ({
 	drawerPosition,
 	query,
@@ -43,16 +88,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				{/* Burger Menu */}
 				<CustomTooltip
 					placement="bottom"
-					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => drawerNavigation.toggleDrawer()}
-							style={styles.iconButton}
-							nativeID={ComponentIds.OPEN_DRAWER}
-						>
-							<Ionicons name="menu" size={24} color={theme.header.text} />
-						</IconButton>
-					)}
+					trigger={makeMenuTrigger(() => drawerNavigation.toggleDrawer(), theme.header.text)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -88,18 +124,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				{/* Filter Icon */}
 				<CustomTooltip
 					placement="bottom"
-					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => onFilterPress?.()}
-							style={styles.iconButton}
-						>
-							<View style={styles.filterIconWrapper}>
-								<FontAwesome name="filter" size={24} color={theme.header.text} />
-								{isFilterActive && <View style={styles.filterBadge} />}
-							</View>
-						</IconButton>
-					)}
+					trigger={makeFilterTrigger(() => onFilterPress?.(), theme.header.text, isFilterActive)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -111,15 +136,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 				{/* Settings Cog */}
 				<CustomTooltip
 					placement="bottom"
-					trigger={triggerProps => (
-						<IconButton
-							{...triggerProps}
-							onPress={() => onSettingsPress?.()}
-							style={styles.iconButton}
-						>
-							<Ionicons name="settings-outline" size={24} color={theme.header.text} />
-						</IconButton>
-					)}
+					trigger={makeSettingsTrigger(() => onSettingsPress?.(), theme.header.text)}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>

@@ -22,7 +22,6 @@ const SettingsListComponents = () => {
 	const [dateValue, setDateValue] = useState('01.01.2024');
 	const [dateError, setDateError] = useState('');
 	const [inputValue, setInputValue] = useState('Beispieltext');
-	const [nickname, setNickname] = useState('Tester');
 	const [boolValue, setBoolValue] = useState(true);
 	const [likeValue, setLikeValue] = useState<boolean | null>(null);
 

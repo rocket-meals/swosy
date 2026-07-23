@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 export type SettingsContextType = {
 	primaryColor: string;
@@ -13,11 +13,17 @@ type SettingsProviderProps = {
 	children: ReactNode;
 };
 
-export const SettingsProvider = ({ primaryColor, onAccountRequired, children }: SettingsProviderProps) => (
-	<SettingsContext.Provider value={{ primaryColor, onAccountRequired }}>
-		{children}
-	</SettingsContext.Provider>
-);
+export const SettingsProvider = ({ primaryColor, onAccountRequired, children }: SettingsProviderProps) => {
+	const value = useMemo(
+		() => ({ primaryColor, onAccountRequired }),
+		[primaryColor, onAccountRequired]
+	);
+	return (
+		<SettingsContext.Provider value={value}>
+			{children}
+		</SettingsContext.Provider>
+	);
+};
 
 export const useSettingsContext = (): SettingsContextType | undefined => {
 	return useContext(SettingsContext);

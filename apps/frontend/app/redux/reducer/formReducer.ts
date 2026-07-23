@@ -11,7 +11,9 @@ const initialState = {
 	cachedForms: {} as Record<string, DatabaseTypes.Forms[]>,
 };
 
-const formReducer = (state = initialState, actions: any) => {
+const formReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_FORM_FILTER: {
 			return {

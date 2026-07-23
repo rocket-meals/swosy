@@ -54,7 +54,6 @@ enum ChatGptImage_MODEL_DallE3_GenerationOptionImageSize {
 
 
 /**
- * TODO: Check prompt with: https://platform.openai.com/docs/guides/moderation omni-moderation model
  * Coole idee eigentlich
  */
 
@@ -96,11 +95,7 @@ export class ImageRawGeneratorChatGpt implements ImageRawGeneratorInterface{
     });
     //console.log("Received image generation response.");
 
-    let usage = result.usage;
-    let input_tokens = usage?.input_tokens || 0;
-    let output_tokens = usage?.output_tokens || 0;
-    let total_tokens = usage?.total_tokens || 0;
-    //console.log(`Image generation token usage - Input: ${input_tokens}, Output: ${output_tokens}, Total: ${total_tokens}`);
+    //console.log(`Image generation token usage - Input: ${result.usage?.input_tokens}, Output: ${result.usage?.output_tokens}, Total: ${result.usage?.total_tokens}`);
 
 // Save the image to a file
     const resultData = result?.data?.[0];

@@ -48,7 +48,7 @@ const FoodPlanList = ({
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			{data.map((item, index) => (
 				<TouchableOpacity
-					key={index}
+					key={item.name}
 					style={[styles.mainContainer, { backgroundColor: theme.screen.iconBg }]}
 					activeOpacity={item.showSwitch ? 1 : 0}
 					onPress={() => {

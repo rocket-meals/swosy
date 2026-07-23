@@ -2,18 +2,18 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodTL1Parser } from '../../FoodTL1Parser';
 import { FoodTL1ParserGetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
-import { FoodTL1Parser_RawReportTestReaderOsnabrueck } from '../FoodTL1Parser_RawReportTestReaderOsnabrueck';
+import { FoodTL1ParserRawReportTestReaderOsnabrueck } from '../FoodTL1ParserRawReportTestReaderOsnabrueck';
 import { FoodTL1ParserOsnabrueck } from '../FoodTL1ParserOsnabrueck';
 
 async function getFoodoffersJson(reportToReturn?: string | undefined) {
-  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck(reportToReturn);
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1ParserRawReportTestReaderOsnabrueck(reportToReturn);
   let foodParser: FoodTL1Parser = new FoodTL1ParserOsnabrueck(testFileGetter);
   await foodParser.createNeededData();
   return await foodParser.getFoodoffersForParser();
 }
 
 describe('FoodTL1ParserOsnabrueck Test', () => {
-  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck();
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1ParserRawReportTestReaderOsnabrueck();
   let foodParser: FoodTL1Parser = new FoodTL1ParserOsnabrueck(testFileGetter);
 
   // should find atleast one food
@@ -69,7 +69,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
   });
 
   it('Foodoffer with vegetarian marking shall have vegetarian marking', async () => {
-    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithVegetarianValues());
+    let foodOfferJson = await getFoodoffersJson(FoodTL1ParserRawReportTestReaderOsnabrueck.getSavedRawReportWithVegetarianValues());
     expect(!!foodOfferJson).toBe(true);
     expect(foodOfferJson.length).toBeGreaterThan(0);
     const expectedMarkingExternalIdentifiers = ['20'];
@@ -99,7 +99,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
   });
 
   it('Food with CO2 rating A and main course should have marking CO2_RATING_A', async () => {
-    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithCO2RatingValuesMainCourse());
+    let foodOfferJson = await getFoodoffersJson(FoodTL1ParserRawReportTestReaderOsnabrueck.getSavedRawReportWithCO2RatingValuesMainCourse());
     expect(!!foodOfferJson).toBe(true);
     expect(foodOfferJson.length).toBeGreaterThan(0);
     const expectedMarkingExternalIdentifiers = [FoodTL1ParserOsnabrueck.getCO2RatingMarkingExternalIdentifier('A')];
@@ -109,7 +109,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
   });
 
   it('Food with CO2 rating A and main course should not have marking CO2_RATING_A', async () => {
-    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithCO2RatingValuesButSideCourse());
+    let foodOfferJson = await getFoodoffersJson(FoodTL1ParserRawReportTestReaderOsnabrueck.getSavedRawReportWithCO2RatingValuesButSideCourse());
     expect(!!foodOfferJson).toBe(true);
     expect(foodOfferJson.length).toBeGreaterThan(0);
     let expectedMarkingExternalIdentifiersNotToContain = [FoodTL1ParserOsnabrueck.getCO2RatingMarkingExternalIdentifier('A')];
@@ -139,7 +139,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
   });
 
   it('Find Niedersachsen Menu line in external identifiers for meal offer', async () => {
-    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithNiedersachsenMenu());
+    let foodOfferJson = await getFoodoffersJson(FoodTL1ParserRawReportTestReaderOsnabrueck.getSavedRawReportWithNiedersachsenMenu());
     expect(!!foodOfferJson).toBe(true);
     expect(foodOfferJson.length).toBeGreaterThan(0);
     const expectedMarkingExternalIdentifiers = [FoodTL1ParserOsnabrueck.MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU];
@@ -149,7 +149,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
   });
 
   it('Food with Eintopf Terrine category and CO2 rating A should have Klimateller marking', async () => {
-    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithEintopfTerrineAndCO2RatingAMensaHaste());
+    let foodOfferJson = await getFoodoffersJson(FoodTL1ParserRawReportTestReaderOsnabrueck.getSavedRawReportWithEintopfTerrineAndCO2RatingAMensaHaste());
     expect(!!foodOfferJson).toBe(true);
     expect(foodOfferJson.length).toBeGreaterThan(0);
     const expectedMarkingExternalIdentifiers = [FoodTL1ParserOsnabrueck.getKlimaTellerMarkingExternalIdentifier()];

@@ -24,6 +24,86 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 
 const fontSize = 10;
 
+const buildFoodMarkingEntry = (food: any, markings: any[] | undefined, markingGroups: any, theme: any, mode: string) => {
+	// Extract marking IDs properly
+	const markingIds = food?.markings?.map((mark: any) => mark.markings_id) || [];
+
+	// Find matching marking objects from `markings` array
+	let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
+
+	// Sort the filtered markings using sortMarkingsByGroup
+	filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
+
+	return filteredMarkings.map((item: any) => ({
+		id: item?.id,
+		image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },
+		bgColor: item?.background_color,
+		color: myContrastColor(item?.background_color, theme, mode === 'dark'),
+		shortCode: item?.short_code,
+		icon: item?.icon,
+	}));
+};
+
+const renderMarkingIcon = (marking: any) => {
+	const iconParts = marking?.icon?.split(':') || [];
+	const [library, name] = iconParts;
+	const Icon = library && iconLibraries[library];
+	if (marking?.icon) {
+		return (
+			<View
+				key={marking.id}
+				style={{
+					...styles.iconMarking,
+					backgroundColor: marking?.bgColor,
+					marginRight: 5,
+					borderRadius: 5,
+				}}
+			>
+				<Icon name={name} size={14} color={marking.color} />
+			</View>
+		);
+	}
+	if (!marking?.image?.uri && marking?.shortCode) {
+		return (
+			<View
+				key={marking.id}
+				style={{
+					...styles.shortCode,
+					backgroundColor: marking?.bgColor,
+					marginRight: 5,
+					padding: 2,
+					borderRadius: 5,
+				}}
+			>
+				<Text
+					style={{
+						color: marking.color,
+						fontSize: fontSize,
+					}}
+				>
+					{marking?.shortCode}
+				</Text>
+			</View>
+		);
+	}
+	if (marking?.image?.uri) {
+		return (
+			<Image
+				key={marking.id}
+				source={marking.image.uri}
+				style={{
+					backgroundColor: marking?.bgColor,
+					width: 15,
+					height: 15,
+					marginRight: 2,
+					borderRadius: 5,
+				}}
+			/>
+		);
+	}
+	return null;
+};
+
 const Index = () => {
 	const printRef = useRef<any>(null);
 	const { translate } = useLanguage();
@@ -238,25 +318,7 @@ const Index = () => {
 			Object.entries(foodData).forEach(([day, dayFoods]) => {
 				dayFoods.forEach((food: any) => {
 					if (!food?.id) return; // Skip if food has no ID
-
-					// Extract marking IDs properly
-					const markingIds = food?.markings?.map((mark: any) => mark.markings_id) || [];
-
-					// Find matching marking objects from `markings` array
-					let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
-
-					// Sort the filtered markings using sortMarkingsByGroup
-					filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
-
-					const dummyMarkings = filteredMarkings.map((item: any) => ({
-						image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },
-						bgColor: item?.background_color,
-						color: myContrastColor(item?.background_color, theme, mode === 'dark'),
-						shortCode: item?.short_code,
-						icon: item?.icon,
-					}));
-
-					newMarkings[food.id] = dummyMarkings; // Store by food ID
+					newMarkings[food.id] = buildFoodMarkingEntry(food, markings, markingGroups, theme, mode); // Store by food ID
 				});
 			});
 			setMarkingsState(newMarkings);
@@ -312,6 +374,7 @@ const Index = () => {
 			const html = `
       <html>
         <head>
+          <meta charset="utf-8">
           <style>
             ${stylesheets}
             @media print {
@@ -351,9 +414,13 @@ const Index = () => {
       </html>
     `;
 
-			const newWindow = window.open('', '_blank');
-			newWindow?.document.write(html);
-			newWindow?.document.close();
+			// Load the print HTML via a Blob URL instead of `document.write` (deprecated):
+			// opening the window directly at the Blob URL still runs the inline
+			// `window.print()` script once the document has loaded, since the window
+			// navigates to a full HTML document rather than having markup injected.
+			const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+			const newWindow = window.open(blobUrl, '_blank');
+			newWindow?.addEventListener('load', () => URL.revokeObjectURL(blobUrl));
 		}
 	};
 
@@ -446,6 +513,7 @@ const Index = () => {
 
 								return (
 									<View
+										key={date}
 										style={{
 											width: '100%',
 											// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
@@ -454,7 +522,6 @@ const Index = () => {
 										}}
 									>
 										<View
-											key={index}
 											style={{
 												...styles.dataRow,
 												// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
@@ -508,65 +575,7 @@ const Index = () => {
 																				padding: 2,
 																			}}
 																		>
-																			{foodMarkings[filteredFood.id]?.map((marking: any, idx: number) => {
-																					const iconParts = marking?.icon?.split(':') || [];
-																					const [library, name] = iconParts;
-																					const Icon = library && iconLibraries[library];
-																					if (marking?.icon) {
-																						return (
-																							<View
-																								key={idx}
-																								style={{
-																									...styles.iconMarking,
-																									backgroundColor: marking?.bgColor,
-																									marginRight: 5,
-																									borderRadius: 5,
-																								}}
-																							>
-																								<Icon name={name} size={14} color={marking.color} />
-																							</View>
-																						);
-																					}
-																					if (!marking?.image?.uri && marking?.shortCode) {
-																						return (
-																							<View
-																								key={idx}
-																								style={{
-																									...styles.shortCode,
-																									backgroundColor: marking?.bgColor,
-																									marginRight: 5,
-																									padding: 2,
-																									borderRadius: 5,
-																								}}
-																							>
-																								<Text
-																									style={{
-																										color: marking.color,
-																										fontSize: fontSize,
-																									}}
-																								>
-																									{marking?.shortCode}
-																								</Text>
-																							</View>
-																						);
-																					}
-																					if (marking?.image?.uri) {
-																						return (
-																							<Image
-																								key={idx}
-																								source={marking.image.uri}
-																								style={{
-																									backgroundColor: marking?.bgColor,
-																									width: 15,
-																									height: 15,
-																									marginRight: 2,
-																									borderRadius: 5,
-																								}}
-																							/>
-																						);
-																					}
-																					return null;
-																				})}
+																			{foodMarkings[filteredFood.id]?.map(renderMarkingIcon)}
 																		</View>
 																	)}
 																</View>

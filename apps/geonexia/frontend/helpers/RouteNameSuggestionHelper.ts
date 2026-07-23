@@ -158,25 +158,10 @@ type ScoredName = { name: string; score: number };
  * @param ownName         – The current route's own name (excluded from filter).
  * @returns Ordered list of unique name suggestions (highest priority first).
  */
-export function suggestRouteNames(
-	routeDict: AreaInfoDict,
-	enclosedDict: AreaInfoDict,
-	existingNames: string[] = [],
-	ownName?: string,
-): string[] {
-	const scored: ScoredName[] = [];
-	const seen = new Set<string>();
+type AddCandidateFn = (name: string, score: number) => void;
 
-	const addCandidate = (name: string, score: number) => {
-		const trimmed = name.trim();
-		if (!trimmed) return;
-		const lower = trimmed.toLowerCase();
-		if (seen.has(lower)) return;
-		seen.add(lower);
-		scored.push({ name: trimmed, score });
-	};
-
-	// ── Score entries from the route dict ──────────────────────────────────
+// ── Score entries from the route dict ──────────────────────────────────
+function scoreRouteDictEntries(routeDict: AreaInfoDict, addCandidate: AddCandidateFn): void {
 	for (const entry of Object.values(routeDict)) {
 		const lw = layerWeight(entry.layerId);
 		const baseScore = entry.count + lw * 2;
@@ -192,8 +177,10 @@ export function suggestRouteNames(
 			}
 		}
 	}
+}
 
-	// ── Score entries from enclosed dict (bonus for "around X") ────────────
+// ── Score entries from enclosed dict (bonus for "around X") ────────────
+function scoreEnclosedDictEntries(enclosedDict: AreaInfoDict, addCandidate: AddCandidateFn): void {
 	for (const entry of Object.values(enclosedDict)) {
 		const lw = layerWeight(entry.layerId);
 		// Enclosed features get a slight bonus because the route goes *around* them
@@ -204,8 +191,10 @@ export function suggestRouteNames(
 			addCandidate(entry.name, baseScore + 3);
 		}
 	}
+}
 
-	// ── Fallback: category-only names from high-priority layers ────────────
+// ── Fallback: category-only names from high-priority layers ────────────
+function scoreFallbackCategoryNames(routeDict: AreaInfoDict, enclosedDict: AreaInfoDict, addCandidate: AddCandidateFn): void {
 	const allEntries = [
 		...Object.values(routeDict).map((e) => ({ entry: e, enclosed: false })),
 		...Object.values(enclosedDict).map((e) => ({ entry: e, enclosed: true })),
@@ -220,6 +209,29 @@ export function suggestRouteNames(
 			}
 		}
 	}
+}
+
+export function suggestRouteNames(
+	routeDict: AreaInfoDict,
+	enclosedDict: AreaInfoDict,
+	existingNames: string[] = [],
+	ownName?: string,
+): string[] {
+	const scored: ScoredName[] = [];
+	const seen = new Set<string>();
+
+	const addCandidate: AddCandidateFn = (name, score) => {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		const lower = trimmed.toLowerCase();
+		if (seen.has(lower)) return;
+		seen.add(lower);
+		scored.push({ name: trimmed, score });
+	};
+
+	scoreRouteDictEntries(routeDict, addCandidate);
+	scoreEnclosedDictEntries(enclosedDict, addCandidate);
+	scoreFallbackCategoryNames(routeDict, enclosedDict, addCandidate);
 
 	// Sort by score descending
 	scored.sort((a, b) => b.score - a.score);

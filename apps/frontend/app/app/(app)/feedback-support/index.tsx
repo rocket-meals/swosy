@@ -24,6 +24,43 @@ import { excerpt } from '@/constants/HelperFunctions';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
+/**
+ * Fill in `title`/`content` on the sanitized feedback input from
+ * `defaultValues` when the user hasn't entered their own (non-empty) value.
+ * Mutates `filteredInputValues` in place, matching the original inline logic.
+ */
+function applyDefaultFeedbackValues(filteredInputValues: { [key: string]: any }, defaultValues?: { title: string; content: string }): void {
+	if (!defaultValues) return;
+
+	if (!String(filteredInputValues.title ?? '').trim()) {
+		filteredInputValues.title = defaultValues.title;
+	}
+	if (!String(filteredInputValues.content ?? '').trim()) {
+		filteredInputValues.content = defaultValues.content;
+	}
+}
+
+/**
+ * Handle a failed feedback create/update submission: reset the loading
+ * state, store the error message/JSON for display, and toast the error.
+ */
+function reportFeedbackSubmissionError(
+	e: any,
+	setLoading: (value: boolean) => void,
+	setErrorMessage: (value: string | null) => void,
+	setErrorJson: (value: string | null) => void,
+	toast: (message: string, type?: string) => void
+): void {
+	setLoading(false);
+	setErrorMessage(e?.message || String(e));
+	try {
+		setErrorJson(JSON.stringify(e));
+	} catch (jsonError) {
+		setErrorJson(String(e));
+	}
+	toast(`Error: ${e?.message || e}`, 'error');
+}
+
 const FeedbackScreen = () => {
 	useSetPageTitle(TranslationKeys.feedback_and_support);
 	const { translate } = useLanguage();
@@ -36,7 +73,7 @@ const FeedbackScreen = () => {
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [loading, setLoading] = useState(false);
 	const [inputValues, setInputValues] = useState<{
-		[key: string]: string | boolean | number | any;
+		[key: string]: any;
 	}>({});
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);
@@ -80,22 +117,10 @@ const FeedbackScreen = () => {
 		}, [app_feedbacks_id, profile?.id])
 	);
 
-	function getIsLandScape(): boolean {
-		const windowWidth = Dimensions.get('screen').width;
-		const windowHeight = Dimensions.get('screen').height;
-		let isLandscape = windowWidth > windowHeight;
-		if (Platform.OS === 'web') {
-			isLandscape = windowWidth > windowHeight;
-		}
-		return isLandscape;
-	}
-
 	const fetchDeviceInfo = async () => {
 		const windowWidth = Dimensions.get('screen').width;
 		const windowHeight = Dimensions.get('screen').height;
 		const windowScale = Dimensions.get('screen').scale;
-		const isSimulator = !DeviceInfo.isDevice;
-		const isTablet = DeviceInfo.deviceType === DeviceInfo.DeviceType.TABLET;
 		const brand = DeviceInfo.brand;
 		let platform: string;
 		if (Platform.OS === 'web') {
@@ -106,7 +131,6 @@ const FeedbackScreen = () => {
 			platform = 'Android';
 		}
 		const systemVersion = DeviceInfo.osVersion;
-		let isLandscape = getIsLandScape();
 
 		setInputValues({
 			title: '',
@@ -215,7 +239,10 @@ const FeedbackScreen = () => {
 			const appStateJson = JSON.stringify(configureStore.getState());
 			sanitizedInput.content = `${sanitizedInput.content ?? ''}\n\n---APP_STATE_JSON---\n${appStateJson}`;
 		} catch (e) {
-			// ignore serialization errors, submit feedback without the app state snapshot
+			console.warn('feedback-support: could not serialize app state', e);
+			// send the serialization error itself along with the feedback so it can be investigated
+			const errorInfo = e instanceof Error ? { message: e.message, stack: e.stack } : e;
+			sanitizedInput.content = `${sanitizedInput.content ?? ''}\n\n---APP_STATE_JSON_ERROR---\n${JSON.stringify(errorInfo)}`;
 		}
 	};
 
@@ -223,14 +250,7 @@ const FeedbackScreen = () => {
 		if (inputValues) {
 			setLoading(true);
 			const { email, ...filteredInputValues } = inputValues;
-			if (defaultValues) {
-				if (!String(filteredInputValues.title ?? '').trim()) {
-					filteredInputValues.title = defaultValues.title;
-				}
-				if (!String(filteredInputValues.content ?? '').trim()) {
-					filteredInputValues.content = defaultValues.content;
-				}
-			}
+			applyDefaultFeedbackValues(filteredInputValues, defaultValues);
 			if (profile?.id) {
 				filteredInputValues.profile = profile?.id;
 			}
@@ -260,14 +280,7 @@ const FeedbackScreen = () => {
 					router.navigate('/support-FAQ');
 				}
 			} catch (e: any) {
-				setLoading(false);
-				setErrorMessage(e?.message || String(e));
-				try {
-					setErrorJson(JSON.stringify(e));
-				} catch (jsonError) {
-					setErrorJson(String(e));
-				}
-				toast(`Error: ${e?.message || e}`, 'error');
+				reportFeedbackSubmissionError(e, setLoading, setErrorMessage, setErrorJson, toast);
 			}
 		}
 	};

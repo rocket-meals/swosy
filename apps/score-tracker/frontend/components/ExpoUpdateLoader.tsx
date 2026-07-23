@@ -10,6 +10,10 @@ interface ExpoUpdateLoaderProps {
 const TIMEOUT_MS = 10000;
 const IS_SMARTPHONE = Platform.OS === 'ios' || Platform.OS === 'android';
 
+function createTimeoutPromise(ms: number): Promise<null> {
+	return new Promise<null>(resolve => setTimeout(() => resolve(null), ms));
+}
+
 /**
  * Blocks the very first render behind a branded loading screen while checking
  * for (and applying) an OTA update, so a cold app start always runs the latest
@@ -31,7 +35,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 				return;
 			}
 
-			const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), TIMEOUT_MS));
+			const timeoutPromise = createTimeoutPromise(TIMEOUT_MS);
 
 			try {
 				setStatus('Suche nach Updates...');

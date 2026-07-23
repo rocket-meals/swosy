@@ -130,6 +130,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Clipboard from 'expo-clipboard';
 import MyAvatar, { AvatarStyle, AvatarSize, STYLE_MAP, AvatarConfig, AvatarAppearanceProps, getStyleProbabilityKeys } from '../MyAvatar';
 import { Style } from '@dicebear/core';
+import { MathHelper } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
@@ -231,13 +232,11 @@ const DEFAULT_AVATAR_STYLE = AvatarStyle.AVATAAARS;
 
 let _defaultAvatarConfig: AvatarConfig | null = null;
 function getDefaultAvatarConfig(): AvatarConfig {
-	if (!_defaultAvatarConfig) {
-		_defaultAvatarConfig = {
-			style: DEFAULT_AVATAR_STYLE,
-			size: AvatarSize.LARGE,
-			options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
-		};
-	}
+	_defaultAvatarConfig ??= {
+		style: DEFAULT_AVATAR_STYLE,
+		size: AvatarSize.LARGE,
+		options: getDefaultOptionsForStyle(DEFAULT_AVATAR_STYLE),
+	};
 	return _defaultAvatarConfig;
 }
 
@@ -521,6 +520,41 @@ const STYLE_NUMERIC_DEFAULTS: Partial<Record<AvatarStyle, Partial<Record<string,
 };
 
 /**
+ * Computes the default value for each color attribute of the given style: the
+ * schema default color if the DiceBear schema declares one, otherwise the
+ * first preset color for that key/style combination.
+ */
+function computeColorAttributeDefaults(style: AvatarStyle, colorKeys: string[]): Record<string, string[]> {
+	const defaults: Record<string, string[]> = {};
+	for (const key of colorKeys) {
+		const schemaDefaults = getSchemaDefaultColors(style, key);
+		if (schemaDefaults.length > 0) {
+			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
+		} else {
+			const presetColors = getPresetColorsForKey(key, style);
+			if (presetColors.length > 0) {
+				defaults[key] = [stripHashPrefix(presetColors[0])];
+			}
+		}
+	}
+	return defaults;
+}
+
+/** Per-style numeric defaults (e.g. scale=100 for openPeeps) as a partial options map. */
+function computeStyleNumericDefaults(style: AvatarStyle): Record<string, string[]> {
+	const defaults: Record<string, string[]> = {};
+	const numericDefaults = STYLE_NUMERIC_DEFAULTS[style];
+	if (numericDefaults) {
+		for (const [key, value] of Object.entries(numericDefaults)) {
+			if (value !== undefined) {
+				defaults[key] = [value];
+			}
+		}
+	}
+	return defaults;
+}
+
+/**
  * Returns a default set of component options for the given avatar style.
  * For each component attribute, the value "default" is used when it exists
  * in the allowed enum values, otherwise the first available value is used.
@@ -540,26 +574,8 @@ function getDefaultOptionsForStyle(style: AvatarStyle): Record<string, string[]>
 		// Probability is not stored – the renderer derives it from key presence at render time.
 	}
 	const colorKeys = getStyleColorKeys(style);
-	for (const key of colorKeys) {
-		const schemaDefaults = getSchemaDefaultColors(style, key);
-		if (schemaDefaults.length > 0) {
-			defaults[key] = [stripHashPrefix(schemaDefaults[0])];
-		} else {
-			const presetColors = getPresetColorsForKey(key, style);
-			if (presetColors.length > 0) {
-				defaults[key] = [stripHashPrefix(presetColors[0])];
-			}
-		}
-	}
-	// Apply per-style numeric defaults (e.g. scale=100 for openPeeps)
-	const numericDefaults = STYLE_NUMERIC_DEFAULTS[style];
-	if (numericDefaults) {
-		for (const [key, value] of Object.entries(numericDefaults)) {
-			if (value !== undefined) {
-				defaults[key] = [value];
-			}
-		}
-	}
+	Object.assign(defaults, computeColorAttributeDefaults(style, colorKeys));
+	Object.assign(defaults, computeStyleNumericDefaults(style));
 	return defaults;
 }
 
@@ -651,6 +667,112 @@ function stripHashPrefix(color: string): string {
 }
 
 /** Position of an item within a visually grouped settings list. */
+function randomizeComponentOptions(
+	style: AvatarStyle,
+	componentOptions: Record<string, string[]>,
+	probabilityKeys: Record<string, string>,
+): Record<string, string[]> {
+	const randomOptions: Record<string, string[]> = {};
+	for (const [key, values] of Object.entries(componentOptions)) {
+		const realValues = values.filter((v) => v !== NONE_OPTION);
+		if (realValues.length === 0) continue;
+		// For openPeeps, mask is always none (key absent = renderer sets probability=0)
+		if (style === AvatarStyle.OPEN_PEEPS && key === 'mask' && probabilityKeys[key]) {
+			continue;
+		}
+		// For optional components, include "none" as a possible random selection
+		if (probabilityKeys[key]) {
+			const allValues = [NONE_OPTION, ...realValues];
+			const randomValue = allValues[Math.floor(MathHelper.random() * allValues.length)];
+			if (randomValue !== NONE_OPTION) {
+				randomOptions[key] = [randomValue];
+			}
+			// Probability not stored – renderer derives it from key presence.
+		} else {
+			randomOptions[key] = [realValues[Math.floor(MathHelper.random() * realValues.length)]];
+		}
+	}
+	return randomOptions;
+}
+
+function randomizeColorOptions(
+	style: AvatarStyle,
+	colorKeys: string[],
+	hiddenPropKeys: Set<string>,
+): Record<string, string[]> {
+	const randomOptions: Record<string, string[]> = {};
+	for (const key of colorKeys) {
+		// Skip hidden prop keys – they are always pinned to a fixed value
+		if (hiddenPropKeys.has(key)) continue;
+		// For Micah, eyebrowsColor and facialHairColor are derived from hairColor below
+		if (style === AvatarStyle.MICAH && (key === 'eyebrowsColor' || key === 'facialHairColor')) continue;
+		const presetColors = getPresetColorsForKey(key, style);
+		const randomColor = presetColors[Math.floor(MathHelper.random() * presetColors.length)];
+		randomOptions[key] = [stripHashPrefix(randomColor)];
+	}
+	return randomOptions;
+}
+
+/** A single avatar option's randomized value: a color list, or a preserved boolean/numeric setting. */
+type AvatarRandomOptionValue = string[] | boolean | number;
+
+// For Micah: coordinate eyebrowsColor (= hairColor) and facialHairColor (one step lighter).
+// Mutates randomOptions in place, matching the calling convention of the other randomize* helpers.
+function applyMicahColorCoordination(
+	style: AvatarStyle,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
+	hiddenPropKeys: Set<string>,
+): void {
+	if (style !== AvatarStyle.MICAH) return;
+	const hairColorValue = randomOptions['hairColor']?.[0] as string | undefined;
+	if (hairColorValue === undefined) return;
+	if (!hiddenPropKeys.has('eyebrowsColor')) {
+		randomOptions['eyebrowsColor'] = [hairColorValue];
+	}
+	if (!hiddenPropKeys.has('facialHairColor')) {
+		// MICAH_HAIR_COLORS is ordered dark→light (index 0=Black … index 8=Light Gray),
+		// so index + 1 yields one step lighter.
+		const hairIndex = MICAH_HAIR_COLORS.findIndex((c) => stripHashPrefix(c) === hairColorValue);
+		const lighterIndex = hairIndex !== -1 ? Math.min(hairIndex + 1, MICAH_HAIR_COLORS.length - 1) : 0;
+		randomOptions['facialHairColor'] = [stripHashPrefix(MICAH_HAIR_COLORS[lighterIndex])];
+	}
+}
+
+// Preserve boolean flags (flip, clip) and numeric options (scale, translateX, translateY, rotate)
+// so that user-set positioning/orientation is not lost on randomize. Mutates randomOptions in place.
+function preservePositioningOptions(
+	config: AvatarConfig,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
+): void {
+	const preserveKeys: string[] = [
+		AvatarPropKey.OpenPeeps.FLIP,
+		AvatarPropKey.OpenPeeps.CLIP,
+		AvatarPropKey.OpenPeeps.SCALE,
+		AvatarPropKey.OpenPeeps.TRANSLATE_X,
+		AvatarPropKey.OpenPeeps.TRANSLATE_Y,
+		AvatarPropKey.OpenPeeps.ROTATE,
+	];
+	for (const key of preserveKeys) {
+		if (config.options?.[key] !== undefined) {
+			randomOptions[key] = config.options[key]!;
+		}
+	}
+}
+
+// Preserve hidden prop values so they are never lost during randomize,
+// even in debug mode where applyHiddenProps is skipped. Mutates randomOptions in place.
+function applyHiddenPropsToRandomOptions(
+	hiddenProps: Record<string, string | undefined> | undefined,
+	randomOptions: Record<string, AvatarRandomOptionValue>,
+): void {
+	if (!hiddenProps) return;
+	for (const [key, value] of Object.entries(hiddenProps)) {
+		if (value !== undefined) {
+			randomOptions[key] = [value];
+		}
+	}
+}
+
 function getGroupPosition(length: number, index: number): 'single' | 'top' | 'bottom' | 'middle' {
 	if (length === 1) return 'single';
 	if (index === 0) return 'top';
@@ -693,7 +815,7 @@ type AvatarEditorBehaviorProps = {
 };
 
 type AvatarEditorModalContentProps = AvatarPreviewAppearanceProps &
-	AvatarEditorBehaviorProps & {
+	Omit<AvatarEditorBehaviorProps, 'onDebugEvent'> & {
 		initialConfig: AvatarConfig;
 		configObservable: ConfigObservable;
 		configRef: React.MutableRefObject<AvatarConfig>;
@@ -1158,79 +1280,13 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		const newComponentOptions = getStyleComponentOptions(config.style);
 		const newColorKeys = getStyleColorKeys(config.style);
 		const newProbabilityKeys = getStyleProbabilityKeys(config.style);
-		const randomOptions: Record<string, string[] | boolean | number> = {};
-		for (const [key, values] of Object.entries(newComponentOptions)) {
-			const realValues = values.filter((v) => v !== NONE_OPTION);
-			if (realValues.length === 0) continue;
-			// For openPeeps, mask is always none (key absent = renderer sets probability=0)
-			if (config.style === AvatarStyle.OPEN_PEEPS && key === 'mask' && newProbabilityKeys[key]) {
-				continue;
-			}
-			// For optional components, include "none" as a possible random selection
-			if (newProbabilityKeys[key]) {
-				const allValues = [NONE_OPTION, ...realValues];
-				const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
-				if (randomValue !== NONE_OPTION) {
-					randomOptions[key] = [randomValue];
-				}
-				// Probability not stored – renderer derives it from key presence.
-			} else {
-				randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
-			}
-		}
-		for (const key of newColorKeys) {
-			// Skip hidden prop keys – they are always pinned to a fixed value
-			if (hiddenPropKeys.has(key)) continue;
-			// For Micah, eyebrowsColor and facialHairColor are derived from hairColor below
-			if (config.style === AvatarStyle.MICAH && (key === 'eyebrowsColor' || key === 'facialHairColor')) continue;
-			const presetColors = getPresetColorsForKey(key, config.style);
-			const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
-			randomOptions[key] = [stripHashPrefix(randomColor)];
-		}
-		// For Micah: coordinate eyebrowsColor (= hairColor) and facialHairColor (one step lighter)
-		if (config.style === AvatarStyle.MICAH) {
-			const hairColorValue = randomOptions['hairColor']?.[0] as string | undefined;
-			if (hairColorValue !== undefined) {
-				if (!hiddenPropKeys.has('eyebrowsColor')) {
-					randomOptions['eyebrowsColor'] = [hairColorValue];
-				}
-				if (!hiddenPropKeys.has('facialHairColor')) {
-					// MICAH_HAIR_COLORS is ordered dark→light (index 0=Black … index 8=Light Gray),
-					// so index + 1 yields one step lighter.
-					const hairIndex = MICAH_HAIR_COLORS.findIndex(
-						(c) => stripHashPrefix(c) === hairColorValue,
-					);
-					const lighterIndex = hairIndex !== -1
-						? Math.min(hairIndex + 1, MICAH_HAIR_COLORS.length - 1)
-						: 0;
-					randomOptions['facialHairColor'] = [stripHashPrefix(MICAH_HAIR_COLORS[lighterIndex])];
-				}
-			}
-		}
-		// Preserve boolean flags (flip, clip) and numeric options (scale, translateX, translateY, rotate)
-		// so that user-set positioning/orientation is not lost on randomize.
-		const preserveKeys: string[] = [
-			AvatarPropKey.OpenPeeps.FLIP,
-			AvatarPropKey.OpenPeeps.CLIP,
-			AvatarPropKey.OpenPeeps.SCALE,
-			AvatarPropKey.OpenPeeps.TRANSLATE_X,
-			AvatarPropKey.OpenPeeps.TRANSLATE_Y,
-			AvatarPropKey.OpenPeeps.ROTATE,
-		];
-		for (const key of preserveKeys) {
-			if (config.options?.[key] !== undefined) {
-				randomOptions[key] = config.options[key]!;
-			}
-		}
-		// Preserve hidden prop values so they are never lost during randomize,
-		// even in debug mode where applyHiddenProps is skipped.
-		if (hiddenProps) {
-			for (const [key, value] of Object.entries(hiddenProps)) {
-				if (value !== undefined) {
-					randomOptions[key] = [value];
-				}
-			}
-		}
+		const randomOptions: Record<string, AvatarRandomOptionValue> = {
+			...randomizeComponentOptions(config.style, newComponentOptions, newProbabilityKeys),
+			...randomizeColorOptions(config.style, newColorKeys, hiddenPropKeys),
+		};
+		applyMicahColorCoordination(config.style, randomOptions, hiddenPropKeys);
+		preservePositioningOptions(config, randomOptions);
+		applyHiddenPropsToRandomOptions(hiddenProps, randomOptions);
 		handleChange({ ...config, options: randomOptions });
 	};
 
@@ -1388,8 +1444,6 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 		...visibleAttributeKeys,
 	];
 
-	const diceButtonBg = accentColor ?? theme.screen.text;
-	const diceIconColor = myContrastColor(diceButtonBg, theme, isDark);
 	const hasHiddenProps = !!(hiddenProps && Object.keys(hiddenProps).length > 0);
 
 	return (
@@ -2252,17 +2306,17 @@ export function generateRandomAvatarConfig(style: AvatarStyle, size: AvatarSize)
 		}
 		if (probabilityKeys[key]) {
 			const allValues = [NONE_OPTION, ...realValues];
-			const randomValue = allValues[Math.floor(Math.random() * allValues.length)];
+			const randomValue = allValues[Math.floor(MathHelper.random() * allValues.length)];
 			if (randomValue !== NONE_OPTION) {
 				randomOptions[key] = [randomValue];
 			}
 		} else {
-			randomOptions[key] = [realValues[Math.floor(Math.random() * realValues.length)]];
+			randomOptions[key] = [realValues[Math.floor(MathHelper.random() * realValues.length)]];
 		}
 	}
 	for (const key of colorKeys) {
 		const presetColors = getPresetColorsForKey(key, style);
-		const randomColor = presetColors[Math.floor(Math.random() * presetColors.length)];
+		const randomColor = presetColors[Math.floor(MathHelper.random() * presetColors.length)];
 		randomOptions[key] = [stripHashPrefix(randomColor)];
 	}
 	return { style, size, options: randomOptions };
@@ -2375,7 +2429,7 @@ const QuickstartDebugSection: React.FC<QuickstartDebugSectionProps> = ({
 			<View style={styles.debugFallbackRow}>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
-						key={index}
+						key={`${presetConfig.style}-${index}`}
 						style={[styles.debugFallbackButton, { backgroundColor: buttonBg }]}
 						onPress={() => {
 							onDebugEvent?.(`debug:fallback-preset press index=${index}`);
@@ -2435,7 +2489,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 			>
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
-						key={index}
+						key={`${presetConfig.style}-${index}`}
 						// Debug: red border = the touchable's actual layout box (the touch target).
 						// If it doesn't line up with the yellow-bordered avatar view, hit-testing
 						// and visuals have drifted apart (the "tap only works at the bottom edge"
