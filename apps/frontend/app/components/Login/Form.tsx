@@ -7,8 +7,8 @@ import { styles } from './styles';
 import { FormProps } from './types';
 import { generateCodeChallenge, generateCodeVerifier } from '@/constants/HelperFunctions';
 import usePlatformHelper from '@/helper/platformHelper';
-import { fetchAuthorizationUrl, fetchToken } from '@/redux/actions/ApiService/ApiService';
-import { handleNativeLogin, handleWebLogin } from '@/helper/authHelper';
+import { fetchAuthorizationUrl } from '@/redux/actions/ApiService/ApiService';
+import { fetchTokenWithRetry, handleNativeLogin, handleWebLogin } from '@/helper/authHelper';
 import { addLoginLog, describeError } from '@/helper/loginDebug';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDispatch } from 'react-redux';
@@ -40,7 +40,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 
 	const getToken = async (codeVerifier: string, code: string) => {
 		try {
-			const { directus_refresh_token } = await fetchToken(codeVerifier, code);
+			const { directus_refresh_token } = await fetchTokenWithRetry(codeVerifier, code);
 
 			if (directus_refresh_token && onSuccess) {
 				addLoginLog('Token-Austausch erfolgreich, melde an');

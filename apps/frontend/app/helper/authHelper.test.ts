@@ -221,6 +221,26 @@ describe('authHelper native login', () => {
 		expect(onToken).toHaveBeenCalledTimes(1);
 	});
 
+	it('retries the token exchange on transient network errors', async () => {
+		jest.useFakeTimers();
+		ApiService.fetchToken.mockRejectedValueOnce(new Error('Network Error')).mockResolvedValueOnce({ directus_refresh_token: 'refresh-after-retry' });
+
+		const promise = authHelper.fetchTokenWithRetry('verifier-retry', 'code-retry');
+		await jest.advanceTimersByTimeAsync(5000);
+
+		await expect(promise).resolves.toEqual({ directus_refresh_token: 'refresh-after-retry' });
+		expect(ApiService.fetchToken).toHaveBeenCalledTimes(2);
+		jest.useRealTimers();
+	});
+
+	it('does not retry the token exchange when the server responded with an error', async () => {
+		const serverError = Object.assign(new Error('Request failed with status code 400'), { response: { status: 400, data: { error: 'Invalid or expired state.' } } });
+		ApiService.fetchToken.mockRejectedValue(serverError);
+
+		await expect(authHelper.fetchTokenWithRetry('verifier-400', 'code-400')).rejects.toBe(serverError);
+		expect(ApiService.fetchToken).toHaveBeenCalledTimes(1);
+	});
+
 	it('does nothing on a deep link code without pending verifier', async () => {
 		const onToken = jest.fn();
 

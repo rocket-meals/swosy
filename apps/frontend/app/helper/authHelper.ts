@@ -125,6 +125,36 @@ const getCodeFromUrl = (url: string): string | null => {
 	}
 };
 
+// Right after returning from the browser the app may still be resuming from
+// the background and the first request can fail with a transient network
+// error (observed on iOS with the system browser strategy). Codes stay valid
+// for a few minutes on the backend, so retrying is safe.
+const TOKEN_EXCHANGE_RETRY_DELAYS_MS = [0, 1000, 3000];
+
+// Axios errors without a response never reached the server - only those are
+// worth retrying; a real server response (e.g. 400 invalid code) is final.
+const isRetryableTokenError = (error: unknown) => !(error as { response?: unknown })?.response;
+
+export const fetchTokenWithRetry = async (codeVerifier: string, code: string): Promise<{ directus_refresh_token?: string | null }> => {
+	let lastError: unknown;
+	for (let attempt = 0; attempt < TOKEN_EXCHANGE_RETRY_DELAYS_MS.length; attempt++) {
+		const delay = TOKEN_EXCHANGE_RETRY_DELAYS_MS[attempt];
+		if (delay > 0) {
+			await new Promise(resolve => setTimeout(resolve, delay));
+		}
+		try {
+			return await fetchToken(codeVerifier, code);
+		} catch (error) {
+			lastError = error;
+			addLoginLog(`Token-Austausch Versuch ${attempt + 1}/${TOKEN_EXCHANGE_RETRY_DELAYS_MS.length} fehlgeschlagen: ${describeError(error)}`);
+			if (!isRetryableTokenError(error)) {
+				break;
+			}
+		}
+	}
+	throw lastError;
+};
+
 const dismissBrowserSafely = () => {
 	try {
 		WebBrowser.dismissBrowser();
@@ -264,7 +294,7 @@ export const completeLoginFromDeepLinkCode = async (code: string, onToken: (dire
 	addLoginLog('Auth-Code empfangen (Login-Screen Deep-Link), starte Token-Austausch');
 	dismissBrowserSafely();
 	try {
-		const { directus_refresh_token } = await fetchToken(codeVerifier, code);
+		const { directus_refresh_token } = await fetchTokenWithRetry(codeVerifier, code);
 		if (directus_refresh_token) {
 			addLoginLog('Token-Austausch erfolgreich (Deep-Link-Pfad)');
 			await clearPendingCodeVerifier();
