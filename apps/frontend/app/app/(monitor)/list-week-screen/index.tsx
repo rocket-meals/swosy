@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const Index = () => {
 	useSetPageTitle('FoodPlan:Week');
@@ -113,6 +114,7 @@ const Index = () => {
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={[styles.header, { backgroundColor: theme.screen.background }]}>
 				<TouchableOpacity
+					nativeID={ComponentIds.MONITOR_LIST_WEEK_CURRENT_WEEK_BUTTON}
 					style={{
 						...styles.currentWeekButton,
 						backgroundColor: foods_area_color,
