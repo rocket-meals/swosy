@@ -183,11 +183,12 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 			</View>
 
 			<View style={styles.managementLogin}>
-				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{`${translate(TranslationKeys.for_management)}?`}</Text>
+				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{translate(TranslationKeys.management_login_question)}</Text>
 				<TouchableOpacity
 					onPress={() => requireAgb(openSheet)}
+					accessibilityRole="link"
 				>
-					<Text style={{ ...styles.loginText, color: theme.screen.text }}>{translate(TranslationKeys.sign_in)}</Text>
+					<Text style={{ ...styles.loginText, color: theme.screen.text, textDecorationLine: 'underline' }}>{translate(TranslationKeys.sign_in_here)}</Text>
 				</TouchableOpacity>
 			</View>
 		</View>

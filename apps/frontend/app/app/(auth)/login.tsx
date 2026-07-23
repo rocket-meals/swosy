@@ -37,6 +37,8 @@ export default function Login() {
 	const wikisHelper = new WikisHelper();
 	const [loading, setLoading] = useState(false);
 	const [providers, setProviders] = useState<any>([]);
+	// Hidden diagnostics: toggled by long-pressing the app logo in the header.
+	const [showLoginDebug, setShowLoginDebug] = useState(false);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
 	const { appSettings, language } = useAppSelector((state) => state.settings);
 	const intro_description = appSettings?.login_screen_translations && getIntroDescriptionTranslation(appSettings?.login_screen_translations, language);
@@ -255,9 +257,9 @@ export default function Login() {
 						width: isWeb && isWebVisible ? '35%' : '100%',
 					}}
 				>
-					<Header />
+					<Header onLogoLongPress={() => setShowLoginDebug(current => !current)} />
 					<Form openSheet={openSheet} openAttentionSheet={openAttentionSheet} onSuccess={handleUserLogin} providers={providers} />
-					{!isWeb && <LoginDebugPanel />}
+					{!isWeb && showLoginDebug && <LoginDebugPanel />}
 					<Footer />
 				</View>
 				{isWeb && isWebVisible && (

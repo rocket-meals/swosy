@@ -13,9 +13,15 @@ import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
 import { useAppSelector } from '@/redux/hooks';
+import { TranslationKeys } from '@/locales/keys';
 
-const LoginHeader = () => {
-        const { setLanguageMode, language } = useLanguage();
+type LoginHeaderProps = {
+	// Long-pressing the app logo toggles the hidden login debug options.
+	onLogoLongPress?: () => void;
+};
+
+const LoginHeader = ({ onLogoLongPress }: LoginHeaderProps) => {
+        const { setLanguageMode, language, translate } = useLanguage();
         const locales = useLocales();
         const dispatch = useDispatch();
         const { theme } = useTheme();
@@ -70,15 +76,23 @@ const LoginHeader = () => {
         const selectedLanguageOption = selectedLanguage ? languageDict[selectedLanguage as keyof typeof languageDict] : undefined;
 	return (
 		<View style={styles.header}>
-			<MyImage
-				remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
-				style={{
-					width: 64,
-					height: 64,
-					resizeMode: 'contain',
-					borderRadius: 6,
-				}}
-			/>
+			<TouchableOpacity
+				onLongPress={onLogoLongPress}
+				disabled={!onLogoLongPress}
+				activeOpacity={1}
+				accessibilityRole="imagebutton"
+				accessibilityLabel={translate(TranslationKeys.long_press_logo_to_show_debug_options)}
+			>
+				<MyImage
+					remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
+					style={{
+						width: 64,
+						height: 64,
+						resizeMode: 'contain',
+						borderRadius: 6,
+					}}
+				/>
+			</TouchableOpacity>
                         <TouchableOpacity
                                 onPress={openLanguageModal}
                                 style={{

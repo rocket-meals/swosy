@@ -17,7 +17,9 @@ import { useAppSelector } from '@/redux/hooks';
 const LoginDebugPanel: React.FC = () => {
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector(state => state.settings);
-	const [expanded, setExpanded] = useState(false);
+	// The panel is only rendered after the hidden long-press gesture on the app
+	// logo, so it starts expanded.
+	const [expanded, setExpanded] = useState(true);
 	const [selectedStrategy, setSelectedStrategy] = useState<LoginBrowserStrategy>(getSelectedLoginBrowserStrategy());
 	const [copied, setCopied] = useState(false);
 	const logEntries = useSyncExternalStore(subscribeLoginLog, getLoginLogEntries, getLoginLogEntries);
