@@ -50,6 +50,17 @@ let _lastSavedAppSettings: AppSettingsSliceState | null = null;
 let _debugTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedDebug: DebugSliceState | null = null;
 
+/**
+ * Clears any pending debounced save and schedules a new one. Returns the new
+ * timer handle so the caller can store it back into its own module-level
+ * timer variable (kept as an explicit parameter/return pair rather than a
+ * closure over that variable).
+ */
+function scheduleDebouncedSave(previousTimer: ReturnType<typeof setTimeout> | null, delayMs: number, save: () => void): ReturnType<typeof setTimeout> {
+	if (previousTimer) clearTimeout(previousTimer);
+	return setTimeout(save, delayMs);
+}
+
 store.subscribe(() => {
 	const state = store.getState();
 
@@ -62,8 +73,7 @@ store.subscribe(() => {
 	const game = state.game;
 	if (game !== _lastSavedGame) {
 		_lastSavedGame = game;
-		if (_gameTimer) clearTimeout(_gameTimer);
-		_gameTimer = setTimeout(() => {
+		_gameTimer = scheduleDebouncedSave(_gameTimer, 300, () => {
 			saveGameState({
 				players: game.players,
 				rounds: game.rounds,
@@ -72,37 +82,34 @@ store.subscribe(() => {
 				gameTypeId: game.gameTypeId,
 			});
 			_gameTimer = null;
-		}, 300);
+		});
 	}
 
 	const friends = state.friends;
 	if (friends !== _lastSavedFriends) {
 		_lastSavedFriends = friends;
-		if (_friendsTimer) clearTimeout(_friendsTimer);
-		_friendsTimer = setTimeout(() => {
+		_friendsTimer = scheduleDebouncedSave(_friendsTimer, 300, () => {
 			saveFriends(friends.friends);
 			_friendsTimer = null;
-		}, 300);
+		});
 	}
 
 	const gameTypes = state.gameTypes;
 	if (gameTypes !== _lastSavedGameTypes) {
 		_lastSavedGameTypes = gameTypes;
-		if (_gameTypesTimer) clearTimeout(_gameTypesTimer);
-		_gameTypesTimer = setTimeout(() => {
+		_gameTypesTimer = scheduleDebouncedSave(_gameTypesTimer, 300, () => {
 			saveGameTypes(gameTypes.gameTypes);
 			_gameTypesTimer = null;
-		}, 300);
+		});
 	}
 
 	const gameHistory = state.gameHistory;
 	if (gameHistory !== _lastSavedHistory) {
 		_lastSavedHistory = gameHistory;
-		if (_historyTimer) clearTimeout(_historyTimer);
-		_historyTimer = setTimeout(() => {
+		_historyTimer = scheduleDebouncedSave(_historyTimer, 300, () => {
 			saveGameHistory(gameHistory.entries);
 			_historyTimer = null;
-		}, 300);
+		});
 	}
 
 	const appSettings = state.appSettings;
@@ -114,11 +121,10 @@ store.subscribe(() => {
 	const debug = state.debug;
 	if (debug !== _lastSavedDebug) {
 		_lastSavedDebug = debug;
-		if (_debugTimer) clearTimeout(_debugTimer);
-		_debugTimer = setTimeout(() => {
+		_debugTimer = scheduleDebouncedSave(_debugTimer, 300, () => {
 			saveDebugState(debug);
 			_debugTimer = null;
-		}, 300);
+		});
 	}
 });
 

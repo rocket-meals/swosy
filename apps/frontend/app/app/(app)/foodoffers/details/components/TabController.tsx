@@ -17,6 +17,43 @@ interface TabControllerProps extends FoodAreaDisplayProps {
     containerWidth: string | number;
 }
 
+const TabTriggerButton = ({
+    triggerProps,
+    style,
+    iconName,
+    iconColor,
+    onSelect,
+}: {
+    triggerProps: any;
+    style: any;
+    iconName: any;
+    iconColor: string;
+    onSelect: () => void;
+}) => (
+    <IconButton
+        {...triggerProps}
+        style={style}
+        activeOpacity={1}
+        onPress={(e: any) => {
+            onSelect();
+            if (triggerProps.onPress) {
+                triggerProps.onPress(e);
+            }
+        }}
+        padding={10}
+    >
+        <MaterialCommunityIcons name={iconName} size={26} color={iconColor} />
+    </IconButton>
+);
+
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeTabTrigger(style: any, iconName: any, iconColor: string, onSelect: () => void) {
+    return (triggerProps: any) => (
+        <TabTriggerButton triggerProps={triggerProps} style={style} iconName={iconName} iconColor={iconColor} onSelect={onSelect} />
+    );
+}
+
 const TabController = ({
     activeTab,
     setActiveTab,
@@ -36,25 +73,11 @@ const TabController = ({
     const renderTab = (tabName: FoodOfferDetailTab, iconName: any, labelKey: string) => (
         <CustomTooltip
             placement="top"
-            trigger={(triggerProps) => (
-                <IconButton
-                    {...triggerProps}
-                    style={getTabStyle(tabName)}
-                    activeOpacity={1}
-                    onPress={(e: any) => {
-                        setActiveTab(tabName);
-                        if (triggerProps.onPress) {
-                            triggerProps.onPress(e);
-                        }
-                    }}
-                    padding={10}
-                >
-                    <MaterialCommunityIcons
-                        name={iconName}
-                        size={26}
-                        color={activeTab === tabName ? contrastColor : theme.screen.icon}
-                    />
-                </IconButton>
+            trigger={makeTabTrigger(
+                getTabStyle(tabName),
+                iconName,
+                activeTab === tabName ? contrastColor : theme.screen.icon,
+                () => setActiveTab(tabName)
             )}
         >
             <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

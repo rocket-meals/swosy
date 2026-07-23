@@ -44,6 +44,30 @@ function clampAnchor(value: number): number {
 	return Math.max(0, Math.min(1, Math.round(value * ANCHOR_PRECISION) / ANCHOR_PRECISION));
 }
 
+/** Compute the anchor-dot and crosshair overlay position for a texture preview. */
+function computeTextureAnchorOverlay(
+	anchorX: number,
+	anchorY: number,
+	dims: { width: number; height: number } | undefined,
+): { dotLeft: number; dotTop: number; crosshairLeft: number; crosshairTop: number } {
+	const bounds = dims
+		? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
+		: null;
+	const dotLeft = bounds
+		? bounds.offsetX + anchorX * bounds.displayW - ANCHOR_DOT_SIZE / 2
+		: anchorX * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+	const dotTop = bounds
+		? bounds.offsetY + anchorY * bounds.displayH - ANCHOR_DOT_SIZE / 2
+		: anchorY * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+	const crosshairLeft = bounds
+		? bounds.offsetX + anchorX * bounds.displayW
+		: anchorX * PREVIEW_HEIGHT;
+	const crosshairTop = bounds
+		? bounds.offsetY + anchorY * bounds.displayH
+		: anchorY * PREVIEW_HEIGHT;
+	return { dotLeft, dotTop, crosshairLeft, crosshairTop };
+}
+
 /** Compute the actual rendered image bounds inside a contain-mode container. */
 function getContainBounds(
 	naturalWidth: number,
@@ -105,7 +129,7 @@ function TerrainThumbnailIcon({ terrainEntry }: Readonly<{ terrainEntry: Terrain
 
 	return (
 		<WebView
-			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${MODAL_THUMB_SIZE}px;height:${MODAL_THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${imgUri.replaceAll(/"/g, '&quot;')}"/></body></html>` }}
+			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${MODAL_THUMB_SIZE}px;height:${MODAL_THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${imgUri.replaceAll('"', '&quot;')}"/></body></html>` }}
 			style={modalStyles.thumb}
 			originWhitelist={['*']}
 			scrollEnabled={false}
@@ -137,6 +161,39 @@ const PREVIEW_CENTER_LNG = 8.1421113;
 const PREVIEW_H3_RESOLUTION = 10;
 const PREVIEW_MAP_ZOOM = 15;
 
+/** Compute the lat/lng bounding box of a cell boundary (array of [lat, lng] vertices). */
+function computeBoundaryLatLngBounds(boundary: [number, number][]): {
+	minLat: number;
+	maxLat: number;
+	minLng: number;
+	maxLng: number;
+} {
+	let minLat = Infinity, maxLat = -Infinity;
+	let minLng = Infinity, maxLng = -Infinity;
+	for (const [lat, lng] of boundary) {
+		if (lat < minLat) minLat = lat;
+		if (lat > maxLat) maxLat = lat;
+		if (lng < minLng) minLng = lng;
+		if (lng > maxLng) maxLng = lng;
+	}
+	return { minLat, maxLat, minLng, maxLng };
+}
+
+/**
+ * Compute the bearing (degrees clockwise from north) from a cell's center to its
+ * northernmost vertex, so the texture top always aligns with the hex north tip.
+ */
+function computeNorthAlignedRotation(boundary: [number, number][], centerLat: number, centerLng: number): number {
+	const northVertex = boundary.reduce(
+		(best, vertex) => (vertex[0] > best[0] ? vertex : best),
+		boundary[0],
+	);
+	const dLat = northVertex[0] - centerLat;
+	const dLng = northVertex[1] - centerLng;
+	const cosLat = Math.cos(centerLat * (Math.PI / 180));
+	return Math.atan2(dLng * cosLat, dLat) * (180 / Math.PI);
+}
+
 /** Build image overlay descriptors for the given H3 cells with the current texture config. */
 function buildPreviewOverlays(
 	imgUri: string,
@@ -149,29 +206,12 @@ function buildPreviewOverlays(
 	for (const h3Index of cells) {
 		const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
 		if (boundary.length < 3) continue;
-		let minLat = Infinity, maxLat = -Infinity;
-		let minLng = Infinity, maxLng = -Infinity;
-		for (const [lat, lng] of boundary) {
-			if (lat < minLat) minLat = lat;
-			if (lat > maxLat) maxLat = lat;
-			if (lng < minLng) minLng = lng;
-			if (lng > maxLng) maxLng = lng;
-		}
+		const { minLat, maxLat, minLng, maxLng } = computeBoundaryLatLngBounds(boundary);
 		const centerLat = (minLat + maxLat) / 2;
 		const centerLng = (minLng + maxLng) / 2;
 		const scaledW = (maxLng - minLng) * scale;
 		const scaledH = (maxLat - minLat) * scale;
-
-		// Compute bearing (degrees clockwise from north) from cell center to its
-		// northernmost vertex so the texture top always aligns with the hex north tip.
-		const northVertex = boundary.reduce(
-			(best, vertex) => (vertex[0] > best[0] ? vertex : best),
-			boundary[0],
-		);
-		const dLat = northVertex[0] - centerLat;
-		const dLng = northVertex[1] - centerLng;
-		const cosLat = Math.cos(centerLat * (Math.PI / 180));
-		const rotation = Math.atan2(dLng * cosLat, dLat) * (180 / Math.PI);
+		const rotation = computeNorthAlignedRotation(boundary, centerLat, centerLng);
 
 		overlays.push({
 			id: `preview-${h3Index}`,
@@ -462,8 +502,8 @@ export default function HexTextureConfigScreen() {
 			{/* Settings for selected terrain type */}
 			{selectedTerrainKey !== null && (() => {
 				const terrainKey = selectedTerrainKey;
-				const entry = ALL_TERRAIN_ENTRIES.find((e) => e.key === terrainKey);
-				if (!entry) return null;
+				const hasEntry = ALL_TERRAIN_ENTRIES.some((e) => e.key === terrainKey);
+				if (!hasEntry) return null;
 				const anchorX = getAnchorX(terrainKey);
 				const anchorY = getAnchorY(terrainKey);
 				const scale = getScale(terrainKey);
@@ -472,21 +512,7 @@ export default function HexTextureConfigScreen() {
 				const dims = imageDims[terrainKey];
 				const count = placedCountMap.get(terrainKey) ?? 0;
 				// Compute actual image bounds within the square preview container for overlay positioning.
-				const bounds = dims
-					? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
-					: null;
-				const dotLeft = bounds
-					? bounds.offsetX + anchorX * bounds.displayW - ANCHOR_DOT_SIZE / 2
-					: anchorX * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
-				const dotTop = bounds
-					? bounds.offsetY + anchorY * bounds.displayH - ANCHOR_DOT_SIZE / 2
-					: anchorY * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
-				const crosshairLeft = bounds
-					? bounds.offsetX + anchorX * bounds.displayW
-					: anchorX * PREVIEW_HEIGHT;
-				const crosshairTop = bounds
-					? bounds.offsetY + anchorY * bounds.displayH
-					: anchorY * PREVIEW_HEIGHT;
+				const { dotLeft, dotTop, crosshairLeft, crosshairTop } = computeTextureAnchorOverlay(anchorX, anchorY, dims);
 
 				return (
 					<>
@@ -507,7 +533,7 @@ export default function HexTextureConfigScreen() {
 								<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
 									{imgUri ? (
 										<WebView
-											source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${PREVIEW_HEIGHT}px;height:${PREVIEW_HEIGHT}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${imgUri.replaceAll(/"/g, '&quot;')}" onload="window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(this.naturalWidth+','+this.naturalHeight)"/></body></html>` }}
+											source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${PREVIEW_HEIGHT}px;height:${PREVIEW_HEIGHT}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${imgUri.replaceAll('"', '&quot;')}" onload="window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(this.naturalWidth+','+this.naturalHeight)"/></body></html>` }}
 											style={[styles.previewImage, { backgroundColor: 'transparent' }]}
 											originWhitelist={['*']}
 											scrollEnabled={false}

@@ -187,67 +187,81 @@ export class ParseSchedule {
     intervalMinutes: number,
   ) {
     let now = new Date();
-    const { canteen, cashregisters, utilization_group } = utilizationContext;
+    const { utilization_group } = utilizationContext;
 
     let interval = await this.getInterval(intervalMinutes, date);
 
     for (let interval_entry of interval) {
-      let utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, interval_entry);
-      if (!utilizationEntryCurrent) {
-        // when we update an existing entry
-        await this.createUtilizationEntry(utilization_group, interval_entry);
-        utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, interval_entry);
+      let utilizationEntryCurrent = await this.findOrCreateUtilizationEntryForInterval(utilization_group, interval_entry);
+      await this.applyUtilizationForecastOrActual(utilizationEntryCurrent, utilizationContext, interval_entry, now);
+    }
+  }
+
+  async findOrCreateUtilizationEntryForInterval(utilization_group: DatabaseTypes.UtilizationsGroups, interval_entry: Interval) {
+    let utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, interval_entry);
+    if (!utilizationEntryCurrent) {
+      // when we update an existing entry
+      await this.createUtilizationEntry(utilization_group, interval_entry);
+      utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, interval_entry);
+    }
+    return utilizationEntryCurrent;
+  }
+
+  async applyUtilizationForecastOrActual(
+    utilizationEntryCurrent: DatabaseTypes.UtilizationsEntries | undefined,
+    utilizationContext: UtiliztationContext,
+    interval_entry: Interval,
+    now: Date,
+  ) {
+    const { canteen, cashregisters, utilization_group } = utilizationContext;
+    //console.log("utilizationEntryCurrent");
+    //console.log(utilizationEntryCurrent);
+
+    if (utilizationEntryCurrent) {
+      //console.log("date_start: "+date_start.toISOString()+" --> "+"date_end: "+date_end.toISOString())
+      let isEntryInPast = false;
+      if (interval_entry.date_start < now && interval_entry.date_end < now) {
+        // if start AND end date is in the past.
+        isEntryInPast = true;
       }
-      //console.log("utilizationEntryCurrent");
-      //console.log(utilizationEntryCurrent);
+      //console.log("isEntryInPast: "+isEntryInPast);
 
-      if (utilizationEntryCurrent) {
-        //console.log("date_start: "+date_start.toISOString()+" --> "+"date_end: "+date_end.toISOString())
-        let isEntryInPast = false;
-        if (interval_entry.date_start < now && interval_entry.date_end < now) {
-          // if start AND end date is in the past.
-          isEntryInPast = true;
-        }
-        //console.log("isEntryInPast: "+isEntryInPast);
+      if (!isEntryInPast) {
+        let utilizationContext: UtiliztationContext = {
+          canteen: canteen,
+          cashregisters: cashregisters,
+          utilization_group: utilization_group,
+        };
 
-        if (!isEntryInPast) {
-          let utilizationContext: UtiliztationContext = {
-            canteen: canteen,
-            cashregisters: cashregisters,
-            utilization_group: utilization_group,
-          };
-
-          utilizationEntryCurrent.value_forecast_current = await this.predictUtilizationForInterval(utilizationContext,
-            interval_entry,
-          );
-        }
-        if (isEntryInPast) {
-          // we need just to count the cash register actions
-          let value_real = await this.countCashRegistersTransactionsForInterval(cashregisters, interval_entry);
-          //console.log("value_real: "+value_real);
-          utilizationEntryCurrent.value_real = value_real;
-
-          if (!utilization_group.all_time_high || (value_real > utilization_group.all_time_high && value_real !== 0)) {
-            //console.log("new all_time_high: "+value_real)
-            utilization_group.all_time_high = value_real;
-            let itemService = this.context.myDatabaseHelper.getUtilizationGroupsHelper();
-            await itemService.updateOne(utilization_group.id, {
-              all_time_high: value_real,
-            });
-          }
-        }
-
-        let itemService = this.context.myDatabaseHelper.getUtilizationEntriesHelper();
-        await itemService.updateOne(utilizationEntryCurrent.id, utilizationEntryCurrent);
-      } else {
-        console.log('Houston we got a problem');
+        utilizationEntryCurrent.value_forecast_current = await this.predictUtilizationForInterval(utilizationContext,
+          interval_entry,
+        );
       }
+      if (isEntryInPast) {
+        // we need just to count the cash register actions
+        let value_real = await this.countCashRegistersTransactionsForInterval(cashregisters, interval_entry);
+        //console.log("value_real: "+value_real);
+        utilizationEntryCurrent.value_real = value_real;
+
+        if (!utilization_group.all_time_high || (value_real > utilization_group.all_time_high && value_real !== 0)) {
+          //console.log("new all_time_high: "+value_real)
+          utilization_group.all_time_high = value_real;
+          let itemService = this.context.myDatabaseHelper.getUtilizationGroupsHelper();
+          await itemService.updateOne(utilization_group.id, {
+            all_time_high: value_real,
+          });
+        }
+      }
+
+      let itemService = this.context.myDatabaseHelper.getUtilizationEntriesHelper();
+      await itemService.updateOne(utilizationEntryCurrent.id, utilizationEntryCurrent);
+    } else {
+      console.log('Houston we got a problem');
     }
   }
 
   /**
    * Simple prediction for the utilization of a canteen, assuming the same utilization as last week
-   * TODO: Implement a more sophisticated prediction
    * @param utilization_group
    * @param cashregisters
    * @param canteen

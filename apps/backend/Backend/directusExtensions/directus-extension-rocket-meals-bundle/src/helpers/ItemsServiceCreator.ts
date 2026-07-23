@@ -39,9 +39,6 @@ export interface AbstractService<Item> {
   deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>;
 }
 
-// https://github.com/directus/directus/blob/main/api/src/types/items.ts
-export type MutationOptions = any; // TODO: check if we ever need this
-
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts#L35
 export type QueryOptions = {
   stripNonRequested?: boolean;
@@ -53,27 +50,27 @@ export type QueryOptions = {
 export interface ItemsService<Item> extends AbstractService<Item> {
   getKeysByQuery(query: Query): Promise<PrimaryKey[]>;
 
-  createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>;
-  createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>;
+  createOne(data: Partial<Item>, opts?: any): Promise<PrimaryKey>;
+  createMany(data: Partial<Item>[], opts?: any): Promise<PrimaryKey[]>;
 
   readByQuery(query: Query, opts?: QueryOptions): Promise<Item[]>;
   readOne(key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<Item>;
   readMany(keys: PrimaryKey[], query?: Query, opts?: QueryOptions): Promise<Item[]>;
 
-  updateByQuery(query: Query, data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey[]>;
-  updateOne(key: PrimaryKey, data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>;
-  updateBatch(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>;
-  updateMany(keys: PrimaryKey[], data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey[]>;
+  updateByQuery(query: Query, data: Partial<Item>, opts?: any): Promise<PrimaryKey[]>;
+  updateOne(key: PrimaryKey, data: Partial<Item>, opts?: any): Promise<PrimaryKey>;
+  updateBatch(data: Partial<Item>[], opts?: any): Promise<PrimaryKey[]>;
+  updateMany(keys: PrimaryKey[], data: Partial<Item>, opts?: any): Promise<PrimaryKey[]>;
 
-  upsertOne(payload: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>;
-  upsertMany(payloads: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>;
+  upsertOne(payload: Partial<Item>, opts?: any): Promise<PrimaryKey>;
+  upsertMany(payloads: Partial<Item>[], opts?: any): Promise<PrimaryKey[]>;
 
-  deleteByQuery(query: Query, opts?: MutationOptions): Promise<PrimaryKey[]>;
-  deleteOne(key: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey>;
-  deleteMany(keys: PrimaryKey[], opts?: MutationOptions): Promise<PrimaryKey[]>;
+  deleteByQuery(query: Query, opts?: any): Promise<PrimaryKey[]>;
+  deleteOne(key: PrimaryKey, opts?: any): Promise<PrimaryKey>;
+  deleteMany(keys: PrimaryKey[], opts?: any): Promise<PrimaryKey[]>;
 
   readSingleton(query: Query, opts?: QueryOptions): Promise<Partial<Item>>;
-  upsertSingleton(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>;
+  upsertSingleton(data: Partial<Item>, opts?: any): Promise<PrimaryKey>;
 }
 
 class GetItemsService {
@@ -103,17 +100,17 @@ export class ItemsServiceCreator extends GetItemsService {
     let database = this.eventContext?.database || this.apiContext.database; // https://github.com/directus/directus/discussions/11051#discussioncomment-2014806
     return new ItemsService(tablename, {
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
 }
 
 export interface FilesService extends ItemsService<DatabaseTypes.DirectusFiles> {
-  uploadOne(stream: FileServiceSteamType, data: FileServiceFileStream, primaryKey?: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey>;
+  uploadOne(stream: FileServiceSteamType, data: FileServiceFileStream, primaryKey?: PrimaryKey, opts?: any): Promise<PrimaryKey>;
 
   importOne(importURL: string, body: Partial<DatabaseTypes.DirectusFiles>): Promise<PrimaryKey>;
-  createOne(data: Partial<DatabaseTypes.DirectusFiles>, opts?: MutationOptions): Promise<PrimaryKey>;
+  createOne(data: Partial<DatabaseTypes.DirectusFiles>, opts?: any): Promise<PrimaryKey>;
   deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>;
   readByQuery(query: Query, opts?: QueryOptions | undefined): Promise<DatabaseTypes.DirectusFiles[]>;
 }
@@ -140,7 +137,7 @@ export class FileServiceCreator extends GetItemsService {
 
     return new FilesService({
       accountability: accountability, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
@@ -164,7 +161,7 @@ export class ActivityServiceCreator extends GetItemsService {
     const database = this.apiContext.database;
     return new ActivityService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }
@@ -200,7 +197,7 @@ export class ServerServiceCreator extends GetItemsService {
     const database = this.apiContext.database;
     return new ServerService({
       accountability: null, //this makes us admin
-      knex: database, //TODO: i think this is not neccessary
+      knex: database,
       schema: schema,
     });
   }

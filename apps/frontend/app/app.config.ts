@@ -72,7 +72,7 @@ function writeWebManifest() {
 	fs.writeFileSync(path.join(publicDir, 'manifest.json'), JSON.stringify(manifest, null, '\t') + '\n');
 }
 
-module.exports = function ({ config }: ConfigContext) {
+module.exports = function getExpoConfig({ config }: ConfigContext) {
 	writeWebManifest();
 	return getFinalConfig(config);
 };

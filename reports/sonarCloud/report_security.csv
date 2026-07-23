@@ -1,2 +1,1 @@
 Key,Message,Component,Line
-"AZ9_onhR-TchFAS-K2Wg","LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.","rocket-meals_rocket-meals:scripts/count-sonar-maintainability-issues.js",49

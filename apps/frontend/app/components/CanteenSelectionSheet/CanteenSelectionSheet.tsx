@@ -23,10 +23,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 	const dispatch = useDispatch();
 	const canteenHelper = new CanteenHelper();
 	const buildingsHelper = new BuildingsHelper();
-	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
 	const { isManagement } = useAppSelector((state) => state.authReducer);
-	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
@@ -59,7 +56,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 				return status === 'published' || status === 'archived';
 			});
 
-			const sortedCanteens = filteredCanteens.sort((a, b) => {
+			filteredCanteens.sort((a, b) => {
 				const aPublished = a.status === 'published';
 				const bPublished = b.status === 'published';
 
@@ -71,6 +68,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 				// If both are same status, sort by sort value
 				return (a.sort || 0) - (b.sort || 0);
 			});
+			const sortedCanteens = filteredCanteens;
 
 			const updatedCanteens = sortedCanteens.map(canteen => {
 				const building = buildingsDict[canteen?.building as string];

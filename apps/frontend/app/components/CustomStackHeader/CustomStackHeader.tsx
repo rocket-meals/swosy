@@ -14,6 +14,55 @@ import { TranslationKeys } from '@/locales/keys';
 
 import { AppScreens } from 'repo-depkit-common';
 
+const BackTriggerButton = ({ triggerProps, onPress, color }: { triggerProps: object; onPress: () => void; color: string }) => (
+	<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={onPress} style={{ padding: 10 }}>
+		<Ionicons name="arrow-back" size={26} color={color} />
+	</TouchableOpacity>
+);
+
+const makeBackTrigger = (onPress: () => void, color: string) => (triggerProps: object) => (
+	<BackTriggerButton triggerProps={triggerProps} onPress={onPress} color={color} />
+);
+
+// Ordered pathname-substring -> target mappings, checked top to bottom (first match wins),
+// for the plain cases where the target doesn't depend on anything but the pathname.
+const GO_BACK_TARGET_RULES: { pathIncludes: string; target: string }[] = [
+	{ pathIncludes: `/${AppScreens.FOOD_OFFERS}/details`, target: `/${AppScreens.FOOD_OFFERS}` },
+	{ pathIncludes: `/${AppScreens.HOUSING}/details`, target: `/${AppScreens.HOUSING}` },
+	{ pathIncludes: `/${AppScreens.STATISTICS}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: `/${AppScreens.SUPPORT_TICKET}`, target: `/${AppScreens.SUPPORT_FAQ}` },
+	{ pathIncludes: `/${AppScreens.FEEDBACK_SUPPORT}`, target: `/${AppScreens.SUPPORT_FAQ}` },
+	{ pathIncludes: `/${AppScreens.SUPPORT_FAQ}`, target: `/${AppScreens.SETTINGS}` },
+	{ pathIncludes: `/${AppScreens.CAMPUS}/details`, target: `/${AppScreens.CAMPUS}` },
+	{ pathIncludes: `/${AppScreens.LIST_WEEK_SCREEN}`, target: `/${AppScreens.FOOD_PLAN_WEEK}` },
+	{ pathIncludes: `/${AppScreens.FOOD_PLAN_WEEK}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: `/${AppScreens.FORMS}`, target: `/${AppScreens.FORM_CATEGORIES}` },
+	{ pathIncludes: `/${AppScreens.FORM_CATEGORIES}`, target: `/${AppScreens.MANAGEMENT}` },
+	{ pathIncludes: '/chats/details', target: '/chats' },
+];
+
+/**
+ * Resolves which screen "go back" should navigate to, based on the current
+ * pathname. Returns null when the router's own back-stack should be used
+ * instead (`router.back()`).
+ */
+function resolveGoBackTarget(pathname: string, loggedIn: boolean, canGoBack: boolean): string | null {
+	// Checked before the table below since its target depends on `loggedIn`, not just the pathname.
+	if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
+		return loggedIn ? `/${AppScreens.SETTINGS}` : `/${AppScreens.LOGIN}`;
+	}
+
+	const matchedRule = GO_BACK_TARGET_RULES.find(rule => pathname.includes(rule.pathIncludes));
+	if (matchedRule) {
+		return matchedRule.target;
+	}
+
+	if (canGoBack) {
+		return null;
+	}
+	return loggedIn ? `/${AppScreens.FOOD_OFFERS}` : `/${AppScreens.LOGIN}`;
+}
+
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -23,42 +72,11 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const handleGoback = () => {
-		if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {
-			router.navigate(`/${AppScreens.FOOD_OFFERS}`);
-		} else if (pathname.includes(`/${AppScreens.HOUSING}/details`)) {
-			router.navigate(`/${AppScreens.HOUSING}`);
-		} else if (pathname.includes(`/${AppScreens.STATISTICS}`)) {
-			router.navigate(`/${AppScreens.MANAGEMENT}`);
-		} else if (pathname.includes(`/${AppScreens.SUPPORT_TICKET}`)) {
-			router.navigate(`/${AppScreens.SUPPORT_FAQ}`);
-		} else if (pathname.includes(`/${AppScreens.FEEDBACK_SUPPORT}`)) {
-			router.navigate(`/${AppScreens.SUPPORT_FAQ}`);
-		} else if (pathname.includes(`/${AppScreens.SUPPORT_FAQ}`)) {
-			router.navigate(`/${AppScreens.SETTINGS}`);
-		} else if (pathname.includes(`/${AppScreens.HOUSING_DELETE_USER}`)) {
-			if (loggedIn) {
-				router.navigate(`/${AppScreens.SETTINGS}`);
-			} else {
-				router.navigate(`/${AppScreens.LOGIN}`);
-			}
-		} else if (pathname.includes(`/${AppScreens.CAMPUS}/details`)) {
-			router.navigate(`/${AppScreens.CAMPUS}`);
-		} else if (pathname.includes(`/${AppScreens.LIST_WEEK_SCREEN}`)) {
-			router.navigate(`/${AppScreens.FOOD_PLAN_WEEK}`);
-		} else if (pathname.includes(`/${AppScreens.FOOD_PLAN_WEEK}`)) {
-			router.navigate(`/${AppScreens.MANAGEMENT}`);
-		} else if (pathname.includes(`/${AppScreens.FORMS}`)) {
-			router.navigate(`/${AppScreens.FORM_CATEGORIES}`);
-                } else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
-                        router.navigate(`/${AppScreens.MANAGEMENT}`);
-                } else if (pathname.includes('/chats/details')) {
-                        router.navigate('/chats');
-                } else if (router.canGoBack()) {
-                        router.back();
-                } else if (loggedIn) {
-			router.navigate(`/${AppScreens.FOOD_OFFERS}`);
+		const target = resolveGoBackTarget(pathname, loggedIn, router.canGoBack());
+		if (target) {
+			router.navigate(target);
 		} else {
-			router.navigate(`/${AppScreens.LOGIN}`);
+			router.back();
 		}
 	};
 
@@ -87,11 +105,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
                                 <View style={styles.col1}>
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
-								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
-							</TouchableOpacity>
-						)}
+						trigger={makeBackTrigger(handleGoback, theme.header.text)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>

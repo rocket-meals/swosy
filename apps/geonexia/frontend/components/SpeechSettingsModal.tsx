@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Keyboard,
-	Platform,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -204,8 +203,6 @@ function PaceMinSecModal({
 			</TouchableOpacity>
 		</View>
 	);
-
-	if (Platform.OS === 'web') return content;
 
 	return content;
 }

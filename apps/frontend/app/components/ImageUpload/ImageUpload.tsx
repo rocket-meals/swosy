@@ -14,11 +14,46 @@ import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
+/**
+ * Deletes the remotely stored form-answer image: fetches the FormAnswer to
+ * find the linked file, deletes that file in Directus, then unlinks it from
+ * the FormAnswer, calling onChange only once everything succeeded.
+ */
+async function deleteRemoteFormAnswerImage(
+	formAnswersHelper: FormAnswersHelper,
+	id: string,
+	onChange: (id: string, value: any, custom_type: string) => void,
+	custom_type: string,
+): Promise<void> {
+	const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
+		fields: ['id', 'value_image'],
+	})) as DatabaseTypes.FormAnswers;
+
+	if (formAnswer?.value_image) {
+		const isFileDeleted = await deleteDirectusFile(String(formAnswer.value_image));
+		if (isFileDeleted) {
+			const deleteResponse = (await formAnswersHelper.updateFormAnswers(id, {
+				value_image: null,
+			})) as DatabaseTypes.FormAnswers;
+
+			if (deleteResponse) {
+				onChange(id, null, custom_type);
+			} else {
+				console.error('Error unlinking file from FormAnswer');
+			}
+		} else {
+			console.error('Error deleting file from Directus');
+		}
+	} else {
+		console.error('No file found to delete');
+	}
+}
+
 const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offlineMode, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; offlineMode?: boolean; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const formAnswersHelper = new FormAnswersHelper();
-	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const [authToken, setAuthToken] = useState<string | null | undefined>(undefined);
 
 	useEffect(() => {
@@ -105,28 +140,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offl
 					onChange(id, null, custom_type);
 					return;
 				}
-				const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
-					fields: ['id', 'value_image'],
-				})) as DatabaseTypes.FormAnswers;
-
-				if (formAnswer?.value_image) {
-					const isFileDeleted = await deleteDirectusFile(String(formAnswer.value_image));
-					if (isFileDeleted) {
-						const deleteResponse = (await formAnswersHelper.updateFormAnswers(id, {
-							value_image: null,
-						})) as DatabaseTypes.FormAnswers;
-
-						if (deleteResponse) {
-							onChange(id, null, custom_type);
-						} else {
-							console.error('Error unlinking file from FormAnswer');
-						}
-					} else {
-						console.error('Error deleting file from Directus');
-					}
-				} else {
-					console.error('No file found to delete');
-				}
+				await deleteRemoteFormAnswerImage(formAnswersHelper, id, onChange, custom_type);
 			} else {
 				onChange(id, null, custom_type);
 			}

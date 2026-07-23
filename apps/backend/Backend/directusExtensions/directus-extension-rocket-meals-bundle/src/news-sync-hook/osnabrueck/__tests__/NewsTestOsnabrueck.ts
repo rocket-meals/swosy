@@ -1,6 +1,6 @@
 // small jest test
 import { describe, expect, it, jest } from '@jest/globals';
-import { StudentenwerkOsnabrueckNews_Parser } from '../StudentenwerkOsnabrueckNews_Parser';
+import { StudentenwerkOsnabrueckNewsParser } from '../StudentenwerkOsnabrueckNewsParser';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
@@ -10,12 +10,12 @@ const htmlArticlePage = fs.readFileSync(path.resolve(__dirname, './NewsSpecificP
 
 describe('NewsTestOsnabrueck', () => {
   async function getNews() {
-    let newsParser = new StudentenwerkOsnabrueckNews_Parser();
+    let newsParser = new StudentenwerkOsnabrueckNewsParser();
 
     jest.spyOn(axios, 'get').mockImplementation(url => {
-      if (url === StudentenwerkOsnabrueckNews_Parser.newsUrl) {
+      if (url === StudentenwerkOsnabrueckNewsParser.newsUrl) {
         return Promise.resolve({ data: html });
-      } else if (url.startsWith(StudentenwerkOsnabrueckNews_Parser.newsArticleUrl)) {
+      } else if (url.startsWith(StudentenwerkOsnabrueckNewsParser.newsArticleUrl)) {
         return Promise.resolve({ data: htmlArticlePage });
       }
       console.log('Unknown URL: ' + url);

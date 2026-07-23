@@ -49,71 +49,61 @@ export const store = configureStore({
 
 // Auto-persist hex tile state to disk whenever it changes (debounced to avoid
 // excessive I/O during rapid consecutive GPS updates).
-let _saveTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedRecords: Record<string, HexTileRecord> | null = null;
-let _walkedEdgesTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedWalkedEdges: string[] | null = null;
-let _walkedEdgesRedLineTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedWalkedEdgesRedLine: string[] | null = null;
 
-// Auto-persist sport type to disk whenever the selected type changes.
-let _lastSavedSportType: SportType | null = null;
+// Generic ref shapes used by the persistence helpers below. Keeping the
+// mutable timer/last-saved-value pair together lets each helper receive it
+// as an explicit parameter instead of closing over module-local `let`s.
+type DebounceRef<T> = { timer: ReturnType<typeof setTimeout> | null; lastSaved: T | null };
+type ImmediateRef<T> = { lastSaved: T | null };
 
-// Auto-persist theme mode to disk whenever the selected mode changes.
-let _lastSavedThemeMode: ThemeMode | null = null;
+// Persists `value` immediately (no debounce) the first time it differs from
+// the last-saved value.
+function persistImmediate<T>(value: T, ref: ImmediateRef<T>, save: (value: T) => void): void {
+	if (value !== ref.lastSaved) {
+		ref.lastSaved = value;
+		save(value);
+	}
+}
 
-// Auto-persist billboard config to disk whenever anchor overrides change.
-let _bbConfigTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedBbConfig: BillboardConfigState | null = null;
+// Persists `value` after a debounce delay, resetting the pending timer on
+// every change so only the trailing value within the delay window is saved.
+function persistDebounced<T>(value: T, ref: DebounceRef<T>, save: (value: T) => void, delay = 500): void {
+	if (value !== ref.lastSaved) {
+		ref.lastSaved = value;
+		if (ref.timer) clearTimeout(ref.timer);
+		ref.timer = setTimeout(() => {
+			save(value);
+			ref.timer = null;
+		}, delay);
+	}
+}
 
-// Auto-persist hex texture config to disk whenever anchor overrides change.
-let _hexTextureConfigTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedHexTextureConfig: HexTextureConfigState | null = null;
-
-// Auto-persist GPS interval seconds to disk whenever it changes.
-let _lastSavedGpsIntervalSeconds: number | null = null;
-
-// Auto-persist TTS enabled flag to disk whenever it changes.
-let _lastSavedTTSEnabled: boolean | null = null;
-
-// Auto-persist speech settings to disk whenever they change.
-let _speechSettingsTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
-
-// Auto-persist display settings to disk whenever they change.
-let _displaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedDisplaySettings: DisplaySettingsState | null = null;
-
-// Auto-persist replay settings to disk whenever they change.
-let _replaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
-let _lastSavedReplaySettings: ReplaySettingsState | null = null;
-
-// Auto-persist player information to disk whenever it changes.
-let _lastSavedPlayerInformation: PlayerInformation | null = null;
-
-store.subscribe(() => {
-	const state = store.getState();
-
-	const { records, isDevMode } = state.hexTiles;
-	if (records !== _lastSavedRecords) {
-		_lastSavedRecords = records;
-		if (_saveTimer) clearTimeout(_saveTimer);
-		_saveTimer = setTimeout(() => {
+// Persists hex tile records, choosing the dev/non-dev storage target based on
+// the freshest isDevMode value at the time the debounce fires (not at the
+// time the change was detected).
+function persistHexTileRecords(records: Record<string, HexTileRecord>, ref: DebounceRef<Record<string, HexTileRecord>>): void {
+	if (records !== ref.lastSaved) {
+		ref.lastSaved = records;
+		if (ref.timer) clearTimeout(ref.timer);
+		ref.timer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			if (currentIsDevMode) {
 				saveDevHexTileState(records);
 			} else {
 				saveHexTileState(records);
 			}
-			_saveTimer = null;
+			ref.timer = null;
 		}, 500);
 	}
+}
 
-	const { walkedEdges } = state.hexTiles;
-	if (walkedEdges !== _lastSavedWalkedEdges) {
-		_lastSavedWalkedEdges = walkedEdges;
-		if (_walkedEdgesTimer) clearTimeout(_walkedEdgesTimer);
-		_walkedEdgesTimer = setTimeout(() => {
+// Persists walked edges, re-reading both isDevMode and the current edges from
+// the store when the debounce fires so the freshest values are saved.
+function persistWalkedEdges(walkedEdges: string[], ref: DebounceRef<string[]>): void {
+	if (walkedEdges !== ref.lastSaved) {
+		ref.lastSaved = walkedEdges;
+		if (ref.timer) clearTimeout(ref.timer);
+		ref.timer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			const currentEdges = store.getState().hexTiles.walkedEdges;
 			if (currentIsDevMode) {
@@ -121,15 +111,17 @@ store.subscribe(() => {
 			} else {
 				saveWalkedEdges(currentEdges);
 			}
-			_walkedEdgesTimer = null;
+			ref.timer = null;
 		}, 500);
 	}
+}
 
-	const { walkedEdgesRedLine: currentWalkedEdgesRedLine } = state.hexTiles;
-	if (currentWalkedEdgesRedLine !== _lastSavedWalkedEdgesRedLine) {
-		_lastSavedWalkedEdgesRedLine = currentWalkedEdgesRedLine;
-		if (_walkedEdgesRedLineTimer) clearTimeout(_walkedEdgesRedLineTimer);
-		_walkedEdgesRedLineTimer = setTimeout(() => {
+// Same as persistWalkedEdges but for the red-line walked edges variant.
+function persistWalkedEdgesRedLine(walkedEdgesRedLine: string[], ref: DebounceRef<string[]>): void {
+	if (walkedEdgesRedLine !== ref.lastSaved) {
+		ref.lastSaved = walkedEdgesRedLine;
+		if (ref.timer) clearTimeout(ref.timer);
+		ref.timer = setTimeout(() => {
 			const currentIsDevMode = store.getState().hexTiles.isDevMode;
 			const currentEdgesRedLine = store.getState().hexTiles.walkedEdgesRedLine;
 			if (currentIsDevMode) {
@@ -137,89 +129,69 @@ store.subscribe(() => {
 			} else {
 				saveWalkedEdgesRedLine(currentEdgesRedLine);
 			}
-			_walkedEdgesRedLineTimer = null;
+			ref.timer = null;
 		}, 500);
 	}
+}
 
-	const { selectedType } = state.sportType;
-	if (selectedType !== _lastSavedSportType) {
-		_lastSavedSportType = selectedType;
-		saveSportType(selectedType);
-	}
+const hexTileRecordsRef: DebounceRef<Record<string, HexTileRecord>> = { timer: null, lastSaved: null };
+const walkedEdgesRef: DebounceRef<string[]> = { timer: null, lastSaved: null };
+const walkedEdgesRedLineRef: DebounceRef<string[]> = { timer: null, lastSaved: null };
 
-	const { selectedMode } = state.theme;
-	if (selectedMode !== _lastSavedThemeMode) {
-		_lastSavedThemeMode = selectedMode;
-		saveThemeMode(selectedMode);
-	}
+// Auto-persist sport type to disk whenever the selected type changes.
+const sportTypeRef: ImmediateRef<SportType> = { lastSaved: null };
 
-	const { spriteAnchors } = state.billboardConfig;
-	if (spriteAnchors !== _lastSavedBbConfig) {
-		_lastSavedBbConfig = spriteAnchors;
-		if (_bbConfigTimer) clearTimeout(_bbConfigTimer);
-		_bbConfigTimer = setTimeout(() => {
-			saveBillboardConfig(spriteAnchors);
-			_bbConfigTimer = null;
-		}, 500);
-	}
+// Auto-persist theme mode to disk whenever the selected mode changes.
+const themeModeRef: ImmediateRef<ThemeMode> = { lastSaved: null };
 
-	const { spriteAnchors: textureAnchors } = state.hexTextureConfig;
-	if (textureAnchors !== _lastSavedHexTextureConfig) {
-		_lastSavedHexTextureConfig = textureAnchors;
-		if (_hexTextureConfigTimer) clearTimeout(_hexTextureConfigTimer);
-		_hexTextureConfigTimer = setTimeout(() => {
-			saveHexTextureConfig(textureAnchors);
-			_hexTextureConfigTimer = null;
-		}, 500);
-	}
+// Auto-persist billboard config to disk whenever anchor overrides change.
+const billboardConfigRef: DebounceRef<BillboardConfigState> = { timer: null, lastSaved: null };
 
-	const { intervalSeconds: gpsSeconds } = state.gpsInterval;
-	if (gpsSeconds !== _lastSavedGpsIntervalSeconds) {
-		_lastSavedGpsIntervalSeconds = gpsSeconds;
-		saveGpsIntervalSeconds(gpsSeconds);
-	}
+// Auto-persist hex texture config to disk whenever anchor overrides change.
+const hexTextureConfigRef: DebounceRef<HexTextureConfigState> = { timer: null, lastSaved: null };
 
-	const { ttsEnabled } = state.tts;
-	if (ttsEnabled !== _lastSavedTTSEnabled) {
-		_lastSavedTTSEnabled = ttsEnabled;
-		saveTTSEnabled(ttsEnabled);
-	}
+// Auto-persist GPS interval seconds to disk whenever it changes.
+const gpsIntervalRef: ImmediateRef<number> = { lastSaved: null };
 
-	const speechSettings = state.speechSettings;
-	if (speechSettings !== _lastSavedSpeechSettings) {
-		_lastSavedSpeechSettings = speechSettings;
-		if (_speechSettingsTimer) clearTimeout(_speechSettingsTimer);
-		_speechSettingsTimer = setTimeout(() => {
-			saveSpeechSettings(speechSettings);
-			_speechSettingsTimer = null;
-		}, 500);
-	}
+// Auto-persist TTS enabled flag to disk whenever it changes.
+const ttsEnabledRef: ImmediateRef<boolean> = { lastSaved: null };
 
-	const displaySettings = state.displaySettings;
-	if (displaySettings !== _lastSavedDisplaySettings) {
-		_lastSavedDisplaySettings = displaySettings;
-		if (_displaySettingsTimer) clearTimeout(_displaySettingsTimer);
-		_displaySettingsTimer = setTimeout(() => {
-			saveDisplaySettings(displaySettings);
-			_displaySettingsTimer = null;
-		}, 500);
-	}
+// Auto-persist speech settings to disk whenever they change.
+const speechSettingsRef: DebounceRef<SpeechSettingsState> = { timer: null, lastSaved: null };
 
-	const { homeHexTile } = state.playerInformation;
-	if (state.playerInformation !== _lastSavedPlayerInformation) {
-		_lastSavedPlayerInformation = state.playerInformation;
-		savePlayerInformation({ homeHexTile });
-	}
+// Auto-persist display settings to disk whenever they change.
+const displaySettingsRef: DebounceRef<DisplaySettingsState> = { timer: null, lastSaved: null };
 
-	const replaySettings = state.replaySettings;
-	if (replaySettings !== _lastSavedReplaySettings) {
-		_lastSavedReplaySettings = replaySettings;
-		if (_replaySettingsTimer) clearTimeout(_replaySettingsTimer);
-		_replaySettingsTimer = setTimeout(() => {
-			saveReplaySettings(replaySettings);
-			_replaySettingsTimer = null;
-		}, 500);
-	}
+// Auto-persist replay settings to disk whenever they change.
+const replaySettingsRef: DebounceRef<ReplaySettingsState> = { timer: null, lastSaved: null };
+
+// Auto-persist player information to disk whenever it changes.
+const playerInformationRef: ImmediateRef<PlayerInformation> = { lastSaved: null };
+
+store.subscribe(() => {
+	const state = store.getState();
+
+	persistHexTileRecords(state.hexTiles.records, hexTileRecordsRef);
+	persistWalkedEdges(state.hexTiles.walkedEdges, walkedEdgesRef);
+	persistWalkedEdgesRedLine(state.hexTiles.walkedEdgesRedLine, walkedEdgesRedLineRef);
+
+	persistImmediate(state.sportType.selectedType, sportTypeRef, saveSportType);
+	persistImmediate(state.theme.selectedMode, themeModeRef, saveThemeMode);
+
+	persistDebounced(state.billboardConfig.spriteAnchors, billboardConfigRef, saveBillboardConfig);
+	persistDebounced(state.hexTextureConfig.spriteAnchors, hexTextureConfigRef, saveHexTextureConfig);
+
+	persistImmediate(state.gpsInterval.intervalSeconds, gpsIntervalRef, saveGpsIntervalSeconds);
+	persistImmediate(state.tts.ttsEnabled, ttsEnabledRef, saveTTSEnabled);
+
+	persistDebounced(state.speechSettings, speechSettingsRef, saveSpeechSettings);
+	persistDebounced(state.displaySettings, displaySettingsRef, saveDisplaySettings);
+
+	persistImmediate(state.playerInformation, playerInformationRef, (playerInformation) => {
+		savePlayerInformation({ homeHexTile: playerInformation.homeHexTile });
+	});
+
+	persistDebounced(state.replaySettings, replaySettingsRef, saveReplaySettings);
 });
 
 // ─── Type helpers ─────────────────────────────────────────────────────────────

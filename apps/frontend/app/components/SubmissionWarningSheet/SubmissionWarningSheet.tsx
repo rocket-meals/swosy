@@ -4,7 +4,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
-import { sheetProps } from './types';
+import { SheetProps } from './types';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { router } from 'expo-router';
@@ -12,7 +12,7 @@ import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 
-const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
+const SubmissionWarningSheet: React.FC<SheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();

@@ -12,6 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
 import { useMyScrollviewModalSelectWeekPlanCanteen } from '@/hooks/useMyScrollviewModalSelectWeekPlanCanteen';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_week);
@@ -54,6 +55,7 @@ const Index = () => {
 				}}
 			>
 				<TouchableOpacity
+					nativeID={ComponentIds.MONITOR_FOODPLAN_WEEK_CANTEEN_BUTTON}
 					style={{
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
@@ -94,6 +96,7 @@ const Index = () => {
 					</View>
 				</View>
 				<TouchableOpacity
+					nativeID={ComponentIds.MONITOR_FOODPLAN_WEEK_BIGSCREEN_BUTTON}
 					style={{
 						...styles.button,
 						backgroundColor: theme.screen.iconBg,

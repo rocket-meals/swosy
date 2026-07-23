@@ -12,6 +12,83 @@ import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 const HOOK_NAME = 'washingmachines-sync-hook';
+
+/**
+ * Computes the capped duration (Postgres time fields do not accept 24:xx:xx,
+ * so durations are capped at 23:59:59) and the derived duration fields used
+ * when persisting a finished washingmachine job.
+ */
+function computeWashingmachineJobDurationFields(durationInMilliseconds: number, current_date_stated: any, current_date_finished: any, washingmachine_id: any) {
+  const millisecondsInDay = 24 * 60 * 60 * 1000;
+  // Postgres time fields do not accept 24:xx:xx, so we cap durations at 23:59:59.
+  const maxPostgresTimeValueMilliseconds = millisecondsInDay - 1000; // 23:59:59
+  const cappedDurationInMilliseconds = Math.min(
+    durationInMilliseconds,
+    maxPostgresTimeValueMilliseconds
+  );
+
+  if (durationInMilliseconds > maxPostgresTimeValueMilliseconds) {
+    console.log(
+      `Capping washingmachine job duration to 23:59:59. date_start=${current_date_stated}, date_end=${current_date_finished}, washingmachine=${washingmachine_id}`
+    );
+  }
+
+  const time_hours = Math.floor(cappedDurationInMilliseconds / 1000 / 60 / 60);
+  const time_minutes = Math.floor((cappedDurationInMilliseconds / 1000 / 60) % 60);
+  const time_seconds = Math.floor((cappedDurationInMilliseconds / 1000) % 60);
+  const hh_mm_ss = time_hours + ':' + time_minutes + ':' + time_seconds;
+
+  const duration_in_minutes = Number.parseInt(cappedDurationInMilliseconds / 1000 / 60 + ''); // Total duration in minutes
+
+  // Round duration to the nearest 10-minute interval
+  const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;
+
+  return {
+    hh_mm_ss,
+    duration_in_minutes,
+    duration_rounded_10min_calculated,
+  };
+}
+
+/**
+ * If the given washingmachine currently has both a start and finish date, persists
+ * a finished washingmachine job for it. Mirrors the previous inline loop body exactly.
+ */
+async function createFinishedWashingmachineJobIfApplicable(myDatabaseHelper: MyDatabaseHelper, washingmachine_id: any) {
+  let washingmachine_curent = await myDatabaseHelper.getWashingmachinesHelper().readOne(washingmachine_id);
+
+  let current_date_stated = washingmachine_curent.date_stated;
+  let current_date_finished = washingmachine_curent.date_finished;
+
+  if (!!current_date_stated && !!current_date_finished) {
+    // currently washing
+    // then save it as a finished washing job
+    let time_diff = new Date(current_date_finished).getTime() - new Date(current_date_stated).getTime();
+    if (time_diff > 0) {
+      const durationInMilliseconds = time_diff;
+
+      const { hh_mm_ss, duration_in_minutes, duration_rounded_10min_calculated } = computeWashingmachineJobDurationFields(
+        durationInMilliseconds,
+        current_date_stated,
+        current_date_finished,
+        washingmachine_curent.id
+      );
+
+      let partialWashingmachineJob: Partial<DatabaseTypes.WashingmachinesJobs> = {
+        date_start: current_date_stated,
+        date_end: current_date_finished,
+        duration_calculated: hh_mm_ss,
+        duration_in_minutes_calculated: duration_in_minutes,
+        duration_in_minutes_rounded_10min_calculated: duration_rounded_10min_calculated,
+        washingmachine: washingmachine_curent.id,
+        apartment: washingmachine_curent.apartment,
+      };
+
+      await myDatabaseHelper.getWashingmachinesJobsHelper().createOne(partialWashingmachineJob);
+    }
+  }
+}
+
 function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions: RegisterFunctions) {
   const { filter } = registerFunctions;
   // Washingmachines Jobs Creation
@@ -30,54 +107,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
       let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
       if (washingmachines_ids) {
         for (let washingmachine_id of washingmachines_ids) {
-          let washingmachine_curent = await myDatabaseHelper.getWashingmachinesHelper().readOne(washingmachine_id);
-
-          let current_date_stated = washingmachine_curent.date_stated;
-          let current_date_finished = washingmachine_curent.date_finished;
-
-          if (!!current_date_stated && !!current_date_finished) {
-            // currently washing
-            // then save it as a finished washing job
-            let time_diff = new Date(current_date_finished).getTime() - new Date(current_date_stated).getTime();
-            if (time_diff > 0) {
-              const durationInMilliseconds = time_diff;
-              const millisecondsInDay = 24 * 60 * 60 * 1000;
-              // Postgres time fields do not accept 24:xx:xx, so we cap durations at 23:59:59.
-              const maxPostgresTimeValueMilliseconds = millisecondsInDay - 1000; // 23:59:59
-              const cappedDurationInMilliseconds = Math.min(
-                durationInMilliseconds,
-                maxPostgresTimeValueMilliseconds
-              );
-
-              if (durationInMilliseconds > maxPostgresTimeValueMilliseconds) {
-                console.log(
-                  `Capping washingmachine job duration to 23:59:59. date_start=${current_date_stated}, date_end=${current_date_finished}, washingmachine=${washingmachine_curent.id}`
-                );
-              }
-
-              const time_hours = Math.floor(cappedDurationInMilliseconds / 1000 / 60 / 60);
-              const time_minutes = Math.floor((cappedDurationInMilliseconds / 1000 / 60) % 60);
-              const time_seconds = Math.floor((cappedDurationInMilliseconds / 1000) % 60);
-              const hh_mm_ss = time_hours + ':' + time_minutes + ':' + time_seconds;
-
-              const duration_in_minutes = Number.parseInt(cappedDurationInMilliseconds / 1000 / 60 + ''); // Total duration in minutes
-
-              // Round duration to the nearest 10-minute interval
-              const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;
-
-              let partialWashingmachineJob: Partial<DatabaseTypes.WashingmachinesJobs> = {
-                date_start: current_date_stated,
-                date_end: current_date_finished,
-                duration_calculated: hh_mm_ss,
-                duration_in_minutes_calculated: duration_in_minutes,
-                duration_in_minutes_rounded_10min_calculated: duration_rounded_10min_calculated,
-                washingmachine: washingmachine_curent.id,
-                apartment: washingmachine_curent.apartment,
-              };
-
-              await myDatabaseHelper.getWashingmachinesJobsHelper().createOne(partialWashingmachineJob);
-            }
-          }
+          await createFinishedWashingmachineJobIfApplicable(myDatabaseHelper, washingmachine_id);
         }
       }
     }
@@ -114,7 +144,7 @@ class WashingmachinesWorkflow extends SingleWorkflowRun {
 }
 
 export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions: RegisterFunctions, apiContext) => {
-  const { action, filter, schedule } = registerFunctions;
+  const { schedule } = registerFunctions;
 
   registerWashingmachinesFilterUpdate(apiContext, registerFunctions);
 
@@ -124,7 +154,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (reg
       usedParser = new DemoWashingmachineParser();
       break;
     case SyncForCustomerEnum.HANNOVER:
-      usedParser = null;
       break;
     case SyncForCustomerEnum.OSNABRUECK:
       usedParser = new StudentenwerkOsnabrueckWashingmachineParser();

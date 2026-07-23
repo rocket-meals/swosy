@@ -10,7 +10,7 @@
  */
 
 import Pbf from 'pbf';
-import { VectorTile } from '@mapbox/vector-tile';
+import { VectorTile, VectorTileFeature } from '@mapbox/vector-tile';
 
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
 import type { MapFeatureFilterOptions } from './OpenMapTilesSchema';
@@ -63,12 +63,9 @@ function tileYToLat(yFrac: number, zoom: number): number {
 }
 
 /** Simple axis-aligned bounding-box overlap check. */
-function boundsOverlap(
-	aMinLat: number, aMinLng: number, aMaxLat: number, aMaxLng: number,
-	bMinLat: number, bMinLng: number, bMaxLat: number, bMaxLng: number,
-): boolean {
-	return aMinLat <= bMaxLat && aMaxLat >= bMinLat &&
-		aMinLng <= bMaxLng && aMaxLng >= bMinLng;
+function boundsOverlap(a: LatLngBounds, b: LatLngBounds): boolean {
+	return a.minLat <= b.maxLat && a.maxLat >= b.minLat &&
+		a.minLng <= b.maxLng && a.maxLng >= b.minLng;
 }
 
 // ─── Name-null filter ───────────────────────────────────────────────────────
@@ -130,6 +127,36 @@ export function getTilesForBounds(
 const tileUrlCache: Record<string, string> = {};
 
 /**
+ * Find the first PBF tile URL (matching `{z}` placeholder or `.pbf` extension)
+ * in a list of candidate tile URL templates.
+ */
+function findPbfTileUrl(tiles: string[] | undefined): string | undefined {
+	if (!tiles) return undefined;
+	for (const url of tiles) {
+		if (url.includes('{z}') || url.includes('.pbf')) return url;
+	}
+	return undefined;
+}
+
+/**
+ * Fetch a TileJSON document from `url` and extract its first PBF tile URL
+ * template, if any. TileJSON fetch/parse errors are swallowed and treated as
+ * "no URL found" so the caller can keep looking at other sources.
+ */
+async function resolveTileUrlFromTileJson(url: string): Promise<string | undefined> {
+	try {
+		const tjRes = await fetch(url);
+		if (tjRes.ok) {
+			const tj = await tjRes.json();
+			return findPbfTileUrl(tj.tiles as string[] | undefined);
+		}
+	} catch {
+		// Ignore TileJSON fetch errors and continue.
+	}
+	return undefined;
+}
+
+/**
  * Fetch the MapLibre style JSON and extract the first `{z}/{x}/{y}` PBF tile
  * URL template from the `sources` section.
  */
@@ -148,34 +175,18 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 		const source = src as Record<string, unknown>;
 		if (source.type !== 'vector') continue;
 
-		const tiles = source.tiles as string[] | undefined;
-		if (tiles) {
-			for (const url of tiles) {
-				if (url.includes('{z}') || url.includes('.pbf')) {
-					tileUrlCache[styleUrl] = url;
-					return url;
-				}
-			}
+		const directUrl = findPbfTileUrl(source.tiles as string[] | undefined);
+		if (directUrl) {
+			tileUrlCache[styleUrl] = directUrl;
+			return directUrl;
 		}
 
 		// Some styles use a TileJSON URL in the `url` field instead.
 		if (typeof source.url === 'string') {
-			try {
-				const tjRes = await fetch(source.url);
-				if (tjRes.ok) {
-					const tj = await tjRes.json();
-					const tjTiles = tj.tiles as string[] | undefined;
-					if (tjTiles) {
-						for (const url of tjTiles) {
-							if (url.includes('{z}') || url.includes('.pbf')) {
-								tileUrlCache[styleUrl] = url;
-								return url;
-							}
-						}
-					}
-				}
-			} catch {
-				// Ignore TileJSON fetch errors and continue.
+			const tileJsonUrl = await resolveTileUrlFromTileJson(source.url);
+			if (tileJsonUrl) {
+				tileUrlCache[styleUrl] = tileJsonUrl;
+				return tileJsonUrl;
 			}
 		}
 	}
@@ -257,6 +268,147 @@ function tileCacheKey(tileUrlTemplate: string, z: number, x: number, y: number):
 }
 
 /**
+ * Determine whether a feature's geographic bounding box (derived from its
+ * tile-relative geometry bbox) overlaps `filterBounds`.
+ */
+function featureOverlapsBounds(
+	feat: VectorTileFeature,
+	x: number,
+	y: number,
+	z: number,
+	filterBounds: { minLat: number; minLng: number; maxLat: number; maxLng: number },
+): boolean {
+	const [bx1, by1, bx2, by2] = feat.bbox();
+	const extent = feat.extent || 4096;
+
+	// Convert tile-relative coordinates to geographic lat/lng.
+	const featMinLng = tileXToLng(x + bx1 / extent, z);
+	const featMaxLng = tileXToLng(x + bx2 / extent, z);
+	// Tile Y increases downward: smaller py → further north.
+	const featMaxLat = tileYToLat(y + by1 / extent, z);
+	const featMinLat = tileYToLat(y + by2 / extent, z);
+
+	return boundsOverlap(
+		{ minLat: featMinLat, minLng: featMinLng, maxLat: featMaxLat, maxLng: featMaxLng },
+		filterBounds,
+	);
+}
+
+/** Build the `MapFeatureInfo` (minus `count`) for a raw tile feature, plus its dedup key. */
+function buildFeatureInfo(
+	layerName: string,
+	props: Record<string, number | string | boolean>,
+): { featureId: string; info: Omit<MapFeatureInfo, 'count'> } {
+	const name = (props.name as string) || (props['name:de'] as string) || null;
+	const cls = (props['class'] as string) || null;
+	const subclass = (props.subclass as string) || null;
+	const highway = (props.highway as string) || null;
+	const waterway = (props.waterway as string) || null;
+	const building = (props.building as string) || null;
+	const natural = (props.natural as string) || null;
+	const landuse = (props.landuse as string) || null;
+	const amenity = (props.amenity as string) || null;
+
+	// Deduplicate by synthetic feature ID: class|subclass|name.
+	// Duplicate occurrences increment the count instead of adding a new entry.
+	const featureId = (cls ?? '') + '|' + (subclass ?? '') + '|' + (name ?? '');
+
+	return {
+		featureId,
+		info: {
+			layerId: layerName,
+			name,
+			class: cls,
+			subclass,
+			highway,
+			waterway,
+			building,
+			natural,
+			landuse,
+			amenity,
+		},
+	};
+}
+
+/**
+ * Resolve the raw PBF buffer for a tile, using the buffer cache when available
+ * and otherwise downloading it. Returns `{ empty: true }` for a tile that
+ * legitimately has no data (404, e.g. ocean areas). Extracted from
+ * fetchAndParseTile() to keep that function's Cognitive Complexity manageable.
+ */
+async function resolveTileBuffer(
+	tileUrlTemplate: string,
+	z: number,
+	x: number,
+	y: number,
+	cacheKey: string,
+): Promise<{ buffer: ArrayBuffer } | { empty: true }> {
+	const cachedBuffer = tileBufferCache[cacheKey];
+	if (cachedBuffer) {
+		return { buffer: cachedBuffer };
+	}
+
+	const url = tileUrlTemplate
+		.replace('{z}', String(z))
+		.replace('{x}', String(x))
+		.replace('{y}', String(y));
+
+	const res = await fetch(url);
+	if (!res.ok) {
+		if (res.status === 404) {
+			// Tiles may legitimately return 404 for ocean / empty areas.
+			return { empty: true };
+		}
+		throw new Error(`Tile fetch failed (${res.status}): ${url}`);
+	}
+
+	const buffer = await res.arrayBuffer();
+	tileBufferCache[cacheKey] = buffer;
+	return { buffer };
+}
+
+/**
+ * Collect the deduplicated (by synthetic class|subclass|name feature ID), occurrence-counted
+ * features of a parsed vector tile, optionally restricted to those overlapping `filterBounds`.
+ * Extracted from fetchAndParseTile() to keep that function's Cognitive Complexity manageable.
+ */
+function collectTileFeatures(
+	tile: VectorTile,
+	x: number,
+	y: number,
+	z: number,
+	filterBounds?: { minLat: number; minLng: number; maxLat: number; maxLng: number },
+): Map<string, MapFeatureInfo> {
+	const featureMap = new Map<string, MapFeatureInfo>();
+
+	for (const layerName of Object.keys(tile.layers)) {
+		if (SKIP_LAYERS.has(layerName)) continue;
+
+		const layer = tile.layers[layerName];
+		for (let i = 0; i < layer.length; i++) {
+			const feat = layer.feature(i);
+			const props = feat.properties ?? {};
+
+			// ── Geographic filter ────────────────────────────────────
+			if (filterBounds && !featureOverlapsBounds(feat, x, y, z, filterBounds)) {
+				continue;
+			}
+
+			const { featureId, info } = buildFeatureInfo(layerName, props);
+			const existing = featureMap.get(featureId);
+			if (existing) {
+				existing.count += 1;
+				continue;
+			}
+
+			featureMap.set(featureId, { ...info, count: 1 });
+		}
+	}
+
+	return featureMap;
+}
+
+/**
  * Fetch a single vector tile and parse it into an array of `MapFeatureInfo`.
  * Results are cached in-memory so repeated requests for the same tile
  * (e.g. overlapping H3 bounding boxes) are served instantly.
@@ -286,100 +438,14 @@ export async function fetchAndParseTile(
 	}
 
 	// Use cached raw buffer when available (avoids re-downloading for filtered queries).
-	let buffer: ArrayBuffer;
-	const cachedBuffer = tileBufferCache[cacheKey];
-	if (cachedBuffer) {
-		buffer = cachedBuffer;
-	} else {
-		const url = tileUrlTemplate
-			.replace('{z}', String(z))
-			.replace('{x}', String(x))
-			.replace('{y}', String(y));
-
-		const res = await fetch(url);
-		if (!res.ok) {
-			// Tiles may legitimately return 404 for ocean / empty areas.
-			if (res.status === 404) {
-				tileFeaturesCache[cacheKey] = [];
-				return [];
-			}
-			throw new Error(`Tile fetch failed (${res.status}): ${url}`);
-		}
-
-		buffer = await res.arrayBuffer();
-		tileBufferCache[cacheKey] = buffer;
+	const bufferResult = await resolveTileBuffer(tileUrlTemplate, z, x, y, cacheKey);
+	if ('empty' in bufferResult) {
+		tileFeaturesCache[cacheKey] = [];
+		return [];
 	}
 
-	const tile = new VectorTile(new Pbf(buffer));
-
-	// Use a Map keyed by the synthetic feature ID (class|subclass|name) to
-	// deduplicate within the tile and accumulate occurrence counts.
-	const featureMap = new Map<string, MapFeatureInfo>();
-
-	for (const layerName of Object.keys(tile.layers)) {
-		if (SKIP_LAYERS.has(layerName)) continue;
-
-		const layer = tile.layers[layerName];
-		for (let i = 0; i < layer.length; i++) {
-			const feat = layer.feature(i);
-			const props = feat.properties ?? {};
-
-			// ── Geographic filter ────────────────────────────────────
-			if (filterBounds) {
-				const [bx1, by1, bx2, by2] = feat.bbox();
-				const extent = feat.extent || 4096;
-
-				// Convert tile-relative coordinates to geographic lat/lng.
-				const featMinLng = tileXToLng(x + bx1 / extent, z);
-				const featMaxLng = tileXToLng(x + bx2 / extent, z);
-				// Tile Y increases downward: smaller py → further north.
-				const featMaxLat = tileYToLat(y + by1 / extent, z);
-				const featMinLat = tileYToLat(y + by2 / extent, z);
-
-				if (!boundsOverlap(
-					featMinLat, featMinLng, featMaxLat, featMaxLng,
-					filterBounds.minLat, filterBounds.minLng,
-					filterBounds.maxLat, filterBounds.maxLng,
-				)) {
-					continue;
-				}
-			}
-
-			const name = (props.name as string) || (props['name:de'] as string) || null;
-			const cls = (props['class'] as string) || null;
-			const subclass = (props.subclass as string) || null;
-			const highway = (props.highway as string) || null;
-			const waterway = (props.waterway as string) || null;
-			const building = (props.building as string) || null;
-			const natural = (props.natural as string) || null;
-			const landuse = (props.landuse as string) || null;
-			const amenity = (props.amenity as string) || null;
-
-			// Deduplicate by synthetic feature ID: class|subclass|name.
-			// Duplicate occurrences increment the count instead of adding a new entry.
-			const featureId = (cls ?? '') + '|' + (subclass ?? '') + '|' + (name ?? '');
-			const existing = featureMap.get(featureId);
-			if (existing) {
-				existing.count += 1;
-				continue;
-			}
-
-			featureMap.set(featureId, {
-				layerId: layerName,
-				name,
-				class: cls,
-				subclass,
-				highway,
-				waterway,
-				building,
-				natural,
-				landuse,
-				amenity,
-				count: 1,
-			});
-		}
-	}
-
+	const tile = new VectorTile(new Pbf(bufferResult.buffer));
+	const featureMap = collectTileFeatures(tile, x, y, z, filterBounds);
 	const features = Array.from(featureMap.values());
 
 	// Only cache when no filter was applied (unfiltered superset).

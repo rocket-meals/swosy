@@ -23,6 +23,7 @@ export {
 } from './src/helpers/SqliteKeyValueStorage';
 export type { SqliteStorageKeyUsage } from './src/helpers/SqliteKeyValueStorage';
 export { getUtf8ByteLength, formatBytes } from './src/helpers/ByteSizeHelper';
+export { MyBuffer } from './src/helpers/MyBuffer';
 
 // Constants
 export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/ui';

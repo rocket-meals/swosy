@@ -93,9 +93,9 @@ const DebugLogout = () => {
 	];
 
 	const myTestLogout = async () => {
-		const exclude = ['CLEAR_ANONYMOUSLY', 'ON_LOGOUT', 'RESET_STORE'];
+		const exclude = new Set(['CLEAR_ANONYMOUSLY', 'ON_LOGOUT', 'RESET_STORE']);
 		for (const step of steps) {
-			if (exclude.includes(step.label)) continue;
+			if (exclude.has(step.label)) continue;
 			const result = step.action() as any;
 			if (result && typeof result === 'object' && typeof result.then === 'function') {
 				await result;
@@ -113,8 +113,8 @@ const DebugLogout = () => {
 		>
 			<View style={{ ...styles.content }}>
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.debug_logout)}</Text>
-				{steps.map((step, index) => (
-					<TouchableOpacity key={index} style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={step.action}>
+				{steps.map((step) => (
+					<TouchableOpacity key={step.label} style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={step.action}>
 						<Text style={{ ...styles.body, color: theme.screen.text }}>{step.label}</Text>
 					</TouchableOpacity>
 				))}

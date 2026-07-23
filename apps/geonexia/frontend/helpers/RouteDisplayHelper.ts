@@ -43,6 +43,52 @@ export function computeEdgesFromHexTiles(hexTiles: string[]): string[] {
 }
 
 /**
+ * Add edges for the H3 grid path between two adjacent cells visited in
+ * sequence, interpolating through any intermediate cells. Falls back to a
+ * direct edge when the two cells sit on different icosahedron faces (no
+ * valid grid path exists between them).
+ */
+function addInterpolatedRouteEdges(lastCell: string, cell: string, edges: Set<string>): void {
+	try {
+		const pathCells = gridPathCells(lastCell, cell);
+		if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+			for (let i = 0; i < pathCells.length - 1; i++) {
+				const a = pathCells[i];
+				const b = pathCells[i + 1];
+				edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+			}
+		}
+	} catch {
+		// Different icosahedron faces – just add direct edge
+		edges.add(lastCell < cell ? `${lastCell}:${cell}` : `${cell}:${lastCell}`);
+	}
+}
+
+/**
+ * Convert a single GPS route point to its H3 cell and, if it differs from the
+ * previously visited cell, record the walked edge(s) between them. Returns
+ * the cell to use as `lastCell` for the next point (unchanged on failure).
+ */
+function processRoutePointForEdges(
+	point: { lat: number; lng: number },
+	h3Resolution: number,
+	lastCell: string | null,
+	edges: Set<string>,
+): string | null {
+	try {
+		const cell = latLngToCell(point.lat, point.lng, h3Resolution);
+		if (!cell) return lastCell;
+		if (lastCell && cell !== lastCell) {
+			addInterpolatedRouteEdges(lastCell, cell, edges);
+		}
+		return cell;
+	} catch {
+		// Skip invalid GPS points
+		return lastCell;
+	}
+}
+
+/**
  * Compute walked edges from raw GPS route points by converting each point to
  * its H3 cell and tracking hex-to-hex transitions (including gap
  * interpolation). This produces accurate edges based on the actual path taken.
@@ -55,28 +101,7 @@ export function computeEdgesFromRoutePoints(
 	let lastCell: string | null = null;
 
 	for (const point of routePoints) {
-		try {
-			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
-			if (!cell) continue;
-			if (lastCell && cell !== lastCell) {
-				try {
-					const pathCells = gridPathCells(lastCell, cell);
-					if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-						for (let i = 0; i < pathCells.length - 1; i++) {
-							const a = pathCells[i];
-							const b = pathCells[i + 1];
-							edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
-						}
-					}
-				} catch {
-					// Different icosahedron faces – just add direct edge
-					edges.add(lastCell < cell ? `${lastCell}:${cell}` : `${cell}:${lastCell}`);
-				}
-			}
-			lastCell = cell;
-		} catch {
-			// Skip invalid GPS points
-		}
+		lastCell = processRoutePointForEdges(point, h3Resolution, lastCell, edges);
 	}
 
 	return Array.from(edges);

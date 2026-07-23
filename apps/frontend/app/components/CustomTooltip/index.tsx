@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip as GluestackTooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { Tooltip as GluestackTooltip } from '@gluestack-ui/themed';
 import { isWeb } from '@/constants/Constants';
 
 type TooltipProps = React.ComponentProps<typeof GluestackTooltip>;
@@ -36,5 +36,6 @@ const CustomTooltip: React.FC<TooltipProps> = ({ trigger, children, ...props }) 
 	);
 };
 
-export { CustomTooltip, TooltipContent, TooltipText };
+export { CustomTooltip };
+export { TooltipContent, TooltipText } from '@gluestack-ui/themed';
 export default CustomTooltip;

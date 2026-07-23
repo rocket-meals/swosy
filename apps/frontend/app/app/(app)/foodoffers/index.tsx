@@ -8,7 +8,6 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import useKioskMode from '@/hooks/useKioskMode';
 import {
 	SET_BUSINESS_HOURS,
 	SET_SELECTED_CANTEEN,
@@ -55,7 +54,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 
-	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 
 	const selectedDate = useAppSelector((state) => state.food.selectedDate);
@@ -66,7 +64,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const selectedCanteen = useSelectedCanteen();
 	useFoodOffersDefaultDate();
-	const kioskMode = useKioskMode();
 	const { hasUnreadChats } = useChatUnreadStatus();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();

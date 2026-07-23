@@ -116,6 +116,82 @@ const useCollectionFields = (collection: CollectionNames) => {
 	return collectionFields;
 };
 
+/**
+ * Downscales the given image if it exceeds maxDimension in either dimension,
+ * preserving aspect ratio. Returns the original uri unchanged if it already
+ * fits within the limit.
+ */
+async function resizeImageIfTooLarge(uri: string, width: number, height: number, maxDimension: number): Promise<string> {
+	if (width <= maxDimension && height <= maxDimension) {
+		return uri;
+	}
+
+	const aspectRatio = width / height;
+	const newDimensions =
+		width > height
+			? {
+					width: maxDimension,
+					height: maxDimension / aspectRatio,
+				}
+			: {
+					width: maxDimension * aspectRatio,
+					height: maxDimension,
+				};
+
+	const resizedImage = await ImageManipulator.manipulateAsync(
+		uri,
+		[{ resize: newDimensions }],
+		{ compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+	);
+
+	return resizedImage.uri;
+}
+
+/**
+ * Builds the FormData payload for an image upload, using the platform-specific
+ * way of turning a local file uri into a file/blob part.
+ */
+async function buildImageFormData(finalUri: string, fileName: string, storage: string): Promise<FormData> {
+	const formData = new FormData();
+
+	if (Platform.OS === 'web') {
+		const blob: Blob = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = function () {
+				resolve(xhr.response);
+			};
+			xhr.onerror = function (e) {
+				console.log(e);
+				reject(new TypeError('Network request failed'));
+			};
+			xhr.responseType = 'blob';
+			xhr.open('GET', finalUri, true);
+			xhr.send(null);
+		});
+
+		if (storage) {
+			formData.append('folder', storage);
+		}
+		formData.append('image', blob, fileName);
+	} else {
+		const uriParts = finalUri.split('.');
+		const fileType = uriParts.at(-1);
+		const fileExtension = `.${fileType}`;
+		const file: any = {
+			uri: finalUri,
+			name: fileName + fileExtension,
+			type: `image/${fileType}`,
+		};
+
+		if (storage) {
+			formData.append('folder', storage);
+		}
+		formData.append('image', file, fileName);
+	}
+
+	return formData;
+}
+
 const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps> = ({ field, collection, itemId, onUpdated, onClose }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -178,69 +254,12 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				}
 
 				const { uri, width, height } = pickerResult.assets[0];
-				let finalUri = uri;
-
-				if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-					const aspectRatio = width / height;
-					const newDimensions =
-						width > height
-							? {
-									width: MAX_IMAGE_DIMENSION,
-									height: MAX_IMAGE_DIMENSION / aspectRatio,
-								}
-							: {
-									width: MAX_IMAGE_DIMENSION * aspectRatio,
-									height: MAX_IMAGE_DIMENSION,
-								};
-
-					const resizedImage = await ImageManipulator.manipulateAsync(
-						uri,
-						[{ resize: newDimensions }],
-						{ compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-					);
-
-					finalUri = resizedImage.uri;
-				}
+				const finalUri = await resizeImageIfTooLarge(uri, width, height, MAX_IMAGE_DIMENSION);
 
 				setLoading(prev => ({ ...prev, camera: useCamera, image: !useCamera }));
 
-				const formData = new FormData();
 				const fileName = `${collection}_${itemId}`;
-
-				if (Platform.OS === 'web') {
-					const blob: Blob = await new Promise((resolve, reject) => {
-						const xhr = new XMLHttpRequest();
-						xhr.onload = function () {
-							resolve(xhr.response);
-						};
-						xhr.onerror = function (e) {
-							console.log(e);
-							reject(new TypeError('Network request failed'));
-						};
-						xhr.responseType = 'blob';
-						xhr.open('GET', finalUri, true);
-						xhr.send(null);
-					});
-
-					if (storage) {
-						formData.append('folder', storage);
-					}
-					formData.append('image', blob, fileName);
-				} else {
-					const uriParts = finalUri.split('.');
-					const fileType = uriParts[uriParts.length - 1];
-					const fileExtension = `.${fileType}`;
-					const file: any = {
-						uri: finalUri,
-						name: fileName + fileExtension,
-						type: `image/${fileType}`,
-					};
-
-					if (storage) {
-						formData.append('folder', storage);
-					}
-					formData.append('image', file, fileName);
-				}
+				const formData = await buildImageFormData(finalUri, fileName, storage);
 
 				const client = ServerAPI.getClient();
 				formData.append('title', fileName);

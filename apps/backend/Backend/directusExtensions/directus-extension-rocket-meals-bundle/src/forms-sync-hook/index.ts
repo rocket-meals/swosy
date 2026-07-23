@@ -56,6 +56,51 @@ function registerHookHandleFormSubmissionDateSubmitted(registerFunctions: Regist
   });
 }
 
+function isFormAnswerValueSet(form_answer: DatabaseTypes.FormAnswers): boolean {
+  let value_string_is_set = form_answer.value_string !== null && form_answer.value_string !== undefined;
+  let value_number_is_set = form_answer.value_number !== null && form_answer.value_number !== undefined;
+  let value_date_is_set = form_answer.value_date !== null && form_answer.value_date !== undefined;
+  let value_boolean_is_set = form_answer.value_boolean !== null && form_answer.value_boolean !== undefined;
+  let value_custom_is_set = form_answer.value_custom !== null && form_answer.value_custom !== undefined;
+  let value_files_is_set = form_answer.value_files !== null && form_answer.value_files !== undefined;
+  let value_image_is_set = form_answer.value_image !== null && form_answer.value_image !== undefined;
+  return value_string_is_set || value_number_is_set || value_date_is_set || value_boolean_is_set || value_custom_is_set || value_files_is_set || value_image_is_set;
+}
+
+function checkRequiredFormFieldHasAnswer(required_form_field: DatabaseTypes.FormFields, form_answers: DatabaseTypes.FormAnswers[]) {
+  let form_field_id = required_form_field.id;
+  let form_answer = form_answers.find(fa => fa.form_field === form_field_id);
+  if (!form_answer) {
+    throw new Error('Required form answer not found for form field with alias: ' + required_form_field.alias + ' (id: ' + required_form_field.id + ')');
+  }
+  let value_is_set = isFormAnswerValueSet(form_answer);
+  if (!value_is_set) {
+    throw new Error('Please fill out the required form field with alias: ' + required_form_field.alias + ' (id: ' + required_form_field.id + ')');
+  }
+}
+
+async function checkFormSubmissionRequiredFieldsFilled(form_submission_id: PrimaryKey, myDatabaseHelper: MyDatabaseHelper) {
+  let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+  let form_id = formSubmission.form;
+  if (!form_id) {
+    throw new Error('Form submission has no form id.');
+  }
+
+  // Get the answers of the user
+  let form_answers = await myDatabaseHelper.getFormsAnswersHelper().findItems({
+    form_submission: formSubmission.id,
+  });
+  // Get the form fields of the form
+  let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
+    form: form_id,
+  });
+
+  let required_form_fields = form_fields.filter(ff => ff.is_required);
+  for (let required_form_field of required_form_fields) {
+    checkRequiredFormFieldHasAnswer(required_form_field, form_answers);
+  }
+}
+
 function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
   // Check if all required fields are filled
   registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.update', async (input, meta, eventContext) => {
@@ -69,40 +114,7 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
       let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
       let form_submission_ids = meta.keys as PrimaryKey[];
       for (let form_submission_id of form_submission_ids) {
-        let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
-        let form_id = formSubmission.form;
-        if (!form_id) {
-          throw new Error('Form submission has no form id.');
-        }
-
-        // Get the answers of the user
-        let form_answers = await myDatabaseHelper.getFormsAnswersHelper().findItems({
-          form_submission: formSubmission.id,
-        });
-        // Get the form fields of the form
-        let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
-          form: form_id,
-        });
-
-        let required_form_fields = form_fields.filter(ff => ff.is_required);
-        for (let required_form_field of required_form_fields) {
-          let form_field_id = required_form_field.id;
-          let form_answer = form_answers.find(fa => fa.form_field === form_field_id);
-          if (!form_answer) {
-            throw new Error('Required form answer not found for form field with alias: ' + required_form_field.alias + ' (id: ' + required_form_field.id + ')');
-          }
-          let value_string_is_set = form_answer.value_string !== null && form_answer.value_string !== undefined;
-          let value_number_is_set = form_answer.value_number !== null && form_answer.value_number !== undefined;
-          let value_date_is_set = form_answer.value_date !== null && form_answer.value_date !== undefined;
-          let value_boolean_is_set = form_answer.value_boolean !== null && form_answer.value_boolean !== undefined;
-          let value_custom_is_set = form_answer.value_custom !== null && form_answer.value_custom !== undefined;
-          let value_files_is_set = form_answer.value_files !== null && form_answer.value_files !== undefined;
-          let value_image_is_set = form_answer.value_image !== null && form_answer.value_image !== undefined;
-          let value_is_set = value_string_is_set || value_number_is_set || value_date_is_set || value_boolean_is_set || value_custom_is_set || value_files_is_set || value_image_is_set;
-          if (!value_is_set) {
-            throw new Error('Please fill out the required form field with alias: ' + required_form_field.alias + ' (id: ' + required_form_field.id + ')');
-          }
-        }
+        await checkFormSubmissionRequiredFieldsFilled(form_submission_id, myDatabaseHelper);
       }
     }
 
@@ -145,229 +157,284 @@ export type FormExtractRelevantInformationSingle = {
 };
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[];
 
+function resolveFormIdFromFormSubmission(formSubmission: DatabaseTypes.FormSubmissions): string {
+  let form_id: string | undefined;
+  if (formSubmission.form) {
+    if (typeof formSubmission.form === 'string') {
+      form_id = formSubmission.form;
+    } else {
+      form_id = formSubmission.form.id;
+    }
+  }
+  if (!form_id) {
+    throw new Error('Form submission has no form id.');
+  }
+  return form_id;
+}
+
+function resolveStaticAndFieldRecipientEmails(form_extract: DatabaseTypes.FormExtracts, form_answers: FormExtractFormAnswer[]): string[] {
+  let recipient_emails: string[] = [];
+
+  let recipient_email_static = form_extract.recipient_email_static;
+  if (recipient_email_static) {
+    recipient_emails.push(recipient_email_static);
+  }
+
+  let recipient_email_field_id = form_extract.recipient_email_field; // if the recipient email is dynamic and set by the user in the form
+  if (recipient_email_field_id) {
+    let form_answer_recipient_email = form_answers.find(fa => fa.form_field === recipient_email_field_id);
+    if (!form_answer_recipient_email) {
+      throw new Error('Recipient email field not found for id: ' + recipient_email_field_id);
+    }
+    let dynamic_email_dynamic = form_answer_recipient_email.value_string;
+    if (dynamic_email_dynamic) {
+      recipient_emails.push(dynamic_email_dynamic);
+    }
+  }
+
+  return recipient_emails;
+}
+
+async function resolveRecipientUserEmail(form_extract: DatabaseTypes.FormExtracts, myDatabaseHelper: MyDatabaseHelper): Promise<string | undefined> {
+  let email_from_recipient_user: string | undefined;
+  const recipient_user_raw = form_extract.recipient_user; // if the recipient email is the user who submitted the form
+  if (recipient_user_raw) {
+    let recipient_user: DatabaseTypes.DirectusUsers | null = null;
+    if (typeof recipient_user_raw === 'string') {
+      let user = await myDatabaseHelper.getUsersHelper().readOne(recipient_user_raw);
+      if (!user) {
+        throw new Error('User not found for id: ' + recipient_user_raw);
+      }
+      recipient_user = user;
+    }
+    if (recipient_user) {
+      let email = recipient_user.email;
+      if (email) {
+        email_from_recipient_user = email;
+      }
+    }
+  }
+  return email_from_recipient_user;
+}
+
+async function resolveRecipientEmailsForFormExtract(form_extract: DatabaseTypes.FormExtracts, form_answers: FormExtractFormAnswer[], myDatabaseHelper: MyDatabaseHelper): Promise<string[]> {
+  let recipient_emails = resolveStaticAndFieldRecipientEmails(form_extract, form_answers);
+
+  let email_from_recipient_user = await resolveRecipientUserEmail(form_extract, myDatabaseHelper);
+  if (email_from_recipient_user) {
+    recipient_emails.push(email_from_recipient_user);
+  }
+
+  return recipient_emails;
+}
+
+async function resolveRelevantFormFieldsForExtract(form_extract: DatabaseTypes.FormExtracts, form_fields: DatabaseTypes.FormFields[], myDatabaseHelper: MyDatabaseHelper): Promise<DatabaseTypes.FormFields[]> {
+  let form_extract_id = form_extract.id;
+  let relevant_form_fields: DatabaseTypes.FormFields[] = [];
+  if (form_extract.all_fields) {
+    relevant_form_fields = form_fields;
+  } else {
+    let formExtractFields = await myDatabaseHelper.getFormExtractFormFieldsHelper().findItems({
+      form_extracts_id: form_extract_id,
+    });
+    for (let formExtractField of formExtractFields) {
+      let form_field_id = formExtractField.form_fields_id;
+      let form_field = form_fields.find(ff => ff.id === form_field_id);
+      if (!form_field) {
+        throw new Error('Form field not found for id: ' + form_field_id);
+      }
+      relevant_form_fields.push(form_field);
+    }
+  }
+  return relevant_form_fields;
+}
+
+function buildSortedFormAnswersForExtract(relevant_form_fields: DatabaseTypes.FormFields[], form_answers: FormExtractFormAnswer[]): FormExtractRelevantInformation {
+  let form_answers_relevant_for_form_extract: FormExtractRelevantInformation = [];
+  for (let relevant_form_field of relevant_form_fields) {
+    let form_field_id = relevant_form_field.id;
+    let form_answer = form_answers.find(fa => fa.form_field === form_field_id);
+    if (!form_answer) {
+      throw new Error('Form answer not found for form field id: ' + form_field_id);
+    }
+    form_answers_relevant_for_form_extract.push({
+      form_field_id: form_field_id,
+      sort: relevant_form_field.sort,
+      form_field: relevant_form_field,
+      form_answer: form_answer,
+    });
+  }
+
+  // sort the form answers by the sort of the form fields
+  form_answers_relevant_for_form_extract.sort((a, b) => {
+    if (a.sort === null || a.sort === undefined) {
+      return 1;
+    }
+    if (b.sort === null || b.sort === undefined) {
+      return -1;
+    }
+    // smaller sort values come first
+    return a.sort - b.sort;
+  });
+
+  return form_answers_relevant_for_form_extract;
+}
+
+async function processFormExtractMailForSubmission(
+  form_extract: DatabaseTypes.FormExtracts,
+  form_with_translations: DatabaseTypes.Forms,
+  formSubmission: DatabaseTypes.FormSubmissions,
+  form_answers: FormExtractFormAnswer[],
+  form_fields: DatabaseTypes.FormFields[],
+  myDatabaseHelper: MyDatabaseHelper
+) {
+  let form_extract_id = form_extract.id;
+
+  let recipient_emails = await resolveRecipientEmailsForFormExtract(form_extract, form_answers, myDatabaseHelper);
+
+  let atleast_one_recipient_email = recipient_emails.length > 0;
+  if (!atleast_one_recipient_email) {
+    throw new Error('No recipient email found for form extract id: ' + form_extract_id);
+  }
+
+  console.log('Get form_extract_form_fields for form_extract id: ' + form_extract_id);
+  let relevant_form_fields = await resolveRelevantFormFieldsForExtract(form_extract, form_fields, myDatabaseHelper);
+
+  let form_answers_relevant_for_form_extract = buildSortedFormAnswersForExtract(relevant_form_fields, form_answers);
+
+  // So now we have the fields and answers relevant for the
+  await sendFormExtractMail(form_with_translations, form_extract, formSubmission, form_answers_relevant_for_form_extract, recipient_emails, myDatabaseHelper);
+}
+
+async function syncFormSubmissionAndSendExtractMails(formSubmission: DatabaseTypes.FormSubmissions, myDatabaseHelper: MyDatabaseHelper) {
+  console.log('Form submission is syncing. Prepare mail.');
+  let form_id = resolveFormIdFromFormSubmission(formSubmission);
+
+  // Get the form
+  console.log('Get form');
+  let form_with_translations = await myDatabaseHelper.getFormsHelper().readOneWithTranslations(form_id);
+
+  // Get the answers of the user
+  console.log('Get form answers');
+  let form_answers_raw = await myDatabaseHelper.getFormsAnswersHelper().findItems(
+    {
+      form_submission: formSubmission.id,
+    },
+    {
+      fields: ['*', 'value_image.*', 'value_files.*'], // this allows us to parse as FormExtractFormAnswer
+    }
+  );
+  let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
+
+  //console.log("Form answers: ");
+  //console.log(JSON.stringify(form_answers, null, 2));
+
+  /**
+   *  Form answers:
+   *  [
+   *    {
+   *      "date_created": "2025-05-13T15:42:17.078Z",
+   *      "date_updated": "2025-05-13T15:42:42.560Z",
+   *      "form_field": "5aa6c42e-9316-4e19-b012-33e6d3a6a3c4",
+   *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+   *      "id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+   *      "sort": null,
+   *      "status": "published",
+   *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+   *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+   *      "value_boolean": null,
+   *      "value_custom": null,
+   *      "value_date": null,
+   *      "value_number": null,
+   *      "value_string": null,
+   *      "value_files": [
+   *        {
+   *          "directus_files_id": "24794e32-0db9-4e76-9a35-27545b99e4dd",
+   *          "form_answers_id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+   *          "id": 10
+   *        }
+   *      ],
+   *      "value_image": null
+   *    },
+   *    {
+   *      "date_created": "2025-05-13T15:42:17.071Z",
+   *      "date_updated": "2025-05-13T15:42:42.568Z",
+   *      "form_field": "d5cda419-7a66-4208-b528-b293ead52844",
+   *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+   *      "id": "32ab94fc-1273-405e-a9a7-0f0c2149ebdd",
+   *      "sort": null,
+   *      "status": "published",
+   *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+   *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+   *      "value_boolean": null,
+   *      "value_custom": null,
+   *      "value_date": null,
+   *      "value_number": null,
+   *      "value_string": "Test",
+   *      "value_files": [],
+   *      "value_image": null
+   *    }
+   *  ]
+   */
+
+  // Get the form fields of the form
+  console.log('Get form fields');
+  let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems(
+    {
+      form: form_id,
+    },
+    { withTranslations: true }
+  ); // with translations of the form fields
+
+  // send mail
+  // get form extracts and send mail according to the form extract fields
+  console.log('Get form extracts');
+  let formExtracts = await myDatabaseHelper.getFormExtractsHelper().findItems({
+    form: form_id,
+  });
+
+  for (let form_extract of formExtracts) {
+    await processFormExtractMailForSubmission(form_extract, form_with_translations, formSubmission, form_answers, form_fields, myDatabaseHelper);
+  }
+
+  // set state to closed
+  console.log('Set form submission state to closed');
+  await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
+    primary_key: formSubmission.id,
+    update: {
+      state: FormSubmissionState.CLOSED,
+    },
+  });
+}
+
+async function processFormSubmissionSyncingIfNeeded(form_submission_id: PrimaryKey, myDatabaseHelper: MyDatabaseHelper) {
+  console.log('Check Form submission id: ' + form_submission_id);
+  let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+  if (formSubmission.state === FormSubmissionState.SYNCING) {
+    try {
+      await syncFormSubmissionAndSendExtractMails(formSubmission, myDatabaseHelper);
+    } catch (e: any) {
+      console.error('Error while sending mail after form submission state syncing: ' + e.toString());
+      console.error(e);
+    }
+    // set state to closed on error
+    console.log('Set form submission state to closed on error');
+    await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
+        primary_key: formSubmission.id,
+        update: {
+            state: FormSubmissionState.CLOSED,
+        }
+    });
+  }
+}
+
 function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
-  // TODO: Move this into a workflow instead of a hook
   registerFunctions.action(CollectionNames.FORM_SUBMISSIONS + '.items.update', async (meta, context) => {
     console.log('Send mail after form submission state syncing');
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
     let form_submissions_ids = meta.keys as PrimaryKey[];
     for (let form_submission_id of form_submissions_ids) {
-      console.log('Check Form submission id: ' + form_submission_id);
-      let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
-      if (formSubmission.state === FormSubmissionState.SYNCING) {
-        try {
-          console.log('Form submission is syncing. Prepare mail.');
-          let form_id: string | undefined;
-          if (formSubmission.form) {
-            if (typeof formSubmission.form === 'string') {
-              form_id = formSubmission.form;
-            } else {
-              form_id = formSubmission.form.id;
-            }
-          }
-          if (!form_id) {
-            throw new Error('Form submission has no form id.');
-          }
-
-          // Get the form
-          console.log('Get form');
-          let form_with_translations = await myDatabaseHelper.getFormsHelper().readOneWithTranslations(form_id);
-
-          // Get the answers of the user
-          console.log('Get form answers');
-          let form_answers_raw = await myDatabaseHelper.getFormsAnswersHelper().findItems(
-            {
-              form_submission: formSubmission.id,
-            },
-            {
-              fields: ['*', 'value_image.*', 'value_files.*'], // this allows us to parse as FormExtractFormAnswer
-            }
-          );
-          let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
-
-          //console.log("Form answers: ");
-          //console.log(JSON.stringify(form_answers, null, 2));
-
-          /**
-           *  Form answers:
-           *  [
-           *    {
-           *      "date_created": "2025-05-13T15:42:17.078Z",
-           *      "date_updated": "2025-05-13T15:42:42.560Z",
-           *      "form_field": "5aa6c42e-9316-4e19-b012-33e6d3a6a3c4",
-           *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
-           *      "id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
-           *      "sort": null,
-           *      "status": "published",
-           *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
-           *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
-           *      "value_boolean": null,
-           *      "value_custom": null,
-           *      "value_date": null,
-           *      "value_number": null,
-           *      "value_string": null,
-           *      "value_files": [
-           *        {
-           *          "directus_files_id": "24794e32-0db9-4e76-9a35-27545b99e4dd",
-           *          "form_answers_id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
-           *          "id": 10
-           *        }
-           *      ],
-           *      "value_image": null
-           *    },
-           *    {
-           *      "date_created": "2025-05-13T15:42:17.071Z",
-           *      "date_updated": "2025-05-13T15:42:42.568Z",
-           *      "form_field": "d5cda419-7a66-4208-b528-b293ead52844",
-           *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
-           *      "id": "32ab94fc-1273-405e-a9a7-0f0c2149ebdd",
-           *      "sort": null,
-           *      "status": "published",
-           *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
-           *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
-           *      "value_boolean": null,
-           *      "value_custom": null,
-           *      "value_date": null,
-           *      "value_number": null,
-           *      "value_string": "Test",
-           *      "value_files": [],
-           *      "value_image": null
-           *    }
-           *  ]
-           */
-
-          // Get the form fields of the form
-          console.log('Get form fields');
-          let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems(
-            {
-              form: form_id,
-            },
-            { withTranslations: true }
-          ); // with translations of the form fields
-
-          // send mail
-          // get form extracts and send mail according to the form extract fields
-          console.log('Get form extracts');
-          let formExtracts = await myDatabaseHelper.getFormExtractsHelper().findItems({
-            form: form_id,
-          });
-
-          for (let form_extract of formExtracts) {
-            let form_extract_id = form_extract.id;
-
-            let recipient_emails: string[] = [];
-
-            let recipient_email_static = form_extract.recipient_email_static;
-            if (recipient_email_static) {
-              recipient_emails.push(recipient_email_static);
-            }
-
-            let recipient_email_field_id = form_extract.recipient_email_field; // if the recipient email is dynamic and set by the user in the form
-            let dynamic_email_dynamic: string | undefined | null = undefined;
-            if (recipient_email_field_id) {
-              let form_answer_recipient_email = form_answers.find(fa => fa.form_field === recipient_email_field_id);
-              if (!form_answer_recipient_email) {
-                throw new Error('Recipient email field not found for id: ' + recipient_email_field_id);
-              }
-              dynamic_email_dynamic = form_answer_recipient_email.value_string;
-              if (dynamic_email_dynamic) {
-                recipient_emails.push(dynamic_email_dynamic);
-              }
-            }
-
-            const recipient_user_raw = form_extract.recipient_user; // if the recipient email is the user who submitted the form
-            if (recipient_user_raw) {
-              let recipient_user: DatabaseTypes.DirectusUsers | null = null;
-              if (typeof recipient_user_raw === 'string') {
-                let user = await myDatabaseHelper.getUsersHelper().readOne(recipient_user_raw);
-                if (!user) {
-                  throw new Error('User not found for id: ' + recipient_user_raw);
-                }
-                recipient_user = user;
-              }
-              if (recipient_user) {
-                let email = recipient_user.email;
-                if (email) {
-                  recipient_emails.push(email);
-                }
-              }
-            }
-
-            let atleast_one_recipient_email = recipient_emails.length > 0;
-            if (!atleast_one_recipient_email) {
-              throw new Error('No recipient email found for form extract id: ' + form_extract_id);
-            }
-
-            console.log('Get form_extract_form_fields for form_extract id: ' + form_extract_id);
-            let relevant_form_fields: DatabaseTypes.FormFields[] = [];
-            if (form_extract.all_fields) {
-              relevant_form_fields = form_fields;
-            } else {
-              let formExtractFields = await myDatabaseHelper.getFormExtractFormFieldsHelper().findItems({
-                form_extracts_id: form_extract_id,
-              });
-              for (let formExtractField of formExtractFields) {
-                let form_field_id = formExtractField.form_fields_id;
-                let form_field = form_fields.find(ff => ff.id === form_field_id);
-                if (!form_field) {
-                  throw new Error('Form field not found for id: ' + form_field_id);
-                }
-                relevant_form_fields.push(form_field);
-              }
-            }
-
-            let form_answers_relevant_for_form_extract: FormExtractRelevantInformation = [];
-            for (let relevant_form_field of relevant_form_fields) {
-              let form_field_id = relevant_form_field.id;
-              let form_answer = form_answers.find(fa => fa.form_field === form_field_id);
-              if (!form_answer) {
-                throw new Error('Form answer not found for form field id: ' + form_field_id);
-              }
-              form_answers_relevant_for_form_extract.push({
-                form_field_id: form_field_id,
-                sort: relevant_form_field.sort,
-                form_field: relevant_form_field,
-                form_answer: form_answer,
-              });
-            }
-
-            // sort the form answers by the sort of the form fields
-            form_answers_relevant_for_form_extract.sort((a, b) => {
-              if (a.sort === null || a.sort === undefined) {
-                return 1;
-              }
-              if (b.sort === null || b.sort === undefined) {
-                return -1;
-              }
-              // smaller sort values come first
-              return a.sort - b.sort;
-            });
-
-            // So now we have the fields and answers relevant for the
-            await sendFormExtractMail(form_with_translations, form_extract, formSubmission, form_answers_relevant_for_form_extract, recipient_emails, myDatabaseHelper);
-          }
-
-          // set state to closed
-          console.log('Set form submission state to closed');
-          await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
-            primary_key: formSubmission.id,
-            update: {
-              state: FormSubmissionState.CLOSED,
-            },
-          });
-        } catch (e: any) {
-          console.error('Error while sending mail after form submission state syncing: ' + e.toString());
-          console.error(e);
-        }
-        // set state to closed on error
-        console.log('Set form submission state to closed on error');
-        await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
-            primary_key: formSubmission.id,
-            update: {
-                state: FormSubmissionState.CLOSED,
-            }
-        });
-      }
+      await processFormSubmissionSyncingIfNeeded(form_submission_id, myDatabaseHelper);
     }
   });
 }
@@ -387,7 +454,6 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
 
   let internalMyDatabaseHelper = myDatabaseHelper.cloneWithInternalServerMode();
   // we need the internal server mode to generate the pdf, as traefik does not route the request correctly
-  // TODO: Fix traefik configuration or add server to extra_hosts in docker-compose
   let pdfBuffer = await FormHelper.generatePdfFromForm({
     form,
     formExtractRelevantInformation,
@@ -450,11 +516,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (reg
   // Send mail after form submission state syncing
   registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
 
-  switch (EnvVariableHelper.getSyncForCustomer()) {
-    case SyncForCustomerEnum.HANNOVER:
-      FormSyncHannover.registerHooks(registerFunctions, apiContext);
-      break;
-    default:
-      break;
+  if (EnvVariableHelper.getSyncForCustomer() === SyncForCustomerEnum.HANNOVER) {
+    FormSyncHannover.registerHooks(registerFunctions, apiContext);
   }
 });

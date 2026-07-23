@@ -67,16 +67,18 @@ export type GameRules = {
 	playerOrder?: PlayerOrderRule | null;
 };
 
-/** A shareable game template: everything needed to create a new game type. */
-export type GamePreset = {
+/** Rules/config fields shared between a shareable `GamePreset` and a stored `GameType`. */
+export type GameTypeDefinition = {
 	name: string;
+	/** Emoji shown as the game's "image" in lists and headers (e.g. 🎲). */
 	icon: string;
 	scoringMode: ScoringMode;
+	/** Maximum number of rounds per match. undefined/null = unlimited. */
 	maxRounds?: number | null;
+	/** Total score at which a match ends. undefined/null = unlimited. */
 	maxScore?: number | null;
+	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
 	rules?: GameRules | null;
-	/** How the starting player rotates each round. undefined/absent defaults to 'fixed'. */
-	startingPlayerMode?: StartingPlayerMode;
 	/**
 	 * Content version of this game definition (distinct from `rules.version`,
 	 * the fixed rule-schema version). Bump this yourself when sharing an
@@ -84,6 +86,12 @@ export type GamePreset = {
 	 * Undefined/absent defaults to 1.
 	 */
 	version?: number;
+};
+
+/** A shareable game template: everything needed to create a new game type. */
+export type GamePreset = GameTypeDefinition & {
+	/** How the starting player rotates each round. undefined/absent defaults to 'fixed'. */
+	startingPlayerMode?: StartingPlayerMode;
 };
 
 // ─── Evaluation ───────────────────────────────────────────────────────────────
@@ -381,6 +389,35 @@ export function validateGameRules(value: unknown): GameRules | null {
 }
 
 /**
+ * Validates the plain scalar fields of a parsed game-preset object (everything
+ * except the nested `rules`, which `parseGamePreset` validates separately since
+ * it needs to keep the parsed `GameRules` value, not just a boolean). A type
+ * predicate (like `isRuleExpr`/`isCardItem` above) so `parseGamePreset` keeps
+ * the same narrowed field types on `v` after the check as it did before this
+ * was split out into its own function.
+ */
+function isValidGamePresetScalarFields(
+	v: Record<string, unknown>,
+): v is Record<string, unknown> & {
+	name: string;
+	icon: string;
+	scoringMode: 'highWins' | 'lowWins';
+	maxRounds: number | null | undefined;
+	maxScore: number | null | undefined;
+	version: number | undefined;
+	startingPlayerMode: StartingPlayerMode | undefined;
+} {
+	if (typeof v.name !== 'string' || v.name.trim() === '') return false;
+	if (typeof v.icon !== 'string' || v.icon === '') return false;
+	if (v.scoringMode !== 'highWins' && v.scoringMode !== 'lowWins') return false;
+	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return false;
+	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return false;
+	if (v.version !== undefined && typeof v.version !== 'number') return false;
+	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return false;
+	return true;
+}
+
+/**
  * Parse a shareable game-template JSON string (as produced by "Spiel
  * exportieren") for import. Returns the parsed preset, or `null` if the text
  * isn't a valid one.
@@ -394,13 +431,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 	}
 	if (typeof parsed !== 'object' || parsed === null) return null;
 	const v = parsed as Record<string, unknown>;
-	if (typeof v.name !== 'string' || v.name.trim() === '') return null;
-	if (typeof v.icon !== 'string' || v.icon === '') return null;
-	if (v.scoringMode !== 'highWins' && v.scoringMode !== 'lowWins') return null;
-	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return null;
-	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return null;
-	if (v.version !== undefined && typeof v.version !== 'number') return null;
-	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return null;
+	if (!isValidGamePresetScalarFields(v)) return null;
 
 	let rules: GameRules | null = null;
 	if (v.rules !== undefined && v.rules !== null) {

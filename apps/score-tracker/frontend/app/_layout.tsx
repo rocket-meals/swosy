@@ -46,6 +46,15 @@ function ThemeSyncBridge() {
 	return null;
 }
 
+// Returns a `drawerIcon` render-prop for the given icon set/name, so each
+// Drawer.Screen's options can reference a stable function instead of
+// defining a new arrow (and thus a new "component") on every render.
+function makeDrawerIcon(IconSet: typeof Ionicons, name: string) {
+	return ({ color, size }: { color: string; size: number }) => <IconSet name={name as any} size={size} color={color} />;
+}
+
+const renderDrawerContent = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
+
 // ─── Drawer navigator ─────────────────────────────────────────────────────────
 
 function ThemedDrawerNavigator() {
@@ -55,7 +64,7 @@ function ThemedDrawerNavigator() {
 		<>
 			<StatusBar style="auto" />
 			<Drawer
-				drawerContent={(props) => <CustomDrawerContent {...props} />}
+				drawerContent={renderDrawerContent}
 				backBehavior="history"
 				screenOptions={{
 					drawerActiveTintColor: PRIMARY_COLOR,
@@ -70,18 +79,14 @@ function ThemedDrawerNavigator() {
 					name="index"
 					options={{
 						title: 'Game',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="game-controller-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'game-controller-outline'),
 					}}
 				/>
 				<Drawer.Screen
 					name="games/index"
 					options={{
 						title: 'Spiele',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="dice-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'dice-outline'),
 					}}
 				/>
 				<Drawer.Screen
@@ -95,36 +100,28 @@ function ThemedDrawerNavigator() {
 					name="players/index"
 					options={{
 						title: 'Freunde',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="people-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'people-outline'),
 					}}
 				/>
 				<Drawer.Screen
 					name="timer/index"
 					options={{
 						title: 'Timer',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="stopwatch-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'stopwatch-outline'),
 					}}
 				/>
 				<Drawer.Screen
 					name="dice/index"
 					options={{
 						title: 'Würfel',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="dice-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'dice-outline'),
 					}}
 				/>
 				<Drawer.Screen
 					name="settings/index"
 					options={{
 						title: 'Settings',
-						drawerIcon: ({ color, size }) => (
-							<Ionicons name="settings-outline" size={size} color={color} />
-						),
+						drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 					}}
 				/>
 			</Drawer>

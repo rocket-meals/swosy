@@ -5,9 +5,8 @@ const WILDCARD_REPLACEMENT = 'WILDCARD_REPLACEMENT';
 
 export class RedirectWhitelistHelper {
   static isRedirectUrlAllowedForWhitelistEntriesWithSimpleWildcards(redirect_whitelist_entries: string[], redirect_url: URL) {
-    for (let i = 0; i < redirect_whitelist_entries.length; i++) {
+    for (const redirect_whitelist_entry of redirect_whitelist_entries) {
       // iterate over the whitelist as long as we haven't found a valid redirect
-      let redirect_whitelist_entry = redirect_whitelist_entries[i];
       try {
         if (RedirectWhitelistHelper.isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry, redirect_url)) {
           return true;

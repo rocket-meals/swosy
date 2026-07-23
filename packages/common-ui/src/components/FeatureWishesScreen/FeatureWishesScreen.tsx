@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, MathHelper } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -74,6 +74,29 @@ const DEFAULT_ITEMS: FeatureWishItem[] = [
 ];
 
 const STATUS_PUBLISHED = 'published';
+
+function applyLikeToggle(
+	id: string,
+	setLikedIds: React.Dispatch<React.SetStateAction<Set<string>>>,
+	setItems: React.Dispatch<React.SetStateAction<FeatureWishItem[]>>
+) {
+	setLikedIds(prev => {
+		const wasLiked = prev.has(id);
+		const next = new Set(prev);
+		if (wasLiked) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		setItems(prevItems =>
+			prevItems.map(item => {
+				if (item.id !== id) return item;
+				return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
+			})
+		);
+		return next;
+	});
+}
 const STATUS_DRAFT = 'draft';
 
 const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
@@ -123,22 +146,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	}, [items, activeFilter, searchText]);
 
 	const handleLike = useCallback((id: string) => {
-		setLikedIds((prev) => {
-			const wasLiked = prev.has(id);
-			const next = new Set(prev);
-			if (wasLiked) {
-				next.delete(id);
-			} else {
-				next.add(id);
-			}
-			setItems((prevItems) =>
-				prevItems.map((item) => {
-					if (item.id !== id) return item;
-					return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
-				})
-			);
-			return next;
-		});
+		applyLikeToggle(id, setLikedIds, setItems);
 	}, []);
 
 	const handleApprove = useCallback(
@@ -162,7 +170,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	const handleCreate = useCallback(
 		(title: string, description: string) => {
 			const newItem: FeatureWishItem = {
-				id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+				id: `${Date.now()}-${MathHelper.random().toString(36).slice(2, 9)}`,
 				title,
 				description,
 				likes: 0,

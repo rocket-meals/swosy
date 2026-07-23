@@ -27,8 +27,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
 
   async getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
     let markings: MarkingsTypeForParser[] = [];
-    for (let i = 0; i < this.parsedReport.length; i++) {
-      let parsedLineObject = this.parsedReport[i];
+    for (const parsedLineObject of this.parsedReport) {
       if (parsedLineObject) {
         let marking = MarkingTL1Parser.getMarkingJSONFromRawMarking(parsedLineObject);
         if (marking) {
@@ -42,7 +41,6 @@ export class MarkingTL1Parser implements MarkingParserInterface {
   private static getMarkingJSONFromRawMarking(rawMarking: { [p: string]: string }): MarkingsTypeForParser | null {
     let id = rawMarking['ID'];
     let name = rawMarking['BESCHREIBUNG'];
-    let hint = rawMarking['HINWEISE'];
     let short = rawMarking['KUERZEL'];
 
     let external_identifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);

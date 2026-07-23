@@ -113,6 +113,27 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
       return [];
     }
 
+    let rawReport = await this.readAndDecodeFileContent(logger);
+
+    if (logger) {
+      await logger.appendLog('File read successfully, now parsing');
+    }
+
+    let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, {
+      newLineDelimiter: CSVExportParser.NEW_LINE_DELIMITER,
+      inlineDelimiter: CSVExportParser.INLINE_DELIMITER_SEMICOLON,
+      removeTailoringQuotes: true,
+    });
+    let tl1ImportHousingContracts: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
+
+    if (logger) {
+      await logger.appendLog('CSV parsed successfully, now correcting date values');
+    }
+
+    return await this.buildImportHousingContracts(tl1ImportHousingContracts, logger);
+  }
+
+  private async readAndDecodeFileContent(logger?: WorkflowRunLogger): Promise<string> {
     let encoding = chardet.detect(fs.readFileSync(this.path_to_file));
     //console.log("Encoding detected: ", encoding);
     if (logger) {
@@ -156,21 +177,10 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
       throw new Error('Error reading file: ' + error.message);
     }
 
-    if (logger) {
-      await logger.appendLog('File read successfully, now parsing');
-    }
+    return rawReport;
+  }
 
-    let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, {
-      newLineDelimiter: CSVExportParser.NEW_LINE_DELIMITER,
-      inlineDelimiter: CSVExportParser.INLINE_DELIMITER_SEMICOLON,
-      removeTailoringQuotes: true,
-    });
-    let tl1ImportHousingContracts: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
-
-    if (logger) {
-      await logger.appendLog('CSV parsed successfully, now correcting date values');
-    }
-
+  private async buildImportHousingContracts(tl1ImportHousingContracts: Tl1ImportHousingContracts, logger?: WorkflowRunLogger): Promise<ImportHousingContracts> {
     let result: ImportHousingContracts = [];
 
     for (let i = 0; i < tl1ImportHousingContracts.length; i++) {
@@ -421,8 +431,8 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
   }
 
   public static getSortedKeysForHousingContractCompositeId(): ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[] {
-    let sortedKeysForHousingContractCompositeId = HOUSING_CONTRACT_FIELDS_FOR_ID.sort((a, b) => a.localeCompare(b));
-    return sortedKeysForHousingContractCompositeId;
+    HOUSING_CONTRACT_FIELDS_FOR_ID.sort((a, b) => a.localeCompare(b));
+    return HOUSING_CONTRACT_FIELDS_FOR_ID;
   }
 
   getHousingContractInternalCustomId(housingContract: ImportHousingContract): string | null {

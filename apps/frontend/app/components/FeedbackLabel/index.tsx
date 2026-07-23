@@ -17,6 +17,28 @@ import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import useAppRatingScore from '@/hooks/useAppRatingScore';
 
+const HoverIconTrigger = ({
+	triggerProps,
+	onHoverIn,
+	onHoverOut,
+	children,
+}: {
+	triggerProps: object;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	children: React.ReactNode;
+}) => (
+	<Pressable {...triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut} style={{ cursor: 'default' } as any}>
+		{children}
+	</Pressable>
+);
+
+const makeHoverIconTrigger = (onHoverIn: () => void, onHoverOut: () => void, children: React.ReactNode) => (triggerProps: object) => (
+	<HoverIconTrigger triggerProps={triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		{children}
+	</HoverIconTrigger>
+);
+
 const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -42,9 +64,9 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 		}
 		let likeStats = null;
 		if (isLike === true && like === true) {
-			likeStats = null;
+			// likeStats already null
 		} else if (isLike === false && like === false) {
-			likeStats = null;
+			// likeStats already null
 		} else {
 			likeStats = isLike;
 		}
@@ -68,11 +90,13 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
-				trigger={triggerProps => (
-					<Pressable {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={{ cursor: 'default' } as any}>
+				trigger={makeHoverIconTrigger(
+					() => setShowTooltip(true),
+					() => setShowTooltip(false),
+					<>
 						{imageUrl && <Image source={{ uri: imageUrl }} style={styles.icon} />}
 						{icon && getIconComponent(icon, theme.screen.icon)}
-					</Pressable>
+					</>
 				)}
 			>
 				<TooltipContent

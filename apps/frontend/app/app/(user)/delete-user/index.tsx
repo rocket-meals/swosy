@@ -27,7 +27,7 @@ const Index = () => {
 	const [projectName, setProjectName] = useState('');
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
-	const [animationJson, setAmimationJson] = useState<any>(null);
+	const [animationJson, setAnimationJson] = useState<any>(null);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [isDeleteAccount, setIsDeleteAccount] = useState(false);
@@ -41,9 +41,9 @@ const Index = () => {
 	};
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(animation, primaryColor));
+			setAnimationJson(replaceLottieColors(animation, primaryColor));
 			return () => {
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [])
 	);
@@ -54,7 +54,7 @@ const Index = () => {
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);

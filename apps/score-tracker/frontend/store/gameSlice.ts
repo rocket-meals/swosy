@@ -6,20 +6,12 @@ import type { Friend } from '../helpers/FriendsStorage';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
 import { generateId } from '../helpers/RandomHelper';
-export type { Player, Round, GameState, GameStatus };
+export type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
-export type GameSliceState = {
-	players: Player[];
-	rounds: Round[];
-	status: GameStatus;
-	currentRoundIndex: number;
-	/** Set when the current match is played as a specific game type. */
-	gameTypeId?: string;
-	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
-	playerOrderState?: number;
-};
+/** Redux slice state for the current match; identical shape to the persisted `GameState`. */
+export type GameSliceState = GameState;
 
 const initialState: GameSliceState = {
 	players: [],

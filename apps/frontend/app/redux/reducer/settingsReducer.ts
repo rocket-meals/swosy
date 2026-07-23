@@ -75,253 +75,75 @@ const initialState = {
         },
 };
 
-const settingReducer = (state = initialState, actions: any) => {
+// Action types whose handling is a simple, uniform "replace one field with the
+// action payload" operation. Grouping them into a lookup table (instead of one
+// switch-case each) keeps the reducer's switch statement below the maintainability
+// threshold for number of case clauses, without changing behavior for any action type.
+const SIMPLE_FIELD_ASSIGNMENTS: Record<string, string> = {
+	[CHANGE_THEME]: 'selectedTheme',
+	[SET_WARNING]: 'isWarning',
+	[SET_SORTING]: 'sortBy',
+	[SET_CAMPUSES_SORTING]: 'campusesSortBy',
+	[SET_APARTMENTS_SORTING]: 'apartmentsSortBy',
+	[SET_SERVER_INFO]: 'serverInfo',
+	[SET_COLOR]: 'primaryColor',
+	[CHANGE_LANGUAGE]: 'language',
+	[SET_DRAWER_POSITION]: 'drawerPosition',
+	[SET_APP_SETTINGS]: 'appSettings',
+	[SET_WIKIS_PAGES]: 'wikisPages',
+	[SET_WIKIS]: 'wikis',
+	[SET_NICKNAME_LOCAL]: 'nickNameLocal',
+	[SET_FIRST_DAY_OF_THE_WEEK]: 'firstDayOfTheWeek',
+	[SET_AMOUNT_COLUMNS_FOR_CARDS]: 'amountColumnsForcard',
+	[SET_FOOD_DETAILS_LAST_TAB]: 'foodDetailsLastTab',
+	[SET_USE_WEBP_FOR_ASSETS]: 'useWebpForAssets',
+	[SET_FOODOFFERS_NEXT_DAY_THRESHOLD]: 'foodOffersNextDayThreshold',
+	[SET_DEBUG_MODE]: 'debugMode',
+	[SET_SIMULATE_EXPO_UPDATE_AVAILABLE]: 'simulateExpoUpdateAvailable',
+	[SET_COLLECTIBLE_ITEM_SIZE]: 'collectibleItemSize',
+	[SET_COLLECTIBLE_RANDOM_POSITION]: 'collectibleRandomPosition',
+	[SET_OFFLINE_MODE]: 'offlineMode',
+	[SET_MAP_TILE_VARIANT_KEY]: 'mapTileVariantKey',
+	[SET_MAP_USE_FLY_ANIMATION]: 'mapUseFlyAnimation',
+	[SET_MAP_VIRTUAL_ZOOM]: 'mapVirtualZoom',
+	[SET_MAP_ORGANISATION_FILTER]: 'mapOrganisationFilter',
+	[SET_OSM_VECTOR_MAP_STYLE_KEY]: 'osmVectorMapStyleKey',
+	[SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION]: 'osmVectorMapUseFlyAnimation',
+	[SET_OSM_VECTOR_MAP_ORGANISATION_FILTER]: 'osmVectorMapOrganisationFilter',
+	[SET_OSM_VECTOR_MAP_PITCH]: 'osmVectorMapPitch',
+	[SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE]: 'osmVectorMapClusterDistance',
+	[SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT]: 'osmVectorMapShowControlsHint',
+	[SET_OSM_VECTOR_MAP_GAME_MODE]: 'osmVectorMapGameMode',
+	[SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE]: 'osmVectorMapAutoRotateMode',
+	[SET_OSM_VECTOR_MAP_PEOPLE_MODE]: 'osmVectorMapPeopleMode',
+	[SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT]: 'osmVectorMapIntelligentMovement',
+	[SET_OSM_VECTOR_MAP_PEOPLE_COUNT]: 'osmVectorMapPeopleCount',
+	[SET_OSM_VECTOR_MAP_CAR_MODE]: 'osmVectorMapCarMode',
+	[SET_OSM_VECTOR_MAP_CONSENT]: 'osmVectorMapConsent',
+	[SET_MAP_CLUSTER_PIXEL_RADIUS]: 'mapClusterPixelRadius',
+	[SET_PIRATE_LANGUAGE]: 'pirateLanguage',
+	[SET_FUN_LANGUAGE_MODE]: 'funLanguageMode',
+	[SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN]: 'foodoffersShowSeparatedMarkingsBreakdown',
+	[SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD]: 'foodoffersShowAverageRatingOnCard',
+};
+
+const settingReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
+	const simpleField = SIMPLE_FIELD_ASSIGNMENTS[actions.type];
+	if (simpleField !== undefined) {
+		return {
+			...state,
+			[simpleField]: actions.payload,
+		};
+	}
+
 	switch (actions.type) {
-		case CHANGE_THEME: {
-			return {
-				...state,
-				selectedTheme: actions.payload,
-			};
-		}
-		case SET_WARNING: {
-			return {
-				...state,
-				isWarning: actions.payload,
-			};
-		}
-		case SET_SORTING: {
-			return {
-				...state,
-				sortBy: actions.payload,
-			};
-		}
-		case SET_CAMPUSES_SORTING: {
-			return {
-				...state,
-				campusesSortBy: actions.payload,
-			};
-		}
-		case SET_APARTMENTS_SORTING: {
-			return {
-				...state,
-				apartmentsSortBy: actions.payload,
-			};
-		}
-		case SET_SERVER_INFO: {
-			return {
-				...state,
-				serverInfo: actions.payload,
-			};
-		}
-		case SET_COLOR: {
-			return {
-				...state,
-				primaryColor: actions.payload,
-			};
-		}
-		case CHANGE_LANGUAGE: {
-			return {
-				...state,
-				language: actions.payload,
-			};
-		}
-		case SET_DRAWER_POSITION: {
-			return {
-				...state,
-				drawerPosition: actions.payload,
-			};
-		}
-		case SET_APP_SETTINGS: {
-			return {
-				...state,
-				appSettings: actions.payload,
-			};
-		}
-		case SET_WIKIS_PAGES: {
-			return {
-				...state,
-				wikisPages: actions.payload,
-			};
-		}
-		case SET_WIKIS: {
-			return {
-				...state,
-				wikis: actions.payload,
-			};
-		}
-		case SET_NICKNAME_LOCAL: {
-			return {
-				...state,
-				nickNameLocal: actions.payload,
-			};
-		}
-		case SET_FIRST_DAY_OF_THE_WEEK: {
-			return {
-				...state,
-				firstDayOfTheWeek: actions.payload,
-			};
-		}
-		case SET_AMOUNT_COLUMNS_FOR_CARDS: {
-			return {
-				...state,
-				amountColumnsForcard: actions.payload,
-			};
-		}
-                case SET_FOOD_DETAILS_LAST_TAB: {
-                        return {
-                                ...state,
-                                foodDetailsLastTab: actions.payload,
-                        };
-                }
-                case SET_USE_WEBP_FOR_ASSETS: {
-                        return {
-                                ...state,
-                                useWebpForAssets: actions.payload,
-                        };
-                }
-                case SET_FOODOFFERS_NEXT_DAY_THRESHOLD: {
-                        return {
-                                ...state,
-                                foodOffersNextDayThreshold: actions.payload,
-                        };
-                }
                 case SET_SELECTED_CUSTOMER: {
                         return {
                                 ...state,
                                 selectedCustomer: actions.payload,
                                 foodoffersShowSeparatedMarkingsBreakdown: null,
-                        };
-                }
-                case SET_DEBUG_MODE: {
-                        return {
-                                ...state,
-                                debugMode: actions.payload,
-                        };
-                }
-                case SET_SIMULATE_EXPO_UPDATE_AVAILABLE: {
-                        return {
-                                ...state,
-                                simulateExpoUpdateAvailable: actions.payload,
-                        };
-                }
-                case SET_COLLECTIBLE_ITEM_SIZE: {
-                        return {
-                                ...state,
-                                collectibleItemSize: actions.payload,
-                        };
-                }
-                case SET_COLLECTIBLE_RANDOM_POSITION: {
-                        return {
-                                ...state,
-                                collectibleRandomPosition: actions.payload,
-                        };
-                }
-                case SET_OFFLINE_MODE: {
-                        return {
-                                ...state,
-                                offlineMode: actions.payload,
-                        };
-                }
-                case SET_MAP_TILE_VARIANT_KEY: {
-                        return {
-                                ...state,
-                                mapTileVariantKey: actions.payload,
-                        };
-                }
-                case SET_MAP_USE_FLY_ANIMATION: {
-                        return {
-                                ...state,
-                                mapUseFlyAnimation: actions.payload,
-                        };
-                }
-                case SET_MAP_VIRTUAL_ZOOM: {
-                        return {
-                                ...state,
-                                mapVirtualZoom: actions.payload,
-                        };
-                }
-                case SET_MAP_ORGANISATION_FILTER: {
-                        return {
-                                ...state,
-                                mapOrganisationFilter: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_STYLE_KEY: {
-                        return {
-                                ...state,
-                                osmVectorMapStyleKey: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION: {
-                        return {
-                                ...state,
-                                osmVectorMapUseFlyAnimation: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_ORGANISATION_FILTER: {
-                        return {
-                                ...state,
-                                osmVectorMapOrganisationFilter: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_PITCH: {
-                        return {
-                                ...state,
-                                osmVectorMapPitch: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE: {
-                        return {
-                                ...state,
-                                osmVectorMapClusterDistance: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT: {
-                        return {
-                                ...state,
-                                osmVectorMapShowControlsHint: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_GAME_MODE: {
-                        return {
-                                ...state,
-                                osmVectorMapGameMode: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE: {
-                        return {
-                                ...state,
-                                osmVectorMapAutoRotateMode: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_PEOPLE_MODE: {
-                        return {
-                                ...state,
-                                osmVectorMapPeopleMode: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT: {
-                        return {
-                                ...state,
-                                osmVectorMapIntelligentMovement: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_PEOPLE_COUNT: {
-                        return {
-                                ...state,
-                                osmVectorMapPeopleCount: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_CAR_MODE: {
-                        return {
-                                ...state,
-                                osmVectorMapCarMode: actions.payload,
-                        };
-                }
-                case SET_OSM_VECTOR_MAP_CONSENT: {
-                        return {
-                                ...state,
-                                osmVectorMapConsent: actions.payload,
                         };
                 }
                 case SET_OSM_VECTOR_MAP_SHOW_SETTINGS: {
@@ -340,36 +162,6 @@ const settingReducer = (state = initialState, actions: any) => {
                                         ...(state as any).osmVectorMapPoiSubSettings,
                                         ...actions.payload,
                                 },
-                        };
-                }
-                case SET_MAP_CLUSTER_PIXEL_RADIUS: {
-                        return {
-                                ...state,
-                                mapClusterPixelRadius: actions.payload,
-                        };
-                }
-                case SET_PIRATE_LANGUAGE: {
-                        return {
-                                ...state,
-                                pirateLanguage: actions.payload,
-                        };
-                }
-                case SET_FUN_LANGUAGE_MODE: {
-                        return {
-                                ...state,
-                                funLanguageMode: actions.payload,
-                        };
-                }
-                case SET_FOODOFFERS_SHOW_SEPARATED_MARKINGS_BREAKDOWN: {
-                        return {
-                                ...state,
-                                foodoffersShowSeparatedMarkingsBreakdown: actions.payload,
-                        };
-                }
-                case SET_FOODOFFERS_SHOW_AVERAGE_RATING_ON_CARD: {
-                        return {
-                                ...state,
-                                foodoffersShowAverageRatingOnCard: actions.payload,
                         };
                 }
                 case SET_CANTEEN_VISITS_VISIBILITY: {

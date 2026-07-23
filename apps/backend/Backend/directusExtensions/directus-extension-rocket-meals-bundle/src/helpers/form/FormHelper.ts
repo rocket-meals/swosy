@@ -6,7 +6,7 @@ import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBackend';
-import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper, StringHelper} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, MathHelper, NumberHelper, StringHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
@@ -70,7 +70,7 @@ export class FormHelper {
 
   public static getExampleFormExtractRelevantInformation(): FormExtractRelevantInformation {
     let formExtractRelevantInformation: FormExtractRelevantInformation = [];
-    let form_submission_id = Math.random().toString();
+    let form_submission_id = MathHelper.random().toString();
 
     let index = 0;
 
@@ -169,8 +169,7 @@ export class FormHelper {
 
     let sizes = [200, 400, 800, 1600];
     let images: string[] = [];
-    for (let i = 0; i < sizes.length; i++) {
-      let size = sizes[i];
+    for (const size of sizes) {
       let imageUrl = `https://picsum.photos/${size}/${size}`;
       images.push(imageUrl);
     }
@@ -235,7 +234,7 @@ export class FormHelper {
       form_settings: '',
       icon: '',
       icon_expo: '',
-      id: Math.random().toString() + obj.alias,
+      id: MathHelper.random().toString() + obj.alias,
       image: null,
       image_remote_url: null,
       image_thumb_hash: null,
@@ -285,7 +284,7 @@ export class FormHelper {
       date_updated: '2021-09-01T00:00:00.000Z',
       form_field: form_field_id,
       form_submission: form_submission_id,
-      id: Math.random().toString(),
+      id: MathHelper.random().toString(),
       sort: 0,
       status: 'published',
       user_created: '1',

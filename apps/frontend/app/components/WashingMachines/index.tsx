@@ -23,13 +23,13 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	const { primaryColor, appSettings } = useAppSelector((state) => state.settings);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
-	const [animationJson, setAmimationJson] = useState<any>(null);
+	const [animationJson, setAnimationJson] = useState<any>(null);
 
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(washingmachineEmpty, primaryColor));
+			setAnimationJson(replaceLottieColors(washingmachineEmpty, primaryColor));
 			return () => {
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [])
 	);
@@ -40,7 +40,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
 			return () => {
 				setAutoPlay(false);
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);
@@ -91,7 +91,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 		const now = new Date();
 
 		for (const machine of washingMachines) {
-			const { date_finished, alias, id } = machine;
+			const { date_finished, alias } = machine;
 
 			if (date_finished) {
 				const finishDate = new Date(date_finished);

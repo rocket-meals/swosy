@@ -47,9 +47,7 @@ export class WorkflowRunLogger {
   getFinalLogWithStateAndParams(workflowrun: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {
     let result: Partial<DatabaseTypes.WorkflowsRuns> = {
       ...workflowrun,
-      ...{
-        log: this.currentLog,
-      },
+      log: this.currentLog,
     };
     return result;
   }

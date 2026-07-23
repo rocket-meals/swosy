@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { ScrollViewModalContentProps } from 'repo-depkit-common-ui';
 
 export interface MyScrollViewModalProps extends ScrollViewModalContentProps {
-  closeSheet?: () => void;
   // For FlatList mode
   renderItem?: (info: { item: any; index: number }) => ReactNode;
   keyExtractor?: (item: any, index: number) => string;

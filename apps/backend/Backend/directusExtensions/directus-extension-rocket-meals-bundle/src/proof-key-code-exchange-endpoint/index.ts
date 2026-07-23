@@ -267,14 +267,12 @@ function checkIfProviderRegistered(provider: string) {
 
 function generateAuthorizationCode(amountBytes?: number) {
   const bytesMinAmount = 32;
-  const bytesMaxAmount = 96;
   const usedAmountBytes = amountBytes || bytesMinAmount;
   const authorization_code = crypto.randomBytes(usedAmountBytes).toString('hex');
   return authorization_code;
 }
 
 function generateStateCode() {
-  const bytesMinAmount = 16;
   const bytesDefaultAmount = 32;
   return crypto.randomBytes(bytesDefaultAmount).toString('hex');
 }
@@ -282,7 +280,7 @@ function generateStateCode() {
 export default defineEndpoint({
   id: EndpointTopName,
   handler: (router, apiContext) => {
-    const { services, database, getSchema, env, logger } = apiContext;
+    const { database, env } = apiContext;
 
     const redisUrl = env?.['REDIS'];
     let validRedisUrl: string | null = null;
@@ -386,7 +384,7 @@ export default defineEndpoint({
       await myStorage.setCodeChallenge(authorization_code, {
         code_challenge: code_challenge_app,
         code_challenge_method: code_challenge_method_app,
-        //directus_session_token: null, // TODO: can be removed, as we dont want to share the directus session token.
+        //directus_session_token: null,
         directus_refresh_token: null, // currently we have not saved the directus_refresh_token. After the OAuth2 Flow we will add it there
       });
 

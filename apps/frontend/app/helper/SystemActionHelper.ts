@@ -29,7 +29,7 @@ export class CommonSystemActionHelper {
 			if (newWindow) {
 				target = '_blank';
 			}
-			await window.open(url, target);
+			window.open(url, target);
 		}
 	}
 
@@ -93,9 +93,9 @@ class MobileSystemActionHelper extends PrivateSystemActionHelper {
 	}
 }
 
-class iPhoneSystemActionHelper extends MobileSystemActionHelper {}
+class IPhoneSystemActionHelper extends MobileSystemActionHelper {}
 
-class androidSystemActionHelper extends MobileSystemActionHelper {
+class AndroidSystemActionHelper extends MobileSystemActionHelper {
 	static async openNFCSettings() {
 		return await MobileSystemActionHelper.openActivity('', IntentLauncher.ActivityAction.NFC_SETTINGS);
 	}
@@ -103,6 +103,6 @@ class androidSystemActionHelper extends MobileSystemActionHelper {
 
 export class SystemActionHelper {
 	static readonly MobileSystemActionHelper = MobileSystemActionHelper;
-	static readonly iPhoneSystemActionHelper = iPhoneSystemActionHelper;
-	static readonly androidSystemActionHelper = androidSystemActionHelper;
+	static readonly iPhoneSystemActionHelper = IPhoneSystemActionHelper;
+	static readonly androidSystemActionHelper = AndroidSystemActionHelper;
 }

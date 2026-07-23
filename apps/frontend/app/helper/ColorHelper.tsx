@@ -2,7 +2,6 @@ import Color from 'tinycolor2';
 import { useMemo } from 'react';
 import { Theme } from '@/context/ThemeContext';
 
-// TODO: memorize this function to reduce computation load and improve performance
 /**
  * Calculates the contrast ratio between two colors based on their luminance.
  * The function uses the WCAG formula for contrast ratio, which is (L1 + 0.05) / (L2 + 0.05),
@@ -60,7 +59,6 @@ function useLighterOrDarkerColorByContrastWithOptions(color: string | undefined,
 		}
 
 		const backgroundColor = Color(color);
-		const isDark = backgroundColor.isDark();
 		let modifiedColor = backgroundColor.clone();
 		const step = 1; // Adjust step to be more precise
 		let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);

@@ -28,14 +28,14 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
-	const [animationJson, setAmimationJson] = useState<any>(null);
+	const [animationJson, setAnimationJson] = useState<any>(null);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(animation, foods_area_color));
+			setAnimationJson(replaceLottieColors(animation, foods_area_color));
 			return () => {
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [])
 	);
@@ -46,7 +46,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
+				setAnimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);

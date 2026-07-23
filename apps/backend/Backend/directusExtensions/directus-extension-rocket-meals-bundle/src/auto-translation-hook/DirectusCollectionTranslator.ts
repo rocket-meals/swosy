@@ -1,6 +1,6 @@
 import { Translator } from './Translator';
 import { TranslatorSettings } from './TranslatorSettings';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, DeepCopyHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { SchemaOverview } from '@directus/types';
 import {SchemaHelper} from "../helpers/SchemaHelper";
@@ -105,7 +105,7 @@ export class DirectusCollectionTranslator {
       return payload;
     }
 
-    const workPayload = JSON.parse(JSON.stringify(payload));
+    const workPayload = DeepCopyHelper.deepCopy(payload);
     const schema = await myDatabaseHelper.getSchema();
     const context: TranslationSchemaContext = { schema, collectionName, translation_field };
 
@@ -295,6 +295,35 @@ export class DirectusCollectionTranslator {
     return undefined;
   }
 
+  /**
+   * Translates each field in fieldsToTranslate from sourceTranslation using the given translator,
+   * for the given destination language_code. Logs and skips fields that fail to translate.
+   */
+  private static async translateFields(options: {
+    translator: Translator;
+    fieldsToTranslate: string[];
+    sourceTranslation: any;
+    sourceLanguageCode: string | undefined;
+    language_code: string;
+  }): Promise<any> {
+    const { translator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code } = options;
+    const translatedItem: any = {};
+    for (const field of fieldsToTranslate) {
+      const fieldValue = sourceTranslation[field];
+      if (fieldValue) {
+        try {
+          const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
+          if (translatedValue) {
+            translatedItem[field] = translatedValue;
+          }
+        } catch (err) {
+          console.error('Translation error for field "' + field + '" to language "' + language_code + '":', err);
+        }
+      }
+    }
+    return translatedItem;
+  }
+
   static async translateTranslationItem(options: TranslationEntryOptions) {
     const { sourceTranslation, language_code, translator, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
     let translatedItem: any = {};
@@ -304,19 +333,7 @@ export class DirectusCollectionTranslator {
         console.warn('Translator is not ready - skipping translation for language: ' + language_code);
         // Skip translation attempts since translator cannot translate
       } else {
-        for (const field of fieldsToTranslate) {
-          const fieldValue = sourceTranslation[field];
-          if (fieldValue) {
-            try {
-              const translatedValue = await translator.translate({ text: fieldValue, source_language: sourceLanguageCode, destination_language: language_code });
-              if (translatedValue) {
-                translatedItem[field] = translatedValue;
-              }
-            } catch (err) {
-              console.error('Translation error for field "' + field + '" to language "' + language_code + '":', err);
-            }
-          }
-        }
+        translatedItem = await DirectusCollectionTranslator.translateFields({translator, fieldsToTranslate, sourceTranslation, sourceLanguageCode, language_code});
       }
     }
 

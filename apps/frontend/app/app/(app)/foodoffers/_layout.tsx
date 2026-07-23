@@ -1,13 +1,18 @@
 import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
-import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
-import { useLanguage } from '@/hooks/useLanguage';
+import TranslatedStackHeader from '@/components/CustomStackHeader/TranslatedStackHeader';
 import { TranslationKeys } from '@/locales/keys';
+
+// `Stack.Screen`'s `options.header` calls this as a plain function (never as
+// a JSX tag), so a factory returning a stable function avoids defining a new
+// arrow (and thus a new "component") on every render.
+function makeTranslatedStackHeader(labelKey: TranslationKeys, headerKey?: string) {
+	return () => <TranslatedStackHeader labelKey={labelKey} headerKey={headerKey} />;
+}
 
 export default function FoodOfferLayout() {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
 	return (
 		<Stack
 			screenOptions={{
@@ -25,7 +30,7 @@ export default function FoodOfferLayout() {
 			<Stack.Screen
 				name="details/index"
 				options={{
-					header: () => <CustomStackHeader label={translate(TranslationKeys.food_details)} />,
+					header: makeTranslatedStackHeader(TranslationKeys.food_details),
 				}}
 			/>
 		</Stack>

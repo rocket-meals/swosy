@@ -25,6 +25,37 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     return input;
   });
 
+  // Merge the updated fields into the current item for a single key, and send the
+  // notification if the merged item is now published. Returns the (possibly updated) input.
+  async function mergeUpdateAndNotifyIfPublished(itemService: ReturnType<typeof myDatabaseHelper.getPushNotificationsHelper>, currentItemId: any, input: Partial<DatabaseTypes.PushNotifications>) {
+    const currentItems = await itemService.readByQuery({
+      filter: { id: currentItemId },
+    });
+
+    if (!currentItems || currentItems.length === 0) {
+      throw new Error(`Item with ID ${currentItemId} not found`);
+    }
+
+    const currentItem = currentItems[0];
+    if (!currentItem) {
+      return input;
+    }
+
+    // Selectively merge the current item with the updated fields
+    for (const key in input) {
+      // @ts-ignore - we want to copy the value from input to currentItem
+      if (input[key] !== undefined) {
+        // @ts-ignore - we want to copy the value from input to currentItem
+        currentItem[key] = input[key];
+      }
+    }
+    if (ItemsServiceHelper.isStatusPublished(currentItem)) {
+      await sendNotification(currentItem, input);
+      return ItemsServiceHelper.setStatusPublished(input);
+    }
+    return input;
+  }
+
   filter<Partial<DatabaseTypes.PushNotifications>>(collectionName + '.items.update', async (input: Partial<DatabaseTypes.PushNotifications>, { keys, collection }) => {
     let itemService = myDatabaseHelper.getPushNotificationsHelper();
 
@@ -33,33 +64,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       throw new Error('No keys provided for update');
     }
 
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
+    for (const key of keys) {
       const currentItemId = key; // Assuming only one item is being updated
-      const currentItems = await itemService.readByQuery({
-        filter: { id: currentItemId },
-      });
-
-      if (!currentItems || currentItems.length === 0) {
-        throw new Error(`Item with ID ${currentItemId} not found`);
-      }
-
-      const currentItem = currentItems[0];
-
-      // Selectively merge the current item with the updated fields
-      if (currentItem) {
-        for (const key in input) {
-          // @ts-ignore - we want to copy the value from input to currentItem
-          if (input[key] !== undefined) {
-            // @ts-ignore - we want to copy the value from input to currentItem
-            currentItem[key] = input[key];
-          }
-        }
-        if (ItemsServiceHelper.isStatusPublished(currentItem)) {
-          await sendNotification(currentItem, input);
-          input = ItemsServiceHelper.setStatusPublished(input);
-        }
-      }
+      input = await mergeUpdateAndNotifyIfPublished(itemService, currentItemId, input);
     }
 
     return input;
@@ -106,7 +113,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       body = payload.message_body;
     }
 
-    let data: any | undefined = undefined; // can't be null, otherwise it will result in an error from expo
+    let data: any = undefined; // can't be null, otherwise it will result in an error from expo
     if (payload.message_data) {
       // check if message_data is set
       data = payload.message_data;
@@ -115,7 +122,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     // Every token should be: "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]" (with the ExponentPushToken prefix and square brackets)
 
     // https://github.com/expo/expo/discussions/27980
-    let richContent: any | undefined = undefined; // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
+    let richContent: any = undefined; // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
 
     let payload_image_url = payload.image_url;
     if (payload_image_url) {
@@ -149,7 +156,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     console.log(messages);
 
     try {
-      let answer = await axios.post('https://exp.host/--/api/v2/push/send', messages);
+      await axios.post('https://exp.host/--/api/v2/push/send', messages);
       input.status_log = 'success';
     } catch (e: any) {
       console.log(`Failed to send notification: ${e.message}`);

@@ -12,7 +12,9 @@ const initialState = {
 	ownCanteenFeedBackLabelEntries: [],
 };
 
-const canteensReducer = (state = initialState, actions: any) => {
+const canteensReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_CANTEENS: {
 			return {

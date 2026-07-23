@@ -22,6 +22,104 @@ interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     initialImageRemoteUrl?: string | null;
 }
 
+const StarRatingIconButton = ({
+    triggerProps,
+    onPress,
+    filled,
+    color,
+}: {
+    triggerProps: object;
+    onPress: () => void;
+    filled: boolean;
+    color: string;
+}) => (
+    <IconButton {...triggerProps} onPress={onPress} style={styles.paddingSmall}>
+        <MaterialIcons name={filled ? 'star' : 'star-border'} size={22} color={color} />
+    </IconButton>
+);
+
+// Factory returning a stable `trigger` render-prop for CustomTooltip, so no
+// new function-that-returns-JSX is defined inside the parent component body.
+function makeStarRatingTrigger(onPress: () => void, filled: boolean, color: string) {
+    return (triggerProps: object) => (
+        <StarRatingIconButton triggerProps={triggerProps} onPress={onPress} filled={filled} color={color} />
+    );
+}
+
+// Resolves the average rating value to display, mirroring the previous inline
+// `(a || b) && numToOneDecimal(a || b)` expression used in both the web and
+// mobile render branches of FoodHeader.
+function resolveDisplayRating(foodDetails: any) {
+    const rating = foodDetails?.rating_average || foodDetails?.rating_average_legacy;
+    return rating && numToOneDecimal(rating);
+}
+
+// Renders the "average rating" badge (star icon + numeric value) shown when
+// `foods_ratings_average_display` is enabled. Extracted so the surrounding
+// web/mobile render branches don't each carry this conditional inline.
+const RatingAverageBadge = ({
+    appSettings,
+    foodDetails,
+    theme,
+    foodsAreaColor,
+    viewStyle,
+    textStyle,
+    starSize,
+}: {
+    appSettings: any;
+    foodDetails: any;
+    theme: any;
+    foodsAreaColor: string;
+    viewStyle: any;
+    textStyle: any;
+    starSize: number;
+}) => {
+    if (!appSettings?.foods_ratings_average_display) {
+        return null;
+    }
+    return (
+        <View
+            style={[
+                viewStyle,
+                { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
+            ]}
+        >
+            <AntDesign name="star" size={starSize} color={foodsAreaColor} />
+            <Text
+                style={[
+                    textStyle,
+                    { color: theme.screen.text }
+                ]}
+            >
+                {resolveDisplayRating(foodDetails)}
+            </Text>
+        </View>
+    );
+};
+
+// Resolves the web-layout style lists that vary by breakpoint (isLargeScreen/isMediumScreen),
+// so the render branch below only reads pre-computed values instead of repeating each ternary
+// (some, like the isLargeScreen-based featured-container style, were previously duplicated inline).
+function computeFoodHeaderWebLayout(isLargeScreen: boolean, isMediumScreen: boolean, containerWidth: string | number | undefined) {
+    return {
+        featuredContainerStyle: [styles.featuredContainer, isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall],
+        foodDetailStyle: [styles.foodDetail, isLargeScreen ? styles.foodDetailLarge : styles.foodDetailSmall],
+        detailsContainerStyle: [
+            styles.detailsContainer,
+            isLargeScreen ? styles.detailsContainerLarge : styles.detailsContainerSmall,
+            isMediumScreen ? styles.paddingHorizontalMedium : styles.paddingHorizontalNone,
+        ],
+        ratingListWrapperStyle: isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth as any } : null],
+        foodHeadingStyle: [
+            styles.foodHeading,
+            styles.widthFull,
+            isLargeScreen ? styles.textLeft : styles.textCenter,
+            styles.flexColumn,
+            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium,
+        ],
+    };
+}
+
 const FoodHeader = ({
     foodDetails,
     screenWidth,
@@ -50,58 +148,43 @@ const FoodHeader = ({
     const imageRemoteUrl = useMemo(() => foodDetails?.image_remote_url || initialImageRemoteUrl, [foodDetails?.image_remote_url, initialImageRemoteUrl]);
     const imageAssetId = useMemo(() => foodDetails?.image || initialImageAssetId, [foodDetails?.image, initialImageAssetId]);
 
+    const renderStarItem = useCallback((index: number) => (
+        <React.Fragment key={index}>
+            {isWeb ? (
+                <CustomTooltip
+                    placement="top"
+                    trigger={makeStarRatingTrigger(() => rateFood(index + 1), previousFeedback?.rating > index, foodsAreaColor)}
+                >
+                    <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+                        <TooltipText fontSize="$sm" color={theme.tooltip.text}>
+                            {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
+                        </TooltipText>
+                    </TooltipContent>
+                </CustomTooltip>
+            ) : (
+                <TouchableOpacity onPress={() => rateFood(index + 1)}>
+                    <MaterialIcons
+                        name={previousFeedback?.rating > index ? 'star' : 'star-border'}
+                        size={20}
+                        color={foodsAreaColor}
+                    />
+                </TouchableOpacity>
+            )}
+        </React.Fragment>
+    ), [previousFeedback?.rating, foodsAreaColor, rateFood, theme, translate]);
+
     const renderRatingStars = useCallback(() => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
-            {Array.from({ length: 5 }).map((_, index) => (
-                <React.Fragment key={index}>
-                    {isWeb ? (
-                        <CustomTooltip
-                            placement="top"
-                            trigger={(triggerProps) => (
-                                <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
-                                    <MaterialIcons
-                                        name={previousFeedback?.rating > index ? 'star' : 'star-border'}
-                                        size={22}
-                                        color={foodsAreaColor}
-                                    />
-                                </IconButton>
-                            )}
-                        >
-                            <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-                                <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-                                    {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
-                                </TooltipText>
-                            </TooltipContent>
-                        </CustomTooltip>
-                    ) : (
-                        <TouchableOpacity onPress={() => rateFood(index + 1)}>
-                            <MaterialIcons
-                                name={previousFeedback?.rating > index ? 'star' : 'star-border'}
-                                size={20}
-                                color={foodsAreaColor}
-                            />
-                        </TouchableOpacity>
-                    )}
-                </React.Fragment>
-            ))}
+            {Array.from({ length: 5 }).map((_, index) => renderStarItem(index))}
         </View>
-    ), [isWeb, previousFeedback?.rating, foodsAreaColor, rateFood, theme, translate]);
+    ), [renderStarItem]);
 
     if (isWeb) {
+        const webLayout = computeFoodHeaderWebLayout(isLargeScreen, isMediumScreen, containerWidth);
         return (
             <>
-                <View
-                    style={[
-                        styles.featuredContainer,
-                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
-                    ]}
-                >
-                    <View
-                        style={[
-                            styles.foodDetail,
-                            isLargeScreen ? styles.foodDetailLarge : styles.foodDetailSmall
-                        ]}
-                    >
+                <View style={webLayout.featuredContainerStyle}>
+                    <View style={webLayout.foodDetailStyle}>
                         <View
                         style={[
                             styles.imageContainer,
@@ -119,37 +202,19 @@ const FoodHeader = ({
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View
-                        style={[
-                            styles.detailsContainer,
-                            isLargeScreen ? styles.detailsContainerLarge : styles.detailsContainerSmall,
-                            isMediumScreen ? styles.paddingHorizontalMedium : styles.paddingHorizontalNone
-                        ]}
-                    >
+                    <View style={webLayout.detailsContainerStyle}>
                         <View style={styles.fullWidthEnd}>
-                            {appSettings?.foods_ratings_average_display && (
-                                <View
-                                    style={[
-                                        styles.ratingView,
-                                        { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
-                                    ]}
-                                >
-                                    <AntDesign name="star" size={22} color={foodsAreaColor} />
-                                    <Text
-                                        style={[
-                                            styles.totalRating,
-                                            { color: theme.screen.text }
-                                        ]}
-                                    >
-                                        {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
-                                            numToOneDecimal(
-                                                foodDetails?.rating_average || foodDetails?.rating_average_legacy
-                                            )}
-                                    </Text>
-                                </View>
-                            )}
+                            <RatingAverageBadge
+                                appSettings={appSettings}
+                                foodDetails={foodDetails}
+                                theme={theme}
+                                foodsAreaColor={foodsAreaColor}
+                                viewStyle={styles.ratingView}
+                                textStyle={styles.totalRating}
+                                starSize={22}
+                            />
                         </View>
-                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
+                        <View style={webLayout.ratingListWrapperStyle}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
                                 iconBgColor={foodsAreaColor}
@@ -163,22 +228,8 @@ const FoodHeader = ({
                         </View>
                     </View>
                 </View>
-                <View
-                    style={[
-                        styles.featuredContainer,
-                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.foodHeading,
-                            styles.widthFull,
-                            { color: theme.screen.text },
-                            isLargeScreen ? styles.textLeft : styles.textCenter,
-                            styles.flexColumn,
-                            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium
-                        ]}
-                    >
+                <View style={webLayout.featuredContainerStyle}>
+                    <Text style={[...webLayout.foodHeadingStyle, { color: theme.screen.text }]}>
                         {foodDetails?.name}
                     </Text>
                 </View>
@@ -201,27 +252,15 @@ const FoodHeader = ({
                 <View style={styles.mobileDetailsHeader}>
                     <View style={styles.row}>
                         <View />
-                        {appSettings?.foods_ratings_average_display && (
-                            <View
-                                style={[
-                                    styles.mobileRatingView,
-                                    { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
-                                ]}
-                            >
-                                <AntDesign name="star" size={18} color={foodsAreaColor} />
-                                <Text
-                                    style={[
-                                        styles.mobileTotalRating,
-                                        { color: theme.screen.text }
-                                    ]}
-                                >
-                                    {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
-                                        numToOneDecimal(
-                                            foodDetails?.rating_average || foodDetails?.rating_average_legacy
-                                        )}
-                                </Text>
-                            </View>
-                        )}
+                        <RatingAverageBadge
+                            appSettings={appSettings}
+                            foodDetails={foodDetails}
+                            theme={theme}
+                            foodsAreaColor={foodsAreaColor}
+                            viewStyle={styles.mobileRatingView}
+                            textStyle={styles.mobileTotalRating}
+                            starSize={18}
+                        />
                     </View>
                 </View>
                 <View style={styles.mobileDetailsFooter}></View>

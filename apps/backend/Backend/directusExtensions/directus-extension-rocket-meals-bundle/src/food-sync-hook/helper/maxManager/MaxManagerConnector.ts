@@ -40,6 +40,12 @@ type CanteenData = {
     html: string;
 }
 
+// Extracts the external identifier from a legend code cell, e.g. "(A)" -> "A".
+export function extractLegendCodeFromText(codeText: string): string | undefined {
+    const codeMatch = codeText.match(/\(([^)]{1,50})\)/);
+    return codeMatch && codeMatch.length > 1 ? codeMatch[1] || undefined : undefined;
+}
+
 export class MaxManagerConnector implements FoodParserInterface, MarkingParserInterface {
 
     private readonly config: MaxManagerConnectorConfig;
@@ -128,7 +134,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
     private async getHtml(canteenId: string, fetchDate: Date, initialHtml: string): Promise<string | undefined> {
         if(this.config.fileContentReader){
             const fileContentReader = this.config.fileContentReader;
-            let fileContent = await fileContentReader.getContent();
+            let fileContent = fileContentReader.getContent();
             return fileContent;
         }
         if(this.config.url){
@@ -165,7 +171,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                 return completeHtmlForCanteen;
                 //console.log(" - Fetched speiseplan for canteen id: " + canteenId + " for date: " + data.date.toDateString()+" HTML length: " + completeHtmlForCanteen.length);
             } catch (error) {
-                console.error("Failed to fetch speiseplan for canteen id: " + canteenId);
+                console.error("Failed to fetch speiseplan for canteen id: " + canteenId, error);
             }
         }
         return undefined;
@@ -452,7 +458,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
             }
         }
 
-        return Promise.resolve(foodoffers);
+        return foodoffers;
     }
 
     async getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]> {
@@ -508,9 +514,9 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                 const codeElement = $(element).find('td').first();
                 let externalIdentifier: string | undefined = undefined;
                 const codeText = codeElement.text().trim();
-                const codeMatch = codeText.match(/\(([^)]+)\)/);
-                if(codeMatch && codeMatch.length > 1){
-                    externalIdentifier = codeMatch[1] || undefined;
+                const codeFromText = extractLegendCodeFromText(codeText);
+                if(codeFromText){
+                    externalIdentifier = codeFromText;
                 } else {
                     // check for img element
                     const imgElement = codeElement.find('img');

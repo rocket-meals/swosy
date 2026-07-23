@@ -11,7 +11,7 @@ export type FormProps = {
 export type SheetProps = {
 	closeSheet: () => void;
 	handleLogin: HandleLoginType;
-	loading: Boolean;
+	loading: boolean;
 }
 
 export type AttentionSheetProps = {

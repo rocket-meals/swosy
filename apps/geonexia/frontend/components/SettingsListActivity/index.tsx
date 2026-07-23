@@ -1,9 +1,9 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SettingsList } from 'repo-depkit-common-ui';
+import { DateHelper } from 'repo-depkit-common';
 
 import { SavedActivity } from '../../helpers/ActivityStorage';
-import { TimeHelper } from '../../helpers/TimeHelper';
 import { SettingsListPressableItemProps } from '../SettingsListSharedProps';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -27,7 +27,7 @@ type Props = SettingsListPressableItemProps & {
 
 const SettingsListActivity: React.FC<Props> = ({ activity, groupPosition, showSeparator, onPress }) => {
 	const km = activity.stats.distanceKm;
-	const value = `${formatDistance(km)} · ${TimeHelper.formatDuration(activity.stats.durationSeconds)}`;
+	const value = `${formatDistance(km)} · ${DateHelper.formatDurationFromSeconds(activity.stats.durationSeconds)}`;
 
 	return (
 		<SettingsList

@@ -7,7 +7,9 @@ const initialState = {
 	apartmentsDict: {},
 };
 
-const apartmentsReducer = (state = initialState, actions: any) => {
+const apartmentsReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_APARTMENTS: {
 			return {

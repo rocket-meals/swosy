@@ -10,11 +10,11 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {TranslationHelper} from '../helpers/TranslationHelper';
-import {CollectionNames, DatabaseTypes, DateHelper, DirectusItemStatus} from 'repo-depkit-common';
+import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
 import {DictMarkingsExclusions, MarkingFilterHelper} from '../helpers/MarkingFilterHelper';
-import {MyTimer, MyTimers} from '../helpers/MyTimer';
+import {MyTimer} from '../helpers/MyTimer';
 import {HashHelper} from '../helpers/HashHelper';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {WorkflowResultHash} from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
@@ -31,6 +31,28 @@ export type FoodCreationHelperObject = {
   foodCategoryExternalIdentifiersToFoodCategoriesDict: DictFoodsCategoryExternalIdentifierToFoodsCategory;
   dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes;
   foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict: DictFoodofferCategoriesExternalIdentifiersToFoodofferCategories;
+};
+
+/**
+ * Groups the report data for a single canteen together with the shared creation helper
+ * object, so it can be passed as one parameter object into the per-canteen sync methods.
+ */
+export type CanteenFoodofferSyncGroup = {
+  canteen: DatabaseTypes.Canteens;
+  canteenExternalIdentifier: string;
+  canteenFoodoffers: FoodoffersTypeForParser[];
+  helperObject: FoodCreationHelperObject;
+};
+
+/**
+ * Groups the data needed to build/apply attribute values for a single food or
+ * foodoffer, shared by `getFoodsOrFoodoffersWithOnlySetAttributesFields` and
+ * `buildAttributeValuesToCreate`.
+ */
+export type AttributeValuesSyncContext = {
+  new_attribute_values: FoodParseFoodAttributesType;
+  dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes;
+  typeHelper: { isFood: boolean; isFoodoffer: boolean };
 };
 
 export class ParseSchedule {
@@ -78,7 +100,7 @@ export class ParseSchedule {
         let foodsJSONList = await this.foodParser.getFoodsListForParser();
         let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
         let currentMealOffersHash = new WorkflowResultHash(HashHelper.hashFromObject(foodofferListForParser));
-        await this.context.logger.appendLog('Current meal offers hash: ' + currentMealOffersHash.getHash());
+        await this.context.logger.appendLog('Current meal offers hash: ' + JSON.stringify(currentMealOffersHash.getHash()));
 
         //console.log("Get Previous Meal Offers Hash");
         let previousMealOffersHash = await this.getPreviousMealOffersHash();
@@ -92,7 +114,7 @@ export class ParseSchedule {
           });
         }
 
-        await this.context.logger.appendLog('Previous meal offers hash: ' + previousMealOffersHash.getHash());
+        await this.context.logger.appendLog('Previous meal offers hash: ' + JSON.stringify(previousMealOffersHash.getHash()));
 
         const markingsExclusionsHelper = this.context.myDatabaseHelper.getMarkingsExclusionsHelper();
 
@@ -218,8 +240,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for food categories here, similar to markings
     }
   }
 
@@ -253,8 +273,6 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
-
-      // TODO: Update translations for foodoffer categories here, similar to markings
     }
   }
 
@@ -271,7 +289,7 @@ export class ParseSchedule {
   }
 
   async getFoodsService() {
-    return await this.context.myDatabaseHelper.getFoodsHelper();
+    return this.context.myDatabaseHelper.getFoodsHelper();
   }
 
   getFoodofferDatesFromRawFoodofferJSONList(foodoffersForParser: FoodoffersTypeForParser[]): FoodofferDateType[] {
@@ -288,7 +306,7 @@ export class ParseSchedule {
   static readonly DELETE_BATCH_SIZE = 250;
 
   async deleteFoodOffers(foodoffers: DatabaseTypes.Foodoffers[], notice: string) {
-    let itemService = await this.context.myDatabaseHelper.getFoodoffersHelper();
+    let itemService = this.context.myDatabaseHelper.getFoodoffersHelper();
     let idsToDelete = foodoffers.map(item => item.id);
 
     if (idsToDelete.length > 0) {
@@ -343,16 +361,7 @@ export class ParseSchedule {
     // Compute the global oldest date from the entire report (across all canteens).
     // This is used later to scope deletion for canteens not present in the report.
     const allReportDates = this.getFoodofferDatesFromRawFoodofferJSONList(foodofferListForParser);
-    let globalOldestDate: FoodofferDateType | null = null;
-    let globalOldestDateMs: number | null = null;
-    for (const foodofferDate of allReportDates) {
-      const dateMs = new Date(DateHelper.foodofferDateTypeToString(foodofferDate)).getTime();
-      if (globalOldestDateMs === null || dateMs < globalOldestDateMs) {
-        globalOldestDate = foodofferDate;
-        globalOldestDateMs = dateMs;
-      }
-    }
-    const globalOldestDateString = globalOldestDate ? DateHelper.foodofferDateTypeToString(globalOldestDate) : null;
+    const globalOldestDateString = ParseSchedule.computeOldestFoodofferDateString(allReportDates);
 
     // Step 2: Process each canteen that IS in the report
     const canteenExternalIdentifiersInReport = new Set(Object.keys(foodoffersForParserGroupedByCanteen));
@@ -362,145 +371,12 @@ export class ParseSchedule {
       if (!canteen) continue;
 
       const canteenFoodoffers = foodoffersForParserGroupedByCanteen[canteenExternalIdentifier] || [];
-      const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
+      const canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup = {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject};
 
       if (canteen.foodoffers_import_without_date) {
-        // Import-without-date canteen: all offers have date=null, process as a single group.
-        // Filter by canteen._eq and date._null to avoid fetching the entire historical dataset.
-        // Component foodoffers have canteen=null, so canteen._eq already excludes them.
-        await this.context.logger.appendLog('Sync: fetching existing date=null non-component foodoffers for canteen (import without date): ' + canteen.id);
-
-        // Normalize date to null so the hash is consistent across parser runs regardless of
-        // what date the parser originally assigned to the foodoffer.
-        const canteenFoodoffersWithNullDate = canteenFoodoffers.map(f => ({...f, date: null as null}));
-
-        // Build report dict for this canteen
-        const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(canteenFoodoffersWithNullDate);
-
-        // Fetch existing date=null foodoffers for this canteen.
-        // canteen._eq excludes component foodoffers (which have canteen=null).
-        // date._null scopes to undated records only, avoiding a full table scan.
-        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
-          filter: {
-            _and: [
-              {
-                canteen: {
-                  _eq: canteen.id,
-                },
-              },
-              {
-                date: {
-                  _null: true,
-                },
-              },
-            ],
-          },
-          fields: ['id', 'result_hash'],
-          limit: -1,
-        });
-
-        const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForCanteen);
-
-        // Compute diff, delete, then create
-        const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
-        await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} (without date): toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
-
-        await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} (without date)`);
-
-        const foodoffersForParserToCreate = diffResult.toCreateResultHashes
-          .map(hash => reportDictByResultHash[hash])
-          .filter((f): f is FoodoffersTypeForParser => !!f);
-        await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
+        await this.syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup);
       } else {
-        // Regular canteen: process diffs per date
-        // Group report foodoffers for this canteen by date string
-        const reportByDate: Record<string, FoodoffersTypeForParser[]> = {};
-        for (const foodofferForParser of canteenFoodoffers) {
-          if (!foodofferForParser.date) continue;
-          const dateKey = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
-          if (!reportByDate[dateKey]) {
-            reportByDate[dateKey] = [];
-          }
-          reportByDate[dateKey].push(foodofferForParser);
-        }
-
-        // Collect all dates: from report + from existing future foodoffers in DB
-        const allDateKeys = new Set<string>(Object.keys(reportByDate));
-
-        // Find the oldest date from the report to scope existing-foodoffer queries
-        const foodofferDates = this.getFoodofferDatesFromRawFoodofferJSONList(canteenFoodoffers);
-        let oldestFoodofferDate: FoodofferDateType | null = null;
-        for (const foodofferDate of foodofferDates) {
-          const dateAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDate));
-          if (!oldestFoodofferDate || dateAsDate < new Date(DateHelper.foodofferDateTypeToString(oldestFoodofferDate))) {
-            oldestFoodofferDate = foodofferDate;
-          }
-        }
-
-        if (!oldestFoodofferDate) {
-          await this.context.logger.appendLog('Sync: no dates in report for canteen ' + canteenExternalIdentifier + ', skipping');
-          continue;
-        }
-
-        const oldestDateString = DateHelper.foodofferDateTypeToString(oldestFoodofferDate);
-        await this.context.logger.appendLog('Sync: fetching existing non-component foodoffers >= ' + oldestDateString + ' for canteen: ' + canteen.id);
-
-        // Fetch all existing foodoffers for this canteen >= oldest date.
-        // canteen._eq excludes component foodoffers (which have canteen=null).
-        // date._gte scopes to future/current dates, avoiding a full table scan.
-        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
-          filter: {
-            _and: [
-              {
-                date: {
-                  _gte: oldestDateString,
-                },
-              },
-              {
-                canteen: {
-                  _eq: canteen.id,
-                },
-              },
-            ],
-          },
-          fields: ['id', 'result_hash', 'date'],
-          limit: -1,
-        });
-
-        // Group existing foodoffers by date
-        const existingByDate: Record<string, DatabaseTypes.Foodoffers[]> = {};
-        for (const existing of existingFoodoffersForCanteen) {
-          const dateKey = existing.date || '__no_date__';
-          if (!existingByDate[dateKey]) {
-            existingByDate[dateKey] = [];
-          }
-          existingByDate[dateKey].push(existing);
-          allDateKeys.add(dateKey);
-        }
-
-        // Process each date independently
-        for (const dateKey of allDateKeys) {
-          const reportFoodoffersForDate = reportByDate[dateKey] || [];
-          const existingFoodoffersForDate = existingByDate[dateKey] || [];
-
-          // Build report dict for this date
-          const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(reportFoodoffersForDate);
-
-          // Build existing dict for this date
-          const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForDate);
-
-          // Compute diff per date
-          const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
-          await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} date ${dateKey}: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
-
-          // Delete first, then create for this date
-          await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} date ${dateKey}`);
-
-          const foodoffersForParserToCreate = diffResult.toCreateResultHashes
-            .map(hash => reportDictByResultHash[hash])
-            .filter((f): f is FoodoffersTypeForParser => !!f);
-          await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
-        }
+        await this.syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup);
       }
     }
 
@@ -509,55 +385,230 @@ export class ParseSchedule {
     // the report had no offers for them. Import-without-date canteens are excluded
     // because their offers are long-term and not expected in every report.
     if (globalOldestDateString) {
-      await this.context.logger.appendLog('Sync: checking all canteens for missing report data (oldest report date: ' + globalOldestDateString + ')');
-      const canteensHelper = this.context.myDatabaseHelper.getCanteensHelper();
-      const allCanteens = await canteensHelper.readAllItems();
-      const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
-
-      for (const canteen of allCanteens) {
-        const externalIdentifier = canteen.external_identifier;
-        if (!externalIdentifier) continue;
-
-        // Skip canteens already processed from the report
-        if (canteenExternalIdentifiersInReport.has(externalIdentifier)) continue;
-
-        // Skip import-without-date canteens: their offers are long-term and not in every report
-        if (canteen.foodoffers_import_without_date) {
-          await this.context.logger.appendLog('Sync: skipping canteen not in report (import without date): ' + externalIdentifier);
-          continue;
-        }
-
-        await this.context.logger.appendLog('Sync: canteen not in report, deleting future foodoffers >= ' + globalOldestDateString + ' for canteen: ' + canteen.id + ' (' + externalIdentifier + ')');
-
-        // Fetch all existing foodoffers for this canteen >= oldest report date.
-        // canteen._eq excludes component foodoffers (which have canteen=null).
-        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
-          filter: {
-            _and: [
-              {
-                date: {
-                  _gte: globalOldestDateString,
-                },
-              },
-              {
-                canteen: {
-                  _eq: canteen.id,
-                },
-              },
-            ],
-          },
-          fields: ['id'],
-          limit: -1,
-        });
-
-        if (existingFoodoffersForCanteen.length > 0) {
-          await this.deleteFoodOffers(existingFoodoffersForCanteen as DatabaseTypes.Foodoffers[], `Delete future foodoffers for canteen not in report: ${externalIdentifier}`);
-        } else {
-          await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier);
-        }
-      }
+      await this.deleteFutureFoodoffersForCanteensNotInReport(canteenExternalIdentifiersInReport, globalOldestDateString);
     } else {
       await this.context.logger.appendLog('Sync: no dates in report at all, skipping canteen-not-in-report cleanup');
+    }
+  }
+
+  /**
+   * Finds the oldest date (by timestamp) among the given foodoffer dates and returns it as a
+   * date-only string via DateHelper. Returns null if the list is empty.
+   */
+  static computeOldestFoodofferDateString(foodofferDates: FoodofferDateType[]): string | null {
+    let oldestDate: FoodofferDateType | null = null;
+    let oldestDateMs: number | null = null;
+    for (const foodofferDate of foodofferDates) {
+      const dateMs = new Date(DateHelper.foodofferDateTypeToString(foodofferDate)).getTime();
+      if (oldestDateMs === null || dateMs < oldestDateMs) {
+        oldestDate = foodofferDate;
+        oldestDateMs = dateMs;
+      }
+    }
+    return oldestDate ? DateHelper.foodofferDateTypeToString(oldestDate) : null;
+  }
+
+  /**
+   * Syncs foodoffers for an "import without date" canteen: all offers have date=null and are
+   * processed as a single group via result_hash diffing.
+   */
+  async syncFoodOffersForCanteenWithoutDate(canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup): Promise<void> {
+    const {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject} = canteenFoodofferSyncGroup;
+    const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
+
+    // Import-without-date canteen: all offers have date=null, process as a single group.
+    // Filter by canteen._eq and date._null to avoid fetching the entire historical dataset.
+    // Component foodoffers have canteen=null, so canteen._eq already excludes them.
+    await this.context.logger.appendLog('Sync: fetching existing date=null non-component foodoffers for canteen (import without date): ' + canteen.id);
+
+    // Normalize date to null so the hash is consistent across parser runs regardless of
+    // what date the parser originally assigned to the foodoffer.
+    const canteenFoodoffersWithNullDate = canteenFoodoffers.map(f => ({...f, date: null as null}));
+
+    // Build report dict for this canteen
+    const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(canteenFoodoffersWithNullDate);
+
+    // Fetch existing date=null foodoffers for this canteen.
+    // canteen._eq excludes component foodoffers (which have canteen=null).
+    // date._null scopes to undated records only, avoiding a full table scan.
+    const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+      filter: {
+        _and: [
+          {
+            canteen: {
+              _eq: canteen.id,
+            },
+          },
+          {
+            date: {
+              _null: true,
+            },
+          },
+        ],
+      },
+      fields: ['id', 'result_hash'],
+      limit: -1,
+    });
+
+    const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForCanteen);
+
+    // Compute diff, delete, then create
+    const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
+    await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} (without date): toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
+
+    await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} (without date)`);
+
+    const foodoffersForParserToCreate = diffResult.toCreateResultHashes
+      .map(hash => reportDictByResultHash[hash])
+      .filter((f): f is FoodoffersTypeForParser => !!f);
+    await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
+  }
+
+  /**
+   * Syncs foodoffers for a regular (dated) canteen: diffs are computed and applied per date
+   * to minimize the deletion window.
+   */
+  async syncFoodOffersForCanteenByDate(canteenFoodofferSyncGroup: CanteenFoodofferSyncGroup): Promise<void> {
+    const {canteen, canteenExternalIdentifier, canteenFoodoffers, helperObject} = canteenFoodofferSyncGroup;
+    const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
+
+    // Regular canteen: process diffs per date
+    // Group report foodoffers for this canteen by date string
+    const reportByDate: Record<string, FoodoffersTypeForParser[]> = {};
+    for (const foodofferForParser of canteenFoodoffers) {
+      if (!foodofferForParser.date) continue;
+      const dateKey = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+      if (!reportByDate[dateKey]) {
+        reportByDate[dateKey] = [];
+      }
+      reportByDate[dateKey].push(foodofferForParser);
+    }
+
+    // Collect all dates: from report + from existing future foodoffers in DB
+    const allDateKeys = new Set<string>(Object.keys(reportByDate));
+
+    // Find the oldest date from the report to scope existing-foodoffer queries
+    const foodofferDates = this.getFoodofferDatesFromRawFoodofferJSONList(canteenFoodoffers);
+    const oldestDateString = ParseSchedule.computeOldestFoodofferDateString(foodofferDates);
+
+    if (!oldestDateString) {
+      await this.context.logger.appendLog('Sync: no dates in report for canteen ' + canteenExternalIdentifier + ', skipping');
+      return;
+    }
+
+    await this.context.logger.appendLog('Sync: fetching existing non-component foodoffers >= ' + oldestDateString + ' for canteen: ' + canteen.id);
+
+    // Fetch all existing foodoffers for this canteen >= oldest date.
+    // canteen._eq excludes component foodoffers (which have canteen=null).
+    // date._gte scopes to future/current dates, avoiding a full table scan.
+    const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+      filter: {
+        _and: [
+          {
+            date: {
+              _gte: oldestDateString,
+            },
+          },
+          {
+            canteen: {
+              _eq: canteen.id,
+            },
+          },
+        ],
+      },
+      fields: ['id', 'result_hash', 'date'],
+      limit: -1,
+    });
+
+    // Group existing foodoffers by date
+    const existingByDate: Record<string, DatabaseTypes.Foodoffers[]> = {};
+    for (const existing of existingFoodoffersForCanteen) {
+      const dateKey = existing.date || '__no_date__';
+      if (!existingByDate[dateKey]) {
+        existingByDate[dateKey] = [];
+      }
+      existingByDate[dateKey].push(existing);
+      allDateKeys.add(dateKey);
+    }
+
+    // Process each date independently
+    for (const dateKey of allDateKeys) {
+      const reportFoodoffersForDate = reportByDate[dateKey] || [];
+      const existingFoodoffersForDate = existingByDate[dateKey] || [];
+
+      // Build report dict for this date
+      const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(reportFoodoffersForDate);
+
+      // Build existing dict for this date
+      const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForDate);
+
+      // Compute diff per date
+      const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
+      await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} date ${dateKey}: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
+
+      // Delete first, then create for this date
+      await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} date ${dateKey}`);
+
+      const foodoffersForParserToCreate = diffResult.toCreateResultHashes
+        .map(hash => reportDictByResultHash[hash])
+        .filter((f): f is FoodoffersTypeForParser => !!f);
+      await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
+    }
+  }
+
+  /**
+   * For canteens NOT present in the current report: deletes their future foodoffers
+   * (date >= globalOldestDateString), since regular canteens are expected in every report.
+   * Import-without-date canteens are skipped, as their offers are long-term and not
+   * expected in every report.
+   */
+  async deleteFutureFoodoffersForCanteensNotInReport(canteenExternalIdentifiersInReport: Set<string>, globalOldestDateString: string): Promise<void> {
+    await this.context.logger.appendLog('Sync: checking all canteens for missing report data (oldest report date: ' + globalOldestDateString + ')');
+    const canteensHelper = this.context.myDatabaseHelper.getCanteensHelper();
+    const allCanteens = await canteensHelper.readAllItems();
+    const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
+
+    for (const canteen of allCanteens) {
+      const externalIdentifier = canteen.external_identifier;
+      if (!externalIdentifier) continue;
+
+      // Skip canteens already processed from the report
+      if (canteenExternalIdentifiersInReport.has(externalIdentifier)) continue;
+
+      // Skip import-without-date canteens: their offers are long-term and not in every report
+      if (canteen.foodoffers_import_without_date) {
+        await this.context.logger.appendLog('Sync: skipping canteen not in report (import without date): ' + externalIdentifier);
+        continue;
+      }
+
+      await this.context.logger.appendLog('Sync: canteen not in report, deleting future foodoffers >= ' + globalOldestDateString + ' for canteen: ' + canteen.id + ' (' + externalIdentifier + ')');
+
+      // Fetch all existing foodoffers for this canteen >= oldest report date.
+      // canteen._eq excludes component foodoffers (which have canteen=null).
+      const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+        filter: {
+          _and: [
+            {
+              date: {
+                _gte: globalOldestDateString,
+              },
+            },
+            {
+              canteen: {
+                _eq: canteen.id,
+              },
+            },
+          ],
+        },
+        fields: ['id'],
+        limit: -1,
+      });
+
+      if (existingFoodoffersForCanteen.length > 0) {
+        await this.deleteFoodOffers(existingFoodoffersForCanteen as DatabaseTypes.Foodoffers[], `Delete future foodoffers for canteen not in report: ${externalIdentifier}`);
+      } else {
+        await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier);
+      }
     }
   }
 
@@ -704,14 +755,30 @@ export class ParseSchedule {
   }
 
   async updateFoodsAttributesValues(food: DatabaseTypes.Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes) {
-    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes, { isFood: true, isFoodoffer: false });
+    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, { new_attribute_values, dictExternalIdentifierToFoodAttributes, typeHelper: { isFood: true, isFoodoffer: false } });
     await this.context.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields, {
       disableEventEmit: true,
     });
   }
 
-  getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<DatabaseTypes.Foods | DatabaseTypes.Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: { isFood: boolean; isFoodoffer: boolean }): T {
+  getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<DatabaseTypes.Foods | DatabaseTypes.Foodoffers>>(foodOrFoodoffer: T, attributeValuesSyncContext: AttributeValuesSyncContext): T {
     let delteAttributeValuesRaw = foodOrFoodoffer.attribute_values;
+    let deleteAttributeValuesIds: any[] = this.resolveAttributeValueIdsToDelete(delteAttributeValuesRaw);
+
+    let createAttributeValues: any[] = this.buildAttributeValuesToCreate(attributeValuesSyncContext, foodOrFoodoffer.id);
+    let foodOrFoodofferCopy: T = {} as T;
+
+    foodOrFoodofferCopy.attribute_values = {
+      //@ts-ignore
+      create: createAttributeValues,
+      delete: deleteAttributeValuesIds,
+      update: [],
+    };
+
+    return foodOrFoodofferCopy;
+  }
+
+  private resolveAttributeValueIdsToDelete(delteAttributeValuesRaw: any): any[] {
     let deleteAttributeValuesIds: any[] = [];
     if (delteAttributeValuesRaw) {
       for (let attribute of delteAttributeValuesRaw) {
@@ -722,7 +789,11 @@ export class ParseSchedule {
         }
       }
     }
+    return deleteAttributeValuesIds;
+  }
 
+  private buildAttributeValuesToCreate(attributeValuesSyncContext: AttributeValuesSyncContext, itemId: any): any[] {
+    const { new_attribute_values, dictExternalIdentifierToFoodAttributes, typeHelper } = attributeValuesSyncContext;
     let createAttributeValues: any[] = [];
     for (let new_attribute of new_attribute_values) {
       let external_identifier = new_attribute.external_identifier;
@@ -731,10 +802,10 @@ export class ParseSchedule {
         let food_id = null;
         let foodoffer_id = null;
         if (typeHelper.isFood) {
-          food_id = foodOrFoodoffer.id;
+          food_id = itemId;
         }
         if (typeHelper.isFoodoffer) {
-          foodoffer_id = foodOrFoodoffer.id;
+          foodoffer_id = itemId;
         }
 
         let createJSON: Omit<DatabaseTypes.FoodsAttributesValues, 'id'> = {
@@ -746,16 +817,7 @@ export class ParseSchedule {
         createAttributeValues.push(createJSON);
       }
     }
-    let foodOrFoodofferCopy: T = {} as T;
-
-    foodOrFoodofferCopy.attribute_values = {
-      //@ts-ignore
-      create: createAttributeValues,
-      delete: deleteAttributeValuesIds,
-      update: [],
-    };
-
-    return foodOrFoodofferCopy;
+    return createAttributeValues;
   }
 
   async updateFoodTranslations(foundFoodWithTranslations: DatabaseTypes.Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
@@ -800,6 +862,41 @@ export class ParseSchedule {
       return foodsInformationForParser.basicFoodData.id;
     }); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
+    const dictMarkingExternalIdentifierToMarking = await this.resolveMarkingExternalIdentifierToMarkingDict(foodsInformationForParserList);
+
+    let foundFoodsWithTranslationsDict = await this.getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList);
+
+    const myTimer = new MyTimer(SCHEDULE_NAME + ' - Update foods');
+
+    let amountCompleted = 0;
+    for (const foodsInformationForParser of foodsInformationForParserList) {
+      let foundFoodWithTranslations = foundFoodsWithTranslationsDict[foodsInformationForParser.basicFoodData.id];
+      if (!!foundFoodWithTranslations && foundFoodWithTranslations.id && this.foodParser) {
+        const basicFoodData = foodsInformationForParser.basicFoodData;
+
+        let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
+        let markings: DatabaseTypes.Markings[] = this.resolveMarkingsForFood(marking_external_identifier_list, dictMarkingExternalIdentifierToMarking);
+
+        await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
+        await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
+
+        await this.updateFoodBasicFields(basicFoodData);
+        await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
+
+        await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
+
+        amountCompleted++;
+        myTimer.printElapsedTimeAndEstimatedTimeRemaining({
+          progress: amountCompleted,
+          total: foodsInformationForParserList.length,
+        });
+      }
+    }
+
+    await this.context.logger.appendLog('Finished Update Foods');
+  }
+
+  private async resolveMarkingExternalIdentifierToMarkingDict(foodsInformationForParserList: FoodsInformationTypeForParser[]): Promise<Record<string, DatabaseTypes.Markings | null>> {
     // create dict with all marking external identifiers
     const dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null> = {};
     for (let foodsInformationForParser of foodsInformationForParserList) {
@@ -820,42 +917,18 @@ export class ParseSchedule {
       }
     }
 
-    let foundFoodsWithTranslationsDict = await this.getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList);
+    return dictMarkingExternalIdentifierToMarking;
+  }
 
-    const myTimer = new MyTimer(SCHEDULE_NAME + ' - Update foods');
-
-    let amountCompleted = 0;
-    for (const foodsInformationForParser of foodsInformationForParserList) {
-      let foundFoodWithTranslations = foundFoodsWithTranslationsDict[foodsInformationForParser.basicFoodData.id];
-      if (!!foundFoodWithTranslations && foundFoodWithTranslations.id && this.foodParser) {
-        const basicFoodData = foodsInformationForParser.basicFoodData;
-
-        let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
-        let markings: DatabaseTypes.Markings[] = [];
-        for (let marking_external_identifier of marking_external_identifier_list) {
-          let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
-          if (marking) {
-            markings.push(marking);
-          }
-        }
-
-        await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
-        await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
-
-        await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
-        await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
-
-        await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
-
-        amountCompleted++;
-        myTimer.printElapsedTimeAndEstimatedTimeRemaining({
-          progress: amountCompleted,
-          total: foodsInformationForParserList.length,
-        });
+  private resolveMarkingsForFood(marking_external_identifier_list: string[], dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>): DatabaseTypes.Markings[] {
+    let markings: DatabaseTypes.Markings[] = [];
+    for (let marking_external_identifier of marking_external_identifier_list) {
+      let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+      if (marking) {
+        markings.push(marking);
       }
     }
-
-    await this.context.logger.appendLog('Finished Update Foods');
+    return markings;
   }
 
   async assignFoodCategoryToFood(food: DatabaseTypes.Foods, foodsInformationForParser: FoodsInformationTypeForParser, foodCategoryExternalIdentifiersToFoodCategoriesDict: DictFoodsCategoryExternalIdentifierToFoodsCategory) {
@@ -942,7 +1015,17 @@ export class ParseSchedule {
     };
   }
 
-  getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject, dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>, resultHash: string) {
+  getFoodofferToCreate(params: {
+    foodofferForParser: FoodoffersTypeForParser,
+    canteen: DatabaseTypes.Canteens,
+    markings: DatabaseTypes.Markings[],
+    food: DatabaseTypes.Foods,
+    foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined,
+    helperObject: FoodCreationHelperObject,
+    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
+    resultHash: string,
+  }) {
+    const { foodofferForParser, canteen, markings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash } = params;
     let food_id = foodofferForParser.food_id;
     const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
@@ -962,7 +1045,11 @@ export class ParseSchedule {
       };
     });
 
-    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as DatabaseTypes.Foodoffers, foodofferForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes, { isFood: false, isFoodoffer: true });
+    let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as DatabaseTypes.Foodoffers, {
+      new_attribute_values: foodofferForParser.attribute_values,
+      dictExternalIdentifierToFoodAttributes: helperObject.dictExternalIdentifierToFoodAttributes,
+      typeHelper: { isFood: false, isFoodoffer: true },
+    });
 
     let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
       ...foodofferForParser.basicFoodofferData,
@@ -995,6 +1082,37 @@ export class ParseSchedule {
       : 'no date';
     await this.context.logger.appendLog('Create Food Offers (' + canteenInfo + ', ' + dateInfo + ')');
 
+    const { dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking } = ParseSchedule.collectCanteenAndMarkingExternalIdentifierDicts(foodofferListForParser);
+
+    // create canteens
+    await this.resolveCanteensForExternalIdentifiers(dictCanteenExternalIdentifierToCanteen);
+
+    // create markings
+    await this.resolveMarkingsForExternalIdentifiers(dictMarkingExternalIdentifierToMarking);
+
+    // search for foods
+    const dictFoodsFound = await this.resolveFoodsForFoodofferList(foodofferListForParser);
+
+    const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
+    for (const [index, foodofferForParser] of foodofferListForParser.entries()) {
+      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog(foodofferForParser, index, amountOfRawMealOffers, dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking, dictFoodsFound, helperObject);
+      if (foodOfferToCreate) {
+        foodoffersToCreate.push(foodOfferToCreate);
+      }
+    }
+
+    await this.createFoodOffersInBatches(foodoffersToCreate, canteenInfo, dateInfo);
+  }
+
+  /**
+   * Collects the distinct canteen and marking external identifiers referenced by the given
+   * foodoffers (including markings referenced by their components), as dicts pre-filled with
+   * null values ready to be resolved to actual database records.
+   */
+  static collectCanteenAndMarkingExternalIdentifierDicts(foodofferListForParser: FoodoffersTypeForParser[]): {
+    dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>;
+    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>;
+  } {
     const dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null> = {};
     const dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null> = {};
 
@@ -1015,7 +1133,14 @@ export class ParseSchedule {
       }
     }
 
-    // create canteens
+    return { dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking };
+  }
+
+  /**
+   * Resolves (find-or-creates) a canteen for each key of the given dict, mutating the dict
+   * in place with the found/created canteen.
+   */
+  async resolveCanteensForExternalIdentifiers(dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>): Promise<void> {
     let canteenExternalIdentifiers = Object.keys(dictCanteenExternalIdentifierToCanteen);
     for (let canteenExternalIdentifier of canteenExternalIdentifiers) {
       let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
@@ -1023,8 +1148,13 @@ export class ParseSchedule {
         dictCanteenExternalIdentifierToCanteen[canteenExternalIdentifier] = canteen;
       }
     }
+  }
 
-    // create markings
+  /**
+   * Resolves (find-or-creates) a marking for each key of the given dict, mutating the dict
+   * in place with the found/created marking.
+   */
+  async resolveMarkingsForExternalIdentifiers(dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>): Promise<void> {
     let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
     for (let markingExternalIdentifier of markingExternalIdentifiers) {
       let marking: DatabaseTypes.Markings | undefined | null = null;
@@ -1033,7 +1163,12 @@ export class ParseSchedule {
         dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
       }
     }
+  }
 
+  /**
+   * Looks up the food record for each food_id referenced by the given foodoffers.
+   */
+  async resolveFoodsForFoodofferList(foodofferListForParser: FoodoffersTypeForParser[]): Promise<Record<string, DatabaseTypes.Foods | null>> {
     // dict foodsFound
     const dictFoodsFound: Record<string, DatabaseTypes.Foods | null> = {};
     for (let foodofferForParser of foodofferListForParser) {
@@ -1049,59 +1184,78 @@ export class ParseSchedule {
         dictFoodsFound[foodId] = food;
       }
     }
+    return dictFoodsFound;
+  }
 
-    const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
-    for (const [index, foodofferForParser] of foodofferListForParser.entries()) {
-      const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
-      const canteenFound = !!canteen;
+  /**
+   * Builds the foodoffer-to-create payload for a single parsed foodoffer, or logs a
+   * skip/error notice and returns null if the canteen/food could not be resolved or the
+   * food is archived.
+   */
+  async resolveFoodofferToCreateOrLog(
+    foodofferForParser: FoodoffersTypeForParser,
+    index: number,
+    amountOfRawMealOffers: number,
+    dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null>,
+    dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
+    dictFoodsFound: Record<string, DatabaseTypes.Foods | null>,
+    helperObject: FoodCreationHelperObject,
+  ): Promise<Partial<DatabaseTypes.Foodoffers> | null> {
+    const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
+    const canteenFound = !!canteen;
 
-      const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
-      const markings: DatabaseTypes.Markings[] = [];
+    const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
+    const markings: DatabaseTypes.Markings[] = [];
 
-      for (let marking_external_identifier of marking_external_identifiers) {
-        const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
-        if (marking) {
-          markings.push(marking);
-        }
-      }
-      const markingsAllFound = markings.length === marking_external_identifiers.length;
-
-      if (!markingsAllFound) {
-        const missingMarkings = marking_external_identifiers.filter(id => !dictMarkingExternalIdentifierToMarking[id]);
-        await this.context.logger.appendLog('Warning Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - some markings not found: [' + missingMarkings.join(', ') + '] - proceeding with available markings');
-      }
-
-      const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
-      let foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined = undefined;
-      if (foodofferCategoryExternalIdentifier) {
-        foodofferCategory = helperObject.foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict[foodofferCategoryExternalIdentifier];
-      }
-
-      const food_id = foodofferForParser.food_id;
-      const food = dictFoodsFound[food_id];
-      const foodFound = !!food;
-
-      const foodIsArchived = foodFound && food?.status === DirectusItemStatus.ARCHIVED;
-
-      if (canteenFound && foodFound && !foodIsArchived) {
-        const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
-        const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
-        let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash);
-        foodoffersToCreate.push(foodOfferToCreate);
-      } else if (foodIsArchived) {
-        await this.context.logger.appendLog('Skip Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - food has status archived - food_id: ' + food_id);
-      } else {
-        await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - foodFound: ' + foodFound + ' - food_id: ' + food_id);
+    for (let marking_external_identifier of marking_external_identifiers) {
+      const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+      if (marking) {
+        markings.push(marking);
       }
     }
+    const markingsAllFound = markings.length === marking_external_identifiers.length;
 
+    if (!markingsAllFound) {
+      const missingMarkings = marking_external_identifiers.filter(id => !dictMarkingExternalIdentifierToMarking[id]);
+      await this.context.logger.appendLog('Warning Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - some markings not found: [' + missingMarkings.join(', ') + '] - proceeding with available markings');
+    }
+
+    const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
+    let foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined = undefined;
+    if (foodofferCategoryExternalIdentifier) {
+      foodofferCategory = helperObject.foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict[foodofferCategoryExternalIdentifier];
+    }
+
+    const food_id = foodofferForParser.food_id;
+    const food = dictFoodsFound[food_id];
+    const foodFound = !!food;
+
+    const foodIsArchived = foodFound && food?.status === DirectusItemStatus.ARCHIVED;
+
+    if (canteenFound && foodFound && !foodIsArchived) {
+      const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
+      const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
+      return this.getFoodofferToCreate({ foodofferForParser, canteen, markings: filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash });
+    } else if (foodIsArchived) {
+      await this.context.logger.appendLog('Skip Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - food has status archived - food_id: ' + food_id);
+      return null;
+    } else {
+      await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - foodFound: ' + foodFound + ' - food_id: ' + food_id);
+      return null;
+    }
+  }
+
+  /**
+   * Creates the given foodoffers in the database in batches, logging progress/timing and
+   * tolerating per-item creation errors (logged, not thrown).
+   */
+  async createFoodOffersInBatches(foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[], canteenInfo: string, dateInfo: string): Promise<void> {
     const batchSize = 10;
 
-    const myFoodOffersService = await this.context.myDatabaseHelper.getFoodoffersHelper();
+    const myFoodOffersService = this.context.myDatabaseHelper.getFoodoffersHelper();
 
     const myTimer = new MyTimer(SCHEDULE_NAME + ' - Create Food Offers (' + canteenInfo + ', ' + dateInfo + ')');
     await this.context.logger.appendLog('Amount of food offers to create: ' + foodoffersToCreate.length)
-    const myTimersEmitEvents = new MyTimers('disableEventEmit_TRUE', 'disableEventEmit_FALSE');
 
     let batchIndex = 1;
     const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
@@ -1138,7 +1292,7 @@ export class ParseSchedule {
   }
 
   async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
-    let itemService = await this.context.myDatabaseHelper.getMarkingsHelper();
+    let itemService = this.context.myDatabaseHelper.getMarkingsHelper();
 
     markingsJSONList = ListHelper.removeDuplicatesFromJsonList(markingsJSONList, 'external_identifier'); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
@@ -1149,7 +1303,7 @@ export class ParseSchedule {
       await this.context.logger.appendLog('Update Marking ' + currentMarking + ' / ' + amountOfMarkings);
       await this.context.logger.appendLog(JSON.stringify(markingJSON, null, 2));
 
-      let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
+      let markingJSONCopy = DeepCopyHelper.deepCopy<any>(markingJSON); // untyped copy: fields are deleted/overwritten below to match Partial<Markings>
       delete markingJSONCopy.translations; // Remove meals translations, add it later
 
       let markings = await itemService.readByQuery({
@@ -1182,7 +1336,9 @@ export class ParseSchedule {
   }
 
   async updateMarkingTranslations(marking: DatabaseTypes.Markings, markingJSON: MarkingsTypeForParser) {
-    await TranslationHelper.updateItemTranslations<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(marking, {
+    let itemService = this.context.myDatabaseHelper.getMarkingsHelper();
+    let markingWithTranslations = await itemService.readOneWithTranslations(marking.id);
+    await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(markingWithTranslations, {
       translationsFromParsing: markingJSON.translations,
       items_primary_field_in_translation_table: 'markings_id',
       itemsTablename: CollectionNames.MARKINGS,

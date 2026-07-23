@@ -10,9 +10,9 @@ import { FetchHelper } from '../../helpers/FetchHelper';
 
 //const agent = new Agent({ maxHeaderSize: 32 * 1024 });
 
-export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
+export class StudentenwerkHannoverNewsParser implements NewsParserInterface {
   static readonly baseUrl = 'https://www.studentenwerk-hannover.de';
-  static readonly newsUrl = `${StudentenwerkHannoverNews_Parser.baseUrl}/unternehmen/news`;
+  static readonly newsUrl = `${StudentenwerkHannoverNewsParser.baseUrl}/unternehmen/news`;
   static readonly newsDetailArticleUrlStart = '/unternehmen/news';
 
 
@@ -28,7 +28,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
     try {
       let response = await this.fetchNewsPage();
-      return StudentenwerkHannoverNews_Parser.parseNewsItems(response, logger, limitAmountNews);
+      return StudentenwerkHannoverNewsParser.parseNewsItems(response, logger, limitAmountNews);
     } catch (error: any) {
       if (logger) {
         logger.appendLog('Error fetching or parsing news page: ' + error.toString());
@@ -39,7 +39,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
   }
 
   async fetchNewsPage() {
-    return await FetchHelper.fetchPage(StudentenwerkHannoverNews_Parser.newsUrl);
+    return await FetchHelper.fetchPage(StudentenwerkHannoverNewsParser.newsUrl);
   }
 
   static async fetchArticlePage(articleUrl: string) {
@@ -68,7 +68,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
       let element: CheerioElement | undefined = articleItems[index];
 
-      let imageUrl = StudentenwerkHannoverNews_Parser.extractImageUrl($newsIndexArticle, element);
+      let imageUrl = StudentenwerkHannoverNewsParser.extractImageUrl($newsIndexArticle, element);
       let header = $newsIndexArticle(element).find('h3').text().trim();
 
       if (!header) {
@@ -79,11 +79,11 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
       }
 
       let content = $newsIndexArticle(element).find('div.news_slider-content_teaser').text().trim();
-      let articleUrl = StudentenwerkHannoverNews_Parser.extractArticleUrl($newsIndexArticle, element);
+      let articleUrl = StudentenwerkHannoverNewsParser.extractArticleUrl($newsIndexArticle, element);
 
-      let date = await StudentenwerkHannoverNews_Parser.fetchArticleDate(articleUrl);
+      let date = await StudentenwerkHannoverNewsParser.fetchArticleDate(articleUrl);
 
-      let categories = StudentenwerkHannoverNews_Parser.extractCategories($newsIndexArticle, element);
+      let categories = StudentenwerkHannoverNewsParser.extractCategories($newsIndexArticle, element);
 
       data.push({
         basicNews: {
@@ -116,13 +116,13 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
   static extractImageUrl($: CheerioAPI, element: CheerioElement | undefined): string {
     let imageStyle = $(element).find('div.news-slider-image').attr('style');
     let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
-    return imageUrlMatch ? StudentenwerkHannoverNews_Parser.baseUrl + imageUrlMatch[1] : '';
+    return imageUrlMatch ? StudentenwerkHannoverNewsParser.baseUrl + imageUrlMatch[1] : '';
   }
 
   static extractArticleUrl($: CheerioAPI, element: CheerioElement | undefined): string | undefined {
     let articleUrl = $(element).find('a.articleLink').attr('href');
-    if (articleUrl?.startsWith(StudentenwerkHannoverNews_Parser.newsDetailArticleUrlStart)) {
-      return StudentenwerkHannoverNews_Parser.baseUrl + articleUrl;
+    if (articleUrl?.startsWith(StudentenwerkHannoverNewsParser.newsDetailArticleUrlStart)) {
+      return StudentenwerkHannoverNewsParser.baseUrl + articleUrl;
     }
     return undefined;
   }
@@ -139,7 +139,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
       dateAsDate.setHours(12, 0, 0, 0);
       return dateAsDate.toISOString();
     } catch (error) {
-      console.log('Error fetching article page: ' + articleUrl);
+      console.error('Error fetching article page: ' + articleUrl, error);
       return null;
     }
   }

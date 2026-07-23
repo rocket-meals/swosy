@@ -16,6 +16,78 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 
+/**
+ * Downscales the given image if it exceeds maxDimension in either dimension,
+ * preserving aspect ratio. Returns the original uri unchanged if it already
+ * fits within the limit.
+ */
+async function resizeImageIfTooLarge(uri: string, width: number, height: number, maxDimension: number): Promise<string> {
+	if (width <= maxDimension && height <= maxDimension) {
+		return uri;
+	}
+
+	const aspectRatio = width / height;
+	const newDimensions =
+		width > height
+			? {
+					width: maxDimension,
+					height: maxDimension / aspectRatio,
+				}
+			: {
+					width: maxDimension * aspectRatio,
+					height: maxDimension,
+				};
+
+	const resizedImage = await ImageManipulator.manipulateAsync(uri, [{ resize: newDimensions }], { compress: 1, format: ImageManipulator.SaveFormat.JPEG });
+
+	return resizedImage.uri;
+}
+
+/**
+ * Builds the FormData payload for an image upload, using the platform-specific
+ * way of turning a local file uri into a file/blob part.
+ */
+async function buildImageFormData(finalUri: string, file_name: string, storage: string): Promise<FormData> {
+	const formData = new FormData();
+
+	if (Platform.OS === 'web') {
+		const blob: Blob = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = function () {
+				resolve(xhr.response);
+			};
+			xhr.onerror = function (e) {
+				console.log(e);
+				reject(new TypeError('Network request failed'));
+			};
+			xhr.responseType = 'blob';
+			xhr.open('GET', finalUri, true);
+			xhr.send(null);
+		});
+
+		if (storage) {
+			formData.append('folder', storage);
+		}
+		formData.append('image', blob, file_name);
+	} else {
+		const uriParts = finalUri.split('.');
+		const fileType = uriParts.at(-1);
+		const fileExtension = `.${fileType}`;
+
+		const file: any = {
+			uri: finalUri,
+			name: file_name + fileExtension,
+			type: `image/${fileType}`,
+		};
+		if (storage) {
+			formData.append('folder', storage);
+		}
+		formData.append('image', file, file_name);
+	}
+
+	return formData;
+}
+
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet, selectedFoodId, handleFetch, fileName }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -28,7 +100,6 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const MAX_IMAGE_DIMENSION = 6000;
 	const { foodCollection } = useAppSelector((state) => state.food);
-	const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
 
 	const getFolder = () => {
@@ -80,77 +151,19 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			}
 
 			const { uri, width, height } = pickerResult.assets[0];
-			let finalUri = uri;
+			const finalUri = await resizeImageIfTooLarge(uri, width, height, MAX_IMAGE_DIMENSION);
 
-			if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-				const aspectRatio = width / height;
-				const newDimensions =
-					width > height
-						? {
-								width: MAX_IMAGE_DIMENSION,
-								height: MAX_IMAGE_DIMENSION / aspectRatio,
-							}
-						: {
-								width: MAX_IMAGE_DIMENSION * aspectRatio,
-								height: MAX_IMAGE_DIMENSION,
-							};
-
-				const resizedImage = await ImageManipulator.manipulateAsync(uri, [{ resize: newDimensions }], { compress: 1, format: ImageManipulator.SaveFormat.JPEG });
-
-				finalUri = resizedImage.uri;
-			}
 			if (useCamera) {
 				setLoading({ ...loading, camera: true });
 			} else {
 				setLoading({ ...loading, image: true });
 			}
-			const formData = new FormData();
 			const file_name = fileName + '_' + selectedFoodId;
 			let storage = '';
 			if (fileName === 'foods') {
 				storage = getFolder();
 			}
-			let fileSizes: number | undefined = undefined;
-
-			if (Platform.OS === 'web') {
-				const blob: Blob = await new Promise((resolve, reject) => {
-					const xhr = new XMLHttpRequest();
-					xhr.onload = function () {
-						resolve(xhr.response);
-					};
-					xhr.onerror = function (e) {
-						console.log(e);
-						reject(new TypeError('Network request failed'));
-					};
-					xhr.responseType = 'blob';
-					xhr.open('GET', finalUri, true);
-					xhr.send(null);
-				});
-
-				fileSizes = blob.size;
-				if (storage) {
-					formData.append('folder', storage);
-				}
-				formData.append('image', blob, file_name);
-			} else {
-				const uriParts = finalUri.split('.');
-				const fileType = uriParts[uriParts.length - 1];
-				const fileExtension = `.${fileType}`;
-
-				const file: any = {
-					uri: finalUri,
-					name: file_name + fileExtension,
-					type: `image/${fileType}`,
-				};
-				if (storage) {
-					formData.append('folder', storage);
-				}
-				formData.append('image', file, file_name);
-
-				const response = await fetch(finalUri);
-				const blob = await response.blob();
-				fileSizes = blob.size;
-			}
+			const formData = await buildImageFormData(finalUri, file_name, storage);
 
 			const client = ServerAPI.getClient();
 			formData.append('title', file_name);
@@ -160,7 +173,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			const file_id = resultFileUpload.id;
 
 			const collectionHelper = new CollectionHelper(fileName);
-                        let resultImageLinked = await collectionHelper.updateItem(selectedFoodId, {
+                        await collectionHelper.updateItem(selectedFoodId, {
                                 image: file_id,
                                 image_generated: false,
                         });
@@ -177,7 +190,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 		try {
 			const collectionHelper = new CollectionHelper(fileName);
 			setLoading({ ...loading, delete: true });
-                        let result = await collectionHelper.updateItem(selectedFoodId, {
+                        await collectionHelper.updateItem(selectedFoodId, {
                                 image: null,
                                 image_remote_url: null,
                                 image_generated: false,

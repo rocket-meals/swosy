@@ -1,5 +1,5 @@
 import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
-import { default as puppeteerCore } from 'puppeteer-core';
+import puppeteerCore from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 
 export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {

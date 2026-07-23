@@ -1,16 +1,13 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
-import type { AvatarConfig } from 'repo-depkit-common-ui';
+import type { PlayerIdentity } from './PlayerIdentity';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type GameHistoryPlayerEntry = {
+export type GameHistoryPlayerEntry = PlayerIdentity & {
 	/** The archived game's transient `Player.id` - the key into `finalScores`. */
 	playerId: string;
 	/** Present when this participant was a friend at the time the game was archived. */
 	friendId?: string;
-	name: string;
-	color: string;
-	avatarConfig?: AvatarConfig;
 };
 
 export type GameHistoryEntry = {

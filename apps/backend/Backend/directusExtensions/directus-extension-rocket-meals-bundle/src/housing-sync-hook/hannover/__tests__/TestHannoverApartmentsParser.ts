@@ -3,16 +3,16 @@ import { describe, expect, it, jest } from '@jest/globals';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
-import { StudentenwerkHannoverApartments_Parser } from '../StudentenwerkHannoverApartments_Parser';
+import { StudentenwerkHannoverApartmentsParser } from '../StudentenwerkHannoverApartmentsParser';
 
 const html = fs.readFileSync(path.resolve(__dirname, './Apartments.html'), 'utf8');
 
 describe('Hannover Apartments Parser', () => {
-  let parser = new StudentenwerkHannoverApartments_Parser();
+  let parser = new StudentenwerkHannoverApartmentsParser();
 
   it('Get Apartments', async () => {
     jest.spyOn(axios, 'get').mockImplementation(url => {
-      if (url === StudentenwerkHannoverApartments_Parser.apartmentsUrl) {
+      if (url === StudentenwerkHannoverApartmentsParser.apartmentsUrl) {
         return Promise.resolve({ data: html });
       }
       return Promise.reject(new Error('Unknown URL'));

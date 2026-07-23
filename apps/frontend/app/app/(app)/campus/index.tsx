@@ -54,9 +54,9 @@ const Index: React.FC = () => {
 	// Local State
 	const [query, setQuery] = useState<string>('');
 	const [refreshing, setRefreshing] = useState(false);
-	const [hasLoaded, setHasLoaded] = useState(false);
+	const [hasLoaded, setHasLoaded] = useState(false); // NOSONAR: hasLoaded is currently unused; remove this comment once it is used
 	const [loading, setLoading] = useState(true);
-	const [campusesDispatched, setCampusesDispatched] = useState(false);
+	const [campusesDispatched, setCampusesDispatched] = useState(false); // NOSONAR: campusesDispatched is currently unused; remove this comment once it is used
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>(null);
 	const [listWidth, setListWidth] = useState<number>(windowWidth);
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
@@ -164,6 +164,7 @@ const Index: React.FC = () => {
 			}
 			return null;
 		} catch (e) {
+			console.warn('fetchSelectedBuilding error', e);
 			toast('Please select canteen', 'error');
 			return null;
 		}

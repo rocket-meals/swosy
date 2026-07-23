@@ -3,10 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
+import type { LabeledAccentProps } from 'repo-depkit-common';
 import MyAvatar, { AvatarConfig, AvatarSize } from '../MyAvatar';
 import { useAvatarEditorModal, UseAvatarEditorModalOptions } from '../MyAvatarEditor';
 
-export type SettingsListAvatarProps = {
+export type SettingsListAvatarProps = LabeledAccentProps & {
 	/** Current avatar config, or null/undefined when no avatar has been set yet. */
 	config?: AvatarConfig | null;
 	/**
@@ -16,7 +17,6 @@ export type SettingsListAvatarProps = {
 	onChange?: (config: AvatarConfig) => void;
 	/** Called when the user confirms deletion. Only invoked when `options.allowDelete` is true. */
 	onDelete?: () => void;
-	label: string;
 	/** Optional value text shown on the right (e.g. a score). */
 	value?: string;
 	/** Preview size of the avatar shown in the row. Defaults to a compact row-sized preview. */
@@ -24,10 +24,6 @@ export type SettingsListAvatarProps = {
 	avatarBackgroundColor?: string;
 	/** Overrides the row's width (defaults to `'100%'`), e.g. for a multi-column layout. */
 	width?: number;
-	/** Overrides the row's background color (defaults to the theme's row background). */
-	backgroundColor?: string;
-	/** Optional border, e.g. to highlight the row. */
-	borderColor?: string;
 	borderWidth?: number;
 	borderStyle?: 'solid' | 'dashed';
 	/** Overrides the title text's font size. */

@@ -31,6 +31,8 @@ const isWeb = Platform.OS === 'web';
 /* ───────────────────────── Scan / Add Friend Modal ──────────────────────── */
 type ScanPhase = 'scanning' | 'confirming' | 'error' | 'already_friends';
 
+type ProfileField = string | DatabaseTypes.Profiles | null | undefined;
+
 type ScanModalContentProps = {
 	onSubmit: (id: string) => Promise<void>;
 	checkAlreadyFriends?: (friendshipId: string) => Promise<boolean>;
@@ -447,18 +449,18 @@ export const FriendsContent: React.FC<FriendsContentProps> = ({ showHeading = tr
 	const friendshipsHelper = useMemo(() => new FriendshipsHelper(), []);
 	const [refreshing, setRefreshing] = useState(false);
 
-	const getProfileIdFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string => {
+	const getProfileIdFromField = useCallback((field: ProfileField): string => {
 		if (!field) return '-';
 		if (typeof field === 'string') return field;
 		return (field as any)?.id ?? '-';
 	}, []);
 
-	const getProfileNicknameFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined): string | null => {
+	const getProfileNicknameFromField = useCallback((field: ProfileField): string | null => {
 		if (!field || typeof field === 'string') return null;
 		return (field as DatabaseTypes.Profiles)?.nickname ?? null;
 	}, []);
 
-	const getProfileAvatarFromField = useCallback((field: string | DatabaseTypes.Profiles | null | undefined) => {
+	const getProfileAvatarFromField = useCallback((field: ProfileField) => {
 		if (!field || typeof field === 'string') return null;
 		return parseProfileAvatar((field as DatabaseTypes.Profiles)?.avatar);
 	}, []);

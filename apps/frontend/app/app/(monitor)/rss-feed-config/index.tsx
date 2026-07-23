@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -7,28 +7,34 @@ import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import styles from './styles';
 
+interface UrlField {
+	id: number;
+	value: string;
+}
+
 const RssFeedConfig = () => {
 	useSetPageTitle(TranslationKeys.rss_feed);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const [urls, setUrls] = useState<string[]>(['']);
+	const nextUrlFieldIdRef = useRef(0);
+	const [urls, setUrls] = useState<UrlField[]>(() => [{ id: nextUrlFieldIdRef.current++, value: '' }]);
 	const [interval, setInterval] = useState('10');
 
 	const addUrlField = () => {
-		setUrls(prev => [...prev, '']);
+		setUrls(prev => [...prev, { id: nextUrlFieldIdRef.current++, value: '' }]);
 	};
 
-	const updateUrl = (index: number, value: string) => {
-		setUrls(prev => prev.map((u, i) => (i === index ? value : u)));
+	const updateUrl = (id: number, value: string) => {
+		setUrls(prev => prev.map(field => (field.id === id ? { ...field, value } : field)));
 	};
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={styles.field}>
 				<Text style={[styles.label, { color: theme.screen.text }]}>RSS Feed URLs</Text>
-				{urls.map((url, index) => (
+				{urls.map(field => (
 					<TextInput
-						key={index}
+						key={field.id}
 						style={[
 							styles.input,
 							{
@@ -37,8 +43,8 @@ const RssFeedConfig = () => {
 								marginBottom: 8,
 							},
 						]}
-						value={url}
-						onChangeText={text => updateUrl(index, text)}
+						value={field.value}
+						onChangeText={text => updateUrl(field.id, text)}
 						placeholder="https://example.com/feed"
 						placeholderTextColor={theme.screen.icon}
 					/>
@@ -58,7 +64,7 @@ const RssFeedConfig = () => {
 					router.push({
 						pathname: '/rss-feed',
 						params: {
-							urls: urls.filter(u => u.trim()).join(','),
+							urls: urls.map(field => field.value).filter(u => u.trim()).join(','),
 							switchIntervalInSeconds: interval,
 						},
 					});

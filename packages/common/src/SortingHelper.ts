@@ -260,6 +260,32 @@ export function sortByPrice(foodOffers: DatabaseTypes.Foodoffers[], priceGroup?:
   return foodOffers;
 }
 
+function classifyOfferByEatingHabits(offer: DatabaseTypes.Foodoffers, profileMarkingsMap: Map<string, any>): 'liked' | 'disliked' | 'neutral' {
+  if (!offer?.markings) {
+    return 'neutral';
+  }
+
+  let isLiked = false;
+  let isDisliked = false;
+
+  for (const marking of offer.markings) {
+    const profileMarking: any = profileMarkingsMap.get(marking.markings_id);
+    if (!profileMarking) {
+      continue;
+    }
+    if (profileMarking.like === true) {
+      isLiked = true;
+    } else if (profileMarking.like === false) {
+      isDisliked = true;
+    }
+  }
+
+  if (isDisliked) {
+    return 'disliked';
+  }
+  return isLiked ? 'liked' : 'neutral';
+}
+
 export function sortByEatingHabits(foodOffers: DatabaseTypes.Foodoffers[], profileMarkingsData: any) {
 
   const profileMarkingsMap = new Map<string, any>(profileMarkingsData?.map((marking: any) => [marking.markings_id, marking]));
@@ -269,26 +295,10 @@ export function sortByEatingHabits(foodOffers: DatabaseTypes.Foodoffers[], profi
   const neutral: DatabaseTypes.Foodoffers[] = [];
 
   for (const offer of foodOffers) {
-    let isLiked = false;
-    let isDisliked = false;
-
-    if (offer?.markings) {
-      for (const marking of offer.markings) {
-        const profileMarking: any = profileMarkingsMap.get(marking.markings_id);
-
-        if (profileMarking) {
-          if (profileMarking.like === true) {
-            isLiked = true;
-          } else if (profileMarking.like === false) {
-            isDisliked = true;
-          }
-        }
-      }
-    }
-
-    if (isDisliked) {
+    const category = classifyOfferByEatingHabits(offer, profileMarkingsMap);
+    if (category === 'disliked') {
       disliked.push(offer);
-    } else if (isLiked) {
+    } else if (category === 'liked') {
       liked.push(offer);
     } else {
       neutral.push(offer);

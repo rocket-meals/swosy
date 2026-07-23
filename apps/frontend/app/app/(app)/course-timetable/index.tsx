@@ -17,24 +17,8 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt, StringHelper } from 'repo-depkit-common';
-
-const extractTextAndLink = (description: string) => {
-	// Remove unintended spaces between `]` and `(`
-	const cleanedDescription = StringHelper.replaceAllWithOptions({ str: description, find: String.raw`]\s+\(`, replace: '](' });
-
-	const regex = /\[(.*?)\]\((.*?)\)/g;
-	const match = regex.exec(cleanedDescription);
-
-	if (match) {
-		const label = match[1]; // The text inside the square brackets
-		const link = match[2]; // The URL inside the parentheses
-		const textWithoutLinkAndLabel = cleanedDescription.replace(match[0], '').trim(); // Remove the entire match
-		return { text: textWithoutLinkAndLabel, label, link };
-	}
-
-	return { text: description, label: '', link: null };
-};
+import { CollectibleAt } from 'repo-depkit-common';
+import { PARSE_MARKDOWN_REGEX, extractTextAndLink } from './markdownHelpers';
 
 const TimetableScreen = () => {
 	useSetPageTitle(TranslationKeys.course_timetable);
@@ -57,11 +41,6 @@ const TimetableScreen = () => {
 			children: <CourseBottomSheet timeTableData={timeTableData} closeSheet={closeScrollViewModal} isUpdate={isUpdate} selectedEventId={selectedEventId} />,
 		});
 	}, [showScrollViewModal, closeScrollViewModal, timeTableData, isUpdate, selectedEventId]);
-
-	const closeSheet = () => {
-		closeScrollViewModal();
-		setIsUpdate(false);
-	};
 
 	const capitalizeFirstLetter = (string: string) => {
 		return string?.charAt(0)?.toUpperCase() + string?.slice(1)?.toLowerCase();
@@ -104,19 +83,18 @@ const TimetableScreen = () => {
 	};
 
 	const parseMarkdown = (text: string) => {
-		const regex = /(\*\*.*?\*\*|\*.*?\*|\[.*?\]\(.*?\))/g;
-		const parts = text?.split(regex);
+		const parts = text?.split(PARSE_MARKDOWN_REGEX).map((part, id) => ({ id, part }));
 
-		return parts?.map((part, index) => {
+		return parts?.map(({ id, part }) => {
 			if (part?.startsWith('**') && part?.endsWith('**')) {
 				return (
-					<Text key={index} style={{ fontWeight: 'bold' }}>
+					<Text key={id} style={{ fontWeight: 'bold' }}>
 						{part?.slice(2, -2)}
 					</Text>
 				);
 			} else if (part?.startsWith('*') && part?.endsWith('*')) {
 				return (
-					<Text key={index} style={{ fontStyle: 'italic' }}>
+					<Text key={id} style={{ fontStyle: 'italic' }}>
 						{part?.slice(1, -1)}
 					</Text>
 				);

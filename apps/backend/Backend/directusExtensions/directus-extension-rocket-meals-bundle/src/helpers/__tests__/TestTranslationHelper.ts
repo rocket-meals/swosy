@@ -107,12 +107,12 @@ describe('TranslationHelper Test', () => {
 
   // Test case that should pass
   it('should detect updates needed when there is a significant change in translations', async () => {
-    const result = await TranslationHelper._getUpdateInformationForTranslations(
-      mockItemWithTranslations,
-      mockItemWithTranslations,
-      mockTranslationsFromParsing,
-      relationField // Use TestTranslationType for the relation field
-    );
+    const result = await TranslationHelper._getUpdateInformationForTranslations({
+      itemWithTranslations: mockItemWithTranslations,
+      item: mockItemWithTranslations,
+      translationsFromParsing: mockTranslationsFromParsing,
+      items_primary_field_in_translation_table: relationField, // Use TestTranslationType for the relation field
+    });
 
     expect(result.updateNeeded).toBe(true);
     expect(result.updateObject.translations.update).toHaveLength(1);
@@ -137,12 +137,12 @@ describe('TranslationHelper Test', () => {
       },
     };
 
-    const result = await TranslationHelper._getUpdateInformationForTranslations(
-      mockItemWithTranslations,
-      mockItemWithTranslations,
-      mockTranslationsWithoutChange,
-      relationField // Use TestTranslationType for the relation field
-    );
+    const result = await TranslationHelper._getUpdateInformationForTranslations({
+      itemWithTranslations: mockItemWithTranslations,
+      item: mockItemWithTranslations,
+      translationsFromParsing: mockTranslationsWithoutChange,
+      items_primary_field_in_translation_table: relationField, // Use TestTranslationType for the relation field
+    });
 
     expect(result.updateNeeded).toBe(false);
     expect(result.updateObject.translations.update).toHaveLength(0);

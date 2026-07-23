@@ -19,7 +19,6 @@ export type SettingsListLeftRightProps<T extends string | number> = Pick<
 	selectedOption: T | null;
 	onSelect: (option: SettingsListLeftRightItem<T>) => void;
 	groupPosition?: SettingsListProps['groupPosition'];
-	accentColor?: string;
 	onPress?: () => void;
 	/** Optional element rendered between the value text and the right arrow. */
 	extraRightElement?: React.ReactNode;

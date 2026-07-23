@@ -85,9 +85,6 @@ const {
 
 // ─── Re-exported types ────────────────────────────────────────────────────────
 
-/** 64-bit hex string representation of an H3 index */
-export type H3Index = string;
-
 /** Pair of lower/upper 32-bit integers representing a 64-bit H3 index */
 export type SplitLong = [number, number];
 
@@ -104,10 +101,10 @@ export const radsToDegs = (rad: number): number => _radsToDegs?.(rad) ?? 0;
 
 // ─── Split-long conversions ───────────────────────────────────────────────────
 
-export const h3IndexToSplitLong = (h3Index: H3Index | SplitLong): SplitLong =>
+export const h3IndexToSplitLong = (h3Index: string | SplitLong): SplitLong =>
     (_h3IndexToSplitLong?.(h3Index) as SplitLong) ?? [0, 0];
 
-export const splitLongToH3Index = (lower: number, upper: number): H3Index =>
+export const splitLongToH3Index = (lower: number, upper: number): string =>
     _splitLongToH3Index?.(lower, upper) ?? '';
 
 // ─── Cell indexing ─────────────────────────────────────────────────────────────
@@ -115,13 +112,13 @@ export const splitLongToH3Index = (lower: number, upper: number): H3Index =>
 /**
  * Convert a lat/lng coordinate (degrees) to an H3 cell index.
  */
-export const latLngToCell = (lat: number, lng: number, res: number): H3Index =>
+export const latLngToCell = (lat: number, lng: number, res: number): string =>
     _latLngToCell?.(lat, lng, res) ?? '';
 
 /**
  * Return the center lat/lng of an H3 cell as [lat, lng] in degrees.
  */
-export const cellToLatLng = (h3Index: H3Index): CoordPair =>
+export const cellToLatLng = (h3Index: string): CoordPair =>
     (_cellToLatLng?.(h3Index) as CoordPair) ?? [0, 0];
 
 /**
@@ -129,7 +126,7 @@ export const cellToLatLng = (h3Index: H3Index): CoordPair =>
  * Returns an empty array for invalid or empty cell indices.
  */
 export const cellToBoundary = (
-    h3Index: H3Index,
+    h3Index: string,
     formatAsGeoJson = false,
 ): CoordPair[] => {
     if (!h3Index || !(_isValidCell?.(h3Index) ?? false)) return [];
@@ -138,41 +135,41 @@ export const cellToBoundary = (
 
 // ─── Cell validation ──────────────────────────────────────────────────────────
 
-export const isValidCell = (h3Index: H3Index | SplitLong): boolean =>
+export const isValidCell = (h3Index: string | SplitLong): boolean =>
     _isValidCell?.(h3Index) ?? false;
 
-export const isValidIndex = (h3Index: H3Index | SplitLong): boolean =>
+export const isValidIndex = (h3Index: string | SplitLong): boolean =>
     _isValidIndex?.(h3Index) ?? false;
 
-export const isPentagon = (h3Index: H3Index | SplitLong): boolean =>
+export const isPentagon = (h3Index: string | SplitLong): boolean =>
     _isPentagon?.(h3Index) ?? false;
 
-export const isResClassIII = (h3Index: H3Index | SplitLong): boolean =>
+export const isResClassIII = (h3Index: string | SplitLong): boolean =>
     _isResClassIII?.(h3Index) ?? false;
 
 // ─── Cell properties ──────────────────────────────────────────────────────────
 
-export const getResolution = (h3Index: H3Index | SplitLong): number =>
+export const getResolution = (h3Index: string | SplitLong): number =>
     _getResolution?.(h3Index) ?? 0;
 
-export const getBaseCellNumber = (h3Index: H3Index | SplitLong): number =>
+export const getBaseCellNumber = (h3Index: string | SplitLong): number =>
     _getBaseCellNumber?.(h3Index) ?? 0;
 
-export const getIcosahedronFaces = (h3Index: H3Index | SplitLong): number[] =>
+export const getIcosahedronFaces = (h3Index: string | SplitLong): number[] =>
     (_getIcosahedronFaces?.(h3Index) as number[]) ?? [];
 
 // ─── Cell hierarchy ────────────────────────────────────────────────────────────
 
-export const cellToParent = (h3Index: H3Index, res: number): H3Index =>
+export const cellToParent = (h3Index: string, res: number): string =>
     _cellToParent?.(h3Index, res) ?? '';
 
-export const cellToChildren = (h3Index: H3Index, childRes: number): H3Index[] =>
-    (_cellToChildren?.(h3Index, childRes) as H3Index[]) ?? [];
+export const cellToChildren = (h3Index: string, childRes: number): string[] =>
+    (_cellToChildren?.(h3Index, childRes) as string[]) ?? [];
 
-export const cellToChildrenSize = (h3Index: H3Index, childRes: number): number =>
+export const cellToChildrenSize = (h3Index: string, childRes: number): number =>
     _cellToChildrenSize?.(h3Index, childRes) ?? 0;
 
-export const cellToCenterChild = (h3Index: H3Index, childRes: number): H3Index =>
+export const cellToCenterChild = (h3Index: string, childRes: number): string =>
     _cellToCenterChild?.(h3Index, childRes) ?? '';
 
 // ─── Grid traversal ───────────────────────────────────────────────────────────
@@ -180,45 +177,45 @@ export const cellToCenterChild = (h3Index: H3Index, childRes: number): H3Index =
 /**
  * Return all cells within k grid rings of h3Index (inclusive).
  */
-export const gridDisk = (h3Index: H3Index, k: number): H3Index[] =>
-    (_gridDisk?.(h3Index, k) as H3Index[]) ?? [];
+export const gridDisk = (h3Index: string, k: number): string[] =>
+    (_gridDisk?.(h3Index, k) as string[]) ?? [];
 
 /**
  * Return cells within k grid rings grouped by ring distance.
  */
-export const gridDiskDistances = (h3Index: H3Index, k: number): H3Index[][] =>
-    (_gridDiskDistances?.(h3Index, k) as H3Index[][]) ?? [];
+export const gridDiskDistances = (h3Index: string, k: number): string[][] =>
+    (_gridDiskDistances?.(h3Index, k) as string[][]) ?? [];
 
-export const gridRingUnsafe = (h3Index: H3Index, k: number): H3Index[] =>
-    (_gridRingUnsafe?.(h3Index, k) as H3Index[]) ?? [];
+export const gridRingUnsafe = (h3Index: string, k: number): string[] =>
+    (_gridRingUnsafe?.(h3Index, k) as string[]) ?? [];
 
-export const gridDistance = (origin: H3Index, dest: H3Index): number =>
+export const gridDistance = (origin: string, dest: string): number =>
     _gridDistance?.(origin, dest) ?? 0;
 
-export const gridPathCells = (origin: H3Index, dest: H3Index): H3Index[] =>
-    (_gridPathCells?.(origin, dest) as H3Index[]) ?? [];
+export const gridPathCells = (origin: string, dest: string): string[] =>
+    (_gridPathCells?.(origin, dest) as string[]) ?? [];
 
 // ─── Set operations ───────────────────────────────────────────────────────────
 
-export const compactCells = (cells: H3Index[]): H3Index[] =>
-    (_compactCells?.(cells) as H3Index[]) ?? [];
+export const compactCells = (cells: string[]): string[] =>
+    (_compactCells?.(cells) as string[]) ?? [];
 
-export const uncompactCells = (cells: H3Index[], res: number): H3Index[] =>
-    (_uncompactCells?.(cells, res) as H3Index[]) ?? [];
+export const uncompactCells = (cells: string[], res: number): string[] =>
+    (_uncompactCells?.(cells, res) as string[]) ?? [];
 
-export const areNeighborCells = (a: H3Index, b: H3Index): boolean =>
+export const areNeighborCells = (a: string, b: string): boolean =>
     _areNeighborCells?.(a, b) ?? false;
 
 export const polygonToCells = (
     coordinates: CoordPair[][] | CoordPair[][][],
     res: number,
     isGeoJson = false,
-): H3Index[] =>
+): string[] =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_polygonToCells?.(coordinates as any, res, isGeoJson) as H3Index[]) ?? [];
+    (_polygonToCells?.(coordinates as any, res, isGeoJson) as string[]) ?? [];
 
 export const cellsToMultiPolygon = (
-    h3Indexes: H3Index[],
+    h3Indexes: string[],
     formatAsGeoJson = false,
 ): CoordPair[][][] =>
     (_cellsToMultiPolygon?.(h3Indexes, formatAsGeoJson) as CoordPair[][][]) ?? [];
@@ -226,9 +223,9 @@ export const cellsToMultiPolygon = (
 // ─── Global cell sets ─────────────────────────────────────────────────────────
 
 export const getNumCells = (res: number): number => _getNumCells?.(res) ?? 0;
-export const getRes0Cells = (): H3Index[] => (_getRes0Cells?.() as H3Index[]) ?? [];
-export const getPentagons = (res: number): H3Index[] =>
-    (_getPentagons?.(res) as H3Index[]) ?? [];
+export const getRes0Cells = (): string[] => (_getRes0Cells?.() as string[]) ?? [];
+export const getPentagons = (res: number): string[] =>
+    (_getPentagons?.(res) as string[]) ?? [];
 
 // ─── Measurement ──────────────────────────────────────────────────────────────
 
@@ -238,7 +235,7 @@ export const greatCircleDistance = (
     unit: string,
 ): number => _greatCircleDistance?.(a, b, unit) ?? 0;
 
-export const cellArea = (h3Index: H3Index, unit: string): number =>
+export const cellArea = (h3Index: string, unit: string): number =>
     _cellArea?.(h3Index, unit) ?? 0;
 
 export const getHexagonAreaAvg = (res: number, unit: string): number =>
@@ -278,7 +275,7 @@ export function formatDistanceKm(km: number): string {
  * length in kilometres.  Returns 0 when the H3 library is unavailable or the
  * cell list has fewer than 2 entries.
  */
-export function computeRouteLengthKm(orderedCells: H3Index[]): number {
+export function computeRouteLengthKm(orderedCells: string[]): number {
     if (orderedCells.length < 2 || !isAvailable()) return 0;
     let totalKm = 0;
     for (let i = 1; i < orderedCells.length; i++) {

@@ -18,7 +18,9 @@ const initialState = {
 	selectedDate: new Date().toISOString().split('T')[0],
 };
 
-const foodReducer = (state = initialState, actions: any) => {
+const foodReducer = (state, actions: any) => {
+	state = state === undefined ? initialState : state;
+
 	switch (actions.type) {
 		case SET_POPUP_EVENTS: {
 			return {

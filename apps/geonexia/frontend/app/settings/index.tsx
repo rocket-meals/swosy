@@ -15,7 +15,7 @@ import {
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteAllActivities, loadActivities, saveActivity } from '../../helpers/ActivityStorage';
+import { deleteAllActivities, getEffectiveEnclosedHexTiles, loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available } from '../../helpers/H3Helper';
 import {
@@ -36,7 +36,6 @@ import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalSeconds } from '../../store/gpsIntervalSlice';
-import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import AdvancedSettingsContent from '../../components/AdvancedSettingsContent';
 import type { RouteSmoothingLevel } from '../../helpers/RouteSmootherHelper';
@@ -88,7 +87,7 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] =
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
 
-const GPS_PRESET_SECONDS = [1, 5, 15];
+const GPS_PRESET_SECONDS = new Set([1, 5, 15]);
 
 const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[] = [
 	{ id: 1, label: '1s', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
@@ -97,7 +96,7 @@ const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[]
 ];
 
 function gpsIntervalLabel(seconds: number): string {
-	if (GPS_PRESET_SECONDS.includes(seconds)) return `${seconds}s`;
+	if (GPS_PRESET_SECONDS.has(seconds)) return `${seconds}s`;
 	return `Custom (${seconds}s)`;
 }
 
@@ -126,7 +125,7 @@ function GpsIntervalContent({
 	selectedSeconds: number;
 	onSelect: (seconds: number) => void;
 }>) {
-	const isPreset = GPS_PRESET_SECONDS.includes(selectedSeconds);
+	const isPreset = GPS_PRESET_SECONDS.has(selectedSeconds);
 
 	return (
 		<>
@@ -265,6 +264,86 @@ function TTSLogContent({
 	);
 }
 
+// Fire-and-forget: fetch features for enclosed tiles that are not yet in the
+// feature cache, then apply forest trees.
+async function applyForestBillboardsForUncachedTiles(records: Record<string, any>, hexTileFeatureCache: HexTileFeatureCache, dispatch: AppDispatch) {
+	try {
+		const tilesWithoutCache = Object.entries(records)
+			.filter(([hexId, rec]) =>
+				rec.enclosedCount > 0 &&
+				!rec.walkedOn &&
+				!hexTileFeatureCache[hexId],
+			)
+			.map(([hexId]) => hexId);
+		if (tilesWithoutCache.length === 0) return;
+		const newEntries: HexTileFeatureCache = {};
+		for (const hexId of tilesWithoutCache) {
+			try {
+				const features = await queryTileFeaturesForHexCell(hexId);
+				newEntries[hexId] = features;
+				if (hasForestFeature(features)) {
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_PINE_TREE_LARGE,
+					}));
+					// Also place the small tree at a MIDDLE ring position,
+					// matching the full checkAndApplyForest behaviour.
+					dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: getSmallTreeAnchorForHexId(hexId),
+						billboard: BILLBOARD_PINE_TREE_SMALL,
+					}));
+				}
+			} catch {
+				// ignore per-cell errors
+			}
+		}
+		await mergeHexTileFeatureCache(newEntries);
+	} catch (err) {
+		console.warn('[Rebuild] Feature cache update failed:', err);
+	}
+}
+
+/**
+ * Migrate a single saved activity so it has up-to-date `computed` enclosed-tile
+ * data, deriving it from the recorded route when missing, and persist the
+ * activity if anything changed. Mutates `activity` in place (matching the
+ * existing migration behaviour) and saves it via `saveActivity`.
+ */
+async function migrateActivityEnclosedTiles(activity: SavedActivity): Promise<void> {
+	let updated = false;
+	let enclosedTiles: string[] =
+		activity.computed?.enclosedHexTiles ??
+		getEffectiveEnclosedHexTiles(activity);
+	if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+		const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+		enclosedTiles = findEnclosedCellsFromHexTiles(
+			buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+			h3Res,
+		);
+	}
+	if (!activity.computed) {
+		activity.computed = computeActivityData(activity, enclosedTiles);
+		activity.enclosedTileCount ??= enclosedTiles.length;
+		updated = true;
+	} else if (
+		!Array.isArray(activity.computed.enclosedHexTiles) ||
+		(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+	) {
+		activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+		activity.enclosedTileCount ??= enclosedTiles.length;
+		updated = true;
+	}
+	if (updated) {
+		try {
+			await saveActivity(activity);
+		} catch (err) {
+			console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
+		}
+	}
+}
+
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
@@ -274,7 +353,6 @@ export default function SettingsScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.intervalSeconds);
-	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
@@ -353,10 +431,6 @@ export default function SettingsScreen() {
 		dispatch(setDebugMode(next));
 		saveDebugModeFlag(next);
 	}, [dispatch, isDebugMode]);
-
-	const handleToggleTTS = useCallback(() => {
-		dispatch(setTTSEnabled(!isTTSEnabled));
-	}, [dispatch, isTTSEnabled]);
 
 	const handleOpenSpeechSettings = useCallback(() => {
 		showSpeechModal({
@@ -470,9 +544,7 @@ export default function SettingsScreen() {
 						for (const activity of allActivities) {
 							let enclosedTiles: string[] =
 								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
+								getEffectiveEnclosedHexTiles(activity);
 							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
 								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
@@ -516,38 +588,7 @@ export default function SettingsScreen() {
 						}
 
 						for (const activity of allActivities) {
-							let updated = false;
-							let enclosedTiles: string[] =
-								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
-							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
-								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-								enclosedTiles = findEnclosedCellsFromHexTiles(
-									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
-									h3Res,
-								);
-							}
-							if (!activity.computed) {
-								activity.computed = computeActivityData(activity, enclosedTiles);
-								activity.enclosedTileCount ??= enclosedTiles.length;
-								updated = true;
-							} else if (
-								!Array.isArray(activity.computed.enclosedHexTiles) ||
-								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
-							) {
-								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
-								activity.enclosedTileCount ??= enclosedTiles.length;
-								updated = true;
-							}
-							if (updated) {
-								try {
-									await saveActivity(activity);
-								} catch (err) {
-									console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
-								}
-							}
+							await migrateActivityEnclosedTiles(activity);
 						}
 
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
@@ -560,44 +601,7 @@ export default function SettingsScreen() {
 						dispatch(loadWalkedEdgesState(walkedEdges));
 						dispatch(loadWalkedEdgesRedLineState(walkedEdgesRedLine));
 
-						void (async () => {
-							try {
-								const tilesWithoutCache = Object.entries(records)
-									.filter(([hexId, rec]) =>
-										rec.enclosedCount > 0 &&
-										!rec.walkedOn &&
-										!hexTileFeatureCache[hexId],
-									)
-									.map(([hexId]) => hexId);
-								if (tilesWithoutCache.length === 0) return;
-								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of tilesWithoutCache) {
-									try {
-										const features = await queryTileFeaturesForHexCell(hexId);
-										newEntries[hexId] = features;
-										if (hasForestFeature(features)) {
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: BillboardAnchorPosition.CENTER,
-												billboard: BILLBOARD_PINE_TREE_LARGE,
-											}));
-											// Also place the small tree at a MIDDLE ring position,
-											// matching the full checkAndApplyForest behaviour.
-											dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: getSmallTreeAnchorForHexId(hexId),
-												billboard: BILLBOARD_PINE_TREE_SMALL,
-											}));
-										}
-									} catch {
-										// ignore per-cell errors
-									}
-								}
-								await mergeHexTileFeatureCache(newEntries);
-							} catch (err) {
-								console.warn('[Rebuild] Feature cache update failed:', err);
-							}
-						})();
+						void applyForestBillboardsForUncachedTiles(records, hexTileFeatureCache, dispatch);
 
 						const count = allActivities.length;
 						showAlert('Welt neu aufgebaut', `Karte aus ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'} neu aufgebaut.`);

@@ -103,6 +103,35 @@ export class GooglePlayHelper {
    * Returns all reviews (paginated automatically).
    * Note: The Google Play Developer API only returns reviews from approximately the last 7 days.
    */
+  private static async fetchReviewsPage(packageName: string, accessToken: string, nextPageToken: string | undefined, logger?: { info: (msg: string) => void }): Promise<GooglePlayReviewsResponse> {
+    const url = new URL(`https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/reviews`);
+    url.searchParams.set('maxResults', '100');
+    if (nextPageToken) {
+      url.searchParams.set('token', nextPageToken);
+    }
+
+    const response = await FetchHelper.fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const responseText = await response.text();
+    let data: GooglePlayReviewsResponse;
+    try {
+      data = JSON.parse(responseText) as GooglePlayReviewsResponse;
+    } catch (e) {
+      throw new Error(`Google Play API returned invalid JSON for package ${packageName}: ${responseText.substring(0, 500)}${responseText.length > 500 ? '... (truncated)' : ''}`);
+    }
+
+    if (logger && !data.reviews) {
+      logger.info('GooglePlayHelper: API response has no reviews field. Response keys: ' + Object.keys(data).join(', '));
+    }
+
+    return data;
+  }
+
   static async fetchAllReviews(packageName: string, serviceAccountKeyJson: string, logger?: { info: (msg: string) => void }): Promise<GooglePlayReview[]> {
     const serviceAccountKey = GooglePlayHelper.parseServiceAccountKey(serviceAccountKeyJson);
     const accessToken = await GooglePlayHelper.getAccessToken(serviceAccountKey);
@@ -111,30 +140,7 @@ export class GooglePlayHelper {
     let nextPageToken: string | undefined = undefined;
 
     while (true) {
-      const url = new URL(`https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/reviews`);
-      url.searchParams.set('maxResults', '100');
-      if (nextPageToken) {
-        url.searchParams.set('token', nextPageToken);
-      }
-
-      const response = await FetchHelper.fetch(url.toString(), {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseText = await response.text();
-      let data: GooglePlayReviewsResponse;
-      try {
-        data = JSON.parse(responseText) as GooglePlayReviewsResponse;
-      } catch (e) {
-        throw new Error(`Google Play API returned invalid JSON for package ${packageName}: ${responseText.substring(0, 500)}${responseText.length > 500 ? '... (truncated)' : ''}`);
-      }
-
-      if (logger && !data.reviews) {
-        logger.info('GooglePlayHelper: API response has no reviews field. Response keys: ' + Object.keys(data).join(', '));
-      }
+      const data = await GooglePlayHelper.fetchReviewsPage(packageName, accessToken, nextPageToken, logger);
 
       if (data.reviews && data.reviews.length > 0) {
         allReviews.push(...data.reviews);

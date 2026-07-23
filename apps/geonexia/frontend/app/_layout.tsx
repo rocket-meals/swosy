@@ -22,6 +22,7 @@ import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechS
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
 import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
 import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
+import type { PlayerInformation } from '../helpers/PlayerInformationStorage';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWalkedEdgesRedLine, loadDevWalkedEdgesRedLine, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesRedLine, saveDevWalkedEdgesRedLine, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
@@ -124,6 +125,15 @@ function ThemeSyncBridge() {
 	return null;
 }
 
+// Returns a `drawerIcon` render-prop for the given icon set/name, so each
+// Drawer.Screen's options can reference a stable function instead of
+// defining a new arrow (and thus a new "component") on every render.
+function makeDrawerIcon(IconSet: typeof Ionicons | typeof MaterialCommunityIcons, name: string) {
+	return ({ color, size }: { color: string; size: number }) => <IconSet name={name as any} size={size} color={color} />;
+}
+
+const renderDrawerContent = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
+
 function ThemedDrawerNavigator() {
 	const { theme } = useTheme();
 
@@ -131,7 +141,7 @@ function ThemedDrawerNavigator() {
 		<>
 		<StatusBar style="auto" />
 		<Drawer
-			drawerContent={(props) => <CustomDrawerContent {...props} />}
+			drawerContent={renderDrawerContent}
 			screenOptions={{
 				drawerActiveTintColor: '#2563eb',
 				headerStyle: { backgroundColor: theme.header.background },
@@ -142,18 +152,14 @@ function ThemedDrawerNavigator() {
 				name="index"
 				options={{
 					title: 'Record',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="radio-button-on-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'radio-button-on-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="activities/index"
 				options={{
 					title: 'Activities',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="list-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'list-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -167,45 +173,35 @@ function ThemedDrawerNavigator() {
 				name="statistics/index"
 				options={{
 					title: 'Statistics',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="bar-chart-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'bar-chart-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="achievements/index"
 				options={{
 					title: 'Achievements',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="trophy-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'trophy-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="challenges/index"
 				options={{
 					title: 'Challenges',
-					drawerIcon: ({ color, size }) => (
-						<MaterialCommunityIcons name="sword-cross" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(MaterialCommunityIcons, 'sword-cross'),
 				}}
 			/>
 			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="bulb-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'bulb-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="routes/index"
 				options={{
 					title: 'Routes',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="map-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'map-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -219,27 +215,21 @@ function ThemedDrawerNavigator() {
 				name="billboard-config/index"
 				options={{
 					title: 'Billboard Config',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="build-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'build-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="hex-texture-config/index"
 				options={{
 					title: 'Hex Texture Config',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="grid-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'grid-outline'),
 				}}
 			/>
 			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="flask-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'flask-outline'),
 				}}
 			/>
 			<Drawer.Screen
@@ -281,9 +271,7 @@ function ThemedDrawerNavigator() {
 				name="settings/index"
 				options={{
 					title: 'Settings',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="settings-outline" size={size} color={color} />
-					),
+					drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 				}}
 			/>
 		</Drawer>
@@ -378,6 +366,176 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	);
 }
 
+// Fire-and-forget: fetch features for enclosed tiles that are not yet in the
+// feature cache, then apply forest trees.
+async function applyForestBillboardsForUncachedTiles(records: Record<string, any>, hexTileFeatureCache: HexTileFeatureCache) {
+	try {
+		const tilesWithoutCache = Object.entries(records)
+			.filter(([hexId, rec]) =>
+				rec.enclosedCount > 0 &&
+				!rec.walkedOn &&
+				!hexTileFeatureCache[hexId],
+			)
+			.map(([hexId]) => hexId);
+		if (tilesWithoutCache.length === 0) return;
+		const newEntries: HexTileFeatureCache = {};
+		for (const hexId of tilesWithoutCache) {
+			try {
+				const features = await queryTileFeaturesForHexCell(hexId);
+				newEntries[hexId] = features;
+				if (hasForestFeature(features)) {
+					store.dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: BillboardAnchorPosition.CENTER,
+						billboard: BILLBOARD_PINE_TREE_LARGE,
+					}));
+					// Also place the small tree at a MIDDLE ring position,
+					// matching the full checkAndApplyForest behaviour.
+					store.dispatch(setBillboardAtAnchor({
+						h3Index: hexId,
+						anchorColor: getSmallTreeAnchorForHexId(hexId),
+						billboard: BILLBOARD_PINE_TREE_SMALL,
+					}));
+				}
+			} catch {
+				// ignore per-cell errors
+			}
+		}
+		await mergeHexTileFeatureCache(newEntries);
+	} catch (err) {
+		console.warn('[Layout] Feature cache update after rebuild failed:', err);
+	}
+}
+
+/**
+ * If the stored world-building ID is stale (player is in/was in a different
+ * world than the one the persisted hex tile state was built for), rebuild the
+ * hex tile map from all saved activities and persist/dispatch the rebuilt
+ * state. Returns `true` if the rebuild path fully handled the state (caller
+ * should stop and not fall through to dispatching the existing persisted
+ * state), `false` otherwise (no rebuild needed/possible).
+ */
+async function rebuildWorldFromActivitiesIfStale(
+	storedBuildingId: number | null,
+	isDevMode: boolean,
+	playerInfo: PlayerInformation,
+): Promise<boolean> {
+	if (storedBuildingId === WORLD_BUILDING_ID || !isH3Available()) return false;
+
+	try {
+		const allActivities = await loadActivities();
+		if (allActivities.length > 0) {
+			const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+			const hexTileFeatureCache = await loadHexTileFeatureCache();
+			const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
+			const routes = await loadRoutes();
+			applyRouteBenches(rebuiltRecords, sorted, routes);
+			if (isDevMode) {
+				saveDevHexTileState(rebuiltRecords);
+				saveDevWalkedEdges(rebuiltEdges);
+				saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				saveDevWorldBuildingId(WORLD_BUILDING_ID);
+			} else {
+				saveHexTileState(rebuiltRecords);
+				saveWalkedEdges(rebuiltEdges);
+				saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
+				saveWorldBuildingId(WORLD_BUILDING_ID);
+			}
+			store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
+			// Fire-and-forget: fetch features for enclosed tiles
+			// that are not yet in the feature cache, then apply forest trees.
+			void applyForestBillboardsForUncachedTiles(rebuiltRecords, hexTileFeatureCache);
+			return true;
+		}
+	} catch (err) {
+		console.warn('[Layout] Failed to rebuild world from activities:', err);
+	}
+	// No activities or rebuild failed – still update the stored ID so we
+	// don't attempt a rebuild on every subsequent launch.
+	if (isDevMode) {
+		saveDevWorldBuildingId(WORLD_BUILDING_ID);
+	} else {
+		saveWorldBuildingId(WORLD_BUILDING_ID);
+	}
+	return false;
+}
+
+// Dispatches billboard updates for whichever of the center/small forest trees
+// are still missing at the given hex tile.
+function dispatchMissingForestTrees(
+	hexId: string,
+	smallTreeAnchor: BillboardAnchorPosition,
+	hasCenterTree: boolean,
+	hasSmallTree: boolean,
+) {
+	if (!hasCenterTree) {
+		store.dispatch(setBillboardAtAnchor({
+			h3Index: hexId,
+			anchorColor: BillboardAnchorPosition.CENTER,
+			billboard: BILLBOARD_PINE_TREE_LARGE,
+		}));
+	}
+	if (!hasSmallTree) {
+		store.dispatch(setBillboardAtAnchor({
+			h3Index: hexId,
+			anchorColor: smallTreeAnchor,
+			billboard: BILLBOARD_PINE_TREE_SMALL,
+		}));
+	}
+}
+
+// If the given hex tile record is missing its forest trees, resolves (from
+// cache or by querying) whether the tile has a forest feature and, if so,
+// dispatches the missing tree billboards. Newly queried features are
+// collected into `newEntries` so the caller can merge them into the cache.
+async function applyForestTreesForHex(
+	hexId: string,
+	rec: any,
+	hexTileFeatureCache: HexTileFeatureCache,
+	newEntries: HexTileFeatureCache,
+) {
+	const needsTrees = !rec.walkedOn && rec.enclosedCount > 0;
+	if (!needsTrees) return;
+	const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
+	const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
+	const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
+	if (hasCenterTree && hasSmallTree) return;
+	const cached = hexTileFeatureCache[hexId];
+	if (cached) {
+		if (hasForestFeature(cached)) {
+			dispatchMissingForestTrees(hexId, smallTreeAnchor, hasCenterTree, hasSmallTree);
+		}
+	} else {
+		try {
+			const features = await queryTileFeaturesForHexCell(hexId);
+			newEntries[hexId] = features;
+			if (hasForestFeature(features)) {
+				dispatchMissingForestTrees(hexId, smallTreeAnchor, hasCenterTree, hasSmallTree);
+			}
+		} catch {
+			// ignore per-cell errors
+		}
+	}
+}
+
+// Fire-and-forget on startup: apply forest trees to enclosed tiles that are
+// missing them. This covers cases where a recording ended before the
+// in-session tree dispatch completed (e.g. app was killed mid-run).
+async function applyMissingForestBillboardsOnStartup(records: Record<string, any>) {
+	try {
+		const hexTileFeatureCache = await loadHexTileFeatureCache();
+		const newEntries: HexTileFeatureCache = {};
+		for (const [hexId, rec] of Object.entries(records)) {
+			await applyForestTreesForHex(hexId, rec, hexTileFeatureCache, newEntries);
+		}
+		if (Object.keys(newEntries).length > 0) {
+			await mergeHexTileFeatureCache(newEntries);
+		}
+	} catch (err) {
+		console.warn('[Layout] Feature cache update on startup failed:', err);
+	}
+}
+
 export default function Layout() {
 	useEffect(() => {
 		(async () => {
@@ -392,146 +550,13 @@ export default function Layout() {
 
 			store.dispatch(loadPersistedPlayerInformation(playerInfo));
 
-			if (storedBuildingId !== WORLD_BUILDING_ID && isH3Available()) {
-				try {
-					const allActivities = await loadActivities();
-					if (allActivities.length > 0) {
-						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
-						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
-						const routes = await loadRoutes();
-						applyRouteBenches(rebuiltRecords, sorted, routes);
-						if (isDevMode) {
-							saveDevHexTileState(rebuiltRecords);
-							saveDevWalkedEdges(rebuiltEdges);
-							saveDevWalkedEdgesRedLine(rebuiltEdgesRedLine);
-							saveDevWorldBuildingId(WORLD_BUILDING_ID);
-						} else {
-							saveHexTileState(rebuiltRecords);
-							saveWalkedEdges(rebuiltEdges);
-							saveWalkedEdgesRedLine(rebuiltEdgesRedLine);
-							saveWorldBuildingId(WORLD_BUILDING_ID);
-						}
-						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges, walkedEdgesRedLine: rebuiltEdgesRedLine }));
-						// Fire-and-forget: fetch features for enclosed tiles
-						// that are not yet in the feature cache, then apply forest trees.
-						void (async () => {
-							try {
-								const tilesWithoutCache = Object.entries(rebuiltRecords)
-									.filter(([hexId, rec]) =>
-										rec.enclosedCount > 0 &&
-										!rec.walkedOn &&
-										!hexTileFeatureCache[hexId],
-									)
-									.map(([hexId]) => hexId);
-								if (tilesWithoutCache.length === 0) return;
-								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of tilesWithoutCache) {
-									try {
-										const features = await queryTileFeaturesForHexCell(hexId);
-										newEntries[hexId] = features;
-										if (hasForestFeature(features)) {
-											store.dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: BillboardAnchorPosition.CENTER,
-												billboard: BILLBOARD_PINE_TREE_LARGE,
-											}));
-											// Also place the small tree at a MIDDLE ring position,
-											// matching the full checkAndApplyForest behaviour.
-											store.dispatch(setBillboardAtAnchor({
-												h3Index: hexId,
-												anchorColor: getSmallTreeAnchorForHexId(hexId),
-												billboard: BILLBOARD_PINE_TREE_SMALL,
-											}));
-										}
-									} catch {
-										// ignore per-cell errors
-									}
-								}
-								await mergeHexTileFeatureCache(newEntries);
-							} catch (err) {
-								console.warn('[Layout] Feature cache update after rebuild failed:', err);
-							}
-						})();
-						return;
-					}
-				} catch (err) {
-					console.warn('[Layout] Failed to rebuild world from activities:', err);
-				}
-				// No activities or rebuild failed – still update the stored ID so we
-				// don't attempt a rebuild on every subsequent launch.
-				if (isDevMode) {
-					saveDevWorldBuildingId(WORLD_BUILDING_ID);
-				} else {
-					saveWorldBuildingId(WORLD_BUILDING_ID);
-				}
-			}
+			if (await rebuildWorldFromActivitiesIfStale(storedBuildingId, isDevMode, playerInfo)) return;
 
 			store.dispatch(setDevMode({ isDevMode, records, walkedEdges, walkedEdgesRedLine }));
 			// Fire-and-forget: apply forest trees to enclosed tiles that are
 			// missing them. This covers cases where a recording ended before the
 			// in-session tree dispatch completed (e.g. app was killed mid-run).
-			void (async () => {
-				try {
-					const hexTileFeatureCache = await loadHexTileFeatureCache();
-					const newEntries: HexTileFeatureCache = {};
-					for (const [hexId, rec] of Object.entries(records)) {
-						const needsTrees = !rec.walkedOn && rec.enclosedCount > 0;
-						if (!needsTrees) continue;
-						const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
-						const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
-						const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
-						if (hasCenterTree && hasSmallTree) continue;
-						const cached = hexTileFeatureCache[hexId];
-						if (cached) {
-							if (hasForestFeature(cached)) {
-								if (!hasCenterTree) {
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: BillboardAnchorPosition.CENTER,
-										billboard: BILLBOARD_PINE_TREE_LARGE,
-									}));
-								}
-								if (!hasSmallTree) {
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: smallTreeAnchor,
-										billboard: BILLBOARD_PINE_TREE_SMALL,
-									}));
-								}
-							}
-						} else {
-							try {
-								const features = await queryTileFeaturesForHexCell(hexId);
-								newEntries[hexId] = features;
-								if (hasForestFeature(features)) {
-									if (!hasCenterTree) {
-										store.dispatch(setBillboardAtAnchor({
-											h3Index: hexId,
-											anchorColor: BillboardAnchorPosition.CENTER,
-											billboard: BILLBOARD_PINE_TREE_LARGE,
-										}));
-									}
-									if (!hasSmallTree) {
-										store.dispatch(setBillboardAtAnchor({
-											h3Index: hexId,
-											anchorColor: smallTreeAnchor,
-											billboard: BILLBOARD_PINE_TREE_SMALL,
-										}));
-									}
-								}
-							} catch {
-								// ignore per-cell errors
-							}
-						}
-					}
-					if (Object.keys(newEntries).length > 0) {
-						await mergeHexTileFeatureCache(newEntries);
-					}
-				} catch (err) {
-					console.warn('[Layout] Feature cache update on startup failed:', err);
-				}
-			})();
+			void applyMissingForestBillboardsOnStartup(records);
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});

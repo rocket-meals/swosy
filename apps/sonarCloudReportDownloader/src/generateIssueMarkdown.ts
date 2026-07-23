@@ -83,21 +83,28 @@ function parseCsvLine(line: string): string[] {
   const fields: string[] = [];
   let current = '';
   let inQuotes = false;
+  let i = 0;
 
-  for (let i = 0; i < line.length; i++) {
+  while (i < line.length) {
     const char = line[i];
+
     if (inQuotes) {
-      if (char === '"') {
-        if (i + 1 < line.length && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += char;
+      if (char === '"' && line[i + 1] === '"') {
+        current += '"';
+        i += 2;
+        continue;
       }
-    } else if (char === '"') {
+      if (char === '"') {
+        inQuotes = false;
+        i++;
+        continue;
+      }
+      current += char;
+      i++;
+      continue;
+    }
+
+    if (char === '"') {
       inQuotes = true;
     } else if (char === ',') {
       fields.push(current);
@@ -105,6 +112,7 @@ function parseCsvLine(line: string): string[] {
     } else {
       current += char;
     }
+    i++;
   }
   fields.push(current);
   return fields;

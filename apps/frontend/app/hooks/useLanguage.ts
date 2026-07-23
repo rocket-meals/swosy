@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { configureStore } from '@/redux/store';
 import translations from '@/locales/translations.json';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
-import { StringHelper } from 'repo-depkit-common';
+import { StringHelper, MathHelper } from 'repo-depkit-common';
 import { LanguageCode } from '@/constants/SettingData';
 
 const changeLanguage = (language: LanguageCode) => ({
@@ -10,7 +10,7 @@ const changeLanguage = (language: LanguageCode) => ({
 	payload: language,
 });
 
-const setPirateLanguage = (enabled: boolean) => ({
+const setPirateLanguageAction = (enabled: boolean) => ({
 	type: SET_PIRATE_LANGUAGE,
 	payload: enabled,
 });
@@ -85,7 +85,7 @@ export const applyGlitchTransformation = (text: string): string => {
 		replace: (word) => {
 			const chars = word.split('');
 			for (let i = chars.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
+				const j = Math.floor(MathHelper.random() * (i + 1));
 				[chars[i], chars[j]] = [chars[j], chars[i]];
 			}
 			return chars.join('');
@@ -119,15 +119,15 @@ export const useLanguage = () => {
 	// console.log(configureStore.getState().settings.language, "lang");
 
 	const [language, setLanguage] = useState(configureStore.getState().settings.language);
-	const [pirateLanguage, setPirateLanguageState] = useState(configureStore.getState().settings.pirateLanguage);
-	const [funLanguageMode, setFunLanguageModeState] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
+	const [pirateLanguage, setPirateLanguage] = useState(configureStore.getState().settings.pirateLanguage);
+	const [funLanguageMode, setFunLanguageMode] = useState<string | null>(configureStore.getState().settings.funLanguageMode);
 
 	const setLanguageMode = (language: LanguageCode) => {
 		configureStore.dispatch(changeLanguage(language));
 	};
 
 	const togglePirateLanguage = (enabled: boolean) => {
-		configureStore.dispatch(setPirateLanguage(enabled));
+		configureStore.dispatch(setPirateLanguageAction(enabled));
 	};
 
 	const toggleFunLanguageMode = (mode: string | null) => {
@@ -151,8 +151,8 @@ export const useLanguage = () => {
 	useEffect(() => {
 		const unsubscribe = configureStore.subscribe(() => {
 			setLanguage(configureStore.getState().settings.language);
-			setPirateLanguageState(configureStore.getState().settings.pirateLanguage);
-			setFunLanguageModeState(configureStore.getState().settings.funLanguageMode);
+			setPirateLanguage(configureStore.getState().settings.pirateLanguage);
+			setFunLanguageMode(configureStore.getState().settings.funLanguageMode);
 		});
 
 		return () => unsubscribe();

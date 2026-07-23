@@ -22,7 +22,7 @@
  */
 
 import Pbf from 'pbf';
-import { VectorTile } from '@mapbox/vector-tile';
+import { VectorTile, type VectorTileFeature, type VectorTileLayer } from '@mapbox/vector-tile';
 
 import { resolveTileUrl, getTilesForBounds, calculateOptimalZoom, DEFAULT_STYLE_URL } from './TileFeatureHelper';
 import type { LatLngBounds } from './TileFeatureHelper';
@@ -44,6 +44,42 @@ export type RoadWay = {
 /** Cache: `"tileUrlTemplate|z|x|y"` → parsed road ways for that tile. */
 const roadWayTileCache: Record<string, RoadWay[]> = {};
 
+/** Normalize a vector-tile feature's GeoJSON geometry into an array of coordinate lines. */
+function geometryToLines(geometry: ReturnType<VectorTileFeature['toGeoJSON']>['geometry']): [number, number][][] {
+	if (geometry.type === 'MultiLineString') return geometry.coordinates;
+	if (geometry.type === 'LineString') return [geometry.coordinates];
+	return [];
+}
+
+/**
+ * Extract road/path polylines (as `RoadWay`s) from the `transportation` layer
+ * of a decoded vector tile, converting each feature's GeoJSON geometry
+ * (LineString or MultiLineString) into one or more ways.
+ */
+function extractRoadWaysFromLayer(
+	layer: VectorTileLayer | undefined,
+	x: number,
+	y: number,
+	z: number,
+): RoadWay[] {
+	const ways: RoadWay[] = [];
+	if (!layer) return ways;
+
+	for (let i = 0; i < layer.length; i++) {
+		const feat = layer.feature(i);
+		if (feat.type !== GEOMETRY_TYPE_LINE) continue;
+
+		const geometry = feat.toGeoJSON(x, y, z).geometry;
+		const lines = geometryToLines(geometry);
+
+		for (const line of lines) {
+			if (line.length >= 2) ways.push({ points: line });
+		}
+	}
+
+	return ways;
+}
+
 async function fetchRoadWaysForTile(
 	tileUrlTemplate: string,
 	z: number,
@@ -64,24 +100,7 @@ async function fetchRoadWaysForTile(
 	const buffer = await res.arrayBuffer();
 	const tile = new VectorTile(new Pbf(buffer));
 	const layer = tile.layers[TRANSPORTATION_LAYER];
-	const ways: RoadWay[] = [];
-
-	if (layer) {
-		for (let i = 0; i < layer.length; i++) {
-			const feat = layer.feature(i);
-			if (feat.type !== GEOMETRY_TYPE_LINE) continue;
-
-			const geometry = feat.toGeoJSON(x, y, z).geometry;
-			let lines: [number, number][][];
-			if (geometry.type === 'MultiLineString') lines = geometry.coordinates;
-			else if (geometry.type === 'LineString') lines = [geometry.coordinates];
-			else lines = [];
-
-			for (const line of lines) {
-				if (line.length >= 2) ways.push({ points: line });
-			}
-		}
-	}
+	const ways = extractRoadWaysFromLayer(layer, x, y, z);
 
 	roadWayTileCache[cacheKey] = ways;
 	return ways;
@@ -315,6 +334,76 @@ function graphNodeIndex(graph: RoadGraph, pt: [number, number]): number | undefi
 /** A candidate entry/exit point into the graph: a node plus the extra distance to reach it from off-graph. */
 type WeightedNode = { nodeIndex: number; extraDist: number };
 
+/** One entry in `findConnectingPath`'s array-scan priority queue. */
+type PathQueueEntry = { nodeIndex: number; dist: number };
+
+/** Maps each target node to the smallest `extraDist` among (possibly duplicate) targets sharing that node. */
+function buildTargetExtraMap(targets: WeightedNode[]): Map<number, number> {
+	const targetExtra = new Map<number, number>();
+	for (const t of targets) {
+		const prevExtra = targetExtra.get(t.nodeIndex);
+		if (prevExtra === undefined || t.extraDist < prevExtra) targetExtra.set(t.nodeIndex, t.extraDist);
+	}
+	return targetExtra;
+}
+
+/** Seeds the Dijkstra `dist` map and priority queue from the search's starting nodes. */
+function seedSourceQueue(sources: WeightedNode[]): { dist: Map<number, number>; queue: PathQueueEntry[] } {
+	const dist = new Map<number, number>();
+	const queue: PathQueueEntry[] = [];
+	for (const s of sources) {
+		if (!dist.has(s.nodeIndex) || s.extraDist < dist.get(s.nodeIndex)!) {
+			dist.set(s.nodeIndex, s.extraDist);
+			queue.push({ nodeIndex: s.nodeIndex, dist: s.extraDist });
+		}
+	}
+	return { dist, queue };
+}
+
+/** Removes and returns the queue entry with the smallest `dist` (simple array-scan priority queue). */
+function popNearestQueueEntry(queue: PathQueueEntry[]): PathQueueEntry {
+	let minIdx = 0;
+	for (let i = 1; i < queue.length; i++) {
+		if (queue[i].dist < queue[minIdx].dist) minIdx = i;
+	}
+	return queue.splice(minIdx, 1)[0];
+}
+
+/** Walks `prev` back from `endNode` to a source, returning the node-index path in source → target order. */
+function reconstructPathFromPrev(prev: Map<number, number>, endNode: number): number[] {
+	const path: number[] = [endNode];
+	let node = endNode;
+	while (prev.has(node)) {
+		node = prev.get(node)!;
+		path.push(node);
+	}
+	path.reverse();
+	return path;
+}
+
+/** Relaxes `current`'s outgoing edges, updating `dist`/`prev` and enqueueing any improved neighbours. */
+function relaxOutgoingEdges(
+	graph: RoadGraph,
+	current: PathQueueEntry,
+	maxTotalDistDeg: number,
+	visited: Set<number>,
+	dist: Map<number, number>,
+	prev: Map<number, number>,
+	queue: PathQueueEntry[],
+): void {
+	for (const edge of graph.adjacency[current.nodeIndex]) {
+		if (visited.has(edge.to)) continue;
+		const newDist = current.dist + edge.dist;
+		if (newDist > maxTotalDistDeg) continue;
+		const existing = dist.get(edge.to);
+		if (existing === undefined || newDist < existing) {
+			dist.set(edge.to, newDist);
+			prev.set(edge.to, current.nodeIndex);
+			queue.push({ nodeIndex: edge.to, dist: newDist });
+		}
+	}
+}
+
 /**
  * Dijkstra search from any of `sources` to the nearest of `targets`, capped at
  * `maxTotalDistDeg` total distance (including the sources'/targets' extra
@@ -332,31 +421,13 @@ function findConnectingPath(
 ): { path: number[]; distance: number } | null {
 	if (sources.length === 0 || targets.length === 0) return null;
 
-	const targetExtra = new Map<number, number>();
-	for (const t of targets) {
-		const prevExtra = targetExtra.get(t.nodeIndex);
-		if (prevExtra === undefined || t.extraDist < prevExtra) targetExtra.set(t.nodeIndex, t.extraDist);
-	}
-
-	const dist = new Map<number, number>();
+	const targetExtra = buildTargetExtraMap(targets);
+	const { dist, queue } = seedSourceQueue(sources);
 	const prev = new Map<number, number>();
-	const queue: { nodeIndex: number; dist: number }[] = [];
-
-	for (const s of sources) {
-		if (!dist.has(s.nodeIndex) || s.extraDist < dist.get(s.nodeIndex)!) {
-			dist.set(s.nodeIndex, s.extraDist);
-			queue.push({ nodeIndex: s.nodeIndex, dist: s.extraDist });
-		}
-	}
-
 	const visited = new Set<number>();
 
 	while (queue.length > 0) {
-		let minIdx = 0;
-		for (let i = 1; i < queue.length; i++) {
-			if (queue[i].dist < queue[minIdx].dist) minIdx = i;
-		}
-		const current = queue.splice(minIdx, 1)[0];
+		const current = popNearestQueueEntry(queue);
 		if (visited.has(current.nodeIndex)) continue;
 		visited.add(current.nodeIndex);
 
@@ -364,29 +435,12 @@ function findConnectingPath(
 		if (extra !== undefined) {
 			const totalDist = current.dist + extra;
 			if (totalDist > maxTotalDistDeg) return null;
-			const path: number[] = [current.nodeIndex];
-			let node = current.nodeIndex;
-			while (prev.has(node)) {
-				node = prev.get(node)!;
-				path.push(node);
-			}
-			path.reverse();
-			return { path, distance: totalDist };
+			return { path: reconstructPathFromPrev(prev, current.nodeIndex), distance: totalDist };
 		}
 
 		if (current.dist > maxTotalDistDeg) continue;
 
-		for (const edge of graph.adjacency[current.nodeIndex]) {
-			if (visited.has(edge.to)) continue;
-			const newDist = current.dist + edge.dist;
-			if (newDist > maxTotalDistDeg) continue;
-			const existing = dist.get(edge.to);
-			if (existing === undefined || newDist < existing) {
-				dist.set(edge.to, newDist);
-				prev.set(edge.to, current.nodeIndex);
-				queue.push({ nodeIndex: edge.to, dist: newDist });
-			}
-		}
+		relaxOutgoingEdges(graph, current, maxTotalDistDeg, visited, dist, prev, queue);
 	}
 
 	return null;
@@ -421,6 +475,73 @@ export type RoadMatchJunctionMode = 'direct' | 'network';
 export const DEFAULT_ROAD_MATCH_JUNCTION_MODE: RoadMatchJunctionMode = 'network';
 
 // ─── Main matching ──────────────────────────────────────────────────────────
+
+/**
+ * Isolated-point correction: point i differs from both neighbours, which
+ * agree with each other - and point i is close enough to the neighbours'
+ * way to plausibly be a noisy reading of the same way, not a real detour.
+ * Mutates `matches` in place.
+ */
+function applyIsolatedPointCorrection(
+	points: [number, number][],
+	matches: (PointMatch | null)[],
+	ways: RoadWay[],
+	noiseDegSq: number,
+): void {
+	for (let i = 1; i < matches.length - 1; i++) {
+		const prev = matches[i - 1];
+		const next = matches[i + 1];
+		if (!prev || !next || prev.wayIndex !== next.wayIndex) continue;
+		const curr = matches[i];
+		if (curr?.wayIndex === prev.wayIndex) continue;
+
+		const alt = findBestMatchOnWay(points[i], ways[prev.wayIndex], prev.wayIndex, noiseDegSq);
+		if (alt) matches[i] = alt;
+	}
+}
+
+/**
+ * Connects `prevMatch` and `currMatch` (matched to the same way) by
+ * appending the way's own vertices between the two projections, instead of
+ * cutting a straight line, in whichever direction the walk went.
+ */
+function connectSameWaySegment(
+	result: [number, number][],
+	wayPoints: [number, number][],
+	prevMatch: PointMatch,
+	currMatch: PointMatch,
+): void {
+	for (const pt of extractWaySubPath(wayPoints, prevMatch.segIndex, prevMatch.t, currMatch.segIndex, currMatch.t)) {
+		pushDistinct(result, pt);
+	}
+	pushDistinct(result, currMatch.point);
+}
+
+/**
+ * Connects `prevMatch` and `currMatch` (matched to different ways) via a
+ * `findConnectingPath` network search, lazily building `graph` from `ways`
+ * on first use (`graph` may already be built from an earlier call). Falls
+ * back to a direct connect when no path is found within `maxConnectDistDeg`.
+ * Returns the (possibly newly built) graph so the caller can reuse it.
+ */
+function connectViaNetworkSearch(
+	result: [number, number][],
+	graph: RoadGraph | null,
+	ways: RoadWay[],
+	prevMatch: PointMatch,
+	currMatch: PointMatch,
+	maxConnectDistDeg: number,
+): RoadGraph {
+	const resolvedGraph = graph ?? buildRoadGraph(ways);
+	const sources = segmentEndpointsAsWeightedNodes(resolvedGraph, ways[prevMatch.wayIndex].points, prevMatch);
+	const targets = segmentEndpointsAsWeightedNodes(resolvedGraph, ways[currMatch.wayIndex].points, currMatch);
+	const connection = findConnectingPath(resolvedGraph, sources, targets, maxConnectDistDeg);
+	if (connection) {
+		for (const nodeIdx of connection.path) pushDistinct(result, resolvedGraph.nodeCoords[nodeIdx]);
+	}
+	pushDistinct(result, currMatch.point);
+	return resolvedGraph;
+}
 
 /**
  * Matches a raw GPS track onto the given road/path ways and returns the
@@ -462,19 +583,7 @@ export function matchRouteToRoads(
 
 	const matches: (PointMatch | null)[] = points.map((pt) => findBestMatch(pt, grid, maxDistDegSq));
 
-	// Isolated-point correction: point i differs from both neighbours, which
-	// agree with each other - and point i is close enough to the neighbours'
-	// way to plausibly be a noisy reading of the same way, not a real detour.
-	for (let i = 1; i < matches.length - 1; i++) {
-		const prev = matches[i - 1];
-		const next = matches[i + 1];
-		if (!prev || !next || prev.wayIndex !== next.wayIndex) continue;
-		const curr = matches[i];
-		if (curr?.wayIndex === prev.wayIndex) continue;
-
-		const alt = findBestMatchOnWay(points[i], ways[prev.wayIndex], prev.wayIndex, noiseDegSq);
-		if (alt) matches[i] = alt;
-	}
+	applyIsolatedPointCorrection(points, matches, ways, noiseDegSq);
 
 	// Built lazily - only needed once a way-to-way transition actually occurs.
 	let graph: RoadGraph | null = null;
@@ -489,24 +598,13 @@ export function matchRouteToRoads(
 		if (currMatch && prevMatch?.wayIndex === currMatch.wayIndex) {
 			// Follow the way's own vertices between the two projections instead of
 			// cutting a straight line, in whichever direction the walk went.
-			const wayPoints = ways[prevMatch.wayIndex].points;
-			for (const pt of extractWaySubPath(wayPoints, prevMatch.segIndex, prevMatch.t, currMatch.segIndex, currMatch.t)) {
-				pushDistinct(result, pt);
-			}
-			pushDistinct(result, currMatch.point);
+			connectSameWaySegment(result, ways[prevMatch.wayIndex].points, prevMatch, currMatch);
 		} else if (prevMatch && currMatch && junctionMode === 'direct') {
 			pushDistinct(result, currMatch.point);
 		} else if (prevMatch && currMatch) {
 			// 'network': search for a real road/path route between them instead of
 			// cutting a straight line across the corner.
-			graph ??= buildRoadGraph(ways);
-			const sources = segmentEndpointsAsWeightedNodes(graph, ways[prevMatch.wayIndex].points, prevMatch);
-			const targets = segmentEndpointsAsWeightedNodes(graph, ways[currMatch.wayIndex].points, currMatch);
-			const connection = findConnectingPath(graph, sources, targets, maxConnectDistDeg);
-			if (connection) {
-				for (const nodeIdx of connection.path) pushDistinct(result, graph.nodeCoords[nodeIdx]);
-			}
-			pushDistinct(result, currMatch.point);
+			graph = connectViaNetworkSearch(result, graph, ways, prevMatch, currMatch, maxConnectDistDeg);
 		} else {
 			pushDistinct(result, currMatch ? currMatch.point : points[i]);
 		}

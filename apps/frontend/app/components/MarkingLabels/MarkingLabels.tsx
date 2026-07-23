@@ -19,6 +19,145 @@ import { TranslationKeys } from '@/locales/keys';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 
+const MarkingIconTrigger = ({
+	triggerProps,
+	onPress,
+	onHoverIn,
+	onHoverOut,
+	marking,
+	size,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	marking: any;
+	size: number;
+}) => (
+	<Pressable {...triggerProps} onPress={onPress} onHoverIn={onHoverIn} onHoverOut={onHoverOut}>
+		<MarkingIcon marking={marking} size={size} />
+	</Pressable>
+);
+
+const makeMarkingIconTrigger = (props: Readonly<{
+	onPress?: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	marking: any;
+	size: number;
+}>) => (triggerProps: object) => <MarkingIconTrigger triggerProps={triggerProps} {...props} />;
+
+const MarkingLabelTextTrigger = ({
+	triggerProps,
+	onHoverIn,
+	onHoverOut,
+	text,
+	textColor,
+}: {
+	triggerProps: object;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	text: string;
+	textColor: string;
+}) => (
+	<Pressable {...triggerProps} onHoverIn={onHoverIn} onHoverOut={onHoverOut} style={styles.labelContainer}>
+		<Text
+			style={{
+				...styles.label,
+				color: textColor,
+				fontSize: isWeb ? 18 : 14,
+				textAlignVertical: 'center',
+			}}
+		>
+			{text}
+		</Text>
+	</Pressable>
+);
+
+const makeMarkingLabelTextTrigger = (props: Readonly<{
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	text: string;
+	textColor: string;
+}>) => (triggerProps: object) => <MarkingLabelTextTrigger triggerProps={triggerProps} {...props} />;
+
+const MarkingReactionTrigger = ({
+	triggerProps,
+	onPress,
+	onHoverIn,
+	onHoverOut,
+	buttonStyle,
+	loading,
+	active,
+	activeIconName,
+	inactiveIconName,
+	iconSize,
+	activeColor,
+	inactiveColor,
+}: {
+	triggerProps: object;
+	onPress: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	buttonStyle: any;
+	loading: boolean;
+	active: boolean;
+	activeIconName: any;
+	inactiveIconName: any;
+	iconSize: number;
+	activeColor: string;
+	inactiveColor: string;
+}) => (
+	<Pressable onHoverIn={onHoverIn} onHoverOut={onHoverOut} style={buttonStyle} {...triggerProps} onPress={onPress}>
+		{loading ? (
+			<ActivityIndicator size={25} color={activeColor} />
+		) : (
+			<MaterialCommunityIcons name={active ? activeIconName : inactiveIconName} size={iconSize} color={active ? activeColor : inactiveColor} />
+		)}
+	</Pressable>
+);
+
+const makeMarkingReactionTrigger = (props: Readonly<{
+	onPress: () => void;
+	onHoverIn: () => void;
+	onHoverOut: () => void;
+	buttonStyle: any;
+	loading: boolean;
+	active: boolean;
+	activeIconName: any;
+	inactiveIconName: any;
+	iconSize: number;
+	activeColor: string;
+	inactiveColor: string;
+}>) => (triggerProps: object) => <MarkingReactionTrigger triggerProps={triggerProps} {...props} />;
+
+// Applies the updated marking to the profile's markings array (removing, replacing, or adding it), mutating and returning profileData.
+const applyMarkingUpdateToProfile = (profileData: any, updatedMarking: any, markingId: any): any => {
+	let markingFound = false;
+
+	profileData?.markings.forEach((profileMarkings: any, index: number) => {
+		if (profileMarkings.markings_id === updatedMarking?.markings_id) {
+			markingFound = true;
+			if (updatedMarking?.like === null) {
+				profileData.markings.splice(index, 1); // Remove if unliked
+			} else {
+				profileData.markings[index] = updatedMarking; // Update like status
+			}
+		}
+	});
+
+	// If the marking doesn't exist, add it
+	if (!markingFound) {
+		profileData.markings.push({
+			...updatedMarking,
+			markings_id: markingId,
+			profiles_id: profileData?.id,
+		});
+	}
+
+	return profileData;
+};
+
 const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet, size = 30 }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -94,47 +233,17 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
-			if (like) {
-				setLikeLoading(true);
-			} else {
-				setDislikeLoading(true);
-			}
+			const setLoadingState = like ? setLikeLoading : setDislikeLoading;
+			setLoadingState(true);
 			if (isAnonymousUser) {
 				handleAnonymousMarking(like);
-				if (like) {
-					setLikeLoading(false);
-				} else {
-					setDislikeLoading(false);
-				}
-				return;
+				setLoadingState(false);
 			} else {
 				try {
 					const likeStats = ownMarking?.like === like ? null : like;
 					const updatedMarking = { ...ownMarking, like: likeStats };
 
-					const profileData = { ...profile };
-					let markingFound = false;
-
-					// Update or remove marking in the profile
-					profileData?.markings.forEach((profileMarkings: any, index: number) => {
-						if (profileMarkings.markings_id === updatedMarking?.markings_id) {
-							markingFound = true;
-							if (updatedMarking?.like === null) {
-								profileData.markings.splice(index, 1); // Remove if unliked
-							} else {
-								profileData.markings[index] = updatedMarking; // Update like status
-							}
-						}
-					});
-
-					// If the marking doesn't exist, add it
-					if (!markingFound) {
-						profileData.markings.push({
-							...updatedMarking,
-							markings_id: markingId,
-							profiles_id: profileData?.id,
-						});
-					}
+					const profileData = applyMarkingUpdateToProfile({ ...profile }, updatedMarking, markingId);
 
 					dispatch({ type: UPDATE_PROFILE, payload: profileData });
 
@@ -142,20 +251,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
 					if (result) {
 						fetchProfile();
-						if (like) {
-							setLikeLoading(false);
-						} else {
-							setDislikeLoading(false);
-						}
+						setLoadingState(false);
 					}
 				} catch (error) {
 					console.error('Error updating marking:', error);
 				} finally {
-					if (like) {
-						setLikeLoading(false);
-					} else {
-						setDislikeLoading(false);
-					}
+					setLoadingState(false);
 				}
 			}
 		},
@@ -174,11 +275,13 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				{handleMenuSheet ? (
 					<CustomTooltip
 						placement="top"
-						trigger={triggerProps => (
-							<Pressable {...triggerProps} onPress={() => openMarkingLabel(marking)} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
-								<MarkingIcon marking={marking} size={size} />
-							</Pressable>
-						)}
+						trigger={makeMarkingIconTrigger({
+							onPress: () => openMarkingLabel(marking),
+							onHoverIn: () => setShowTooltip(true),
+							onHoverOut: () => setShowTooltip(false),
+							marking,
+							size,
+						})}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -192,20 +295,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				<CustomTooltip
 					placement="top"
 					isOpen={showTooltip}
-					trigger={triggerProps => (
-						<Pressable {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={styles.labelContainer}>
-							<Text
-								style={{
-									...styles.label,
-									color: theme.screen.text,
-									fontSize: isWeb ? 18 : 14,
-									textAlignVertical: 'center',
-								}}
-							>
-								{markingText}
-							</Text>
-						</Pressable>
-					)}
+					trigger={makeMarkingLabelTextTrigger({
+						onHoverIn: () => setShowTooltip(true),
+						onHoverOut: () => setShowTooltip(false),
+						text: markingText,
+						textColor: theme.screen.text,
+					})}
 				>
 					<TooltipContent
 						bg={theme.tooltip.background}
@@ -225,11 +320,19 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 			<View style={styles.col2}>
 				<CustomTooltip
 					placement="top"
-					trigger={triggerProps => (
-						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={styles.likeButton} {...triggerProps} onPress={() => handleUpdateMarking(true)}>
-							{likeLoading ? <ActivityIndicator size={25} color={foods_area_color} /> : <MaterialCommunityIcons name={ownMarking?.like ? 'thumb-up' : 'thumb-up-outline'} size={iconSize} color={ownMarking?.like ? foods_area_color : theme.screen.icon} />}
-						</Pressable>
-					)}
+					trigger={makeMarkingReactionTrigger({
+						onPress: () => handleUpdateMarking(true),
+						onHoverIn: () => setShowTooltip(true),
+						onHoverOut: () => setShowTooltip(false),
+						buttonStyle: styles.likeButton,
+						loading: likeLoading,
+						active: !!ownMarking?.like,
+						activeIconName: "thumb-up",
+						inactiveIconName: "thumb-up-outline",
+						iconSize,
+						activeColor: foods_area_color,
+						inactiveColor: theme.screen.icon,
+					})}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -239,11 +342,19 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				</CustomTooltip>
 				<CustomTooltip
 					placement="top"
-					trigger={triggerProps => (
-						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} {...triggerProps} style={styles.dislikeButton} {...triggerProps} onPress={() => handleUpdateMarking(false)}>
-							{dislikeLoading ? <ActivityIndicator size={25} color={foods_area_color} /> : <MaterialCommunityIcons name={ownMarking?.like === false ? 'thumb-down' : 'thumb-down-outline'} size={iconSize} color={ownMarking?.like === false ? foods_area_color : theme.screen.icon} />}
-						</Pressable>
-					)}
+					trigger={makeMarkingReactionTrigger({
+						onPress: () => handleUpdateMarking(false),
+						onHoverIn: () => setShowTooltip(true),
+						onHoverOut: () => setShowTooltip(false),
+						buttonStyle: styles.dislikeButton,
+						loading: dislikeLoading,
+						active: ownMarking?.like === false,
+						activeIconName: "thumb-down",
+						inactiveIconName: "thumb-down-outline",
+						iconSize,
+						activeColor: foods_area_color,
+						inactiveColor: theme.screen.icon,
+					})}
 				>
 					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 						<TooltipText fontSize="$sm" color={theme.tooltip.text}>

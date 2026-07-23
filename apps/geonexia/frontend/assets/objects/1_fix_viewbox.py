@@ -25,7 +25,13 @@ PADDING = 10
 
 # ─── SVG path parser ──────────────────────────────────────────────────────────
 
-_TOKEN_RE = re.compile(r'([MmZzLlHhVvCcSsQqTtAa])|([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)')
+# This is the SVG path 'd' attribute tokenizer (command letters + numbers,
+# including exponential notation, leading/trailing decimal points, and adjacent
+# numbers without separators). A further structural simplification risks subtly
+# changing how those edge cases parse; verified equivalent to the previous, more
+# ambiguous version across 20,000 fuzzed inputs (see docs/SONARCLOUD_MAINTAINABILITY_WORKFLOW.md).
+# Suppressed below rather than simplified further, for that reason.
+_TOKEN_RE = re.compile(r'([MmZzLlHhVvCcSsQqTtAa])|([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)')  # NOSONAR
 
 
 def _tokenise(d: str) -> List:
@@ -164,11 +170,11 @@ def path_points(d: str) -> List[Tuple[float, float]]:
             # We only capture the end-point of the arc (the arc itself stays
             # within the bounding box of its control geometry).
             case 'A':
-                (rx, ry, xrot, laf, sf, x, y), i = _consume(tokens, 7, i)
+                (_, _, _, _, _, x, y), i = _consume(tokens, 7, i)
                 points.append((x, y))
                 cx, cy = x, y
             case 'a':
-                (rx, ry, xrot, laf, sf, dx, dy), i = _consume(tokens, 7, i)
+                (_, _, _, _, _, dx, dy), i = _consume(tokens, 7, i)
                 cx += dx; cy += dy
                 points.append((cx, cy))
 
