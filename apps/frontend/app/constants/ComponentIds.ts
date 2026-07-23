@@ -90,6 +90,12 @@ export enum AppComponentIds {
 
 	// Feedback
 	FEEDBACK_AND_SUPPORT_TITLE = 'feedback-and-support-title',
+
+	// Monitor: Food Plan Week / print (Speiseplan)
+	MONITOR_FOODPLAN_WEEK_CANTEEN_BUTTON = 'monitor-foodplan-week-canteen-button',
+	MONITOR_FOODPLAN_WEEK_BIGSCREEN_BUTTON = 'monitor-foodplan-week-bigscreen-button',
+	MONITOR_LIST_WEEK_CURRENT_WEEK_BUTTON = 'monitor-list-week-current-week-button',
+	MONITOR_LIST_WEEK_PRINT_BUTTON = 'monitor-list-week-print-button',
 }
 
 /**

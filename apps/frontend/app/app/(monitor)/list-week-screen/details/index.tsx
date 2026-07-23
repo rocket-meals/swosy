@@ -374,6 +374,7 @@ const Index = () => {
 			const html = `
       <html>
         <head>
+          <meta charset="utf-8">
           <style>
             ${stylesheets}
             @media print {
@@ -417,7 +418,7 @@ const Index = () => {
 			// opening the window directly at the Blob URL still runs the inline
 			// `window.print()` script once the document has loaded, since the window
 			// navigates to a full HTML document rather than having markup injected.
-			const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+			const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
 			const newWindow = window.open(blobUrl, '_blank');
 			newWindow?.addEventListener('load', () => URL.revokeObjectURL(blobUrl));
 		}

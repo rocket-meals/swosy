@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-ic
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { isWeb } from '@/constants/Constants';
+import { ComponentIds } from '@/constants/ComponentIds';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
@@ -47,7 +48,7 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 								<MaterialIcons name="calendar-month" size={24} color={theme.screen.icon} />
 							</TouchableOpacity>
 							{isWeb && (
-								<TouchableOpacity onPress={handlePrint}>
+								<TouchableOpacity nativeID={ComponentIds.MONITOR_LIST_WEEK_PRINT_BUTTON} onPress={handlePrint}>
 									<Ionicons name="print-outline" size={24} color={theme.screen.icon} />
 								</TouchableOpacity>
 							)}
