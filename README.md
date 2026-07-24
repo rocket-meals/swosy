@@ -18,6 +18,12 @@ https://github.com/rocket-meals/swosy
 
 https://github.com/rocket-meals/studi-futter
 
+## 📱 Android Preview APK
+
+<!-- android-preview-apk:start -->
+Wird nach dem nächsten Build auf `master` automatisch aktualisiert.
+<!-- android-preview-apk:end -->
+
 # 🚀 Rocket Meals
 
 **Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von
