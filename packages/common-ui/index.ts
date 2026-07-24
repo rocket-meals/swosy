@@ -106,6 +106,10 @@ export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMy
 export { default as FeatureWishesScreen } from './src/components/FeatureWishesScreen';
 export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishItem } from './src/components/FeatureWishesScreen';
 
+export { default as AppDownloadBanner } from './src/components/AppDownloadBanner';
+export { getMobileWebPlatform } from './src/components/AppDownloadBanner';
+export type { AppDownloadBannerProps, AppDownloadBannerTexts, MobileWebPlatform } from './src/components/AppDownloadBanner';
+
 export { default as ScreenHeader } from './src/components/ScreenHeader';
 export type { ScreenHeaderProps } from './src/components/ScreenHeader';
 
