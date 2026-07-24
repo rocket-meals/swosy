@@ -318,47 +318,17 @@ jobs:
         uses: ./.github/actions/setup-and-install
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: "🧪 Build with previewApk profile"
-        run: eas build --platform android --non-interactive --profile previewApk --json | tee eas-build-output.json
-        working-directory: ./apps/frontend/app
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
       # Only master@rocket-meals/rocket-meals gets the README link - forks and
       # other branches build previews too, but must not push commits upstream
       # nor advertise a preview APK from an unverified fork build.
-      - name: "📝 Update APK link in README"
-        if: github.ref_name == 'master' && needs.check-repository.outputs.is-upstream == 'true'
-        run: |
-          node - <<'EOF'
-          const fs = require('fs');
-
-          const builds = JSON.parse(fs.readFileSync('apps/frontend/app/eas-build-output.json', 'utf-8'));
-          const build = Array.isArray(builds) ? builds[0] : builds;
-          const apkUrl = build?.artifacts?.applicationArchiveUrl || build?.artifacts?.buildUrl;
-
-          if (!apkUrl) {
-            console.log('No APK URL found in EAS build output, skipping README update.');
-            process.exit(0);
-          }
-
-          const readmePath = 'README.md';
-          const readme = fs.readFileSync(readmePath, 'utf-8');
-          const start = '<!-- android-preview-apk:start -->';
-          const end = '<!-- android-preview-apk:end -->';
-          const startIdx = readme.indexOf(start);
-          const endIdx = readme.indexOf(end);
-
-          if (startIdx === -1 || endIdx === -1) {
-            console.log('README markers not found, skipping README update.');
-            process.exit(0);
-          }
-
-          const block = `${start}\n📱 [Neueste Android Preview APK herunterladen](${apkUrl})\n`;
-          const updated = readme.slice(0, startIdx) + block + readme.slice(endIdx);
-          fs.writeFileSync(readmePath, updated);
-          console.log(`Updated README with APK link: ${apkUrl}`);
-          EOF
+      - name: "🧪 Build Android Preview APK & update README"
+        uses: ./.github/actions/build-android-preview-apk
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          working-directory: ./apps/frontend/app
+          app-key: frontend
+          app-label: "Rocket Meals (Frontend)"
+          update-readme: ${{ (github.ref_name == 'master' && needs.check-repository.outputs.is-upstream == 'true') && 'true' || 'false' }}
 
       - name: "💾 Commit README update"
         if: github.ref_name == 'master' && needs.check-repository.outputs.is-upstream == 'true'
