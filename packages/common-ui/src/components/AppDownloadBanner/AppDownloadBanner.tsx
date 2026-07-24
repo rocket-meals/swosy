@@ -3,19 +3,15 @@ import { Image, ImageSourcePropType, Platform, StyleSheet, Text, TouchableOpacit
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
-import { getMobileWebPlatform, isRunningAsInstalledWebApp, useNativeAppInstalledStatus } from './helpers';
+import { getMobileWebPlatform } from './helpers';
 
 export interface AppDownloadBannerTexts {
 	/** App / project name shown as the banner title. */
 	title: string;
-	/** Subtitle shown while the install state is unknown (e.g. "Download or open the app"). */
+	/** Subtitle shown below the title (e.g. "Download or open the app"). */
 	subtitle: string;
-	/** Subtitle shown when the native app was detected on the device (e.g. "App already installed"). */
-	installedSubtitle?: string;
-	/** Button label when the app is (or might be) already installed (e.g. "Open"). */
+	/** Button label (e.g. "Open"). */
 	openButtonLabel: string;
-	/** Button label when the app was NOT detected on the device (e.g. "Install"). Falls back to openButtonLabel. */
-	installButtonLabel?: string;
 	/** Accessibility label for the dismiss (close) button. */
 	dismissAccessibilityLabel?: string;
 }
@@ -33,15 +29,8 @@ export interface AppDownloadBannerProps {
 	 * renders nothing when this is missing.
 	 */
 	storeUrl?: string | null;
-	/**
-	 * Android package name (applicationId). When provided it is matched against
-	 * navigator.getInstalledRelatedApps() to detect an installed native app.
-	 */
-	androidPackageName?: string;
-	/** Called with the store URL when the visitor taps the button and the app is not known to be installed. */
+	/** Called with the store URL when the visitor taps the button. */
 	onOpenStore: (storeUrl: string) => void;
-	/** Called instead of onOpenStore when the native app was detected as installed (e.g. open via deep link). */
-	onOpenApp?: () => void;
 	/** Called when the visitor dismisses the banner. */
 	onDismiss: () => void;
 	/** Allows the parent to hide the banner (kiosk mode, dismissed state, ...). Defaults to true. */
@@ -51,54 +40,25 @@ export interface AppDownloadBannerProps {
 
 /**
  * App-store-style "get the app" banner intended for the very top of a web app
- * when visited from a mobile browser. Purely presentational plus device
- * detection - dismiss persistence, translations and store URL resolution are
- * the caller's responsibility.
- *
- * When the native Android app can be positively detected via
- * navigator.getInstalledRelatedApps() the banner switches to an "already
- * installed" appearance (check badge + open label). On iOS there is no web
- * API for this, so the banner always falls back to its plain install/open
- * button there - deliberately not paired with an apple-itunes-app meta tag,
- * since that tag is baked into the HTML at build time and cannot react to an
- * in-app runtime customer/backend switch the way this component does.
+ * when visited from a mobile browser. Purely presentational - dismiss
+ * persistence, translations and store URL resolution are the caller's
+ * responsibility.
  */
-const AppDownloadBanner: React.FC<AppDownloadBannerProps> = ({
-	texts,
-	iconSource,
-	accentColor,
-	isDarkTheme,
-	storeUrl,
-	androidPackageName,
-	onOpenStore,
-	onOpenApp,
-	onDismiss,
-	visible = true,
-	testID,
-}) => {
+const AppDownloadBanner: React.FC<AppDownloadBannerProps> = ({ texts, iconSource, accentColor, isDarkTheme, storeUrl, onOpenStore, onDismiss, visible = true, testID }) => {
 	const { theme } = useTheme();
 	const mobilePlatform = useMemo(() => getMobileWebPlatform(), []);
-	const runningStandalone = useMemo(() => isRunningAsInstalledWebApp(), []);
-	const installedStatus = useNativeAppInstalledStatus(androidPackageName);
-	const isInstalled = installedStatus === 'installed';
 
 	const handlePress = useCallback(() => {
-		if (isInstalled && onOpenApp) {
-			onOpenApp();
-			return;
-		}
 		if (storeUrl) {
 			onOpenStore(storeUrl);
 		}
-	}, [isInstalled, onOpenApp, onOpenStore, storeUrl]);
+	}, [onOpenStore, storeUrl]);
 
-	if (!visible || Platform.OS !== 'web' || !mobilePlatform || runningStandalone || !storeUrl) {
+	if (!visible || Platform.OS !== 'web' || !mobilePlatform || !storeUrl) {
 		return null;
 	}
 
 	const contrastColor = myContrastColor(accentColor, theme, !!isDarkTheme);
-	const subtitle = isInstalled && texts.installedSubtitle ? texts.installedSubtitle : texts.subtitle;
-	const buttonLabel = isInstalled ? texts.openButtonLabel : texts.installButtonLabel || texts.openButtonLabel;
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.header.background, borderBottomColor: theme.screen.iconBg }]} testID={testID}>
@@ -111,36 +71,27 @@ const AppDownloadBanner: React.FC<AppDownloadBannerProps> = ({
 			>
 				<MaterialCommunityIcons name="close" size={20} color={theme.screen.icon} />
 			</TouchableOpacity>
-			<View style={styles.iconWrapper}>
-				{iconSource ? (
-					<Image source={iconSource} style={[styles.appIcon, { backgroundColor: theme.screen.iconBg }]} accessibilityLabel={texts.title} />
-				) : (
-					<View style={[styles.appIcon, styles.iconFallback, { backgroundColor: theme.screen.iconBg }]}>
-						<MaterialCommunityIcons name="cellphone-arrow-down" size={24} color={theme.screen.icon} />
-					</View>
-				)}
-				{isInstalled && (
-					<View style={[styles.installedBadge, { borderColor: theme.header.background }]}>
-						<MaterialCommunityIcons name="check" size={10} color="#ffffff" />
-					</View>
-				)}
-			</View>
+			{iconSource ? (
+				<Image source={iconSource} style={[styles.appIcon, { backgroundColor: theme.screen.iconBg }]} accessibilityLabel={texts.title} />
+			) : (
+				<View style={[styles.appIcon, styles.iconFallback, { backgroundColor: theme.screen.iconBg }]}>
+					<MaterialCommunityIcons name="cellphone-arrow-down" size={24} color={theme.screen.icon} />
+				</View>
+			)}
 			<View style={styles.textContainer}>
 				<Text numberOfLines={1} style={[styles.title, { color: theme.header.text }]}>
 					{texts.title}
 				</Text>
 				<Text numberOfLines={1} style={[styles.subtitle, { color: theme.screen.placeholder }]}>
-					{subtitle}
+					{texts.subtitle}
 				</Text>
 			</View>
-			<TouchableOpacity onPress={handlePress} style={[styles.openButton, { backgroundColor: accentColor }]} accessibilityRole="button" accessibilityLabel={buttonLabel}>
-				<Text style={[styles.openButtonLabel, { color: contrastColor }]}>{buttonLabel}</Text>
+			<TouchableOpacity onPress={handlePress} style={[styles.openButton, { backgroundColor: accentColor }]} accessibilityRole="button" accessibilityLabel={texts.openButtonLabel}>
+				<Text style={[styles.openButtonLabel, { color: contrastColor }]}>{texts.openButtonLabel}</Text>
 			</TouchableOpacity>
 		</View>
 	);
 };
-
-const INSTALLED_BADGE_COLOR = '#2e9e5b';
 
 const styles = StyleSheet.create({
 	container: {
@@ -161,10 +112,6 @@ const styles = StyleSheet.create({
 	closeButton: {
 		padding: 4,
 	},
-	iconWrapper: {
-		width: 44,
-		height: 44,
-	},
 	appIcon: {
 		width: 44,
 		height: 44,
@@ -172,18 +119,6 @@ const styles = StyleSheet.create({
 		resizeMode: 'contain',
 	},
 	iconFallback: {
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	installedBadge: {
-		position: 'absolute',
-		right: -4,
-		bottom: -4,
-		width: 16,
-		height: 16,
-		borderRadius: 8,
-		borderWidth: 2,
-		backgroundColor: INSTALLED_BADGE_COLOR,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

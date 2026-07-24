@@ -67,18 +67,6 @@ const AppDownloadBanner: React.FC = () => {
 		CommonSystemActionHelper.openExternalURL(url, true);
 	}, []);
 
-	// Only used when the native app was positively detected as installed
-	// (Android via getInstalledRelatedApps): open the app directly through its
-	// custom scheme instead of routing the visitor through the store.
-	const appScheme = customerConfig?.appScheme;
-	const handleOpenApp = useCallback(() => {
-		if (appScheme && typeof window !== 'undefined') {
-			window.location.href = `${appScheme}://`;
-		} else if (storeUrl) {
-			CommonSystemActionHelper.openExternalURL(storeUrl, true);
-		}
-	}, [appScheme, storeUrl]);
-
 	const projectLogo = serverInfo?.info?.project?.project_logo ? getImageUrl(serverInfo.info.project.project_logo) : null;
 	const iconSource = projectLogo ? { uri: projectLogo } : customerConfig.images.icon_logo_source_get_for_react_native();
 	const projectName = ServerInfoHelper.getServerName(serverInfo || {}, customerConfig);
@@ -88,18 +76,14 @@ const AppDownloadBanner: React.FC = () => {
 			texts={{
 				title: projectName,
 				subtitle: translate(TranslationKeys.download_or_open_the_app),
-				installedSubtitle: translate(TranslationKeys.app_banner_installed),
 				openButtonLabel: translate(TranslationKeys.app_banner_open),
-				installButtonLabel: translate(TranslationKeys.app_banner_install),
 				dismissAccessibilityLabel: translate(TranslationKeys.cancel),
 			}}
 			iconSource={iconSource}
 			accentColor={primaryColor}
 			isDarkTheme={mode === 'dark'}
 			storeUrl={storeUrl}
-			androidPackageName={customerConfig?.bundleIdAndroid}
 			onOpenStore={handleOpenStore}
-			onOpenApp={handleOpenApp}
 			onDismiss={handleDismiss}
 			visible={!kioskMode && !dismissed}
 		/>
