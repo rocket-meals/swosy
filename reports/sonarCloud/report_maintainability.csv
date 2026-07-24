@@ -1,3 +1,6 @@
 Key,Message,Component,Line
+"AZ-S25eHzkWu0uAd803m","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/frontend/app/helper/authHelper.ts",269
+"AZ-S241ozkWu0uAd803k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Login/LoginDebugPanel.tsx",63
+"AZ-S241ozkWu0uAd803l","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/Login/LoginDebugPanel.tsx",74
 "AZ-Loz7AmLUUMuYcs1hT","Remove this unused import of 'Round'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameSlice.ts",3
 "AZ-Loz7AmLUUMuYcs1hU","Remove this unused import of 'GameStatus'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameSlice.ts",3
