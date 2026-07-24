@@ -58,7 +58,8 @@ jobs:
           retention-days: 7
 
       - name: "🖨️ Print result"
-        run: echo "APK URL: ${{ steps.build.outputs.apk-url }}"
+        run: |
+          echo "APK URL: ${{ steps.build.outputs.apk-url }}"
 
       - name: "💾 Commit README update"
         if: github.event.inputs.update_readme == 'true'
