@@ -45,52 +45,14 @@ runs:
     - name: "🔍 Extract APK URL"
       id: extract
       shell: bash
-      run: |
-        node - <<'EOF'
-        const fs = require('fs');
-
-        const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
-        const builds = JSON.parse(fs.readFileSync(buildOutputPath, 'utf-8'));
-        const build = Array.isArray(builds) ? builds[0] : builds;
-        const apkUrl = build?.artifacts?.applicationArchiveUrl || build?.artifacts?.buildUrl || '';
-
-        if (!apkUrl) {
-          console.log('No APK URL found in EAS build output.');
-        }
-
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `apk-url=${apkUrl}\n`);
-        EOF
+      run: yarn workspace rocket-meals-scripts apk:extract-url
       env:
         BUILD_OUTPUT_PATH: ${{ inputs.working-directory }}/eas-build-output.json
 
     - name: "📝 Update APK link in README"
       if: inputs.update-readme == 'true' && steps.extract.outputs.apk-url != ''
       shell: bash
-      run: |
-        node - <<'EOF'
-        const fs = require('fs');
-
-        const readmePath = process.env.README_PATH;
-        const appKey = process.env.APP_KEY;
-        const appLabel = process.env.APP_LABEL;
-        const apkUrl = process.env.APK_URL;
-
-        const readme = fs.readFileSync(readmePath, 'utf-8');
-        const start = `<!-- android-preview-apk:${appKey}:start -->`;
-        const end = `<!-- android-preview-apk:${appKey}:end -->`;
-        const startIdx = readme.indexOf(start);
-        const endIdx = readme.indexOf(end);
-
-        if (startIdx === -1 || endIdx === -1) {
-          console.log(`README markers for "${appKey}" not found, skipping README update.`);
-          process.exit(0);
-        }
-
-        const block = `${start}\n**${appLabel}:** 📱 [Neueste Android Preview APK herunterladen](${apkUrl})\n`;
-        const updated = readme.slice(0, startIdx) + block + readme.slice(endIdx);
-        fs.writeFileSync(readmePath, updated);
-        console.log(`Updated README (${appKey}) with APK link: ${apkUrl}`);
-        EOF
+      run: yarn workspace rocket-meals-scripts apk:update-readme
       env:
         README_PATH: ${{ inputs.readme-path }}
         APP_KEY: ${{ inputs.app-key }}

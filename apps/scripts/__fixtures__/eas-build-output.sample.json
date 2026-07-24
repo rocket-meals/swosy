@@ -1,0 +1,48 @@
+[
+  {
+    "id": "0f3fcc30-1ae1-4155-ad0c-78f0bcf2d084",
+    "status": "FINISHED",
+    "platform": "ANDROID",
+    "artifacts": {
+      "buildUrl": "https://expo.dev/artifacts/eas/agNvd7IersQRJKvRJ-dk6Qltyz--qSooN4s1aC0ouPo.apk",
+      "applicationArchiveUrl": "https://expo.dev/artifacts/eas/agNvd7IersQRJKvRJ-dk6Qltyz--qSooN4s1aC0ouPo.apk"
+    },
+    "fingerprint": {
+      "id": "019f9337-525b-743e-9c93-0f1b114047c8",
+      "hash": "d4adc22e0d0ae96100340f64c54c23a7e041a5c0"
+    },
+    "initiatingActor": {
+      "id": "a35dd2fd-3f76-460a-9639-7b7912ebd84d",
+      "displayName": "GitHubActions"
+    },
+    "project": {
+      "id": "36f72583-5997-4602-8609-05f39444f2e7",
+      "name": "rocket-meals-dev",
+      "slug": "rocket-meals-dev",
+      "ownerAccount": {
+        "id": "901fb860-b6ba-4bb3-a2e8-3b2be1ddb736",
+        "name": "baumgartner-software"
+      }
+    },
+    "channel": "preview",
+    "distribution": "STORE",
+    "buildProfile": "previewApk",
+    "sdkVersion": "54.0.0",
+    "appVersion": "21.200.0",
+    "appBuildVersion": "200",
+    "runtimeVersion": "21.200.0",
+    "gitCommitHash": "40ae679063f11382027a593fe183e8aca1dd2426",
+    "gitCommitMessage": "Fix YAML syntax error in test-android-preview-apk.yml (unquoted colon in run step)",
+    "priority": "HIGH",
+    "createdAt": "2026-07-24T08:21:44.124Z",
+    "updatedAt": "2026-07-24T08:44:28.996Z",
+    "completedAt": "2026-07-24T08:44:28.826Z",
+    "expirationDate": "2026-08-23T08:21:44.150Z",
+    "isForIosSimulator": false,
+    "metrics": {
+      "buildWaitTime": 2940,
+      "buildQueueTime": 4744,
+      "buildDuration": 1357018
+    }
+  }
+]
