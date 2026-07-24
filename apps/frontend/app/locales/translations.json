@@ -3607,6 +3607,16 @@
     "tr": "Avatarlar",
     "zh": "头像"
   },
+  "avatar_scroll_list": {
+    "de": "Avatar Scroll-Liste",
+    "en": "Avatar Scroll List",
+    "ar": "قائمة تمرير الصور الرمزية",
+    "es": "Lista de desplazamiento de avatares",
+    "fr": "Liste défilante d'avatars",
+    "ru": "Прокручиваемый список аватаров",
+    "tr": "Avatar Kaydırma Listesi",
+    "zh": "头像滚动列表"
+  },
   "avatar_style": {
     "de": "Avatar-Stil",
     "en": "Avatar Style",
