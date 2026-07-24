@@ -7386,5 +7386,35 @@
     "ru": "Показывать среднюю оценку на карточке",
     "tr": "Kartda ortalama puanı göster",
     "zh": "在卡片上显示平均评分"
+  },
+  "management_login_question": {
+    "de": "Du gehörst zur Verwaltung?",
+    "en": "Are you part of the management?",
+    "ar": "هل تنتمي إلى الإدارة؟",
+    "es": "¿Perteneces a la administración?",
+    "fr": "Vous faites partie de l'administration ?",
+    "ru": "Вы из администрации?",
+    "tr": "Yönetimin bir parçası mısın?",
+    "zh": "您属于管理团队吗？"
+  },
+  "sign_in_here": {
+    "de": "Hier anmelden",
+    "en": "Sign in here",
+    "ar": "سجّل الدخول هنا",
+    "es": "Inicia sesión aquí",
+    "fr": "Se connecter ici",
+    "ru": "Войти здесь",
+    "tr": "Buradan giriş yap",
+    "zh": "在此登录"
+  },
+  "long_press_logo_to_show_debug_options": {
+    "de": "App-Logo gedrückt halten, um Debug-Optionen zur Fehlersuche anzuzeigen",
+    "en": "Press and hold the app logo to show debug options for troubleshooting",
+    "ar": "اضغط مطولاً على شعار التطبيق لعرض خيارات تصحيح الأخطاء",
+    "es": "Mantén pulsado el logotipo de la aplicación para mostrar las opciones de depuración",
+    "fr": "Appuyez longuement sur le logo de l'application pour afficher les options de débogage",
+    "ru": "Удерживайте логотип приложения, чтобы показать параметры отладки",
+    "tr": "Hata ayıklama seçeneklerini göstermek için uygulama logosuna basılı tut",
+    "zh": "长按应用标志以显示调试选项"
   }
 }

@@ -7,8 +7,9 @@ import { styles } from './styles';
 import { FormProps } from './types';
 import { generateCodeChallenge, generateCodeVerifier } from '@/constants/HelperFunctions';
 import usePlatformHelper from '@/helper/platformHelper';
-import { fetchAuthorizationUrl, fetchToken } from '@/redux/actions/ApiService/ApiService';
-import { handleNativeLogin, handleWebLogin } from '@/helper/authHelper';
+import { fetchAuthorizationUrl } from '@/redux/actions/ApiService/ApiService';
+import { fetchTokenWithRetry, handleNativeLogin, handleWebLogin } from '@/helper/authHelper';
+import { addLoginLog, describeError } from '@/helper/loginDebug';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDispatch } from 'react-redux';
 import { UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
@@ -39,13 +40,17 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 
 	const getToken = async (codeVerifier: string, code: string) => {
 		try {
-			const { directus_refresh_token } = await fetchToken(codeVerifier, code);
+			const { directus_refresh_token } = await fetchTokenWithRetry(codeVerifier, code);
 
 			if (directus_refresh_token && onSuccess) {
+				addLoginLog('Token-Austausch erfolgreich, melde an');
 				onSuccess(directus_refresh_token);
+			} else {
+				addLoginLog('Token-Austausch lieferte keinen Refresh-Token');
 			}
 		} catch (error) {
 			console.error('Error fetching token:', error);
+			addLoginLog(`Token-Austausch fehlgeschlagen: ${describeError(error)}`);
 		}
 	};
 
@@ -63,7 +68,9 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 				code_challenge: codeChallenge,
 			};
 
+			addLoginLog(`Fordere Authorize-URL an (Provider: ${provider}, redirect_url: ${desiredRedirectURL})`);
 			const { urlToProviderLogin } = await fetchAuthorizationUrl(payload);
+			addLoginLog('Authorize-URL vom Server erhalten');
 
 			if (isWeb()) {
 				await handleWebLogin(urlToProviderLogin, desiredRedirectURL, codeVerifier, getToken);
@@ -77,6 +84,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 			});
 		} catch (error) {
 			console.error('Login Error:', error);
+			addLoginLog(`Login-Fehler: ${describeError(error)}`);
 		}
 	};
 
@@ -175,11 +183,12 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 			</View>
 
 			<View style={styles.managementLogin}>
-				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{`${translate(TranslationKeys.for_management)}?`}</Text>
+				<Text style={{ ...styles.fromManagement, color: theme.login.text }}>{translate(TranslationKeys.management_login_question)}</Text>
 				<TouchableOpacity
 					onPress={() => requireAgb(openSheet)}
+					accessibilityRole="link"
 				>
-					<Text style={{ ...styles.loginText, color: theme.screen.text }}>{translate(TranslationKeys.sign_in)}</Text>
+					<Text style={{ ...styles.loginText, color: theme.screen.text, textDecorationLine: 'underline' }}>{translate(TranslationKeys.sign_in_here)}</Text>
 				</TouchableOpacity>
 			</View>
 		</View>

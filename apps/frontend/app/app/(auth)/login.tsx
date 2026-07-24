@@ -24,17 +24,21 @@ import { getDetailedDescriptionTranslation, getIntroDescriptionTranslation } fro
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { completeLoginFromDeepLinkCode } from '@/helper/authHelper';
+import LoginDebugPanel from '@/components/Login/LoginDebugPanel';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
 	const toast = useToast();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const { deviceMock } = useGlobalSearchParams();
+	const { deviceMock, code } = useGlobalSearchParams();
 	const appSettingsHelper = new AppSettingsHelper();
 	const wikisHelper = new WikisHelper();
 	const [loading, setLoading] = useState(false);
 	const [providers, setProviders] = useState<any>([]);
+	// Hidden diagnostics: toggled by long-pressing the app logo in the header.
+	const [showLoginDebug, setShowLoginDebug] = useState(false);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
 	const { appSettings, language } = useAppSelector((state) => state.settings);
 	const intro_description = appSettings?.login_screen_translations && getIntroDescriptionTranslation(appSettings?.login_screen_translations, language);
@@ -64,6 +68,19 @@ export default function Login() {
 		getAppSettings();
 		getProviders();
 	}, []);
+
+	// Fallback for the native SSO flow: when the auth redirect opens the app as
+	// a plain deep link (scheme://login?code=...) without the pending
+	// WebBrowser auth session catching it (see helper/authHelper.ts), the code
+	// arrives here as route param and the token exchange is completed from it.
+	const deepLinkCode = Array.isArray(code) ? code[0] : code;
+	useEffect(() => {
+		if (deepLinkCode) {
+			completeLoginFromDeepLinkCode(deepLinkCode, token => {
+				handleUserLogin(token);
+			});
+		}
+	}, [deepLinkCode]);
 
         const handleUserLogin = async (token?: string, email?: string, password?: string) => {
                 try {
@@ -240,8 +257,9 @@ export default function Login() {
 						width: isWeb && isWebVisible ? '35%' : '100%',
 					}}
 				>
-					<Header />
+					<Header onLogoLongPress={() => setShowLoginDebug(current => !current)} />
 					<Form openSheet={openSheet} openAttentionSheet={openAttentionSheet} onSuccess={handleUserLogin} providers={providers} />
+					{!isWeb && showLoginDebug && <LoginDebugPanel />}
 					<Footer />
 				</View>
 				{isWeb && isWebVisible && (
