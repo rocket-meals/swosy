@@ -305,20 +305,46 @@ jobs:
 #    needs: [sonarcloud-report, check-build]
     needs: [check-build, check-repository]
     if: needs.check-build.outputs.changed == 'true'
+    permissions:
+      contents: write
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: "🧰 Setup Node.js, Yarn & Dependencies"
         uses: ./.github/actions/setup-and-install
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: "🧪 Build with previewApk profile"
-        run: eas build --platform android --non-interactive --profile previewApk
-        working-directory: ./apps/frontend/app
-        env:
+      # Only master@rocket-meals/rocket-meals gets the README link - forks and
+      # other branches build previews too, but must not push commits upstream
+      # nor advertise a preview APK from an unverified fork build.
+      - name: "🧪 Build Android Preview APK & update README"
+        uses: ./.github/actions/build-android-preview-apk
+        with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          working-directory: ./apps/frontend/app
+          app-key: frontend
+          app-label: "Rocket Meals (Frontend)"
+          update-readme: ${{ (github.ref_name == 'master' && needs.check-repository.outputs.is-upstream == 'true') && 'true' || 'false' }}
+
+      - name: "💾 Commit README update"
+        if: github.ref_name == 'master' && needs.check-repository.outputs.is-upstream == 'true'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update Android preview APK link in README [skip ci]"
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-ios:
     name: "📦 Build & 🚀 Submit iOS App"
