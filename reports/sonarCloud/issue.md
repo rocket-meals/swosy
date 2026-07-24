@@ -23,8 +23,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/Login/LoginDebugPanel.tsx#L74
 
 - **Refactor this code to not use nested template literals.**
-  apps/frontend/app/helper/authHelper.ts:269
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L269
+  apps/frontend/app/helper/authHelper.ts:267
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L267
 
 - **Remove this unused import of 'Round'.**
   apps/score-tracker/frontend/store/gameSlice.ts:3
