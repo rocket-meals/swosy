@@ -6,8 +6,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { MyAvatar } from 'repo-depkit-common-ui';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AvatarConfig, MyAvatar } from 'repo-depkit-common-ui';
 import { parseProfileAvatar, AVATAR_BACKGROUND } from '@/hooks/useAvatarProfileEditor';
 
 const PAGE_SIZE = 24;
@@ -16,15 +15,37 @@ const MIN_ITEM_WIDTH = 110;
 
 const profilesHelper = new CollectionHelper<DatabaseTypes.Profiles>('profiles');
 
-// Only the fields needed for the list are requested to keep each page small.
-// Sorted by id so that offset-based pagination stays stable while scrolling.
+interface AvatarListItem {
+	id: string;
+	nickname: string | null;
+	config: AvatarConfig;
+}
+
+// Same query as the onboarding avatar carousel: only profiles that actually have
+// an avatar are loaded from the backend - no default/preset avatars are mixed in.
+// Paginated via limit/offset; the id tiebreaker keeps the order stable while
+// scrolling even when many profiles share the same (or no) date_updated.
 async function fetchProfilesPage(offset: number): Promise<DatabaseTypes.Profiles[]> {
 	return await profilesHelper.readItems({
+		filter: { avatar: { _nnull: true } },
+		sort: ['-date_updated', 'id'],
 		fields: ['id', 'nickname', 'avatar'],
-		sort: ['id'],
 		limit: PAGE_SIZE,
 		offset,
 	});
+}
+
+// Profiles whose avatar field cannot be parsed into a config are skipped -
+// the list only shows real, renderable server avatars.
+function toAvatarListItems(profiles: DatabaseTypes.Profiles[]): AvatarListItem[] {
+	const items: AvatarListItem[] = [];
+	for (const profile of profiles) {
+		const config = parseProfileAvatar(profile.avatar);
+		if (config) {
+			items.push({ id: String(profile.id), nickname: profile.nickname ?? null, config });
+		}
+	}
+	return items;
 }
 
 const AvatarScrollListScreen = () => {
@@ -32,12 +53,14 @@ const AvatarScrollListScreen = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 
-	const [profiles, setProfiles] = useState<DatabaseTypes.Profiles[]>([]);
+	const [items, setItems] = useState<AvatarListItem[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	// Offset counts fetched profiles (not rendered items), since unparseable avatars are skipped.
+	const offsetRef = useRef(0);
 	// Guards against parallel page loads (onEndReached can fire multiple times while scrolling).
 	const loadingMoreRef = useRef(false);
 
@@ -51,15 +74,16 @@ const AvatarScrollListScreen = () => {
 		return Math.max(2, Math.min(6, Math.floor(screenWidth / MIN_ITEM_WIDTH)));
 	}, [screenWidth]);
 
-	const appendUniqueProfiles = useCallback((prev: DatabaseTypes.Profiles[], page: DatabaseTypes.Profiles[]) => {
-		const knownIds = new Set(prev.map((p) => p.id));
-		return [...prev, ...page.filter((p) => !knownIds.has(p.id))];
+	const appendUniqueItems = useCallback((prev: AvatarListItem[], page: AvatarListItem[]) => {
+		const knownIds = new Set(prev.map((item) => item.id));
+		return [...prev, ...page.filter((item) => !knownIds.has(item.id))];
 	}, []);
 
 	const loadInitial = useCallback(async () => {
 		try {
 			const page = await fetchProfilesPage(0);
-			setProfiles(page);
+			offsetRef.current = page.length;
+			setItems(toAvatarListItems(page));
 			setHasMore(page.length === PAGE_SIZE);
 		} catch (e) {
 			console.error('[AvatarScrollList] Error loading profiles', e);
@@ -83,8 +107,9 @@ const AvatarScrollListScreen = () => {
 		loadingMoreRef.current = true;
 		setLoadingMore(true);
 		try {
-			const page = await fetchProfilesPage(profiles.length);
-			setProfiles((prev) => appendUniqueProfiles(prev, page));
+			const page = await fetchProfilesPage(offsetRef.current);
+			offsetRef.current += page.length;
+			setItems((prev) => appendUniqueItems(prev, toAvatarListItems(page)));
 			setHasMore(page.length === PAGE_SIZE);
 		} catch (e) {
 			console.error('[AvatarScrollList] Error loading more profiles', e);
@@ -92,27 +117,20 @@ const AvatarScrollListScreen = () => {
 			loadingMoreRef.current = false;
 			setLoadingMore(false);
 		}
-	}, [hasMore, loading, profiles.length, appendUniqueProfiles]);
+	}, [hasMore, loading, appendUniqueItems]);
 
-	const renderProfile = useCallback(
-		({ item }: { item: DatabaseTypes.Profiles }) => {
-			const avatarConfig = parseProfileAvatar(item.avatar);
-			const displayName = item.nickname || `#${String(item.id).slice(0, 8)}`;
+	const renderItem = useCallback(
+		({ item }: { item: AvatarListItem }) => {
+			const displayName = item.nickname || `#${item.id.slice(0, 8)}`;
 			return (
 				<View style={[styles.profileItem, { width: (100 / numColumns + '%') as DimensionValue }]}>
-					{avatarConfig ? (
-						<MyAvatar
-							style={avatarConfig.style}
-							options={avatarConfig.options}
-							size={AVATAR_RENDER_SIZE}
-							rounded={true}
-							backgroundColor={AVATAR_BACKGROUND}
-						/>
-					) : (
-						<View style={[styles.placeholderAvatar, { borderColor: theme.screen.text + '33' }]}>
-							<MaterialCommunityIcons name="account-outline" size={AVATAR_RENDER_SIZE / 2} color={theme.screen.text + '66'} />
-						</View>
-					)}
+					<MyAvatar
+						style={item.config.style}
+						options={item.config.options}
+						size={AVATAR_RENDER_SIZE}
+						rounded={true}
+						backgroundColor={AVATAR_BACKGROUND}
+					/>
 					<Text style={[styles.profileName, { color: theme.screen.text }]} numberOfLines={1}>
 						{displayName}
 					</Text>
@@ -134,9 +152,9 @@ const AvatarScrollListScreen = () => {
 		<FlatList
 			// Changing numColumns on the fly is not supported by FlatList, so remount on change.
 			key={`avatar-grid-${numColumns}`}
-			data={profiles}
-			keyExtractor={(item) => String(item.id)}
-			renderItem={renderProfile}
+			data={items}
+			keyExtractor={(item) => item.id}
+			renderItem={renderItem}
 			numColumns={numColumns}
 			onEndReached={loadMore}
 			onEndReachedThreshold={0.5}
@@ -174,15 +192,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		paddingVertical: 12,
 		paddingHorizontal: 4,
-	},
-	placeholderAvatar: {
-		width: AVATAR_RENDER_SIZE,
-		height: AVATAR_RENDER_SIZE,
-		borderRadius: AVATAR_RENDER_SIZE / 2,
-		borderWidth: 2,
-		borderStyle: 'dashed',
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
 	profileName: {
 		marginTop: 8,
