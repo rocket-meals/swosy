@@ -31,12 +31,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L81
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/components/GameCategorySettings.tsx:208
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L208
+  apps/score-tracker/frontend/components/GameCategorySettings.tsx:209
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L209
 
 - **The empty object is useless.**
-  apps/score-tracker/frontend/helpers/GameCategories.ts:217
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L217
+  apps/score-tracker/frontend/helpers/GameCategories.ts:219
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L219
 
 - **Remove this unused import of 'Round'.**
   apps/score-tracker/frontend/store/gameSlice.ts:3
@@ -47,6 +47,6 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L3
 
 - **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
-  apps/score-tracker/frontend/store/gameTypesSlice.ts:256
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L256
+  apps/score-tracker/frontend/store/gameTypesSlice.ts:260
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L260
 
