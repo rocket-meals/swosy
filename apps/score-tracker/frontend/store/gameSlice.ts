@@ -3,6 +3,7 @@ import type { AvatarConfig } from 'repo-depkit-common-ui';
 import type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
+import type { GameCategoryValue } from '../helpers/GameCategories';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
 import { generateId } from '../helpers/RandomHelper';
@@ -20,6 +21,8 @@ const initialState: GameSliceState = {
 	currentRoundIndex: 0,
 	gameTypeId: undefined,
 	playerOrderState: undefined,
+	categoryValues: {},
+	playerCategoryValues: {},
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -51,6 +54,8 @@ const gameSlice = createSlice({
 				currentRoundIndex: action.payload.currentRoundIndex,
 				gameTypeId: action.payload.gameTypeId,
 				playerOrderState: action.payload.playerOrderState,
+				categoryValues: action.payload.categoryValues ?? {},
+				playerCategoryValues: action.payload.playerCategoryValues ?? {},
 			};
 		},
 
@@ -116,9 +121,35 @@ const gameSlice = createSlice({
 			}
 		},
 
-		/** Select (or clear) the game type the current match is played as. */
+		/**
+		 * Select (or clear) the game type the current match is played as.
+		 * Category values are keyed by the *previous* game type's category ids,
+		 * so switching games drops them instead of carrying meaningless
+		 * leftovers into the new one.
+		 */
 		setGameType(state, action: PayloadAction<string | undefined>) {
+			if (state.gameTypeId !== action.payload) {
+				state.categoryValues = {};
+				state.playerCategoryValues = {};
+			}
 			state.gameTypeId = action.payload;
+		},
+
+		/** Record a match-scope category value (see helpers/GameCategories). */
+		setCategoryValue(state, action: PayloadAction<{ categoryId: string; value: GameCategoryValue }>) {
+			if (!state.categoryValues) state.categoryValues = {};
+			state.categoryValues[action.payload.categoryId] = action.payload.value;
+		},
+
+		/** Record a player-scope category value for one player. */
+		setPlayerCategoryValue(
+			state,
+			action: PayloadAction<{ playerId: string; categoryId: string; value: GameCategoryValue }>,
+		) {
+			if (!state.playerCategoryValues) state.playerCategoryValues = {};
+			const forPlayer = state.playerCategoryValues[action.payload.playerId] ?? {};
+			forPlayer[action.payload.categoryId] = action.payload.value;
+			state.playerCategoryValues[action.payload.playerId] = forPlayer;
 		},
 
 		/** Move a player one seat up/down in the table order (manual seating adjustment). No-op at either edge. */
@@ -139,6 +170,7 @@ const gameSlice = createSlice({
 				delete round.scores[action.payload];
 				if (round.cardSelections) delete round.cardSelections[action.payload];
 			}
+			if (state.playerCategoryValues) delete state.playerCategoryValues[action.payload];
 		},
 
 		/** Set the score for a player in a specific round. */
@@ -197,17 +229,27 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = Math.min(state.rounds.length - 1, state.currentRoundIndex + 1);
 		},
 
-		/** Clear all rounds and return to the setup phase (keeps players). */
+		/** Clear all rounds and recorded category values, back to setup (keeps players). */
 		resetScores(state) {
 			state.rounds = [];
 			state.status = 'setup';
 			state.currentRoundIndex = 0;
 			state.playerOrderState = undefined;
+			state.categoryValues = {};
+			state.playerCategoryValues = {};
 		},
 
 		/** Delete everything (players and rounds) and return to the setup phase. */
 		resetAll() {
-			return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0, gameTypeId: undefined };
+			return {
+				players: [],
+				rounds: [],
+				status: 'setup' as const,
+				currentRoundIndex: 0,
+				gameTypeId: undefined,
+				categoryValues: {},
+				playerCategoryValues: {},
+			};
 		},
 	},
 	// Players added from a friend are linked via friendId. When the friend is
@@ -241,6 +283,8 @@ const gameSlice = createSlice({
 			.addCase(removeGameType, (state, action) => {
 				if (state.gameTypeId === action.payload) {
 					state.gameTypeId = undefined;
+					state.categoryValues = {};
+					state.playerCategoryValues = {};
 				}
 			});
 	},
@@ -255,6 +299,8 @@ export const {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	setCategoryValue,
+	setPlayerCategoryValue,
 	movePlayer,
 	removePlayer,
 	setScore,

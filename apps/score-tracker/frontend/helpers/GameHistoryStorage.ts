@@ -1,5 +1,6 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { PlayerIdentity } from './PlayerIdentity';
+import type { GameCategoryValues } from './GameCategories';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,6 +20,10 @@ export type GameHistoryEntry = {
 	finalScores: Record<string, number>;
 	/** Present when the match was played as a specific game (see GameTypesStorage). */
 	gameTypeId?: string;
+	/** Recorded match-scope category values (see GameCategories), keyed by category id. */
+	categoryValues?: GameCategoryValues;
+	/** Recorded player-scope category values, keyed by `GameHistoryPlayerEntry.playerId` and then category id. */
+	playerCategoryValues?: Record<string, GameCategoryValues>;
 };
 
 export type GameHistoryState = {

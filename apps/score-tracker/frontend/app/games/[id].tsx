@@ -1,9 +1,10 @@
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
+	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListTextInput,
 	SettingsListNumberInput,
@@ -23,6 +24,7 @@ import {
 	setGameTypeMaxScore,
 	setGameTypeRules,
 	setGameTypeStartingPlayerMode,
+	setGameTypeTrackScores,
 	setGameTypeVersion,
 	updateGameTypeFromPreset,
 	addGameTypeFromPreset,
@@ -36,9 +38,19 @@ import { GAME_TYPE_ICONS } from '../../helpers/GameTypesStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
 import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
+import type { CategoryFilters, GameCategory, MatchSort } from '../../helpers/GameCategories';
+import {
+	DEFAULT_MATCH_SORT,
+	compareCategoryValues,
+	matchPassesFilters,
+	resolveCategoryValues,
+	summarizeCategoryValues,
+} from '../../helpers/GameCategories';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
+import GameCategorySettings from '../../components/GameCategorySettings';
+import MatchFilterSort from '../../components/MatchFilterSort';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -59,6 +71,33 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
+/** Summary line of the "Sortieren & filtern" row, e.g. `Dauer ↑ · 2 Filter aktiv`. */
+function describeSortAndFilters(categories: GameCategory[], sort: MatchSort, filters: CategoryFilters): string {
+	const sortCategory = sort.categoryId ? categories.find((c) => c.id === sort.categoryId) : undefined;
+	const sortName = sortCategory ? sortCategory.name : 'Datum';
+	const arrow = sort.direction === 'asc' ? '↑' : '↓';
+	const activeFilters = Object.keys(filters).length;
+	if (activeFilters === 0) return `${sortName} ${arrow}`;
+	return `${sortName} ${arrow} · ${activeFilters === 1 ? '1 Filter aktiv' : `${activeFilters} Filter aktiv`}`;
+}
+
+/**
+ * Value line of one match row: the winner (only for games that are actually
+ * scored) plus whatever the game's own match categories recorded.
+ */
+function describeMatchRow(
+	match: Readonly<{ winnerName?: string; winnerScore: number; roundsCount: number; categorySummary: string }>,
+	trackScores: boolean,
+): string {
+	const parts: string[] = [];
+	if (trackScores) {
+		if (match.winnerName) parts.push(`🏆 ${match.winnerName} (${match.winnerScore} Punkte)`);
+		parts.push(`${match.roundsCount} Runden`);
+	}
+	if (match.categorySummary) parts.push(match.categorySummary);
+	return parts.length > 0 ? parts.join(' · ') : `${match.roundsCount} Runden`;
+}
+
 /** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
 function gameTypeToPreset(gameType: GameType): GamePreset {
 	return {
@@ -68,6 +107,8 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 		maxRounds: gameType.maxRounds ?? null,
 		maxScore: gameType.maxScore ?? null,
 		rules: gameType.rules ?? null,
+		categories: gameType.categories ?? null,
+		trackScores: gameType.trackScores ?? true,
 		startingPlayerMode: gameType.startingPlayerMode ?? 'fixed',
 		version: gameType.version ?? 1,
 	};
@@ -256,6 +297,13 @@ export default function GameTypeDetailScreen() {
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
+	// Match list sorting/filtering by the game's own categories. Kept as local
+	// screen state (not persisted): it's a way of looking at the list, not part
+	// of the game definition.
+	const [matchFilters, setMatchFilters] = useState<CategoryFilters>({});
+	const [matchSort, setMatchSort] = useState<MatchSort>(DEFAULT_MATCH_SORT);
+	const [showFilters, setShowFilters] = useState(false);
+
 	// Header: back arrow to the games list (drawer navigators have no reliable
 	// push history, so navigate explicitly - same reasoning as the old friend
 	// detail screen).
@@ -266,10 +314,29 @@ export default function GameTypeDetailScreen() {
 		});
 	}, [navigation, theme.header.text, gameType]);
 
+	const categories: GameCategory[] = useMemo(() => gameType?.categories ?? [], [gameType]);
+	const trackScores = gameType?.trackScores ?? true;
+
+	const totalMatchCount = useMemo(
+		() => (gameType ? historyEntries.filter((entry) => entry.gameTypeId === gameType.id).length : 0),
+		[historyEntries, gameType],
+	);
+
 	const matches = useMemo(() => {
 		if (!gameType) return [];
+		const sortCategory = matchSort.categoryId ? categories.find((c) => c.id === matchSort.categoryId) : undefined;
+		const directionFactor = matchSort.direction === 'asc' ? 1 : -1;
+
 		return historyEntries
 			.filter((entry) => entry.gameTypeId === gameType.id)
+			.filter((entry) =>
+				matchPassesFilters({
+					categories,
+					filters: matchFilters,
+					matchValues: entry.categoryValues,
+					playerValues: entry.playerCategoryValues,
+				}),
+			)
 			.map((entry) => {
 				const ranked = [...entry.players].sort((a, b) => {
 					const scoreA = entry.finalScores[a.playerId] ?? 0;
@@ -284,10 +351,26 @@ export default function GameTypeDetailScreen() {
 					players: entry.players,
 					winnerName: winner ? winner.name : undefined,
 					winnerScore: winner ? entry.finalScores[winner.playerId] ?? 0 : 0,
+					categoryValues: resolveCategoryValues(categories, entry.categoryValues),
+					categorySummary: summarizeCategoryValues(
+						categories.filter((c) => c.scope === 'match'),
+						entry.categoryValues,
+					),
 				};
 			})
-			.sort((a, b) => b.endedAt - a.endedAt);
-	}, [historyEntries, gameType]);
+			.sort((a, b) => {
+				if (!sortCategory) return (a.endedAt - b.endedAt) * directionFactor;
+				const byCategory = compareCategoryValues(
+					sortCategory,
+					a.categoryValues[sortCategory.id],
+					b.categoryValues[sortCategory.id],
+				);
+				// Equal category values keep the newest match first, so the list
+				// never jumps around between renders.
+				if (byCategory !== 0) return byCategory * directionFactor;
+				return b.endedAt - a.endedAt;
+			});
+	}, [historyEntries, gameType, categories, matchFilters, matchSort]);
 
 	const handleOpenIconModal = useCallback(() => {
 		if (!gameType) return;
@@ -355,6 +438,8 @@ export default function GameTypeDetailScreen() {
 				})),
 				finalScores: totals,
 				gameTypeId: activeGame.gameTypeId,
+				categoryValues: activeGame.categoryValues,
+				playerCategoryValues: activeGame.playerCategoryValues,
 			};
 			dispatch(archiveGame(entry));
 		}
@@ -522,12 +607,23 @@ export default function GameTypeDetailScreen() {
 				/>
 
 				<SettingsListGroupTitle title="Spielregeln" />
+				<SettingsListBoolean
+					nativeID={ComponentIds.GAME_DETAIL_TRACK_SCORES_ROW}
+					label="Punkte zählen"
+					leftIcon={<MaterialCommunityIcons name="counter" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					isEnabled={trackScores}
+					valueActive="Spieler bekommen Punkte"
+					valueInactive="Nur Kategorien statt Punkte"
+					onToggle={() => dispatch(setGameTypeTrackScores({ gameTypeId: gameType.id, trackScores: !trackScores }))}
+					groupPosition="top"
+				/>
 				<SettingsList
 					label="Punkte-Eingabe"
 					value={gameType.rules?.scoreEntry ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
 					leftIcon={<MaterialCommunityIcons name={gameType.rules?.scoreEntry ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
 					iconBgColor={PRIMARY_COLOR}
-					groupPosition="top"
+					groupPosition="middle"
 				/>
 				<SettingsList
 					nativeID={ComponentIds.GAME_DETAIL_STARTING_PLAYER_ROW}
@@ -549,6 +645,9 @@ export default function GameTypeDetailScreen() {
 						groupPosition="bottom"
 					/>
 				)}
+
+				<SettingsListGroupTitle title="Kategorien" />
+				<GameCategorySettings gameTypeId={gameType.id} />
 
 				<SettingsListGroupTitle title="Code" />
 				<SettingsListTextInput
@@ -610,7 +709,9 @@ export default function GameTypeDetailScreen() {
 					</>
 				)}
 
-				<SettingsListGroupTitle title={`Partien (${matches.length})`} />
+				<SettingsListGroupTitle
+					title={matches.length === totalMatchCount ? `Partien (${matches.length})` : `Partien (${matches.length} von ${totalMatchCount})`}
+				/>
 				<SettingsList
 					nativeID={ComponentIds.GAME_DETAIL_START_MATCH_BUTTON}
 					label="Neue Partie starten"
@@ -618,11 +719,33 @@ export default function GameTypeDetailScreen() {
 					iconBgColor={PRIMARY_COLOR}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleStartMatch}
-					groupPosition="single"
+					groupPosition={categories.length > 0 ? 'top' : 'single'}
 				/>
+				{categories.length > 0 && (
+					<SettingsList
+						nativeID={ComponentIds.GAME_DETAIL_FILTER_TOGGLE}
+						label="Sortieren & filtern"
+						value={describeSortAndFilters(categories, matchSort, matchFilters)}
+						stackedValue
+						leftIcon={<Ionicons name="funnel-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						rightIcon={<Ionicons name={showFilters ? 'chevron-up' : 'chevron-down'} size={20} color="#9ca3af" />}
+						handleFunction={() => setShowFilters((value) => !value)}
+						groupPosition="bottom"
+					/>
+				)}
+				{categories.length > 0 && showFilters && (
+					<MatchFilterSort
+						categories={categories}
+						filters={matchFilters}
+						onFiltersChange={setMatchFilters}
+						sort={matchSort}
+						onSortChange={setMatchSort}
+					/>
+				)}
 				{matches.length === 0 ? (
 					<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
-						Noch keine Partien gespielt.
+						{totalMatchCount === 0 ? 'Noch keine Partien gespielt.' : 'Keine Partie passt zu den gewählten Filtern.'}
 					</Text>
 				) : (
 					matches.map((match, index) => (
@@ -630,11 +753,7 @@ export default function GameTypeDetailScreen() {
 							key={match.id}
 							nativeID={`${ComponentIds.GAME_DETAIL_MATCH_ROW_PREFIX}${match.id}`}
 							label={formatDate(match.endedAt)}
-							value={
-								match.winnerName
-									? `🏆 ${match.winnerName} (${match.winnerScore} Punkte) · ${match.roundsCount} Runden`
-									: `${match.roundsCount} Runden`
-							}
+							value={describeMatchRow(match, trackScores)}
 							stackedValue
 							leftIcon={<Ionicons name="calendar-outline" size={20} color="#ffffff" />}
 							iconBgColor={PRIMARY_COLOR}

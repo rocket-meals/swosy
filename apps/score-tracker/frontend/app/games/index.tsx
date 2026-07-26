@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
 import type { AppDispatch, RootState } from '../../store/store';
-import { FLIP_SEVEN_PRESET, parseGamePreset } from '../../helpers/GameRules';
+import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, parseGamePreset } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
@@ -84,6 +84,12 @@ export default function GamesScreen() {
 		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
 	}, [dispatch, closeModal]);
 
+	const handleLoadMansions = useCallback(() => {
+		const action = dispatch(addGameTypeFromPreset(MANSIONS_OF_MADNESS_PRESET));
+		closeModal();
+		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
+	}, [dispatch, closeModal]);
+
 	const handleImportPreset = useCallback(
 		(value: string) => {
 			const preset = parseGamePreset(value);
@@ -100,15 +106,26 @@ export default function GamesScreen() {
 			title: 'Spiel laden',
 			children: (
 				<View style={styles.modalContent}>
-					<SettingsListGroupTitle title="Beispiel" />
+					<SettingsListGroupTitle title="Beispiele" />
 					<SettingsList
 						nativeID={ComponentIds.GAMES_IMPORT_LOAD_FLIP_SEVEN_ROW}
 						label="🃏 Flip Seven laden"
-						value="Fertig konfiguriertes Beispielspiel"
+						value="Punktespiel mit Kartenauswahl"
+						stackedValue
 						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleLoadFlipSeven}
-						groupPosition="single"
+						groupPosition="top"
+					/>
+					<SettingsList
+						nativeID={ComponentIds.GAMES_IMPORT_LOAD_MANSIONS_ROW}
+						label="🏰 Villen des Wahnsinns laden"
+						value="Ohne Punkte - mit Start-/Endzeit, Dauer, Karte, Status, Notiz und Wahnsinn je Spieler"
+						stackedValue
+						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleLoadMansions}
+						groupPosition="bottom"
 					/>
 					<SettingsListGroupTitle title="Eigenes Spiel importieren" />
 					<SettingsListTextInput
@@ -129,7 +146,7 @@ export default function GamesScreen() {
 				</View>
 			),
 		});
-	}, [showModal, handleLoadFlipSeven, handleImportPreset]);
+	}, [showModal, handleLoadFlipSeven, handleLoadMansions, handleImportPreset]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({

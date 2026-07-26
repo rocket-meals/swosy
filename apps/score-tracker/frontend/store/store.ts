@@ -80,6 +80,9 @@ store.subscribe(() => {
 				status: game.status,
 				currentRoundIndex: game.currentRoundIndex,
 				gameTypeId: game.gameTypeId,
+				playerOrderState: game.playerOrderState,
+				categoryValues: game.categoryValues,
+				playerCategoryValues: game.playerCategoryValues,
 			});
 			_gameTimer = null;
 		});

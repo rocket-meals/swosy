@@ -33,6 +33,8 @@ import {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	setCategoryValue,
+	setPlayerCategoryValue,
 	movePlayer,
 	removePlayer,
 	setScore,
@@ -58,7 +60,10 @@ import { logDebug } from '../helpers/DebugLogger';
 import { generateId } from '../helpers/RandomHelper';
 import GameTypeIcon from '../components/GameTypeIcon';
 import CardScoreEntryModal from '../components/CardScoreEntryModal';
+import CategoryValueRows from '../components/CategoryValueRows';
 import { computeNextStartingPlayerIndex } from '../helpers/GameRules';
+import type { GameCategory } from '../helpers/GameCategories';
+import { categoriesForScope, resolveCategoryValues, summarizeCategoryValues } from '../helpers/GameCategories';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -222,6 +227,53 @@ function ScoreInputContent({
 	);
 }
 
+// ─── Custom category sections (see helpers/GameCategories) ────────────────────
+//
+// Both sections subscribe to the store themselves so their rows update live -
+// the player one is rendered inside a modal, where a closure-captured value
+// would otherwise keep showing whatever was recorded at open-time.
+
+function MatchCategorySection({ categories }: Readonly<{ categories: GameCategory[] }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const values = useSelector((state: RootState) => state.game.categoryValues);
+	const matchCategories = useMemo(() => categoriesForScope(categories, 'match'), [categories]);
+	const resolved = useMemo(() => resolveCategoryValues(categories, values), [categories, values]);
+
+	if (matchCategories.length === 0) return null;
+
+	return (
+		<View style={styles.categorySection}>
+			<SettingsListGroupTitle title="Spielinfos" />
+			<CategoryValueRows
+				categories={matchCategories}
+				values={resolved}
+				allCategories={categories}
+				onChange={(categoryId, value) => dispatch(setCategoryValue({ categoryId, value }))}
+			/>
+		</View>
+	);
+}
+
+function PlayerCategorySection({ playerId, categories }: Readonly<{ playerId: string; categories: GameCategory[] }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const values = useSelector((state: RootState) => state.game.playerCategoryValues?.[playerId]);
+	const playerCategories = useMemo(() => categoriesForScope(categories, 'player'), [categories]);
+	const resolved = useMemo(() => resolveCategoryValues(categories, values), [categories, values]);
+
+	if (playerCategories.length === 0) return null;
+
+	return (
+		<View style={styles.modalContent}>
+			<CategoryValueRows
+				categories={playerCategories}
+				values={resolved}
+				allCategories={categories}
+				onChange={(categoryId, value) => dispatch(setPlayerCategoryValue({ playerId, categoryId, value }))}
+			/>
+		</View>
+	);
+}
+
 // ─── Player score row (active game, scoreboard view) ──────────────────────────
 //
 // Single column: full screen width, so the shared SettingsListAvatar row
@@ -240,7 +292,8 @@ const MISSING_SCORE_BORDER = 'rgba(255,255,255,0.85)';
 function PlayerTile({
 	playerId,
 	name,
-	score,
+	scoreLabel,
+	compactValue,
 	color,
 	avatarConfig,
 	isLeader,
@@ -251,7 +304,10 @@ function PlayerTile({
 }: Readonly<{
 	playerId: string;
 	name: string;
-	score: number;
+	/** Either the player's total score, or - for games without points - a summary of their recorded categories. */
+	scoreLabel: string;
+	/** Renders `scoreLabel` in a smaller font, for the multi-word category summary. */
+	compactValue: boolean;
 	color: string;
 	avatarConfig?: AvatarConfig;
 	isLeader: boolean;
@@ -273,7 +329,7 @@ function PlayerTile({
 					config={avatarConfig}
 					onPressOverride={onPress}
 					label={name}
-					value={String(score)}
+					value={scoreLabel}
 					stackedValue
 					previewSize={TILE_AVATAR_SIZE}
 					avatarBackgroundColor="#ffffff"
@@ -281,7 +337,7 @@ function PlayerTile({
 					titleColor={textColor}
 					valueColor={textColor}
 					titleFontSize={20}
-					valueFontSize={26}
+					valueFontSize={compactValue ? 15 : 26}
 					borderColor={hasScore ? undefined : MISSING_SCORE_BORDER}
 					borderWidth={hasScore ? undefined : 2.5}
 					borderStyle="dashed"
@@ -323,7 +379,9 @@ function PlayerTile({
 			<Text style={[styles.verticalTileName, { color: textColor }]} numberOfLines={2} ellipsizeMode="tail">
 				{name}
 			</Text>
-			<Text style={[styles.verticalTileScore, { color: textColor }]}>{score}</Text>
+			<Text style={[styles.verticalTileScore, compactValue && styles.verticalTileScoreCompact, { color: textColor }]} numberOfLines={3}>
+				{scoreLabel}
+			</Text>
 		</TouchableOpacity>
 	);
 }
@@ -706,6 +764,8 @@ export default function GameScreen() {
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const gameTypeId = useSelector((state: RootState) => state.game.gameTypeId);
 	const playerOrderState = useSelector((state: RootState) => state.game.playerOrderState);
+	const categoryValues = useSelector((state: RootState) => state.game.categoryValues);
+	const playerCategoryValues = useSelector((state: RootState) => state.game.playerCategoryValues);
 	const columnsPortrait = useSelector((state: RootState) => state.appSettings.columnsPortrait);
 	const columnsLandscape = useSelector((state: RootState) => state.appSettings.columnsLandscape);
 
@@ -738,6 +798,12 @@ export default function GameScreen() {
 	const maxRounds = selectedGameType?.maxRounds ?? null;
 	const maxScore = selectedGameType?.maxScore ?? null;
 	const scoringMode = selectedGameType?.scoringMode ?? 'highWins';
+	// Custom tracked categories of the selected game (see helpers/GameCategories).
+	// `trackScores: false` games are recorded purely through their player-scope
+	// categories, so the tiles show those instead of a point total.
+	const categories = useMemo<GameCategory[]>(() => selectedGameType?.categories ?? [], [selectedGameType]);
+	const playerCategories = useMemo(() => categoriesForScope(categories, 'player'), [categories]);
+	const trackScores = selectedGameType?.trackScores ?? true;
 
 	// Landscape detection and column count (independently configurable per orientation)
 	const isLandscape = windowWidth > windowHeight;
@@ -760,7 +826,7 @@ export default function GameScreen() {
 	// Find leader. With the default "highWins" scoring the highest total leads;
 	// game types with "lowWins" (e.g. golf-style card games) invert this.
 	const leaderId = useMemo(() => {
-		if (players.length === 0) return null;
+		if (players.length === 0 || !trackScores) return null;
 		const anyScoreEntered = rounds.some((round) => players.some((p) => round.scores[p.id] != null));
 		if (!anyScoreEntered) return null;
 		let bestScore = scoringMode === 'lowWins' ? Infinity : -Infinity;
@@ -777,15 +843,15 @@ export default function GameScreen() {
 		// the plus (matches the previous behavior).
 		if (scoringMode === 'highWins' && bestScore <= 0) return null;
 		return bestId;
-	}, [players, rounds, totals, scoringMode]);
+	}, [players, rounds, totals, scoringMode, trackScores]);
 
 	// A match is over once any player's total reaches the game type's optional
 	// max score - independent of scoringMode (both "first to X" and
 	// "bust at X" games use a target/limit score this way).
 	const matchFinished = useMemo(() => {
-		if (maxScore == null) return false;
+		if (maxScore == null || !trackScores) return false;
 		return players.some((player) => (totals[player.id] ?? 0) >= maxScore);
-	}, [maxScore, players, totals]);
+	}, [maxScore, players, totals, trackScores]);
 
 	const currentRound = rounds[currentRoundIndex] ?? null;
 	const currentRoundNumber = currentRoundIndex + 1;
@@ -871,12 +937,14 @@ export default function GameScreen() {
 				})),
 				finalScores: Object.fromEntries(players.map((p) => [p.id, totals[p.id] ?? 0])),
 				gameTypeId,
+				categoryValues,
+				playerCategoryValues,
 			};
 			dispatch(archiveGame(entry));
 		}
 		dispatch(resetAll());
 		closeSettingsModal();
-	}, [players, rounds, totals, gameTypeId, dispatch, closeSettingsModal]);
+	}, [players, rounds, totals, gameTypeId, categoryValues, playerCategoryValues, dispatch, closeSettingsModal]);
 
 	// ─── Game type selection (setup phase) ───────────────────────────────────
 
@@ -953,25 +1021,48 @@ export default function GameScreen() {
 
 	// ─── Score entry ──────────────────────────────────────────────────────────
 
+	// Tapping a player opens their round entry: the score (a plain number or the
+	// game type's card picker) and/or the player-scope categories. A game with
+	// `trackScores: false` skips the score part entirely and is recorded through
+	// its categories alone.
 	const handleTilePress = useCallback(
 		(playerId: string) => {
 			if (!currentRound) return;
+			const player = players.find((p) => p.id === playerId);
+			const categorySection = playerCategories.length > 0 ? <PlayerCategorySection playerId={playerId} categories={categories} /> : null;
+			const title = player ? player.name : 'Eintrag';
+
+			if (!trackScores) {
+				showScoreModal({
+					title,
+					children: categorySection ?? (
+						<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+							Dieses Spiel zählt keine Punkte. Lege im Spiel eine Kategorie für „Jeden Spieler einzeln“ an, um hier etwas zu erfassen.
+						</Text>
+					),
+				});
+				return;
+			}
+
 			const scoreEntryRules = selectedGameType?.rules?.scoreEntry;
 			if (scoreEntryRules) {
 				showScoreModal({
 					title: 'Punkte eingeben',
 					children: (
-						<CardScoreEntryModal
-							items={scoreEntryRules.items}
-							scoreFormula={scoreEntryRules.scoreFormula}
-							bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
-							bonusPoints={scoreEntryRules.bonusPoints}
-							initialSelection={currentRound.cardSelections?.[playerId] ?? []}
-							onSave={(cardIds, score) => {
-								dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));
-								closeScoreModal();
-							}}
-						/>
+						<>
+							<CardScoreEntryModal
+								items={scoreEntryRules.items}
+								scoreFormula={scoreEntryRules.scoreFormula}
+								bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
+								bonusPoints={scoreEntryRules.bonusPoints}
+								initialSelection={currentRound.cardSelections?.[playerId] ?? []}
+								onSave={(cardIds, score) => {
+									dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));
+									closeScoreModal();
+								}}
+							/>
+							{categorySection}
+						</>
 					),
 				});
 				return;
@@ -979,17 +1070,20 @@ export default function GameScreen() {
 			showScoreModal({
 				title: 'Punkte eingeben',
 				children: (
-					<ScoreInputContent
-						initialValue={currentRound.scores[playerId] ?? null}
-						onSave={(value) => {
-							dispatch(setScore({ roundId: currentRound.id, playerId, score: value }));
-							closeScoreModal();
-						}}
-					/>
+					<>
+						<ScoreInputContent
+							initialValue={currentRound.scores[playerId] ?? null}
+							onSave={(value) => {
+								dispatch(setScore({ roundId: currentRound.id, playerId, score: value }));
+								closeScoreModal();
+							}}
+						/>
+						{categorySection}
+					</>
 				),
 			});
 		},
-		[currentRound, selectedGameType, showScoreModal, closeScoreModal, dispatch],
+		[currentRound, players, categories, playerCategories, trackScores, selectedGameType, showScoreModal, closeScoreModal, dispatch, theme],
 	);
 
 	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);
@@ -1062,6 +1156,7 @@ export default function GameScreen() {
 								/>
 							</View>
 						)}
+						<MatchCategorySection categories={categories} />
 						{players.map((player, index) => (
 							<PlayerEditGroup
 								key={player.id}
@@ -1103,21 +1198,26 @@ export default function GameScreen() {
 								</Text>
 							</View>
 						)}
-						{players.map((player) => (
-							<PlayerTile
-								key={player.id}
-								playerId={player.id}
-								name={player.name}
-								score={totals[player.id] ?? 0}
-								color={player.color}
-								avatarConfig={player.avatarConfig}
-								isLeader={player.id === leaderId}
-								isRoundStarter={currentRound?.startingPlayerId === player.id}
-								hasScore={currentRound ? currentRound.scores[player.id] != null : false}
-								onPress={() => handleTilePress(player.id)}
-								tileWidth={tileWidth}
-							/>
-						))}
+						<MatchCategorySection categories={categories} />
+						{players.map((player) => {
+							const summary = summarizeCategoryValues(playerCategories, playerCategoryValues?.[player.id]);
+							return (
+								<PlayerTile
+									key={player.id}
+									playerId={player.id}
+									name={player.name}
+									scoreLabel={trackScores ? String(totals[player.id] ?? 0) : summary || 'Noch nichts erfasst'}
+									compactValue={!trackScores}
+									color={player.color}
+									avatarConfig={player.avatarConfig}
+									isLeader={player.id === leaderId}
+									isRoundStarter={currentRound?.startingPlayerId === player.id}
+									hasScore={trackScores ? currentRound?.scores[player.id] != null : summary !== ''}
+									onPress={() => handleTilePress(player.id)}
+									tileWidth={tileWidth}
+								/>
+							);
+						})}
 					</>
 				)}
 			</ScrollView>
@@ -1245,6 +1345,14 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: '700',
 		marginTop: 2,
+	},
+	verticalTileScoreCompact: {
+		fontSize: 13,
+		fontWeight: '600',
+		textAlign: 'center',
+	},
+	categorySection: {
+		width: '100%',
 	},
 	playerEditGroup: {
 		marginBottom: 4,

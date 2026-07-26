@@ -1,5 +1,6 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { PlayerIdentity } from './PlayerIdentity';
+import type { GameCategoryValues } from './GameCategories';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,6 +48,10 @@ export type GameState = {
 	gameTypeId?: string;
 	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
 	playerOrderState?: number;
+	/** Values of the game type's match-scope categories (see GameCategories), keyed by category id. */
+	categoryValues?: GameCategoryValues;
+	/** Values of the game type's player-scope categories, keyed by player id and then category id. */
+	playerCategoryValues?: Record<string, GameCategoryValues>;
 };
 
 // ─── Storage access ───────────────────────────────────────────────────────────
@@ -65,7 +70,7 @@ export async function saveGameState(state: GameState): Promise<void> {
 }
 
 function emptyGameState(): GameState {
-	return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0 };
+	return { players: [], rounds: [], status: 'setup', currentRoundIndex: 0, categoryValues: {}, playerCategoryValues: {} };
 }
 
 /**
@@ -91,6 +96,8 @@ export async function loadGameState(): Promise<GameState> {
 				currentRoundIndex,
 				gameTypeId: parsed.gameTypeId,
 				playerOrderState: parsed.playerOrderState,
+				categoryValues: parsed.categoryValues ?? {},
+				playerCategoryValues: parsed.playerCategoryValues ?? {},
 			};
 		}
 		return emptyGameState();

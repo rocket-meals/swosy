@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { GameType, ScoringMode } from '../helpers/GameTypesStorage';
 import { DEFAULT_GAME_TYPE_ICON } from '../helpers/GameTypesStorage';
 import type { GamePreset, GameRules, StartingPlayerMode } from '../helpers/GameRules';
+import type { GameCategory, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
 import { generateId } from '../helpers/RandomHelper';
 export type { GameType, ScoringMode };
 
@@ -14,6 +15,21 @@ export type GameTypesSliceState = {
 const initialState: GameTypesSliceState = {
 	gameTypes: [],
 };
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function findCategory(state: GameTypesSliceState, gameTypeId: string, categoryId: string): GameCategory | undefined {
+	const gameType = state.gameTypes.find((g) => g.id === gameTypeId);
+	return gameType?.categories?.find((c) => c.id === categoryId);
+}
+
+/** Starting options of a freshly created `enum` category - the most common win/loss pair. */
+function defaultEnumOptions(): { id: string; label: string }[] {
+	return [
+		{ id: generateId(), label: 'Gewonnen' },
+		{ id: generateId(), label: 'Verloren' },
+	];
+}
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
@@ -40,6 +56,8 @@ const gameTypesSlice = createSlice({
 					maxRounds: null,
 					maxScore: null,
 					rules: null,
+					categories: null,
+					trackScores: true,
 					startingPlayerMode: 'fixed',
 					version: 1,
 					createdAt: Date.now(),
@@ -62,6 +80,8 @@ const gameTypesSlice = createSlice({
 					maxRounds: preset.maxRounds ?? null,
 					maxScore: preset.maxScore ?? null,
 					rules: preset.rules ?? null,
+					categories: preset.categories ?? null,
+					trackScores: preset.trackScores ?? true,
 					startingPlayerMode: preset.startingPlayerMode ?? 'fixed',
 					version: preset.version ?? 1,
 					createdAt: Date.now(),
@@ -128,8 +148,138 @@ const gameTypesSlice = createSlice({
 			gameType.maxRounds = preset.maxRounds ?? null;
 			gameType.maxScore = preset.maxScore ?? null;
 			gameType.rules = preset.rules ?? null;
+			gameType.categories = preset.categories ?? null;
+			gameType.trackScores = preset.trackScores ?? true;
 			gameType.startingPlayerMode = preset.startingPlayerMode ?? 'fixed';
 			gameType.version = preset.version ?? 1;
+		},
+
+		/** Toggle whether players are scored with points at all (see `GameTypeDefinition.trackScores`). */
+		setGameTypeTrackScores(state, action: PayloadAction<{ gameTypeId: string; trackScores: boolean }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.trackScores = action.payload.trackScores;
+		},
+
+		// ─── Custom categories (see helpers/GameCategories) ───────────────────
+
+		/** Append a new category. `enum` categories start with a usable win/loss option pair. */
+		addGameCategory: {
+			reducer(state, action: PayloadAction<{ gameTypeId: string; category: GameCategory }>) {
+				const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+				if (!gameType) return;
+				if (!gameType.categories) gameType.categories = [];
+				gameType.categories.push(action.payload.category);
+			},
+			prepare(params: { gameTypeId: string; name: string; type: GameCategoryType; scope: GameCategoryScope }) {
+				const category: GameCategory = {
+					id: generateId(),
+					name: params.name,
+					type: params.type,
+					scope: params.scope,
+					options: params.type === 'enum' ? defaultEnumOptions() : undefined,
+					computed: null,
+				};
+				return { payload: { gameTypeId: params.gameTypeId, category } };
+			},
+		},
+
+		renameGameCategory(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; name: string }>) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (category) category.name = action.payload.name;
+		},
+
+		/**
+		 * Change a category's value type. Options and a computed-duration link
+		 * only make sense for `enum`/`duration`, so they're seeded or dropped
+		 * along with the switch instead of lingering as dead data.
+		 */
+		setGameCategoryType(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; type: GameCategoryType }>) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (!category) return;
+			category.type = action.payload.type;
+			if (action.payload.type === 'enum') {
+				if (!category.options || category.options.length === 0) category.options = defaultEnumOptions();
+			} else {
+				category.options = undefined;
+			}
+			if (action.payload.type !== 'duration') category.computed = null;
+		},
+
+		setGameCategoryScope(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; scope: GameCategoryScope }>) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (!category) return;
+			category.scope = action.payload.scope;
+			// A computed duration can only reference categories of its own
+			// scope, so a scope change invalidates the link.
+			category.computed = null;
+		},
+
+		/** Set (or clear) the two categories a computed `duration` is derived from. */
+		setGameCategoryComputed(
+			state,
+			action: PayloadAction<{ gameTypeId: string; categoryId: string; computed: { fromCategoryId: string; toCategoryId: string } | null }>,
+		) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (category) category.computed = action.payload.computed;
+		},
+
+		/** Move a category one position up/down in the list. No-op at either edge. */
+		moveGameCategory(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; direction: 'up' | 'down' }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			const categories = gameType?.categories;
+			if (!categories) return;
+			const index = categories.findIndex((c) => c.id === action.payload.categoryId);
+			if (index === -1) return;
+			const targetIndex = action.payload.direction === 'up' ? index - 1 : index + 1;
+			if (targetIndex < 0 || targetIndex >= categories.length) return;
+			const [category] = categories.splice(index, 1);
+			categories.splice(targetIndex, 0, category);
+		},
+
+		/** Delete a category, together with any computed link pointing at it. */
+		removeGameCategory(state, action: PayloadAction<{ gameTypeId: string; categoryId: string }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (!gameType?.categories) return;
+			gameType.categories = gameType.categories.filter((c) => c.id !== action.payload.categoryId);
+			for (const category of gameType.categories) {
+				const computed = category.computed;
+				if (computed && (computed.fromCategoryId === action.payload.categoryId || computed.toCategoryId === action.payload.categoryId)) {
+					category.computed = null;
+				}
+			}
+		},
+
+		addGameCategoryOption: {
+			reducer(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; option: { id: string; label: string } }>) {
+				const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+				if (!category) return;
+				if (!category.options) category.options = [];
+				category.options.push(action.payload.option);
+			},
+			prepare(params: { gameTypeId: string; categoryId: string; label: string }) {
+				return {
+					payload: {
+						gameTypeId: params.gameTypeId,
+						categoryId: params.categoryId,
+						option: { id: generateId(), label: params.label },
+					},
+				};
+			},
+		},
+
+		renameGameCategoryOption(
+			state,
+			action: PayloadAction<{ gameTypeId: string; categoryId: string; optionId: string; label: string }>,
+		) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			const option = category?.options?.find((o) => o.id === action.payload.optionId);
+			if (option) option.label = action.payload.label;
+		},
+
+		removeGameCategoryOption(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; optionId: string }>) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (!category?.options) return;
+			category.options = category.options.filter((o) => o.id !== action.payload.optionId);
 		},
 
 		removeGameType(state, action: PayloadAction<string>) {
@@ -150,6 +300,17 @@ export const {
 	setGameTypeRules,
 	setGameTypeStartingPlayerMode,
 	setGameTypeVersion,
+	setGameTypeTrackScores,
+	addGameCategory,
+	renameGameCategory,
+	setGameCategoryType,
+	setGameCategoryScope,
+	setGameCategoryComputed,
+	moveGameCategory,
+	removeGameCategory,
+	addGameCategoryOption,
+	renameGameCategoryOption,
+	removeGameCategoryOption,
 	updateGameTypeFromPreset,
 	removeGameType,
 } = gameTypesSlice.actions;

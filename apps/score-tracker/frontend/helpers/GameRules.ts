@@ -1,4 +1,6 @@
 import type { ScoringMode } from './GameTypesStorage';
+import type { GameCategory } from './GameCategories';
+import { validateGameCategories } from './GameCategories';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 //
@@ -79,6 +81,20 @@ export type GameTypeDefinition = {
 	maxScore?: number | null;
 	/** Custom score-entry rules (e.g. a card picker instead of a plain number). undefined/null = plain numeric entry. */
 	rules?: GameRules | null;
+	/**
+	 * Extra things tracked about a match beyond the points - e.g. start/end
+	 * time, the played map, the outcome, a note (see helpers/GameCategories).
+	 * undefined/null = nothing extra is tracked.
+	 */
+	categories?: GameCategory[] | null;
+	/**
+	 * Whether players are scored with points at all. undefined/absent defaults
+	 * to `true`. Set to `false` for games that are only tracked through
+	 * player-scope categories (e.g. "gewonnen/verloren" plus "Wahnsinn"
+	 * instead of a number) - the scoreboard then shows those values on the
+	 * player tiles in place of a total score.
+	 */
+	trackScores?: boolean;
 	/**
 	 * Content version of this game definition (distinct from `rules.version`,
 	 * the fixed rule-schema version). Bump this yourself when sharing an
@@ -406,6 +422,7 @@ function isValidGamePresetScalarFields(
 	maxScore: number | null | undefined;
 	version: number | undefined;
 	startingPlayerMode: StartingPlayerMode | undefined;
+	trackScores: boolean | undefined;
 } {
 	if (typeof v.name !== 'string' || v.name.trim() === '') return false;
 	if (typeof v.icon !== 'string' || v.icon === '') return false;
@@ -414,6 +431,7 @@ function isValidGamePresetScalarFields(
 	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return false;
 	if (v.version !== undefined && typeof v.version !== 'number') return false;
 	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return false;
+	if (v.trackScores !== undefined && typeof v.trackScores !== 'boolean') return false;
 	return true;
 }
 
@@ -439,6 +457,12 @@ export function parseGamePreset(text: string): GamePreset | null {
 		if (!rules) return null;
 	}
 
+	let categories: GameCategory[] | null = null;
+	if (v.categories !== undefined && v.categories !== null) {
+		categories = validateGameCategories(v.categories);
+		if (!categories) return null;
+	}
+
 	return {
 		name: v.name,
 		icon: v.icon,
@@ -446,6 +470,8 @@ export function parseGamePreset(text: string): GamePreset | null {
 		maxRounds: (v.maxRounds as number | null | undefined) ?? null,
 		maxScore: (v.maxScore as number | null | undefined) ?? null,
 		rules,
+		categories,
+		trackScores: v.trackScores ?? true,
 		startingPlayerMode: (v.startingPlayerMode as StartingPlayerMode | undefined) ?? 'fixed',
 		version: (v.version as number | undefined) ?? 1,
 	};
@@ -505,6 +531,8 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 	maxRounds: null,
 	maxScore: 200,
 	version: 1,
+	trackScores: true,
+	categories: null,
 	rules: {
 		version: 1,
 		scoreEntry: {
@@ -514,4 +542,60 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 			bonusPoints: 15,
 		},
 	},
+};
+
+// ─── Built-in "Villen des Wahnsinns" preset ───────────────────────────────────
+//
+// A co-op game that isn't scored with points at all (`trackScores: false`):
+// what's worth recording is when it was played, how long it took, which map
+// was chosen, how it ended - and per investigator whether they went insane.
+// Purely an example of what custom categories can express (see
+// helpers/GameCategories.ts); nothing here is specific to that game in code.
+
+export const MANSIONS_OF_MADNESS_PRESET: GamePreset = {
+	name: 'Villen des Wahnsinns',
+	icon: '🏰',
+	scoringMode: 'highWins',
+	maxRounds: null,
+	maxScore: null,
+	version: 1,
+	rules: null,
+	trackScores: false,
+	categories: [
+		{ id: 'date', name: 'Spieltag', type: 'date', scope: 'match' },
+		{ id: 'startTime', name: 'Startzeit', type: 'time', scope: 'match' },
+		{ id: 'endTime', name: 'Endzeit', type: 'time', scope: 'match' },
+		{
+			id: 'duration',
+			name: 'Dauer',
+			type: 'duration',
+			scope: 'match',
+			computed: { fromCategoryId: 'startTime', toCategoryId: 'endTime' },
+		},
+		{ id: 'map', name: 'Gespielte Karte', type: 'text', scope: 'match' },
+		{
+			id: 'status',
+			name: 'Spielstatus',
+			type: 'enum',
+			scope: 'match',
+			options: [
+				{ id: 'won', label: 'Gewonnen' },
+				{ id: 'lost', label: 'Verloren' },
+				{ id: 'aborted', label: 'Abgebrochen' },
+			],
+		},
+		{ id: 'note', name: 'Notiz', type: 'text', scope: 'match' },
+		{
+			id: 'playerStatus',
+			name: 'Ergebnis',
+			type: 'enum',
+			scope: 'player',
+			options: [
+				{ id: 'survived', label: 'Überlebt' },
+				{ id: 'dead', label: 'Gestorben' },
+			],
+		},
+		{ id: 'insanity', name: 'Wahnsinn', type: 'boolean', scope: 'player' },
+		{ id: 'insanityNote', name: 'Wahnsinn (Notiz)', type: 'text', scope: 'player' },
+	],
 };

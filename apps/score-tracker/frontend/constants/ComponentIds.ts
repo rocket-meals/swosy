@@ -92,6 +92,32 @@ export const ComponentIds = {
 	GAME_DETAIL_STARTING_PLAYER_ROW: 'game-detail-starting-player-row',
 	GAME_STARTING_PLAYER_MODE_ROW_PREFIX: 'game-starting-player-mode-row-',
 
+	// Custom categories: value entry (game screen) and definition (game detail)
+	CATEGORY_VALUE_ROW_PREFIX: 'category-value-row-',
+	CATEGORY_VALUE_ENUM_OPTION_PREFIX: 'category-value-enum-option-',
+	GAME_CATEGORY_ROW_PREFIX: 'game-category-row-',
+	GAME_CATEGORY_MOVE_UP_PREFIX: 'game-category-move-up-',
+	GAME_CATEGORY_MOVE_DOWN_PREFIX: 'game-category-move-down-',
+	GAME_CATEGORY_ADD_ROW: 'game-category-add-row',
+	GAME_CATEGORY_NAME_ROW: 'game-category-name-row',
+	GAME_CATEGORY_TYPE_ROW_PREFIX: 'game-category-type-row-',
+	GAME_CATEGORY_SCOPE_ROW_PREFIX: 'game-category-scope-row-',
+	GAME_CATEGORY_ADD_OPTION_ROW: 'game-category-add-option-row',
+	GAME_CATEGORY_COMPUTED_TOGGLE: 'game-category-computed-toggle',
+	GAME_CATEGORY_DELETE_BUTTON: 'game-category-delete-button',
+	GAME_DETAIL_TRACK_SCORES_ROW: 'game-detail-track-scores-row',
+	GAMES_IMPORT_LOAD_MANSIONS_ROW: 'games-import-load-mansions-row',
+
+	// Match list: sorting and filtering (game detail screen)
+	GAME_DETAIL_FILTER_TOGGLE: 'game-detail-filter-toggle',
+	GAME_DETAIL_FILTER_RESET: 'game-detail-filter-reset',
+	GAME_DETAIL_SORT_CHIP_PREFIX: 'game-detail-sort-chip-',
+	GAME_DETAIL_SORT_DIRECTION_BUTTON: 'game-detail-sort-direction-button',
+	GAME_DETAIL_FILTER_CHIP_PREFIX: 'game-detail-filter-chip-',
+	GAME_DETAIL_FILTER_TEXT_INPUT_PREFIX: 'game-detail-filter-text-input-',
+	GAME_DETAIL_FILTER_MIN_PREFIX: 'game-detail-filter-min-',
+	GAME_DETAIL_FILTER_MAX_PREFIX: 'game-detail-filter-max-',
+
 	// Timer screen
 	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',
 	TIMER_RESET_BUTTON: 'timer-reset-button',
