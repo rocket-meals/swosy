@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-24T15:25:19.784Z",
+  "report_timestamp": "2026-07-26T22:56:05.405Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1.5,
-          "maximum": 102,
-          "average": 1.5363232023721276,
-          "amountSavedValuesForKeys": 4145,
+          "maximum": 104,
+          "average": 1.5361623616236162,
+          "amountSavedValuesForKeys": 4163,
           "amountKeys": 29
         },
         "invertedParameterToMethods": {
@@ -21,51 +21,51 @@
         },
         "invertedParameterToClasses": {
           "median": 1,
-          "maximum": 102,
-          "average": 1.5506921062476617,
-          "amountSavedValuesForKeys": 4145,
-          "amountKeys": 28
+          "maximum": 104,
+          "average": 1.5504655493482309,
+          "amountSavedValuesForKeys": 4163,
+          "amountKeys": 30
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4533,
-        "detection_time_ms": 78,
+        "ast_generation_time_ms": 4613,
+        "detection_time_ms": 82,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 124.66,
-          "os_memory_free": 14887407616,
-          "os_memory_total": 16766418944,
+          "os_uptime": 132.48,
+          "os_memory_free": 14856413184,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 0,
-    "amount_files_with_data_clumps": 0,
+    "amount_classes_or_interfaces_with_data_clumps": 2,
+    "amount_files_with_data_clumps": 2,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 2,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 0
+    "amount_data_clumps": 2
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "a65fcf444c07dbaa3d0cc5e646bd4ee34075673b",
-    "project_commit_hash": "a65fcf444c07dbaa3d0cc5e646bd4ee34075673b",
+    "project_version": "d3efb36e1330e13bf21dba58fe0a277da5803648",
+    "project_commit_hash": "d3efb36e1330e13bf21dba58fe0a277da5803648",
     "project_tag": null,
-    "project_commit_date": "1784906603",
+    "project_commit_date": "1785106441",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 580,
-    "number_of_classes_or_interfaces": 1234,
+    "number_of_files": 581,
+    "number_of_classes_or_interfaces": 1246,
     "number_of_methods": 1468,
-    "number_of_data_fields": 4145,
+    "number_of_data_fields": 4163,
     "number_of_method_parameters": 1621
   },
   "detector": {
@@ -90,5 +90,200 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {}
+  "data_clumps": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValues": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValues",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry",
+      "from_class_or_interface_name": "GameHistoryEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
+      "to_class_or_interface_name": "GameState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/gameTypeId": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/gameTypeId",
+          "name": "gameTypeId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/gameTypeId",
+            "name": "gameTypeId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 2,
+              "endLine": 48,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 22
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/categoryValues": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/categoryValues",
+          "name": "categoryValues",
+          "type": "GameCategoryValues",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/categoryValues",
+            "name": "categoryValues",
+            "type": "GameCategoryValues",
+            "modifiers": [],
+            "position": {
+              "startLine": 52,
+              "startColumn": 2,
+              "endLine": 52,
+              "endColumn": 38
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 38
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/playerCategoryValues": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/playerCategoryValues",
+          "name": "playerCategoryValues",
+          "type": "Record<string, GameCategoryValues>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerCategoryValues",
+            "name": "playerCategoryValues",
+            "type": "Record<string, GameCategoryValues>",
+            "modifiers": [],
+            "position": {
+              "startLine": 54,
+              "startColumn": 2,
+              "endLine": 54,
+              "endColumn": 60
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 60
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-gameTypeIdcategoryValuesplayerCategoryValues": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-gameTypeIdcategoryValuesplayerCategoryValues",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
+      "from_class_or_interface_name": "GameState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry",
+      "to_class_or_interface_name": "GameHistoryEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/gameTypeId": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/gameTypeId",
+          "name": "gameTypeId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/gameTypeId",
+            "name": "gameTypeId",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 2,
+            "endLine": 48,
+            "endColumn": 22
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/categoryValues": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/categoryValues",
+          "name": "categoryValues",
+          "type": "GameCategoryValues",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/categoryValues",
+            "name": "categoryValues",
+            "type": "GameCategoryValues",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 38
+            }
+          },
+          "position": {
+            "startLine": 52,
+            "startColumn": 2,
+            "endLine": 52,
+            "endColumn": 38
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerCategoryValues": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/playerCategoryValues",
+          "name": "playerCategoryValues",
+          "type": "Record<string, GameCategoryValues>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/playerCategoryValues",
+            "name": "playerCategoryValues",
+            "type": "Record<string, GameCategoryValues>",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 60
+            }
+          },
+          "position": {
+            "startLine": 54,
+            "startColumn": 2,
+            "endLine": 54,
+            "endColumn": 60
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    }
+  }
 }
