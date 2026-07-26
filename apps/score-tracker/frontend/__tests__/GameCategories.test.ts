@@ -16,7 +16,8 @@ import {
 	parseTimeToMinutes,
 	resolveCategoryValues,
 	summarizeCategoryValues,
-	validateGameCategories,
+	cloneGameCategories,
+	normalizeGameCategories,
 } from '../helpers/GameCategories';
 import { MANSIONS_OF_MADNESS_PRESET, parseGamePreset } from '../helpers/GameRules';
 
@@ -229,18 +230,100 @@ describe('matchPassesFilters', () => {
 	});
 });
 
-describe('validateGameCategories', () => {
-	it('accepts a well-formed list', () => {
-		expect(validateGameCategories([startTime, duration, status])).not.toBeNull();
+describe('normalizeGameCategories', () => {
+	it('accepts a well-formed list and keeps every id it was given', () => {
+		const normalized = normalizeGameCategories([startTime, duration, status]);
+		expect(normalized?.map((c) => c.id)).toEqual(['start', 'duration', 'status']);
+		expect(normalized?.[2].options?.map((o) => o.id)).toEqual(['won', 'lost']);
+	});
+
+	it('generates ids for categories and options that have none', () => {
+		const normalized = normalizeGameCategories([
+			{ name: 'Notiz', type: 'text', scope: 'match' },
+			{ name: 'Ergebnis', type: 'enum', scope: 'player', options: [{ label: 'Gewonnen' }, { label: 'Verloren' }] },
+		]);
+		expect(normalized).not.toBeNull();
+		const [note0, outcome] = normalized!;
+		expect(note0.id).toBeTruthy();
+		expect(outcome.id).toBeTruthy();
+		expect(note0.id).not.toBe(outcome.id);
+		const optionIds = outcome.options!.map((o) => o.id);
+		expect(optionIds.every((id) => typeof id === 'string' && id !== '')).toBe(true);
+		expect(new Set(optionIds).size).toBe(2);
+	});
+
+	it('resolves a computed duration that references its sources by name', () => {
+		const normalized = normalizeGameCategories([
+			{ name: 'Startzeit', type: 'time', scope: 'match' },
+			{ name: 'Endzeit', type: 'time', scope: 'match' },
+			{ name: 'Dauer', type: 'duration', scope: 'match', computed: { fromCategoryId: 'Startzeit', toCategoryId: 'Endzeit' } },
+		]);
+		const [from, to, computed] = normalized!;
+		expect(computed.computed).toEqual({ fromCategoryId: from.id, toCategoryId: to.id });
+	});
+
+	it('drops a computed link that points at nothing instead of failing the import', () => {
+		const normalized = normalizeGameCategories([
+			{ id: 'd', name: 'Dauer', type: 'duration', scope: 'match', computed: { fromCategoryId: 'weg', toCategoryId: 'auch-weg' } },
+		]);
+		expect(normalized?.[0].computed).toBeNull();
 	});
 
 	it('rejects malformed entries', () => {
-		expect(validateGameCategories('nope')).toBeNull();
-		expect(validateGameCategories([{ id: 'x', name: 'X', type: 'unknown', scope: 'match' }])).toBeNull();
-		expect(validateGameCategories([{ id: 'x', name: 'X', type: 'text', scope: 'nowhere' }])).toBeNull();
-		// enum without options, and duplicate ids
-		expect(validateGameCategories([{ id: 'x', name: 'X', type: 'enum', scope: 'match' }])).toBeNull();
-		expect(validateGameCategories([startTime, { ...endTime, id: startTime.id }])).toBeNull();
+		expect(normalizeGameCategories('nope')).toBeNull();
+		expect(normalizeGameCategories([{ id: 'x', name: 'X', type: 'unknown', scope: 'match' }])).toBeNull();
+		expect(normalizeGameCategories([{ id: 'x', name: 'X', type: 'text', scope: 'nowhere' }])).toBeNull();
+		// enum without anything to select, and duplicate explicit ids
+		expect(normalizeGameCategories([{ id: 'x', name: 'X', type: 'enum', scope: 'match' }])).toBeNull();
+		expect(normalizeGameCategories([startTime, { ...endTime, id: startTime.id }])).toBeNull();
+	});
+});
+
+describe('cloneGameCategories', () => {
+	it('copies nested options so two game types never share them', () => {
+		const clone = cloneGameCategories([status])!;
+		expect(clone[0]).not.toBe(status);
+		expect(clone[0].options![0]).not.toBe(status.options![0]);
+		expect(clone[0].options![0].id).toBe(status.options![0].id);
+		clone[0].options![0].label = 'Geschafft';
+		expect(status.options![0].label).toBe('Gewonnen');
+	});
+});
+
+// The whole point of storing ids: a match records `{ status: 'won' }` and the
+// label is resolved from the game type at display time - so renaming a category
+// or an option rewrites what past matches show, without rewriting their data.
+describe('id-based storage', () => {
+	it('reflects a renamed option in an already recorded value', () => {
+		const recorded = { status: 'won' };
+		expect(formatCategoryValue(status, recorded.status)).toBe('Gewonnen');
+
+		const renamed: GameCategory = {
+			...status,
+			name: 'Ausgang',
+			options: [
+				{ id: 'won', label: 'Erfolgreich geflohen' },
+				{ id: 'lost', label: 'Verloren' },
+			],
+		};
+		// Same stored value, new label - nothing about the match had to change.
+		expect(formatCategoryValue(renamed, recorded.status)).toBe('Erfolgreich geflohen');
+		expect(summarizeCategoryValues([renamed], recorded)).toBe('Ausgang: Erfolgreich geflohen');
+	});
+
+	it('keeps filtering and sorting working after a rename', () => {
+		const renamed: GameCategory = { ...status, options: [{ id: 'won', label: 'Sieg' }, { id: 'lost', label: 'Pleite' }] };
+		expect(categoryValuePassesFilter(renamed, 'won', { kind: 'enum', optionIds: ['won'] })).toBe(true);
+		expect(compareCategoryValues(renamed, 'won', 'lost')).toBeLessThan(0);
+	});
+
+	it('shows a value whose option was deleted as "not recorded" without losing the stored id', () => {
+		const recorded = { status: 'won' };
+		const withoutWon: GameCategory = { ...status, options: [{ id: 'lost', label: 'Verloren' }] };
+		expect(formatCategoryValue(withoutWon, recorded.status)).toBe('—');
+		// The match still holds the id, so re-adding the option restores the display.
+		expect(recorded.status).toBe('won');
+		expect(formatCategoryValue(status, recorded.status)).toBe('Gewonnen');
 	});
 });
 

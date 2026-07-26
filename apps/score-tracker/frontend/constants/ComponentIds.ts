@@ -105,6 +105,7 @@ export const ComponentIds = {
 	GAME_CATEGORY_ADD_OPTION_ROW: 'game-category-add-option-row',
 	GAME_CATEGORY_COMPUTED_TOGGLE: 'game-category-computed-toggle',
 	GAME_CATEGORY_DELETE_BUTTON: 'game-category-delete-button',
+	GAME_CATEGORY_ID_ROW: 'game-category-id-row',
 	GAME_DETAIL_TRACK_SCORES_ROW: 'game-detail-track-scores-row',
 	GAMES_IMPORT_LOAD_MANSIONS_ROW: 'games-import-load-mansions-row',
 

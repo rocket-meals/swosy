@@ -3,6 +3,7 @@ import type { GameType, ScoringMode } from '../helpers/GameTypesStorage';
 import { DEFAULT_GAME_TYPE_ICON } from '../helpers/GameTypesStorage';
 import type { GamePreset, GameRules, StartingPlayerMode } from '../helpers/GameRules';
 import type { GameCategory, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
+import { cloneGameCategories } from '../helpers/GameCategories';
 import { generateId } from '../helpers/RandomHelper';
 export type { GameType, ScoringMode };
 
@@ -80,7 +81,10 @@ const gameTypesSlice = createSlice({
 					maxRounds: preset.maxRounds ?? null,
 					maxScore: preset.maxScore ?? null,
 					rules: preset.rules ?? null,
-					categories: preset.categories ?? null,
+					// Deep copy: a preset can be a shared module-level constant
+					// (or be imported twice), and each game type must own its
+					// categories - their ids are what recorded matches point at.
+					categories: cloneGameCategories(preset.categories),
 					trackScores: preset.trackScores ?? true,
 					startingPlayerMode: preset.startingPlayerMode ?? 'fixed',
 					version: preset.version ?? 1,
@@ -148,7 +152,7 @@ const gameTypesSlice = createSlice({
 			gameType.maxRounds = preset.maxRounds ?? null;
 			gameType.maxScore = preset.maxScore ?? null;
 			gameType.rules = preset.rules ?? null;
-			gameType.categories = preset.categories ?? null;
+			gameType.categories = cloneGameCategories(preset.categories);
 			gameType.trackScores = preset.trackScores ?? true;
 			gameType.startingPlayerMode = preset.startingPlayerMode ?? 'fixed';
 			gameType.version = preset.version ?? 1;
@@ -189,18 +193,18 @@ const gameTypesSlice = createSlice({
 		},
 
 		/**
-		 * Change a category's value type. Options and a computed-duration link
-		 * only make sense for `enum`/`duration`, so they're seeded or dropped
-		 * along with the switch instead of lingering as dead data.
+		 * Change a category's value type. Switching *to* `enum` seeds a usable
+		 * option pair; switching away keeps the existing options untouched, so
+		 * their ids - and with them every already recorded match value - survive
+		 * a round trip through another type. A computed-duration link only means
+		 * anything for `duration` and is dropped otherwise.
 		 */
 		setGameCategoryType(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; type: GameCategoryType }>) {
 			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
 			if (!category) return;
 			category.type = action.payload.type;
-			if (action.payload.type === 'enum') {
-				if (!category.options || category.options.length === 0) category.options = defaultEnumOptions();
-			} else {
-				category.options = undefined;
+			if (action.payload.type === 'enum' && (!category.options || category.options.length === 0)) {
+				category.options = defaultEnumOptions();
 			}
 			if (action.payload.type !== 'duration') category.computed = null;
 		},

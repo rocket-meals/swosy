@@ -13,6 +13,8 @@
 // instead of a number, each player gets e.g. "gewonnen/verloren" plus
 // "Wahnsinn: ja/nein" and a note.
 
+import { generateId } from './RandomHelper';
+
 /** Value types a category can hold. */
 export type GameCategoryType = 'enum' | 'number' | 'date' | 'time' | 'duration' | 'text' | 'boolean';
 
@@ -432,17 +434,19 @@ export const DEFAULT_MATCH_SORT: MatchSort = { categoryId: null, direction: 'des
 
 // ─── Validation (for import) ──────────────────────────────────────────────────
 
-function isGameCategoryOption(value: unknown): value is GameCategoryOption {
+function isValidOptionShape(value: unknown): boolean {
 	if (typeof value !== 'object' || value === null) return false;
 	const v = value as Record<string, unknown>;
-	return typeof v.id === 'string' && v.id !== '' && typeof v.label === 'string';
+	if (typeof v.label !== 'string') return false;
+	return v.id === undefined || (typeof v.id === 'string' && v.id !== '');
 }
 
 function hasValidEnumOptions(v: Record<string, unknown>): boolean {
-	if (v.type !== 'enum') return v.options === undefined || v.options === null || (Array.isArray(v.options) && v.options.every(isGameCategoryOption));
-	if (!Array.isArray(v.options) || v.options.length === 0 || !v.options.every(isGameCategoryOption)) return false;
-	const ids = new Set((v.options as GameCategoryOption[]).map((o) => o.id));
-	return ids.size === v.options.length;
+	if (v.type !== 'enum') return v.options === undefined || v.options === null || (Array.isArray(v.options) && v.options.every(isValidOptionShape));
+	// An enum with nothing to choose from could never hold a value.
+	if (!Array.isArray(v.options) || v.options.length === 0 || !v.options.every(isValidOptionShape)) return false;
+	const ids = (v.options as { id?: string }[]).map((o) => o.id).filter((id): id is string => typeof id === 'string');
+	return new Set(ids).size === ids.length;
 }
 
 function hasValidComputed(v: Record<string, unknown>): boolean {
@@ -453,10 +457,11 @@ function hasValidComputed(v: Record<string, unknown>): boolean {
 	return typeof computed.fromCategoryId === 'string' && typeof computed.toCategoryId === 'string';
 }
 
-function isGameCategory(value: unknown): value is GameCategory {
+/** Shape check of one imported entry. `id`s are optional here - they get generated below. */
+function isValidCategoryShape(value: unknown): boolean {
 	if (typeof value !== 'object' || value === null) return false;
 	const v = value as Record<string, unknown>;
-	if (typeof v.id !== 'string' || v.id === '') return false;
+	if (v.id !== undefined && (typeof v.id !== 'string' || v.id === '')) return false;
 	if (typeof v.name !== 'string') return false;
 	if (typeof v.type !== 'string' || !GAME_CATEGORY_TYPES.includes(v.type as GameCategoryType)) return false;
 	if (typeof v.scope !== 'string' || !GAME_CATEGORY_SCOPES.includes(v.scope as GameCategoryScope)) return false;
@@ -466,15 +471,66 @@ function isGameCategory(value: unknown): value is GameCategory {
 }
 
 /**
- * Validate an imported category list. Returns it typed, or `null` if any entry
- * is malformed or two entries share an id.
+ * A computed duration may reference its two source categories either by id or -
+ * convenient when writing a preset by hand - by name. Returns the resolved id,
+ * or `null` when nothing matches (the link is then dropped rather than failing
+ * the whole import).
  */
-export function validateGameCategories(value: unknown): GameCategory[] | null {
+function resolveCategoryReference(reference: string, categories: GameCategory[]): string | null {
+	if (categories.some((c) => c.id === reference)) return reference;
+	return categories.find((c) => c.name === reference)?.id ?? null;
+}
+
+/**
+ * Validate an imported category list and give every category and enum option a
+ * stable id, generating one wherever the JSON left it out. Ids are what a
+ * played match actually stores (see `GameCategoryValues`), so they must exist
+ * before any value can be recorded - and must never be re-generated for an
+ * entry that already carries one, or previously recorded matches would lose
+ * their reference.
+ *
+ * Returns `null` if an entry is malformed or two of them share an id.
+ */
+export function normalizeGameCategories(value: unknown): GameCategory[] | null {
 	if (!Array.isArray(value)) return null;
-	if (!value.every(isGameCategory)) return null;
-	const ids = new Set((value as GameCategory[]).map((c) => c.id));
-	if (ids.size !== value.length) return null;
-	return value as GameCategory[];
+	if (!value.every(isValidCategoryShape)) return null;
+
+	const raw = value as (Partial<GameCategory> & { name: string; type: GameCategoryType; scope: GameCategoryScope })[];
+	const explicitIds = raw.map((c) => c.id).filter((id): id is string => typeof id === 'string');
+	if (new Set(explicitIds).size !== explicitIds.length) return null;
+
+	const categories: GameCategory[] = raw.map((category) => ({
+		id: category.id ?? generateId(),
+		name: category.name,
+		type: category.type,
+		scope: category.scope,
+		options: category.options?.map((option) => ({ id: option.id ?? generateId(), label: option.label })),
+		computed: category.computed ?? null,
+	}));
+
+	// Resolve the computed links only once every category has its final id.
+	for (const category of categories) {
+		const computed = category.computed;
+		if (!computed) continue;
+		const fromCategoryId = resolveCategoryReference(computed.fromCategoryId, categories);
+		const toCategoryId = resolveCategoryReference(computed.toCategoryId, categories);
+		category.computed = fromCategoryId && toCategoryId ? { fromCategoryId, toCategoryId } : null;
+	}
+
+	return categories;
+}
+
+/**
+ * Deep copy of a category list, so a game type created from a (module-level or
+ * re-imported) preset never shares nested option objects with another one.
+ */
+export function cloneGameCategories(categories: GameCategory[] | null | undefined): GameCategory[] | null {
+	if (!categories) return null;
+	return categories.map((category) => ({
+		...category,
+		options: category.options?.map((option) => ({ ...option })),
+		computed: category.computed ? { ...category.computed } : null,
+	}));
 }
 
 // ─── Convenience ──────────────────────────────────────────────────────────────

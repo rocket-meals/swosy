@@ -39,6 +39,7 @@ import { categoryTypeIcon } from './CategoryValueRows';
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const NEUTRAL_COLOR = '#6b7280';
+const DEBUG_COLOR = '#7c3aed';
 
 function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bottom' | 'single' {
 	if (total === 1) return 'single';
@@ -253,9 +254,11 @@ export function GameCategoryEditorContent({
 	onDeleted,
 }: Readonly<{ gameTypeId: string; categoryId: string; onDeleted: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
+	const { theme } = useTheme();
 	const categories = useSelector(
 		(state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === gameTypeId)?.categories ?? [],
 	);
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const category = categories.find((c) => c.id === categoryId);
 
 	if (!category) return null;
@@ -310,6 +313,39 @@ export function GameCategoryEditorContent({
 			{category.type === 'enum' && <EnumOptionsEditor gameTypeId={gameTypeId} category={category} />}
 			{category.type === 'duration' && (
 				<ComputedDurationEditor gameTypeId={gameTypeId} category={category} categories={categories} />
+			)}
+
+			{/* Recorded matches only ever store ids (category id, and for an
+			    enum the option id), never the texts - so renaming here rewrites
+			    what every past match displays, without touching its data. */}
+			<Text style={[styles.hint, { color: theme.screen.placeholder }]}>
+				Namen und Optionen können jederzeit umbenannt werden: Partien speichern nur die ID der Kategorie (und bei einer Auswahl die ID der
+				Option), der Text kommt immer aus dem Spiel. Wird eine Option gelöscht, verlieren bereits erfasste Partien nur deren Anzeige.
+			</Text>
+
+			{debugMode && (
+				<>
+					<SettingsListGroupTitle title="Debug" />
+					<SettingsList
+						nativeID={ComponentIds.GAME_CATEGORY_ID_ROW}
+						label="ID"
+						value={category.id}
+						leftIcon={<MaterialCommunityIcons name="identifier" size={20} color="#ffffff" />}
+						iconBgColor={DEBUG_COLOR}
+						groupPosition={category.type === 'enum' ? 'top' : 'single'}
+					/>
+					{category.type === 'enum' &&
+						(category.options ?? []).map((option, index, all) => (
+							<SettingsList
+								key={option.id}
+								label={option.label}
+								value={option.id}
+								leftIcon={<MaterialCommunityIcons name="identifier" size={20} color="#ffffff" />}
+								iconBgColor={DEBUG_COLOR}
+								groupPosition={index === all.length - 1 ? 'bottom' : 'middle'}
+							/>
+						))}
+				</>
 			)}
 
 			<SettingsListGroupTitle title="Entfernen" />

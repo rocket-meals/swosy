@@ -1,6 +1,6 @@
 import type { ScoringMode } from './GameTypesStorage';
 import type { GameCategory } from './GameCategories';
-import { validateGameCategories } from './GameCategories';
+import { normalizeGameCategories } from './GameCategories';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 //
@@ -459,7 +459,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 
 	let categories: GameCategory[] | null = null;
 	if (v.categories !== undefined && v.categories !== null) {
-		categories = validateGameCategories(v.categories);
+		categories = normalizeGameCategories(v.categories);
 		if (!categories) return null;
 	}
 
