@@ -1289,11 +1289,12 @@ export default function GameScreen() {
 			playerCount: players.length,
 			previousStartIndex: players.findIndex((p) => p.id === currentRound.startingPlayerId),
 			previousRoundScores: players.map((p) => currentRound.scores[p.id] ?? null),
+			totalScores: players.map((p) => totals[p.id] ?? null),
 			scoringMode,
 			state: playerOrderState ?? selectedGameType?.rules?.playerOrder?.initialState ?? 0,
 		});
 		dispatch(goToNextRound({ startingPlayerId: players[startIndex]?.id, nextOrderState: nextState }));
-	}, [currentRoundIndex, rounds.length, currentRound, selectedGameType, players, scoringMode, playerOrderState, dispatch]);
+	}, [currentRoundIndex, rounds.length, currentRound, selectedGameType, players, totals, scoringMode, playerOrderState, dispatch]);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 

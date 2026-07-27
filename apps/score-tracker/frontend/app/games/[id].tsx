@@ -169,6 +169,14 @@ const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; ico
 		label: 'Schlechtester der letzten Runde beginnt',
 		icon: <MaterialCommunityIcons name="trophy-broken" size={20} color="#ffffff" />,
 	},
+	totalWinner: {
+		label: 'Bester insgesamt beginnt',
+		icon: <Ionicons name="podium-outline" size={20} color="#ffffff" />,
+	},
+	totalLoser: {
+		label: 'Schlechtester insgesamt beginnt',
+		icon: <MaterialCommunityIcons name="podium-bronze" size={20} color="#ffffff" />,
+	},
 	rotate: {
 		label: 'Startspieler rotiert reihum',
 		icon: <Ionicons name="sync-outline" size={20} color="#ffffff" />,
@@ -188,13 +196,20 @@ const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; ico
  */
 function startingPlayerModeLabel(mode: StartingPlayerMode, scoringMode: ScoringMode): string {
 	const lowWins = scoringMode === 'lowWins';
-	if (mode === 'previousWinner') {
-		return `Bester der letzten Runde beginnt (${lowWins ? 'wenigste' : 'meiste'} Punkte)`;
+	const bestPoints = lowWins ? 'wenigste' : 'meiste';
+	const worstPoints = lowWins ? 'meiste' : 'wenigste';
+	switch (mode) {
+		case 'previousWinner':
+			return `Bester der letzten Runde beginnt (${bestPoints} Punkte)`;
+		case 'previousLoser':
+			return `Schlechtester der letzten Runde beginnt (${worstPoints} Punkte)`;
+		case 'totalWinner':
+			return `Bester insgesamt beginnt (${bestPoints} Punkte)`;
+		case 'totalLoser':
+			return `Schlechtester insgesamt beginnt (${worstPoints} Punkte)`;
+		default:
+			return STARTING_PLAYER_MODE_INFO[mode].label;
 	}
-	if (mode === 'previousLoser') {
-		return `Schlechtester der letzten Runde beginnt (${lowWins ? 'meiste' : 'wenigste'} Punkte)`;
-	}
-	return STARTING_PLAYER_MODE_INFO[mode].label;
 }
 
 function StartingPlayerModeSection({ gameTypeId }: Readonly<{ gameTypeId: string }>) {
