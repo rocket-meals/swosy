@@ -6,13 +6,13 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 9 | 9 |
+| 🔧 Maintainability | 10 | 10 |
 
-**Total issues:** 9
+**Total issues:** 10
 
 ---
 
-## 🔧 Maintainability (9/9)
+## 🔧 Maintainability (10/10)
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
@@ -27,8 +27,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L267
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/games/[id].tsx:81
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L81
+  apps/score-tracker/frontend/app/games/[id].tsx:80
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L80
+
+- **Remove this useless assignment to variable "categoryValues".**
+  apps/score-tracker/frontend/app/index.tsx:779
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L779
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/score-tracker/frontend/components/GameCategorySettings.tsx:209
