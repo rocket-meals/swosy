@@ -128,8 +128,8 @@ function ScoringModeSection({ gameTypeId }: Readonly<{ gameTypeId: string }>) {
 	if (!gameType) return null;
 
 	const options: { mode: ScoringMode; label: string; icon: React.ReactNode }[] = [
-		{ mode: 'highWins', label: 'Viele Punkte gewinnen', icon: <Ionicons name="trending-up-outline" size={20} color="#ffffff" /> },
-		{ mode: 'lowWins', label: 'Wenige Punkte gewinnen', icon: <Ionicons name="trending-down-outline" size={20} color="#ffffff" /> },
+		{ mode: 'highWins', label: 'Viele Punkte gewinnen (mehr ist besser)', icon: <Ionicons name="trending-up-outline" size={20} color="#ffffff" /> },
+		{ mode: 'lowWins', label: 'Wenige Punkte gewinnen (weniger ist besser)', icon: <Ionicons name="trending-down-outline" size={20} color="#ffffff" /> },
 	];
 
 	return (
@@ -165,6 +165,10 @@ const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; ico
 		label: 'Bester der letzten Runde beginnt',
 		icon: <Ionicons name="trophy-outline" size={20} color="#ffffff" />,
 	},
+	previousLoser: {
+		label: 'Schlechtester der letzten Runde beginnt',
+		icon: <MaterialCommunityIcons name="trophy-broken" size={20} color="#ffffff" />,
+	},
 	rotate: {
 		label: 'Startspieler rotiert reihum',
 		icon: <Ionicons name="sync-outline" size={20} color="#ffffff" />,
@@ -174,6 +178,24 @@ const STARTING_PLAYER_MODE_INFO: Record<StartingPlayerMode, { label: string; ico
 		icon: <MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />,
 	},
 };
+
+/**
+ * Modus-Label inklusive der Auflösung, was „Bester“/„Schlechtester“ bei der
+ * aktuellen Wertung konkret bedeutet - bei „Wenige Punkte gewinnen“ (z.B.
+ * Odin) ist der Rundenbeste, wer die *wenigsten* Punkte bekommen hat. Wer die
+ * meisten Punkte der letzten Runde beginnen lassen will, wählt dort also
+ * „Schlechtester der letzten Runde beginnt“.
+ */
+function startingPlayerModeLabel(mode: StartingPlayerMode, scoringMode: ScoringMode): string {
+	const lowWins = scoringMode === 'lowWins';
+	if (mode === 'previousWinner') {
+		return `Bester der letzten Runde beginnt (${lowWins ? 'wenigste' : 'meiste'} Punkte)`;
+	}
+	if (mode === 'previousLoser') {
+		return `Schlechtester der letzten Runde beginnt (${lowWins ? 'meiste' : 'wenigste'} Punkte)`;
+	}
+	return STARTING_PLAYER_MODE_INFO[mode].label;
+}
 
 function StartingPlayerModeSection({ gameTypeId }: Readonly<{ gameTypeId: string }>) {
 	const dispatch = useDispatch<AppDispatch>();
@@ -187,7 +209,7 @@ function StartingPlayerModeSection({ gameTypeId }: Readonly<{ gameTypeId: string
 				<SettingsListSelectOptionSingle
 					key={candidate}
 					nativeID={`${ComponentIds.GAME_STARTING_PLAYER_MODE_ROW_PREFIX}${candidate}`}
-					label={STARTING_PLAYER_MODE_INFO[candidate].label}
+					label={startingPlayerModeLabel(candidate, gameType.scoringMode)}
 					leftIcon={STARTING_PLAYER_MODE_INFO[candidate].icon}
 					iconBgColor={PRIMARY_COLOR}
 					isSelected={mode === candidate}
@@ -206,6 +228,10 @@ function StartingPlayerModeSection({ gameTypeId }: Readonly<{ gameTypeId: string
 					groupPosition={getGroupPosition(index, STARTING_PLAYER_MODES.length)}
 				/>
 			))}
+			<Text style={styles.startingPlayerHint}>
+				„Bester“/„Schlechtester“ richtet sich nach der Wertung dieses Spiels - aktuell gewinnt, wer{' '}
+				{gameType.scoringMode === 'lowWins' ? 'wenige' : 'viele'} Punkte hat.
+			</Text>
 			{mode === 'custom' && (
 				<Text style={styles.startingPlayerHint}>
 					Die Regel wird als „playerOrder“ im JSON unter „Code bearbeiten“ gepflegt (Felder: startIndex, nextState, initialState).
@@ -389,7 +415,7 @@ function GameTypeSettingsContent({
 			/>
 			<SettingsList
 				label="Wertung"
-				value={gameType.scoringMode === 'lowWins' ? 'Wenige Punkte gewinnen' : 'Viele Punkte gewinnen'}
+				value={gameType.scoringMode === 'lowWins' ? 'Wenige Punkte gewinnen (weniger ist besser)' : 'Viele Punkte gewinnen (mehr ist besser)'}
 				leftIcon={
 					<Ionicons
 						name={gameType.scoringMode === 'lowWins' ? 'trending-down-outline' : 'trending-up-outline'}
@@ -500,7 +526,7 @@ function GameTypeSettingsContent({
 			<SettingsList
 				nativeID={ComponentIds.GAME_DETAIL_STARTING_PLAYER_ROW}
 				label="Startspieler"
-				value={STARTING_PLAYER_MODE_INFO[gameType.startingPlayerMode ?? 'fixed'].label}
+				value={startingPlayerModeLabel(gameType.startingPlayerMode ?? 'fixed', gameType.scoringMode)}
 				leftIcon={<Ionicons name="person-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
 				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}

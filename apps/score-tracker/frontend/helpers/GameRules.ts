@@ -162,9 +162,15 @@ export function evaluateRuleExpr(expr: RuleExpr, ctx: RuleEvalContext): number {
 // player list (the same order shown/edited in the setup screen), not a
 // player id - reordering players is a separate, purely manual action.
 
-export type StartingPlayerMode = 'fixed' | 'previousWinner' | 'rotate' | 'custom';
+// "previousWinner"/"previousLoser" are relative to the game's `scoringMode`:
+// the round's winner is whoever scored best *according to the Wertung* (with
+// 'lowWins' that's the fewest points), the loser is the other extreme. Both
+// exist because "who begins" is a house rule independent of who is leading -
+// e.g. Odin is scored 'lowWins', yet the player with the most points of the
+// last round starts the next one ('previousLoser').
+export type StartingPlayerMode = 'fixed' | 'previousWinner' | 'previousLoser' | 'rotate' | 'custom';
 
-export const STARTING_PLAYER_MODES: StartingPlayerMode[] = ['fixed', 'previousWinner', 'rotate', 'custom'];
+export const STARTING_PLAYER_MODES: StartingPlayerMode[] = ['fixed', 'previousWinner', 'previousLoser', 'rotate', 'custom'];
 
 export type PlayerOrderRuleExpr =
 	| { op: 'const'; value: number }
@@ -172,6 +178,7 @@ export type PlayerOrderRuleExpr =
 	| { op: 'previousStartIndex' }
 	| { op: 'state' }
 	| { op: 'roundWinnerIndex' }
+	| { op: 'roundLoserIndex' }
 	| { op: 'add'; args: PlayerOrderRuleExpr[] }
 	| { op: 'mod'; a: PlayerOrderRuleExpr; b: PlayerOrderRuleExpr }
 	| { op: 'if'; cond: PlayerOrderRuleExpr; thenExpr: PlayerOrderRuleExpr; elseExpr: PlayerOrderRuleExpr }
@@ -201,19 +208,29 @@ export type PlayerOrderEvalContext = {
 	state: number;
 };
 
-function roundWinnerIndex(scores: (number | null)[], scoringMode: ScoringMode, fallback: number): number {
+function roundExtremeIndex(scores: (number | null)[], preferLower: boolean, fallback: number): number {
 	let bestIndex = -1;
-	let bestScore = scoringMode === 'lowWins' ? Infinity : -Infinity;
+	let bestScore = preferLower ? Infinity : -Infinity;
 	for (let i = 0; i < scores.length; i++) {
 		const score = scores[i];
 		if (score == null) continue;
-		const isBetter = scoringMode === 'lowWins' ? score < bestScore : score > bestScore;
+		const isBetter = preferLower ? score < bestScore : score > bestScore;
 		if (isBetter) {
 			bestScore = score;
 			bestIndex = i;
 		}
 	}
 	return bestIndex >= 0 ? bestIndex : fallback;
+}
+
+/** Seat that scored best in the round *per the Wertung* ('lowWins' → fewest points). */
+function roundWinnerIndex(scores: (number | null)[], scoringMode: ScoringMode, fallback: number): number {
+	return roundExtremeIndex(scores, scoringMode === 'lowWins', fallback);
+}
+
+/** Seat that scored worst in the round *per the Wertung* ('lowWins' → most points). */
+function roundLoserIndex(scores: (number | null)[], scoringMode: ScoringMode, fallback: number): number {
+	return roundExtremeIndex(scores, scoringMode !== 'lowWins', fallback);
 }
 
 export function evaluatePlayerOrderExpr(expr: PlayerOrderRuleExpr, ctx: PlayerOrderEvalContext): number {
@@ -228,6 +245,8 @@ export function evaluatePlayerOrderExpr(expr: PlayerOrderRuleExpr, ctx: PlayerOr
 			return ctx.state;
 		case 'roundWinnerIndex':
 			return roundWinnerIndex(ctx.previousRoundScores, ctx.scoringMode, Math.max(0, ctx.previousStartIndex));
+		case 'roundLoserIndex':
+			return roundLoserIndex(ctx.previousRoundScores, ctx.scoringMode, Math.max(0, ctx.previousStartIndex));
 		case 'add':
 			return expr.args.reduce((sum, arg) => sum + evaluatePlayerOrderExpr(arg, ctx), 0);
 		case 'mod': {
@@ -287,6 +306,11 @@ export function computeNextStartingPlayerIndex(params: {
 		case 'previousWinner':
 			return {
 				startIndex: roundWinnerIndex(previousRoundScores, scoringMode, Math.max(0, previousStartIndex)),
+				nextState: state,
+			};
+		case 'previousLoser':
+			return {
+				startIndex: roundLoserIndex(previousRoundScores, scoringMode, Math.max(0, previousStartIndex)),
 				nextState: state,
 			};
 		case 'custom': {
@@ -358,6 +382,7 @@ function isPlayerOrderRuleExpr(value: unknown): value is PlayerOrderRuleExpr {
 		case 'previousStartIndex':
 		case 'state':
 		case 'roundWinnerIndex':
+		case 'roundLoserIndex':
 			return true;
 		case 'add':
 			return Array.isArray(v.args) && v.args.length > 0 && v.args.every(isPlayerOrderRuleExpr);
