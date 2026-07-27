@@ -105,8 +105,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L219
 
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/score-tracker/frontend/helpers/GameRules.ts:446
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L446
+  apps/score-tracker/frontend/helpers/GameRules.ts:486
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L486
 
 - **Remove this unused import of 'Round'.**
   apps/score-tracker/frontend/store/gameSlice.ts:3
