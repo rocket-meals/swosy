@@ -770,7 +770,9 @@ export default function GameTypeDetailScreen() {
 	const handleStartMatch = useCallback(() => {
 		if (!gameType) return;
 		archiveRunningMatch();
-		dispatch(resetScores());
+		// A new match starts with empty seats - the players are picked in the
+		// setup phase instead of carrying over the previous match's roster.
+		dispatch(resetScores({ clearPlayers: true }));
 		dispatch(setGameType(gameType.id));
 		router.push('/');
 	}, [gameType, archiveRunningMatch, dispatch]);

@@ -584,33 +584,49 @@ function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
 	const players = useSelector((state: RootState) => state.game.players);
 	const friends = useSelector((state: RootState) => state.friends.friends);
 
-	const existingFriendIds = new Set(players.map((p) => p.friendId).filter((id): id is string => !!id));
-	const availableFriends = friends.filter((f) => !existingFriendIds.has(f.id));
+	// Friends are a multi-select: every friend stays listed, tapping toggles
+	// them in/out of the match and the modal stays open - so a fresh match
+	// (which starts with empty seats) can pick its whole group in one go.
+	const playersByFriendId = new Map(
+		players.filter((p) => p.friendId).map((p) => [p.friendId as string, p]),
+	);
 
 	return (
 		<View style={styles.modalContent}>
 			<SettingsListGroupTitle title="Freunde" />
-			{availableFriends.length === 0 ? (
+			{friends.length === 0 ? (
 				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
 					Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
 				</Text>
 			) : (
-				availableFriends.map((friend: Friend, index) => (
-					<SettingsListAvatar
-						key={friend.id}
-						nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
-						config={friend.avatarConfig}
-						avatarBackgroundColor={friend.color}
-						previewSize={PICKER_AVATAR_SIZE}
-						label={friend.name}
-						rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
-						onPressOverride={() => {
-							dispatch(addFriendPlayer(friend));
-							onDone();
-						}}
-						groupPosition={getGroupPosition(index, availableFriends.length)}
-					/>
-				))
+				friends.map((friend: Friend, index) => {
+					const linkedPlayer = playersByFriendId.get(friend.id);
+					return (
+						<SettingsListAvatar
+							key={friend.id}
+							nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
+							config={friend.avatarConfig}
+							avatarBackgroundColor={friend.color}
+							previewSize={PICKER_AVATAR_SIZE}
+							label={friend.name}
+							rightIcon={
+								<Ionicons
+									name={linkedPlayer ? 'checkmark-circle' : 'ellipse-outline'}
+									size={22}
+									color={linkedPlayer ? SUCCESS_COLOR : '#ffffff'}
+								/>
+							}
+							onPressOverride={() => {
+								if (linkedPlayer) {
+									dispatch(removePlayer(linkedPlayer.id));
+								} else {
+									dispatch(addFriendPlayer(friend));
+								}
+							}}
+							groupPosition={getGroupPosition(index, friends.length)}
+						/>
+					);
+				})
 			)}
 			<SettingsListGroupTitle title="Sonstige" />
 			<SettingsList

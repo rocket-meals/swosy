@@ -281,8 +281,15 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = Math.min(state.rounds.length - 1, state.currentRoundIndex + 1);
 		},
 
-		/** Clear all rounds and recorded category values, back to setup (keeps players). */
-		resetScores(state) {
+		/**
+		 * Clear all rounds and recorded category values, back to setup. Players
+		 * are kept by default ("Alle Punkte zurücksetzen" restarts the same
+		 * group); `clearPlayers: true` empties the seats too - a brand-new match
+		 * ("Neue Partie starten") begins with nobody, and the players are picked
+		 * in the setup phase instead of inheriting the previous match's roster.
+		 */
+		resetScores(state, action: PayloadAction<{ clearPlayers?: boolean } | undefined>) {
+			if (action.payload?.clearPlayers) state.players = [];
 			state.rounds = [];
 			state.status = 'setup';
 			state.currentRoundIndex = 0;

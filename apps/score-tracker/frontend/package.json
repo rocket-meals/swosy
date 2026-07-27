@@ -20,7 +20,8 @@
     "resolver": "<rootDir>/jest.resolver.js",
     "moduleNameMapper": {
       "expo-modules-core/src/web/index\\.web": "<rootDir>/emptyModule.js",
-      "expo-modules-core/src/uuid/uuid\\.web": "<rootDir>/emptyModule.js"
+      "expo-modules-core/src/uuid/uuid\\.web": "<rootDir>/emptyModule.js",
+      "^immer$": "<rootDir>/../../../node_modules/immer/dist/cjs/index.js"
     }
   },
   "dependencies": {
