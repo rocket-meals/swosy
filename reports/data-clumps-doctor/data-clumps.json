@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-27T00:12:09.112Z",
+  "report_timestamp": "2026-07-27T00:52:31.643Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 104,
-          "average": 1.5365313653136532,
-          "amountSavedValuesForKeys": 4164,
+          "average": 1.5367023238657322,
+          "amountSavedValuesForKeys": 4166,
           "amountKeys": 29
         },
         "invertedParameterToMethods": {
@@ -20,27 +20,27 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 104,
-          "average": 1.5508379888268156,
-          "amountSavedValuesForKeys": 4164,
+          "average": 1.5510052122114668,
+          "amountSavedValuesForKeys": 4166,
           "amountKeys": 30
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4723,
-        "detection_time_ms": 78,
+        "ast_generation_time_ms": 4224,
+        "detection_time_ms": 79,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 144.11,
-          "os_memory_free": 14945210368,
-          "os_memory_total": 16766423040,
+          "os_uptime": 136.7,
+          "os_memory_free": 14863650816,
+          "os_memory_total": 16765378560,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3399
         }
       }
     },
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "79d529d61f73a3fc68c6cd8ca1bf9529723d7bcd",
-    "project_commit_hash": "79d529d61f73a3fc68c6cd8ca1bf9529723d7bcd",
+    "project_version": "cfcdf6fba8939ffcdadd651896236e7dcba894fe",
+    "project_commit_hash": "cfcdf6fba8939ffcdadd651896236e7dcba894fe",
     "project_tag": null,
-    "project_commit_date": "1785111010",
+    "project_commit_date": "1785113426",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 581,
     "number_of_classes_or_interfaces": 1246,
     "number_of_methods": 1468,
-    "number_of_data_fields": 4164,
+    "number_of_data_fields": 4166,
     "number_of_method_parameters": 1621
   },
   "detector": {
@@ -91,9 +91,9 @@
     }
   },
   "data_clumps": {
-    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValues": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValuesrounds": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValues",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValuesrounds",
       "probability": 1,
       "from_file_path": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts",
       "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry",
@@ -119,16 +119,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 54,
               "startColumn": 2,
-              "endLine": 48,
+              "endLine": 54,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 22
           }
         },
@@ -144,16 +144,16 @@
             "type": "GameCategoryValues",
             "modifiers": [],
             "position": {
-              "startLine": 52,
+              "startLine": 58,
               "startColumn": 2,
-              "endLine": 52,
+              "endLine": 58,
               "endColumn": 38
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 25,
             "endColumn": 38
           }
         },
@@ -169,17 +169,42 @@
             "type": "Record<string, GameCategoryValues>",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 60,
               "startColumn": 2,
-              "endLine": 54,
+              "endLine": 60,
               "endColumn": 60
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 60
+          }
+        },
+        "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/rounds": {
+          "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/rounds",
+          "name": "rounds",
+          "type": "Round[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds",
+            "name": "rounds",
+            "type": "Round[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 2,
+              "endLine": 44,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 2,
+            "endLine": 33,
+            "endColumn": 19
           }
         }
       },
@@ -188,9 +213,9 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-gameTypeIdcategoryValuesplayerCategoryValues": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-roundsgameTypeIdcategoryValuesplayerCategoryValues": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-gameTypeIdcategoryValuesplayerCategoryValues",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameStorage.ts-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-roundsgameTypeIdcategoryValuesplayerCategoryValues",
       "probability": 1,
       "from_file_path": "apps/score-tracker/frontend/helpers/GameStorage.ts",
       "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState",
@@ -204,6 +229,31 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds": {
+          "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/rounds",
+          "name": "rounds",
+          "type": "Round[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry/memberField/rounds",
+            "name": "rounds",
+            "type": "Round[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 2,
+              "endLine": 33,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 2,
+            "endLine": 44,
+            "endColumn": 18
+          }
+        },
         "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/gameTypeId": {
           "key": "apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState/memberField/gameTypeId",
           "name": "gameTypeId",
@@ -216,16 +266,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 23,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 54,
             "startColumn": 2,
-            "endLine": 48,
+            "endLine": 54,
             "endColumn": 22
           }
         },
@@ -241,16 +291,16 @@
             "type": "GameCategoryValues",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 25,
               "endColumn": 38
             }
           },
           "position": {
-            "startLine": 52,
+            "startLine": 58,
             "startColumn": 2,
-            "endLine": 52,
+            "endLine": 58,
             "endColumn": 38
           }
         },
@@ -266,16 +316,16 @@
             "type": "Record<string, GameCategoryValues>",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 27,
               "endColumn": 60
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 60,
             "startColumn": 2,
-            "endLine": 54,
+            "endLine": 60,
             "endColumn": 60
           }
         }
