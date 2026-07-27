@@ -70,6 +70,7 @@ export const ComponentIds = {
 	PLAYERS_OPTIONS_IMPORT_ROW: 'players-options-import-row',
 	PLAYER_DETAIL_EXPORT_ROW: 'player-detail-export-row',
 	PLAYER_DETAIL_IMPORT_ROW: 'player-detail-import-row',
+	PLAYER_DETAIL_AVATAR_ROW: 'player-detail-avatar-row',
 	PLAYER_DETAIL_DELETE_BUTTON: 'player-detail-delete-button',
 	PLAYER_DETAIL_ID_ROW: 'player-detail-id-row',
 

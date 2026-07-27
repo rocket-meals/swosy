@@ -1,10 +1,26 @@
 import React, { ReactNode } from 'react';
 import MyScrollViewModal, { MyScrollViewModalProps } from '../MyScrollViewModal';
 import { useModal } from './useModal';
+import type { ModalCloseReason } from './ModalProvider';
 
 export type MyScrollViewModalConfig = MyScrollViewModalProps & { children?: ReactNode };
 
-type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string };
+type ScrollViewModalOptions = {
+	backgroundStyle?: any;
+	headerBackgroundColor?: string;
+	/**
+	 * Called exactly once when this modal leaves the stack - including when it
+	 * is only popped back to the modal below it.
+	 *
+	 * Prefer this over `MyScrollViewModalProps.onClose` for anything that has
+	 * to happen on close (e.g. persisting what the user edited): `onClose`
+	 * fires from the content component's unmount, and the stack renders every
+	 * item at the same tree position inside one sheet - so popping back to the
+	 * parent modal re-renders that component instead of unmounting it, and
+	 * `onClose` never runs (see the SCROLL FIX 6 note in MyScrollViewModal).
+	 */
+	onClosed?: (reason: ModalCloseReason) => void;
+};
 
 export const useMyScrollViewModal = () => {
 	const { show: showModal, close, showAndDiscardOthers: showAndDiscardOthersModal, closeAll, debug } = useModal();

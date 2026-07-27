@@ -184,6 +184,7 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 	return (
 		<View style={styles.modalContent}>
 			<SettingsListAvatar
+				nativeID={ComponentIds.PLAYER_DETAIL_AVATAR_ROW}
 				config={friend.avatarConfig}
 				onChange={(config) => {
 					logDebug(`players: avatar onChange friend=${friend.id} style=${config.style}`);
