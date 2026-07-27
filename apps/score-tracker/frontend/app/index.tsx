@@ -578,7 +578,7 @@ function ColumnsSettingsSection() {
 // next to the rest of what can be done to the running match. Connected to the
 // store so the list updates while the modal stays open.
 
-function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
+function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => void; onEditPlayers?: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
 	const players = useSelector((state: RootState) => state.game.players);
@@ -590,6 +590,9 @@ function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
 	const playersByFriendId = new Map(
 		players.filter((p) => p.friendId).map((p) => [p.friendId as string, p]),
 	);
+	// Guests only exist inside the match, so they're listed here too - ticked,
+	// with the same toggle-to-remove behavior as the friend rows.
+	const guests = players.filter((p) => !p.friendId);
 
 	return (
 		<View style={styles.modalContent}>
@@ -628,7 +631,20 @@ function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
 					);
 				})
 			)}
-			<SettingsListGroupTitle title="Sonstige" />
+			<SettingsListGroupTitle title="Gäste" />
+			{guests.map((guest, index) => (
+				<SettingsListAvatar
+					key={guest.id}
+					nativeID={`${ComponentIds.GAME_ADD_PLAYER_GUEST_ROW_PREFIX}${guest.id}`}
+					config={guest.avatarConfig}
+					avatarBackgroundColor={guest.color}
+					previewSize={PICKER_AVATAR_SIZE}
+					label={guest.name}
+					rightIcon={<Ionicons name="checkmark-circle" size={22} color={SUCCESS_COLOR} />}
+					onPressOverride={() => dispatch(removePlayer(guest.id))}
+					groupPosition={index === 0 ? 'top' : 'middle'}
+				/>
+			))}
 			<SettingsList
 				nativeID={ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON}
 				label="Gast hinzufügen"
@@ -638,7 +654,20 @@ function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
 					dispatch(addGuestPlayer());
 					onDone();
 				}}
-				groupPosition="single"
+				groupPosition={guests.length > 0 ? 'middle' : 'top'}
+			/>
+			<SettingsList
+				nativeID={ComponentIds.GAME_ADD_PLAYER_EDIT_ROW}
+				label="Spieler bearbeiten"
+				value="Name, Farbe, Avatar und Reihenfolge"
+				leftIcon={<Ionicons name="people-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={() => {
+					onEditPlayers?.();
+					onDone();
+				}}
+				groupPosition="bottom"
 			/>
 		</View>
 	);
@@ -651,8 +680,8 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 	const { show, close } = useMyScrollViewModal();
 
 	const handleAddPlayer = useCallback(() => {
-		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} /> });
-	}, [show, close]);
+		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} onEditPlayers={onEditPlayers} /> });
+	}, [show, close, onEditPlayers]);
 
 	return (
 		<>
@@ -988,7 +1017,10 @@ export default function GameScreen() {
 	// ─── Add-player chooser (friend roster or guest) ─────────────────────────
 
 	const handleOpenAddPlayerModal = useCallback(() => {
-		showAddPlayerModal({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={closeAddPlayerModal} /> });
+		showAddPlayerModal({
+			title: 'Spieler hinzufügen',
+			children: <AddPlayerContent onDone={closeAddPlayerModal} onEditPlayers={() => setIsEditingPlayers(true)} />,
+		});
 	}, [showAddPlayerModal, closeAddPlayerModal]);
 
 	// ─── Settings modal (header gear) ────────────────────────────────────────
@@ -996,11 +1028,12 @@ export default function GameScreen() {
 	/**
 	 * Throw away the match currently open - including its archived entry, if it
 	 * was re-opened from the history - and start over from the setup phase with
-	 * the same game preselected.
+	 * the same game preselected. The seats are emptied too: the next match
+	 * picks its players fresh instead of inheriting this one's roster.
 	 */
 	const handleDeleteMatch = useCallback(() => {
 		if (matchId) dispatch(removeGameFromHistory(matchId));
-		dispatch(resetScores());
+		dispatch(resetScores({ clearPlayers: true }));
 		closeSettingsModal();
 	}, [matchId, dispatch, closeSettingsModal]);
 
