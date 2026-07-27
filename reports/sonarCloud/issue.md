@@ -5,14 +5,24 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 20 | 20 |
+| 🐛 Reliability | 2 | 2 |
+| 🔧 Maintainability | 22 | 22 |
 
-**Total issues:** 20
+**Total issues:** 24
 
 ---
 
-## 🔧 Maintainability (20/20)
+## 🐛 Reliability (2/2)
+
+- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
+  apps/score-tracker/frontend/components/GameImagePicker.tsx:186
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L186
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/score-tracker/frontend/helpers/ImageSearch.ts:168
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
+
+## 🔧 Maintainability (22/22)
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
@@ -31,8 +41,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L21
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/games/[id].tsx:82
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L82
+  apps/score-tracker/frontend/app/games/[id].tsx:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L84
 
 - **Remove this unused import of 'resetAll'.**
   apps/score-tracker/frontend/app/index.tsx:46
@@ -51,28 +61,36 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L60
 
 - **Remove this useless assignment to variable "game".**
-  apps/score-tracker/frontend/app/index.tsx:855
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L855
+  apps/score-tracker/frontend/app/index.tsx:856
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L856
 
 - **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/index.tsx:861
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L861
+  apps/score-tracker/frontend/app/index.tsx:862
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L862
 
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/index.tsx:879
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L879
+  apps/score-tracker/frontend/app/index.tsx:880
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L880
 
 - **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/index.tsx:865
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L865
+  apps/score-tracker/frontend/app/index.tsx:866
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L866
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/score-tracker/frontend/components/GameCategorySettings.tsx:209
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L209
 
+- **'../helpers/GameImageUpload' imported multiple times.**
+  apps/score-tracker/frontend/components/GameImagePicker.tsx:21
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L21
+
+- **'../helpers/GameImageUpload' imported multiple times.**
+  apps/score-tracker/frontend/components/GameImagePicker.tsx:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L23
+
 - **Use `export…from` to re-export `defaultImageQuery`.**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:283
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L283
+  apps/score-tracker/frontend/components/GameImagePicker.tsx:336
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L336
 
 - **The empty object is useless.**
   apps/score-tracker/frontend/helpers/GameCategories.ts:219
