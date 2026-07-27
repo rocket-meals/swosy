@@ -37,8 +37,8 @@ import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
 import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
-import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
-import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
+import type { StartingPlayerMode } from '../../helpers/GameRules';
+import { gameTypeToPreset, parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
 import type { CategoryFilters, GameCategory, GameCategoryValues, MatchSort } from '../../helpers/GameCategories';
 import {
 	DEFAULT_MATCH_SORT,
@@ -118,23 +118,6 @@ function matchSearchText(
 function describeGameImage(imageUrl: string | null | undefined): string {
 	if (!imageUrl) return 'Emoji';
 	return isInlineImage(imageUrl) ? `Eigenes Bild (${describeImageSize(imageUrl)})` : 'Bild aus der Suche';
-}
-
-/** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
-function gameTypeToPreset(gameType: GameType): GamePreset {
-	return {
-		name: gameType.name,
-		icon: gameType.icon,
-		imageUrl: gameType.imageUrl ?? null,
-		scoringMode: gameType.scoringMode,
-		maxRounds: gameType.maxRounds ?? null,
-		maxScore: gameType.maxScore ?? null,
-		rules: gameType.rules ?? null,
-		categories: gameType.categories ?? null,
-		trackScores: gameType.trackScores ?? true,
-		startingPlayerMode: gameType.startingPlayerMode ?? 'fixed',
-		version: gameType.version ?? 1,
-	};
 }
 
 // ─── Scoring mode modal content (live-updating, subscribes to the store) ─────

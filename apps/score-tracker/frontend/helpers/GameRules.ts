@@ -1,4 +1,4 @@
-import type { ScoringMode } from './GameTypesStorage';
+import type { GameType, ScoringMode } from './GameTypesStorage';
 import type { GameCategory } from './GameCategories';
 import { normalizeGameCategories } from './GameCategories';
 
@@ -441,6 +441,23 @@ function isValidGamePresetScalarFields(
 	if (v.startingPlayerMode !== undefined && !STARTING_PLAYER_MODES.includes(v.startingPlayerMode as StartingPlayerMode)) return false;
 	if (v.trackScores !== undefined && typeof v.trackScores !== 'boolean') return false;
 	return true;
+}
+
+/** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
+export function gameTypeToPreset(gameType: GameType): GamePreset {
+	return {
+		name: gameType.name,
+		icon: gameType.icon,
+		imageUrl: gameType.imageUrl ?? null,
+		scoringMode: gameType.scoringMode,
+		maxRounds: gameType.maxRounds ?? null,
+		maxScore: gameType.maxScore ?? null,
+		rules: gameType.rules ?? null,
+		categories: gameType.categories ?? null,
+		trackScores: gameType.trackScores ?? true,
+		startingPlayerMode: gameType.startingPlayerMode ?? 'fixed',
+		version: gameType.version ?? 1,
+	};
 }
 
 /**

@@ -2,12 +2,21 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsList, SettingsListGroupTitle, SettingsListTextInput, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import {
+	SettingsList,
+	SettingsListGroupTitle,
+	SettingsListSelectOptionSingle,
+	SettingsListTextInput,
+	useMyScrollViewModal,
+	useTheme,
+} from 'repo-depkit-common-ui';
+import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
+import { setGamesSortMode } from '../../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../../store/store';
-import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, parseGamePreset } from '../../helpers/GameRules';
+import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, gameTypeToPreset, parseGamePreset } from '../../helpers/GameRules';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
@@ -20,29 +29,68 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
-function GamesHeaderRight({ color, onImport, onAdd }: Readonly<{ color: string; onImport: () => void; onAdd: () => void }>) {
+// All actions on the games list (create, import/export, sorting) live in the
+// settings modal - the header only opens it.
+function GamesHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; onOpenSettings: () => void }>) {
 	return (
 		<View style={styles.headerButtons}>
 			<TouchableOpacity
-				nativeID={ComponentIds.GAMES_SCREEN_IMPORT_BUTTON}
-				onPress={onImport}
+				nativeID={ComponentIds.GAMES_SCREEN_SETTINGS_BUTTON}
+				onPress={onOpenSettings}
 				style={styles.headerButton}
 			>
-				<Ionicons name="cloud-download-outline" size={22} color={color} />
-			</TouchableOpacity>
-			<TouchableOpacity
-				nativeID={ComponentIds.GAMES_SCREEN_ADD_BUTTON}
-				onPress={onAdd}
-				style={styles.headerButton}
-			>
-				<Ionicons name="add-circle-outline" size={24} color={color} />
+				<Ionicons name="settings-outline" size={22} color={color} />
 			</TouchableOpacity>
 		</View>
 	);
 }
 
-function makeGamesHeaderRight(color: string, onImport: () => void, onAdd: () => void) {
-	return () => <GamesHeaderRight color={color} onImport={onImport} onAdd={onAdd} />;
+function makeGamesHeaderRight(color: string, onOpenSettings: () => void) {
+	return () => <GamesHeaderRight color={color} onOpenSettings={onOpenSettings} />;
+}
+
+// ─── Sort options (settings modal) ────────────────────────────────────────────
+//
+// Rendered as its own component so it re-renders from its own `useSelector`
+// subscription and the selected option updates live while the modal stays
+// open (same pattern as the game screen's ColumnsSettingsSection).
+
+function GamesSortSection() {
+	const dispatch = useDispatch<AppDispatch>();
+	const gamesSortMode = useSelector((state: RootState) => state.appSettings.gamesSortMode);
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Sortierung" />
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAMES_SETTINGS_SORT_LAST_PLAYED}
+				label="Zuletzt gespielt"
+				leftIcon={<Ionicons name="time-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={gamesSortMode === 'lastPlayed'}
+				onPress={() => dispatch(setGamesSortMode('lastPlayed'))}
+				groupPosition="top"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAMES_SETTINGS_SORT_NAME}
+				label="Name (A–Z)"
+				leftIcon={<Ionicons name="text-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={gamesSortMode === 'name'}
+				onPress={() => dispatch(setGamesSortMode('name'))}
+				groupPosition="middle"
+			/>
+			<SettingsListSelectOptionSingle
+				nativeID={ComponentIds.GAMES_SETTINGS_SORT_MATCH_COUNT}
+				label="Anzahl Partien"
+				leftIcon={<Ionicons name="podium-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isSelected={gamesSortMode === 'matchCount'}
+				onPress={() => dispatch(setGamesSortMode('matchCount'))}
+				groupPosition="bottom"
+			/>
+		</>
+	);
 }
 
 export default function GamesScreen() {
@@ -51,32 +99,55 @@ export default function GamesScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
+	const gamesSortMode = useSelector((state: RootState) => state.appSettings.gamesSortMode);
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
-	const filteredGameTypes = useMemo(() => {
-		const query = searchQuery.trim().toLowerCase();
-		if (!query) return gameTypes;
-		return gameTypes.filter((gameType) => gameType.name.toLowerCase().includes(query));
-	}, [gameTypes, searchQuery]);
-
-	// Played matches per game type (derived from the archived history)
-	const matchCounts = useMemo(() => {
+	// Played matches and most recent match per game type (derived from the
+	// archived history). `lastPlayedAt` drives the default sort order.
+	const { matchCounts, lastPlayedAt } = useMemo(() => {
 		const counts: Record<string, number> = {};
+		const lastPlayed: Record<string, number> = {};
 		for (const entry of historyEntries) {
 			if (entry.gameTypeId) {
 				counts[entry.gameTypeId] = (counts[entry.gameTypeId] ?? 0) + 1;
+				lastPlayed[entry.gameTypeId] = Math.max(lastPlayed[entry.gameTypeId] ?? 0, entry.endedAt);
 			}
 		}
-		return counts;
+		return { matchCounts: counts, lastPlayedAt: lastPlayed };
 	}, [historyEntries]);
+
+	const filteredGameTypes = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		const filtered = query ? gameTypes.filter((gameType) => gameType.name.toLowerCase().includes(query)) : [...gameTypes];
+		const byName = (a: (typeof filtered)[number], b: (typeof filtered)[number]) => a.name.localeCompare(b.name);
+		switch (gamesSortMode) {
+			case 'name':
+				filtered.sort(byName);
+				break;
+			case 'matchCount':
+				filtered.sort((a, b) => (matchCounts[b.id] ?? 0) - (matchCounts[a.id] ?? 0) || byName(a, b));
+				break;
+			default:
+				// Default: games with the most recent match first; never-played games
+				// (no history entry → 0) end up at the bottom, alphabetically.
+				filtered.sort((a, b) => (lastPlayedAt[b.id] ?? 0) - (lastPlayedAt[a.id] ?? 0) || byName(a, b));
+				break;
+		}
+		return filtered;
+	}, [gameTypes, searchQuery, gamesSortMode, matchCounts, lastPlayedAt]);
 
 	const handleAddGameType = useCallback(() => {
 		const gameNumber = gameTypes.length + 1;
 		const action = dispatch(addGameType(`Spiel ${gameNumber}`));
 		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
 	}, [gameTypes.length, dispatch]);
+
+	const handleAddGameTypeFromModal = useCallback(() => {
+		closeModal();
+		handleAddGameType();
+	}, [closeModal, handleAddGameType]);
 
 	const handleLoadFlipSeven = useCallback(() => {
 		const action = dispatch(addGameTypeFromPreset(FLIP_SEVEN_PRESET));
@@ -101,12 +172,37 @@ export default function GamesScreen() {
 		[dispatch, closeModal],
 	);
 
-	const handleOpenImportModal = useCallback(() => {
+	// Copies all games as shareable templates (same JSON format the per-game
+	// export on the detail screen produces, just as an array).
+	const handleExportAll = useCallback(async () => {
+		await Clipboard.setStringAsync(JSON.stringify(gameTypes.map(gameTypeToPreset), null, 2));
+	}, [gameTypes]);
+
+	const handleOpenSettingsModal = useCallback(() => {
 		showModal({
-			title: 'Spiel laden',
+			title: '⚙️ Optionen',
 			children: (
 				<View style={styles.modalContent}>
-					<SettingsListGroupTitle title="Beispiele" />
+					<SettingsListGroupTitle title="Neu" />
+					<SettingsList
+						nativeID={ComponentIds.GAMES_SETTINGS_CREATE_GAME_ROW}
+						label="Neues Spiel erstellen"
+						leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleAddGameTypeFromModal}
+						groupPosition="single"
+					/>
+					<SettingsListGroupTitle title="Import / Export" />
+					<SettingsList
+						nativeID={ComponentIds.GAMES_SETTINGS_EXPORT_ALL_ROW}
+						label="Alle Spiele exportieren"
+						value="Kopiert alle Spiele als JSON in die Zwischenablage"
+						stackedValue
+						leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleExportAll}
+						groupPosition="top"
+					/>
 					<SettingsList
 						nativeID={ComponentIds.GAMES_IMPORT_LOAD_FLIP_SEVEN_ROW}
 						label="🃏 Flip Seven laden"
@@ -115,7 +211,7 @@ export default function GamesScreen() {
 						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleLoadFlipSeven}
-						groupPosition="top"
+						groupPosition="middle"
 					/>
 					<SettingsList
 						nativeID={ComponentIds.GAMES_IMPORT_LOAD_MANSIONS_ROW}
@@ -125,9 +221,8 @@ export default function GamesScreen() {
 						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleLoadMansions}
-						groupPosition="bottom"
+						groupPosition="middle"
 					/>
-					<SettingsListGroupTitle title="Eigenes Spiel importieren" />
 					<SettingsListTextInput
 						nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
 						label="Spiel importieren"
@@ -141,18 +236,19 @@ export default function GamesScreen() {
 						textAlignVertical="top"
 						checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
 						onSave={handleImportPreset}
-						groupPosition="single"
+						groupPosition="bottom"
 					/>
+					<GamesSortSection />
 				</View>
 			),
 		});
-	}, [showModal, handleLoadFlipSeven, handleLoadMansions, handleImportPreset]);
+	}, [showModal, handleAddGameTypeFromModal, handleExportAll, handleLoadFlipSeven, handleLoadMansions, handleImportPreset]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
-			headerRight: makeGamesHeaderRight(theme.header.text, handleOpenImportModal, handleAddGameType),
+			headerRight: makeGamesHeaderRight(theme.header.text, handleOpenSettingsModal),
 		});
-	}, [navigation, theme.header.text, handleAddGameType, handleOpenImportModal]);
+	}, [navigation, theme.header.text, handleOpenSettingsModal]);
 
 	const searchResultsContent =
 		filteredGameTypes.length === 0 ? (
@@ -209,12 +305,22 @@ export default function GamesScreen() {
 			<ScrollView
 				contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32 }]}
 			>
+				<View style={styles.createGameRow}>
+					<SettingsList
+						nativeID={ComponentIds.GAMES_SCREEN_CREATE_GAME_ROW}
+						label="Spiel anlegen"
+						leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleAddGameType}
+						groupPosition="single"
+					/>
+				</View>
 				{gameTypes.length === 0 ? (
 					<View style={styles.emptyContainer}>
 						<Ionicons name="dice-outline" size={64} color={theme.screen.icon} />
 						<Text style={[styles.emptyText, { color: theme.screen.text }]}>Noch keine Spiele</Text>
 						<Text style={[styles.emptySubtext, { color: theme.screen.placeholder }]}>
-							Lege ein Spiel (z.B. Skat, Phase 10, ...) über den + Button im Header an
+							Lege ein Spiel (z.B. Skat, Phase 10, ...) über „Spiel anlegen“ an
 						</Text>
 					</View>
 				) : (
@@ -259,6 +365,9 @@ const styles = StyleSheet.create({
 	},
 	listContent: {
 		padding: 12,
+	},
+	createGameRow: {
+		marginBottom: 12,
 	},
 	gameIconWrapper: {
 		marginRight: 12,

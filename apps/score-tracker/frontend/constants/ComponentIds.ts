@@ -80,8 +80,13 @@ export const ComponentIds = {
 	PLAYER_DETAIL_ID_ROW: 'player-detail-id-row',
 
 	// Games (game types) screen
-	GAMES_SCREEN_ADD_BUTTON: 'games-screen-add-button',
-	GAMES_SCREEN_IMPORT_BUTTON: 'games-screen-import-button',
+	GAMES_SCREEN_SETTINGS_BUTTON: 'games-screen-settings-button',
+	GAMES_SCREEN_CREATE_GAME_ROW: 'games-screen-create-game-row',
+	GAMES_SETTINGS_CREATE_GAME_ROW: 'games-settings-create-game-row',
+	GAMES_SETTINGS_EXPORT_ALL_ROW: 'games-settings-export-all-row',
+	GAMES_SETTINGS_SORT_LAST_PLAYED: 'games-settings-sort-last-played',
+	GAMES_SETTINGS_SORT_NAME: 'games-settings-sort-name',
+	GAMES_SETTINGS_SORT_MATCH_COUNT: 'games-settings-sort-match-count',
 	GAMES_SCREEN_SEARCH_INPUT: 'games-screen-search-input',
 	GAMES_SCREEN_GAME_ROW_PREFIX: 'games-screen-game-row-',
 	GAMES_IMPORT_LOAD_FLIP_SEVEN_ROW: 'games-import-load-flip-seven-row',

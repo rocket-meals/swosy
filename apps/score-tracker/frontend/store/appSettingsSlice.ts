@@ -1,17 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ColumnsCount } from '../helpers/AppSettingsStorage';
-export type { ColumnsCount };
+import type { ColumnsCount, GamesSortMode } from '../helpers/AppSettingsStorage';
+export type { ColumnsCount, GamesSortMode };
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
 export type AppSettingsSliceState = {
 	columnsPortrait: ColumnsCount;
 	columnsLandscape: ColumnsCount;
+	gamesSortMode: GamesSortMode;
 };
 
 const initialState: AppSettingsSliceState = {
 	columnsPortrait: 1,
 	columnsLandscape: 2,
+	gamesSortMode: 'lastPlayed',
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
@@ -24,6 +26,7 @@ const appSettingsSlice = createSlice({
 		loadAppSettings(state, action: PayloadAction<AppSettingsSliceState>) {
 			state.columnsPortrait = action.payload.columnsPortrait;
 			state.columnsLandscape = action.payload.columnsLandscape;
+			state.gamesSortMode = action.payload.gamesSortMode;
 		},
 
 		setColumnsPortrait(state, action: PayloadAction<ColumnsCount>) {
@@ -33,8 +36,12 @@ const appSettingsSlice = createSlice({
 		setColumnsLandscape(state, action: PayloadAction<ColumnsCount>) {
 			state.columnsLandscape = action.payload;
 		},
+
+		setGamesSortMode(state, action: PayloadAction<GamesSortMode>) {
+			state.gamesSortMode = action.payload;
+		},
 	},
 });
 
-export const { loadAppSettings, setColumnsPortrait, setColumnsLandscape } = appSettingsSlice.actions;
+export const { loadAppSettings, setColumnsPortrait, setColumnsLandscape, setGamesSortMode } = appSettingsSlice.actions;
 export default appSettingsSlice.reducer;
