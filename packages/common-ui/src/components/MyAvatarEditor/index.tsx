@@ -136,6 +136,7 @@ import SettingsListGroupTitle from '../SettingsListGroupTitle';
 import SettingsList from '../SettingsList';
 import SettingsListLeftRight, { type SettingsListLeftRightItem } from '../SettingsListLeftRight/SettingsListLeftRight';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CommonUiComponentIds } from '../../constants/ComponentIds';
 import { HAIR_COLORS, MICAH_HAIR_COLORS, SKIN_COLORS, PRESET_COLORS } from '../MyColorPicker';
 import MyCustomColorPicker from '../MyCustomColorPicker';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -1459,6 +1460,10 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 			)}
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_category') : 'Category'} />
+			{/* Marks "the editor is showing", as opposed to the quick-start grid -
+			    the two are mutually exclusive, which is what an E2E test can use to
+			    tell whether an avatar is already stored for the edited entity. */}
+			<View nativeID={CommonUiComponentIds.AVATAR_EDITOR_CATEGORY_LIST}>
 			{allCategories.map((cat, index) => {
 				const groupPosition = getGroupPosition(allCategories.length, index);
 				const rawColor = colorKeys.includes(cat) ? config.options?.[cat] : null;
@@ -1493,6 +1498,7 @@ const AvatarEditorModalContent: React.FC<AvatarEditorModalContentProps> = ({
 					/>
 				);
 			})}
+			</View>
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
@@ -2430,6 +2436,7 @@ const QuickstartDebugSection: React.FC<QuickstartDebugSectionProps> = ({
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={`${presetConfig.style}-${index}`}
+						nativeID={`${CommonUiComponentIds.AVATAR_EDITOR_DEBUG_PRESET_PREFIX}${index}`}
 						style={[styles.debugFallbackButton, { backgroundColor: buttonBg }]}
 						onPress={() => {
 							onDebugEvent?.(`debug:fallback-preset press index=${index}`);
@@ -2490,6 +2497,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={`${presetConfig.style}-${index}`}
+						nativeID={`${CommonUiComponentIds.AVATAR_EDITOR_PRESET_PREFIX}${index}`}
 						// Debug: red border = the touchable's actual layout box (the touch target).
 						// If it doesn't line up with the yellow-bordered avatar view, hit-testing
 						// and visuals have drifted apart (the "tap only works at the bottom edge"
@@ -2559,6 +2567,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 
 			<SettingsListGroupTitle title={translate ? translate('avatar_section_actions') : 'Actions'} />
 			<SettingsList
+				nativeID={CommonUiComponentIds.AVATAR_EDITOR_CUSTOMIZE_ROW}
 				title={translate ? translate('avatar_customize') : 'Customize'}
 				value={translate ? translate('avatar_customize_hint') : 'Customize avatar completely from scratch'}
 				onPress={() => {
@@ -2920,15 +2929,20 @@ export const useAvatarEditorModal = () => {
 
 			// Dirty tracking: only save when the user has actually made a change.
 			const isDirtyRef = { current: false };
+			// The editor saves on close, and "close" must also cover being popped
+			// back to the modal it was opened from (e.g. the friend edit sheet) -
+			// hence the stack-level `onClosed` below rather than the content's
+			// unmount-based `onClose`, which never fires for a pop. Guarded so the
+			// Apply button and the following close can't save twice.
+			const hasSavedRef = { current: false };
+			const saveIfDirty = () => {
+				if (hasSavedRef.current || !isDirtyRef.current) return;
+				hasSavedRef.current = true;
+				onDone(configRef.current);
+			};
 
 			show({
 				title: options?.title ?? 'Avatar Editor',
-				onClose: () => {
-					options?.onDebugEvent?.(`closed dirty=${isDirtyRef.current}`);
-					if (isDirtyRef.current) {
-						onDone(configRef.current);
-					}
-				},
 				stickyHeaderComponent: (
 					<AvatarStickyHeaderConditional
 						modeObservable={modeObservable}
@@ -2946,12 +2960,12 @@ export const useAvatarEditorModal = () => {
 						onApply={() => {
 							options?.onDebugEvent?.('apply');
 							isDirtyRef.current = true;
-							onDone(configRef.current);
+							saveIfDirty();
 							close();
 						}}
 						onChange={() => { isDirtyRef.current = true; }}
 						onReset={() => { isDirtyRef.current = false; }}
-						onDelete={onDelete ? () => { isDirtyRef.current = false; onDelete(); close(); } : undefined}
+						onDelete={onDelete ? () => { isDirtyRef.current = false; hasSavedRef.current = true; onDelete(); close(); } : undefined}
 						allowedStyles={allowedStyles}
 						size={size}
 						accentColor={options?.accentColor}
@@ -2963,6 +2977,11 @@ export const useAvatarEditorModal = () => {
 						onDebugEvent={options?.onDebugEvent}
 					/>
 				),
+			}, {
+				onClosed: (reason) => {
+					options?.onDebugEvent?.(`closed reason=${reason} dirty=${isDirtyRef.current}`);
+					saveIfDirty();
+				},
 			});
 		},
 		[show, close],

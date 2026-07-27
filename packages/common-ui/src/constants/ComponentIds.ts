@@ -9,4 +9,13 @@
 export enum CommonUiComponentIds {
 	// Modal
 	MODAL_CLOSE_BUTTON = 'modal-close-button',
+
+	// Avatar editor (see MyAvatarEditor). The quick-start grid is only shown
+	// while no avatar exists yet, so its presence/absence is what tells an E2E
+	// test whether an avatar was actually stored.
+	AVATAR_EDITOR_PRESET_PREFIX = 'avatar-editor-preset-',
+	/** Debug-only text fallback tiles, shown next to the grid in debug mode. */
+	AVATAR_EDITOR_DEBUG_PRESET_PREFIX = 'avatar-editor-debug-preset-',
+	AVATAR_EDITOR_CUSTOMIZE_ROW = 'avatar-editor-customize-row',
+	AVATAR_EDITOR_CATEGORY_LIST = 'avatar-editor-category-list',
 }
