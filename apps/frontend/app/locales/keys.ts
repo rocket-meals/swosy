@@ -394,6 +394,7 @@ export enum TranslationKeys {
         canteen_visits = 'canteen_visits',
         avatar = 'avatar',
         avatars = 'avatars',
+        avatar_scroll_list = 'avatar_scroll_list',
         avatar_style = 'avatar_style',
         avatar_seed = 'avatar_seed',
         avatar_size = 'avatar_size',
