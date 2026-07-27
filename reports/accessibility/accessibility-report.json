@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T17:21:58.154Z",
+  "generatedAt": "2026-07-27T04:22:26.349Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -242,7 +242,7 @@
             {
               "target": ".r-q4m81j",
               "html": "<div dir=\"auto\" class=\"css-146c3p1 r-q4m81j\" style=\"font-size: 16px; color: rgb(255, 255, 255);\">Failed to load apartments</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.28 (foreground color: #ffffff, background color: #ff8989, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.63 (foreground color: #ffffff, background color: #ff3333, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
             }
           ]
         },
