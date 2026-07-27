@@ -62,20 +62,24 @@ const gameSlice = createSlice({
 			};
 		},
 
-		/** Add a new guest player (not linked to any friend) with a default name. */
-		addGuestPlayer(state) {
+		/** Add a new guest player (not linked to any friend) with a default name. `atStart` seats them first instead of last. */
+		addGuestPlayer(state, action: PayloadAction<{ atStart?: boolean } | undefined>) {
 			const playerNumber = state.players.length + 1;
 			const color = PLAYER_COLORS[state.players.length % PLAYER_COLORS.length];
 			const newPlayer: Player = { id: generateId(), name: `Spieler ${playerNumber}`, color };
-			state.players.push(newPlayer);
+			if (action.payload?.atStart) {
+				state.players.unshift(newPlayer);
+			} else {
+				state.players.push(newPlayer);
+			}
 			for (const round of state.rounds) {
 				round.scores[newPlayer.id] = null;
 			}
 		},
 
-		/** Add a player snapshotted from an existing friend (name/color/avatar copied at add-time). */
-		addFriendPlayer(state, action: PayloadAction<Friend>) {
-			const friend = action.payload;
+		/** Add a player snapshotted from an existing friend (name/color/avatar copied at add-time). `atStart` seats them first instead of last. */
+		addFriendPlayer(state, action: PayloadAction<{ friend: Friend; atStart?: boolean }>) {
+			const { friend, atStart } = action.payload;
 			const newPlayer: Player = {
 				id: generateId(),
 				name: friend.name,
@@ -83,7 +87,11 @@ const gameSlice = createSlice({
 				avatarConfig: friend.avatarConfig,
 				friendId: friend.id,
 			};
-			state.players.push(newPlayer);
+			if (atStart) {
+				state.players.unshift(newPlayer);
+			} else {
+				state.players.push(newPlayer);
+			}
 			for (const round of state.rounds) {
 				round.scores[newPlayer.id] = null;
 			}

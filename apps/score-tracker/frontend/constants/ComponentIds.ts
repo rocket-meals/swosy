@@ -42,7 +42,11 @@ export const ComponentIds = {
 	GAME_PLAYER_ROW_SAVE_FRIEND_PREFIX: 'game-player-row-save-friend-',
 	GAME_PLAYER_ROW_MOVE_UP_PREFIX: 'game-player-row-move-up-',
 	GAME_PLAYER_ROW_MOVE_DOWN_PREFIX: 'game-player-row-move-down-',
+	GAME_PLAYER_ROW_EDIT_PREFIX: 'game-player-row-edit-',
 	GAME_ADD_PLAYER_BUTTON: 'game-add-player-button',
+	// NOT 'game-add-player-button-top': Maestro id matchers append '.*', so the
+	// bottom button's id must not be a prefix of this one.
+	GAME_ADD_PLAYER_BUTTON_TOP: 'game-add-player-top-button',
 	GAME_ADD_PLAYER_GUEST_BUTTON: 'game-add-player-guest-button',
 	GAME_ADD_PLAYER_FRIEND_ROW_PREFIX: 'game-add-player-friend-row-',
 	GAME_ADD_PLAYER_SELECTED_ROW_PREFIX: 'game-add-player-selected-row-',

@@ -383,38 +383,22 @@ function PlayerTile({
 	);
 }
 
-// ─── Player edit row group (setup phase + header "Spieler bearbeiten" mode) ───
+// ─── Player edit modal content (opened via the pencil on a player row) ───────
+//
+// Mirrors the friends screen's "Freund bearbeiten" modal: avatar, name, color,
+// save-as-friend (guests) and delete live here instead of inline rows in the
+// setup list. Subscribes to the store itself so the rows update live while
+// the modal stays open.
 
-function PlayerEditGroup({
-	player,
-	onRename,
-	onColorChange,
-	onAvatarChange,
-	onSaveAsFriend,
-	onDelete,
-	onMoveUp,
-	onMoveDown,
-	canMoveUp,
-	canMoveDown,
-}: Readonly<{
-	player: Player;
-	onRename: (name: string) => void;
-	onColorChange: (color: string) => void;
-	onAvatarChange: (config: AvatarConfig) => void;
-	/** Only set for guest players (no friendId yet): saves them to the friends roster. */
-	onSaveAsFriend?: () => void;
-	onDelete: () => void;
-	/** Manual seating-order adjustment (see GameRules `startingPlayerMode`). */
-	onMoveUp: () => void;
-	onMoveDown: () => void;
-	canMoveUp: boolean;
-	canMoveDown: boolean;
-}>) {
+function PlayerEditContent({ playerId, onClose }: Readonly<{ playerId: string; onClose: () => void }>) {
+	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
-	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
+	const player = useSelector((state: RootState) => state.game.players.find((p) => p.id === playerId));
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
+	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 
 	const handleOpenColorModal = useCallback(() => {
+		if (!player) return;
 		showColorModal({
 			title: 'Farbe wählen',
 			children: (
@@ -422,54 +406,40 @@ function PlayerEditGroup({
 					colors={PLAYER_COLORS}
 					selectedColor={player.color}
 					onSelect={(color) => {
-						onColorChange(color);
+						dispatch(setPlayerColor({ playerId, color }));
 						closeColorModal();
 					}}
 				/>
 			),
 		});
-	}, [showColorModal, closeColorModal, player.color, onColorChange]);
+	}, [showColorModal, closeColorModal, player, playerId, dispatch]);
+
+	// Save a guest player to the friends roster and link them, so future edits
+	// stay in sync and the player can be re-added from the roster next time.
+	const handleSaveAsFriend = useCallback(() => {
+		if (!player) return;
+		const action = dispatch(
+			addFriendFromPlayer({ name: player.name, color: player.color, avatarConfig: player.avatarConfig }),
+		);
+		dispatch(linkPlayerToFriend({ playerId, friendId: action.payload.id }));
+	}, [player, playerId, dispatch]);
+
+	if (!player) {
+		return <Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>Spieler nicht gefunden.</Text>;
+	}
 
 	return (
-		<View style={styles.playerEditGroup} nativeID={`${ComponentIds.GAME_PLAYER_ROW_PREFIX}${player.id}`}>
-			<SettingsList
-				label="Reihenfolge"
-				leftIcon={<Ionicons name="swap-vertical-outline" size={20} color="#ffffff" />}
-				iconBgColor={PRIMARY_COLOR}
-				rightElement={
-					<View style={styles.reorderButtons}>
-						<TouchableOpacity
-							nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_UP_PREFIX}${player.id}`}
-							onPress={onMoveUp}
-							disabled={!canMoveUp}
-							hitSlop={8}
-							style={styles.reorderButton}
-						>
-							<Ionicons name="chevron-up" size={20} color={canMoveUp ? theme.screen.text : theme.screen.border} />
-						</TouchableOpacity>
-						<TouchableOpacity
-							nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_DOWN_PREFIX}${player.id}`}
-							onPress={onMoveDown}
-							disabled={!canMoveDown}
-							hitSlop={8}
-							style={styles.reorderButton}
-						>
-							<Ionicons name="chevron-down" size={20} color={canMoveDown ? theme.screen.text : theme.screen.border} />
-						</TouchableOpacity>
-					</View>
-				}
-				groupPosition="top"
-			/>
+		<View style={styles.modalContent}>
 			<SettingsListAvatar
 				config={player.avatarConfig}
 				onChange={(config) => {
 					logDebug(`game: avatar onChange player=${player.id} style=${config.style}`);
-					onAvatarChange(config);
+					dispatch(setPlayerAvatar({ playerId, avatarConfig: config }));
 				}}
-				label={player.name}
+				label="Avatar"
 				previewSize={EDIT_AVATAR_SIZE}
 				avatarBackgroundColor={player.color}
-				groupPosition="middle"
+				groupPosition="top"
 				editorOptions={{
 					title: 'Avatar',
 					allowedStyles: [AvatarStyle.AVATAAARS],
@@ -484,7 +454,9 @@ function PlayerEditGroup({
 				placeholder="Name eingeben"
 				initialValue={player.name}
 				value={player.name}
-				onSave={onRename}
+				onSave={(name) => {
+					dispatch(renamePlayer({ playerId, name }));
+				}}
 				groupPosition="middle"
 			/>
 			<SettingsList
@@ -494,13 +466,13 @@ function PlayerEditGroup({
 				handleFunction={handleOpenColorModal}
 				groupPosition="middle"
 			/>
-			{onSaveAsFriend && (
+			{!player.friendId && (
 				<SettingsList
 					nativeID={`${ComponentIds.GAME_PLAYER_ROW_SAVE_FRIEND_PREFIX}${player.id}`}
 					label="Als Freund speichern"
 					leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
 					iconBgColor={SUCCESS_COLOR}
-					handleFunction={onSaveAsFriend}
+					handleFunction={handleSaveAsFriend}
 					groupPosition="middle"
 				/>
 			)}
@@ -509,10 +481,78 @@ function PlayerEditGroup({
 				label="Spieler löschen"
 				leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
 				iconBgColor={DANGER_COLOR}
-				handleFunction={onDelete}
+				handleFunction={() => {
+					dispatch(removePlayer(playerId));
+					onClose();
+				}}
 				groupPosition="bottom"
 			/>
 		</View>
+	);
+}
+
+// ─── Player row (setup phase + header "Spieler bearbeiten" mode) ─────────────
+//
+// Compact, friends-screen-style row: avatar and name, with reorder arrows and
+// an edit pencil on the right. Everything else (name, color, avatar, delete)
+// moved into the PlayerEditContent modal behind the pencil.
+
+function PlayerSetupRow({
+	player,
+	index,
+	total,
+	onEdit,
+}: Readonly<{
+	player: Player;
+	index: number;
+	total: number;
+	onEdit: () => void;
+}>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const { theme } = useTheme();
+	const canMoveUp = index > 0;
+	const canMoveDown = index < total - 1;
+
+	return (
+		<SettingsListAvatar
+			nativeID={`${ComponentIds.GAME_PLAYER_ROW_PREFIX}${player.id}`}
+			config={player.avatarConfig}
+			avatarBackgroundColor={player.color}
+			previewSize={PICKER_AVATAR_SIZE}
+			label={player.name}
+			onPressOverride={onEdit}
+			rightIcon={
+				<View style={styles.selectedPlayerActions}>
+					<TouchableOpacity
+						nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_UP_PREFIX}${player.id}`}
+						onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
+						disabled={!canMoveUp}
+						hitSlop={8}
+						style={styles.reorderButton}
+					>
+						<Ionicons name="chevron-up" size={20} color={canMoveUp ? theme.screen.text : theme.screen.border} />
+					</TouchableOpacity>
+					<TouchableOpacity
+						nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_DOWN_PREFIX}${player.id}`}
+						onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
+						disabled={!canMoveDown}
+						hitSlop={8}
+						style={styles.reorderButton}
+					>
+						<Ionicons name="chevron-down" size={20} color={canMoveDown ? theme.screen.text : theme.screen.border} />
+					</TouchableOpacity>
+					<TouchableOpacity
+						nativeID={`${ComponentIds.GAME_PLAYER_ROW_EDIT_PREFIX}${player.id}`}
+						onPress={onEdit}
+						hitSlop={8}
+						style={styles.reorderButton}
+					>
+						<Ionicons name="pencil-outline" size={18} color={theme.screen.text} />
+					</TouchableOpacity>
+				</View>
+			}
+			groupPosition={getGroupPosition(index, total)}
+		/>
 	);
 }
 
@@ -581,12 +621,30 @@ function ColumnsSettingsSection() {
 /** How long a deselected player stays visible (grayed out) before actually leaving the match - the tap can be undone until then. */
 const PENDING_REMOVAL_DELAY_MS = 2000;
 
-function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => void; onEditPlayers?: () => void }>) {
+function AddPlayerContent({
+	onDone,
+	insertAtStart,
+}: Readonly<{
+	onDone: () => void;
+	/** Seats newly added players first instead of last (the setup screen's top add button). */
+	insertAtStart?: boolean;
+}>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
 	const players = useSelector((state: RootState) => state.game.players);
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const [friendSearch, setFriendSearch] = useState('');
+	const { show: showPlayerEditModal, close: closePlayerEditModal } = useMyScrollViewModal();
+
+	const handleEditPlayer = useCallback(
+		(playerId: string) => {
+			showPlayerEditModal({
+				title: 'Spieler bearbeiten',
+				children: <PlayerEditContent playerId={playerId} onClose={closePlayerEditModal} />,
+			});
+		},
+		[showPlayerEditModal, closePlayerEditModal],
+	);
 
 	// Tapping a selected row doesn't remove the player immediately: the row
 	// first turns gray, and only after PENDING_REMOVAL_DELAY_MS the player
@@ -680,10 +738,7 @@ function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => vo
 									</TouchableOpacity>
 									<TouchableOpacity
 										nativeID={`${ComponentIds.GAME_ADD_PLAYER_EDIT_PREFIX}${player.id}`}
-										onPress={() => {
-											onEditPlayers?.();
-											onDone();
-										}}
+										onPress={() => handleEditPlayer(player.id)}
 										hitSlop={8}
 										style={styles.reorderButton}
 									>
@@ -701,7 +756,7 @@ function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => vo
 				label="Gast hinzufügen"
 				leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
-				handleFunction={() => dispatch(addGuestPlayer())}
+				handleFunction={() => dispatch(addGuestPlayer(insertAtStart ? { atStart: true } : undefined))}
 				groupPosition="single"
 			/>
 			<SettingsListGroupTitle title="Freunde" />
@@ -744,7 +799,7 @@ function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => vo
 						previewSize={PICKER_AVATAR_SIZE}
 						label={friend.name}
 						rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
-						onPressOverride={() => dispatch(addFriendPlayer(friend))}
+						onPressOverride={() => dispatch(addFriendPlayer({ friend, atStart: insertAtStart }))}
 						groupPosition={getGroupPosition(index, availableFriends.length)}
 					/>
 				</View>
@@ -760,8 +815,8 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 	const { show, close } = useMyScrollViewModal();
 
 	const handleAddPlayer = useCallback(() => {
-		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} onEditPlayers={onEditPlayers} /> });
-	}, [show, close, onEditPlayers]);
+		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} /> });
+	}, [show, close]);
 
 	return (
 		<>
@@ -997,6 +1052,7 @@ export default function GameScreen() {
 	const { show: showAddPlayerModal, close: closeAddPlayerModal } = useMyScrollViewModal();
 	const { show: showSettingsModal, close: closeSettingsModal } = useMyScrollViewModal();
 	const { show: showGameTypeModal, close: closeGameTypeModal } = useMyScrollViewModal();
+	const { show: showPlayerEditModal, close: closePlayerEditModal } = useMyScrollViewModal();
 	const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
 	const navigation = useNavigation();
@@ -1095,13 +1151,31 @@ export default function GameScreen() {
 	}, [columnCount, windowWidth, insets.left, insets.right]);
 
 	// ─── Add-player chooser (friend roster or guest) ─────────────────────────
+	//
+	// The setup list has an add button above AND below the players: the top
+	// one seats new players first, the bottom one last.
 
-	const handleOpenAddPlayerModal = useCallback(() => {
-		showAddPlayerModal({
-			title: 'Spieler hinzufügen',
-			children: <AddPlayerContent onDone={closeAddPlayerModal} onEditPlayers={() => setIsEditingPlayers(true)} />,
-		});
-	}, [showAddPlayerModal, closeAddPlayerModal]);
+	const handleOpenAddPlayerModal = useCallback(
+		(atStart: boolean) => {
+			showAddPlayerModal({
+				title: 'Spieler hinzufügen',
+				children: <AddPlayerContent onDone={closeAddPlayerModal} insertAtStart={atStart} />,
+			});
+		},
+		[showAddPlayerModal, closeAddPlayerModal],
+	);
+
+	// ─── Per-player edit modal (pencil on a player row) ──────────────────────
+
+	const handleOpenPlayerEditModal = useCallback(
+		(playerId: string) => {
+			showPlayerEditModal({
+				title: 'Spieler bearbeiten',
+				children: <PlayerEditContent playerId={playerId} onClose={closePlayerEditModal} />,
+			});
+		},
+		[showPlayerEditModal, closePlayerEditModal],
+	);
 
 	// ─── Settings modal (header gear) ────────────────────────────────────────
 
@@ -1125,18 +1199,6 @@ export default function GameScreen() {
 			children: <GameTypeSelectSection onDone={closeGameTypeModal} />,
 		});
 	}, [showGameTypeModal, closeGameTypeModal]);
-
-	// Save a guest player to the friends roster and link them, so future edits
-	// stay in sync and the player can be re-added from the roster next time.
-	const handleSaveGuestAsFriend = useCallback(
-		(player: Player) => {
-			const action = dispatch(
-				addFriendFromPlayer({ name: player.name, color: player.color, avatarConfig: player.avatarConfig }),
-			);
-			dispatch(linkPlayerToFriend({ playerId: player.id, friendId: action.payload.id }));
-		},
-		[dispatch],
-	);
 
 	const handleOpenSettingsModal = useCallback(() => {
 		showSettingsModal({
@@ -1345,25 +1407,28 @@ export default function GameScreen() {
 							</View>
 						)}
 						<MatchCategorySection categories={categories} />
+						<TouchableOpacity
+							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON_TOP}
+							style={[styles.addPlayerButton, styles.addPlayerButtonTop, { borderColor: PRIMARY_COLOR }]}
+							onPress={() => handleOpenAddPlayerModal(true)}
+							activeOpacity={0.7}
+						>
+							<Ionicons name="add-circle-outline" size={22} color={PRIMARY_COLOR} />
+							<Text style={[styles.addPlayerButtonText, { color: PRIMARY_COLOR }]}>Spieler hinzufügen</Text>
+						</TouchableOpacity>
 						{players.map((player, index) => (
-							<PlayerEditGroup
+							<PlayerSetupRow
 								key={player.id}
 								player={player}
-								onRename={(name) => dispatch(renamePlayer({ playerId: player.id, name }))}
-								onColorChange={(color) => dispatch(setPlayerColor({ playerId: player.id, color }))}
-								onAvatarChange={(config) => dispatch(setPlayerAvatar({ playerId: player.id, avatarConfig: config }))}
-								onSaveAsFriend={player.friendId ? undefined : () => handleSaveGuestAsFriend(player)}
-								onDelete={() => dispatch(removePlayer(player.id))}
-								onMoveUp={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
-								onMoveDown={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
-								canMoveUp={index > 0}
-								canMoveDown={index < players.length - 1}
+								index={index}
+								total={players.length}
+								onEdit={() => handleOpenPlayerEditModal(player.id)}
 							/>
 						))}
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON}
 							style={[styles.addPlayerButton, { borderColor: PRIMARY_COLOR }]}
-							onPress={handleOpenAddPlayerModal}
+							onPress={() => handleOpenAddPlayerModal(false)}
 							activeOpacity={0.7}
 						>
 							<Ionicons name="add-circle-outline" size={22} color={PRIMARY_COLOR} />
@@ -1550,13 +1615,6 @@ const styles = StyleSheet.create({
 	categorySection: {
 		width: '100%',
 	},
-	playerEditGroup: {
-		marginBottom: 4,
-	},
-	reorderButtons: {
-		flexDirection: 'row',
-		gap: 4,
-	},
 	reorderButton: {
 		width: 32,
 		height: 32,
@@ -1586,6 +1644,10 @@ const styles = StyleSheet.create({
 	addPlayerButtonText: {
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	addPlayerButtonTop: {
+		marginTop: 0,
+		marginBottom: 4,
 	},
 	emptyHint: {
 		fontSize: 13,
