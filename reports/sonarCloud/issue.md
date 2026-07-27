@@ -89,8 +89,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L23
 
 - **Use `export…from` to re-export `defaultImageQuery`.**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:336
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L336
+  apps/score-tracker/frontend/components/GameImagePicker.tsx:338
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
 
 - **The empty object is useless.**
   apps/score-tracker/frontend/helpers/GameCategories.ts:219
