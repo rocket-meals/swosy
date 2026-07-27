@@ -49,8 +49,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L84
 
 - **Refactor this code to not nest functions more than 4 levels deep.**
-  apps/score-tracker/frontend/app/index.tsx:609
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L609
+  apps/score-tracker/frontend/app/index.tsx:667
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L667
 
 - **Remove this unused import of 'resetAll'.**
   apps/score-tracker/frontend/app/index.tsx:46
@@ -69,20 +69,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L60
 
 - **Remove this useless assignment to variable "game".**
-  apps/score-tracker/frontend/app/index.tsx:981
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L981
+  apps/score-tracker/frontend/app/index.tsx:1036
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1036
 
 - **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/index.tsx:987
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L987
+  apps/score-tracker/frontend/app/index.tsx:1042
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1042
 
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/index.tsx:1005
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1005
+  apps/score-tracker/frontend/app/index.tsx:1061
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1061
 
 - **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/index.tsx:991
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L991
+  apps/score-tracker/frontend/app/index.tsx:1046
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1046
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/score-tracker/frontend/components/GameCategorySettings.tsx:209
