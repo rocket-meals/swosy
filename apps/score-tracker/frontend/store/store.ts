@@ -79,6 +79,7 @@ store.subscribe(() => {
 				rounds: game.rounds,
 				status: game.status,
 				currentRoundIndex: game.currentRoundIndex,
+				matchId: game.matchId,
 				gameTypeId: game.gameTypeId,
 				playerOrderState: game.playerOrderState,
 				categoryValues: game.categoryValues,

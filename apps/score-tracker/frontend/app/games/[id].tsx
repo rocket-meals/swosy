@@ -1,5 +1,5 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
@@ -30,18 +30,20 @@ import {
 	addGameTypeFromPreset,
 	removeGameType,
 } from '../../store/gameTypesSlice';
-import { resetScores, setGameType } from '../../store/gameSlice';
+import { loadMatch, resetScores, setGameType } from '../../store/gameSlice';
 import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
+import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
 import { GAME_TYPE_ICONS } from '../../helpers/GameTypesStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
 import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
-import type { CategoryFilters, GameCategory, MatchSort } from '../../helpers/GameCategories';
+import type { CategoryFilters, GameCategory, GameCategoryValues, MatchSort } from '../../helpers/GameCategories';
 import {
 	DEFAULT_MATCH_SORT,
 	compareCategoryValues,
+	formatCategoryValue,
 	matchPassesFilters,
 	resolveCategoryValues,
 	summarizeCategoryValues,
@@ -55,10 +57,7 @@ import MatchFilterSort from '../../components/MatchFilterSort';
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const DEBUG_COLOR = '#7c3aed';
-
-function generateHistoryId(): string {
-	return generateId();
-}
+const SUCCESS_COLOR = '#16a34a';
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -86,16 +85,29 @@ function describeSortAndFilters(categories: GameCategory[], sort: MatchSort, fil
  * scored) plus whatever the game's own match categories recorded.
  */
 function describeMatchRow(
-	match: Readonly<{ winnerName?: string; winnerScore: number; roundsCount: number; categorySummary: string }>,
+	match: Readonly<{ winnerName?: string; winnerScore: number; roundsCount: number; players: unknown[]; categorySummary: string }>,
 	trackScores: boolean,
 ): string {
 	const parts: string[] = [];
+	// A game that isn't scored has no rounds at all (see `startGame`), so
+	// neither a winner nor a round count says anything about such a match.
 	if (trackScores) {
 		if (match.winnerName) parts.push(`🏆 ${match.winnerName} (${match.winnerScore} Punkte)`);
-		parts.push(`${match.roundsCount} Runden`);
+		parts.push(match.roundsCount === 1 ? '1 Runde' : `${match.roundsCount} Runden`);
+	} else {
+		parts.push(match.players.length === 1 ? '1 Spieler' : `${match.players.length} Spieler`);
 	}
 	if (match.categorySummary) parts.push(match.categorySummary);
-	return parts.length > 0 ? parts.join(' · ') : `${match.roundsCount} Runden`;
+	return parts.join(' · ');
+}
+
+/** Everything of a match the search field looks at: date, participants and recorded values. */
+function matchSearchText(
+	match: Readonly<{ endedAt: number; players: { name: string }[]; categoryValues: GameCategoryValues }>,
+	categories: GameCategory[],
+): string {
+	const values = categories.map((category) => formatCategoryValue(category, match.categoryValues[category.id]));
+	return [formatDate(match.endedAt), ...match.players.map((player) => player.name), ...values].join(' ').toLowerCase();
 }
 
 /** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
@@ -285,92 +297,21 @@ function makeGameDetailHeaderLeft(color: string) {
 
 // ─── Game detail screen ───────────────────────────────────────────────────────
 
-export default function GameTypeDetailScreen() {
-	const { theme } = useTheme();
-	const insets = useSafeAreaInsets();
+// ─── Game settings (all the "how is this game played" rows) ───────────────────
+//
+// Shown inline on the detail screen while the game has never been played, and
+// behind the header's gear button once it has - by then the screen is about the
+// recorded matches, and the settings are a rarely used side trip. Subscribes to
+// the store itself so it stays live in both places.
+
+function GameTypeSettingsContent({
+	gameTypeId,
+	onGameTypeDeleted,
+}: Readonly<{ gameTypeId: string; onGameTypeDeleted: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
-	const navigation = useNavigation();
-	const { id } = useLocalSearchParams<{ id: string }>();
-	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === id));
-	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
-	const activeGame = useSelector((state: RootState) => state.game);
+	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === gameTypeId));
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
-
-	// Match list sorting/filtering by the game's own categories. Kept as local
-	// screen state (not persisted): it's a way of looking at the list, not part
-	// of the game definition.
-	const [matchFilters, setMatchFilters] = useState<CategoryFilters>({});
-	const [matchSort, setMatchSort] = useState<MatchSort>(DEFAULT_MATCH_SORT);
-	const [showFilters, setShowFilters] = useState(false);
-
-	// Header: back arrow to the games list (drawer navigators have no reliable
-	// push history, so navigate explicitly - same reasoning as the old friend
-	// detail screen).
-	useLayoutEffect(() => {
-		navigation.setOptions({
-			title: gameType ? `${gameType.icon} ${gameType.name}` : 'Spiel',
-			headerLeft: makeGameDetailHeaderLeft(theme.header.text),
-		});
-	}, [navigation, theme.header.text, gameType]);
-
-	const categories: GameCategory[] = useMemo(() => gameType?.categories ?? [], [gameType]);
-	const trackScores = gameType?.trackScores ?? true;
-
-	const totalMatchCount = useMemo(
-		() => (gameType ? historyEntries.filter((entry) => entry.gameTypeId === gameType.id).length : 0),
-		[historyEntries, gameType],
-	);
-
-	const matches = useMemo(() => {
-		if (!gameType) return [];
-		const sortCategory = matchSort.categoryId ? categories.find((c) => c.id === matchSort.categoryId) : undefined;
-		const directionFactor = matchSort.direction === 'asc' ? 1 : -1;
-
-		return historyEntries
-			.filter((entry) => entry.gameTypeId === gameType.id)
-			.filter((entry) =>
-				matchPassesFilters({
-					categories,
-					filters: matchFilters,
-					matchValues: entry.categoryValues,
-					playerValues: entry.playerCategoryValues,
-				}),
-			)
-			.map((entry) => {
-				const ranked = [...entry.players].sort((a, b) => {
-					const scoreA = entry.finalScores[a.playerId] ?? 0;
-					const scoreB = entry.finalScores[b.playerId] ?? 0;
-					return gameType.scoringMode === 'lowWins' ? scoreA - scoreB : scoreB - scoreA;
-				});
-				const winner = ranked[0];
-				return {
-					id: entry.id,
-					endedAt: entry.endedAt,
-					roundsCount: entry.roundsCount,
-					players: entry.players,
-					winnerName: winner ? winner.name : undefined,
-					winnerScore: winner ? entry.finalScores[winner.playerId] ?? 0 : 0,
-					categoryValues: resolveCategoryValues(categories, entry.categoryValues),
-					categorySummary: summarizeCategoryValues(
-						categories.filter((c) => c.scope === 'match'),
-						entry.categoryValues,
-					),
-				};
-			})
-			.sort((a, b) => {
-				if (!sortCategory) return (a.endedAt - b.endedAt) * directionFactor;
-				const byCategory = compareCategoryValues(
-					sortCategory,
-					a.categoryValues[sortCategory.id],
-					b.categoryValues[sortCategory.id],
-				);
-				// Equal category values keep the newest match first, so the list
-				// never jumps around between renders.
-				if (byCategory !== 0) return byCategory * directionFactor;
-				return b.endedAt - a.endedAt;
-			});
-	}, [historyEntries, gameType, categories, matchFilters, matchSort]);
 
 	const handleOpenIconModal = useCallback(() => {
 		if (!gameType) return;
@@ -380,78 +321,25 @@ export default function GameTypeDetailScreen() {
 				<IconPickerContent
 					selectedIcon={gameType.icon}
 					onSelect={(icon) => {
-						dispatch(setGameTypeIcon({ gameTypeId: gameType.id, icon }));
+						dispatch(setGameTypeIcon({ gameTypeId, icon }));
 						closeModal();
 					}}
 				/>
 			),
 		});
-	}, [showModal, closeModal, gameType, dispatch]);
+	}, [showModal, closeModal, gameType, gameTypeId, dispatch]);
 
 	const handleOpenScoringModal = useCallback(() => {
-		if (!gameType) return;
-		showModal({
-			title: 'Wertung',
-			children: <ScoringModeSection gameTypeId={gameType.id} />,
-		});
-	}, [showModal, gameType]);
+		showModal({ title: 'Wertung', children: <ScoringModeSection gameTypeId={gameTypeId} /> });
+	}, [showModal, gameTypeId]);
 
 	const handleOpenStartingPlayerModal = useCallback(() => {
-		if (!gameType) return;
-		showModal({
-			title: 'Startspieler',
-			children: <StartingPlayerModeSection gameTypeId={gameType.id} />,
-		});
-	}, [showModal, gameType]);
-
-	const handleDelete = useCallback(() => {
-		if (!gameType) return;
-		dispatch(removeGameType(gameType.id));
-		router.replace('/games');
-	}, [gameType, dispatch]);
-
-	// Start a new match of this game: archive a still-running match first (it
-	// keeps its own game type), then reuse the current player list in the setup
-	// phase with this game type preselected.
-	const handleStartMatch = useCallback(() => {
-		if (!gameType) return;
-		if (activeGame.status === 'active' && activeGame.players.length > 0) {
-			const totals: Record<string, number> = {};
-			for (const player of activeGame.players) {
-				let total = 0;
-				for (const round of activeGame.rounds) {
-					const score = round.scores[player.id];
-					if (score != null) total += score;
-				}
-				totals[player.id] = total;
-			}
-			const entry: GameHistoryEntry = {
-				id: generateHistoryId(),
-				endedAt: Date.now(),
-				roundsCount: activeGame.rounds.length,
-				players: activeGame.players.map((p) => ({
-					playerId: p.id,
-					friendId: p.friendId,
-					name: p.name,
-					color: p.color,
-					avatarConfig: p.avatarConfig,
-				})),
-				finalScores: totals,
-				gameTypeId: activeGame.gameTypeId,
-				categoryValues: activeGame.categoryValues,
-				playerCategoryValues: activeGame.playerCategoryValues,
-			};
-			dispatch(archiveGame(entry));
-		}
-		dispatch(resetScores());
-		dispatch(setGameType(gameType.id));
-		router.push('/');
-	}, [gameType, activeGame, dispatch]);
+		showModal({ title: 'Startspieler', children: <StartingPlayerModeSection gameTypeId={gameTypeId} /> });
+	}, [showModal, gameTypeId]);
 
 	const handleCopyId = useCallback(async () => {
-		if (!gameType) return;
-		await Clipboard.setStringAsync(gameType.id);
-	}, [gameType]);
+		await Clipboard.setStringAsync(gameTypeId);
+	}, [gameTypeId]);
 
 	const handleExportPreset = useCallback(async () => {
 		if (!gameType) return;
@@ -473,20 +361,420 @@ export default function GameTypeDetailScreen() {
 	const handleRemoveRules = useCallback(() => {
 		if (!gameType) return;
 		if (gameType.rules?.playerOrder) {
-			dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: { version: 1, playerOrder: gameType.rules.playerOrder } }));
+			dispatch(setGameTypeRules({ gameTypeId, rules: { version: 1, playerOrder: gameType.rules.playerOrder } }));
 		} else {
-			dispatch(setGameTypeRules({ gameTypeId: gameType.id, rules: null }));
+			dispatch(setGameTypeRules({ gameTypeId, rules: null }));
 		}
-	}, [gameType, dispatch]);
+	}, [gameType, gameTypeId, dispatch]);
 
 	const handleEditCode = useCallback(
 		(value: string) => {
-			if (!gameType) return;
 			const preset = parseGamePreset(value);
 			if (!preset) return;
-			dispatch(updateGameTypeFromPreset({ gameTypeId: gameType.id, preset }));
+			dispatch(updateGameTypeFromPreset({ gameTypeId, preset }));
 		},
-		[gameType, dispatch],
+		[gameTypeId, dispatch],
+	);
+
+	if (!gameType) return null;
+	const trackScores = gameType.trackScores ?? true;
+
+	return (
+		<>
+			<SettingsList
+				label="Bild"
+				leftIconComponent={
+					<View style={styles.gameIconWrapper}>
+						<GameTypeIcon icon={gameType.icon} size={48} />
+					</View>
+				}
+				rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#ffffff" />}
+				handleFunction={handleOpenIconModal}
+				groupPosition="top"
+			/>
+			<SettingsListTextInput
+				label="Name"
+				placeholder="Name eingeben"
+				initialValue={gameType.name}
+				value={gameType.name}
+				onSave={(name) => {
+					dispatch(renameGameType({ gameTypeId, name }));
+				}}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				label="Wertung"
+				value={gameType.scoringMode === 'lowWins' ? 'Wenige Punkte gewinnen' : 'Viele Punkte gewinnen'}
+				leftIcon={
+					<Ionicons
+						name={gameType.scoringMode === 'lowWins' ? 'trending-down-outline' : 'trending-up-outline'}
+						size={20}
+						color="#ffffff"
+					/>
+				}
+				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenScoringModal}
+				groupPosition="middle"
+			/>
+			{/* A game without points has no rounds either, so the two round/score
+			    limits only make sense while it is scored. */}
+			{trackScores && (
+				<>
+					<SettingsListNumberInput
+						label="Max. Runden pro Partie"
+						value={gameType.maxRounds ? String(gameType.maxRounds) : 'Unbegrenzt'}
+						leftIcon={<Ionicons name="repeat-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						modalTitle="Max. Runden pro Partie"
+						placeholder="z.B. 10"
+						initialValue={gameType.maxRounds ?? undefined}
+						min={1}
+						max={99}
+						onSave={(value) => {
+							dispatch(setGameTypeMaxRounds({ gameTypeId, maxRounds: value }));
+						}}
+						allowDisable
+						disableLabel="Unbegrenzt"
+						onDisable={() => {
+							dispatch(setGameTypeMaxRounds({ gameTypeId, maxRounds: null }));
+						}}
+						groupPosition="middle"
+					/>
+					<SettingsListNumberInput
+						label="Maximale Punktzahl"
+						value={gameType.maxScore ? String(gameType.maxScore) : 'Unbegrenzt'}
+						leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						modalTitle="Maximale Punktzahl"
+						placeholder="z.B. 100"
+						initialValue={gameType.maxScore ?? undefined}
+						min={1}
+						max={999999}
+						onSave={(value) => {
+							dispatch(setGameTypeMaxScore({ gameTypeId, maxScore: value }));
+						}}
+						allowDisable
+						disableLabel="Unbegrenzt"
+						onDisable={() => {
+							dispatch(setGameTypeMaxScore({ gameTypeId, maxScore: null }));
+						}}
+						groupPosition="middle"
+					/>
+				</>
+			)}
+			<SettingsListNumberInput
+				nativeID={ComponentIds.GAME_DETAIL_VERSION_ROW}
+				label="Version"
+				value={String(gameType.version ?? 1)}
+				leftIcon={<MaterialCommunityIcons name="tag-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				modalTitle="Version"
+				placeholder="z.B. 1"
+				initialValue={gameType.version ?? 1}
+				min={1}
+				max={999999}
+				onSave={(value) => {
+					dispatch(setGameTypeVersion({ gameTypeId, version: value }));
+				}}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				nativeID={ComponentIds.GAME_DETAIL_DELETE_BUTTON}
+				label="Spiel löschen"
+				leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
+				iconBgColor={DANGER_COLOR}
+				handleFunction={() => {
+					dispatch(removeGameType(gameTypeId));
+					onGameTypeDeleted();
+				}}
+				groupPosition="bottom"
+			/>
+
+			<SettingsListGroupTitle title="Spielregeln" />
+			<SettingsListBoolean
+				nativeID={ComponentIds.GAME_DETAIL_TRACK_SCORES_ROW}
+				label="Punkte zählen"
+				leftIcon={<MaterialCommunityIcons name="counter" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				isEnabled={trackScores}
+				valueActive="Spieler bekommen Punkte"
+				valueInactive="Nur Kategorien, keine Runden"
+				onToggle={() => dispatch(setGameTypeTrackScores({ gameTypeId, trackScores: !trackScores }))}
+				groupPosition="top"
+			/>
+			{trackScores && (
+				<SettingsList
+					label="Punkte-Eingabe"
+					value={gameType.rules?.scoreEntry ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
+					leftIcon={<MaterialCommunityIcons name={gameType.rules?.scoreEntry ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					groupPosition="middle"
+				/>
+			)}
+			<SettingsList
+				nativeID={ComponentIds.GAME_DETAIL_STARTING_PLAYER_ROW}
+				label="Startspieler"
+				value={STARTING_PLAYER_MODE_INFO[gameType.startingPlayerMode ?? 'fixed'].label}
+				leftIcon={<Ionicons name="person-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenStartingPlayerModal}
+				groupPosition={gameType.rules?.scoreEntry ? 'middle' : 'bottom'}
+			/>
+			{gameType.rules?.scoreEntry && (
+				<SettingsList
+					label="Regeln entfernen"
+					value="Zurück zur Zahleneingabe"
+					leftIcon={<Ionicons name="close-circle-outline" size={20} color="#ffffff" />}
+					iconBgColor={DANGER_COLOR}
+					handleFunction={handleRemoveRules}
+					groupPosition="bottom"
+				/>
+			)}
+
+			<SettingsListGroupTitle title="Kategorien" />
+			<GameCategorySettings gameTypeId={gameTypeId} />
+
+			<SettingsListGroupTitle title="Code" />
+			<SettingsListTextInput
+				nativeID={ComponentIds.GAME_DETAIL_CODE_EDIT_ROW}
+				label="Code bearbeiten"
+				leftIcon={<MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				modalTitle="Code bearbeiten"
+				placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
+				initialValue={JSON.stringify(gameTypeToPreset(gameType), null, 2)}
+				saveLabel="Übernehmen"
+				multiline
+				numberOfLines={16}
+				textAlignVertical="top"
+				checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
+				onSave={handleEditCode}
+				groupPosition="single"
+			/>
+
+			<SettingsListGroupTitle title="Spiel als Vorlage teilen" />
+			<SettingsList
+				nativeID={ComponentIds.GAME_DETAIL_EXPORT_ROW}
+				label="Dieses Spiel exportieren"
+				value={gameType.name}
+				leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={handleExportPreset}
+				groupPosition="top"
+			/>
+			<SettingsListTextInput
+				nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
+				label="Spiel importieren"
+				leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				modalTitle="Spiel importieren"
+				placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
+				saveLabel="Importieren"
+				multiline
+				numberOfLines={10}
+				textAlignVertical="top"
+				checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
+				onSave={handleImportPreset}
+				groupPosition="bottom"
+			/>
+
+			{debugMode && (
+				<>
+					<SettingsListGroupTitle title="Debug" />
+					<SettingsList
+						nativeID={ComponentIds.GAME_DETAIL_ID_ROW}
+						label="ID"
+						value={gameType.id}
+						leftIcon={<MaterialCommunityIcons name="identifier" size={20} color="#ffffff" />}
+						iconBgColor={DEBUG_COLOR}
+						rightIcon={<MaterialCommunityIcons name="content-copy" size={18} color="#9ca3af" />}
+						handleFunction={handleCopyId}
+						groupPosition="single"
+					/>
+				</>
+			)}
+		</>
+	);
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
+function GameDetailHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; onOpenSettings: () => void }>) {
+	return (
+		<TouchableOpacity
+			nativeID={ComponentIds.GAME_DETAIL_SETTINGS_BUTTON}
+			onPress={onOpenSettings}
+			style={styles.headerButton}
+		>
+			<Ionicons name="settings-outline" size={22} color={color} />
+		</TouchableOpacity>
+	);
+}
+
+function makeGameDetailHeaderRight(color: string, onOpenSettings: () => void) {
+	return () => <GameDetailHeaderRight color={color} onOpenSettings={onOpenSettings} />;
+}
+
+// ─── Game detail screen ───────────────────────────────────────────────────────
+
+export default function GameTypeDetailScreen() {
+	const { theme } = useTheme();
+	const insets = useSafeAreaInsets();
+	const dispatch = useDispatch<AppDispatch>();
+	const navigation = useNavigation();
+	const { id } = useLocalSearchParams<{ id: string }>();
+	const gameType = useSelector((state: RootState) => state.gameTypes.gameTypes.find((g) => g.id === id));
+	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
+	const activeGame = useSelector((state: RootState) => state.game);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+
+	// Match list search/sorting/filtering. Kept as local screen state (not
+	// persisted): it's a way of looking at the list, not part of the game.
+	const [searchQuery, setSearchQuery] = useState('');
+	const [matchFilters, setMatchFilters] = useState<CategoryFilters>({});
+	const [matchSort, setMatchSort] = useState<MatchSort>(DEFAULT_MATCH_SORT);
+	const [showFilters, setShowFilters] = useState(false);
+
+	const categories: GameCategory[] = useMemo(() => gameType?.categories ?? [], [gameType]);
+	const trackScores = gameType?.trackScores ?? true;
+
+	// The match currently being played, if it belongs to this game. It is not in
+	// the history yet (that happens when it is replaced or ended), but it is a
+	// match of this game all the same - so it shows up in the list, on top and
+	// marked as running, and tapping it jumps straight back into it.
+	const runningMatch = useMemo(() => {
+		if (!gameType || activeGame.status !== 'active' || activeGame.gameTypeId !== gameType.id) return null;
+		if (activeGame.players.length === 0) return null;
+		return buildHistoryEntry(activeGame, { id: activeGame.matchId ?? 'running', endedAt: Date.now() });
+	}, [gameType, activeGame]);
+
+	const allMatchEntries = useMemo(() => {
+		if (!gameType) return [];
+		const archived = historyEntries.filter((entry) => entry.gameTypeId === gameType.id && entry.id !== runningMatch?.id);
+		return runningMatch ? [runningMatch, ...archived] : archived;
+	}, [historyEntries, gameType, runningMatch]);
+
+	// A game that has never been played shows its settings right away - that's
+	// the "just created it, set it up" case. From the first recorded match on,
+	// the screen is about those matches and the settings move into the header.
+	const hasMatches = allMatchEntries.length > 0;
+
+	const matches = useMemo(() => {
+		if (!gameType) return [];
+		const sortCategory = matchSort.categoryId ? categories.find((c) => c.id === matchSort.categoryId) : undefined;
+		const directionFactor = matchSort.direction === 'asc' ? 1 : -1;
+		const query = searchQuery.trim().toLowerCase();
+
+		return allMatchEntries
+			.filter((entry) =>
+				matchPassesFilters({
+					categories,
+					filters: matchFilters,
+					matchValues: entry.categoryValues,
+					playerValues: entry.playerCategoryValues,
+				}),
+			)
+			.map((entry) => {
+				const ranked = [...entry.players].sort((a, b) => {
+					const scoreA = entry.finalScores[a.playerId] ?? 0;
+					const scoreB = entry.finalScores[b.playerId] ?? 0;
+					return gameType.scoringMode === 'lowWins' ? scoreA - scoreB : scoreB - scoreA;
+				});
+				const winner = ranked[0];
+				return {
+					id: entry.id,
+					entry,
+					isRunning: entry.id === runningMatch?.id,
+					endedAt: entry.endedAt,
+					roundsCount: entry.roundsCount,
+					players: entry.players,
+					winnerName: winner ? winner.name : undefined,
+					winnerScore: winner ? entry.finalScores[winner.playerId] ?? 0 : 0,
+					categoryValues: resolveCategoryValues(categories, entry.categoryValues),
+					categorySummary: summarizeCategoryValues(
+						categories.filter((c) => c.scope === 'match'),
+						entry.categoryValues,
+					),
+				};
+			})
+			.filter((match) => query === '' || matchSearchText(match, categories).includes(query))
+			.sort((a, b) => {
+				if (!sortCategory) return (a.endedAt - b.endedAt) * directionFactor;
+				const byCategory = compareCategoryValues(
+					sortCategory,
+					a.categoryValues[sortCategory.id],
+					b.categoryValues[sortCategory.id],
+				);
+				// Equal category values keep the newest match first, so the list
+				// never jumps around between renders.
+				if (byCategory !== 0) return byCategory * directionFactor;
+				return b.endedAt - a.endedAt;
+			});
+	}, [allMatchEntries, gameType, categories, matchFilters, matchSort, searchQuery, runningMatch]);
+
+	const handleOpenSettingsModal = useCallback(() => {
+		if (!gameType) return;
+		showModal({
+			title: '⚙️ Einstellungen',
+			children: (
+				<View style={styles.modalContent}>
+					<GameTypeSettingsContent
+						gameTypeId={gameType.id}
+						onGameTypeDeleted={() => {
+							closeModal();
+							router.replace('/games');
+						}}
+					/>
+				</View>
+			),
+		});
+	}, [showModal, closeModal, gameType]);
+
+	// Header: back arrow to the games list (drawer navigators have no reliable
+	// push history, so navigate explicitly - same reasoning as the old friend
+	// detail screen). The gear only appears once the settings have moved out of
+	// the screen body.
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			title: gameType ? `${gameType.icon} ${gameType.name}` : 'Spiel',
+			headerLeft: makeGameDetailHeaderLeft(theme.header.text),
+			headerRight: hasMatches ? makeGameDetailHeaderRight(theme.header.text, handleOpenSettingsModal) : undefined,
+		});
+	}, [navigation, theme.header.text, gameType, hasMatches, handleOpenSettingsModal]);
+
+	/** Archive whatever is currently being played, so it isn't lost when the game state is replaced. */
+	const archiveRunningMatch = useCallback(() => {
+		if (activeGame.status !== 'active' || activeGame.players.length === 0) return;
+		dispatch(
+			archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: Date.now() })),
+		);
+	}, [activeGame, dispatch]);
+
+	// Start a new match of this game: archive a still-running match first (it
+	// keeps its own game type), then reuse the current player list in the setup
+	// phase with this game type preselected.
+	const handleStartMatch = useCallback(() => {
+		if (!gameType) return;
+		archiveRunningMatch();
+		dispatch(resetScores());
+		dispatch(setGameType(gameType.id));
+		router.push('/');
+	}, [gameType, archiveRunningMatch, dispatch]);
+
+	// Tapping a match returns to it: the running one is already loaded, an
+	// archived one is loaded back into the game state (and keeps its id, so
+	// playing on updates its own history entry).
+	const handleOpenMatch = useCallback(
+		(entry: GameHistoryEntry, isRunning: boolean) => {
+			if (!isRunning) {
+				archiveRunningMatch();
+				dispatch(loadMatch(entry));
+			}
+			router.push('/');
+		},
+		[archiveRunningMatch, dispatch],
 	);
 
 	if (!gameType) {
@@ -497,6 +785,11 @@ export default function GameTypeDetailScreen() {
 		);
 	}
 
+	const matchCountTitle =
+		matches.length === allMatchEntries.length
+			? `Partien (${matches.length})`
+			: `Partien (${matches.length} von ${allMatchEntries.length})`;
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView
@@ -505,213 +798,11 @@ export default function GameTypeDetailScreen() {
 					{ paddingBottom: insets.bottom + 32, paddingLeft: insets.left, paddingRight: insets.right },
 				]}
 			>
-				<SettingsList
-					label="Bild"
-					leftIconComponent={
-						<View style={styles.gameIconWrapper}>
-							<GameTypeIcon icon={gameType.icon} size={48} />
-						</View>
-					}
-					rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#ffffff" />}
-					handleFunction={handleOpenIconModal}
-					groupPosition="top"
-				/>
-				<SettingsListTextInput
-					label="Name"
-					placeholder="Name eingeben"
-					initialValue={gameType.name}
-					value={gameType.name}
-					onSave={(name) => {
-						dispatch(renameGameType({ gameTypeId: gameType.id, name }));
-					}}
-					groupPosition="middle"
-				/>
-				<SettingsList
-					label="Wertung"
-					value={gameType.scoringMode === 'lowWins' ? 'Wenige Punkte gewinnen' : 'Viele Punkte gewinnen'}
-					leftIcon={
-						<Ionicons
-							name={gameType.scoringMode === 'lowWins' ? 'trending-down-outline' : 'trending-up-outline'}
-							size={20}
-							color="#ffffff"
-						/>
-					}
-					iconBgColor={PRIMARY_COLOR}
-					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={handleOpenScoringModal}
-					groupPosition="middle"
-				/>
-				<SettingsListNumberInput
-					label="Max. Runden pro Partie"
-					value={gameType.maxRounds ? String(gameType.maxRounds) : 'Unbegrenzt'}
-					leftIcon={<Ionicons name="repeat-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Max. Runden pro Partie"
-					placeholder="z.B. 10"
-					initialValue={gameType.maxRounds ?? undefined}
-					min={1}
-					max={99}
-					onSave={(value) => {
-						dispatch(setGameTypeMaxRounds({ gameTypeId: gameType.id, maxRounds: value }));
-					}}
-					allowDisable
-					disableLabel="Unbegrenzt"
-					onDisable={() => {
-						dispatch(setGameTypeMaxRounds({ gameTypeId: gameType.id, maxRounds: null }));
-					}}
-					groupPosition="middle"
-				/>
-				<SettingsListNumberInput
-					label="Maximale Punktzahl"
-					value={gameType.maxScore ? String(gameType.maxScore) : 'Unbegrenzt'}
-					leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Maximale Punktzahl"
-					placeholder="z.B. 100"
-					initialValue={gameType.maxScore ?? undefined}
-					min={1}
-					max={999999}
-					onSave={(value) => {
-						dispatch(setGameTypeMaxScore({ gameTypeId: gameType.id, maxScore: value }));
-					}}
-					allowDisable
-					disableLabel="Unbegrenzt"
-					onDisable={() => {
-						dispatch(setGameTypeMaxScore({ gameTypeId: gameType.id, maxScore: null }));
-					}}
-					groupPosition="middle"
-				/>
-				<SettingsListNumberInput
-					nativeID={ComponentIds.GAME_DETAIL_VERSION_ROW}
-					label="Version"
-					value={String(gameType.version ?? 1)}
-					leftIcon={<MaterialCommunityIcons name="tag-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Version"
-					placeholder="z.B. 1"
-					initialValue={gameType.version ?? 1}
-					min={1}
-					max={999999}
-					onSave={(value) => {
-						dispatch(setGameTypeVersion({ gameTypeId: gameType.id, version: value }));
-					}}
-					groupPosition="middle"
-				/>
-				<SettingsList
-					nativeID={ComponentIds.GAME_DETAIL_DELETE_BUTTON}
-					label="Spiel löschen"
-					leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
-					iconBgColor={DANGER_COLOR}
-					handleFunction={handleDelete}
-					groupPosition="bottom"
-				/>
-
-				<SettingsListGroupTitle title="Spielregeln" />
-				<SettingsListBoolean
-					nativeID={ComponentIds.GAME_DETAIL_TRACK_SCORES_ROW}
-					label="Punkte zählen"
-					leftIcon={<MaterialCommunityIcons name="counter" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					isEnabled={trackScores}
-					valueActive="Spieler bekommen Punkte"
-					valueInactive="Nur Kategorien statt Punkte"
-					onToggle={() => dispatch(setGameTypeTrackScores({ gameTypeId: gameType.id, trackScores: !trackScores }))}
-					groupPosition="top"
-				/>
-				<SettingsList
-					label="Punkte-Eingabe"
-					value={gameType.rules?.scoreEntry ? 'Kartenauswahl' : 'Zahleneingabe (Standard)'}
-					leftIcon={<MaterialCommunityIcons name={gameType.rules?.scoreEntry ? 'cards-outline' : 'numeric'} size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					groupPosition="middle"
-				/>
-				<SettingsList
-					nativeID={ComponentIds.GAME_DETAIL_STARTING_PLAYER_ROW}
-					label="Startspieler"
-					value={STARTING_PLAYER_MODE_INFO[gameType.startingPlayerMode ?? 'fixed'].label}
-					leftIcon={<Ionicons name="person-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={handleOpenStartingPlayerModal}
-					groupPosition={gameType.rules?.scoreEntry ? 'middle' : 'bottom'}
-				/>
-				{gameType.rules?.scoreEntry && (
-					<SettingsList
-						label="Regeln entfernen"
-						value="Zurück zur Zahleneingabe"
-						leftIcon={<Ionicons name="close-circle-outline" size={20} color="#ffffff" />}
-						iconBgColor={DANGER_COLOR}
-						handleFunction={handleRemoveRules}
-						groupPosition="bottom"
-					/>
+				{!hasMatches && (
+					<GameTypeSettingsContent gameTypeId={gameType.id} onGameTypeDeleted={() => router.replace('/games')} />
 				)}
 
-				<SettingsListGroupTitle title="Kategorien" />
-				<GameCategorySettings gameTypeId={gameType.id} />
-
-				<SettingsListGroupTitle title="Code" />
-				<SettingsListTextInput
-					nativeID={ComponentIds.GAME_DETAIL_CODE_EDIT_ROW}
-					label="Code bearbeiten"
-					leftIcon={<MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Code bearbeiten"
-					placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
-					initialValue={JSON.stringify(gameTypeToPreset(gameType), null, 2)}
-					saveLabel="Übernehmen"
-					multiline
-					numberOfLines={16}
-					textAlignVertical="top"
-					checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
-					onSave={handleEditCode}
-					groupPosition="single"
-				/>
-
-				<SettingsListGroupTitle title="Spiel als Vorlage teilen" />
-				<SettingsList
-					nativeID={ComponentIds.GAME_DETAIL_EXPORT_ROW}
-					label="Dieses Spiel exportieren"
-					value={gameType.name}
-					leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					handleFunction={handleExportPreset}
-					groupPosition="top"
-				/>
-				<SettingsListTextInput
-					nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
-					label="Spiel importieren"
-					leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Spiel importieren"
-					placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
-					saveLabel="Importieren"
-					multiline
-					numberOfLines={10}
-					textAlignVertical="top"
-					checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
-					onSave={handleImportPreset}
-					groupPosition="bottom"
-				/>
-
-				{debugMode && (
-					<>
-						<SettingsListGroupTitle title="Debug" />
-						<SettingsList
-							nativeID={ComponentIds.GAME_DETAIL_ID_ROW}
-							label="ID"
-							value={gameType.id}
-							leftIcon={<MaterialCommunityIcons name="identifier" size={20} color="#ffffff" />}
-							iconBgColor={DEBUG_COLOR}
-							rightIcon={<MaterialCommunityIcons name="content-copy" size={18} color="#9ca3af" />}
-							handleFunction={handleCopyId}
-							groupPosition="single"
-						/>
-					</>
-				)}
-
-				<SettingsListGroupTitle
-					title={matches.length === totalMatchCount ? `Partien (${matches.length})` : `Partien (${matches.length} von ${totalMatchCount})`}
-				/>
+				<SettingsListGroupTitle title={matchCountTitle} />
 				<SettingsList
 					nativeID={ComponentIds.GAME_DETAIL_START_MATCH_BUTTON}
 					label="Neue Partie starten"
@@ -719,9 +810,9 @@ export default function GameTypeDetailScreen() {
 					iconBgColor={PRIMARY_COLOR}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleStartMatch}
-					groupPosition={categories.length > 0 ? 'top' : 'single'}
+					groupPosition={hasMatches && categories.length > 0 ? 'top' : 'single'}
 				/>
-				{categories.length > 0 && (
+				{hasMatches && categories.length > 0 && (
 					<SettingsList
 						nativeID={ComponentIds.GAME_DETAIL_FILTER_TOGGLE}
 						label="Sortieren & filtern"
@@ -734,7 +825,27 @@ export default function GameTypeDetailScreen() {
 						groupPosition="bottom"
 					/>
 				)}
-				{categories.length > 0 && showFilters && (
+				{hasMatches && (
+					<View style={[styles.searchBar, { backgroundColor: theme.screen.iconBg }]}>
+						<Ionicons name="search-outline" size={18} color={theme.screen.icon} />
+						<TextInput
+							nativeID={ComponentIds.GAME_DETAIL_SEARCH_INPUT}
+							style={[styles.searchInput, { color: theme.screen.text }]}
+							placeholder="Partie suchen"
+							placeholderTextColor={theme.screen.placeholder}
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							returnKeyType="search"
+							autoCorrect={false}
+						/>
+						{searchQuery.length > 0 && (
+							<TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={8}>
+								<Ionicons name="close-circle" size={18} color={theme.screen.icon} />
+							</TouchableOpacity>
+						)}
+					</View>
+				)}
+				{hasMatches && categories.length > 0 && showFilters && (
 					<MatchFilterSort
 						categories={categories}
 						filters={matchFilters}
@@ -745,19 +856,20 @@ export default function GameTypeDetailScreen() {
 				)}
 				{matches.length === 0 ? (
 					<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
-						{totalMatchCount === 0 ? 'Noch keine Partien gespielt.' : 'Keine Partie passt zu den gewählten Filtern.'}
+						{allMatchEntries.length === 0 ? 'Noch keine Partien gespielt.' : 'Keine Partie passt zur Suche.'}
 					</Text>
 				) : (
 					matches.map((match, index) => (
 						<SettingsList
 							key={match.id}
 							nativeID={`${ComponentIds.GAME_DETAIL_MATCH_ROW_PREFIX}${match.id}`}
-							label={formatDate(match.endedAt)}
+							label={match.isRunning ? `${formatDate(match.endedAt)} · läuft` : formatDate(match.endedAt)}
 							value={describeMatchRow(match, trackScores)}
 							stackedValue
-							leftIcon={<Ionicons name="calendar-outline" size={20} color="#ffffff" />}
-							iconBgColor={PRIMARY_COLOR}
+							leftIcon={<Ionicons name={match.isRunning ? 'play-circle-outline' : 'calendar-outline'} size={20} color="#ffffff" />}
+							iconBgColor={match.isRunning ? SUCCESS_COLOR : PRIMARY_COLOR}
 							rightElement={<MatchParticipants players={match.players} />}
+							handleFunction={() => handleOpenMatch(match.entry, match.isRunning)}
 							groupPosition={getGroupPosition(index, matches.length)}
 						/>
 					))
@@ -778,6 +890,25 @@ const styles = StyleSheet.create({
 	},
 	listContent: {
 		padding: 12,
+	},
+	headerButton: {
+		padding: 4,
+		marginRight: 8,
+	},
+	searchBar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		borderRadius: 10,
+		paddingHorizontal: 12,
+		height: 40,
+		marginTop: 12,
+		marginBottom: 4,
+	},
+	searchInput: {
+		flex: 1,
+		fontSize: 15,
+		height: '100%',
 	},
 	gameIconWrapper: {
 		marginRight: 12,

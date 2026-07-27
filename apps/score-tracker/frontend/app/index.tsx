@@ -47,13 +47,13 @@ import {
 } from '../store/gameSlice';
 import { addFriendFromPlayer } from '../store/friendsSlice';
 import { addGameType } from '../store/gameTypesSlice';
-import { archiveGame } from '../store/gameHistorySlice';
+import { archiveGame, removeGameFromHistory } from '../store/gameHistorySlice';
 import { setColumnsPortrait, setColumnsLandscape } from '../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Player } from '../helpers/GameStorage';
 import type { GameType } from '../helpers/GameTypesStorage';
-import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
+import { buildHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
@@ -81,10 +81,6 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	if (total === 1 || index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
-}
-
-function generateHistoryId(): string {
-	return generateId();
 }
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────
@@ -645,12 +641,15 @@ function GameHeaderRight({
 	isActive,
 	isEditingPlayers,
 	onToggleEditingPlayers,
+	onDeleteMatch,
 	onOpenSettings,
 }: Readonly<{
 	color: string;
 	isActive: boolean;
 	isEditingPlayers: boolean;
 	onToggleEditingPlayers: () => void;
+	/** Deletes the match currently open (only offered while one is being played). */
+	onDeleteMatch: () => void;
 	onOpenSettings: () => void;
 }>) {
 	return (
@@ -666,6 +665,15 @@ function GameHeaderRight({
 						size={22}
 						color={color}
 					/>
+				</TouchableOpacity>
+			)}
+			{isActive && (
+				<TouchableOpacity
+					nativeID={ComponentIds.GAME_HEADER_DELETE_MATCH_BUTTON}
+					onPress={onDeleteMatch}
+					style={styles.headerButton}
+				>
+					<Ionicons name="trash-outline" size={22} color={color} />
 				</TouchableOpacity>
 			)}
 			<TouchableOpacity
@@ -684,6 +692,7 @@ function makeGameHeaderRight(
 	isActive: boolean,
 	isEditingPlayers: boolean,
 	onToggleEditingPlayers: () => void,
+	onDeleteMatch: () => void,
 	onOpenSettings: () => void,
 ) {
 	return () => (
@@ -692,6 +701,7 @@ function makeGameHeaderRight(
 			isActive={isActive}
 			isEditingPlayers={isEditingPlayers}
 			onToggleEditingPlayers={onToggleEditingPlayers}
+			onDeleteMatch={onDeleteMatch}
 			onOpenSettings={onOpenSettings}
 		/>
 	);
@@ -756,7 +766,9 @@ export default function GameScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
+	const game = useSelector((state: RootState) => state.game);
 	const players = useSelector((state: RootState) => state.game.players);
+	const matchId = useSelector((state: RootState) => state.game.matchId);
 	const rounds = useSelector((state: RootState) => state.game.rounds);
 	const status = useSelector((state: RootState) => state.game.status);
 	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
@@ -924,27 +936,22 @@ export default function GameScreen() {
 
 	const handleStartNewGame = useCallback(() => {
 		if (players.length > 0) {
-			const entry: GameHistoryEntry = {
-				id: generateHistoryId(),
-				endedAt: Date.now(),
-				roundsCount: rounds.length,
-				players: players.map((p) => ({
-					playerId: p.id,
-					friendId: p.friendId,
-					name: p.name,
-					color: p.color,
-					avatarConfig: p.avatarConfig,
-				})),
-				finalScores: Object.fromEntries(players.map((p) => [p.id, totals[p.id] ?? 0])),
-				gameTypeId,
-				categoryValues,
-				playerCategoryValues,
-			};
-			dispatch(archiveGame(entry));
+			dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
 		}
 		dispatch(resetAll());
 		closeSettingsModal();
-	}, [players, rounds, totals, gameTypeId, categoryValues, playerCategoryValues, dispatch, closeSettingsModal]);
+	}, [players.length, game, matchId, dispatch, closeSettingsModal]);
+
+	/**
+	 * Throw away the match currently open - including its archived entry, if it
+	 * was re-opened from the history - and start over from the setup phase with
+	 * the same game preselected.
+	 */
+	const handleDeleteMatch = useCallback(() => {
+		if (matchId) dispatch(removeGameFromHistory(matchId));
+		dispatch(resetScores());
+		closeSettingsModal();
+	}, [matchId, dispatch, closeSettingsModal]);
 
 	// ─── Game type selection (setup phase) ───────────────────────────────────
 
@@ -1014,10 +1021,20 @@ export default function GameScreen() {
 				status === 'active',
 				isEditingPlayers,
 				toggleEditingPlayers,
+				handleDeleteMatch,
 				handleOpenSettingsModal,
 			),
 		});
-	}, [navigation, theme.header.text, status, isEditingPlayers, handleOpenSettingsModal, selectedGameType]);
+	}, [
+		navigation,
+		theme.header.text,
+		status,
+		isEditingPlayers,
+		toggleEditingPlayers,
+		handleDeleteMatch,
+		handleOpenSettingsModal,
+		selectedGameType,
+	]);
 
 	// ─── Score entry ──────────────────────────────────────────────────────────
 
@@ -1027,7 +1044,8 @@ export default function GameScreen() {
 	// its categories alone.
 	const handleTilePress = useCallback(
 		(playerId: string) => {
-			if (!currentRound) return;
+			// Only score entry needs a round; a game without points has none.
+			if (trackScores && !currentRound) return;
 			const player = players.find((p) => p.id === playerId);
 			const categorySection = playerCategories.length > 0 ? <PlayerCategorySection playerId={playerId} categories={categories} /> : null;
 			const title = player ? player.name : 'Eintrag';
@@ -1045,6 +1063,7 @@ export default function GameScreen() {
 			}
 
 			const scoreEntryRules = selectedGameType?.rules?.scoreEntry;
+			if (!currentRound) return;
 			if (scoreEntryRules) {
 				showScoreModal({
 					title: 'Punkte eingeben',
@@ -1222,13 +1241,16 @@ export default function GameScreen() {
 				)}
 			</ScrollView>
 
-			{(status === 'setup' || !isEditingPlayers) && (
+			{/* A game without points has no rounds, so the round navigation bar
+			    disappears with them - such a match is ended via the header's
+			    settings ("Neues Spiel") or discarded via its delete button. */}
+			{(status === 'setup' || (!isEditingPlayers && trackScores)) && (
 				<View style={[styles.bottomBar, { borderTopColor: theme.screen.border, paddingBottom: insets.bottom + 12 }]}>
 					{status === 'setup' ? (
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_START_BUTTON}
 							style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR, opacity: startButtonOpacity }]}
-							onPress={() => dispatch(startGame())}
+							onPress={() => dispatch(startGame({ withRounds: trackScores }))}
 							disabled={players.length === 0}
 							activeOpacity={0.8}
 						>

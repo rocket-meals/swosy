@@ -1,6 +1,7 @@
 import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { PlayerIdentity } from './PlayerIdentity';
 import type { GameCategoryValues } from './GameCategories';
+import type { GameState, Round } from './GameStorage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,11 +25,55 @@ export type GameHistoryEntry = {
 	categoryValues?: GameCategoryValues;
 	/** Recorded player-scope category values, keyed by `GameHistoryPlayerEntry.playerId` and then category id. */
 	playerCategoryValues?: Record<string, GameCategoryValues>;
+	/**
+	 * The match's rounds, kept so an archived match can be re-opened and played
+	 * on (see `loadMatch` in the game slice). Absent on entries archived before
+	 * re-opening existed - those only carry `finalScores`.
+	 */
+	rounds?: Round[];
 };
 
 export type GameHistoryState = {
 	entries: GameHistoryEntry[];
 };
+
+// ─── Building an entry from a played match ────────────────────────────────────
+
+/**
+ * Snapshot of the currently played match, ready to be archived. Keeps the
+ * match's own id (`GameState.matchId`), so archiving the same match twice -
+ * e.g. after re-opening and playing on - updates its entry instead of adding a
+ * duplicate one (see `archiveGame`).
+ */
+export function buildHistoryEntry(game: GameState, params: { id: string; endedAt: number }): GameHistoryEntry {
+	const finalScores: Record<string, number> = {};
+	for (const player of game.players) {
+		let total = 0;
+		for (const round of game.rounds) {
+			const score = round.scores[player.id];
+			if (score != null) total += score;
+		}
+		finalScores[player.id] = total;
+	}
+
+	return {
+		id: params.id,
+		endedAt: params.endedAt,
+		roundsCount: game.rounds.length,
+		players: game.players.map((player) => ({
+			playerId: player.id,
+			friendId: player.friendId,
+			name: player.name,
+			color: player.color,
+			avatarConfig: player.avatarConfig,
+		})),
+		finalScores,
+		gameTypeId: game.gameTypeId,
+		categoryValues: game.categoryValues,
+		playerCategoryValues: game.playerCategoryValues,
+		rounds: game.rounds,
+	};
+}
 
 // ─── Storage access ───────────────────────────────────────────────────────────
 

@@ -19,6 +19,7 @@ export const ComponentIds = {
 
 	// Game screen header
 	GAME_HEADER_EDIT_PLAYERS_BUTTON: 'game-header-edit-players-button',
+	GAME_HEADER_DELETE_MATCH_BUTTON: 'game-header-delete-match-button',
 	GAME_HEADER_SETTINGS_BUTTON: 'game-header-settings-button',
 
 	// Round navigation (active game)
@@ -85,6 +86,8 @@ export const ComponentIds = {
 	GAME_DETAIL_EDIT_BUTTON: 'game-detail-edit-button',
 	GAME_DETAIL_DELETE_BUTTON: 'game-detail-delete-button',
 	GAME_DETAIL_ID_ROW: 'game-detail-id-row',
+	GAME_DETAIL_SETTINGS_BUTTON: 'game-detail-settings-button',
+	GAME_DETAIL_SEARCH_INPUT: 'game-detail-search-input',
 	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
 	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',
 	GAME_DETAIL_EXPORT_ROW: 'game-detail-export-row',

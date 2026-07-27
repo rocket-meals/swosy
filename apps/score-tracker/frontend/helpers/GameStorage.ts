@@ -44,6 +44,12 @@ export type GameState = {
 	rounds: Round[];
 	status: GameStatus;
 	currentRoundIndex: number;
+	/**
+	 * Stable id of the match being played, generated when it starts. Archiving
+	 * reuses it (see `buildHistoryEntry`), so a match re-opened from the history
+	 * and played on updates its own entry instead of piling up copies.
+	 */
+	matchId?: string;
 	/** Set when the current match is played as a specific game (see GameTypesStorage). */
 	gameTypeId?: string;
 	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
@@ -94,6 +100,7 @@ export async function loadGameState(): Promise<GameState> {
 				rounds,
 				status,
 				currentRoundIndex,
+				matchId: parsed.matchId,
 				gameTypeId: parsed.gameTypeId,
 				playerOrderState: parsed.playerOrderState,
 				categoryValues: parsed.categoryValues ?? {},

@@ -3,6 +3,7 @@ import type { AvatarConfig } from 'repo-depkit-common-ui';
 import type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Friend } from '../helpers/FriendsStorage';
+import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
 import type { GameCategoryValue } from '../helpers/GameCategories';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
@@ -19,6 +20,7 @@ const initialState: GameSliceState = {
 	rounds: [],
 	status: 'setup',
 	currentRoundIndex: 0,
+	matchId: undefined,
 	gameTypeId: undefined,
 	playerOrderState: undefined,
 	categoryValues: {},
@@ -52,6 +54,7 @@ const gameSlice = createSlice({
 				rounds: action.payload.rounds,
 				status: action.payload.status,
 				currentRoundIndex: action.payload.currentRoundIndex,
+				matchId: action.payload.matchId,
 				gameTypeId: action.payload.gameTypeId,
 				playerOrderState: action.payload.playerOrderState,
 				categoryValues: action.payload.categoryValues ?? {},
@@ -197,13 +200,62 @@ const gameSlice = createSlice({
 			round.cardSelections[action.payload.playerId] = action.payload.cardIds;
 		},
 
-		/** Leave the setup phase (round 0) and start round 1. Round 1 always starts with the first seat. */
-		startGame(state) {
+		/**
+		 * Leave the setup phase and start the match. Round 1 always starts with
+		 * the first seat.
+		 *
+		 * A game that doesn't score its players (`trackScores: false`, see
+		 * GameRules) has no rounds at all - everything it records lives in its
+		 * categories - so the caller passes `withRounds: false` and no round is
+		 * created.
+		 */
+		startGame(state, action: PayloadAction<{ withRounds?: boolean } | undefined>) {
 			if (state.status === 'active') return;
+			const withRounds = action.payload?.withRounds ?? true;
 			state.status = 'active';
-			state.rounds = [{ id: generateId(), scores: emptyScoresFor(state.players), startingPlayerId: state.players[0]?.id }];
+			state.rounds = withRounds
+				? [{ id: generateId(), scores: emptyScoresFor(state.players), startingPlayerId: state.players[0]?.id }]
+				: [];
 			state.currentRoundIndex = 0;
+			state.matchId = generateId();
 			state.playerOrderState = undefined;
+		},
+
+		/**
+		 * Re-open an archived match (see the game detail screen's match list):
+		 * its players, rounds and recorded category values become the currently
+		 * played match again, keeping its id so archiving updates that same
+		 * history entry.
+		 *
+		 * Entries archived before rounds were kept fall back to a single round
+		 * holding the final scores - the per-round breakdown is gone for those,
+		 * but their totals stay visible and editable.
+		 */
+		loadMatch(state, action: PayloadAction<GameHistoryEntry>) {
+			const entry = action.payload;
+			const players: Player[] = entry.players.map((player, index) => ({
+				id: player.playerId,
+				name: player.name,
+				color: player.color || PLAYER_COLORS[index % PLAYER_COLORS.length],
+				avatarConfig: player.avatarConfig,
+				friendId: player.friendId,
+			}));
+			const rounds =
+				entry.rounds ??
+				(Object.keys(entry.finalScores).length > 0
+					? [{ id: generateId(), scores: { ...entry.finalScores } }]
+					: []);
+			return {
+				players,
+				rounds,
+				status: 'active' as const,
+				currentRoundIndex: Math.max(0, rounds.length - 1),
+				matchId: entry.id,
+				gameTypeId: entry.gameTypeId,
+				playerOrderState: undefined,
+				categoryValues: entry.categoryValues ?? {},
+				playerCategoryValues: entry.playerCategoryValues ?? {},
+			};
 		},
 
 		/** Move to the previous round (view/edit its scores). No-op at round 1. */
@@ -234,6 +286,7 @@ const gameSlice = createSlice({
 			state.rounds = [];
 			state.status = 'setup';
 			state.currentRoundIndex = 0;
+			state.matchId = undefined;
 			state.playerOrderState = undefined;
 			state.categoryValues = {};
 			state.playerCategoryValues = {};
@@ -246,6 +299,7 @@ const gameSlice = createSlice({
 				rounds: [],
 				status: 'setup' as const,
 				currentRoundIndex: 0,
+				matchId: undefined,
 				gameTypeId: undefined,
 				categoryValues: {},
 				playerCategoryValues: {},
@@ -299,6 +353,7 @@ export const {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	loadMatch,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,
