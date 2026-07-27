@@ -20,7 +20,7 @@ import type { ImageSearchResult } from '../helpers/ImageSearch';
 import { defaultImageQuery, isGoogleImageSearchConfigured, searchImages } from '../helpers/ImageSearch';
 import { MAX_IMAGE_SIZE } from '../helpers/GameImageUpload';
 import { GAME_TYPE_ICONS } from '../helpers/GameTypesStorage';
-import { describeImageSize, isInlineImage, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
+import { ImagePickerUnavailableError, describeImageSize, isInlineImage, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
 import { ComponentIds } from '../constants/ComponentIds';
 
 // The sheet's keyboard tracking only sees BottomSheetTextInput; web has no
@@ -195,7 +195,9 @@ export function GameImagePickerContent({
 				}
 			} catch (err) {
 				console.warn('[GameImagePicker] own image failed:', err);
-				setUploadError('Das Bild konnte nicht übernommen werden.');
+				setUploadError(
+					err instanceof ImagePickerUnavailableError ? err.message : 'Das Bild konnte nicht übernommen werden.',
+				);
 			} finally {
 				setIsUploading(false);
 			}

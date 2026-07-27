@@ -19,6 +19,26 @@ const IMAGE_QUALITY = 0.7;
 export type PickImageSource = 'library' | 'camera';
 
 /**
+ * Thrown when the picker's native module isn't part of the installed app yet.
+ * `expo-image-picker`/`expo-image-manipulator` ship native code, so they only
+ * become usable with a new native build - an OTA update alone carries the
+ * JavaScript but not the module behind it. Callers turn this into a hint
+ * rather than letting it surface as a crash.
+ */
+export class ImagePickerUnavailableError extends Error {
+	constructor() {
+		super('Eigene Bilder sind erst nach dem nächsten nativen App-Update verfügbar.');
+		this.name = 'ImagePickerUnavailableError';
+	}
+}
+
+/** True for the "native module missing" failure, as opposed to a real error. */
+function isMissingNativeModule(err: unknown): boolean {
+	const message = err instanceof Error ? err.message : String(err);
+	return /native module|not available|doesn't exist|cannot find module/i.test(message);
+}
+
+/**
  * Scale the picked image down so its longest edge is at most `MAX_IMAGE_SIZE`,
  * keeping the aspect ratio. Images that are already small are left as they are
  * (they still get re-encoded, which is what produces the base64 payload).
@@ -36,6 +56,15 @@ function resizeAction(width: number, height: number): ImageManipulator.Action[] 
  * permission - both are normal outcomes, not errors.
  */
 export async function pickGameImageAsDataUri(source: PickImageSource): Promise<string | null> {
+	try {
+		return await runPicker(source);
+	} catch (err) {
+		if (isMissingNativeModule(err)) throw new ImagePickerUnavailableError();
+		throw err;
+	}
+}
+
+async function runPicker(source: PickImageSource): Promise<string | null> {
 	const permission =
 		source === 'camera'
 			? await ImagePicker.requestCameraPermissionsAsync()
