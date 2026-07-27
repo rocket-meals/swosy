@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-07-27T08:04:47.643Z",
+  "report_timestamp": "2026-07-27T17:34:07.376Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 106,
-          "average": 1.5380934854619066,
-          "amountSavedValuesForKeys": 4179,
+          "average": 1.5382634289919057,
+          "amountSavedValuesForKeys": 4181,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 106,
-          "average": 1.5529542920847268,
-          "amountSavedValuesForKeys": 4179,
+          "average": 1.5531203566121843,
+          "amountSavedValuesForKeys": 4181,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 5319,
-        "detection_time_ms": 97,
+        "ast_generation_time_ms": 3644,
+        "detection_time_ms": 69,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 159.45,
-          "os_memory_free": 14890762240,
-          "os_memory_total": 16766418944,
+          "os_uptime": 125.5,
+          "os_memory_free": 14824517632,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 4,
-    "amount_files_with_data_clumps": 4,
+    "amount_classes_or_interfaces_with_data_clumps": 6,
+    "amount_files_with_data_clumps": 6,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 4,
+    "fields_to_fields_data_clump": 6,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 4
+    "amount_data_clumps": 6
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "090cf3ef176d82c44b058cc8ceaf7f7e228ddcb4",
-    "project_commit_hash": "090cf3ef176d82c44b058cc8ceaf7f7e228ddcb4",
+    "project_version": "7d4ad0f1cb473d7d4fdd16f6bde4ee19cdce3df6",
+    "project_commit_hash": "7d4ad0f1cb473d7d4fdd16f6bde4ee19cdce3df6",
     "project_tag": null,
-    "project_commit_date": "1785139341",
+    "project_commit_date": "1785169735",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 585,
-    "number_of_classes_or_interfaces": 1252,
+    "number_of_classes_or_interfaces": 1253,
     "number_of_methods": 1471,
-    "number_of_data_fields": 4179,
+    "number_of_data_fields": 4181,
     "number_of_method_parameters": 1623
   },
   "detector": {
@@ -91,6 +91,103 @@
     }
   },
   "data_clumps": {
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState-apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState-columnsPortraitcolumnsLandscapegamesSortMode": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState-apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState-columnsPortraitcolumnsLandscapegamesSortMode",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState",
+      "from_class_or_interface_name": "AppSettingsState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/store/appSettingsSlice.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState",
+      "to_class_or_interface_name": "AppSettingsSliceState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsPortrait": {
+          "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsPortrait",
+          "name": "columnsPortrait",
+          "type": "ColumnsCount",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsPortrait",
+            "name": "columnsPortrait",
+            "type": "ColumnsCount",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 32
+          }
+        },
+        "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsLandscape": {
+          "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsLandscape",
+          "name": "columnsLandscape",
+          "type": "ColumnsCount",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsLandscape",
+            "name": "columnsLandscape",
+            "type": "ColumnsCount",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 33
+          }
+        },
+        "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/gamesSortMode": {
+          "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/gamesSortMode",
+          "name": "gamesSortMode",
+          "type": "GamesSortMode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/gamesSortMode",
+            "name": "gamesSortMode",
+            "type": "GamesSortMode",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 31
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValuesrounds": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts-apps/score-tracker/frontend/helpers/GameHistoryStorage.ts/interface/GameHistoryEntry-apps/score-tracker/frontend/helpers/GameStorage.ts/interface/GameState-gameTypeIdcategoryValuesplayerCategoryValuesrounds",
@@ -209,7 +306,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 2
       }
     },
@@ -331,6 +428,103 @@
         }
       },
       "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/score-tracker/frontend/store/appSettingsSlice.ts-apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState-columnsPortraitcolumnsLandscapegamesSortMode": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/score-tracker/frontend/store/appSettingsSlice.ts-apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState-apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState-columnsPortraitcolumnsLandscapegamesSortMode",
+      "probability": 1,
+      "from_file_path": "apps/score-tracker/frontend/store/appSettingsSlice.ts",
+      "from_class_or_interface_key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState",
+      "from_class_or_interface_name": "AppSettingsSliceState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts",
+      "to_class_or_interface_key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState",
+      "to_class_or_interface_name": "AppSettingsState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsPortrait": {
+          "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsPortrait",
+          "name": "columnsPortrait",
+          "type": "ColumnsCount",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsPortrait",
+            "name": "columnsPortrait",
+            "type": "ColumnsCount",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 32
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 32
+          }
+        },
+        "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsLandscape": {
+          "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/columnsLandscape",
+          "name": "columnsLandscape",
+          "type": "ColumnsCount",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/columnsLandscape",
+            "name": "columnsLandscape",
+            "type": "ColumnsCount",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 33
+          }
+        },
+        "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/gamesSortMode": {
+          "key": "apps/score-tracker/frontend/store/appSettingsSlice.ts/interface/AppSettingsSliceState/memberField/gamesSortMode",
+          "name": "gamesSortMode",
+          "type": "GamesSortMode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/score-tracker/frontend/helpers/AppSettingsStorage.ts/interface/AppSettingsState/memberField/gamesSortMode",
+            "name": "gamesSortMode",
+            "type": "GamesSortMode",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 31
+          }
+        }
+      },
+      "data_clump_type_additional": {
         "cluster_id": 1,
         "cluster_type": 2
       }
@@ -428,7 +622,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     },
@@ -525,7 +719,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 2,
+        "cluster_id": 3,
         "cluster_type": 2
       }
     }
