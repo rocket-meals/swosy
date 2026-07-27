@@ -375,6 +375,7 @@ const Index = () => {
       <html>
         <head>
           <meta charset="utf-8">
+          <base href="${document.baseURI}">
           <style>
             ${stylesheets}
             @media print {
@@ -407,7 +408,12 @@ const Index = () => {
           ${content}
           <script>
             window.onload = function () {
-              window.print();
+              var print = function () { window.print(); };
+              if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(print, print);
+              } else {
+                print();
+              }
             };
           </script>
         </body>
@@ -418,6 +424,11 @@ const Index = () => {
 			// opening the window directly at the Blob URL still runs the inline
 			// `window.print()` script once the document has loaded, since the window
 			// navigates to a full HTML document rather than having markup injected.
+			// The <base href> above is required for this: a blob: document (unlike the
+			// about:blank window document.write used) does not inherit the opener's
+			// base URL, so without it the relative font URLs in the copied stylesheets
+			// (Poppins @font-face, @expo/vector-icons icon fonts) fail to resolve and
+			// the print falls back to default fonts without bold weights.
 			const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
 			const newWindow = window.open(blobUrl, '_blank');
 			newWindow?.addEventListener('load', () => URL.revokeObjectURL(blobUrl));
