@@ -1416,15 +1416,21 @@ export default function GameScreen() {
 							<Ionicons name="add-circle-outline" size={22} color={PRIMARY_COLOR} />
 							<Text style={[styles.addPlayerButtonText, { color: PRIMARY_COLOR }]}>Spieler hinzufügen</Text>
 						</TouchableOpacity>
-						{players.map((player, index) => (
-							<PlayerSetupRow
-								key={player.id}
-								player={player}
-								index={index}
-								total={players.length}
-								onEdit={() => handleOpenPlayerEditModal(player.id)}
-							/>
-						))}
+						{/* One wrapper View: the ScrollView's contentContainer has a `gap`,
+						    which would otherwise push the grouped rows apart. */}
+						{players.length > 0 && (
+							<View>
+								{players.map((player, index) => (
+									<PlayerSetupRow
+										key={player.id}
+										player={player}
+										index={index}
+										total={players.length}
+										onEdit={() => handleOpenPlayerEditModal(player.id)}
+									/>
+								))}
+							</View>
+						)}
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON}
 							style={[styles.addPlayerButton, { borderColor: PRIMARY_COLOR }]}
