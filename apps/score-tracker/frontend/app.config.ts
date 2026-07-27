@@ -75,6 +75,15 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			eas: {
 				projectId: '7ea1e999-21dd-41ec-96b3-fc8aa7ad9993',
 			},
+			// Optional Google Programmable Search credentials for the game image
+			// search (helpers/ImageSearch). With both set, a game's picture comes
+			// from Google image results; without them the keyless providers
+			// (Wikimedia Commons, Openverse) are used instead - the feature works
+			// either way, only the result quality differs.
+			googleImageSearch: {
+				apiKey: process.env.GOOGLE_IMAGE_SEARCH_API_KEY ?? '',
+				searchEngineId: process.env.GOOGLE_IMAGE_SEARCH_ENGINE_ID ?? '',
+			},
 		}
 	};
 };

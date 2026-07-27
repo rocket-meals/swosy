@@ -168,7 +168,7 @@ export default function GamesScreen() {
 						nativeID={`${ComponentIds.GAMES_SCREEN_GAME_ROW_PREFIX}${gameType.id}`}
 						leftIconComponent={
 							<View style={styles.gameIconWrapper}>
-								<GameTypeIcon icon={gameType.icon} size={56} />
+								<GameTypeIcon icon={gameType.icon} imageUrl={gameType.imageUrl} size={56} />
 							</View>
 						}
 						label={gameType.name}

@@ -18,8 +18,8 @@ export const ComponentIds = {
 	DRAWER_ITEM_SETTINGS: 'drawer-item-settings',
 
 	// Game screen header
+	GAME_HEADER_BACK_BUTTON: 'game-header-back-button',
 	GAME_HEADER_EDIT_PLAYERS_BUTTON: 'game-header-edit-players-button',
-	GAME_HEADER_DELETE_MATCH_BUTTON: 'game-header-delete-match-button',
 	GAME_HEADER_SETTINGS_BUTTON: 'game-header-settings-button',
 
 	// Round navigation (active game)
@@ -60,7 +60,11 @@ export const ComponentIds = {
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_1: 'game-settings-columns-landscape-1',
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_2: 'game-settings-columns-landscape-2',
 	GAME_SETTINGS_RESET_SCORES: 'game-settings-reset-scores',
-	GAME_SETTINGS_NEW_GAME: 'game-settings-new-game',
+	GAME_SETTINGS_DELETE_MATCH: 'game-settings-delete-match',
+	GAME_SETTINGS_PLAYER_ROW_PREFIX: 'game-settings-player-row-',
+	GAME_SETTINGS_PLAYER_REMOVE_PREFIX: 'game-settings-player-remove-',
+	GAME_SETTINGS_ADD_PLAYER: 'game-settings-add-player',
+	GAME_SETTINGS_EDIT_PLAYERS: 'game-settings-edit-players',
 
 	// Players (friends) screen
 	PLAYERS_SCREEN_ADD_BUTTON: 'players-screen-add-button',
@@ -87,6 +91,12 @@ export const ComponentIds = {
 	GAME_DETAIL_DELETE_BUTTON: 'game-detail-delete-button',
 	GAME_DETAIL_ID_ROW: 'game-detail-id-row',
 	GAME_DETAIL_SETTINGS_BUTTON: 'game-detail-settings-button',
+	GAME_DETAIL_IMAGE_ROW: 'game-detail-image-row',
+	GAME_DETAIL_NAME_ROW: 'game-detail-name-row',
+	GAME_IMAGE_SEARCH_INPUT: 'game-image-search-input',
+	GAME_IMAGE_RESULT_PREFIX: 'game-image-result-',
+	GAME_IMAGE_ICON_PREFIX: 'game-image-icon-',
+	GAME_IMAGE_REMOVE_ROW: 'game-image-remove-row',
 	GAME_DETAIL_SEARCH_INPUT: 'game-detail-search-input',
 	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
 	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',

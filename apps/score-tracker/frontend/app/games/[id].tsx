@@ -19,6 +19,7 @@ import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import {
 	renameGameType,
 	setGameTypeIcon,
+	setGameTypeImageUrl,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,
@@ -35,7 +36,6 @@ import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
 import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
-import { GAME_TYPE_ICONS } from '../../helpers/GameTypesStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { GamePreset, StartingPlayerMode } from '../../helpers/GameRules';
 import { parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
@@ -52,6 +52,8 @@ import { ComponentIds } from '../../constants/ComponentIds';
 import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
 import GameCategorySettings from '../../components/GameCategorySettings';
+import { GameImagePickerContent, GameImageSearchHeader, ImageQueryObservable, defaultImageQuery } from '../../components/GameImagePicker';
+import { findImageUrlForGameName } from '../../helpers/ImageSearch';
 import MatchFilterSort from '../../components/MatchFilterSort';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -115,6 +117,7 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 	return {
 		name: gameType.name,
 		icon: gameType.icon,
+		imageUrl: gameType.imageUrl ?? null,
 		scoringMode: gameType.scoringMode,
 		maxRounds: gameType.maxRounds ?? null,
 		maxScore: gameType.maxScore ?? null,
@@ -124,32 +127,6 @@ function gameTypeToPreset(gameType: GameType): GamePreset {
 		startingPlayerMode: gameType.startingPlayerMode ?? 'fixed',
 		version: gameType.version ?? 1,
 	};
-}
-
-// ─── Icon picker modal content ────────────────────────────────────────────────
-
-function IconPickerContent({ selectedIcon, onSelect }: Readonly<{ selectedIcon: string; onSelect: (icon: string) => void }>) {
-	const { theme } = useTheme();
-	return (
-		<View style={styles.iconGrid}>
-			{GAME_TYPE_ICONS.map((icon) => {
-				const isSelected = icon === selectedIcon;
-				return (
-					<TouchableOpacity
-						key={icon}
-						style={[
-							styles.iconGridItem,
-							{ borderColor: isSelected ? PRIMARY_COLOR : theme.screen.border, backgroundColor: isSelected ? PRIMARY_COLOR + '20' : 'transparent' },
-						]}
-						onPress={() => onSelect(icon)}
-						activeOpacity={0.7}
-					>
-						<Text style={styles.iconGridEmoji}>{icon}</Text>
-					</TouchableOpacity>
-				);
-			})}
-		</View>
-	);
 }
 
 // ─── Scoring mode modal content (live-updating, subscribes to the store) ─────
@@ -313,21 +290,37 @@ function GameTypeSettingsContent({
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
-	const handleOpenIconModal = useCallback(() => {
+	// One picker for both kinds of "image": searched pictures (only their URL is
+	// stored) and the emoji fallback. The search term lives in an observable so
+	// the modal's sticky header and its content can share it.
+	const handleOpenImageModal = useCallback(() => {
 		if (!gameType) return;
+		const observable = new ImageQueryObservable(defaultImageQuery(gameType.name));
 		showModal({
 			title: 'Bild wählen',
-			children: (
-				<IconPickerContent
-					selectedIcon={gameType.icon}
-					onSelect={(icon) => {
-						dispatch(setGameTypeIcon({ gameTypeId, icon }));
-						closeModal();
-					}}
-				/>
-			),
+			stickyHeaderComponent: <GameImageSearchHeader observable={observable} />,
+			children: <GameImagePickerContent gameTypeId={gameTypeId} observable={observable} onPicked={closeModal} />,
 		});
-	}, [showModal, closeModal, gameType, gameTypeId, dispatch]);
+	}, [showModal, closeModal, gameType, gameTypeId]);
+
+	/**
+	 * Naming a game that has no picture yet looks one up automatically: the
+	 * first hit for "<name> Logo". Fire and forget - a failed lookup simply
+	 * leaves the emoji in place.
+	 */
+	const handleRenameGameType = useCallback(
+		(name: string) => {
+			const trimmed = name.trim();
+			dispatch(renameGameType({ gameTypeId, name: trimmed }));
+			if (gameType?.imageUrl || trimmed === '') return;
+			findImageUrlForGameName(trimmed)
+				.then((imageUrl) => {
+					if (imageUrl) dispatch(setGameTypeImageUrl({ gameTypeId, imageUrl }));
+				})
+				.catch(() => undefined);
+		},
+		[dispatch, gameTypeId, gameType?.imageUrl],
+	);
 
 	const handleOpenScoringModal = useCallback(() => {
 		showModal({ title: 'Wertung', children: <ScoringModeSection gameTypeId={gameTypeId} /> });
@@ -382,24 +375,25 @@ function GameTypeSettingsContent({
 	return (
 		<>
 			<SettingsList
+				nativeID={ComponentIds.GAME_DETAIL_IMAGE_ROW}
 				label="Bild"
+				value={gameType.imageUrl ? 'Bild aus der Suche' : 'Emoji'}
 				leftIconComponent={
 					<View style={styles.gameIconWrapper}>
-						<GameTypeIcon icon={gameType.icon} size={48} />
+						<GameTypeIcon icon={gameType.icon} imageUrl={gameType.imageUrl} size={48} />
 					</View>
 				}
 				rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#ffffff" />}
-				handleFunction={handleOpenIconModal}
+				handleFunction={handleOpenImageModal}
 				groupPosition="top"
 			/>
 			<SettingsListTextInput
+				nativeID={ComponentIds.GAME_DETAIL_NAME_ROW}
 				label="Name"
 				placeholder="Name eingeben"
 				initialValue={gameType.name}
 				value={gameType.name}
-				onSave={(name) => {
-					dispatch(renameGameType({ gameTypeId, name }));
-				}}
+				onSave={handleRenameGameType}
 				groupPosition="middle"
 			/>
 			<SettingsList
@@ -932,24 +926,6 @@ const styles = StyleSheet.create({
 		color: '#9ca3af',
 		paddingHorizontal: 10,
 		paddingTop: 10,
-	},
-	iconGrid: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 10,
-		padding: 10,
-		justifyContent: 'center',
-	},
-	iconGridItem: {
-		width: 56,
-		height: 56,
-		borderRadius: 12,
-		borderWidth: 2,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	iconGridEmoji: {
-		fontSize: 28,
 	},
 	matchAvatarsRow: {
 		flexDirection: 'row',

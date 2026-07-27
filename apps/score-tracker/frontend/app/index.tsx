@@ -571,6 +571,121 @@ function ColumnsSettingsSection() {
 	);
 }
 
+// ─── Player management (settings modal) ───────────────────────────────────────
+//
+// Adding and removing players used to hang off the header; both now live here,
+// next to the rest of what can be done to the running match. Connected to the
+// store so the list updates while the modal stays open.
+
+function AddPlayerContent({ onDone }: Readonly<{ onDone: () => void }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const { theme } = useTheme();
+	const players = useSelector((state: RootState) => state.game.players);
+	const friends = useSelector((state: RootState) => state.friends.friends);
+
+	const existingFriendIds = new Set(players.map((p) => p.friendId).filter((id): id is string => !!id));
+	const availableFriends = friends.filter((f) => !existingFriendIds.has(f.id));
+
+	return (
+		<View style={styles.modalContent}>
+			<SettingsListGroupTitle title="Freunde" />
+			{availableFriends.length === 0 ? (
+				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+					Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
+				</Text>
+			) : (
+				availableFriends.map((friend: Friend, index) => (
+					<SettingsListAvatar
+						key={friend.id}
+						nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
+						config={friend.avatarConfig}
+						avatarBackgroundColor={friend.color}
+						previewSize={PICKER_AVATAR_SIZE}
+						label={friend.name}
+						rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
+						onPressOverride={() => {
+							dispatch(addFriendPlayer(friend));
+							onDone();
+						}}
+						groupPosition={getGroupPosition(index, availableFriends.length)}
+					/>
+				))
+			)}
+			<SettingsListGroupTitle title="Sonstige" />
+			<SettingsList
+				nativeID={ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON}
+				label="Gast hinzufügen"
+				leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={() => {
+					dispatch(addGuestPlayer());
+					onDone();
+				}}
+				groupPosition="single"
+			/>
+		</View>
+	);
+}
+
+function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => void }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const { theme } = useTheme();
+	const players = useSelector((state: RootState) => state.game.players);
+	const { show, close } = useMyScrollViewModal();
+
+	const handleAddPlayer = useCallback(() => {
+		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} /> });
+	}, [show, close]);
+
+	return (
+		<>
+			<SettingsListGroupTitle title={`Spieler (${players.length})`} />
+			{players.length === 0 && (
+				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>Noch keine Spieler in dieser Partie.</Text>
+			)}
+			{players.map((player, index) => (
+				<SettingsListAvatar
+					key={player.id}
+					nativeID={`${ComponentIds.GAME_SETTINGS_PLAYER_ROW_PREFIX}${player.id}`}
+					config={player.avatarConfig}
+					avatarBackgroundColor={player.color}
+					previewSize={PICKER_AVATAR_SIZE}
+					label={player.name}
+					onPressOverride={onEditPlayers}
+					rightIcon={
+						<TouchableOpacity
+							nativeID={`${ComponentIds.GAME_SETTINGS_PLAYER_REMOVE_PREFIX}${player.id}`}
+							onPress={() => dispatch(removePlayer(player.id))}
+							hitSlop={8}
+						>
+							<Ionicons name="trash-outline" size={20} color={DANGER_COLOR} />
+						</TouchableOpacity>
+					}
+					groupPosition={index === 0 ? 'top' : 'middle'}
+				/>
+			))}
+			<SettingsList
+				nativeID={ComponentIds.GAME_SETTINGS_ADD_PLAYER}
+				label="Spieler hinzufügen"
+				leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={handleAddPlayer}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				nativeID={ComponentIds.GAME_SETTINGS_EDIT_PLAYERS}
+				label="Spieler bearbeiten"
+				value="Name, Farbe, Avatar und Reihenfolge"
+				leftIcon={<Ionicons name="people-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={onEditPlayers}
+				groupPosition="bottom"
+			/>
+		</>
+	);
+}
+
 // ─── Game type selector (setup phase modal) ───────────────────────────────────
 //
 // Rendered as its own component so it re-renders from its own `useSelector`
@@ -610,7 +725,7 @@ function GameTypeSelectSection({ onDone }: Readonly<{ onDone: () => void }>) {
 					key={gameType.id}
 					nativeID={`${ComponentIds.GAME_TYPE_SELECT_ROW_PREFIX}${gameType.id}`}
 					label={gameType.name}
-					leftIcon={<Text style={styles.gameTypeOptionEmoji}>{gameType.icon}</Text>}
+					leftIcon={<GameTypeIcon icon={gameType.icon} imageUrl={gameType.imageUrl} size={28} />}
 					iconBgColor="#ffffff"
 					selectionColor={PRIMARY_COLOR}
 					isSelected={gameTypeId === gameType.id}
@@ -636,46 +751,11 @@ function GameTypeSelectSection({ onDone }: Readonly<{ onDone: () => void }>) {
 
 // ─── Game Screen ──────────────────────────────────────────────────────────────
 
-function GameHeaderRight({
-	color,
-	isActive,
-	isEditingPlayers,
-	onToggleEditingPlayers,
-	onDeleteMatch,
-	onOpenSettings,
-}: Readonly<{
-	color: string;
-	isActive: boolean;
-	isEditingPlayers: boolean;
-	onToggleEditingPlayers: () => void;
-	/** Deletes the match currently open (only offered while one is being played). */
-	onDeleteMatch: () => void;
-	onOpenSettings: () => void;
-}>) {
+// Everything that acts on the match itself (add/remove players, delete the
+// match) lives in the settings modal - the header only opens it.
+function GameHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; onOpenSettings: () => void }>) {
 	return (
 		<View style={styles.headerButtons}>
-			{isActive && (
-				<TouchableOpacity
-					nativeID={ComponentIds.GAME_HEADER_EDIT_PLAYERS_BUTTON}
-					onPress={onToggleEditingPlayers}
-					style={styles.headerButton}
-				>
-					<Ionicons
-						name={isEditingPlayers ? 'checkmark-circle-outline' : 'people-outline'}
-						size={22}
-						color={color}
-					/>
-				</TouchableOpacity>
-			)}
-			{isActive && (
-				<TouchableOpacity
-					nativeID={ComponentIds.GAME_HEADER_DELETE_MATCH_BUTTON}
-					onPress={onDeleteMatch}
-					style={styles.headerButton}
-				>
-					<Ionicons name="trash-outline" size={22} color={color} />
-				</TouchableOpacity>
-			)}
 			<TouchableOpacity
 				nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
 				onPress={onOpenSettings}
@@ -687,24 +767,30 @@ function GameHeaderRight({
 	);
 }
 
-function makeGameHeaderRight(
-	color: string,
-	isActive: boolean,
-	isEditingPlayers: boolean,
-	onToggleEditingPlayers: () => void,
-	onDeleteMatch: () => void,
-	onOpenSettings: () => void,
-) {
-	return () => (
-		<GameHeaderRight
-			color={color}
-			isActive={isActive}
-			isEditingPlayers={isEditingPlayers}
-			onToggleEditingPlayers={onToggleEditingPlayers}
-			onDeleteMatch={onDeleteMatch}
-			onOpenSettings={onOpenSettings}
-		/>
+function makeGameHeaderRight(color: string, onOpenSettings: () => void) {
+	return () => <GameHeaderRight color={color} onOpenSettings={onOpenSettings} />;
+}
+
+/**
+ * While the match belongs to a game, the burger is replaced by a back arrow
+ * leading to that game - the match was opened from there, so that's where
+ * "back" goes. Without a game there is nothing to go back to and the drawer
+ * button stays.
+ */
+function GameHeaderBackButton({ color, gameTypeId }: Readonly<{ color: string; gameTypeId: string }>) {
+	return (
+		<TouchableOpacity
+			nativeID={ComponentIds.GAME_HEADER_BACK_BUTTON}
+			onPress={() => router.replace({ pathname: '/games/[id]', params: { id: gameTypeId } })}
+			style={styles.headerBackButton}
+		>
+			<Ionicons name="arrow-back" size={24} color={color} />
+		</TouchableOpacity>
 	);
+}
+
+function makeGameHeaderLeft(color: string, gameTypeId: string) {
+	return () => <GameHeaderBackButton color={color} gameTypeId={gameTypeId} />;
 }
 
 /** Label for the "next round" navigation button. */
@@ -741,7 +827,7 @@ function resolveGameScreenDisplayValues({
 	const gameTypeRowValue = selectedGameType ? selectedGameType.name : 'Kein bestimmtes Spiel';
 	const gameTypeRowIconComponent = selectedGameType ? (
 		<View style={styles.gameTypeIconWrapper}>
-			<GameTypeIcon icon={selectedGameType.icon} size={40} />
+			<GameTypeIcon icon={selectedGameType.icon} imageUrl={selectedGameType.imageUrl} size={40} />
 		</View>
 	) : undefined;
 	const gameTypeRowLeftIcon = selectedGameType ? undefined : <Ionicons name="game-controller-outline" size={20} color="#ffffff" />;
@@ -885,62 +971,10 @@ export default function GameScreen() {
 	// ─── Add-player chooser (friend roster or guest) ─────────────────────────
 
 	const handleOpenAddPlayerModal = useCallback(() => {
-		const existingFriendIds = new Set(players.map((p) => p.friendId).filter((id): id is string => !!id));
-		const availableFriends = friends.filter((f) => !existingFriendIds.has(f.id));
-
-		showAddPlayerModal({
-			title: 'Spieler hinzufügen',
-			children: (
-				<View style={styles.modalContent}>
-					<SettingsListGroupTitle title="Freunde" />
-					{availableFriends.length === 0 ? (
-						<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
-							Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
-						</Text>
-					) : (
-						availableFriends.map((friend: Friend, index) => (
-							<SettingsListAvatar
-								key={friend.id}
-								nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
-								config={friend.avatarConfig}
-								avatarBackgroundColor={friend.color}
-								previewSize={PICKER_AVATAR_SIZE}
-								label={friend.name}
-								rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
-								onPressOverride={() => {
-									dispatch(addFriendPlayer(friend));
-									closeAddPlayerModal();
-								}}
-								groupPosition={getGroupPosition(index, availableFriends.length)}
-							/>
-						))
-					)}
-					<SettingsListGroupTitle title="Sonstige" />
-					<SettingsList
-						nativeID={ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON}
-						label="Gast hinzufügen"
-						leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
-						iconBgColor={PRIMARY_COLOR}
-						handleFunction={() => {
-							dispatch(addGuestPlayer());
-							closeAddPlayerModal();
-						}}
-						groupPosition="single"
-					/>
-				</View>
-			),
-		});
-	}, [players, friends, showAddPlayerModal, closeAddPlayerModal, dispatch, theme]);
+		showAddPlayerModal({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={closeAddPlayerModal} /> });
+	}, [showAddPlayerModal, closeAddPlayerModal]);
 
 	// ─── Settings modal (header gear) ────────────────────────────────────────
-
-	const handleStartNewGame = useCallback(() => {
-		if (players.length > 0) {
-			dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
-		}
-		dispatch(resetAll());
-		closeSettingsModal();
-	}, [players.length, game, matchId, dispatch, closeSettingsModal]);
 
 	/**
 	 * Throw away the match currently open - including its archived entry, if it
@@ -976,39 +1010,54 @@ export default function GameScreen() {
 
 	const handleOpenSettingsModal = useCallback(() => {
 		showSettingsModal({
-			title: '⚙️ Einstellungen',
+			title: '⚙️ Optionen',
 			children: (
 				<View style={styles.modalContent}>
+					<MatchPlayersSection
+						onEditPlayers={() => {
+							setIsEditingPlayers(true);
+							closeSettingsModal();
+						}}
+					/>
+
 					<ColumnsSettingsSection />
 
 					{status === 'active' && (
 						<>
-							<SettingsListGroupTitle title="Spiel" />
+							<SettingsListGroupTitle title="Partie" />
+							{trackScores && (
+								<SettingsList
+									nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
+									label="Alle Punkte zurücksetzen"
+									value="Spieler bleiben, alle Runden werden geleert"
+									stackedValue
+									leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
+									iconBgColor={WARNING_COLOR}
+									handleFunction={() => {
+										dispatch(resetScores());
+										closeSettingsModal();
+									}}
+									groupPosition="top"
+								/>
+							)}
+							{/* Replaces the old "Neues Spiel": that left open whether it
+							    reset or deleted the match. This one only ever deletes. */}
 							<SettingsList
-								nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
-								label="Alle Punkte zurücksetzen"
-								leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
-								iconBgColor={WARNING_COLOR}
-								handleFunction={() => {
-									dispatch(resetScores());
-									closeSettingsModal();
-								}}
-								groupPosition="top"
-							/>
-							<SettingsList
-								nativeID={ComponentIds.GAME_SETTINGS_NEW_GAME}
-								label="Neues Spiel"
+								nativeID={ComponentIds.GAME_SETTINGS_DELETE_MATCH}
+								label="Partie löschen"
+								value="Diese Partie wird verworfen und aus der Liste des Spiels entfernt"
+								stackedValue
 								leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
 								iconBgColor={DANGER_COLOR}
-								handleFunction={handleStartNewGame}
-								groupPosition="bottom"
+								handleFunction={handleDeleteMatch}
+								groupPosition={trackScores ? 'bottom' : 'single'}
 							/>
 						</>
 					)}
 				</View>
 			),
 		});
-	}, [status, dispatch, closeSettingsModal, handleStartNewGame]);
+	}, [status, trackScores, dispatch, closeSettingsModal, handleDeleteMatch]);
 
 	// ─── Header buttons ───────────────────────────────────────────────────────
 
@@ -1016,25 +1065,10 @@ export default function GameScreen() {
 		navigation.setOptions({
 			// Show which game is being played right in the header
 			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
-			headerRight: makeGameHeaderRight(
-				theme.header.text,
-				status === 'active',
-				isEditingPlayers,
-				toggleEditingPlayers,
-				handleDeleteMatch,
-				handleOpenSettingsModal,
-			),
+			headerRight: makeGameHeaderRight(theme.header.text, handleOpenSettingsModal),
+			headerLeft: selectedGameType ? makeGameHeaderLeft(theme.header.text, selectedGameType.id) : undefined,
 		});
-	}, [
-		navigation,
-		theme.header.text,
-		status,
-		isEditingPlayers,
-		toggleEditingPlayers,
-		handleDeleteMatch,
-		handleOpenSettingsModal,
-		selectedGameType,
-	]);
+	}, [navigation, theme.header.text, handleOpenSettingsModal, selectedGameType]);
 
 	// ─── Score entry ──────────────────────────────────────────────────────────
 
@@ -1310,6 +1344,11 @@ const styles = StyleSheet.create({
 	},
 	headerButton: {
 		padding: 4,
+	},
+	headerBackButton: {
+		padding: 4,
+		marginLeft: 8,
+		marginRight: 8,
 	},
 	tilesScroll: {
 		flex: 1,

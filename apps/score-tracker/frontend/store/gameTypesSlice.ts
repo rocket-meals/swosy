@@ -53,6 +53,7 @@ const gameTypesSlice = createSlice({
 					id: generateId(),
 					name,
 					icon: DEFAULT_GAME_TYPE_ICON,
+					imageUrl: null,
 					scoringMode: 'highWins',
 					maxRounds: null,
 					maxScore: null,
@@ -77,6 +78,7 @@ const gameTypesSlice = createSlice({
 					id: generateId(),
 					name: preset.name,
 					icon: preset.icon,
+					imageUrl: preset.imageUrl ?? null,
 					scoringMode: preset.scoringMode,
 					maxRounds: preset.maxRounds ?? null,
 					maxScore: preset.maxScore ?? null,
@@ -102,6 +104,12 @@ const gameTypesSlice = createSlice({
 		setGameTypeIcon(state, action: PayloadAction<{ gameTypeId: string; icon: string }>) {
 			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
 			if (gameType) gameType.icon = action.payload.icon;
+		},
+
+		/** Set (or clear, with `null`) the game's picture. Only the URL is stored. */
+		setGameTypeImageUrl(state, action: PayloadAction<{ gameTypeId: string; imageUrl: string | null }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (gameType) gameType.imageUrl = action.payload.imageUrl;
 		},
 
 		setGameTypeScoringMode(state, action: PayloadAction<{ gameTypeId: string; scoringMode: ScoringMode }>) {
@@ -148,6 +156,7 @@ const gameTypesSlice = createSlice({
 			const { preset } = action.payload;
 			gameType.name = preset.name;
 			gameType.icon = preset.icon;
+			gameType.imageUrl = preset.imageUrl ?? null;
 			gameType.scoringMode = preset.scoringMode;
 			gameType.maxRounds = preset.maxRounds ?? null;
 			gameType.maxScore = preset.maxScore ?? null;
@@ -298,6 +307,7 @@ export const {
 	addGameTypeFromPreset,
 	renameGameType,
 	setGameTypeIcon,
+	setGameTypeImageUrl,
 	setGameTypeScoringMode,
 	setGameTypeMaxRounds,
 	setGameTypeMaxScore,

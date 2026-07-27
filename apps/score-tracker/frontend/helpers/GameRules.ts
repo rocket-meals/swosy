@@ -74,6 +74,12 @@ export type GameTypeDefinition = {
 	name: string;
 	/** Emoji shown as the game's "image" in lists and headers (e.g. 🎲). */
 	icon: string;
+	/**
+	 * Picture of the game, shown instead of the emoji wherever the game appears.
+	 * Only the URL is stored, never the image itself (see helpers/ImageSearch);
+	 * undefined/null = fall back to `icon`.
+	 */
+	imageUrl?: string | null;
 	scoringMode: ScoringMode;
 	/** Maximum number of rounds per match. undefined/null = unlimited. */
 	maxRounds?: number | null;
@@ -418,6 +424,7 @@ function isValidGamePresetScalarFields(
 	name: string;
 	icon: string;
 	scoringMode: 'highWins' | 'lowWins';
+	imageUrl: string | null | undefined;
 	maxRounds: number | null | undefined;
 	maxScore: number | null | undefined;
 	version: number | undefined;
@@ -426,6 +433,7 @@ function isValidGamePresetScalarFields(
 } {
 	if (typeof v.name !== 'string' || v.name.trim() === '') return false;
 	if (typeof v.icon !== 'string' || v.icon === '') return false;
+	if (v.imageUrl !== undefined && v.imageUrl !== null && typeof v.imageUrl !== 'string') return false;
 	if (v.scoringMode !== 'highWins' && v.scoringMode !== 'lowWins') return false;
 	if (v.maxRounds !== undefined && v.maxRounds !== null && typeof v.maxRounds !== 'number') return false;
 	if (v.maxScore !== undefined && v.maxScore !== null && typeof v.maxScore !== 'number') return false;
@@ -466,6 +474,7 @@ export function parseGamePreset(text: string): GamePreset | null {
 	return {
 		name: v.name,
 		icon: v.icon,
+		imageUrl: v.imageUrl ?? null,
 		scoringMode: v.scoringMode,
 		maxRounds: (v.maxRounds as number | null | undefined) ?? null,
 		maxScore: (v.maxScore as number | null | undefined) ?? null,

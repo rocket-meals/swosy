@@ -78,7 +78,7 @@ function ThemedDrawerNavigator() {
 				<Drawer.Screen
 					name="index"
 					options={{
-						title: 'Game',
+						title: 'Aktuelle Partie',
 						drawerIcon: makeDrawerIcon(Ionicons, 'game-controller-outline'),
 					}}
 				/>
@@ -137,7 +137,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const items: DrawerItem[] = [
 		{
 			key: 'index',
-			label: 'Game',
+			label: 'Aktuelle Partie',
 			nativeID: ComponentIds.DRAWER_ITEM_GAME,
 			renderIcon: (_, color) => <Ionicons name="game-controller-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('index'),
