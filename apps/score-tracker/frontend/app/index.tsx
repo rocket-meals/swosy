@@ -59,6 +59,7 @@ import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
 import { generateId } from '../helpers/RandomHelper';
 import GameTypeIcon from '../components/GameTypeIcon';
+import { makeGameHeaderTitle } from '../components/GameHeaderTitle';
 import CardScoreEntryModal from '../components/CardScoreEntryModal';
 import CategoryValueRows from '../components/CategoryValueRows';
 import { computeNextStartingPlayerIndex } from '../helpers/GameRules';
@@ -1063,8 +1064,12 @@ export default function GameScreen() {
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			// Show which game is being played right in the header
-			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Game',
+			// Show which game is being played right in the header - as its picture
+			// plus the name when it has one, otherwise the emoji in the text title.
+			title: selectedGameType ? `${selectedGameType.icon} ${selectedGameType.name}` : 'Aktuelle Partie',
+			headerTitle: selectedGameType
+				? makeGameHeaderTitle(selectedGameType.name, selectedGameType.icon, selectedGameType.imageUrl)
+				: undefined,
 			headerRight: makeGameHeaderRight(theme.header.text, handleOpenSettingsModal),
 			headerLeft: selectedGameType ? makeGameHeaderLeft(theme.header.text, selectedGameType.id) : undefined,
 		});

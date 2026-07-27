@@ -67,6 +67,13 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			['expo-updates', { username: 'jack5496' }],
 			'expo-localization',
 			'expo-font',
+			[
+				'expo-image-picker',
+				{
+					photosPermission: 'Erlaube den Zugriff auf deine Fotos, um einem Spiel ein eigenes Bild zu geben.',
+					cameraPermission: 'Erlaube den Zugriff auf die Kamera, um ein Bild für ein Spiel aufzunehmen.',
+				},
+			],
 		],
 		experiments: {
 			typedRoutes: true,

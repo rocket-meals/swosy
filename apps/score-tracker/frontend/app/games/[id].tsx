@@ -51,9 +51,11 @@ import {
 import { ComponentIds } from '../../constants/ComponentIds';
 import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
+import { makeGameHeaderTitle } from '../../components/GameHeaderTitle';
 import GameCategorySettings from '../../components/GameCategorySettings';
 import { GameImagePickerContent, GameImageSearchHeader, ImageQueryObservable, defaultImageQuery } from '../../components/GameImagePicker';
 import { findImageUrlForGameName } from '../../helpers/ImageSearch';
+import { describeImageSize, isInlineImage } from '../../helpers/GameImageUpload';
 import MatchFilterSort from '../../components/MatchFilterSort';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -110,6 +112,12 @@ function matchSearchText(
 ): string {
 	const values = categories.map((category) => formatCategoryValue(category, match.categoryValues[category.id]));
 	return [formatDate(match.endedAt), ...match.players.map((player) => player.name), ...values].join(' ').toLowerCase();
+}
+
+/** What the "Bild" row shows as its value: where the game's picture comes from. */
+function describeGameImage(imageUrl: string | null | undefined): string {
+	if (!imageUrl) return 'Emoji';
+	return isInlineImage(imageUrl) ? `Eigenes Bild (${describeImageSize(imageUrl)})` : 'Bild aus der Suche';
 }
 
 /** Strip the instance-specific id/createdAt so a game type can be shared/re-imported as a template. */
@@ -374,19 +382,6 @@ function GameTypeSettingsContent({
 
 	return (
 		<>
-			<SettingsList
-				nativeID={ComponentIds.GAME_DETAIL_IMAGE_ROW}
-				label="Bild"
-				value={gameType.imageUrl ? 'Bild aus der Suche' : 'Emoji'}
-				leftIconComponent={
-					<View style={styles.gameIconWrapper}>
-						<GameTypeIcon icon={gameType.icon} imageUrl={gameType.imageUrl} size={48} />
-					</View>
-				}
-				rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#ffffff" />}
-				handleFunction={handleOpenImageModal}
-				groupPosition="top"
-			/>
 			<SettingsListTextInput
 				nativeID={ComponentIds.GAME_DETAIL_NAME_ROW}
 				label="Name"
@@ -394,6 +389,19 @@ function GameTypeSettingsContent({
 				initialValue={gameType.name}
 				value={gameType.name}
 				onSave={handleRenameGameType}
+				groupPosition="top"
+			/>
+			<SettingsList
+				nativeID={ComponentIds.GAME_DETAIL_IMAGE_ROW}
+				label="Bild"
+				value={describeGameImage(gameType.imageUrl)}
+				leftIconComponent={
+					<View style={styles.gameIconWrapper}>
+						<GameTypeIcon icon={gameType.icon} imageUrl={gameType.imageUrl} size={48} />
+					</View>
+				}
+				rightIcon={<MaterialCommunityIcons name="pencil" size={20} color="#ffffff" />}
+				handleFunction={handleOpenImageModal}
 				groupPosition="middle"
 			/>
 			<SettingsList
@@ -733,6 +741,7 @@ export default function GameTypeDetailScreen() {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: gameType ? `${gameType.icon} ${gameType.name}` : 'Spiel',
+			headerTitle: gameType ? makeGameHeaderTitle(gameType.name, gameType.icon, gameType.imageUrl) : undefined,
 			headerLeft: makeGameDetailHeaderLeft(theme.header.text),
 			headerRight: hasMatches ? makeGameDetailHeaderRight(theme.header.text, handleOpenSettingsModal) : undefined,
 		});

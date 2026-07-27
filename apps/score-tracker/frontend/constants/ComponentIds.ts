@@ -97,6 +97,8 @@ export const ComponentIds = {
 	GAME_IMAGE_RESULT_PREFIX: 'game-image-result-',
 	GAME_IMAGE_ICON_PREFIX: 'game-image-icon-',
 	GAME_IMAGE_REMOVE_ROW: 'game-image-remove-row',
+	GAME_IMAGE_UPLOAD_ROW: 'game-image-upload-row',
+	GAME_IMAGE_CAMERA_ROW: 'game-image-camera-row',
 	GAME_DETAIL_SEARCH_INPUT: 'game-detail-search-input',
 	GAME_DETAIL_START_MATCH_BUTTON: 'game-detail-start-match-button',
 	GAME_DETAIL_MATCH_ROW_PREFIX: 'game-detail-match-row-',

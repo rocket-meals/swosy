@@ -12,9 +12,17 @@
 //     search-engine id, which are read from the Expo config (see
 //     `extra.googleImageSearch` in app.config.ts); without them the provider is
 //     skipped.
-//  2. Wikimedia Commons - keyless and CORS-friendly, good for logos and box art
-//     of well-known games.
-//  3. Openverse - keyless and CORS-friendly, the broader catch-all.
+//  2. BoardGameGeek - keyless, and by far the most relevant source for this
+//     app: it returns the actual box art of a board game. BGG sends no CORS
+//     headers, so it only contributes on native (on web the request fails and
+//     the provider is skipped).
+//  3. Wikimedia Commons - keyless and CORS-friendly, but a Creative-Commons
+//     catalogue: fine for well-known logos, thin for everything else.
+//  4. Openverse - keyless and CORS-friendly, the broader CC catch-all.
+//
+// Because the keyless providers only cover Creative-Commons material, a game
+// can also be given an image the user picks themselves (see GameImageUpload) -
+// that one is stored inline instead of by URL.
 //
 // Everything here is plain `fetch` against public JSON APIs; no key is ever
 // required for the app to work, the Google one only makes the results match
@@ -143,7 +151,52 @@ async function searchOpenverse(query: string, limit: number, signal?: AbortSigna
 		.filter((result): result is ImageSearchResult => result !== null);
 }
 
-const PROVIDERS = [searchGoogle, searchWikimediaCommons, searchOpenverse];
+async function fetchText(url: string, signal?: AbortSignal): Promise<string> {
+	const response = await fetch(url, { signal });
+	if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+	return response.text();
+}
+
+/**
+ * BoardGameGeek's XML API: search for the game, then read the box art of the
+ * best matches. Two round trips, but it is the only keyless source that
+ * actually knows board games. Parsed with narrow regexes rather than a full XML
+ * parser - the two tags we need are plain attributes.
+ */
+async function searchBoardGameGeek(query: string, limit: number, signal?: AbortSignal): Promise<ImageSearchResult[]> {
+	// The stored search term usually ends in "Logo"; BGG only knows game titles.
+	const title = query.replace(/\s+(logo|cover|box)$/i, '').trim();
+	if (title === '') return [];
+
+	const searchXml = await fetchText(
+		`https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${encodeURIComponent(title)}`,
+		signal,
+	);
+	const ids = Array.from(searchXml.matchAll(/<item[^>]*\sid="(\d+)"/g))
+		.map((match) => match[1])
+		.slice(0, Math.min(10, limit));
+	if (ids.length === 0) return [];
+
+	const thingXml = await fetchText(`https://boardgamegeek.com/xmlapi2/thing?id=${ids.join(',')}`, signal);
+	const items = thingXml.split('<item ').slice(1);
+	return items
+		.map((item) => {
+			const image = /<image>([^<]+)<\/image>/.exec(item)?.[1];
+			if (!image) return null;
+			const thumbnail = /<thumbnail>([^<]+)<\/thumbnail>/.exec(item)?.[1] ?? image;
+			const name = /<name[^>]*\svalue="([^"]+)"/.exec(item)?.[1] ?? title;
+			return {
+				id: image,
+				url: image.startsWith('//') ? `https:${image}` : image,
+				thumbnailUrl: thumbnail.startsWith('//') ? `https:${thumbnail}` : thumbnail,
+				title: name,
+				source: 'BoardGameGeek',
+			};
+		})
+		.filter((result): result is ImageSearchResult => result !== null);
+}
+
+const PROVIDERS = [searchGoogle, searchBoardGameGeek, searchWikimediaCommons, searchOpenverse];
 
 /**
  * Search images for `query`. Providers are tried in order until one returns

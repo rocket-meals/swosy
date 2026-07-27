@@ -27557,6 +27557,8 @@ __metadata:
     expo-constants: "npm:~18.0.10"
     expo-file-system: "npm:~19.0.17"
     expo-font: "npm:~14.0.9"
+    expo-image-manipulator: "npm:~14.0.7"
+    expo-image-picker: "npm:~17.0.8"
     expo-linking: "npm:~8.0.8"
     expo-localization: "npm:~17.0.7"
     expo-router: "npm:~6.0.13"
