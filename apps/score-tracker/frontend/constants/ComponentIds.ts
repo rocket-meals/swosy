@@ -45,8 +45,11 @@ export const ComponentIds = {
 	GAME_ADD_PLAYER_BUTTON: 'game-add-player-button',
 	GAME_ADD_PLAYER_GUEST_BUTTON: 'game-add-player-guest-button',
 	GAME_ADD_PLAYER_FRIEND_ROW_PREFIX: 'game-add-player-friend-row-',
-	GAME_ADD_PLAYER_GUEST_ROW_PREFIX: 'game-add-player-guest-row-',
-	GAME_ADD_PLAYER_EDIT_ROW: 'game-add-player-edit-row',
+	GAME_ADD_PLAYER_SELECTED_ROW_PREFIX: 'game-add-player-selected-row-',
+	GAME_ADD_PLAYER_MOVE_UP_PREFIX: 'game-add-player-move-up-',
+	GAME_ADD_PLAYER_MOVE_DOWN_PREFIX: 'game-add-player-move-down-',
+	GAME_ADD_PLAYER_EDIT_PREFIX: 'game-add-player-edit-',
+	GAME_ADD_PLAYER_SEARCH_INPUT: 'game-add-player-search-input',
 
 	// Score entry modal
 	GAME_SCORE_INPUT_SAVE_BUTTON: 'game-score-input-save-button',

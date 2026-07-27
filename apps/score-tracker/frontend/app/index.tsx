@@ -578,97 +578,177 @@ function ColumnsSettingsSection() {
 // next to the rest of what can be done to the running match. Connected to the
 // store so the list updates while the modal stays open.
 
+/** How long a deselected player stays visible (grayed out) before actually leaving the match - the tap can be undone until then. */
+const PENDING_REMOVAL_DELAY_MS = 2000;
+
 function AddPlayerContent({ onDone, onEditPlayers }: Readonly<{ onDone: () => void; onEditPlayers?: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
 	const players = useSelector((state: RootState) => state.game.players);
 	const friends = useSelector((state: RootState) => state.friends.friends);
+	const [friendSearch, setFriendSearch] = useState('');
 
-	// Friends are a multi-select: every friend stays listed, tapping toggles
-	// them in/out of the match and the modal stays open - so a fresh match
-	// (which starts with empty seats) can pick its whole group in one go.
-	const playersByFriendId = new Map(
-		players.filter((p) => p.friendId).map((p) => [p.friendId as string, p]),
+	// Tapping a selected row doesn't remove the player immediately: the row
+	// first turns gray, and only after PENDING_REMOVAL_DELAY_MS the player
+	// leaves the match. Tapping the gray row again cancels the removal.
+	const [pendingRemovalIds, setPendingRemovalIds] = useState<string[]>([]);
+	const removalTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+	const togglePendingRemoval = useCallback(
+		(playerId: string) => {
+			const timer = removalTimersRef.current[playerId];
+			if (timer) {
+				clearTimeout(timer);
+				delete removalTimersRef.current[playerId];
+				setPendingRemovalIds((ids) => ids.filter((id) => id !== playerId));
+				return;
+			}
+			setPendingRemovalIds((ids) => [...ids, playerId]);
+			removalTimersRef.current[playerId] = setTimeout(() => {
+				delete removalTimersRef.current[playerId];
+				setPendingRemovalIds((ids) => ids.filter((id) => id !== playerId));
+				dispatch(removePlayer(playerId));
+			}, PENDING_REMOVAL_DELAY_MS);
+		},
+		[dispatch],
 	);
-	// Guests only exist inside the match, so they're listed here too - ticked,
-	// with the same toggle-to-remove behavior as the friend rows.
-	const guests = players.filter((p) => !p.friendId);
+
+	// Content unmounting with removals still pending (e.g. the modal is torn
+	// down right after a tap): they were meant to go, so remove them right away
+	// instead of letting the tap silently evaporate.
+	useEffect(
+		() => () => {
+			for (const [playerId, timer] of Object.entries(removalTimersRef.current)) {
+				clearTimeout(timer);
+				dispatch(removePlayer(playerId));
+			}
+			removalTimersRef.current = {};
+		},
+		[dispatch],
+	);
+
+	// Selected friends live in the top section, so the friends list below only
+	// offers the remaining ones - grayed out with a plus, i.e. "not selected".
+	const selectedFriendIds = new Set(players.map((p) => p.friendId).filter((id): id is string => !!id));
+	const query = friendSearch.trim().toLowerCase();
+	const availableFriends = friends.filter(
+		(f) => !selectedFriendIds.has(f.id) && (!query || f.name.toLowerCase().includes(query)),
+	);
 
 	return (
 		<View style={styles.modalContent}>
-			<SettingsListGroupTitle title="Freunde" />
-			{friends.length === 0 ? (
+			<SettingsListGroupTitle title={`Ausgewählte Spieler (${players.length})`} />
+			{players.length === 0 && (
 				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
-					Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
+					Noch keine Spieler ausgewählt. Wähle unten Freunde aus oder füge einen Gast hinzu.
 				</Text>
-			) : (
-				friends.map((friend: Friend, index) => {
-					const linkedPlayer = playersByFriendId.get(friend.id);
-					return (
-						<SettingsListAvatar
-							key={friend.id}
-							nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
-							config={friend.avatarConfig}
-							avatarBackgroundColor={friend.color}
-							previewSize={PICKER_AVATAR_SIZE}
-							label={friend.name}
-							rightIcon={
-								<Ionicons
-									name={linkedPlayer ? 'checkmark-circle' : 'ellipse-outline'}
-									size={22}
-									color={linkedPlayer ? SUCCESS_COLOR : '#ffffff'}
-								/>
-							}
-							onPressOverride={() => {
-								if (linkedPlayer) {
-									dispatch(removePlayer(linkedPlayer.id));
-								} else {
-									dispatch(addFriendPlayer(friend));
-								}
-							}}
-							groupPosition={getGroupPosition(index, friends.length)}
-						/>
-					);
-				})
 			)}
-			<SettingsListGroupTitle title="Gäste" />
-			{guests.map((guest, index) => (
-				<SettingsListAvatar
-					key={guest.id}
-					nativeID={`${ComponentIds.GAME_ADD_PLAYER_GUEST_ROW_PREFIX}${guest.id}`}
-					config={guest.avatarConfig}
-					avatarBackgroundColor={guest.color}
-					previewSize={PICKER_AVATAR_SIZE}
-					label={guest.name}
-					rightIcon={<Ionicons name="checkmark-circle" size={22} color={SUCCESS_COLOR} />}
-					onPressOverride={() => dispatch(removePlayer(guest.id))}
-					groupPosition={index === 0 ? 'top' : 'middle'}
-				/>
-			))}
+			{players.map((player, index) => {
+				const pendingRemoval = pendingRemovalIds.includes(player.id);
+				return (
+					<View key={player.id} style={pendingRemoval ? styles.pendingRemovalRow : undefined}>
+						<SettingsListAvatar
+							nativeID={`${ComponentIds.GAME_ADD_PLAYER_SELECTED_ROW_PREFIX}${player.id}`}
+							config={player.avatarConfig}
+							avatarBackgroundColor={player.color}
+							previewSize={PICKER_AVATAR_SIZE}
+							label={player.name}
+							onPressOverride={() => togglePendingRemoval(player.id)}
+							rightIcon={
+								<View style={styles.selectedPlayerActions}>
+									<TouchableOpacity
+										nativeID={`${ComponentIds.GAME_ADD_PLAYER_MOVE_UP_PREFIX}${player.id}`}
+										onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
+										disabled={index === 0}
+										hitSlop={8}
+										style={styles.reorderButton}
+									>
+										<Ionicons name="chevron-up" size={20} color={index === 0 ? theme.screen.border : theme.screen.text} />
+									</TouchableOpacity>
+									<TouchableOpacity
+										nativeID={`${ComponentIds.GAME_ADD_PLAYER_MOVE_DOWN_PREFIX}${player.id}`}
+										onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
+										disabled={index === players.length - 1}
+										hitSlop={8}
+										style={styles.reorderButton}
+									>
+										<Ionicons
+											name="chevron-down"
+											size={20}
+											color={index === players.length - 1 ? theme.screen.border : theme.screen.text}
+										/>
+									</TouchableOpacity>
+									<TouchableOpacity
+										nativeID={`${ComponentIds.GAME_ADD_PLAYER_EDIT_PREFIX}${player.id}`}
+										onPress={() => {
+											onEditPlayers?.();
+											onDone();
+										}}
+										hitSlop={8}
+										style={styles.reorderButton}
+									>
+										<Ionicons name="pencil-outline" size={18} color={theme.screen.text} />
+									</TouchableOpacity>
+								</View>
+							}
+							groupPosition={getGroupPosition(index, players.length)}
+						/>
+					</View>
+				);
+			})}
 			<SettingsList
 				nativeID={ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON}
 				label="Gast hinzufügen"
 				leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
-				handleFunction={() => {
-					dispatch(addGuestPlayer());
-					onDone();
-				}}
-				groupPosition={guests.length > 0 ? 'middle' : 'top'}
+				handleFunction={() => dispatch(addGuestPlayer())}
+				groupPosition="single"
 			/>
-			<SettingsList
-				nativeID={ComponentIds.GAME_ADD_PLAYER_EDIT_ROW}
-				label="Spieler bearbeiten"
-				value="Name, Farbe, Avatar und Reihenfolge"
-				leftIcon={<Ionicons name="people-outline" size={20} color="#ffffff" />}
-				iconBgColor={PRIMARY_COLOR}
-				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-				handleFunction={() => {
-					onEditPlayers?.();
-					onDone();
-				}}
-				groupPosition="bottom"
-			/>
+			<SettingsListGroupTitle title="Freunde" />
+			{friends.length > 0 && (
+				<View style={[styles.modalSearchBar, { backgroundColor: theme.screen.iconBg }]}>
+					<Ionicons name="search-outline" size={18} color={theme.screen.icon} />
+					<TextInput
+						nativeID={ComponentIds.GAME_ADD_PLAYER_SEARCH_INPUT}
+						style={[styles.modalSearchInput, { color: theme.screen.text }]}
+						placeholder="Freund suchen"
+						placeholderTextColor={theme.screen.placeholder}
+						value={friendSearch}
+						onChangeText={setFriendSearch}
+						returnKeyType="search"
+						autoCorrect={false}
+					/>
+					{friendSearch.length > 0 && (
+						<TouchableOpacity onPress={() => setFriendSearch('')} hitSlop={8}>
+							<Ionicons name="close-circle" size={18} color={theme.screen.icon} />
+						</TouchableOpacity>
+					)}
+				</View>
+			)}
+			{friends.length === 0 && (
+				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+					Keine Freunde verfügbar. Lege welche im Spieler-Bereich an oder füge einen Gast hinzu.
+				</Text>
+			)}
+			{friends.length > 0 && availableFriends.length === 0 && (
+				<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+					{query ? `Kein Freund gefunden für „${friendSearch}“.` : 'Alle Freunde sind bereits ausgewählt.'}
+				</Text>
+			)}
+			{availableFriends.map((friend: Friend, index) => (
+				<View key={friend.id} style={styles.unselectedFriendRow}>
+					<SettingsListAvatar
+						nativeID={`${ComponentIds.GAME_ADD_PLAYER_FRIEND_ROW_PREFIX}${friend.id}`}
+						config={friend.avatarConfig}
+						avatarBackgroundColor={friend.color}
+						previewSize={PICKER_AVATAR_SIZE}
+						label={friend.name}
+						rightIcon={<Ionicons name="add-circle-outline" size={22} color="#ffffff" />}
+						onPressOverride={() => dispatch(addFriendPlayer(friend))}
+						groupPosition={getGroupPosition(index, availableFriends.length)}
+					/>
+				</View>
+			))}
 		</View>
 	);
 }
@@ -1590,6 +1670,31 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		padding: 10,
+	},
+	pendingRemovalRow: {
+		opacity: 0.35,
+	},
+	selectedPlayerActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	unselectedFriendRow: {
+		opacity: 0.55,
+	},
+	modalSearchBar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		borderRadius: 10,
+		paddingHorizontal: 12,
+		height: 40,
+		marginBottom: 8,
+	},
+	modalSearchInput: {
+		flex: 1,
+		fontSize: 15,
+		height: '100%',
 	},
 	scoreInputContainer: {
 		padding: 16,

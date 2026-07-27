@@ -5,6 +5,7 @@
  */
 
 import { MaestroTestCase } from 'repo-depkit-maestro-framework';
+import { CommonUiComponentIds } from 'repo-depkit-common-ui/src/constants/ComponentIds';
 import { ComponentIds } from '../../../frontend/constants/ComponentIds';
 
 const test = new MaestroTestCase({
@@ -17,14 +18,15 @@ test
 	.openPage('http://localhost:8082/')
 	.waitForAnimationToEnd()
 
-	// Setup: two guest players, then start the game
+	// Setup: two guest players (the chooser stays open between adds), then
+	// close the chooser and start the game
 	.tapOnId(ComponentIds.GAME_ADD_PLAYER_BUTTON)
 	.waitForAnimationToEnd()
 	.tapOnId(ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON)
 	.waitForAnimationToEnd()
-	.tapOnId(ComponentIds.GAME_ADD_PLAYER_BUTTON)
-	.waitForAnimationToEnd()
 	.tapOnId(ComponentIds.GAME_ADD_PLAYER_GUEST_BUTTON)
+	.waitForAnimationToEnd()
+	.tapOnId(CommonUiComponentIds.MODAL_CLOSE_BUTTON)
 	.waitForAnimationToEnd()
 	.tapOnId(ComponentIds.GAME_START_BUTTON)
 	.waitForAnimationToEnd()
