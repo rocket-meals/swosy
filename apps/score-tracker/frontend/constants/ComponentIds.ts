@@ -62,6 +62,7 @@ export const ComponentIds = {
 	GAME_CARD_SCORE_CARD_PREFIX: 'game-card-score-card-',
 	GAME_CARD_SCORE_BONUS_BADGE: 'game-card-score-bonus-badge',
 	GAME_CARD_SCORE_SAVE_BUTTON: 'game-card-score-save-button',
+	GAME_CARD_SCORE_MANUAL_INPUT: 'game-card-score-manual-input',
 
 	// Settings modal (header gear)
 	GAME_SETTINGS_COLUMNS_PORTRAIT_1: 'game-settings-columns-portrait-1',

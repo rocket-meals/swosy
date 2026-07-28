@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Platform } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'repo-depkit-common-ui';
+
+// Same platform split as the score input on the game screen:
+// BottomSheetTextInput's blur handler breaks on react-native-web.
+const ResolvedManualScoreInput = Platform.OS === 'web' ? TextInput : BottomSheetTextInput;
 import type { CardCategory, CardItem, RuleExpr } from '../helpers/GameRules';
 import { evaluateRuleExpr } from '../helpers/GameRules';
 import { ComponentIds } from '../constants/ComponentIds';
@@ -76,6 +81,7 @@ export default function CardScoreEntryModal({
 	bonusAtNumberCount,
 	bonusPoints,
 	initialSelection,
+	initialScore,
 	onSave,
 }: Readonly<{
 	items: CardItem[];
@@ -83,11 +89,25 @@ export default function CardScoreEntryModal({
 	bonusAtNumberCount?: number;
 	bonusPoints?: number;
 	initialSelection: string[];
+	/** The round's already-stored score, if any - re-shown as a manual override when it doesn't match the card calculation. */
+	initialScore?: number | null;
 	onSave: (cardIds: string[], score: number) => void;
 }>) {
 	const { theme } = useTheme();
 	const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 	const [selectedIds, setSelectedIds] = useState<string[]>(() => initialSelection.filter((id) => itemsById.has(id)));
+	// The computed score can be overridden by typing into the score field
+	// (null = follow the card calculation). Tapping any card hands control
+	// back to the calculation. A stored score that deviates from what the
+	// stored cards compute to was overridden earlier - start in that state.
+	const [manualScoreText, setManualScoreText] = useState<string | null>(() => {
+		if (initialScore == null) return null;
+		const initialItems = initialSelection
+			.map((id) => items.find((item) => item.id === id))
+			.filter((item): item is CardItem => !!item);
+		const computed = evaluateRuleExpr(scoreFormula, { selectedItems: initialItems });
+		return initialScore === computed ? null : String(initialScore);
+	});
 
 	const grouped = useMemo(() => {
 		const byCategory = new Map<CardCategory, CardItem[]>();
@@ -118,19 +138,50 @@ export default function CardScoreEntryModal({
 		[selectedItems, bonusAtNumberCount, bonusPoints],
 	);
 
+	// Manually typed score, or null while empty/invalid (then the calculation stays authoritative).
+	const manualScore = useMemo(() => {
+		if (manualScoreText == null) return null;
+		const trimmed = manualScoreText.trim();
+		if (trimmed === '' || trimmed === '-') return null;
+		const parsed = Number.parseInt(trimmed, 10);
+		return Number.isNaN(parsed) ? null : parsed;
+	}, [manualScoreText]);
+
+	const effectiveScore = manualScore ?? previewScore;
+
 	const handleTapCard = useCallback((item: CardItem) => {
+		setManualScoreText(null);
 		setSelectedIds((prev) => (prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]));
 	}, []);
 
 	const handleSave = useCallback(() => {
-		onSave(selectedIds, previewScore);
-	}, [onSave, selectedIds, previewScore]);
+		onSave(selectedIds, effectiveScore);
+	}, [onSave, selectedIds, effectiveScore]);
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.scoreRow}>
 				<Text style={[styles.scoreLabel, { color: theme.screen.placeholder }]}>Rundenpunktzahl</Text>
-				<Text style={[styles.scoreValue, { color: theme.screen.text }]}>{previewScore}</Text>
+				{/* Editable (but never auto-focused): typing here overrides the card
+				    calculation, tapping a card below switches back to it. */}
+				<ResolvedManualScoreInput
+					nativeID={ComponentIds.GAME_CARD_SCORE_MANUAL_INPUT}
+					style={[
+						styles.scoreInput,
+						{ color: theme.screen.text, borderColor: manualScoreText != null ? PRIMARY_COLOR : theme.screen.border },
+					]}
+					value={manualScoreText ?? String(previewScore)}
+					onChangeText={(text: string) => setManualScoreText(text.replace(/[^0-9-]/g, ''))}
+					keyboardType="number-pad"
+					returnKeyType="done"
+					textAlign="center"
+					selectTextOnFocus
+				/>
+				{manualScoreText != null && (
+					<Text style={[styles.manualHint, { color: theme.screen.placeholder }]}>
+						Manuell eingetragen - Tippen auf eine Karte rechnet wieder automatisch
+					</Text>
+				)}
 			</View>
 
 			{grouped.map(({ category, items: groupItems }) => (
@@ -180,7 +231,7 @@ export default function CardScoreEntryModal({
 				activeOpacity={0.8}
 			>
 				<Ionicons name="checkmark-circle-outline" size={20} color="#ffffff" />
-				<Text style={styles.saveButtonText}>Fertig - {previewScore} Punkte speichern</Text>
+				<Text style={styles.saveButtonText}>Fertig - {effectiveScore} Punkte speichern</Text>
 			</TouchableOpacity>
 
 			{calculationSteps.length > 0 && (
@@ -211,9 +262,20 @@ const styles = StyleSheet.create({
 		textTransform: 'uppercase',
 		letterSpacing: 0.5,
 	},
-	scoreValue: {
+	scoreInput: {
 		fontSize: 40,
 		fontWeight: '700',
+		minWidth: 110,
+		paddingVertical: 2,
+		paddingHorizontal: 16,
+		borderWidth: 1.5,
+		borderStyle: 'dashed',
+		borderRadius: 12,
+	},
+	manualHint: {
+		fontSize: 11,
+		marginTop: 4,
+		textAlign: 'center',
 	},
 	group: {
 		marginBottom: 14,

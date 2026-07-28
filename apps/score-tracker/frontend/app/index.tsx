@@ -1305,6 +1305,7 @@ export default function GameScreen() {
 								bonusAtNumberCount={scoreEntryRules.bonusAtNumberCount}
 								bonusPoints={scoreEntryRules.bonusPoints}
 								initialSelection={currentRound.cardSelections?.[playerId] ?? []}
+								initialScore={currentRound.scores[playerId] ?? null}
 								onSave={(cardIds, score) => {
 									dispatch(setCardSelection({ roundId: currentRound.id, playerId, cardIds, score }));
 									closeScoreModal();
