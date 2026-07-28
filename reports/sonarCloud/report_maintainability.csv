@@ -5,10 +5,6 @@ Key,Message,Component,Line
 "AZ-ihYHsRNMUYcNiZYmd","'../helpers/GameImageUpload' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",23
 "AZ-iWbnxE1zZThhKZLay","Remove this unused import of 'setGameTypeIcon'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",21
 "AZ-iWboOE1zZThhKZLaz","Remove this unused import of 'resetAll'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",46
-"AZ-iWboOE1zZThhKZLa0","Remove this unused import of 'archiveGame'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",50
-"AZ-iWboOE1zZThhKZLa1","Remove this unused import of 'buildHistoryEntry'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",56
-"AZ-iWboOE1zZThhKZLa2","Remove this unused import of 'generateId'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",60
-"AZ-iWboOE1zZThhKZLa3","Remove this useless assignment to variable ""game"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1036
 "AZ-iWboOE1zZThhKZLa4","Remove this useless assignment to variable ""friends"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1042
 "AZ-iWboOE1zZThhKZLa5","Remove this useless assignment to variable ""toggleEditingPlayers"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1061
 "AZ-iWbi6E1zZThhKZLax","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",486

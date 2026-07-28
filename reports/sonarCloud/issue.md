@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 2 | 2 |
-| 🔧 Maintainability | 24 | 24 |
+| 🔧 Maintainability | 20 | 20 |
 
-**Total issues:** 26
+**Total issues:** 22
 
 ---
 
@@ -22,7 +22,7 @@
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (24/24)
+## 🔧 Maintainability (20/20)
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
@@ -55,22 +55,6 @@
 - **Remove this unused import of 'resetAll'.**
   apps/score-tracker/frontend/app/index.tsx:46
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L46
-
-- **Remove this unused import of 'archiveGame'.**
-  apps/score-tracker/frontend/app/index.tsx:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L50
-
-- **Remove this unused import of 'buildHistoryEntry'.**
-  apps/score-tracker/frontend/app/index.tsx:56
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L56
-
-- **Remove this unused import of 'generateId'.**
-  apps/score-tracker/frontend/app/index.tsx:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L60
-
-- **Remove this useless assignment to variable "game".**
-  apps/score-tracker/frontend/app/index.tsx:1036
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1036
 
 - **Remove this useless assignment to variable "friends".**
   apps/score-tracker/frontend/app/index.tsx:1042
