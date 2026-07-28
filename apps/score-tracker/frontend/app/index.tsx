@@ -1191,6 +1191,17 @@ export default function GameScreen() {
 		closeSettingsModal();
 	}, [matchId, dispatch, closeSettingsModal]);
 
+	/**
+	 * Mark the match's rounds as finished: archive the match (it appears as
+	 * beendet in its game's Partien list, re-openable from there) and return
+	 * to an empty setup phase with the same game preselected.
+	 */
+	const handleEndMatch = useCallback(() => {
+		dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
+		dispatch(resetScores({ clearPlayers: true }));
+		closeSettingsModal();
+	}, [game, matchId, dispatch, closeSettingsModal]);
+
 	// ─── Game type selection (setup phase) ───────────────────────────────────
 
 	const handleOpenGameTypeModal = useCallback(() => {
@@ -1217,6 +1228,16 @@ export default function GameScreen() {
 					{status === 'active' && (
 						<>
 							<SettingsListGroupTitle title="Partie" />
+							<SettingsList
+								nativeID={ComponentIds.GAME_SETTINGS_END_MATCH}
+								label="Partie beenden"
+								value="Runden werden als beendet markiert und die Partie gespeichert"
+								stackedValue
+								leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
+								iconBgColor={SUCCESS_COLOR}
+								handleFunction={handleEndMatch}
+								groupPosition="top"
+							/>
 							{trackScores && (
 								<SettingsList
 									nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
@@ -1229,7 +1250,7 @@ export default function GameScreen() {
 										dispatch(resetScores());
 										closeSettingsModal();
 									}}
-									groupPosition="top"
+									groupPosition="middle"
 								/>
 							)}
 							{/* Replaces the old "Neues Spiel": that left open whether it
@@ -1242,7 +1263,7 @@ export default function GameScreen() {
 								leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
 								iconBgColor={DANGER_COLOR}
 								handleFunction={handleDeleteMatch}
-								groupPosition={trackScores ? 'bottom' : 'single'}
+								groupPosition="bottom"
 							/>
 						</>
 					)}

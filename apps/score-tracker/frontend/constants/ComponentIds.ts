@@ -70,6 +70,7 @@ export const ComponentIds = {
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_1: 'game-settings-columns-landscape-1',
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_2: 'game-settings-columns-landscape-2',
 	GAME_SETTINGS_RESET_SCORES: 'game-settings-reset-scores',
+	GAME_SETTINGS_END_MATCH: 'game-settings-end-match',
 	GAME_SETTINGS_DELETE_MATCH: 'game-settings-delete-match',
 	GAME_SETTINGS_PLAYER_ROW_PREFIX: 'game-settings-player-row-',
 	GAME_SETTINGS_PLAYER_REMOVE_PREFIX: 'game-settings-player-remove-',
@@ -91,6 +92,7 @@ export const ComponentIds = {
 
 	// Games (game types) screen
 	GAMES_SCREEN_SETTINGS_BUTTON: 'games-screen-settings-button',
+	GAMES_SCREEN_QUICK_MATCH_ROW: 'games-screen-quick-match-row',
 	GAMES_SCREEN_CREATE_GAME_ROW: 'games-screen-create-game-row',
 	GAMES_SETTINGS_CREATE_GAME_ROW: 'games-settings-create-game-row',
 	GAMES_SETTINGS_EXPORT_ALL_ROW: 'games-settings-export-all-row',

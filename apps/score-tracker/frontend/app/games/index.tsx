@@ -15,12 +15,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
 import { setGamesSortMode } from '../../store/appSettingsSlice';
+import { resetScores, setGameType } from '../../store/gameSlice';
+import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, gameTypeToPreset, parseGamePreset } from '../../helpers/GameRules';
+import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
+import { generateId } from '../../helpers/RandomHelper';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 
 const PRIMARY_COLOR = '#2563eb';
+const SUCCESS_COLOR = '#16a34a';
 
 // Helper to determine groupPosition for list items
 function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bottom' {
@@ -100,6 +105,7 @@ export default function GamesScreen() {
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
 	const gamesSortMode = useSelector((state: RootState) => state.appSettings.gamesSortMode);
+	const activeGame = useSelector((state: RootState) => state.game);
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -143,6 +149,21 @@ export default function GamesScreen() {
 		const action = dispatch(addGameType(`Spiel ${gameNumber}`));
 		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
 	}, [gameTypes.length, dispatch]);
+
+	// "Schnelles Spiel": jump straight into a fresh match without picking a
+	// game - only the players are left to add in the setup phase. A still
+	// running match is archived first so it isn't lost (same as the game
+	// detail's "Neue Partie starten").
+	const handleQuickMatch = useCallback(() => {
+		if (activeGame.status === 'active' && activeGame.players.length > 0) {
+			dispatch(
+				archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: Date.now() })),
+			);
+		}
+		dispatch(resetScores({ clearPlayers: true }));
+		dispatch(setGameType(undefined));
+		router.push('/');
+	}, [activeGame, dispatch]);
 
 	const handleAddGameTypeFromModal = useCallback(() => {
 		closeModal();
@@ -307,12 +328,22 @@ export default function GamesScreen() {
 			>
 				<View style={styles.createGameRow}>
 					<SettingsList
+						nativeID={ComponentIds.GAMES_SCREEN_QUICK_MATCH_ROW}
+						label="Schnelles Spiel"
+						value="Partie ohne bestimmtes Spiel starten - nur noch Spieler hinzufügen"
+						stackedValue
+						leftIcon={<Ionicons name="flash-outline" size={20} color="#ffffff" />}
+						iconBgColor={SUCCESS_COLOR}
+						handleFunction={handleQuickMatch}
+						groupPosition="top"
+					/>
+					<SettingsList
 						nativeID={ComponentIds.GAMES_SCREEN_CREATE_GAME_ROW}
 						label="Spiel anlegen"
 						leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleAddGameType}
-						groupPosition="single"
+						groupPosition="bottom"
 					/>
 				</View>
 				{gameTypes.length === 0 ? (
