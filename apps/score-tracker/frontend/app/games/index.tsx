@@ -19,7 +19,7 @@ import { resetScores, setGameType } from '../../store/gameSlice';
 import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, gameTypeToPreset, parseGamePreset } from '../../helpers/GameRules';
-import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
+import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
 import { generateId } from '../../helpers/RandomHelper';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
@@ -155,7 +155,7 @@ export default function GamesScreen() {
 	// running match is archived first so it isn't lost (same as the game
 	// detail's "Neue Partie starten").
 	const handleQuickMatch = useCallback(() => {
-		if (activeGame.status === 'active' && activeGame.players.length > 0) {
+		if (activeGame.status === 'active' && activeGame.players.length > 0 && hasRecordedResults(activeGame)) {
 			dispatch(
 				archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: Date.now() })),
 			);

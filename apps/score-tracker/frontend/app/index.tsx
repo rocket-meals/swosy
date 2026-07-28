@@ -53,7 +53,7 @@ import type { AppDispatch, RootState } from '../store/store';
 import { PLAYER_COLORS } from '../helpers/GameStorage';
 import type { Player } from '../helpers/GameStorage';
 import type { GameType } from '../helpers/GameTypesStorage';
-import { buildHistoryEntry } from '../helpers/GameHistoryStorage';
+import { buildHistoryEntry, hasRecordedResults } from '../helpers/GameHistoryStorage';
 import type { Friend } from '../helpers/FriendsStorage';
 import { ComponentIds } from '../constants/ComponentIds';
 import { logDebug } from '../helpers/DebugLogger';
@@ -1193,12 +1193,15 @@ export default function GameScreen() {
 
 	/**
 	 * Mark the match's rounds as finished: archive the match (it appears as
-	 * beendet in its game's Partien list, re-openable from there) and return
-	 * to an empty setup phase with the same game preselected.
+	 * beendet in its game's Partien list, re-openable from there) and open the
+	 * follow-up match right away - same game, same players, back in the setup
+	 * phase. A match nothing was recorded in is discarded instead of archived.
 	 */
 	const handleEndMatch = useCallback(() => {
-		dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
-		dispatch(resetScores({ clearPlayers: true }));
+		if (hasRecordedResults(game)) {
+			dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
+		}
+		dispatch(resetScores());
 		closeSettingsModal();
 	}, [game, matchId, dispatch, closeSettingsModal]);
 

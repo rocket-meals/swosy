@@ -40,6 +40,26 @@ export type GameHistoryState = {
 // ─── Building an entry from a played match ────────────────────────────────────
 
 /**
+ * Whether anything was actually recorded in this match: a round score, a card
+ * selection, or a category value. A match without any of these (e.g. the empty
+ * follow-up match opened right after ending one) is not worth archiving - the
+ * callers skip saving it instead of cluttering the history with blanks.
+ */
+export function hasRecordedResults(game: GameState): boolean {
+	const anyRoundEntry = game.rounds.some(
+		(round) =>
+			Object.values(round.scores).some((score) => score != null) ||
+			(round.cardSelections != null && Object.values(round.cardSelections).some((cards) => cards.length > 0)),
+	);
+	if (anyRoundEntry) return true;
+	if (game.categoryValues && Object.keys(game.categoryValues).length > 0) return true;
+	return (
+		game.playerCategoryValues != null &&
+		Object.values(game.playerCategoryValues).some((values) => Object.keys(values).length > 0)
+	);
+}
+
+/**
  * Snapshot of the currently played match, ready to be archived. Keeps the
  * match's own id (`GameState.matchId`), so archiving the same match twice -
  * e.g. after re-opening and playing on - updates its entry instead of adding a

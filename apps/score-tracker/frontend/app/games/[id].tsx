@@ -35,7 +35,7 @@ import { loadMatch, resetScores, setGameType } from '../../store/gameSlice';
 import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import type { GameHistoryEntry, GameHistoryPlayerEntry } from '../../helpers/GameHistoryStorage';
-import { buildHistoryEntry } from '../../helpers/GameHistoryStorage';
+import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { StartingPlayerMode } from '../../helpers/GameRules';
 import { gameTypeToPreset, parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
@@ -771,9 +771,15 @@ export default function GameTypeDetailScreen() {
 		});
 	}, [navigation, theme.header.text, gameType, hasMatches, handleOpenSettingsModal]);
 
-	/** Archive whatever is currently being played, so it isn't lost when the game state is replaced. */
+	/**
+	 * Archive whatever is currently being played, so it isn't lost when the
+	 * game state is replaced. A match nothing was recorded in yet (e.g. the
+	 * empty follow-up opened right after ending one) is dropped instead of
+	 * saved - leaving it without entering anything must not clutter the list.
+	 */
 	const archiveRunningMatch = useCallback(() => {
 		if (activeGame.status !== 'active' || activeGame.players.length === 0) return;
+		if (!hasRecordedResults(activeGame)) return;
 		dispatch(
 			archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: Date.now() })),
 		);
