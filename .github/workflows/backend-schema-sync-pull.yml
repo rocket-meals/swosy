@@ -14,7 +14,7 @@ on:
         description: 'Commit message for the schema changes'
         required: false
         type: string
-        default: 'chore: pull database schema from test system'
+        default: 'chore: pull database schema from test system [skip ci]'
 
 jobs:
   sync:
@@ -73,6 +73,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "ℹ️ No schema changes detected, nothing to commit."
           else
-            git commit -m "${{ github.event.inputs.commit_message || 'chore: pull database schema from test system' }}"
+            git commit -m "${{ github.event.inputs.commit_message || 'chore: pull database schema from test system [skip ci]' }}"
             git push origin HEAD:${{ github.ref_name }}
           fi
