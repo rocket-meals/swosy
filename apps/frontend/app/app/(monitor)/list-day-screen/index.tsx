@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { getImageUrl, showDayPlanPrice, showFormatedPrice } from '@/constants/HelperFunctions';
-import { getFoodAttributesTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
+import { getFoodAttributesTranslation, getFoodOfferName, getTextFromTranslation } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import styles from './styles';
 import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -395,7 +395,7 @@ const Index = () => {
 	const fetchFoods = async () => {
 		try {
 			const todayDate = new Date().toISOString().split('T')[0];
-			const foodData = await fetchFoodsByCanteen(String(canteens_id), todayDate);
+			const foodData = await fetchFoodsByCanteen(String(canteens_id), todayDate, language);
 			let foodOffers = foodData?.data || [];
 			foodOffers = sortFoodOffers(foodOffers);
 			setFoods(foodOffers);
@@ -411,7 +411,7 @@ const Index = () => {
 	const fetchOptionalFoods = async () => {
 		try {
 			const todayDate = new Date().toISOString().split('T')[0];
-			const foodData = await fetchFoodsByCanteen(String(monitor_additional_canteens_id), todayDate);
+			const foodData = await fetchFoodsByCanteen(String(monitor_additional_canteens_id), todayDate, language);
 			let foodOffers = foodData?.data || [];
 			foodOffers = sortFoodOffers(foodOffers);
 			setOptionalFoods(foodOffers);
@@ -708,7 +708,7 @@ const Index = () => {
 														},
 													]}
 												>
-													{getTextFromTranslation(item?.food?.translations, language)}
+													{getFoodOfferName(item, language)}
 												</Text>
 												<View
 													style={[
@@ -845,7 +845,7 @@ const Index = () => {
 													},
 												]}
 											>
-												{getTextFromTranslation(item?.food?.translations, language)}
+												{getFoodOfferName(item, language)}
 											</Text>
 											<View
 												style={[

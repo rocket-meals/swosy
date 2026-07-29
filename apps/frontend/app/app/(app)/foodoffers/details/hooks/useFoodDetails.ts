@@ -11,12 +11,17 @@ interface UseFoodDetailsProps {
     initialFoodId?: string | string[];
 }
 
-const findTranslationForLanguage = (
-    translations: DatabaseTypes.FoodsTranslations[] | undefined | null,
+type TranslationWithName = {
+    languages_code?: unknown;
+    name?: string | null;
+};
+
+const findTranslationForLanguage = <T extends TranslationWithName>(
+    translations: T[] | undefined | null,
     languageCode: string | undefined
 ) => {
     return translations?.find(
-        (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
+        (val: T) => String(val?.languages_code)?.split('-')[0] === languageCode
     );
 };
 
@@ -29,13 +34,22 @@ const applyFoodOfferDetailsResponse = (
 ) => {
     if (!foodData?.data) return;
 
-    const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+    const { food, attribute_values, foodoffer_category, translations: foodofferTranslations } = foodData?.data ?? {};
 
-    const translation = findTranslationForLanguage(food?.translations, languageCode);
+    // Prefer the foodoffer's own translation; fall back to the food's translation when empty
+    const foodofferTranslation = findTranslationForLanguage(
+        foodofferTranslations as DatabaseTypes.FoodoffersTranslations[] | undefined,
+        languageCode
+    );
+    const foodTranslation = findTranslationForLanguage(
+        food?.translations as DatabaseTypes.FoodsTranslations[] | undefined,
+        languageCode
+    );
+    const name = foodofferTranslation?.name || foodTranslation?.name || null;
     setFoodDetails({
         ...food,
         foodoffer_category,
-        name: translation ? translateDynamic(translation.name) : null,
+        name: name ? translateDynamic(name) : null,
     });
     if (attribute_values) {
         setFoodAttributes(attribute_values);
@@ -81,7 +95,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
         setLoading(true);
         try {
             if (id) {
-                const foodData = await fetchFoodOffersDetailsById(id.toString());
+                const foodData = await fetchFoodOffersDetailsById(id.toString(), languageCode);
                 applyFoodOfferDetailsResponse(foodData, languageCode, translateDynamic, setFoodDetails, setFoodAttributes);
             } else if (foodId) {
                 const foodData = await fetchFoodDetailsById(foodId.toString());

@@ -19,6 +19,7 @@ export enum CollectionNames {
   BUILDINGS = 'buildings',
   FOODS = 'foods',
   FOODS_TRANSLATIONS = 'foods_translations',
+  FOODOFFERS_TRANSLATIONS = 'foodoffers_translations',
   FOODS_FEEDBACKS = 'foods_feedbacks',
   FOODS_CATEGORIES = 'foods_categories',
   FOODS_ATTRIBUTES = 'foods_attributes',

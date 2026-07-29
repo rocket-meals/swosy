@@ -308,6 +308,32 @@ export class TranslationHelper {
   }
 
   /**
+   * Builds the list of translation objects for a nested create on a brand-new item
+   * (e.g. creating a foodoffer together with its translations in one request).
+   * The relation field to the parent item is omitted, as Directus sets it automatically
+   * for nested creates.
+   */
+  static getTranslationsCreateListForNewItem(translationsFromParsing: TranslationsFromParsingType): NewTranslationForCreation[] {
+    const createTranslations: NewTranslationForCreation[] = [];
+    const languageKeys = Object.keys(translationsFromParsing) as LanguageCodesType[];
+    for (const languageKey of languageKeys) {
+      const translationFromParsing = translationsFromParsing[languageKey];
+      if (!translationFromParsing) {
+        continue;
+      }
+      createTranslations.push({
+        be_source_for_translations: languageKey === TranslationHelper.LANGUAGE_CODE_DE,
+        let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
+        ...translationFromParsing,
+        [FIELD_TRANSLATION_LANGUAGE_CODE]: {
+          [FIELD_LANGUAGE_ID]: languageKey,
+        },
+      });
+    }
+    return createTranslations;
+  }
+
+  /**
    * Iterates over the language keys still remaining in `remaining_translationsFromParsing`
    * (i.e. languages from parsing that were not matched to an existing translation) and
    * pushes a create-object for each one into `createTranslations`. Returns whether any

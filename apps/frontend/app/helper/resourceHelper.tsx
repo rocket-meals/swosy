@@ -191,6 +191,19 @@ export function isRatingNegative(rating: number | null | undefined): boolean {
 	return rating !== null && rating !== undefined && rating < MINIMUM_RATING_AS_FAVORITE;
 }
 
+/**
+ * Resolves the display name of a foodoffer in the given language.
+ * Prefers the foodoffer's own translation; when the foodoffer has no translation,
+ * the translation of the related food is used instead.
+ */
+export function getFoodOfferName(foodoffer: DatabaseTypes.Foodoffers | null | undefined, languageCode: string): string {
+	if (!foodoffer) return '';
+	const offerName = getTextFromTranslation(foodoffer.translations as Array<Partial<Translation>>, languageCode);
+	if (offerName) return offerName;
+	const food = typeof foodoffer.food === 'object' ? (foodoffer.food as DatabaseTypes.Foods | null) : null;
+	return getTextFromTranslation(food?.translations as Array<Partial<Translation>> | undefined, languageCode);
+}
+
 export function getFoodName(food: string | DatabaseTypes.Foods | null | undefined, languageCode: string) {
 	if (typeof food === 'object' && food !== null) {
 		const translations = food.translations as TranslationEntry[];

@@ -52,7 +52,7 @@ const VALID_FOOD_TABS = Object.values(FoodOfferDetailTab);
 
 const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offerId, foodId: initialFoodId, initialImageAssetId, initialImageRemoteUrl }) => {
     const { theme } = useTheme();
-    const { translate } = useLanguage();
+    const { translate, language } = useLanguage();
     const dispatch = useDispatch();
     const { width: screenWidth } = useWindowDimensions();
 
@@ -112,7 +112,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const getFoodDetails = useCallback(async () => {
         try {
             if (offerId) {
-                const foodData = await fetchFoodOffersDetailsById(offerId.toString());
+                const foodData = await fetchFoodOffersDetailsById(offerId.toString(), language);
                 if (foodData?.data) {
                     setFoodOfferDetails(foodData.data);
                 } else {
@@ -129,7 +129,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
         } catch (e) {
             console.error('Error fetching food details: ', e);
         }
-    }, [offerId, initialFoodId]);
+    }, [offerId, initialFoodId, language]);
 
     const openNotificationSheet = useCallback(() => {
         showModal({

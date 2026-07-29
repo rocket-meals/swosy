@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useDispatch } from 'react-redux';
 import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { getImageUrl, showDayPlanPrice, showFormatedPrice } from '@/constants/HelperFunctions';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
+import { getFoodOfferName, getTextFromTranslation } from '@/helper/resourceHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useLocalSearchParams } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
@@ -182,6 +182,7 @@ const fetchAndSetCurrentFoodOfferCategory = (
 
 type RunFoodsRefreshOptions = {
 	params: any;
+	language?: string;
 	setFoods: (value: any[]) => void;
 	setCurrentFood: (value: any) => void;
 	setCurrentFoodIndex: (value: number) => void;
@@ -194,6 +195,7 @@ type RunFoodsRefreshOptions = {
 // Runs the periodic (or initial) food-offers refresh for the selected canteen.
 const runFoodsRefresh = async ({
 	params,
+	language,
 	setFoods,
 	setCurrentFood,
 	setCurrentFoodIndex,
@@ -204,7 +206,7 @@ const runFoodsRefresh = async ({
 }: RunFoodsRefreshOptions): Promise<void> => {
 	try {
 		const todayDate = new Date().toISOString().split('T')[0];
-		const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate);
+		const foodData = await fetchFoodsByCanteen(String(params?.canteens_id), todayDate, language);
 
 		const filteredData = filterFoodsByParams(foodData?.data || [], params);
 
@@ -301,6 +303,7 @@ const Index = () => {
 	const fetchFoods = () =>
 		runFoodsRefresh({
 			params,
+			language,
 			setFoods,
 			setCurrentFood,
 			setCurrentFoodIndex,
@@ -566,7 +569,7 @@ const Index = () => {
 										fontSize: foodTitleFontSize,
 									}}
 								>
-									{getTextFromTranslation(currentFood?.food?.translations, language)}
+									{getFoodOfferName(currentFood, language)}
 								</Text>
 							</View>
 							<View style={styles.foodDetailsContainer}>

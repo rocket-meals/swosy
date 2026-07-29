@@ -27,6 +27,24 @@ const fetchWithRetry = async (url: string, config: any) => {
 };
 
 /**
+ * Builds the Directus `deep` parameter that limits the foodoffer's own translations
+ * to the selected language (language codes in the database look like 'de-DE', while
+ * the app language is e.g. 'de', so we match on the prefix).
+ */
+const buildFoodofferTranslationsDeepFilter = (languageCode?: string) => {
+	if (!languageCode) return undefined;
+	return {
+		translations: {
+			_filter: {
+				languages_code: {
+					_starts_with: languageCode.split('-')[0],
+				},
+			},
+		},
+	};
+};
+
+/**
  * Filters out foodoffers where the associated food has status 'archived'.
  * This ensures that even if archived-food foodoffers exist on the server,
  * they are not displayed in the frontend.
@@ -63,7 +81,7 @@ export const fetchFoodOffers = async () => {
 	}
 };
 
-export const fetchFoodOffersByCanteen = async (canteenId: string, selected: string) => {
+export const fetchFoodOffersByCanteen = async (canteenId: string, selected: string, languageCode?: string) => {
 	try {
 		// Date format should be YYYY-MM-DD
 		const paramDateStart = new Date(selected).toISOString().split('T')[0];
@@ -71,7 +89,8 @@ export const fetchFoodOffersByCanteen = async (canteenId: string, selected: stri
 
 		const response = await fetchWithRetry('/items/foodoffers', {
 			params: {
-				fields: '*, markings.*,food.*,food.translations.*, attribute_values.*, attribute_values.food_attribute.*,attribute_values.food_attribute.group.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*', // Fetch all fields, including related ones
+				fields: '*, translations.*, markings.*,food.*,food.translations.*, attribute_values.*, attribute_values.food_attribute.*,attribute_values.food_attribute.group.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*', // Fetch all fields, including related ones
+				deep: buildFoodofferTranslationsDeepFilter(languageCode),
 				limit: -1, // Remove limit to fetch all results
 				filter: {
 					_and: [
@@ -114,7 +133,7 @@ export const fetchFoodOffersByCanteen = async (canteenId: string, selected: stri
 	}
 };
 
-export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) => {
+export const fetchFoodsByCanteen = async (canteenId: string, selected?: string, languageCode?: string) => {
 	try {
 		// Initialize date filter variables only if `selected` is provided
 		const paramDateStart = selected ? new Date(selected).toISOString().split('T')[0] : null;
@@ -158,7 +177,8 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 
 		const response = await fetchWithRetry('/items/foodoffers', {
 			params: {
-				fields: '*,food.*,!food.feedbacks,food.translations.*,markings.*, attribute_values.*, attribute_values.food_attribute.*,attribute_values.food_attribute.group.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*', // Exclude food.feedbacks field as per the API call
+				fields: '*,translations.*,food.*,!food.feedbacks,food.translations.*,markings.*, attribute_values.*, attribute_values.food_attribute.*,attribute_values.food_attribute.group.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*', // Exclude food.feedbacks field as per the API call
+				deep: buildFoodofferTranslationsDeepFilter(languageCode),
 				limit: -1, // Fetch all results
 				filter: { _and: baseFilter },
 			},
@@ -170,13 +190,14 @@ export const fetchFoodsByCanteen = async (canteenId: string, selected?: string) 
 	}
 };
 
-export const fetchFoodOffersDetailsById = async (id: string) => {
+export const fetchFoodOffersDetailsById = async (id: string, languageCode?: string) => {
 	try {
 		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
 			params: {
-				fields: '*, markings.*,food.*,food.feedbacks.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
+				fields: '*, translations.*, markings.*,food.*,food.feedbacks.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
 				limit: -1,
 				deep: {
+					...(buildFoodofferTranslationsDeepFilter(languageCode) || {}),
 					food: {
 						feedbacks: {
 							_filter: {

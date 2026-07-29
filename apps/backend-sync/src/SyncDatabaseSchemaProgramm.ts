@@ -13,7 +13,10 @@ program.option('--push', 'Push local schema to Directus').option('--pull', 'Pull
 async function main() {
   program.parse();
   const options = program.opts();
-  await syncDatabase(options);
+  const success = await syncDatabase(options);
+  if (!success) {
+    process.exitCode = 1; // let callers (e.g. CI) notice sync failures
+  }
 }
 
 // Starte den Service
