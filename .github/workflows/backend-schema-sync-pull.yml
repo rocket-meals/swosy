@@ -1,4 +1,4 @@
-name: "🗄️ Backend Schema Sync (Manual)"
+name: "🗄️ Backend Schema Sync Pull (Manual)"
 
 # Pulls the current database schema (directus-sync data + generated types) from the
 # test system and commits the changes to the branch the workflow was started on.
@@ -14,7 +14,7 @@ on:
         description: 'Commit message for the schema changes'
         required: false
         type: string
-        default: 'chore: sync database schema from test system'
+        default: 'chore: pull database schema from test system'
 
 jobs:
   sync:
@@ -73,6 +73,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "ℹ️ No schema changes detected, nothing to commit."
           else
-            git commit -m "${{ github.event.inputs.commit_message || 'chore: sync database schema from test system' }}"
+            git commit -m "${{ github.event.inputs.commit_message || 'chore: pull database schema from test system' }}"
             git push origin HEAD:${{ github.ref_name }}
           fi
