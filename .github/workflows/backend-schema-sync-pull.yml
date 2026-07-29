@@ -51,6 +51,9 @@ jobs:
       - name: "📦 Install dependencies"
         run: yarn install --immutable
 
+      - name: "🎭 Install Playwright browser (for type download)"
+        run: yarn workspace backend-sync exec playwright install --with-deps chromium
+
       - name: "🗄️ Pull database schema from test system"
         env:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
