@@ -1,0 +1,78 @@
+name: "🗄️ Backend Schema Sync (Manual)"
+
+# Pulls the current database schema (directus-sync data + generated types) from the
+# test system and commits the changes to the branch the workflow was started on.
+#
+# Required repository secrets:
+#   - ADMIN_EMAIL:    Admin email of the test system Directus instance
+#   - ADMIN_PASSWORD: Admin password of the test system Directus instance
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'Commit message for the schema changes'
+        required: false
+        type: string
+        default: 'chore: sync database schema from test system'
+
+jobs:
+  sync:
+    name: "🗄️ Pull schema from test system"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn"
+        run: corepack enable
+
+      - name: "📦 Get Yarn cache directory path"
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: "📦 Cache Yarn dependencies"
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: "📦 Install dependencies"
+        run: yarn install --immutable
+
+      - name: "🗄️ Pull database schema from test system"
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          if [ -z "$ADMIN_EMAIL" ] || [ -z "$ADMIN_PASSWORD" ]; then
+            echo "::error::Secrets ADMIN_EMAIL and ADMIN_PASSWORD must be configured for this workflow."
+            exit 1
+          fi
+          yarn workspace backend-sync sync:pull-from-test-system
+
+      - name: "🤖 Configure Git"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: "📤 Commit and push schema changes"
+        run: |
+          git add data/directus-sync-data packages/common/src/databaseTypes
+          if git diff --cached --quiet; then
+            echo "ℹ️ No schema changes detected, nothing to commit."
+          else
+            git commit -m "${{ github.event.inputs.commit_message || 'chore: sync database schema from test system' }}"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
