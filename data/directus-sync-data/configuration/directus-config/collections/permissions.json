@@ -3436,6 +3436,18 @@
     "validation": null,
     "permissions": null,
     "action": "read",
+    "collection": "foodoffers_translations",
+    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
+    "_syncId": "107abf8e-fd1b-8224-de42-67a6933a30de"
+  },
+  {
+    "fields": [
+      "*"
+    ],
+    "presets": null,
+    "validation": null,
+    "permissions": null,
+    "action": "read",
     "collection": "foodoffers_categories",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "8a769583-45cf-4b57-a4fd-c05f9c6b253d"

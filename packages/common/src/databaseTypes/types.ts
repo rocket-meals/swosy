@@ -1100,6 +1100,7 @@ export type Foodoffers = {
   result_hash?: string | null;
   sort?: number | null;
   status?: string | null;
+  translations: any[] | FoodoffersTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1162,6 +1163,17 @@ export type FoodoffersMarkings = {
   foodoffers_id?: string | Foodoffers | null;
   id: number;
   markings_id?: string | Markings | null;
+};
+
+export type FoodoffersTranslations = {
+  be_source_for_translations?: boolean | null;
+  description?: string | null;
+  foodoffers_id?: string | Foodoffers | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
 };
 
 export type Foods = {
@@ -2054,6 +2066,7 @@ export type CustomDirectusTypes = {
   foodoffers_components: FoodoffersComponents[];
   foodoffers_info_items: FoodoffersInfoItems[];
   foodoffers_markings: FoodoffersMarkings[];
+  foodoffers_translations: FoodoffersTranslations[];
   foods: Foods[];
   foods_attributes: FoodsAttributes[];
   foods_attributes_groups: FoodsAttributesGroups[];
