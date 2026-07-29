@@ -1167,7 +1167,6 @@ export type FoodoffersMarkings = {
 
 export type FoodoffersTranslations = {
   be_source_for_translations?: boolean | null;
-  description?: string | null;
   foodoffers_id?: string | Foodoffers | null;
   id: number;
   languages_code?: string | Languages | null;

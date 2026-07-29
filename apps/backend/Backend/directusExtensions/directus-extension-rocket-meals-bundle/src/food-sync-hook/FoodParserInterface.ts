@@ -106,7 +106,6 @@ export class FoodParserHelper {
       }
       translationsFromParsing[languagesCode as LanguageCodesType] = {
         name: translationRecord.name ?? null,
-        description: translationRecord.description ?? null,
       };
     }
     return Object.keys(translationsFromParsing).length > 0 ? translationsFromParsing : undefined;
