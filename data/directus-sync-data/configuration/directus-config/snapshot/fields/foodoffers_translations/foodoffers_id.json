@@ -1,7 +1,7 @@
 {
   "collection": "foodoffers_translations",
   "field": "foodoffers_id",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "foodoffers_translations",
     "conditions": null,
@@ -25,9 +25,9 @@
   "schema": {
     "name": "foodoffers_id",
     "table": "foodoffers_translations",
-    "data_type": "character varying",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 255,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
@@ -37,7 +37,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods",
+    "foreign_key_table": "foodoffers",
     "foreign_key_column": "id"
   }
 }
