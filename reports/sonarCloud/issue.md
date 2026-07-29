@@ -4,13 +4,23 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 0 | 0 |
+| 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 2 | 2 |
-| 🔧 Maintainability | 20 | 20 |
+| 🔧 Maintainability | 21 | 21 |
 
-**Total issues:** 22
+**Total issues:** 25
 
 ---
+
+## 🔒 Security (2/2)
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/workflows/backend-schema-sync-pull.yml:55
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/backend-schema-sync-pull.yml#L55
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/workflows/backend-schema-sync-pull.yml:52
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/backend-schema-sync-pull.yml#L52
 
 ## 🐛 Reliability (2/2)
 
@@ -22,7 +32,7 @@
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (20/20)
+## 🔧 Maintainability (21/21)
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
@@ -35,6 +45,10 @@
 - **Refactor this code to not use nested template literals.**
   apps/frontend/app/helper/authHelper.ts:267
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/authHelper.ts#L267
+
+- **The empty object is useless.**
+  apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts:200
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts#L200
 
 - **Remove this unused import of 'GameType'.**
   apps/score-tracker/frontend/app/games/[id].tsx:39
