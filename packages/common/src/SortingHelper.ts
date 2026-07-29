@@ -84,6 +84,23 @@ export function getFoodName(food: string | DatabaseTypes.Foods | null | undefine
   return null;
 }
 
+/**
+ * Resolves the display name of a foodoffer: prefers the foodoffer's own translations,
+ * falls back to the related food's translations (and its alias) when the foodoffer
+ * has no translation.
+ */
+export function getFoodofferName(foodoffer: DatabaseTypes.Foodoffers | null | undefined, languageCode: string) {
+  if (typeof foodoffer === 'object' && foodoffer !== null) {
+    const translations = (foodoffer.translations as TranslationEntry[]) || [];
+    const translation = getDirectusTranslation({ languageCode }, translations, 'name', false, null);
+    if (translation && !translation.startsWith(MISSING_TRANSLATION)) {
+      return translation.charAt(0).toUpperCase() + translation.slice(1);
+    }
+    return getFoodName(foodoffer.food, languageCode);
+  }
+  return null;
+}
+
 export const normalizeSort = (value: any): number => {
   return value === undefined || value === null || value === '' ? Infinity : value;
 };
@@ -108,8 +125,8 @@ export const sortBySortField = <T extends { sort?: number | null }>(items: T[]):
 
 export function sortByFoodName(foodOffers: DatabaseTypes.Foodoffers[], languageCode: string) {
   foodOffers.sort((a, b) => {
-    let nameA = getFoodName(a.food, languageCode);
-    let nameB = getFoodName(b.food, languageCode);
+    let nameA = getFoodofferName(a, languageCode);
+    let nameB = getFoodofferName(b, languageCode);
     if (nameA && nameB) {
       return nameA.localeCompare(nameB);
     } else if (nameA) {

@@ -1,5 +1,5 @@
 import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
-import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes, LanguageCodesType} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 import {HashHelper} from '../helpers/HashHelper';
 
@@ -32,7 +32,7 @@ export type CanteensTypeForParser = CanteenTypeOmitedFields & {
   external_identifier: string;
 }; // make external_identifier required
 
-export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values' | 'result_hash'>;
+export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values' | 'result_hash' | 'translations'>;
 
 export type FoodComponentForParser = {
   alias: string;
@@ -48,6 +48,12 @@ export type FoodoffersTypeForParser = FoodClassificationData & {
   canteen_external_identifier: string;
   food_id: string;
   components: FoodComponentForParser[];
+  /**
+   * Optional translations for the foodoffer itself (like foods have). When not provided,
+   * a German translation is derived from the foodoffer alias at creation time, so that
+   * foodoffers carry their own name independently of the food they reference.
+   */
+  translations?: TranslationsFromParsingType;
 };
 
 export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
@@ -86,6 +92,26 @@ export class FoodParserHelper {
     return marking_external_identifiers;
   }
 
+  /**
+   * Converts the fetched foodoffer translations (database records) back into the parser
+   * translation format, so a foodoffer copied from an existing one keeps its own name.
+   */
+  static extractTranslationsFromParsing(foodoffer: DatabaseTypes.Foodoffers): TranslationsFromParsingType | undefined {
+    const translationRecords = (foodoffer.translations as DatabaseTypes.FoodoffersTranslations[]) || [];
+    const translationsFromParsing: TranslationsFromParsingType = {};
+    for (const translationRecord of translationRecords) {
+      const languagesCode = translationRecord?.languages_code;
+      if (!languagesCode || typeof languagesCode !== 'string') {
+        continue;
+      }
+      translationsFromParsing[languagesCode as LanguageCodesType] = {
+        name: translationRecord.name ?? null,
+        description: translationRecord.description ?? null,
+      };
+    }
+    return Object.keys(translationsFromParsing).length > 0 ? translationsFromParsing : undefined;
+  }
+
   static getFoodofferForParserInformation(foodoffer: DatabaseTypes.Foodoffers): FoodoffersTypeForParser | null {
     const dateString = foodoffer.date;
     if (!dateString) {
@@ -113,7 +139,7 @@ export class FoodParserHelper {
         ? foodoffer.foodoffer_category?.external_identifier || null
         : null;
 
-    const {id, user_created, user_updated, canteen, food, markings, date: _, foodoffer_category, category, result_hash, ...rest} = foodoffer;
+    const {id, user_created, user_updated, canteen, food, markings, date: _, foodoffer_category, category, result_hash, translations, ...rest} = foodoffer;
 
     const basicFoodofferData: FoodofferTypeWithBasicData = {
       ...rest,
@@ -131,6 +157,7 @@ export class FoodParserHelper {
       canteen_external_identifier: canteenExternalIdentifier,
       food_id: foodId,
       components: [],
+      translations: FoodParserHelper.extractTranslationsFromParsing(foodoffer),
     };
   }
 
@@ -145,7 +172,7 @@ export class FoodParserHelper {
     }
 
 
-    const translations: TranslationsFromParsingType = {
+    const translations: TranslationsFromParsingType = foodoffer.translations ?? {
       [LanguageCodes.DE]: {
         name: alias,
       },

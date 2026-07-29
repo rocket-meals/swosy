@@ -10,7 +10,7 @@ import {
   FoodWithBasicData
 } from './FoodParserInterface';
 import {TranslationHelper} from '../helpers/TranslationHelper';
-import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus} from 'repo-depkit-common';
+import {CollectionNames, DatabaseTypes, DateHelper, DeepCopyHelper, DirectusItemStatus, LanguageCodes} from 'repo-depkit-common';
 import {MarkingParserInterface, MarkingsTypeForParser} from './MarkingParserInterface';
 import {ListHelper} from '../helpers/ListHelper';
 import {DictMarkingsExclusions, MarkingFilterHelper} from '../helpers/MarkingFilterHelper';
@@ -1051,6 +1051,19 @@ export class ParseSchedule {
       typeHelper: { isFood: false, isFoodoffer: true },
     });
 
+    // Foodoffers get their own translations (like foods), so offers can carry different
+    // names per location. Parsers without explicit foodoffer translations fall back to a
+    // German translation derived from the alias (same source as the food name).
+    let translationsFromParsing = foodofferForParser.translations;
+    if (!translationsFromParsing && basicFoodofferData.alias) {
+      translationsFromParsing = {
+        [LanguageCodes.DE]: {
+          name: basicFoodofferData.alias,
+        },
+      };
+    }
+    const translationsCreate = translationsFromParsing ? TranslationHelper.getTranslationsCreateListForNewItem(translationsFromParsing) : [];
+
     let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
       ...foodofferForParser.basicFoodofferData,
       canteen: canteen.id,
@@ -1061,6 +1074,12 @@ export class ParseSchedule {
       date_created: new Date().toISOString(),
       date_updated: new Date().toISOString(),
       result_hash: resultHash,
+      translations: {
+        // @ts-ignore Directus nested create format is not reflected in the static type
+        create: translationsCreate,
+        update: [],
+        delete: [],
+      },
       markings: {
         // @ts-ignore
         create: markingsCreate,

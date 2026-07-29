@@ -209,6 +209,15 @@ export class FoodTL1Parser implements FoodParserInterface {
         foodoffer_components: [],
       };
 
+      const translations: TranslationsFromParsingType = {
+        [LanguageCodes.DE]: {
+          name: FoodTL1Parser._getFoodNameDe(parsedReportItem),
+        },
+        [LanguageCodes.EN]: {
+          name: FoodTL1Parser._getFoodNameEn(parsedReportItem),
+        },
+      };
+
       const foodofferForParser: FoodoffersTypeForParser = {
         date: rawFoodoffer.date,
         basicFoodofferData: basicFoodofferData,
@@ -218,6 +227,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
         food_id: rawFoodoffer.food_id,
         components: FoodTL1Parser.getComponentsFromRawTL1Foodoffer(rawFoodoffer, parsedReportItem),
+        translations: translations,
       };
       result.push(foodofferForParser);
     }
