@@ -363,13 +363,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const loadDay = useCallback(
 		async (date: string): Promise<DayData> => {
-			const res = await fetchFoodOffersByCanteen(canteenId, date);
+			const res = await fetchFoodOffersByCanteen(canteenId, date, language);
 			const offers = res?.data || [];
 			// Persist to AsyncStorage cache
 			await cacheFoodOffers(canteenId, date, offers);
 			return { date, offers } as DayData;
 		},
-		[canteenId]
+		[canteenId, language]
 	);
 
 	const loadCachedDay = useCallback(

@@ -123,7 +123,7 @@ export const useFoodOffersData = (
         if (prefetchedKeys.current.has(nextCacheKey) || prefetchedFoodOffers[nextCacheKey]) return;
 
         prefetchedKeys.current.add(nextCacheKey);
-        fetchFoodOffersByCanteen(canteenId, date)
+        fetchFoodOffersByCanteen(canteenId, date, stateRef.current.languageCode)
             .then(res => {
                 const offers = res?.data || [];
                 setPrefetchedFoodOffers(p => ({ ...p, [nextCacheKey]: offers }));
@@ -167,7 +167,7 @@ export const useFoodOffersData = (
         } else {
             try {
                 setLoading(true);
-                const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
+                const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate, stateRef.current.languageCode);
                 foodOffers = foodData?.data || [];
                 
                 // Update cache and dispatch

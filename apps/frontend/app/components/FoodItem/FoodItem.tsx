@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
-import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
+import { getDescriptionFromTranslation, getFoodOfferName } from '@/helper/resourceHelper';
 import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
@@ -284,7 +284,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           excerptLength = 60;
         }
         const name = excerpt(
-          getTextFromTranslation(foodItem?.translations, language || 'de'),
+          getFoodOfferName(item, language || 'de'),
           excerptLength
         );
         if (!name) return name;
@@ -293,7 +293,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
         if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
         return result;
       },
-      [foodItem?.translations, language, pirateLanguage, funLanguageMode, screenWidth]
+      [item, language, pirateLanguage, funLanguageMode, screenWidth]
     );
 
     const priceLabel = useMemo(() => showFormatedPrice(showPrice(item, profile)), [item, profile]);
@@ -480,7 +480,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
             <TooltipText fontSize="$sm" color={theme.tooltip.text}>
               {(() => {
-                const tooltipText = getTextFromTranslation(foodItem?.translations, language || 'de');
+                const tooltipText = getFoodOfferName(item, language || 'de');
                 if (!tooltipText) return tooltipText;
                 let result = tooltipText;
                 if (pirateLanguage) result = applyPirateTransformation(result);

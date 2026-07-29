@@ -7,7 +7,7 @@ import ListWeekHeader from '@/components/ListWeekHeader/ListWeekHeader';
 import styles from './styles';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
 import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
+import { getFoodOfferName } from '@/helper/resourceHelper';
 import { getImageUrl, showDayPlanPrice, showFormatedPrice } from '@/constants/HelperFunctions';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { useLocalSearchParams } from 'expo-router';
@@ -145,7 +145,7 @@ const Index = () => {
 				const dayName = weekDayNames[i];
 				const date = weekDays[i];
 
-				const foodData = await fetchFoodsByCanteen(String(canteens_id), date);
+				const foodData = await fetchFoodsByCanteen(String(canteens_id), date, language);
 				newFoods[dayName] = foodData?.data || [];
 			}
 
@@ -533,7 +533,7 @@ const Index = () => {
 													const foodItems = foods[dayName]
 														?.filter((food: any) => food.food.food_category === col.key)
 														?.map((filteredFood: any) => {
-															const foodText = getTextFromTranslation(filteredFood?.food?.translations, language);
+															const foodText = getFoodOfferName(filteredFood, language);
 															const priceText = getPriceText(filteredFood);
 
 															return (
