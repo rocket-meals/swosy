@@ -160,9 +160,6 @@ export class ParseSchedule {
           await this.context.logger.appendLog('Sync food offers via result hash');
           await this.syncFoodOffers(foodofferListForParser, helperObject);
 
-          await this.context.logger.appendLog('Cleanup orphaned component foodoffers');
-          await this.cleanupOrphanedComponentFoodoffers();
-
           return this.context.logger.getFinalLogWithStateAndParams({
             state: WORKFLOW_RUN_STATE.SUCCESS,
             result_hash: currentMealOffersHash.getHash(),
@@ -612,48 +609,6 @@ export class ParseSchedule {
       } else {
         await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier);
       }
-    }
-  }
-
-  /**
-   * Deletes orphaned component foodoffers: foodoffers without a canteen that are not
-   * referenced by any foodoffers_components junction row. Such rows are unreachable in
-   * the app (all queries filter by canteen) and are historical leftovers from deleting
-   * parent foodoffers, where the junction rows were removed by the database via
-   * ON DELETE CASCADE without the components hook being able to delete the children.
-   */
-  async cleanupOrphanedComponentFoodoffers(): Promise<void> {
-    const foodoffersHelper = this.context.myDatabaseHelper.getFoodoffersHelper();
-    const componentsHelper = this.context.myDatabaseHelper.getFoodofferComponentsHelper();
-
-    const foodoffersWithoutCanteen = await foodoffersHelper.readByQuery({
-      filter: {
-        canteen: {
-          _null: true,
-        },
-      },
-      fields: ['id'],
-      limit: -1,
-    });
-    if (foodoffersWithoutCanteen.length === 0) {
-      await this.context.logger.appendLog('Cleanup: no foodoffers without canteen found');
-      return;
-    }
-
-    const junctionRows = await componentsHelper.readByQuery({
-      fields: ['component_foodoffers_id'],
-      limit: -1,
-    });
-    const referencedComponentIds = new Set(
-      junctionRows
-        .map(row => (typeof row.component_foodoffers_id === 'string' ? row.component_foodoffers_id : null))
-        .filter((id): id is string => !!id)
-    );
-
-    const orphanedFoodoffers = foodoffersWithoutCanteen.filter(foodoffer => !referencedComponentIds.has(foodoffer.id));
-    await this.context.logger.appendLog(`Cleanup: found ${orphanedFoodoffers.length} orphaned component foodoffers (canteen=null, not referenced by any foodoffers_components row)`);
-    if (orphanedFoodoffers.length > 0) {
-      await this.deleteFoodOffers(orphanedFoodoffers, 'Delete orphaned component foodoffers');
     }
   }
 
