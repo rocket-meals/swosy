@@ -846,6 +846,11 @@ export class FoodTL1Parser implements FoodParserInterface {
       textIndex++;
     }
 
+    // A subdivision into components is only meaningful when the foodoffer consists of
+    // at least two components; a single component is just the foodoffer itself.
+    if (components.length < 2) {
+      return [];
+    }
 
     return components;
   }
