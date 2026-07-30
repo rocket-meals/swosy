@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 20 | 20 |
+| 🔧 Maintainability | 23 | 23 |
 
-**Total issues:** 23
+**Total issues:** 26
 
 ---
 
@@ -28,7 +28,19 @@
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (20/20)
+## 🔧 Maintainability (23/23)
+
+- **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L1248
+
+- **Async method 'resolveFoodofferToCreateOrLog' has too many parameters (8). Maximum allowed is 7.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1324
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L1324
+
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts:353
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts#L353
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
