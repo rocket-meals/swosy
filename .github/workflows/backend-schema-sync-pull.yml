@@ -28,31 +28,6 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
 
-      # TEMPORARY diagnostic step (will be reverted): inspect duplicate foodoffers via public API
-      - name: "🔎 Diagnose foodoffers duplicates"
-        run: |
-          API="https://test.rocket-meals.de/rocket-meals/api"
-          echo "=== newest 15 foodoffers ==="
-          curl -sS "$API/items/foodoffers?limit=15&sort=-date_created&fields=id,alias,date,result_hash,is_component,canteen,food,status,date_created,translations.id,translations.name,translations.languages_code" | head -c 6000
-          echo
-          echo "=== foodoffers with alias null (the 'empty' ones), newest 15 ==="
-          curl -sS "$API/items/foodoffers?limit=15&sort=-date_created&filter%5Balias%5D%5B_null%5D=true&fields=id,alias,date,result_hash,is_component,canteen,food,status,date_created,date_updated,translations.id,translations.name,translations.languages_code" | head -c 6000
-          echo
-          echo "=== count alias-null vs total ==="
-          curl -sS "$API/items/foodoffers?aggregate%5Bcount%5D=id&filter%5Balias%5D%5B_null%5D=true" | head -c 500
-          echo
-          curl -sS "$API/items/foodoffers?aggregate%5Bcount%5D=id" | head -c 500
-          echo
-          echo "=== one empty foodoffer in detail (all public fields) ==="
-          EMPTY_ID=$(curl -sS "$API/items/foodoffers?limit=1&sort=-date_created&filter%5Balias%5D%5B_null%5D=true&fields=id" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
-          echo "empty id: $EMPTY_ID"
-          if [ -n "$EMPTY_ID" ]; then
-            curl -sS "$API/items/foodoffers/$EMPTY_ID?fields=*,translations.*,markings.*,foodoffer_components.*,attribute_values.*" | head -c 4000
-          fi
-          echo
-          echo "=== foodoffers_translations count ==="
-          curl -sS "$API/items/foodoffers_translations?aggregate%5Bcount%5D=id" | head -c 300
-
       - name: "⚙️ Setup Node.js"
         uses: actions/setup-node@v4
         with:
