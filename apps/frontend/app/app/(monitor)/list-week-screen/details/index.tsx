@@ -437,6 +437,14 @@ const Index = () => {
 
 	const noOffersFound = Object.entries(categories)?.length < 1;
 
+	const columns = getColumns();
+	const totalFlex = columns.reduce((sum, c) => sum + c.flex, 0);
+	// Fixed percentage widths instead of `flex`: with `flex` (flexBasis 0) each cell
+	// first gets its own padding/border as base size and only the remaining space is
+	// distributed, so rows with a different number of cells (e.g. days without any
+	// offers) end up with slightly shifted column borders.
+	const getColumnWidth = (flex: number): `${number}%` => `${(flex / totalFlex) * 100}%`;
+
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
 			<ListWeekHeader handlePrint={handlePrint} />
@@ -494,13 +502,13 @@ const Index = () => {
 								</View>
 							</View>
 							<View style={[styles.headerRow, { backgroundColor: foods_area_color }]}>
-								{getColumns()?.map((col, index) => (
+								{columns?.map((col, index) => (
 									<View
 										key={col.key}
-										// Apply the calculated flex
+										// Apply the calculated width
 										style={[
 											styles.cell,
-											{ flex: col.flex }, // Use col.flex here
+											{ width: getColumnWidth(col.flex) },
 										]}
 									>
 										<Text style={{ ...styles.headerText, color: contrastColor }}>{col.key === 'day' ? translate(col.key) : col.title}</Text>
@@ -512,8 +520,6 @@ const Index = () => {
 								const dayName = weekDayNames[index];
 								const shortDayName = dayName?.concat('_S');
 
-								const columns = getColumns();
-								const totalFlex = columns.reduce((sum, c) => sum + c.flex, 0);
 								const dayLabelFontFamily = isMobile ? 'Poppins_400Regular' : 'Poppins_700Bold';
 
 								// Check if any column for this day has food items
@@ -601,7 +607,7 @@ const Index = () => {
 															style={[
 																styles.cell,
 																{
-																	flex: col.flex,
+																	width: getColumnWidth(col.flex),
 																	borderRightWidth: 1,
 																	borderBottomWidth: 1,
 																	borderLeftWidth: colIndex === 0 ? 1 : 0,
@@ -650,7 +656,7 @@ const Index = () => {
 														style={[
 															styles.cell,
 															{
-																flex: columns[0].flex,
+																width: getColumnWidth(columns[0].flex),
 																borderLeftWidth: 1,
 																borderRightWidth: 1,
 																borderBottomWidth: 1,
@@ -691,7 +697,7 @@ const Index = () => {
 														style={[
 															styles.cell,
 															{
-																flex: totalFlex - columns[0].flex,
+																width: getColumnWidth(totalFlex - columns[0].flex),
 																borderRightWidth: 1,
 																borderBottomWidth: 1,
 																borderColor: foods_area_color,
