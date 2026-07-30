@@ -9,7 +9,6 @@ export type ResultHandleWorkflowRunsWantToRun = {
 
 export enum WorkflowEnum {
   fileCleanup = 'file-cleanup',
-  foodoffersComponentsCleanup = 'foodoffers-components-cleanup',
 }
 
 export class WorkflowRunLogger {

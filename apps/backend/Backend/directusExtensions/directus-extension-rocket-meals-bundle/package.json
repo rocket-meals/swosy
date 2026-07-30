@@ -130,11 +130,6 @@
       },
       {
         "type": "hook",
-        "name": "foodoffers-components-cleanup-hook",
-        "source": "src/foodoffers-components-cleanup-hook/index.ts"
-      },
-      {
-        "type": "hook",
         "name": "food-image-ai-generation-hook",
         "source": "src/food-image-ai-generation-hook/index.ts"
       },
