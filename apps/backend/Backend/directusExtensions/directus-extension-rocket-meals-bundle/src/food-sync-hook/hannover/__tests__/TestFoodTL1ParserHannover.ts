@@ -344,7 +344,7 @@ describe('FoodTL1ParserHannover Test', () => {
     expect(firstFoodoffer.basicFoodofferData.price_student).toEqual(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_PRICE);
     });
 
-  it('Foodoffer with single TEXT field has one component', async () => {
+  it('Foodoffer with single TEXT field has no components (subdivision only needed for 2 or more)', async () => {
     let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
     expect(foodoffersJson.length).toBeGreaterThan(0);
     const firstFoodoffer = foodoffersJson[0];
@@ -352,8 +352,7 @@ describe('FoodTL1ParserHannover Test', () => {
     if (!firstFoodoffer) {
       return;
     }
-    expect(firstFoodoffer.components.length).toBe(1);
-    expect(firstFoodoffer.components[0]?.alias).toBe('Karamellpudding');
+    expect(firstFoodoffer.components.length).toBe(0);
   });
 
   it('Foodoffer with multiple TEXT fields has correct number of components', async () => {
