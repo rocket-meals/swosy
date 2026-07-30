@@ -23,6 +23,7 @@ const initialState: GameSliceState = {
 	matchId: undefined,
 	gameTypeId: undefined,
 	playerOrderState: undefined,
+	endedAt: undefined,
 	categoryValues: {},
 	playerCategoryValues: {},
 };
@@ -57,6 +58,7 @@ const gameSlice = createSlice({
 				matchId: action.payload.matchId,
 				gameTypeId: action.payload.gameTypeId,
 				playerOrderState: action.payload.playerOrderState,
+				endedAt: action.payload.endedAt,
 				categoryValues: action.payload.categoryValues ?? {},
 				playerCategoryValues: action.payload.playerCategoryValues ?? {},
 			};
@@ -218,7 +220,7 @@ const gameSlice = createSlice({
 		 * created.
 		 */
 		startGame(state, action: PayloadAction<{ withRounds?: boolean } | undefined>) {
-			if (state.status === 'active') return;
+			if (state.status !== 'setup') return;
 			const withRounds = action.payload?.withRounds ?? true;
 			state.status = 'active';
 			state.rounds = withRounds
@@ -227,17 +229,24 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = 0;
 			state.matchId = generateId();
 			state.playerOrderState = undefined;
+			state.endedAt = undefined;
 		},
 
 		/**
-		 * Re-open an archived match (see the game detail screen's match list):
-		 * its players, rounds and recorded category values become the currently
-		 * played match again, keeping its id so archiving updates that same
-		 * history entry.
+		 * Open an archived match (see the game detail screen's match list) for
+		 * viewing: its players, rounds and recorded category values become the
+		 * currently loaded match, but in the read-only `finished` state - nothing
+		 * about the archived entry can be changed until it is explicitly
+		 * re-opened for play via `reopenMatch`. It keeps its id, so archiving
+		 * after re-opening updates that same history entry.
+		 *
+		 * The rounds and category values are deep-copied: the history entry and
+		 * the live match state must never share objects, or editing the loaded
+		 * match could silently rewrite the archive.
 		 *
 		 * Entries archived before rounds were kept fall back to a single round
 		 * holding the final scores - the per-round breakdown is gone for those,
-		 * but their totals stay visible and editable.
+		 * but their totals stay visible.
 		 */
 		loadMatch(state, action: PayloadAction<GameHistoryEntry>) {
 			const entry = action.payload;
@@ -248,22 +257,46 @@ const gameSlice = createSlice({
 				avatarConfig: player.avatarConfig,
 				friendId: player.friendId,
 			}));
-			const rounds =
-				entry.rounds ??
-				(Object.keys(entry.finalScores).length > 0
-					? [{ id: generateId(), scores: { ...entry.finalScores } }]
-					: []);
+			let rounds: Round[] = [];
+			if (entry.rounds) {
+				rounds = entry.rounds.map((round) => ({
+					id: round.id,
+					scores: { ...round.scores },
+					cardSelections: round.cardSelections
+						? Object.fromEntries(Object.entries(round.cardSelections).map(([playerId, cards]) => [playerId, [...cards]]))
+						: undefined,
+					startingPlayerId: round.startingPlayerId,
+				}));
+			} else if (Object.keys(entry.finalScores).length > 0) {
+				rounds = [{ id: generateId(), scores: { ...entry.finalScores } }];
+			}
+			const playerCategoryValues = Object.fromEntries(
+				Object.entries(entry.playerCategoryValues ?? {}).map(([playerId, values]) => [playerId, { ...values }]),
+			);
 			return {
 				players,
 				rounds,
-				status: 'active' as const,
+				status: 'finished' as const,
 				currentRoundIndex: Math.max(0, rounds.length - 1),
 				matchId: entry.id,
 				gameTypeId: entry.gameTypeId,
 				playerOrderState: undefined,
-				categoryValues: entry.categoryValues ?? {},
-				playerCategoryValues: entry.playerCategoryValues ?? {},
+				endedAt: entry.endedAt,
+				categoryValues: { ...(entry.categoryValues ?? {}) },
+				playerCategoryValues,
 			};
+		},
+
+		/**
+		 * Put a `finished` (view-only) match back into play. Only reachable from
+		 * the match options modal ("Partie wieder öffnen") - the counterpart of
+		 * "Partie beenden" there. From then on the match behaves like any running
+		 * one; ending it again updates its existing history entry.
+		 */
+		reopenMatch(state) {
+			if (state.status !== 'finished') return;
+			state.status = 'active';
+			state.endedAt = undefined;
 		},
 
 		/** Move to the previous round (view/edit its scores). No-op at round 1. */
@@ -278,6 +311,12 @@ const gameSlice = createSlice({
 		 * custom-rule state - see `computeNextStartingPlayerIndex` in GameRules.
 		 */
 		goToNextRound(state, action: PayloadAction<{ startingPlayerId?: string; nextOrderState?: number } | undefined>) {
+			// A finished (view-only) match pages through its recorded rounds but
+			// never grows by a new one - it has to be re-opened first.
+			if (state.status === 'finished') {
+				state.currentRoundIndex = Math.min(state.rounds.length - 1, state.currentRoundIndex + 1);
+				return;
+			}
 			if (state.currentRoundIndex >= state.rounds.length - 1) {
 				state.rounds.push({
 					id: generateId(),
@@ -303,6 +342,7 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = 0;
 			state.matchId = undefined;
 			state.playerOrderState = undefined;
+			state.endedAt = undefined;
 			state.categoryValues = {};
 			state.playerCategoryValues = {};
 		},
@@ -316,6 +356,7 @@ const gameSlice = createSlice({
 				currentRoundIndex: 0,
 				matchId: undefined,
 				gameTypeId: undefined,
+				endedAt: undefined,
 				categoryValues: {},
 				playerCategoryValues: {},
 			};
@@ -369,6 +410,7 @@ export const {
 	linkPlayerToFriend,
 	setGameType,
 	loadMatch,
+	reopenMatch,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,
