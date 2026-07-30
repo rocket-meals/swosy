@@ -148,4 +148,95 @@ describe('TranslationHelper Test', () => {
     expect(result.updateObject.translations.update).toHaveLength(0);
     expect(result.updateObject.translations.create).toHaveLength(0);
   });
+
+  describe('getTranslationsCreateListForNewItemReusingExistingTranslations', () => {
+    const parsedTranslationsGermanOnly: TranslationsFromParsingType = {
+      [LanguageCodes.DE]: {
+        name: 'Spaghetti Bolognese',
+      },
+    };
+
+    const existingFoodTranslations = [
+      {
+        id: 1 as PrimaryKey,
+        languages_code: LanguageCodes.DE,
+        be_source_for_translations: true,
+        let_be_translated: false,
+        name: 'Spaghetti Bolognese',
+        description: 'Mit Rinderhack',
+      },
+      {
+        id: 2 as PrimaryKey,
+        languages_code: LanguageCodes.EN,
+        be_source_for_translations: false,
+        let_be_translated: false,
+        name: 'Spaghetti bolognese',
+        description: 'With minced beef',
+      },
+      {
+        id: 3 as PrimaryKey,
+        languages_code: 'ar-SA',
+        be_source_for_translations: false,
+        let_be_translated: false,
+        name: 'سباغيتي بولونيز',
+      },
+    ];
+
+    it('reuses existing translations when the source name matches', () => {
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, existingFoodTranslations, ['name']);
+
+      expect(createList).toHaveLength(3);
+
+      const englishEntry = createList.find(entry => (entry.languages_code as any)?.code === LanguageCodes.EN);
+      expect(englishEntry?.name).toBe('Spaghetti bolognese');
+      expect(englishEntry?.let_be_translated).toBe(false); // reused, must not be machine-translated again
+      expect(englishEntry?.be_source_for_translations).toBe(false);
+      // only the requested fields are copied, the target collection has no description
+      expect(englishEntry).not.toHaveProperty('description');
+      // no database record fields leak into the create payload
+      expect(englishEntry).not.toHaveProperty('id');
+
+      const arabicEntry = createList.find(entry => (entry.languages_code as any)?.code === 'ar-SA');
+      expect(arabicEntry?.name).toBe('سباغيتي بولونيز');
+      expect(arabicEntry?.let_be_translated).toBe(false);
+    });
+
+    it('does not reuse existing translations when the source name differs', () => {
+      const parsedTranslationsDifferentName: TranslationsFromParsingType = {
+        [LanguageCodes.DE]: {
+          name: 'Currywurst',
+        },
+      };
+
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsDifferentName, existingFoodTranslations, ['name']);
+
+      // only the parsed translation, remaining languages are left to the auto-translation hook
+      expect(createList).toHaveLength(1);
+      expect(createList[0]?.name).toBe('Currywurst');
+      expect((createList[0]?.languages_code as any)?.code).toBe(LanguageCodes.DE);
+    });
+
+    it('parser translations win over existing translations for the same language', () => {
+      const parsedTranslationsGermanAndEnglish: TranslationsFromParsingType = {
+        [LanguageCodes.DE]: {
+          name: 'Spaghetti Bolognese',
+        },
+        [LanguageCodes.EN]: {
+          name: 'Spaghetti bolognese (fresh from report)',
+        },
+      };
+
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanAndEnglish, existingFoodTranslations, ['name']);
+
+      expect(createList).toHaveLength(3);
+      const englishEntry = createList.find(entry => (entry.languages_code as any)?.code === LanguageCodes.EN);
+      expect(englishEntry?.name).toBe('Spaghetti bolognese (fresh from report)');
+    });
+
+    it('returns only parsed translations when the related item has no translations', () => {
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [], ['name']);
+      expect(createList).toHaveLength(1);
+      expect(createList[0]?.name).toBe('Spaghetti Bolognese');
+    });
+  });
 });

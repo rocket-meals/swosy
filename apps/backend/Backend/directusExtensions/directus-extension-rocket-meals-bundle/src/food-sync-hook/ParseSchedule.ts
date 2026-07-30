@@ -1062,7 +1062,13 @@ export class ParseSchedule {
         },
       };
     }
-    const translationsCreate = translationsFromParsing ? TranslationHelper.getTranslationsCreateListForNewItem(translationsFromParsing) : [];
+    // Reuse the food's existing translations when the source name matches, so the
+    // auto-translation hook does not machine-translate the same text again for every
+    // newly created foodoffer (keeps translation costs down).
+    const existingFoodTranslations = (food.translations as DatabaseTypes.FoodsTranslations[]) || [];
+    const translationsCreate = translationsFromParsing
+      ? TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(translationsFromParsing, existingFoodTranslations, ['name'])
+      : [];
 
     let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
       ...foodofferForParser.basicFoodofferData,
@@ -1185,7 +1191,9 @@ export class ParseSchedule {
   }
 
   /**
-   * Looks up the food record for each food_id referenced by the given foodoffers.
+   * Looks up the food record (including its translations) for each food_id referenced
+   * by the given foodoffers. The translations are needed so that foodoffers can reuse
+   * the already existing food translations instead of triggering new auto-translations.
    */
   async resolveFoodsForFoodofferList(foodofferListForParser: FoodoffersTypeForParser[]): Promise<Record<string, DatabaseTypes.Foods | null>> {
     // dict foodsFound
@@ -1198,7 +1206,7 @@ export class ParseSchedule {
     const foodsService = await this.getFoodsService();
     const foodIds = Object.keys(dictFoodsFound);
     for (let foodId of foodIds) {
-      let food = await foodsService.readOne(foodId);
+      let food = await foodsService.readOneWithTranslations(foodId);
       if (food) {
         dictFoodsFound[foodId] = food;
       }
