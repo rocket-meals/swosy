@@ -183,7 +183,7 @@ describe('TranslationHelper Test', () => {
     ];
 
     it('reuses existing translations when the source name matches', () => {
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, existingFoodTranslations, ['name']);
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [existingFoodTranslations], ['name']);
 
       expect(createList).toHaveLength(3);
 
@@ -208,7 +208,7 @@ describe('TranslationHelper Test', () => {
         },
       };
 
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsDifferentName, existingFoodTranslations, ['name']);
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsDifferentName, [existingFoodTranslations], ['name']);
 
       // only the parsed translation, remaining languages are left to the auto-translation hook
       expect(createList).toHaveLength(1);
@@ -226,15 +226,55 @@ describe('TranslationHelper Test', () => {
         },
       };
 
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanAndEnglish, existingFoodTranslations, ['name']);
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanAndEnglish, [existingFoodTranslations], ['name']);
 
       expect(createList).toHaveLength(3);
       const englishEntry = createList.find(entry => (entry.languages_code as any)?.code === LanguageCodes.EN);
       expect(englishEntry?.name).toBe('Spaghetti bolognese (fresh from report)');
     });
 
+    it('falls back to the next candidate when the first one does not match', () => {
+      // e.g. the food has a different name, but another foodoffer with the same name exists
+      const existingOtherFoodofferTranslations = [
+        {
+          id: 10 as PrimaryKey,
+          languages_code: LanguageCodes.DE,
+          be_source_for_translations: true,
+          let_be_translated: false,
+          name: 'Spaghetti Bolognese',
+        },
+        {
+          id: 11 as PrimaryKey,
+          languages_code: LanguageCodes.EN,
+          be_source_for_translations: false,
+          let_be_translated: false,
+          name: 'Spaghetti bolognese (from other foodoffer)',
+        },
+      ];
+      const nonMatchingFoodTranslations = [
+        {
+          id: 20 as PrimaryKey,
+          languages_code: LanguageCodes.DE,
+          be_source_for_translations: true,
+          let_be_translated: false,
+          name: 'Ganz anderer Name',
+        },
+      ];
+
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
+        parsedTranslationsGermanOnly,
+        [nonMatchingFoodTranslations, existingOtherFoodofferTranslations],
+        ['name']
+      );
+
+      expect(createList).toHaveLength(2);
+      const englishEntry = createList.find(entry => (entry.languages_code as any)?.code === LanguageCodes.EN);
+      expect(englishEntry?.name).toBe('Spaghetti bolognese (from other foodoffer)');
+      expect(englishEntry?.let_be_translated).toBe(false);
+    });
+
     it('returns only parsed translations when the related item has no translations', () => {
-      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [], ['name']);
+      const createList = TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(parsedTranslationsGermanOnly, [[]], ['name']);
       expect(createList).toHaveLength(1);
       expect(createList[0]?.name).toBe('Spaghetti Bolognese');
     });
