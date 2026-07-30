@@ -42,6 +42,7 @@ import {
 	startGame,
 	goToPreviousRound,
 	goToNextRound,
+	reopenMatch,
 	resetScores,
 	resetAll,
 } from '../store/gameSlice';
@@ -82,6 +83,11 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 	if (total === 1 || index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+/** Day a finished match ended, for the view-only banner (same format as the Partien list). */
+function formatEndedAtDate(timestamp: number): string {
+	return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 // ─── Score Input Modal Content ────────────────────────────────────────────────
@@ -230,7 +236,11 @@ function ScoreInputContent({
 // the player one is rendered inside a modal, where a closure-captured value
 // would otherwise keep showing whatever was recorded at open-time.
 
-function MatchCategorySection({ categories }: Readonly<{ categories: GameCategory[] }>) {
+function MatchCategorySection({
+	categories,
+	gameTypeId,
+	readOnly,
+}: Readonly<{ categories: GameCategory[]; gameTypeId?: string; readOnly?: boolean }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const values = useSelector((state: RootState) => state.game.categoryValues);
 	const matchCategories = useMemo(() => categoriesForScope(categories, 'match'), [categories]);
@@ -245,13 +255,19 @@ function MatchCategorySection({ categories }: Readonly<{ categories: GameCategor
 				categories={matchCategories}
 				values={resolved}
 				allCategories={categories}
+				gameTypeId={gameTypeId}
+				readOnly={readOnly}
 				onChange={(categoryId, value) => dispatch(setCategoryValue({ categoryId, value }))}
 			/>
 		</View>
 	);
 }
 
-function PlayerCategorySection({ playerId, categories }: Readonly<{ playerId: string; categories: GameCategory[] }>) {
+function PlayerCategorySection({
+	playerId,
+	categories,
+	gameTypeId,
+}: Readonly<{ playerId: string; categories: GameCategory[]; gameTypeId?: string }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const values = useSelector((state: RootState) => state.game.playerCategoryValues?.[playerId]);
 	const playerCategories = useMemo(() => categoriesForScope(categories, 'player'), [categories]);
@@ -265,6 +281,7 @@ function PlayerCategorySection({ playerId, categories }: Readonly<{ playerId: st
 				categories={playerCategories}
 				values={resolved}
 				allCategories={categories}
+				gameTypeId={gameTypeId}
 				onChange={(categoryId, value) => dispatch(setPlayerCategoryValue({ playerId, categoryId, value }))}
 			/>
 		</View>
@@ -812,11 +829,16 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
 	const players = useSelector((state: RootState) => state.game.players);
+	const status = useSelector((state: RootState) => state.game.status);
 	const { show, close } = useMyScrollViewModal();
 
 	const handleAddPlayer = useCallback(() => {
 		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} /> });
 	}, [show, close]);
+
+	// A finished match is view-only: its roster is part of the archived result
+	// and must not be editable until the match is explicitly re-opened.
+	if (status === 'finished') return null;
 
 	return (
 		<>
@@ -861,6 +883,113 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 				iconBgColor={PRIMARY_COLOR}
 				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={onEditPlayers}
+				groupPosition="bottom"
+			/>
+		</>
+	);
+}
+
+// ─── Match options (settings modal: end/reopen/reset/delete the match) ───────
+//
+// Subscribes to the store itself so ending a match always archives the *live*
+// state. These rows used to be built inline in the settings-modal callback,
+// which captured a stale `game` snapshot - "Partie beenden" then archived (or,
+// via the hasRecordedResults guard, silently discarded) an outdated copy of
+// the match, wiping the entered rounds and players from the saved entry.
+
+function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const game = useSelector((state: RootState) => state.game);
+	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
+	const selectedGameType = game.gameTypeId ? gameTypes.find((g) => g.id === game.gameTypeId) : undefined;
+	const trackScores = selectedGameType?.trackScores ?? true;
+
+	/**
+	 * Mark the match's rounds as finished: archive the match (it appears as
+	 * beendet in its game's Partien list, viewable from there) and open the
+	 * follow-up match right away - same game, same players, back in the setup
+	 * phase. A match nothing was recorded in is discarded instead of archived.
+	 */
+	const handleEndMatch = useCallback(() => {
+		if (hasRecordedResults(game)) {
+			dispatch(archiveGame(buildHistoryEntry(game, { id: game.matchId ?? generateId(), endedAt: Date.now() })));
+		}
+		dispatch(resetScores());
+		onClose();
+	}, [game, dispatch, onClose]);
+
+	/** Put a finished (view-only) match back into play - the counterpart of "Partie beenden". */
+	const handleReopenMatch = useCallback(() => {
+		dispatch(reopenMatch());
+		onClose();
+	}, [dispatch, onClose]);
+
+	/**
+	 * Throw away the match currently open - including its archived entry, if it
+	 * was opened from the history - and start over from the setup phase with
+	 * the same game preselected. The seats are emptied too: the next match
+	 * picks its players fresh instead of inheriting this one's roster.
+	 */
+	const handleDeleteMatch = useCallback(() => {
+		if (game.matchId) dispatch(removeGameFromHistory(game.matchId));
+		dispatch(resetScores({ clearPlayers: true }));
+		onClose();
+	}, [game.matchId, dispatch, onClose]);
+
+	if (game.status === 'setup') return null;
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Partie" />
+			{game.status === 'active' && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_SETTINGS_END_MATCH}
+					label="Partie beenden"
+					value="Runden werden als beendet markiert und die Partie gespeichert"
+					stackedValue
+					leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
+					iconBgColor={SUCCESS_COLOR}
+					handleFunction={handleEndMatch}
+					groupPosition="top"
+				/>
+			)}
+			{game.status === 'finished' && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_SETTINGS_REOPEN_MATCH}
+					label="Partie wieder öffnen"
+					value="Die beendete Partie kann danach wieder bearbeitet werden"
+					stackedValue
+					leftIcon={<Ionicons name="lock-open-outline" size={20} color="#ffffff" />}
+					iconBgColor={SUCCESS_COLOR}
+					handleFunction={handleReopenMatch}
+					groupPosition="top"
+				/>
+			)}
+			{game.status === 'active' && trackScores && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
+					label="Alle Punkte zurücksetzen"
+					value="Spieler bleiben, alle Runden werden geleert"
+					stackedValue
+					leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
+					iconBgColor={WARNING_COLOR}
+					handleFunction={() => {
+						dispatch(resetScores());
+						onClose();
+					}}
+					groupPosition="middle"
+				/>
+			)}
+			{/* Replaces the old "Neues Spiel": that left open whether it
+			    reset or deleted the match. This one only ever deletes. */}
+			<SettingsList
+				nativeID={ComponentIds.GAME_SETTINGS_DELETE_MATCH}
+				label="Partie löschen"
+				value="Diese Partie wird verworfen und aus der Liste des Spiels entfernt"
+				stackedValue
+				leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
+				iconBgColor={DANGER_COLOR}
+				handleFunction={handleDeleteMatch}
 				groupPosition="bottom"
 			/>
 		</>
@@ -975,10 +1104,22 @@ function makeGameHeaderLeft(color: string, gameTypeId: string) {
 }
 
 /** Label for the "next round" navigation button. */
-function resolveNextRoundLabel(matchFinished: boolean, maxRounds: number | null, currentRoundNumber: number): string {
+function resolveNextRoundLabel(params: {
+	matchFinished: boolean;
+	maxRounds: number | null;
+	currentRoundNumber: number;
+	/** Viewing an archived match read-only (see `GameStatus`'s `finished`). */
+	isFinishedView: boolean;
+	roundsCount: number;
+}): string {
+	const { matchFinished, maxRounds, currentRoundNumber, isFinishedView, roundsCount } = params;
+	if (isFinishedView) {
+		return currentRoundNumber >= roundsCount ? 'Partie beendet' : `Runde ${currentRoundNumber + 1}`;
+	}
 	if (matchFinished) {
 		return 'Spiel beendet';
-	} else if (maxRounds != null && currentRoundNumber >= maxRounds) {
+	}
+	if (maxRounds != null && currentRoundNumber >= maxRounds) {
 		return 'Letzte Runde';
 	}
 	return `Runde ${currentRoundNumber + 1}`;
@@ -1033,10 +1174,9 @@ export default function GameScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
-	const game = useSelector((state: RootState) => state.game);
 	const players = useSelector((state: RootState) => state.game.players);
-	const matchId = useSelector((state: RootState) => state.game.matchId);
 	const rounds = useSelector((state: RootState) => state.game.rounds);
+	const endedAt = useSelector((state: RootState) => state.game.endedAt);
 	const status = useSelector((state: RootState) => state.game.status);
 	const currentRoundIndex = useSelector((state: RootState) => state.game.currentRoundIndex);
 	const friends = useSelector((state: RootState) => state.friends.friends);
@@ -1060,16 +1200,19 @@ export default function GameScreen() {
 	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
 	const toggleEditingPlayers = useCallback(() => setIsEditingPlayers(v => !v), []);
 
-	// Leaving the setup phase always drops back into the scoreboard view.
+	// Leaving the setup phase always drops back into the scoreboard view, and a
+	// finished (view-only) match never opens in player-edit mode.
 	const prevStatusRef = useRef(status);
 	useEffect(() => {
-		if (prevStatusRef.current === 'setup' && status === 'active') {
+		if ((prevStatusRef.current === 'setup' && status === 'active') || status === 'finished') {
 			setIsEditingPlayers(false);
 		}
 		prevStatusRef.current = status;
 	}, [status]);
 
-	const showEditRows = status === 'setup' || isEditingPlayers;
+	// A finished match is a view onto its archived entry - no editing surfaces.
+	const isFinishedView = status === 'finished';
+	const showEditRows = status === 'setup' || (isEditingPlayers && !isFinishedView);
 
 	const selectedGameType = useMemo(
 		() => (gameTypeId ? gameTypes.find((g) => g.id === gameTypeId) : undefined),
@@ -1137,11 +1280,19 @@ export default function GameScreen() {
 	const currentRoundNumber = currentRoundIndex + 1;
 	// A finished match only blocks *advancing past the end* - paging forward
 	// through already-played rounds (after having gone back) must keep working.
+	// In the view-only finished state the last recorded round is always the end.
 	const isLastPossibleRound =
-		(matchFinished && currentRoundIndex >= rounds.length - 1) || (maxRounds != null && currentRoundNumber >= maxRounds);
+		((matchFinished || isFinishedView) && currentRoundIndex >= rounds.length - 1) ||
+		(maxRounds != null && currentRoundNumber >= maxRounds);
 
 	// Label for the "next round" navigation button
-	const nextRoundLabel = resolveNextRoundLabel(matchFinished, maxRounds, currentRoundNumber);
+	const nextRoundLabel = resolveNextRoundLabel({
+		matchFinished,
+		maxRounds,
+		currentRoundNumber,
+		isFinishedView,
+		roundsCount: rounds.length,
+	});
 
 	// Tile width, only needed once a multi-column layout is active
 	const tileWidth = useMemo(() => {
@@ -1177,34 +1328,6 @@ export default function GameScreen() {
 		[showPlayerEditModal, closePlayerEditModal],
 	);
 
-	// ─── Settings modal (header gear) ────────────────────────────────────────
-
-	/**
-	 * Throw away the match currently open - including its archived entry, if it
-	 * was re-opened from the history - and start over from the setup phase with
-	 * the same game preselected. The seats are emptied too: the next match
-	 * picks its players fresh instead of inheriting this one's roster.
-	 */
-	const handleDeleteMatch = useCallback(() => {
-		if (matchId) dispatch(removeGameFromHistory(matchId));
-		dispatch(resetScores({ clearPlayers: true }));
-		closeSettingsModal();
-	}, [matchId, dispatch, closeSettingsModal]);
-
-	/**
-	 * Mark the match's rounds as finished: archive the match (it appears as
-	 * beendet in its game's Partien list, re-openable from there) and open the
-	 * follow-up match right away - same game, same players, back in the setup
-	 * phase. A match nothing was recorded in is discarded instead of archived.
-	 */
-	const handleEndMatch = useCallback(() => {
-		if (hasRecordedResults(game)) {
-			dispatch(archiveGame(buildHistoryEntry(game, { id: matchId ?? generateId(), endedAt: Date.now() })));
-		}
-		dispatch(resetScores());
-		closeSettingsModal();
-	}, [game, matchId, dispatch, closeSettingsModal]);
-
 	// ─── Game type selection (setup phase) ───────────────────────────────────
 
 	const handleOpenGameTypeModal = useCallback(() => {
@@ -1214,6 +1337,8 @@ export default function GameScreen() {
 		});
 	}, [showGameTypeModal, closeGameTypeModal]);
 
+	// All sections subscribe to the store themselves (see MatchOptionsSection),
+	// so the modal content never acts on a stale snapshot of the match.
 	const handleOpenSettingsModal = useCallback(() => {
 		showSettingsModal({
 			title: '⚙️ Optionen',
@@ -1228,52 +1353,11 @@ export default function GameScreen() {
 
 					<ColumnsSettingsSection />
 
-					{status === 'active' && (
-						<>
-							<SettingsListGroupTitle title="Partie" />
-							<SettingsList
-								nativeID={ComponentIds.GAME_SETTINGS_END_MATCH}
-								label="Partie beenden"
-								value="Runden werden als beendet markiert und die Partie gespeichert"
-								stackedValue
-								leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
-								iconBgColor={SUCCESS_COLOR}
-								handleFunction={handleEndMatch}
-								groupPosition="top"
-							/>
-							{trackScores && (
-								<SettingsList
-									nativeID={ComponentIds.GAME_SETTINGS_RESET_SCORES}
-									label="Alle Punkte zurücksetzen"
-									value="Spieler bleiben, alle Runden werden geleert"
-									stackedValue
-									leftIcon={<Ionicons name="refresh-outline" size={20} color="#ffffff" />}
-									iconBgColor={WARNING_COLOR}
-									handleFunction={() => {
-										dispatch(resetScores());
-										closeSettingsModal();
-									}}
-									groupPosition="middle"
-								/>
-							)}
-							{/* Replaces the old "Neues Spiel": that left open whether it
-							    reset or deleted the match. This one only ever deletes. */}
-							<SettingsList
-								nativeID={ComponentIds.GAME_SETTINGS_DELETE_MATCH}
-								label="Partie löschen"
-								value="Diese Partie wird verworfen und aus der Liste des Spiels entfernt"
-								stackedValue
-								leftIcon={<Ionicons name="trash-outline" size={20} color="#ffffff" />}
-								iconBgColor={DANGER_COLOR}
-								handleFunction={handleDeleteMatch}
-								groupPosition="bottom"
-							/>
-						</>
-					)}
+					<MatchOptionsSection onClose={closeSettingsModal} />
 				</View>
 			),
 		});
-	}, [status, trackScores, dispatch, closeSettingsModal, handleDeleteMatch]);
+	}, [showSettingsModal, closeSettingsModal]);
 
 	// ─── Header buttons ───────────────────────────────────────────────────────
 
@@ -1298,10 +1382,14 @@ export default function GameScreen() {
 	// its categories alone.
 	const handleTilePress = useCallback(
 		(playerId: string) => {
+			// A finished match is view-only - nothing to enter until it is
+			// re-opened via the match options.
+			if (isFinishedView) return;
 			// Only score entry needs a round; a game without points has none.
 			if (trackScores && !currentRound) return;
 			const player = players.find((p) => p.id === playerId);
-			const categorySection = playerCategories.length > 0 ? <PlayerCategorySection playerId={playerId} categories={categories} /> : null;
+			const categorySection =
+				playerCategories.length > 0 ? <PlayerCategorySection playerId={playerId} categories={categories} gameTypeId={gameTypeId} /> : null;
 			const title = player ? player.name : 'Eintrag';
 
 			if (!trackScores) {
@@ -1357,7 +1445,7 @@ export default function GameScreen() {
 				),
 			});
 		},
-		[currentRound, players, categories, playerCategories, trackScores, selectedGameType, showScoreModal, closeScoreModal, dispatch, theme],
+		[currentRound, players, categories, playerCategories, trackScores, isFinishedView, selectedGameType, gameTypeId, showScoreModal, closeScoreModal, dispatch, theme],
 	);
 
 	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);
@@ -1366,6 +1454,9 @@ export default function GameScreen() {
 	// through already-played rounds must keep their originally recorded one.
 	const handleNextRound = useCallback(() => {
 		const isCreatingNewRound = currentRoundIndex >= rounds.length - 1;
+		// Viewing a finished match pages through its recorded rounds but must
+		// never grow it by a new one.
+		if (isFinishedView && isCreatingNewRound) return;
 		if (!isCreatingNewRound || !currentRound) {
 			dispatch(goToNextRound());
 			return;
@@ -1381,7 +1472,7 @@ export default function GameScreen() {
 			state: playerOrderState ?? selectedGameType?.rules?.playerOrder?.initialState ?? 0,
 		});
 		dispatch(goToNextRound({ startingPlayerId: players[startIndex]?.id, nextOrderState: nextState }));
-	}, [currentRoundIndex, rounds.length, currentRound, selectedGameType, players, totals, scoringMode, playerOrderState, dispatch]);
+	}, [currentRoundIndex, rounds.length, currentRound, isFinishedView, selectedGameType, players, totals, scoringMode, playerOrderState, dispatch]);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -1431,7 +1522,7 @@ export default function GameScreen() {
 								/>
 							</View>
 						)}
-						<MatchCategorySection categories={categories} />
+						<MatchCategorySection categories={categories} gameTypeId={gameTypeId} />
 						<TouchableOpacity
 							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON_TOP}
 							style={[styles.addPlayerButton, styles.addPlayerButtonTop, { borderColor: PRIMARY_COLOR }]}
@@ -1473,7 +1564,16 @@ export default function GameScreen() {
 					</>
 				) : (
 					<>
-						{matchFinished && (
+						{isFinishedView && (
+							<View nativeID={ComponentIds.GAME_FINISHED_VIEW_BANNER} style={[styles.finishedBanner, styles.finishedViewBanner]}>
+								<Ionicons name="lock-closed-outline" size={18} color="#ffffff" />
+								<Text style={styles.finishedBannerText}>
+									Beendete Partie{endedAt ? ` vom ${formatEndedAtDate(endedAt)}` : ''} - nur Ansicht. Zum Bearbeiten in den
+									Optionen (⚙️) „Partie wieder öffnen“ wählen.
+								</Text>
+							</View>
+						)}
+						{matchFinished && !isFinishedView && (
 							<View nativeID={ComponentIds.GAME_FINISHED_BANNER} style={[styles.finishedBanner, { backgroundColor: SUCCESS_COLOR }]}>
 								<Ionicons name="trophy-outline" size={18} color="#ffffff" />
 								<Text style={styles.finishedBannerText}>
@@ -1482,7 +1582,7 @@ export default function GameScreen() {
 								</Text>
 							</View>
 						)}
-						<MatchCategorySection categories={categories} />
+						<MatchCategorySection categories={categories} gameTypeId={gameTypeId} readOnly={isFinishedView} />
 						{players.map((player) => {
 							const summary = summarizeCategoryValues(playerCategories, playerCategoryValues?.[player.id]);
 							return (
@@ -1695,6 +1795,9 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		paddingHorizontal: 16,
 		marginBottom: 12,
+	},
+	finishedViewBanner: {
+		backgroundColor: '#6b7280',
 	},
 	finishedBannerText: {
 		color: '#ffffff',

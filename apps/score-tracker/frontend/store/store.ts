@@ -82,6 +82,7 @@ store.subscribe(() => {
 				matchId: game.matchId,
 				gameTypeId: game.gameTypeId,
 				playerOrderState: game.playerOrderState,
+				endedAt: game.endedAt,
 				categoryValues: game.categoryValues,
 				playerCategoryValues: game.playerCategoryValues,
 			});

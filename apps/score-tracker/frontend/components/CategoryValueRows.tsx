@@ -11,6 +11,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import { useDispatch, useSelector } from 'react-redux';
 import type { GameCategory, GameCategoryType, GameCategoryValue, GameCategoryValues } from '../helpers/GameCategories';
 import {
 	displayDateToIso,
@@ -21,6 +22,8 @@ import {
 	parseTimeToMinutes,
 	timeFromTimestamp,
 } from '../helpers/GameCategories';
+import { addGameCategoryOption } from '../store/gameTypesSlice';
+import type { AppDispatch, RootState } from '../store/store';
 import { ComponentIds } from '../constants/ComponentIds';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -53,16 +56,32 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 }
 
 // ─── Enum picker (modal content) ──────────────────────────────────────────────
+//
+// When the category belongs to a known game type (`gameTypeId` set), the picker
+// subscribes to the store so it always shows the live option list - and offers
+// creating a new option right here, so a missing value (e.g. a new "Typ
+// gewonnen" outcome) can be added during entry without a detour through the
+// game's settings. The new option is selected immediately.
 
 function EnumOptionsContent({
-	category,
+	category: categoryProp,
+	gameTypeId,
 	selectedOptionId,
 	onSelect,
 }: Readonly<{
 	category: GameCategory;
+	/** Game type owning the category - enables adding new options in place. */
+	gameTypeId?: string;
 	selectedOptionId: string | null;
 	onSelect: (optionId: string | null) => void;
 }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const liveCategory = useSelector((state: RootState) =>
+		gameTypeId
+			? state.gameTypes.gameTypes.find((g) => g.id === gameTypeId)?.categories?.find((c) => c.id === categoryProp.id)
+			: undefined,
+	);
+	const category = liveCategory ?? categoryProp;
 	const options = category.options ?? [];
 	return (
 		<View style={styles.modalContent}>
@@ -78,6 +97,23 @@ function EnumOptionsContent({
 					groupPosition={groupPositionFor(index, options.length)}
 				/>
 			))}
+			{gameTypeId && (
+				<SettingsListTextInput
+					nativeID={`${ComponentIds.CATEGORY_VALUE_ENUM_ADD_OPTION_PREFIX}${category.id}`}
+					label="Neue Option hinzufügen"
+					leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Neue Option"
+					placeholder="z.B. Unentschieden"
+					saveLabel="Hinzufügen"
+					checkTextInput={(value) => ({ isValid: value.trim() !== '', value })}
+					onSave={(label) => {
+						const action = dispatch(addGameCategoryOption({ gameTypeId, categoryId: category.id, label: label.trim() }));
+						onSelect(action.payload.option.id);
+					}}
+					groupPosition="single"
+				/>
+			)}
 			<SettingsList
 				label="Keine Angabe"
 				leftIcon={<Ionicons name="close-circle-outline" size={20} color="#ffffff" />}
@@ -97,12 +133,18 @@ export function CategoryValueRow({
 	allCategories,
 	onChange,
 	groupPosition,
+	gameTypeId,
+	readOnly,
 }: Readonly<{
 	category: GameCategory;
 	value: GameCategoryValue | undefined;
 	allCategories: GameCategory[];
 	onChange: (value: GameCategoryValue) => void;
 	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
+	/** Game type owning the categories - lets the enum picker add new options in place. */
+	gameTypeId?: string;
+	/** Render the recorded value without any way to change it (viewing a finished match). */
+	readOnly?: boolean;
 }>) {
 	const { show, close } = useMyScrollViewModal();
 	const nativeID = `${ComponentIds.CATEGORY_VALUE_ROW_PREFIX}${category.id}`;
@@ -114,6 +156,7 @@ export function CategoryValueRow({
 			children: (
 				<EnumOptionsContent
 					category={category}
+					gameTypeId={gameTypeId}
 					selectedOptionId={typeof value === 'string' ? value : null}
 					onSelect={(optionId) => {
 						onChange(optionId);
@@ -122,7 +165,21 @@ export function CategoryValueRow({
 				/>
 			),
 		});
-	}, [show, close, category, value, onChange]);
+	}, [show, close, category, gameTypeId, value, onChange]);
+
+	// Viewing a finished match: every category renders as a plain value row.
+	if (readOnly && !isComputedCategory(category)) {
+		return (
+			<SettingsList
+				nativeID={nativeID}
+				label={category.name}
+				value={formatCategoryValue(category, value)}
+				leftIcon={leftIcon}
+				iconBgColor="#6b7280"
+				groupPosition={groupPosition}
+			/>
+		);
+	}
 
 	// A computed duration is derived from two other categories and can only be
 	// changed by changing those, so it renders as a plain read-only row.
@@ -282,6 +339,8 @@ export default function CategoryValueRows({
 	allCategories,
 	onChange,
 	emptyHint,
+	gameTypeId,
+	readOnly,
 }: Readonly<{
 	categories: GameCategory[];
 	values: GameCategoryValues;
@@ -290,6 +349,10 @@ export default function CategoryValueRows({
 	onChange: (categoryId: string, value: GameCategoryValue) => void;
 	/** Shown instead of the rows when the game type has no matching categories. */
 	emptyHint?: string;
+	/** Game type owning the categories - lets the enum picker add new options in place. */
+	gameTypeId?: string;
+	/** Render the recorded values without any way to change them (viewing a finished match). */
+	readOnly?: boolean;
 }>) {
 	const { theme } = useTheme();
 
@@ -308,6 +371,8 @@ export default function CategoryValueRows({
 					allCategories={allCategories}
 					onChange={(value) => onChange(category.id, value)}
 					groupPosition={groupPositionFor(index, categories.length)}
+					gameTypeId={gameTypeId}
+					readOnly={readOnly}
 				/>
 			))}
 		</>

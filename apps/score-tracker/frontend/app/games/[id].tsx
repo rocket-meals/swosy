@@ -798,9 +798,10 @@ export default function GameTypeDetailScreen() {
 		router.push('/');
 	}, [gameType, archiveRunningMatch, dispatch]);
 
-	// Tapping a match returns to it: the running one is already loaded, an
-	// archived one is loaded back into the game state (and keeps its id, so
-	// playing on updates its own history entry).
+	// Tapping a match opens it: the running one is already loaded; an archived
+	// one is loaded view-only (status `finished`) - editing it again requires
+	// "Partie wieder öffnen" in its options, so just looking at an old match
+	// can never change or lose what was recorded.
 	const handleOpenMatch = useCallback(
 		(entry: GameHistoryEntry, isRunning: boolean) => {
 			if (!isRunning) {

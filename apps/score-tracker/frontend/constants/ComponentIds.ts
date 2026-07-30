@@ -27,6 +27,7 @@ export const ComponentIds = {
 	GAME_ROUND_NEXT_BUTTON: 'game-round-next-button',
 	GAME_ROUND_LABEL: 'game-round-label',
 	GAME_FINISHED_BANNER: 'game-finished-banner',
+	GAME_FINISHED_VIEW_BANNER: 'game-finished-view-banner',
 
 	// Setup phase (round 0)
 	GAME_START_BUTTON: 'game-start-button',
@@ -71,6 +72,7 @@ export const ComponentIds = {
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_2: 'game-settings-columns-landscape-2',
 	GAME_SETTINGS_RESET_SCORES: 'game-settings-reset-scores',
 	GAME_SETTINGS_END_MATCH: 'game-settings-end-match',
+	GAME_SETTINGS_REOPEN_MATCH: 'game-settings-reopen-match',
 	GAME_SETTINGS_DELETE_MATCH: 'game-settings-delete-match',
 	GAME_SETTINGS_PLAYER_ROW_PREFIX: 'game-settings-player-row-',
 	GAME_SETTINGS_PLAYER_REMOVE_PREFIX: 'game-settings-player-remove-',
@@ -128,6 +130,7 @@ export const ComponentIds = {
 	// Custom categories: value entry (game screen) and definition (game detail)
 	CATEGORY_VALUE_ROW_PREFIX: 'category-value-row-',
 	CATEGORY_VALUE_ENUM_OPTION_PREFIX: 'category-value-enum-option-',
+	CATEGORY_VALUE_ENUM_ADD_OPTION_PREFIX: 'category-value-enum-add-option-',
 	GAME_CATEGORY_ROW_PREFIX: 'game-category-row-',
 	GAME_CATEGORY_MOVE_UP_PREFIX: 'game-category-move-up-',
 	GAME_CATEGORY_MOVE_DOWN_PREFIX: 'game-category-move-down-',

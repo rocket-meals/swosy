@@ -37,7 +37,13 @@ export type Round = {
 	startingPlayerId?: string;
 };
 
-export type GameStatus = 'setup' | 'active';
+/**
+ * Lifecycle of the currently loaded match. `finished` is an archived match
+ * re-opened from its game's Partien list purely to look at it: everything is
+ * read-only until it is explicitly re-opened for play via the match options
+ * ("Partie wieder öffnen") - the same modal a running match is ended in.
+ */
+export type GameStatus = 'setup' | 'active' | 'finished';
 
 export type GameState = {
 	players: Player[];
@@ -54,6 +60,8 @@ export type GameState = {
 	gameTypeId?: string;
 	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
 	playerOrderState?: number;
+	/** When the match ended - only set while `status` is `finished` (viewing an archived match). */
+	endedAt?: number;
 	/** Values of the game type's match-scope categories (see GameCategories), keyed by category id. */
 	categoryValues?: GameCategoryValues;
 	/** Values of the game type's player-scope categories, keyed by player id and then category id. */
@@ -103,6 +111,7 @@ export async function loadGameState(): Promise<GameState> {
 				matchId: parsed.matchId,
 				gameTypeId: parsed.gameTypeId,
 				playerOrderState: parsed.playerOrderState,
+				endedAt: parsed.endedAt,
 				categoryValues: parsed.categoryValues ?? {},
 				playerCategoryValues: parsed.playerCategoryValues ?? {},
 			};
