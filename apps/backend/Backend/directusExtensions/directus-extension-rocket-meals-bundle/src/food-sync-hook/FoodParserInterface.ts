@@ -214,6 +214,11 @@ export class FoodParserHelper {
       marking_external_identifiers: normalizedMarkings,
       date: normalizedDate,
     };
+    // The hash only covers the parsed report input. Translations are derived from that
+    // input (e.g. the food names already part of the hash via alias), so they are
+    // excluded - this keeps hashes identical to before foodoffers had own translations
+    // and avoids recreating all foodoffers on unchanged menus.
+    delete normalizedFoodofferInformationForParser.translations;
 
     return HashHelper.hashFromObject(normalizedFoodofferInformationForParser);
   }

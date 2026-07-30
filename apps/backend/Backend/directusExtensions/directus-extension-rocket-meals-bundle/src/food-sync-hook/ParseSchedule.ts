@@ -959,7 +959,9 @@ export class ParseSchedule {
   }
 
   buildComponentFoodoffersCreate(components: FoodComponentForParser[], canteen: DatabaseTypes.Canteens, dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>, dictMarkingsExclusions: DictMarkingsExclusions): any {
-    if (!components || components.length === 0) {
+    // A single component carries no information beyond the foodoffer itself - the split
+    // into components is only meaningful when there are 2 or more of them.
+    if (!components || components.length <= 1) {
       return {
         create: [],
         update: [],
@@ -1024,8 +1026,9 @@ export class ParseSchedule {
     helperObject: FoodCreationHelperObject,
     dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
     resultHash: string,
+    existingFoodofferTranslationsForSourceName?: DatabaseTypes.FoodoffersTranslations[],
   }) {
-    const { foodofferForParser, canteen, markings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash } = params;
+    const { foodofferForParser, canteen, markings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash, existingFoodofferTranslationsForSourceName } = params;
     let food_id = foodofferForParser.food_id;
     const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
@@ -1062,12 +1065,18 @@ export class ParseSchedule {
         },
       };
     }
-    // Reuse the food's existing translations when the source name matches, so the
-    // auto-translation hook does not machine-translate the same text again for every
-    // newly created foodoffer (keeps translation costs down).
+    // Reuse existing translations when the source name matches, so the auto-translation
+    // hook does not machine-translate the same text again for every newly created
+    // foodoffer (keeps translation costs down). Candidates in order: the food's
+    // translations, then the translations of an already existing foodoffer with the
+    // same source name.
     const existingFoodTranslations = (food.translations as DatabaseTypes.FoodsTranslations[]) || [];
     const translationsCreate = translationsFromParsing
-      ? TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(translationsFromParsing, existingFoodTranslations, ['name'])
+      ? TranslationHelper.getTranslationsCreateListForNewItemReusingExistingTranslations(
+          translationsFromParsing,
+          [existingFoodTranslations, existingFoodofferTranslationsForSourceName],
+          ['name']
+        )
       : [];
 
     let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
@@ -1118,9 +1127,12 @@ export class ParseSchedule {
     // search for foods
     const dictFoodsFound = await this.resolveFoodsForFoodofferList(foodofferListForParser);
 
+    // lookup existing foodoffer translations that can be reused (by source name)
+    const dictSourceNameToExistingFoodofferTranslations = await this.resolveExistingFoodofferTranslationsBySourceName(foodofferListForParser);
+
     const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
     for (const [index, foodofferForParser] of foodofferListForParser.entries()) {
-      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog(foodofferForParser, index, amountOfRawMealOffers, dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking, dictFoodsFound, helperObject);
+      const foodOfferToCreate = await this.resolveFoodofferToCreateOrLog(foodofferForParser, index, amountOfRawMealOffers, dictCanteenExternalIdentifierToCanteen, dictMarkingExternalIdentifierToMarking, dictFoodsFound, helperObject, dictSourceNameToExistingFoodofferTranslations);
       if (foodOfferToCreate) {
         foodoffersToCreate.push(foodOfferToCreate);
       }
@@ -1215,6 +1227,96 @@ export class ParseSchedule {
   }
 
   /**
+   * Resolves the source (German) name a foodoffer's translations are based on.
+   */
+  private getTranslationSourceNameForFoodoffer(foodofferForParser: FoodoffersTypeForParser): string | null {
+    const parsedSourceName = foodofferForParser.translations?.[LanguageCodes.DE]?.name;
+    if (typeof parsedSourceName === 'string' && parsedSourceName) {
+      return parsedSourceName;
+    }
+    return foodofferForParser.basicFoodofferData.alias ?? null;
+  }
+
+  static readonly TRANSLATION_LOOKUP_CHUNK_SIZE = 100;
+
+  /**
+   * Looks up already existing foodoffer translations in the database whose source
+   * (German) translation matches one of the given foodoffers' source names. The found
+   * translation sets can then be reused for newly created foodoffers, so the
+   * auto-translation hook does not have to translate the same text again.
+   */
+  async resolveExistingFoodofferTranslationsBySourceName(foodofferListForParser: FoodoffersTypeForParser[]): Promise<Record<string, DatabaseTypes.FoodoffersTranslations[]>> {
+    const sourceNames = new Set<string>();
+    for (const foodofferForParser of foodofferListForParser) {
+      const sourceName = this.getTranslationSourceNameForFoodoffer(foodofferForParser);
+      if (sourceName) {
+        sourceNames.add(sourceName);
+      }
+    }
+    if (sourceNames.size === 0) {
+      return {};
+    }
+
+    const foodoffersTranslationsHelper = this.context.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodoffersTranslations>(CollectionNames.FOODOFFERS_TRANSLATIONS);
+
+    // Find one existing foodoffer per source name whose source translation matches
+    const dictSourceNameToFoodofferId: Record<string, string> = {};
+    const sourceNameList = Array.from(sourceNames);
+    for (let i = 0; i < sourceNameList.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
+      const chunk = sourceNameList.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
+      const sourceTranslationRows = await foodoffersTranslationsHelper.readByQuery({
+        filter: {
+          _and: [
+            { languages_code: { _eq: TranslationHelper.DefaultLanguage } },
+            { name: { _in: chunk } },
+          ],
+        },
+        fields: ['name', 'foodoffers_id'],
+        limit: -1,
+      });
+      for (const sourceTranslationRow of sourceTranslationRows) {
+        const foodofferId = typeof sourceTranslationRow.foodoffers_id === 'string' ? sourceTranslationRow.foodoffers_id : null;
+        const name = sourceTranslationRow.name;
+        if (name && foodofferId && !dictSourceNameToFoodofferId[name]) {
+          dictSourceNameToFoodofferId[name] = foodofferId;
+        }
+      }
+    }
+
+    const foodofferIds = Array.from(new Set(Object.values(dictSourceNameToFoodofferId)));
+    if (foodofferIds.length === 0) {
+      return {};
+    }
+
+    // Fetch the complete translation sets of those foodoffers
+    const dictFoodofferIdToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
+    for (let i = 0; i < foodofferIds.length; i += ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE) {
+      const chunk = foodofferIds.slice(i, i + ParseSchedule.TRANSLATION_LOOKUP_CHUNK_SIZE);
+      const translationRows = await foodoffersTranslationsHelper.readByQuery({
+        filter: { foodoffers_id: { _in: chunk } },
+        limit: -1,
+      });
+      for (const translationRow of translationRows) {
+        const foodofferId = typeof translationRow.foodoffers_id === 'string' ? translationRow.foodoffers_id : null;
+        if (!foodofferId) continue;
+        if (!dictFoodofferIdToTranslations[foodofferId]) {
+          dictFoodofferIdToTranslations[foodofferId] = [];
+        }
+        dictFoodofferIdToTranslations[foodofferId].push(translationRow);
+      }
+    }
+
+    const dictSourceNameToTranslations: Record<string, DatabaseTypes.FoodoffersTranslations[]> = {};
+    for (const [sourceName, foodofferId] of Object.entries(dictSourceNameToFoodofferId)) {
+      const translations = dictFoodofferIdToTranslations[foodofferId];
+      if (translations && translations.length > 0) {
+        dictSourceNameToTranslations[sourceName] = translations;
+      }
+    }
+    return dictSourceNameToTranslations;
+  }
+
+  /**
    * Builds the foodoffer-to-create payload for a single parsed foodoffer, or logs a
    * skip/error notice and returns null if the canteen/food could not be resolved or the
    * food is archived.
@@ -1227,6 +1329,7 @@ export class ParseSchedule {
     dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>,
     dictFoodsFound: Record<string, DatabaseTypes.Foods | null>,
     helperObject: FoodCreationHelperObject,
+    dictSourceNameToExistingFoodofferTranslations?: Record<string, DatabaseTypes.FoodoffersTranslations[]>,
   ): Promise<Partial<DatabaseTypes.Foodoffers> | null> {
     const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
     const canteenFound = !!canteen;
@@ -1262,7 +1365,9 @@ export class ParseSchedule {
     if (canteenFound && foodFound && !foodIsArchived) {
       const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
       const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
-      return this.getFoodofferToCreate({ foodofferForParser, canteen, markings: filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash });
+      const translationSourceName = this.getTranslationSourceNameForFoodoffer(foodofferForParser);
+      const existingFoodofferTranslationsForSourceName = translationSourceName ? dictSourceNameToExistingFoodofferTranslations?.[translationSourceName] : undefined;
+      return this.getFoodofferToCreate({ foodofferForParser, canteen, markings: filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking, resultHash, existingFoodofferTranslationsForSourceName });
     } else if (foodIsArchived) {
       await this.context.logger.appendLog('Skip Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - food has status archived - food_id: ' + food_id);
       return null;
