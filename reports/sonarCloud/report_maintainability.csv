@@ -1,6 +1,6 @@
 Key,Message,Component,Line
+"AZ-troKbdnmC--q0OpVh","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts",200
 "AZ-kpc65MS4027xJKxyM","Remove this unused import of 'GameType'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",39
-"AZ-kpc9gMS4027xJKxyN","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",667
 "AZ-ihYHsRNMUYcNiZYmc","'../helpers/GameImageUpload' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",21
 "AZ-ihYHsRNMUYcNiZYmd","'../helpers/GameImageUpload' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",23
 "AZ-iWbnxE1zZThhKZLay","Remove this unused import of 'setGameTypeIcon'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",21
