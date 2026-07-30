@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 2 | 2 |
-| 🔧 Maintainability | 21 | 21 |
+| 🐛 Reliability | 1 | 1 |
+| 🔧 Maintainability | 20 | 20 |
 
-**Total issues:** 25
+**Total issues:** 23
 
 ---
 
@@ -22,17 +22,13 @@
   .github/workflows/backend-schema-sync-pull.yml:52
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/backend-schema-sync-pull.yml#L52
 
-## 🐛 Reliability (2/2)
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:186
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L186
+## 🐛 Reliability (1/1)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (21/21)
+## 🔧 Maintainability (20/20)
 
 - **Extract this nested ternary operation into an independent statement.**
   apps/frontend/app/components/Login/LoginDebugPanel.tsx:63
@@ -61,10 +57,6 @@
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/games/[id].tsx:84
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L84
-
-- **Refactor this code to not nest functions more than 4 levels deep.**
-  apps/score-tracker/frontend/app/index.tsx:667
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L667
 
 - **Remove this unused import of 'resetAll'.**
   apps/score-tracker/frontend/app/index.tsx:46
