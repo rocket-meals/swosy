@@ -182,6 +182,9 @@ export type AppUsageEvents = {
   event_type?: string | null;
   id: string;
   payload?: unknown | null;
+  payload_boolean?: boolean | null;
+  payload_datetime?: string | null;
+  payload_number?: number | null;
   platform?: string | null;
   screen_name?: string | null;
   sequence_number?: number | null;

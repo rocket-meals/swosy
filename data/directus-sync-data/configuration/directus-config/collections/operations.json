@@ -2,9 +2,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -24,6 +21,9 @@
         "foods_parsing_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "c5c0602c-889f-4d4a-8af3-90b4be91a20c",
     "resolve": null,
     "reject": null,
@@ -32,9 +32,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -48,6 +45,9 @@
         "news_parsing_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "fcd01059-33f0-486e-a407-2eb361848025",
     "resolve": null,
     "reject": null,
@@ -56,9 +56,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -72,6 +69,9 @@
         "notifications_foods_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "017ffe97-5499-43ce-87fc-f755815d2b62",
     "resolve": null,
     "reject": null,
@@ -80,9 +80,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -96,6 +93,9 @@
         "washingmachine_parsing_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "3a675c40-2a17-4a25-a3ba-ab8fc9d5e7a0",
     "resolve": null,
     "reject": null,
@@ -104,9 +104,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -120,6 +117,9 @@
         "cashregisters_parsing_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "16feb8c5-d138-454a-8fd6-e60394661f91",
     "resolve": null,
     "reject": null,
@@ -128,9 +128,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -144,6 +141,9 @@
         "housing_parsing_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "d1b80b70-debc-442c-89f2-3a0f32731247",
     "resolve": null,
     "reject": null,
@@ -152,9 +152,6 @@
   {
     "position_y": 1,
     "position_x": 19,
-    "type": "item-update",
-    "key": "item_update_jrrlc",
-    "name": "Daten aktualisieren",
     "options": {
       "collection": "app_settings",
       "permissions": "$full",
@@ -168,6 +165,9 @@
         "utilization_forecast_calculation_status": "start"
       }
     },
+    "type": "item-update",
+    "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "flow": "4bb7441a-82da-4d3c-b778-dbca944fe4d5",
     "resolve": null,
     "reject": null,
