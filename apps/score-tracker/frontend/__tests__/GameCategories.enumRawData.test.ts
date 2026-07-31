@@ -11,17 +11,35 @@ jest.mock('repo-depkit-common-ui', () => ({
 	setStorageItem: jest.fn(async () => undefined),
 }));
 
-import { enumOptionsToRawData, parseEnumOptionsRawData } from '../helpers/GameCategories';
+import { ENUM_OPTIONS_RAW_DATA_COMMENT_KEY, enumOptionsToRawData, parseEnumOptionsRawData } from '../helpers/GameCategories';
 import gameTypesReducer, { addGameType, addGameCategory, setGameCategoryOptions } from '../store/gameTypesSlice';
 
 describe('parseEnumOptionsRawData', () => {
-	it('round-trips the exported form and keeps existing option ids', () => {
+	it('round-trips the exported form (comment entry ignored) and keeps existing option ids', () => {
 		const options = [
 			{ id: 'opt-won', label: 'Gewonnen' },
 			{ id: 'opt-lost', label: 'Verloren' },
 		];
-		const parsed = parseEnumOptionsRawData(enumOptionsToRawData(options));
-		expect(parsed).toEqual(options);
+		const rawData = enumOptionsToRawData(options);
+		// The export leads with the explanatory comment entry for pasted-along AIs.
+		expect((JSON.parse(rawData) as Record<string, unknown>[])[0][ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]).toContain('"+"');
+		expect(parseEnumOptionsRawData(rawData)).toEqual(options);
+	});
+
+	it('treats "id": "+" as "create new" and generates distinct ids (Directus-style)', () => {
+		const parsed = parseEnumOptionsRawData('[{"id": "+", "label": "Agatha Crane"}, {"id": "+", "label": "Rita Young"}]');
+		expect(parsed).toHaveLength(2);
+		expect(parsed?.[0].id).not.toBe('+');
+		expect(parsed?.[1].id).not.toBe('+');
+		expect(parsed?.[0].id).not.toBe(parsed?.[1].id);
+	});
+
+	it('strips a "//" comment key from an entry and skips pure comment entries', () => {
+		const parsed = parseEnumOptionsRawData(
+			'[{"//": "wird ignoriert"}, {"//": "neu", "id": "+", "label": "Carson Sinclair"}]',
+		);
+		expect(parsed).toHaveLength(1);
+		expect(parsed?.[0].label).toBe('Carson Sinclair');
 	});
 
 	it('accepts plain strings and id-less objects, generating fresh ids', () => {
@@ -49,6 +67,7 @@ describe('parseEnumOptionsRawData', () => {
 		['malformed JSON', 'not json'],
 		['a non-array', '{"label": "X"}'],
 		['an empty list', '[]'],
+		['a list holding only a comment entry', '[{"//": "nur Kommentar"}]'],
 		['an entry without a label', '[{"id": "a"}]'],
 		['an empty label', '["  "]'],
 		['a non-string id', '[{"id": 5, "label": "X"}]'],

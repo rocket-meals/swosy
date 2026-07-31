@@ -527,9 +527,31 @@ export function normalizeGameCategories(value: unknown): GameCategory[] | null {
 // investigators/scenarios of a board game) and pasted back in one go instead
 // of adding dozens of options by hand.
 
-/** The option list as the JSON text shown in the "Rohdaten" field. */
+/**
+ * Directus-style marker: an option pasted with this id gets a freshly
+ * generated one - `{ "id": "+", "label": "..." }` reads as "create new".
+ */
+export const NEW_ENUM_OPTION_ID = '+';
+
+/**
+ * Key of the explanatory comment entry the export puts at the top of the JSON
+ * (JSON has no real comments). Stripped from every entry on import; an entry
+ * consisting of nothing else is dropped entirely.
+ */
+export const ENUM_OPTIONS_RAW_DATA_COMMENT_KEY = '//';
+
+const ENUM_OPTIONS_RAW_DATA_COMMENT =
+	'Optionen dieser Auswahl-Kategorie. Bestehende "id"-Werte unverändert lassen - Partien speichern nur die id. ' +
+	'Neue Optionen bekommen "id": "+" (oder keine id, oder nur den Text als String) - die id wird beim Import generiert. ' +
+	'Dieser Kommentar-Eintrag wird beim Import ignoriert.';
+
+/**
+ * The option list as the JSON text shown in the "Rohdaten" field, with the
+ * explanatory comment entry first - so a pasted-along AI knows how to extend
+ * the list without being told the format separately.
+ */
 export function enumOptionsToRawData(options: GameCategoryOption[] | undefined): string {
-	return JSON.stringify(options ?? [], null, 2);
+	return JSON.stringify([{ [ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]: ENUM_OPTIONS_RAW_DATA_COMMENT }, ...(options ?? [])], null, 2);
 }
 
 /**
@@ -537,11 +559,14 @@ export function enumOptionsToRawData(options: GameCategoryOption[] | undefined):
  * hand-written or AI-generated JSON doesn't have to match the export exactly:
  * - `{ "id": "...", "label": "..." }` - the exported form; the id is kept, so
  *   values already recorded in matches keep pointing at their option
- * - `{ "label": "..." }` or a plain `"..."` string - a new option, id generated
+ * - `{ "id": "+", "label": "..." }`, `{ "label": "..." }` or a plain `"..."`
+ *   string - a new option, id generated
+ * - a `"//"` comment key is dropped from every entry; an entry that was only
+ *   a comment (like the one the export prepends) is skipped
  *
- * Returns `null` when the JSON is malformed, empty, contains an entry without
- * a usable label, or two entries share an id - the caller keeps the current
- * options in that case instead of applying half an import.
+ * Returns `null` when the JSON is malformed, holds no options, contains an
+ * entry without a usable label, or two entries share an id - the caller keeps
+ * the current options in that case instead of applying half an import.
  */
 export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | null {
 	let parsed: unknown;
@@ -550,7 +575,7 @@ export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | n
 	} catch {
 		return null;
 	}
-	if (!Array.isArray(parsed) || parsed.length === 0) return null;
+	if (!Array.isArray(parsed)) return null;
 
 	const options: GameCategoryOption[] = [];
 	for (const entry of parsed) {
@@ -560,11 +585,15 @@ export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | n
 			continue;
 		}
 		if (typeof entry !== 'object' || entry === null) return null;
-		const raw = entry as Record<string, unknown>;
+		const { [ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]: _comment, ...raw } = entry as Record<string, unknown>;
+		if (Object.keys(raw).length === 0) continue;
 		if (typeof raw.label !== 'string' || raw.label.trim() === '') return null;
-		if (raw.id !== undefined && (typeof raw.id !== 'string' || raw.id === '')) return null;
-		options.push({ id: typeof raw.id === 'string' ? raw.id : generateId(), label: raw.label.trim() });
+		const id = raw.id;
+		if (id !== undefined && (typeof id !== 'string' || id === '')) return null;
+		const keepId = typeof id === 'string' && id !== NEW_ENUM_OPTION_ID;
+		options.push({ id: keepId ? (id as string) : generateId(), label: raw.label.trim() });
 	}
+	if (options.length === 0) return null;
 
 	const ids = options.map((option) => option.id);
 	if (new Set(ids).size !== ids.length) return null;

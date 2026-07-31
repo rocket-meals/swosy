@@ -65,8 +65,10 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 // list as JSON. Copy it out (the copy button puts it on the clipboard), let
 // e.g. an AI generate the remaining investigators/scenarios based on what is
 // already there, and paste the full list back in - entries pasted with their
-// exported id keep it, so recorded matches keep their reference, while plain
-// strings or id-less entries become new options.
+// exported id keep it, so recorded matches keep their reference, while
+// `"id": "+"` (Directus-style), id-less entries or plain strings become new
+// options. The export starts with a `"//"` comment entry explaining exactly
+// that, so the pasted-along AI needs no extra briefing; the import ignores it.
 
 export function EnumOptionsRawDataRow({
 	gameTypeId,
@@ -101,7 +103,7 @@ export function EnumOptionsRawDataRow({
 			leftIcon={<MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />}
 			iconBgColor="#6b7280"
 			modalTitle={`Rohdaten: ${category.name}`}
-			placeholder='[{"id": "...", "label": "Gewonnen"}, "Neue Option"]'
+			placeholder='[{"id": "+", "label": "Neue Option"}, "Oder nur Text"]'
 			saveLabel="Übernehmen"
 			initialValue={enumOptionsToRawData(options)}
 			multiline
