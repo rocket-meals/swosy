@@ -34,7 +34,7 @@ import {
 	isComputedCategory,
 } from '../helpers/GameCategories';
 import { ComponentIds } from '../constants/ComponentIds';
-import { categoryTypeIcon } from './CategoryValueRows';
+import { categoryTypeIcon, EnumOptionsRawDataRow } from './CategoryValueRows';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -134,8 +134,11 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 				onSave={(label) => {
 					dispatch(addGameCategoryOption({ gameTypeId, categoryId: category.id, label: label.trim() }));
 				}}
-				groupPosition="bottom"
+				groupPosition="middle"
 			/>
+			{/* The whole option list as copy/paste JSON, e.g. to let an AI
+			    generate the remaining options - see EnumOptionsRawDataRow. */}
+			<EnumOptionsRawDataRow gameTypeId={gameTypeId} category={category} groupPosition="bottom" />
 		</>
 	);
 }

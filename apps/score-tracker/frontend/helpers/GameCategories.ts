@@ -520,6 +520,57 @@ export function normalizeGameCategories(value: unknown): GameCategory[] | null {
 	return categories;
 }
 
+// ─── Enum option raw data (copy/paste of a whole option list) ─────────────────
+//
+// The "Rohdaten" field of an enum category: the option list as JSON, meant to
+// be copied out, extended elsewhere (e.g. by asking an AI to generate all
+// investigators/scenarios of a board game) and pasted back in one go instead
+// of adding dozens of options by hand.
+
+/** The option list as the JSON text shown in the "Rohdaten" field. */
+export function enumOptionsToRawData(options: GameCategoryOption[] | undefined): string {
+	return JSON.stringify(options ?? [], null, 2);
+}
+
+/**
+ * Parse the pasted "Rohdaten" back into an option list. Accepted entries, so
+ * hand-written or AI-generated JSON doesn't have to match the export exactly:
+ * - `{ "id": "...", "label": "..." }` - the exported form; the id is kept, so
+ *   values already recorded in matches keep pointing at their option
+ * - `{ "label": "..." }` or a plain `"..."` string - a new option, id generated
+ *
+ * Returns `null` when the JSON is malformed, empty, contains an entry without
+ * a usable label, or two entries share an id - the caller keeps the current
+ * options in that case instead of applying half an import.
+ */
+export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | null {
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(value);
+	} catch {
+		return null;
+	}
+	if (!Array.isArray(parsed) || parsed.length === 0) return null;
+
+	const options: GameCategoryOption[] = [];
+	for (const entry of parsed) {
+		if (typeof entry === 'string') {
+			if (entry.trim() === '') return null;
+			options.push({ id: generateId(), label: entry.trim() });
+			continue;
+		}
+		if (typeof entry !== 'object' || entry === null) return null;
+		const raw = entry as Record<string, unknown>;
+		if (typeof raw.label !== 'string' || raw.label.trim() === '') return null;
+		if (raw.id !== undefined && (typeof raw.id !== 'string' || raw.id === '')) return null;
+		options.push({ id: typeof raw.id === 'string' ? raw.id : generateId(), label: raw.label.trim() });
+	}
+
+	const ids = options.map((option) => option.id);
+	if (new Set(ids).size !== ids.length) return null;
+	return options;
+}
+
 /**
  * Deep copy of a category list, so a game type created from a (module-level or
  * re-imported) preset never shares nested option objects with another one.

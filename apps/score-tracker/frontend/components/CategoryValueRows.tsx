@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import {
 	SettingsList,
 	SettingsListBoolean,
@@ -15,14 +16,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { GameCategory, GameCategoryType, GameCategoryValue, GameCategoryValues } from '../helpers/GameCategories';
 import {
 	displayDateToIso,
+	enumOptionsToRawData,
 	formatCategoryValue,
 	formatDuration,
 	isComputedCategory,
 	isoDateToDisplay,
+	parseEnumOptionsRawData,
 	parseTimeToMinutes,
 	timeFromTimestamp,
 } from '../helpers/GameCategories';
-import { addGameCategoryOption } from '../store/gameTypesSlice';
+import { addGameCategoryOption, setGameCategoryOptions } from '../store/gameTypesSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { ComponentIds } from '../constants/ComponentIds';
 
@@ -53,6 +56,67 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 	if (index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+// ─── Enum option raw data (shared "Rohdaten" row) ─────────────────────────────
+//
+// Sits at the bottom of every place enum options can be managed (the category
+// editor in the game settings and the entry-time picker): the whole option
+// list as JSON. Copy it out (the copy button puts it on the clipboard), let
+// e.g. an AI generate the remaining investigators/scenarios based on what is
+// already there, and paste the full list back in - entries pasted with their
+// exported id keep it, so recorded matches keep their reference, while plain
+// strings or id-less entries become new options.
+
+export function EnumOptionsRawDataRow({
+	gameTypeId,
+	category,
+	groupPosition,
+}: Readonly<{
+	gameTypeId: string;
+	category: GameCategory;
+	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
+}>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const options = category.options ?? [];
+
+	const handleCopy = useCallback(async () => {
+		await Clipboard.setStringAsync(enumOptionsToRawData(options));
+	}, [options]);
+
+	const handleApply = useCallback(
+		(value: string) => {
+			const parsed = parseEnumOptionsRawData(value);
+			if (!parsed) return;
+			dispatch(setGameCategoryOptions({ gameTypeId, categoryId: category.id, options: parsed }));
+		},
+		[dispatch, gameTypeId, category.id],
+	);
+
+	return (
+		<SettingsListTextInput
+			nativeID={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_PREFIX}${category.id}`}
+			label="Rohdaten"
+			value={options.length === 1 ? '1 Option als JSON' : `${options.length} Optionen als JSON`}
+			leftIcon={<MaterialCommunityIcons name="code-json" size={20} color="#ffffff" />}
+			iconBgColor="#6b7280"
+			modalTitle={`Rohdaten: ${category.name}`}
+			placeholder='[{"id": "...", "label": "Gewonnen"}, "Neue Option"]'
+			saveLabel="Übernehmen"
+			initialValue={enumOptionsToRawData(options)}
+			multiline
+			numberOfLines={12}
+			textAlignVertical="top"
+			checkTextInput={(value) => ({ isValid: parseEnumOptionsRawData(value) !== null, value })}
+			onSave={handleApply}
+			rightElement={
+				<TouchableOpacity onPress={handleCopy} hitSlop={8}>
+					<MaterialCommunityIcons name="content-copy" size={20} color="#9ca3af" />
+				</TouchableOpacity>
+			}
+			groupPosition={groupPosition}
+		/>
+	);
 }
 
 // ─── Enum picker (modal content) ──────────────────────────────────────────────
@@ -121,6 +185,7 @@ function EnumOptionsContent({
 				handleFunction={() => onSelect(null)}
 				groupPosition="single"
 			/>
+			{gameTypeId && <EnumOptionsRawDataRow gameTypeId={gameTypeId} category={category} groupPosition="single" />}
 		</View>
 	);
 }

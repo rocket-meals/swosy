@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { GameType, ScoringMode } from '../helpers/GameTypesStorage';
 import { DEFAULT_GAME_TYPE_ICON } from '../helpers/GameTypesStorage';
 import type { GamePreset, GameRules, StartingPlayerMode } from '../helpers/GameRules';
-import type { GameCategory, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
+import type { GameCategory, GameCategoryOption, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
 import { cloneGameCategories } from '../helpers/GameCategories';
 import { generateId } from '../helpers/RandomHelper';
 export type { GameType, ScoringMode };
@@ -280,6 +280,20 @@ const gameTypesSlice = createSlice({
 			},
 		},
 
+		/**
+		 * Replace an enum category's whole option list at once - the "Rohdaten"
+		 * import (see `parseEnumOptionsRawData` in GameCategories). The caller
+		 * passes already validated options with final ids: entries pasted with an
+		 * existing id keep it, so recorded matches keep their reference.
+		 */
+		setGameCategoryOptions(
+			state,
+			action: PayloadAction<{ gameTypeId: string; categoryId: string; options: GameCategoryOption[] }>,
+		) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			if (category) category.options = action.payload.options;
+		},
+
 		renameGameCategoryOption(
 			state,
 			action: PayloadAction<{ gameTypeId: string; categoryId: string; optionId: string; label: string }>,
@@ -323,6 +337,7 @@ export const {
 	moveGameCategory,
 	removeGameCategory,
 	addGameCategoryOption,
+	setGameCategoryOptions,
 	renameGameCategoryOption,
 	removeGameCategoryOption,
 	updateGameTypeFromPreset,
