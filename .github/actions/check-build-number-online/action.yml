@@ -1,0 +1,59 @@
+name: 'Check Build Number Online'
+description: 'Vergleicht die lokale Build-Nummer (getBuildNumber() in config.ts) mit der aktuell online verfügbaren Build-Nummer aus EAS (eas build:list) und entscheidet, ob ein neuer Build nötig ist'
+
+inputs:
+  EXPO_TOKEN:
+    required: true
+    description: Expo Access Token (für EAS CLI)
+  working-directory:
+    required: false
+    default: ./apps/frontend/app
+    description: Verzeichnis der Expo-App relativ zum Repo-Root
+  platform:
+    required: true
+    description: Plattform, deren Online-Build-Nummer geprüft wird (android oder ios)
+  build-profile:
+    required: false
+    default: production
+    description: EAS Build-Profil, dessen letzte fertige Builds als "online" gelten
+
+outputs:
+  should-build:
+    description: 'true, wenn die lokale Build-Nummer höher ist als die online verfügbare (oder keine online gefunden wurde)'
+    value: ${{ steps.compare.outputs.should-build }}
+  local-build-number:
+    description: Die lokale Build-Nummer aus config.ts
+    value: ${{ steps.compare.outputs.local-build-number }}
+  online-build-number:
+    description: Die zuletzt online verfügbare Build-Nummer aus EAS (leer, falls keine gefunden)
+    value: ${{ steps.compare.outputs.online-build-number }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "📡 Fetch latest finished ${{ inputs.platform }} builds from EAS"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+      # Fail open: if EAS cannot be queried we rather build once too often than miss a release.
+      run: |
+        if ! eas build:list \
+          --platform "${{ inputs.platform }}" \
+          --build-profile "${{ inputs.build-profile }}" \
+          --status finished \
+          --limit 5 \
+          --non-interactive \
+          --json > eas-build-list.json; then
+          echo "⚠️ eas build:list failed, assuming no online builds (fail open)"
+          echo "[]" > eas-build-list.json
+        fi
+
+    - name: "🔍 Compare local build number against online build number"
+      id: compare
+      shell: bash
+      env:
+        # yarn workspace runs with cwd=apps/scripts, so paths must be absolute
+        CONFIG_PATH: ${{ github.workspace }}/${{ inputs.working-directory }}/config.ts
+        BUILD_LIST_PATH: ${{ github.workspace }}/${{ inputs.working-directory }}/eas-build-list.json
+      run: yarn workspace rocket-meals-scripts build-number:compare-online
