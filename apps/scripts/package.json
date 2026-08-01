@@ -2,6 +2,9 @@
   "name": "rocket-meals-scripts",
   "version": "1.0.0",
   "private": true,
+  "dependencies": {
+    "repo-depkit-common": "workspace:*"
+  },
   "scripts": {
     "generate:eas": "ts-node --project ./tsconfig.json ./generate-eas-config.ts",
     "analyze:data-clumps": "ts-node --project ./tsconfig.json ./analyze-data-clumps.ts",
