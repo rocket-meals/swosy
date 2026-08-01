@@ -18,6 +18,7 @@ https://github.com/rocket-meals/swosy
 
 https://github.com/rocket-meals/studi-futter
 
+
 ## 📱 Android Preview APK
 
 <!-- android-preview-apk:frontend:start -->
