@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 26 | 26 |
+| 🐛 Reliability | 3 | 3 |
+| 🔧 Maintainability | 31 | 31 |
 
-**Total issues:** 29
+**Total issues:** 36
 
 ---
 
@@ -22,13 +22,21 @@
   .github/workflows/backend-schema-sync-pull.yml:52
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/backend-schema-sync-pull.yml#L52
 
-## 🐛 Reliability (1/1)
+## 🐛 Reliability (3/3)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (26/26)
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/scripts/check-build-version.ts:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L11
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/scripts/check-build-version.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
+
+## 🔧 Maintainability (31/31)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -133,4 +141,24 @@
 - **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
   apps/score-tracker/frontend/store/gameTypesSlice.ts:269
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L269
+
+- **Use the "RegExp.exec()" method instead.**
+  apps/scripts/check-build-version.ts:10
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L10
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/scripts/check-build-version.ts:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L11
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/scripts/check-build-version.ts:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
+
+- **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
+  apps/scripts/check-build-version.ts:78
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L78
+
+- **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
+  apps/scripts/check-build-version.ts:85
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
 

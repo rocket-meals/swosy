@@ -1,2 +1,4 @@
 Key,Message,Component,Line
+"AZ--Sat46-MHR3H1YA_k","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",11
+"AZ--Sat46-MHR3H1YA_l","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",23
 "AZ-ihYAiRNMUYcNiZYmb","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/ImageSearch.ts",168

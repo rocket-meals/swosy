@@ -1,4 +1,9 @@
 Key,Message,Component,Line
+"AZ--Sat46-MHR3H1YA_j","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",10
+"AZ--Sat46-MHR3H1YA_k","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",11
+"AZ--Sat46-MHR3H1YA_l","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",23
+"AZ--Sat46-MHR3H1YA_m","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",78
+"AZ--Sat46-MHR3H1YA_n","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",85
 "AZ-4TGcpfP0insu18B9q","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CategoryValueRows.tsx",56
 "AZ-4TGWEfP0insu18B9p","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameCategories.ts",571
 "AZ-1aZf8wJvOFR3Rn7rN","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CategoryValueRows.tsx",263
