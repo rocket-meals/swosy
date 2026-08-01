@@ -4,7 +4,7 @@ import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
+import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, ToastProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
@@ -257,11 +257,15 @@ export default function Layout() {
 						<ThemeProvider>
 							<ThemeSyncBridge />
 							<SettingsProvider primaryColor={PRIMARY_COLOR}>
-								<ModalProvider>
-									<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
-										<ThemedDrawerNavigator />
-									</KeyboardAvoidingView>
-								</ModalProvider>
+								{/* ToastProvider wraps ModalProvider so toasts (e.g. clipboard
+								    feedback) render above open bottom-sheet modals. */}
+								<ToastProvider>
+									<ModalProvider>
+										<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
+											<ThemedDrawerNavigator />
+										</KeyboardAvoidingView>
+									</ModalProvider>
+								</ToastProvider>
 							</SettingsProvider>
 						</ThemeProvider>
 					</SafeAreaProvider>

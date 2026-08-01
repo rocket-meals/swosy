@@ -10,6 +10,9 @@ export enum CommonUiComponentIds {
 	// Modal
 	MODAL_CLOSE_BUTTON = 'modal-close-button',
 
+	// Toast (see components/Toast) - the currently visible toast message.
+	TOAST = 'common-ui-toast',
+
 	// Avatar editor (see MyAvatarEditor). The quick-start grid is only shown
 	// while no avatar exists yet, so its presence/absence is what tells an E2E
 	// test whether an avatar was actually stored.

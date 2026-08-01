@@ -132,6 +132,8 @@ export const ComponentIds = {
 	CATEGORY_VALUE_ENUM_OPTION_PREFIX: 'category-value-enum-option-',
 	CATEGORY_VALUE_ENUM_ADD_OPTION_PREFIX: 'category-value-enum-add-option-',
 	CATEGORY_OPTIONS_RAW_DATA_PREFIX: 'category-options-raw-data-',
+	CATEGORY_OPTIONS_RAW_DATA_COPY_PREFIX: 'category-options-raw-data-copy-',
+	CATEGORY_OPTIONS_RAW_DATA_PASTE_PREFIX: 'category-options-raw-data-paste-',
 	GAME_CATEGORY_ROW_PREFIX: 'game-category-row-',
 	GAME_CATEGORY_MOVE_UP_PREFIX: 'game-category-move-up-',
 	GAME_CATEGORY_MOVE_DOWN_PREFIX: 'game-category-move-down-',

@@ -103,6 +103,9 @@ export { useModal } from './src/components/GlobalModal/useModal';
 export { useMyScrollViewModal } from './src/components/GlobalModal/useMyScrollViewModal';
 export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMyScrollViewModal';
 
+export { ToastProvider, useToast } from './src/components/Toast';
+export type { ToastType, ShowToastOptions, ToastContextType } from './src/components/Toast';
+
 export { default as FeatureWishesScreen } from './src/components/FeatureWishesScreen';
 export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishItem } from './src/components/FeatureWishesScreen';
 

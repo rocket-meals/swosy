@@ -11,6 +11,8 @@ import {
 	SettingsListTextInput,
 	useMyScrollViewModal,
 	useTheme,
+	useToast,
+	borderRadiusContainer,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import type { GameCategory, GameCategoryType, GameCategoryValue, GameCategoryValues } from '../helpers/GameCategories';
@@ -69,6 +71,10 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 // `"id": "+"` (Directus-style), id-less entries or plain strings become new
 // options. The export starts with a `"//"` comment entry explaining exactly
 // that, so the pasted-along AI needs no extra briefing; the import ignores it.
+//
+// Inside the modal, "Kopieren"/"Einfügen" buttons copy the current (possibly
+// edited) text to the clipboard resp. fill the field from it; every clipboard
+// action and a successful "Übernehmen" confirm themselves with a toast.
 
 export function EnumOptionsRawDataRow({
 	gameTypeId,
@@ -80,19 +86,57 @@ export function EnumOptionsRawDataRow({
 	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
 }>) {
 	const dispatch = useDispatch<AppDispatch>();
+	const { theme } = useTheme();
+	const { show: showToast } = useToast();
 	const options = category.options ?? [];
 
-	const handleCopy = useCallback(async () => {
-		await Clipboard.setStringAsync(enumOptionsToRawData(options));
-	}, [options]);
+	const copyToClipboard = useCallback(
+		async (rawData: string) => {
+			await Clipboard.setStringAsync(rawData);
+			showToast('JSON in die Zwischenablage kopiert');
+		},
+		[showToast],
+	);
+
+	const handleCopyFromRow = useCallback(async () => {
+		await copyToClipboard(enumOptionsToRawData(options));
+	}, [copyToClipboard, options]);
+
+	// Reads the clipboard and puts its content into the modal's text field (via
+	// setValue) - deliberately without saving, so the JSON can still be reviewed
+	// and has to be confirmed with "Übernehmen" like a manual edit.
+	const handlePaste = useCallback(
+		async (setValue: (value: string) => void) => {
+			let text = '';
+			try {
+				text = await Clipboard.getStringAsync();
+			} catch {
+				// E.g. the browser denied clipboard read permission on web.
+				showToast('Zugriff auf die Zwischenablage nicht möglich', { type: 'error' });
+				return;
+			}
+			if (text.trim() === '') {
+				showToast('Die Zwischenablage ist leer', { type: 'error' });
+				return;
+			}
+			setValue(text);
+			if (parseEnumOptionsRawData(text) === null) {
+				showToast('Eingefügt - aber kein gültiges JSON', { type: 'error' });
+			} else {
+				showToast('Aus der Zwischenablage eingefügt');
+			}
+		},
+		[showToast],
+	);
 
 	const handleApply = useCallback(
 		(value: string) => {
 			const parsed = parseEnumOptionsRawData(value);
 			if (!parsed) return;
 			dispatch(setGameCategoryOptions({ gameTypeId, categoryId: category.id, options: parsed }));
+			showToast(parsed.length === 1 ? '1 Option übernommen' : `${parsed.length} Optionen übernommen`);
 		},
-		[dispatch, gameTypeId, category.id],
+		[dispatch, gameTypeId, category.id, showToast],
 	);
 
 	return (
@@ -112,10 +156,32 @@ export function EnumOptionsRawDataRow({
 			checkTextInput={(value) => ({ isValid: parseEnumOptionsRawData(value) !== null, value })}
 			onSave={handleApply}
 			rightElement={
-				<TouchableOpacity onPress={handleCopy} hitSlop={8}>
+				<TouchableOpacity onPress={handleCopyFromRow} hitSlop={8}>
 					<MaterialCommunityIcons name="content-copy" size={20} color="#9ca3af" />
 				</TouchableOpacity>
 			}
+			renderModalChildren={(setValue, currentValue) => (
+				<View style={styles.clipboardRow}>
+					<TouchableOpacity
+						nativeID={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_COPY_PREFIX}${category.id}`}
+						style={[styles.clipboardButton, { borderColor: theme.sheet.inputBorder }]}
+						onPress={() => copyToClipboard(currentValue)}
+						activeOpacity={0.7}
+					>
+						<MaterialCommunityIcons name="content-copy" size={18} color={theme.sheet.text} />
+						<Text style={[styles.clipboardButtonText, { color: theme.sheet.text }]}>Kopieren</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						nativeID={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_PASTE_PREFIX}${category.id}`}
+						style={[styles.clipboardButton, { borderColor: theme.sheet.inputBorder }]}
+						onPress={() => handlePaste(setValue)}
+						activeOpacity={0.7}
+					>
+						<MaterialCommunityIcons name="content-paste" size={18} color={theme.sheet.text} />
+						<Text style={[styles.clipboardButtonText, { color: theme.sheet.text }]}>Einfügen</Text>
+					</TouchableOpacity>
+				</View>
+			)}
 			groupPosition={groupPosition}
 		/>
 	);
@@ -449,6 +515,25 @@ export default function CategoryValueRows({
 const styles = StyleSheet.create({
 	modalContent: {
 		padding: 10,
+	},
+	clipboardRow: {
+		flexDirection: 'row',
+		gap: 12,
+		marginTop: 12,
+	},
+	clipboardButton: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		height: 44,
+		borderWidth: 1,
+		borderRadius: borderRadiusContainer,
+	},
+	clipboardButtonText: {
+		fontSize: 15,
+		fontWeight: '600',
 	},
 	emptyHint: {
 		fontSize: 13,
