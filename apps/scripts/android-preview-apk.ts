@@ -41,6 +41,13 @@ function runExtract(): void {
   const buildOutputPath = readRequiredEnv('BUILD_OUTPUT_PATH');
   const githubOutput = readRequiredEnv('GITHUB_OUTPUT');
 
+  if (!fs.existsSync(buildOutputPath)) {
+    throw new Error(
+      `EAS build output not found at "${buildOutputPath}" (cwd: "${process.cwd()}"). ` +
+        'BUILD_OUTPUT_PATH must be absolute or relative to this script\'s working directory.'
+    );
+  }
+
   const buildOutput = JSON.parse(fs.readFileSync(buildOutputPath, 'utf-8'));
   const apkUrl = extractApkUrl(buildOutput);
 
