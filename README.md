@@ -22,7 +22,7 @@ https://github.com/rocket-meals/studi-futter
 ## 📱 Android Preview APK
 
 <!-- android-preview-apk:frontend:start -->
-Wird nach dem nächsten Build auf `master` automatisch aktualisiert.
+**Rocket Meals (Frontend):** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/AIHxB8Ozu-UoAyY1563cEHDcnRm9MWiaCVikyZ4wBBI.apk)
 <!-- android-preview-apk:frontend:end -->
 
 # 🚀 Rocket Meals
