@@ -80,8 +80,7 @@ jobs:
           echo "🚀 Triggering Combined CI workflow after successful sync..."
           gh workflow run ci.yml \
             --repo "${{ steps.check-repo.outputs.repository-name }}" \
-            --ref master \
-            -f previous_commit_sha="${{ steps.check-updates.outputs.local-commit }}"
+            --ref master
           echo "✅ Combined CI workflow triggered!"
 
       - name: ⏭️ Skip Fork Sync - No Updates

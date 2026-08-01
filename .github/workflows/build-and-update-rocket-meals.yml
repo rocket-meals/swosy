@@ -1,0 +1,156 @@
+name: "🚀 Build and Update Rocket Meals"
+
+# Forces the Apple/Android store builds, the Android preview APK and the EAS
+# (OTA) update in one go - without the online build number check that gates
+# these jobs in the regular CI. Only runs on master of rocket-meals/rocket-meals.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_expo_update:
+        description: 'EAS Update (OTA) auf den production channel veröffentlichen'
+        required: false
+        type: boolean
+        default: true
+      build_android:
+        description: 'Android Production Build erzwingen und in den Play Store submitten'
+        required: false
+        type: boolean
+        default: true
+      build_ios:
+        description: 'iOS Production Build erzwingen und in den App Store submitten'
+        required: false
+        type: boolean
+        default: true
+      build_android_preview:
+        description: 'Android Preview APK bauen und README-Link aktualisieren'
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: "🛡️ Only master@rocket-meals/rocket-meals"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+      - name: "🔍 Check Repository Type"
+        id: check
+        uses: ./.github/actions/check-repository
+      - name: "🛡️ Abort on forks or non-master branches"
+        run: |
+          if [ "${{ steps.check.outputs.is-upstream }}" != "true" ]; then
+            echo "::error::This workflow may only run on rocket-meals/rocket-meals, not on ${{ github.repository }}."
+            exit 1
+          fi
+          if [ "${{ github.ref_name }}" != "master" ]; then
+            echo "::error::This workflow may only run on master, not on ${{ github.ref_name }}."
+            exit 1
+          fi
+
+  expo-update:
+    name: "🏗 EAS Update Production"
+    runs-on: ubuntu-latest
+    needs: guard
+    if: inputs.run_expo_update
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: "🚀 Publish update"
+        run: eas update --auto --platform all --non-interactive --channel production
+        working-directory: ./apps/frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-android:
+    name: "📦 Build & 🚀 Submit Android App (forced)"
+    runs-on: ubuntu-latest
+    needs: guard
+    if: inputs.build_android
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: "🛠️ Build and Submit Android App"
+        run: eas build --platform android --non-interactive --profile production --auto-submit
+        working-directory: ./apps/frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-android-preview:
+    name: "🧪 Build Android Preview APK (forced)"
+    runs-on: ubuntu-latest
+    needs: guard
+    if: inputs.build_android_preview
+    permissions:
+      contents: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: "🧪 Build Android Preview APK & update README"
+        uses: ./.github/actions/build-android-preview-apk
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          working-directory: ./apps/frontend/app
+          app-key: frontend
+          app-label: "Rocket Meals (Frontend)"
+          update-readme: 'true'
+      - name: "💾 Commit README update"
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update Android preview APK link in README [skip ci]"
+            git pull --rebase --autostash origin master
+            git push origin HEAD:master
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-ios:
+    name: "📦 Build & 🚀 Submit iOS App (forced)"
+    runs-on: ubuntu-latest
+    needs: guard
+    if: inputs.build_ios
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+      - name: "🛠️ Build and Submit iOS App"
+        run: eas build --platform ios --non-interactive --auto-submit
+        working-directory: ./apps/frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

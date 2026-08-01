@@ -47,14 +47,15 @@ runs:
       shell: bash
       run: yarn workspace rocket-meals-scripts apk:extract-url
       env:
-        BUILD_OUTPUT_PATH: ${{ inputs.working-directory }}/eas-build-output.json
+        # yarn workspace runs with cwd=apps/scripts, so paths must be absolute
+        BUILD_OUTPUT_PATH: ${{ github.workspace }}/${{ inputs.working-directory }}/eas-build-output.json
 
     - name: "📝 Update APK link in README"
       if: inputs.update-readme == 'true' && steps.extract.outputs.apk-url != ''
       shell: bash
       run: yarn workspace rocket-meals-scripts apk:update-readme
       env:
-        README_PATH: ${{ inputs.readme-path }}
+        README_PATH: ${{ github.workspace }}/${{ inputs.readme-path }}
         APP_KEY: ${{ inputs.app-key }}
         APP_LABEL: ${{ inputs.app-label }}
         APK_URL: ${{ steps.extract.outputs.apk-url }}
