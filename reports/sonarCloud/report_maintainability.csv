@@ -1,5 +1,7 @@
 Key,Message,Component,Line
-"AZ-1aZf8wJvOFR3Rn7rN","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CategoryValueRows.tsx",130
+"AZ-4TGcpfP0insu18B9q","Replace this union type with a type alias.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CategoryValueRows.tsx",56
+"AZ-4TGWEfP0insu18B9p","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameCategories.ts",571
+"AZ-1aZf8wJvOFR3Rn7rN","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/CategoryValueRows.tsx",263
 "AZ-1aZb_wJvOFR3Rn7rM","The empty object is useless.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameSlice.ts",285
 "AZ-zOK-DGRVy9SslAC6z","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1248
 "AZ-zOK-DGRVy9SslAC60","Async method 'resolveFoodofferToCreateOrLog' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1324
@@ -17,7 +19,7 @@ Key,Message,Component,Line
 "AZ-hEYRQ6u5EiuulWcmX","Remove this useless assignment to variable ""categoryValues"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",1186
 "AZ-gpv0EN7uvEWkOHr2c","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",84
 "AZ-gpvy0N7uvEWkOHr2b","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameTypesSlice.ts",269
-"AZ-gpv09N7uvEWkOHr2d","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameCategorySettings.tsx",209
+"AZ-gpv09N7uvEWkOHr2d","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameCategorySettings.tsx",212
 "AZ-gpvwCN7uvEWkOHr2a","The empty object is useless.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameCategories.ts",219
 "AZ-S25eHzkWu0uAd803m","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/frontend/app/helper/authHelper.ts",267
 "AZ-S241ozkWu0uAd803k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Login/LoginDebugPanel.tsx",63

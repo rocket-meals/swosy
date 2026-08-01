@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 1 | 1 |
-| 🔧 Maintainability | 24 | 24 |
+| 🔧 Maintainability | 26 | 26 |
 
-**Total issues:** 27
+**Total issues:** 29
 
 ---
 
@@ -28,7 +28,7 @@
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/ImageSearch.ts#L168
 
-## 🔧 Maintainability (24/24)
+## 🔧 Maintainability (26/26)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -86,13 +86,17 @@
   apps/score-tracker/frontend/app/index.tsx:1186
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1186
 
+- **Replace this union type with a type alias.**
+  apps/score-tracker/frontend/components/CategoryValueRows.tsx:56
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L56
+
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:130
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L130
+  apps/score-tracker/frontend/components/CategoryValueRows.tsx:263
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L263
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/components/GameCategorySettings.tsx:209
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L209
+  apps/score-tracker/frontend/components/GameCategorySettings.tsx:212
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L212
 
 - **'../helpers/GameImageUpload' imported multiple times.**
   apps/score-tracker/frontend/components/GameImagePicker.tsx:21
@@ -105,6 +109,10 @@
 - **Use `export…from` to re-export `defaultImageQuery`.**
   apps/score-tracker/frontend/components/GameImagePicker.tsx:338
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
+
+- **Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.**
+  apps/score-tracker/frontend/helpers/GameCategories.ts:571
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L571
 
 - **The empty object is useless.**
   apps/score-tracker/frontend/helpers/GameCategories.ts:219
