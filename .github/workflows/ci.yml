@@ -5,8 +5,11 @@ on:
     branches: [main, master, dev]
   workflow_dispatch:
     inputs:
+      # Deprecated: build numbers are now compared against EAS online instead of
+      # git history. Kept so sync-fork dispatches from not-yet-synced forks that
+      # still pass this input do not fail.
       previous_commit_sha:
-        description: 'Commit SHA to compare build numbers against (from sync-fork: pre-sync state)'
+        description: 'Deprecated - no longer used (build numbers are compared against EAS online)'
         required: false
         default: ''
 
@@ -402,26 +405,34 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
   geonexia-check-build:
-    name: "🔍 Geonexia Check Build Number"
+    name: "🔍 Geonexia Check iOS Build Number (online)"
     runs-on: ubuntu-latest
     needs: check-repository
+    if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
     outputs:
-      changed: ${{ steps.check.outputs.changed }}
+      should-build: ${{ steps.check.outputs.should-build }}
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
-      - name: "🔍 Compare Geonexia Build Number"
-        id: check
-        uses: ./.github/actions/check-build-number
         with:
-          working-directory: apps/geonexia/frontend
-          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
+          ref: ${{ github.ref_name }}
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: "🔍 Compare Geonexia iOS Build Number against EAS"
+        id: check
+        uses: ./.github/actions/check-build-number-online
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          working-directory: ./apps/geonexia/frontend
+          platform: ios
 
   geonexia-build-ios:
     name: "📦 Geonexia Build & 🚀 Submit iOS App"
     runs-on: ubuntu-latest
     needs: [geonexia-check-build, check-repository]
-    if: needs.geonexia-check-build.outputs.changed == 'true' && needs.check-repository.outputs.is-upstream == 'true'
+    if: needs.geonexia-check-build.outputs.should-build == 'true' && needs.check-repository.outputs.is-upstream == 'true'
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
@@ -458,26 +469,34 @@ jobs:
           ref_name: ${{ github.ref_name }}
 
   score-tracker-check-build:
-    name: "🔍 Score Tracker Check Build Number"
+    name: "🔍 Score Tracker Check iOS Build Number (online)"
     runs-on: ubuntu-latest
     needs: check-repository
+    if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
     outputs:
-      changed: ${{ steps.check.outputs.changed }}
+      should-build: ${{ steps.check.outputs.should-build }}
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
-      - name: "🔍 Compare Score Tracker Build Number"
-        id: check
-        uses: ./.github/actions/check-build-number
         with:
-          working-directory: apps/score-tracker/frontend
-          previous-commit-sha: ${{ github.event.inputs.previous_commit_sha }}
+          ref: ${{ github.ref_name }}
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: "🔍 Compare Score Tracker iOS Build Number against EAS"
+        id: check
+        uses: ./.github/actions/check-build-number-online
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          working-directory: ./apps/score-tracker/frontend
+          platform: ios
 
   score-tracker-build-ios:
     name: "📦 Score Tracker Build & 🚀 Submit iOS App"
     runs-on: ubuntu-latest
     needs: [score-tracker-check-build, check-repository]
-    if: needs.score-tracker-check-build.outputs.changed == 'true' && needs.check-repository.outputs.is-upstream == 'true'
+    if: needs.score-tracker-check-build.outputs.should-build == 'true' && needs.check-repository.outputs.is-upstream == 'true'
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
