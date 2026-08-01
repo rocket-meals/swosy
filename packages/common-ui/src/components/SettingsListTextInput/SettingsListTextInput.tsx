@@ -55,8 +55,9 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	 *  Clicking a suggestion is equivalent to typing its value and pressing Save. */
 	suggestions?: SettingsListTextInputSuggestion[];
 	/** Optional render function for extra content rendered below the Save button.
-	 *  Receives a callback to programmatically set the text input value. */
-	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
+	 *  Receives a callback to programmatically set the text input value and the
+	 *  input's current (unsaved) value, e.g. for clipboard copy/paste buttons. */
+	renderModalChildren?: (onSuggest: (value: string) => void, currentValue: string) => React.ReactNode;
 }
 
 type ModalSheetProps = ModalSheetBaseProps<string> &
@@ -68,7 +69,7 @@ type ModalSheetProps = ModalSheetBaseProps<string> &
 		checkTextInput?: CheckTextInput;
 		allowSubmitWhenDisabled?: boolean;
 		suggestions?: SettingsListTextInputSuggestion[];
-		renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
+		renderModalChildren?: (onSuggest: (value: string) => void, currentValue: string) => React.ReactNode;
 	};
 
 const ModalSheet: React.FC<ModalSheetProps> = ({
@@ -180,7 +181,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 					/>
 				</View>
 			)}
-			{renderModalChildren?.(setValue)}
+			{renderModalChildren?.(setValue, value)}
 		</View>
 	);
 
