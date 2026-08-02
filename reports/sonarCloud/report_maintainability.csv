@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ_CQBoz7LyVx862mpi0","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",290
 "AZ--Sat46-MHR3H1YA_j","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",10
 "AZ--Sat46-MHR3H1YA_k","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",11
 "AZ--Sat46-MHR3H1YA_l","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/scripts/check-build-version.ts",23

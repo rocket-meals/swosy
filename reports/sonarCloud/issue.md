@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
+| 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 31 | 31 |
+| 🔧 Maintainability | 32 | 32 |
 
-**Total issues:** 36
+**Total issues:** 40
 
 ---
 
-## 🔒 Security (2/2)
+## 🔒 Security (5/5)
 
 - **Lifecycle scripts are enabled by default in Yarn v2+.**
   .github/workflows/backend-schema-sync-pull.yml:55
@@ -21,6 +21,18 @@
 - **Lifecycle scripts are enabled by default in Yarn v2+.**
   .github/workflows/backend-schema-sync-pull.yml:52
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/backend-schema-sync-pull.yml#L52
+
+- **Make sure that no untrusted code is executed from a fork.**
+  .github/workflows/ios-submit-review-geonexia.yml:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-geonexia.yml#L39
+
+- **Make sure that no untrusted code is executed from a fork.**
+  .github/workflows/ios-submit-review-rocket-meals.yml:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-rocket-meals.yml#L35
+
+- **Make sure that no untrusted code is executed from a fork.**
+  .github/workflows/ios-submit-review-score-tracker.yml:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L39
 
 ## 🐛 Reliability (3/3)
 
@@ -36,7 +48,7 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (31/31)
+## 🔧 Maintainability (32/32)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -161,4 +173,8 @@
 - **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
   apps/scripts/check-build-version.ts:85
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
+
+- **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
+  apps/scripts/submit-ios-review.ts:290
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L290
 
