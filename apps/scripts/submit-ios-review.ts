@@ -1,8 +1,4 @@
-import * as crypto from 'node:crypto';
-import * as fs from 'node:fs';
-import { base64url } from './base64url';
-
-const API_BASE = 'https://api.appstoreconnect.apple.com/v1';
+import { AscApiError, JsonApiResource, asArray, ascRequest, createAppStoreConnectToken, findAppId, readRequiredEnv } from './asc-api';
 
 // https://developer.apple.com/documentation/appstoreconnectapi/appstoreversionstate
 const SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'INVALID_BINARY']);
@@ -10,81 +6,37 @@ const SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVEL
 // https://developer.apple.com/documentation/appstoreconnectapi/reviewsubmission
 const NON_TERMINAL_REVIEW_SUBMISSION_STATES = new Set(['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'UNRESOLVED_ISSUES', 'CANCELING', 'COMPLETING']);
 
-type JsonApiResource = {
-  type: string;
-  id: string;
-  attributes?: Record<string, unknown>;
-  relationships?: Record<string, { data?: { type: string; id: string } | null }>;
-};
+// Automated (post-CI) runs must never blindly re-submit a version Apple has
+// rejected - that needs a human to look at the rejection first. Only untouched drafts
+// are submitted without a human in the loop.
+const AUTO_SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION']);
 
-type JsonApiDocument = {
-  data?: JsonApiResource | JsonApiResource[];
-  included?: JsonApiResource[];
-};
+// IOS_SUBMIT_AUTO=true turns "nothing to submit" situations into a graceful exit 0
+// instead of a hard error, so scheduled runs don't show up as failures.
+const AUTO_MODE = process.env.IOS_SUBMIT_AUTO === 'true';
 
-function createAppStoreConnectToken(keyId: string, issuerId: string, privateKeyPath: string): string {
-  const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: 'ES256', kid: keyId, typ: 'JWT' };
-  const payload = { iss: issuerId, iat: now, exp: now + 15 * 60, aud: 'appstoreconnect-v1' };
-  const unsigned = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(payload))}`;
-  // App Store Connect expects the raw R||S signature (JOSE), not the DER encoding Node uses by default.
-  const signature = crypto.sign('sha256', Buffer.from(unsigned), { key: privateKey, dsaEncoding: 'ieee-p1363' });
-  return `${unsigned}.${base64url(signature)}`;
-}
+// While a freshly uploaded build is still being processed by Apple, wait up to this many
+// minutes for it to become VALID before giving up (used by the post-CI trigger).
+const MAX_WAIT_MINUTES = Number(process.env.IOS_SUBMIT_MAX_WAIT_MINUTES ?? '0');
+const POLL_INTERVAL_MINUTES = 5;
+// Grace period in which we also retry when no processing build is visible yet - the
+// upload from CI may not have arrived at Apple at the moment this script starts.
+const INITIAL_GRACE_MINUTES = 15;
 
-type AscApiErrorDetail = { code?: string; detail?: string };
-
-class AscApiError extends Error {
+// Thrown in auto mode when there is nothing that can (or should) be submitted right now.
+class SkipSubmission extends Error {
   constructor(
-    public readonly status: number,
-    public readonly errors: AscApiErrorDetail[],
-    rawText: string,
-    method: string,
-    path: string
+    message: string,
+    public readonly retryWhileProcessing: boolean = false
   ) {
-    super(`App Store Connect API Fehler (${status} ${method} ${path}):\n${rawText}`);
+    super(message);
   }
 }
 
-async function ascRequest(token: string, method: string, path: string, body?: unknown): Promise<JsonApiDocument> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  const text = await response.text();
-
-  if (!response.ok) {
-    let errors: AscApiErrorDetail[] = [];
-    try {
-      errors = (JSON.parse(text) as { errors?: AscApiErrorDetail[] }).errors ?? [];
-    } catch {
-      // response body wasn't JSON - leave errors empty, raw text is still in the thrown error message
-    }
-    throw new AscApiError(response.status, errors, text, method, path);
-  }
-
-  return text ? JSON.parse(text) : {};
-}
-
-function asArray(data: JsonApiResource | JsonApiResource[] | undefined): JsonApiResource[] {
-  if (!data) return [];
-  return Array.isArray(data) ? data : [data];
-}
-
-async function findAppId(token: string, bundleId: string): Promise<string> {
-  const query = new URLSearchParams({ 'filter[bundleId]': bundleId });
-  const result = await ascRequest(token, 'GET', `/apps?${query}`);
-  const app = asArray(result.data)[0];
-  if (!app) {
-    throw new Error(`Keine App mit bundleId "${bundleId}" in App Store Connect gefunden.`);
-  }
-  return app.id;
+// In manual mode blocked submissions are real errors (the user explicitly asked for a
+// submission), in auto mode they are expected and just end the run gracefully.
+function submissionBlocked(message: string, retryWhileProcessing = false): Error {
+  return AUTO_MODE ? new SkipSubmission(message, retryWhileProcessing) : new Error(message);
 }
 
 async function findLatestValidBuild(token: string, appId: string): Promise<{ buildId: string; version: string }> {
@@ -99,7 +51,7 @@ async function findLatestValidBuild(token: string, appId: string): Promise<{ bui
   const result = await ascRequest(token, 'GET', `/builds?${query}`);
   const build = asArray(result.data)[0];
   if (!build) {
-    throw new Error(`Kein verarbeiteter (VALID) Build für App ${appId} gefunden. Wurde bereits ein Build hochgeladen und von Apple verarbeitet?`);
+    throw submissionBlocked(`Kein verarbeiteter (VALID) Build für App ${appId} gefunden. Wurde bereits ein Build hochgeladen und von Apple verarbeitet?`, true);
   }
 
   const preReleaseVersionId = build.relationships?.preReleaseVersion?.data?.id;
@@ -128,8 +80,17 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
   if (exactMatch) {
     const state = exactMatch.attributes?.appStoreState as string;
     if (!SUBMITTABLE_APP_VERSION_STATES.has(state)) {
-      throw new Error(
-        `App Store Version ${versionString} existiert bereits mit Status "${state}" und kann nicht automatisch eingereicht werden. Bitte manuell in App Store Connect prüfen.`
+      // e.g. WAITING_FOR_REVIEW, IN_REVIEW, PENDING_DEVELOPER_RELEASE, READY_FOR_SALE.
+      // Retry-worthy in auto mode: a build that is still processing may carry a new
+      // version number and change the situation.
+      throw submissionBlocked(
+        `App Store Version ${versionString} existiert bereits mit Status "${state}" und kann nicht automatisch eingereicht werden. Bitte manuell in App Store Connect prüfen.`,
+        true
+      );
+    }
+    if (AUTO_MODE && !AUTO_SUBMITTABLE_APP_VERSION_STATES.has(state)) {
+      throw new SkipSubmission(
+        `App Store Version ${versionString} hat den Status "${state}" (Ablehnung durch Apple?). Automatische Wieder-Einreichung ist deaktiviert - bitte prüfen und bei Bedarf manuell per workflow_dispatch einreichen.`
       );
     }
     return exactMatch.id;
@@ -137,6 +98,12 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
 
   const editableVersion = versions.find(v => SUBMITTABLE_APP_VERSION_STATES.has(v.attributes?.appStoreState as string));
   if (editableVersion) {
+    const editableState = editableVersion.attributes?.appStoreState as string;
+    if (AUTO_MODE && !AUTO_SUBMITTABLE_APP_VERSION_STATES.has(editableState)) {
+      throw new SkipSubmission(
+        `Vorhandene Entwurfsversion "${editableVersion.attributes?.versionString}" hat den Status "${editableState}" (Ablehnung durch Apple?). Automatische Wieder-Einreichung ist deaktiviert - bitte prüfen und bei Bedarf manuell per workflow_dispatch einreichen.`
+      );
+    }
     console.log(`   Benenne vorhandene Entwurfsversion "${editableVersion.attributes?.versionString}" (${editableVersion.id}) zu "${versionString}" um ...`);
     await ascRequest(token, 'PATCH', `/appStoreVersions/${editableVersion.id}`, {
       data: {
@@ -148,15 +115,26 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
     return editableVersion.id;
   }
 
-  const created = await ascRequest(token, 'POST', '/appStoreVersions', {
-    data: {
-      type: 'appStoreVersions',
-      attributes: { platform: 'IOS', versionString, releaseType: 'MANUAL' },
-      relationships: { app: { data: { type: 'apps', id: appId } } },
-    },
-  });
-
-  return (created.data as JsonApiResource).id;
+  try {
+    const created = await ascRequest(token, 'POST', '/appStoreVersions', {
+      data: {
+        type: 'appStoreVersions',
+        attributes: { platform: 'IOS', versionString, releaseType: 'MANUAL' },
+        relationships: { app: { data: { type: 'apps', id: appId } } },
+      },
+    });
+    return (created.data as JsonApiResource).id;
+  } catch (error) {
+    // Apple allows only one editable version at a time; e.g. while an approved version
+    // still waits for its manual release, creating the next one fails with 409. In auto
+    // mode that just means "not now" - the next automated or manual run will try again.
+    if (AUTO_MODE && error instanceof AscApiError && error.status === 409) {
+      throw new SkipSubmission(
+        `Neue App Store Version ${versionString} kann aktuell nicht angelegt werden (409 von App Store Connect) - z. B. wartet eine freigegebene Version noch auf den manuellen Release. Details: ${error.message}`
+      );
+    }
+    throw error;
+  }
 }
 
 async function attachBuild(token: string, appStoreVersionId: string, buildId: string): Promise<void> {
@@ -214,7 +192,7 @@ async function findReusableReviewSubmission(token: string, appId: string): Promi
 
   const state = active.attributes?.state as string;
   if (state !== 'READY_FOR_REVIEW') {
-    throw new Error(
+    throw submissionBlocked(
       `Für diese App läuft bereits eine Review-Einreichung (Status "${state}"). Bitte in App Store Connect prüfen, bevor eine neue Einreichung gestartet wird.`
     );
   }
@@ -255,22 +233,27 @@ async function submitReviewSubmission(token: string, reviewSubmissionId: string)
   });
 }
 
-function readRequiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Environment variable ${name} is not set.`);
-  }
-  return value;
+async function hasProcessingBuild(token: string, appId: string): Promise<boolean> {
+  const query = new URLSearchParams({
+    'filter[app]': appId,
+    'filter[processingState]': 'PROCESSING',
+    sort: '-uploadedDate',
+    limit: '1',
+  });
+  const result = await ascRequest(token, 'GET', `/builds?${query}`);
+  return asArray(result.data).length > 0;
 }
 
-async function main(): Promise<void> {
-  const bundleId = readRequiredEnv('IOS_BUNDLE_ID');
-  const releaseNotes = readRequiredEnv('IOS_RELEASE_NOTES');
-  const keyId = readRequiredEnv('EXPO_ASC_KEY_ID');
-  const issuerId = readRequiredEnv('EXPO_ASC_ISSUER_ID');
-  const privateKeyPath = readRequiredEnv('EXPO_ASC_API_KEY_PATH');
+function sleepMinutes(minutes: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, minutes * 60 * 1000));
+}
 
-  const token = createAppStoreConnectToken(keyId, issuerId, privateKeyPath);
+type Credentials = { keyId: string; issuerId: string; privateKeyPath: string };
+
+async function attemptSubmission(bundleId: string, releaseNotes: string, credentials: Credentials): Promise<void> {
+  // The App Store Connect JWT expires after 15 minutes, so every attempt of the
+  // retry loop below needs a fresh one.
+  const token = createAppStoreConnectToken(credentials.keyId, credentials.issuerId, credentials.privateKeyPath);
 
   console.log(`🔍 Suche App mit bundleId "${bundleId}" ...`);
   const appId = await findAppId(token, bundleId);
@@ -302,6 +285,55 @@ async function main(): Promise<void> {
   await submitReviewSubmission(token, reviewSubmissionId);
 
   console.log(`\n🎉 App Store Version ${version} (Build ${buildId}) wurde erfolgreich zur Review eingereicht.`);
+}
+
+async function main(): Promise<void> {
+  const bundleId = readRequiredEnv('IOS_BUNDLE_ID');
+  const releaseNotes = readRequiredEnv('IOS_RELEASE_NOTES');
+  const credentials: Credentials = {
+    keyId: readRequiredEnv('EXPO_ASC_KEY_ID'),
+    issuerId: readRequiredEnv('EXPO_ASC_ISSUER_ID'),
+    privateKeyPath: readRequiredEnv('EXPO_ASC_API_KEY_PATH'),
+  };
+
+  if (AUTO_MODE) {
+    console.log(`🤖 Automatischer Modus aktiv (max. Wartezeit auf Apple-Verarbeitung: ${MAX_WAIT_MINUTES} Minuten).\n`);
+  }
+
+  const deadline = Date.now() + MAX_WAIT_MINUTES * 60 * 1000;
+  const graceDeadline = Date.now() + Math.min(MAX_WAIT_MINUTES, INITIAL_GRACE_MINUTES) * 60 * 1000;
+
+  // In auto mode a blocked submission is retried as long as Apple is still processing a
+  // freshly uploaded build (its version may become submittable once it turns VALID).
+  for (;;) {
+    try {
+      await attemptSubmission(bundleId, releaseNotes, credentials);
+      return;
+    } catch (error) {
+      if (!(error instanceof SkipSubmission)) {
+        throw error;
+      }
+
+      let retry = false;
+      if (error.retryWhileProcessing && Date.now() < deadline) {
+        const token = createAppStoreConnectToken(credentials.keyId, credentials.issuerId, credentials.privateKeyPath);
+        const appId = await findAppId(token, bundleId);
+        const processing = await hasProcessingBuild(token, appId);
+        if (processing) {
+          console.log('⏳ Apple verarbeitet gerade einen hochgeladenen Build ...');
+        }
+        retry = processing || Date.now() < graceDeadline;
+      }
+
+      if (!retry) {
+        console.log(`\n⏭️ Keine Einreichung durchgeführt: ${error.message}`);
+        return;
+      }
+
+      console.log(`   Nächster Versuch in ${POLL_INTERVAL_MINUTES} Minuten ...\n`);
+      await sleepMinutes(POLL_INTERVAL_MINUTES);
+    }
+  }
 }
 
 main().catch(error => {
