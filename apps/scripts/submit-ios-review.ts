@@ -10,7 +10,7 @@ const SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVEL
 // https://developer.apple.com/documentation/appstoreconnectapi/reviewsubmission
 const NON_TERMINAL_REVIEW_SUBMISSION_STATES = new Set(['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'UNRESOLVED_ISSUES', 'CANCELING', 'COMPLETING']);
 
-// Automated (scheduled / post-CI) runs must never blindly re-submit a version Apple has
+// Automated (post-CI) runs must never blindly re-submit a version Apple has
 // rejected - that needs a human to look at the rejection first. Only untouched drafts
 // are submitted without a human in the loop.
 const AUTO_SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION']);
@@ -208,7 +208,7 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
   } catch (error) {
     // Apple allows only one editable version at a time; e.g. while an approved version
     // still waits for its manual release, creating the next one fails with 409. In auto
-    // mode that just means "not now" - the next scheduled run will try again.
+    // mode that just means "not now" - the next automated or manual run will try again.
     if (AUTO_MODE && error instanceof AscApiError && error.status === 409) {
       throw new SkipSubmission(
         `Neue App Store Version ${versionString} kann aktuell nicht angelegt werden (409 von App Store Connect) - z. B. wartet eine freigegebene Version noch auf den manuellen Release. Details: ${error.message}`

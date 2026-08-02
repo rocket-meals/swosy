@@ -8,11 +8,6 @@ on:
         required: false
         default: "Fehlerbehebungen und Aktualisierung von Bibliotheken."
 
-  # Daily check: as soon as the previous version cleared App Review (or was released)
-  # and a newer processed build exists, it is submitted automatically.
-  schedule:
-    - cron: '0 5 * * *'
-
   # After a successful CI run a new iOS build may have been uploaded. Apple needs a
   # while to process it, so the submit script waits for processing builds
   # (IOS_SUBMIT_MAX_WAIT_MINUTES) and submits once the build turns VALID.
@@ -21,7 +16,7 @@ on:
     types: [completed]
     branches: [master]
 
-# Serialize runs so a scheduled run and a post-CI run never submit concurrently.
+# Serialize runs so a manual run and a post-CI run never submit concurrently.
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
@@ -31,7 +26,7 @@ jobs:
     name: "🚀 Submit latest build for App Review"
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    # Post-CI trigger only reacts to successful CI runs; schedule and manual runs always go.
+    # Post-CI trigger only reacts to successful CI runs; manual runs always go.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: "🔄 Checkout Repository"
@@ -101,7 +96,7 @@ jobs:
         run: yarn workspace rocket-meals-scripts submit:ios:review
         env:
           IOS_RELEASE_NOTES: ${{ inputs.release_notes || 'Fehlerbehebungen und Aktualisierung von Bibliotheken.' }}
-          # Scheduled and post-CI runs skip gracefully when there is nothing to submit
+          # Post-CI runs skip gracefully when there is nothing to submit
           # and never re-submit versions Apple has rejected.
           IOS_SUBMIT_AUTO: ${{ github.event_name != 'workflow_dispatch' }}
           # Only the post-CI trigger waits for Apple to finish processing a fresh build.
