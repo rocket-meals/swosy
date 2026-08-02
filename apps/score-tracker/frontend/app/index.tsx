@@ -34,6 +34,7 @@ import {
 	linkPlayerToFriend,
 	setGameType,
 	setStartedAt,
+	setEndedAt,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,
@@ -239,10 +240,74 @@ function ScoreInputContent({
 // would otherwise keep showing whatever was recorded at open-time.
 
 /**
+ * One editable built-in time row (Startzeit/Endzeit): renders exactly like a
+ * category value row - a plain value row when read-only, otherwise a text
+ * input taking `TT.MM.JJJJ HH:MM` with a "Jetzt" shortcut, where an empty
+ * input clears the value again.
+ */
+function MatchTimeRow({
+	nativeID,
+	label,
+	icon,
+	timestamp,
+	emptyHint,
+	readOnly,
+	onSave,
+	groupPosition,
+}: Readonly<{
+	nativeID: string;
+	label: string;
+	icon: React.ReactNode;
+	timestamp: number | undefined;
+	/** Shown as the row value while nothing is recorded (instead of a bare dash). */
+	emptyHint: string;
+	readOnly?: boolean;
+	onSave: (timestamp: number | null) => void;
+	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
+}>) {
+	const value = timestamp != null ? formatTimestampAsDateTime(timestamp) : emptyHint;
+
+	if (readOnly) {
+		return (
+			<SettingsList
+				nativeID={nativeID}
+				label={label}
+				value={timestamp != null ? formatTimestampAsDateTime(timestamp) : '—'}
+				leftIcon={icon}
+				iconBgColor="#6b7280"
+				groupPosition={groupPosition}
+			/>
+		);
+	}
+
+	return (
+		<SettingsListTextInput
+			nativeID={nativeID}
+			label={label}
+			value={value}
+			leftIcon={icon}
+			iconBgColor={PRIMARY_COLOR}
+			modalTitle={label}
+			placeholder="TT.MM.JJJJ HH:MM"
+			keyboardType="numbers-and-punctuation"
+			saveLabel="Übernehmen"
+			initialValue={timestamp != null ? formatTimestampAsDateTime(timestamp) : ''}
+			// An empty input clears the value again; anything else has to be a
+			// real date + time before it can be saved.
+			checkTextInput={(next) => ({ isValid: next.trim() === '' || parseDateTimeInput(next) != null, value: next })}
+			suggestions={[{ key: 'now', value: formatTimestampAsDateTime(Date.now()), label: `Jetzt (${formatTimestampAsDateTime(Date.now())})` }]}
+			onSave={(next) => onSave(parseDateTimeInput(next))}
+			groupPosition={groupPosition}
+		/>
+	);
+}
+
+/**
  * The built-in start/end/duration rows of the running or finished match (see
- * helpers/MatchTimes) - present for every game, without configuring anything:
- * the start is stamped when the match starts (and can be corrected here), the
- * end is stamped when it is ended, and the duration derives from the two.
+ * helpers/MatchTimes) - always all three, behaving like a category trio with
+ * a computed duration: the start is stamped when the match starts, the end
+ * when it is ended, both stay editable like any category value (read-only in
+ * the finished view, like categories), and the duration is derived.
  */
 function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
 	const dispatch = useDispatch<AppDispatch>();
@@ -250,58 +315,40 @@ function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
 	const endedAt = useSelector((state: RootState) => state.game.endedAt);
 	const storedDuration = useSelector((state: RootState) => state.game.durationMinutes);
 
-	// While the match runs, the duration keeps counting from the start; the
-	// archived value is only fixed once the match is ended.
+	// While the match runs (no end recorded yet), the duration keeps counting
+	// from the start; a recorded end fixes it.
 	const duration = storedDuration ?? durationMinutesBetween(startedAt, endedAt ?? Date.now());
-	const startValue = startedAt != null ? formatTimestampAsDateTime(startedAt) : '—';
+	let durationValue = 'Ergibt sich aus Startzeit → Endzeit';
+	if (duration != null) {
+		durationValue = `${formatDuration(duration)}${endedAt == null ? ' (läuft)' : ''}`;
+	}
 
 	return (
 		<>
-			{readOnly ? (
-				<SettingsList
-					nativeID={ComponentIds.GAME_MATCH_STARTED_AT_ROW}
-					label="Startzeit"
-					value={startValue}
-					leftIcon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
-					iconBgColor="#6b7280"
-					groupPosition="top"
-				/>
-			) : (
-				<SettingsListTextInput
-					nativeID={ComponentIds.GAME_MATCH_STARTED_AT_ROW}
-					label="Startzeit"
-					value={startValue}
-					leftIcon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
-					modalTitle="Startzeit"
-					placeholder="TT.MM.JJJJ HH:MM"
-					keyboardType="numbers-and-punctuation"
-					saveLabel="Übernehmen"
-					initialValue={startedAt != null ? formatTimestampAsDateTime(startedAt) : ''}
-					// An empty input clears the stamped start again; anything else
-					// has to be a real date + time before it can be saved.
-					checkTextInput={(next) => ({ isValid: next.trim() === '' || parseDateTimeInput(next) != null, value: next })}
-					suggestions={[{ key: 'now', value: formatTimestampAsDateTime(Date.now()), label: `Jetzt (${formatTimestampAsDateTime(Date.now())})` }]}
-					onSave={(next) => {
-						dispatch(setStartedAt(parseDateTimeInput(next)));
-					}}
-					groupPosition="top"
-				/>
-			)}
-			{endedAt != null && (
-				<SettingsList
-					nativeID={ComponentIds.GAME_MATCH_ENDED_AT_ROW}
-					label="Endzeit"
-					value={formatTimestampAsDateTime(endedAt)}
-					leftIcon={<Ionicons name="stop-outline" size={20} color="#ffffff" />}
-					iconBgColor={readOnly ? '#6b7280' : PRIMARY_COLOR}
-					groupPosition="middle"
-				/>
-			)}
+			<MatchTimeRow
+				nativeID={ComponentIds.GAME_MATCH_STARTED_AT_ROW}
+				label="Startzeit"
+				icon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
+				timestamp={startedAt}
+				emptyHint="—"
+				readOnly={readOnly}
+				onSave={(next) => dispatch(setStartedAt(next))}
+				groupPosition="top"
+			/>
+			<MatchTimeRow
+				nativeID={ComponentIds.GAME_MATCH_ENDED_AT_ROW}
+				label="Endzeit"
+				icon={<Ionicons name="stop-outline" size={20} color="#ffffff" />}
+				timestamp={endedAt}
+				emptyHint="Wird beim Beenden gesetzt"
+				readOnly={readOnly}
+				onSave={(next) => dispatch(setEndedAt(next))}
+				groupPosition="middle"
+			/>
 			<SettingsList
 				nativeID={ComponentIds.GAME_MATCH_DURATION_ROW}
 				label="Dauer"
-				value={duration != null ? `${formatDuration(duration)}${endedAt == null ? ' (läuft)' : ''}` : 'Wird beim Beenden berechnet'}
+				value={durationValue}
 				leftIcon={<Ionicons name="hourglass-outline" size={20} color="#ffffff" />}
 				iconBgColor="#6b7280"
 				groupPosition="bottom"
@@ -991,7 +1038,9 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 	 */
 	const handleEndMatch = useCallback(() => {
 		if (hasRecordedResults(game)) {
-			dispatch(archiveGame(buildHistoryEntry(game, { id: game.matchId ?? generateId(), endedAt: Date.now() })));
+			// A manually entered/corrected Endzeit wins over the current moment
+			// (see the built-in time rows) - clearing it re-stamps on ending.
+			dispatch(archiveGame(buildHistoryEntry(game, { id: game.matchId ?? generateId(), endedAt: game.endedAt ?? Date.now() })));
 		}
 		dispatch(resetScores());
 		onClose();

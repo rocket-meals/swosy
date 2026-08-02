@@ -8,6 +8,7 @@ import type { GameCategoryValue } from '../helpers/GameCategories';
 import { renameFriend, setFriendColor, setFriendAvatar } from './friendsSlice';
 import { removeGameType } from './gameTypesSlice';
 import { generateId } from '../helpers/RandomHelper';
+import { durationMinutesBetween } from '../helpers/MatchTimes';
 export type { Player, Round, GameState, GameStatus } from '../helpers/GameStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
@@ -217,10 +218,22 @@ const gameSlice = createSlice({
 		/**
 		 * Correct the automatically stamped start time of the running match by
 		 * hand (see helpers/MatchTimes). `null` clears it - such a match simply
-		 * has no recorded start and thus no duration.
+		 * has no recorded start and thus no duration. The stored duration
+		 * follows the edit like a computed category would.
 		 */
 		setStartedAt(state, action: PayloadAction<number | null>) {
 			state.startedAt = action.payload ?? undefined;
+			state.durationMinutes = durationMinutesBetween(state.startedAt, state.endedAt) ?? undefined;
+		},
+
+		/**
+		 * Correct (or pre-set) the end time by hand. Ending the match keeps a
+		 * manually entered end instead of stamping over it; `null` clears the
+		 * value so ending stamps the current moment again.
+		 */
+		setEndedAt(state, action: PayloadAction<number | null>) {
+			state.endedAt = action.payload ?? undefined;
+			state.durationMinutes = durationMinutesBetween(state.startedAt, state.endedAt) ?? undefined;
 		},
 
 		/**
@@ -316,10 +329,10 @@ const gameSlice = createSlice({
 		reopenMatch(state) {
 			if (state.status !== 'finished') return;
 			state.status = 'active';
-			// The start stays - re-ending the match stamps a fresh end and
-			// recomputes the duration from the original start.
-			state.endedAt = undefined;
-			state.durationMinutes = undefined;
+			// Times stay untouched: a match is typically re-opened to correct
+			// its recorded values - including start and end. Re-ending keeps the
+			// (possibly edited) end; clearing the Endzeit row makes the next
+			// "Partie beenden" stamp the current moment again.
 		},
 
 		/** Move to the previous round (view/edit its scores). No-op at round 1. */
@@ -439,6 +452,7 @@ export const {
 	loadMatch,
 	reopenMatch,
 	setStartedAt,
+	setEndedAt,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,

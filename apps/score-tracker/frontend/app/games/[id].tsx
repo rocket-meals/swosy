@@ -685,7 +685,7 @@ export default function GameTypeDetailScreen() {
 	const runningMatch = useMemo(() => {
 		if (!gameType || activeGame.status !== 'active' || activeGame.gameTypeId !== gameType.id) return null;
 		if (activeGame.players.length === 0) return null;
-		return buildHistoryEntry(activeGame, { id: activeGame.matchId ?? 'running', endedAt: Date.now() });
+		return buildHistoryEntry(activeGame, { id: activeGame.matchId ?? 'running', endedAt: activeGame.endedAt ?? Date.now() });
 	}, [gameType, activeGame]);
 
 	const allMatchEntries = useMemo(() => {
@@ -801,8 +801,10 @@ export default function GameTypeDetailScreen() {
 	const archiveRunningMatch = useCallback(() => {
 		if (activeGame.status !== 'active' || activeGame.players.length === 0) return;
 		if (!hasRecordedResults(activeGame)) return;
+		// A manually entered Endzeit wins over the current moment (see the
+		// built-in time rows on the match screen).
 		dispatch(
-			archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: Date.now() })),
+			archiveGame(buildHistoryEntry(activeGame, { id: activeGame.matchId ?? generateId(), endedAt: activeGame.endedAt ?? Date.now() })),
 		);
 	}, [activeGame, dispatch]);
 

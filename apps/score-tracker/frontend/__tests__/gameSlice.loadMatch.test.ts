@@ -71,10 +71,12 @@ describe('finished (view-only) state', () => {
 		expect(state.matchId).toBe('match-1');
 	});
 
-	it('reopenMatch puts the match back into play and clears the ended date', () => {
+	it('reopenMatch puts the match back into play, keeping the recorded end editable', () => {
 		const state = gameReducer(finishedState(), reopenMatch());
 		expect(state.status).toBe('active');
-		expect(state.endedAt).toBeUndefined();
+		// The end stays as a recorded value (correctable via the built-in time
+		// rows); ending the match again keeps the possibly edited end.
+		expect(state.endedAt).toBe(archivedEntry().endedAt);
 		expect(state.matchId).toBe('match-1');
 		expect(state.rounds).toHaveLength(1);
 	});
