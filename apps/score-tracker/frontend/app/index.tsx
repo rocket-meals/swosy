@@ -251,7 +251,6 @@ function MatchTimeRow({
 	icon,
 	timestamp,
 	emptyHint,
-	readOnly,
 	onSave,
 	groupPosition,
 }: Readonly<{
@@ -261,24 +260,10 @@ function MatchTimeRow({
 	timestamp: number | undefined;
 	/** Shown as the row value while nothing is recorded (instead of a bare dash). */
 	emptyHint: string;
-	readOnly?: boolean;
 	onSave: (timestamp: number | null) => void;
 	groupPosition: 'top' | 'middle' | 'bottom' | 'single';
 }>) {
 	const value = timestamp != null ? formatTimestampAsDateTime(timestamp) : emptyHint;
-
-	if (readOnly) {
-		return (
-			<SettingsList
-				nativeID={nativeID}
-				label={label}
-				value={timestamp != null ? formatTimestampAsDateTime(timestamp) : '—'}
-				leftIcon={icon}
-				iconBgColor="#6b7280"
-				groupPosition={groupPosition}
-			/>
-		);
-	}
 
 	return (
 		<SettingsListTextInput
@@ -306,10 +291,11 @@ function MatchTimeRow({
  * The built-in start/end/duration rows of the running or finished match (see
  * helpers/MatchTimes) - always all three, behaving like a category trio with
  * a computed duration: the start is stamped when the match starts, the end
- * when it is ended, both stay editable like any category value (read-only in
- * the finished view, like categories), and the duration is derived.
+ * when it is ended, both stay editable like any category value (finished
+ * matches included - edits sync back into the archive), and the duration is
+ * derived.
  */
-function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
+function MatchTimeRows() {
 	const dispatch = useDispatch<AppDispatch>();
 	const startedAt = useSelector((state: RootState) => state.game.startedAt);
 	const endedAt = useSelector((state: RootState) => state.game.endedAt);
@@ -331,7 +317,6 @@ function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
 				icon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
 				timestamp={startedAt}
 				emptyHint="—"
-				readOnly={readOnly}
 				onSave={(next) => dispatch(setStartedAt(next))}
 				groupPosition="top"
 			/>
@@ -341,7 +326,6 @@ function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
 				icon={<Ionicons name="stop-outline" size={20} color="#ffffff" />}
 				timestamp={endedAt}
 				emptyHint="Wird beim Beenden gesetzt"
-				readOnly={readOnly}
 				onSave={(next) => dispatch(setEndedAt(next))}
 				groupPosition="middle"
 			/>
@@ -357,11 +341,7 @@ function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
 	);
 }
 
-function MatchCategorySection({
-	categories,
-	gameTypeId,
-	readOnly,
-}: Readonly<{ categories: GameCategory[]; gameTypeId?: string; readOnly?: boolean }>) {
+function MatchCategorySection({ categories, gameTypeId }: Readonly<{ categories: GameCategory[]; gameTypeId?: string }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const values = useSelector((state: RootState) => state.game.categoryValues);
 	const status = useSelector((state: RootState) => state.game.status);
@@ -376,13 +356,12 @@ function MatchCategorySection({
 	return (
 		<View style={styles.categorySection}>
 			<SettingsListGroupTitle title="Spielinfos" />
-			{showTimeRows && <MatchTimeRows readOnly={readOnly} />}
+			{showTimeRows && <MatchTimeRows />}
 			<CategoryValueRows
 				categories={matchCategories}
 				values={resolved}
 				allCategories={categories}
 				gameTypeId={gameTypeId}
-				readOnly={readOnly}
 				onChange={(categoryId, value) => dispatch(setCategoryValue({ categoryId, value }))}
 			/>
 		</View>
@@ -409,6 +388,59 @@ function PlayerCategorySection({
 				allCategories={categories}
 				gameTypeId={gameTypeId}
 				onChange={(categoryId, value) => dispatch(setPlayerCategoryValue({ playerId, categoryId, value }))}
+			/>
+		</View>
+	);
+}
+
+/**
+ * "Mehr Infos" block of the player entry modal: the player's totals in this
+ * match plus the way into the full player editor (name, color, avatar).
+ * Subscribes to the store itself so the numbers update live while the modal
+ * stays open.
+ */
+function PlayerMatchInfoSection({
+	playerId,
+	trackScores,
+	onEditPlayer,
+}: Readonly<{ playerId: string; trackScores: boolean; onEditPlayer: () => void }>) {
+	const player = useSelector((state: RootState) => state.game.players.find((p) => p.id === playerId));
+	const rounds = useSelector((state: RootState) => state.game.rounds);
+
+	if (!player) return null;
+
+	let total = 0;
+	let scoredRounds = 0;
+	for (const round of rounds) {
+		const score = round.scores[player.id];
+		if (score != null) {
+			total += score;
+			scoredRounds += 1;
+		}
+	}
+
+	return (
+		<View style={styles.modalContent}>
+			<SettingsListGroupTitle title="Spieler" />
+			{trackScores && (
+				<SettingsList
+					nativeID={`${ComponentIds.GAME_PLAYER_INFO_TOTAL_PREFIX}${player.id}`}
+					label="Gesamtpunkte"
+					value={`${total} Punkte · ${scoredRounds === 1 ? '1 gewertete Runde' : `${scoredRounds} gewertete Runden`}`}
+					leftIcon={<Ionicons name="podium-outline" size={20} color="#ffffff" />}
+					iconBgColor="#6b7280"
+					groupPosition="top"
+				/>
+			)}
+			<SettingsList
+				nativeID={`${ComponentIds.GAME_PLAYER_INFO_EDIT_PREFIX}${player.id}`}
+				label="Spieler bearbeiten"
+				value="Name, Farbe und Avatar"
+				leftIcon={<Ionicons name="person-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={onEditPlayer}
+				groupPosition={trackScores ? 'bottom' : 'single'}
 			/>
 		</View>
 	);
@@ -955,16 +987,11 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 	const dispatch = useDispatch<AppDispatch>();
 	const { theme } = useTheme();
 	const players = useSelector((state: RootState) => state.game.players);
-	const status = useSelector((state: RootState) => state.game.status);
 	const { show, close } = useMyScrollViewModal();
 
 	const handleAddPlayer = useCallback(() => {
 		show({ title: 'Spieler hinzufügen', children: <AddPlayerContent onDone={close} /> });
 	}, [show, close]);
-
-	// A finished match is view-only: its roster is part of the archived result
-	// and must not be editable until the match is explicitly re-opened.
-	if (status === 'finished') return null;
 
 	return (
 		<>
@@ -1085,7 +1112,7 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 				<SettingsList
 					nativeID={ComponentIds.GAME_SETTINGS_REOPEN_MATCH}
 					label="Partie wieder öffnen"
-					value="Die beendete Partie kann danach wieder bearbeitet werden"
+					value="Entfernt das Beendet-Flag - die Partie läuft weiter und kann neue Runden bekommen"
 					stackedValue
 					leftIcon={<Ionicons name="lock-open-outline" size={20} color="#ffffff" />}
 					iconBgColor={SUCCESS_COLOR}
@@ -1328,19 +1355,20 @@ export default function GameScreen() {
 	const [isEditingPlayers, setIsEditingPlayers] = useState(false);
 	const toggleEditingPlayers = useCallback(() => setIsEditingPlayers(v => !v), []);
 
-	// Leaving the setup phase always drops back into the scoreboard view, and a
-	// finished (view-only) match never opens in player-edit mode.
+	// Leaving the setup phase always drops back into the scoreboard view.
 	const prevStatusRef = useRef(status);
 	useEffect(() => {
-		if ((prevStatusRef.current === 'setup' && status === 'active') || status === 'finished') {
+		if (prevStatusRef.current === 'setup' && status === 'active') {
 			setIsEditingPlayers(false);
 		}
 		prevStatusRef.current = status;
 	}, [status]);
 
-	// A finished match is a view onto its archived entry - no editing surfaces.
+	// "Beendet" only flags the match and fixes its duration - everything stays
+	// editable, and edits sync straight back into the archived entry (see the
+	// auto-persist in store.ts).
 	const isFinishedView = status === 'finished';
-	const showEditRows = status === 'setup' || (isEditingPlayers && !isFinishedView);
+	const showEditRows = status === 'setup' || isEditingPlayers;
 
 	const selectedGameType = useMemo(
 		() => (gameTypeId ? gameTypes.find((g) => g.id === gameTypeId) : undefined),
@@ -1504,29 +1532,35 @@ export default function GameScreen() {
 
 	// ─── Score entry ──────────────────────────────────────────────────────────
 
-	// Tapping a player opens their round entry: the score (a plain number or the
-	// game type's card picker) and/or the player-scope categories. A game with
-	// `trackScores: false` skips the score part entirely and is recorded through
-	// its categories alone.
+	// Tapping a player opens their entry: the score of the viewed round (a
+	// plain number or the game type's card picker), the player-scope
+	// categories, plus a summary and the player editor (name, color, avatar) -
+	// works on finished matches too, "beendet" only flags the match and fixes
+	// its duration.
 	const handleTilePress = useCallback(
 		(playerId: string) => {
-			// A finished match is view-only - nothing to enter until it is
-			// re-opened via the match options.
-			if (isFinishedView) return;
 			// Only score entry needs a round; a game without points has none.
 			if (trackScores && !currentRound) return;
 			const player = players.find((p) => p.id === playerId);
 			const categorySection =
 				playerCategories.length > 0 ? <PlayerCategorySection playerId={playerId} categories={categories} gameTypeId={gameTypeId} /> : null;
+			const infoSection = (
+				<PlayerMatchInfoSection playerId={playerId} trackScores={trackScores} onEditPlayer={() => handleOpenPlayerEditModal(playerId)} />
+			);
 			const title = player ? player.name : 'Eintrag';
 
 			if (!trackScores) {
 				showScoreModal({
 					title,
-					children: categorySection ?? (
-						<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
-							Dieses Spiel zählt keine Punkte. Lege im Spiel eine Kategorie für „Jeden Spieler einzeln“ an, um hier etwas zu erfassen.
-						</Text>
+					children: (
+						<>
+							{categorySection ?? (
+								<Text style={[styles.emptyHint, { color: theme.screen.placeholder }]}>
+									Dieses Spiel zählt keine Punkte. Lege im Spiel eine Kategorie für „Jeden Spieler einzeln“ an, um hier etwas zu erfassen.
+								</Text>
+							)}
+							{infoSection}
+						</>
 					),
 				});
 				return;
@@ -1536,7 +1570,7 @@ export default function GameScreen() {
 			if (!currentRound) return;
 			if (scoreEntryRules) {
 				showScoreModal({
-					title: 'Punkte eingeben',
+					title,
 					children: (
 						<>
 							<CardScoreEntryModal
@@ -1552,13 +1586,14 @@ export default function GameScreen() {
 								}}
 							/>
 							{categorySection}
+							{infoSection}
 						</>
 					),
 				});
 				return;
 			}
 			showScoreModal({
-				title: 'Punkte eingeben',
+				title,
 				children: (
 					<>
 						<ScoreInputContent
@@ -1569,11 +1604,12 @@ export default function GameScreen() {
 							}}
 						/>
 						{categorySection}
+						{infoSection}
 					</>
 				),
 			});
 		},
-		[currentRound, players, categories, playerCategories, trackScores, isFinishedView, selectedGameType, gameTypeId, showScoreModal, closeScoreModal, dispatch, theme],
+		[currentRound, players, categories, playerCategories, trackScores, selectedGameType, gameTypeId, showScoreModal, closeScoreModal, handleOpenPlayerEditModal, dispatch, theme],
 	);
 
 	const handlePrevRound = useCallback(() => dispatch(goToPreviousRound()), [dispatch]);
@@ -1694,10 +1730,10 @@ export default function GameScreen() {
 					<>
 						{isFinishedView && (
 							<View nativeID={ComponentIds.GAME_FINISHED_VIEW_BANNER} style={[styles.finishedBanner, styles.finishedViewBanner]}>
-								<Ionicons name="lock-closed-outline" size={18} color="#ffffff" />
+								<Ionicons name="flag-outline" size={18} color="#ffffff" />
 								<Text style={styles.finishedBannerText}>
-									Beendete Partie{endedAt ? ` vom ${formatEndedAtDate(endedAt)}` : ''} - nur Ansicht. Zum Bearbeiten in den
-									Optionen (⚙️) „Partie wieder öffnen“ wählen.
+									Beendete Partie{endedAt ? ` vom ${formatEndedAtDate(endedAt)}` : ''} - Änderungen werden direkt in der
+									gespeicherten Partie übernommen.
 								</Text>
 							</View>
 						)}
@@ -1710,7 +1746,7 @@ export default function GameScreen() {
 								</Text>
 							</View>
 						)}
-						<MatchCategorySection categories={categories} gameTypeId={gameTypeId} readOnly={isFinishedView} />
+						<MatchCategorySection categories={categories} gameTypeId={gameTypeId} />
 						{players.map((player) => {
 							const summary = summarizeCategoryValues(playerCategories, playerCategoryValues?.[player.id]);
 							return (

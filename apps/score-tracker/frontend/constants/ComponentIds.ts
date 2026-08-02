@@ -29,6 +29,10 @@ export const ComponentIds = {
 	GAME_FINISHED_BANNER: 'game-finished-banner',
 	GAME_FINISHED_VIEW_BANNER: 'game-finished-view-banner',
 
+	// Player entry modal (more info)
+	GAME_PLAYER_INFO_TOTAL_PREFIX: 'game-player-info-total-',
+	GAME_PLAYER_INFO_EDIT_PREFIX: 'game-player-info-edit-',
+
 	// Built-in match times (see helpers/MatchTimes)
 	GAME_MATCH_STARTED_AT_ROW: 'game-match-started-at-row',
 	GAME_MATCH_ENDED_AT_ROW: 'game-match-ended-at-row',

@@ -3,11 +3,12 @@ import themeReducer from './themeSlice';
 import gameReducer from './gameSlice';
 import friendsReducer from './friendsSlice';
 import gameTypesReducer from './gameTypesSlice';
-import gameHistoryReducer from './gameHistorySlice';
+import gameHistoryReducer, { archiveGame } from './gameHistorySlice';
 import appSettingsReducer from './appSettingsSlice';
 import debugReducer from './debugSlice';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { saveGameState } from '../helpers/GameStorage';
+import { buildHistoryEntry } from '../helpers/GameHistoryStorage';
 import { saveFriends } from '../helpers/FriendsStorage';
 import { saveGameTypes } from '../helpers/GameTypesStorage';
 import { saveGameHistory } from '../helpers/GameHistoryStorage';
@@ -72,7 +73,21 @@ store.subscribe(() => {
 
 	const game = state.game;
 	if (game !== _lastSavedGame) {
+		const previousGame = _lastSavedGame;
 		_lastSavedGame = game;
+		// A finished match stays editable - "beendet" is only a flag plus the
+		// fixed duration. Edits made while the match is finished (players,
+		// scores, categories, times) mirror straight into its archived entry.
+		// Only edit transitions sync (same finished match before and after), so
+		// merely opening an archived match never rewrites its entry.
+		if (
+			game.status === 'finished' &&
+			game.matchId &&
+			previousGame?.status === 'finished' &&
+			previousGame.matchId === game.matchId
+		) {
+			store.dispatch(archiveGame(buildHistoryEntry(game, { id: game.matchId, endedAt: game.endedAt ?? Date.now() })));
+		}
 		_gameTimer = scheduleDebouncedSave(_gameTimer, 300, () => {
 			saveGameState({
 				players: game.players,
