@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 36 | 36 |
+| 🔧 Maintainability | 35 | 35 |
 
-**Total issues:** 44
+**Total issues:** 43
 
 ---
 
@@ -48,7 +48,7 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (36/36)
+## 🔧 Maintainability (35/35)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -134,17 +134,13 @@
   apps/score-tracker/frontend/components/GameImagePicker.tsx:338
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
 
-- **Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.**
-  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:102
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L102
-
-- **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
-  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:142
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L142
+- **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
+  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:115
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L115
 
 - **The empty object is useless.**
-  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:148
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L148
+  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:168
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L168
 
 - **Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.**
   apps/score-tracker/frontend/helpers/GameCategories.ts:590
