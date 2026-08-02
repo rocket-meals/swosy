@@ -11,9 +11,15 @@ jest.mock('repo-depkit-common-ui', () => ({
 	setStorageItem: jest.fn(async () => undefined),
 }));
 
-import { findLegacyTimeCategories, migrateBuiltinMatchTimes, migrateHistoryEntry } from '../helpers/BuiltinTimesMigration';
+import {
+	findLegacyTimeCategories,
+	migrateActiveGameState,
+	migrateBuiltinMatchTimes,
+	migrateHistoryEntry,
+} from '../helpers/BuiltinTimesMigration';
 import type { GameCategory } from '../helpers/GameCategories';
 import type { GameHistoryEntry } from '../helpers/GameHistoryStorage';
+import type { GameState } from '../helpers/GameStorage';
 import type { GameType } from '../helpers/GameTypesStorage';
 
 /** The category layout of the old "Villen des Wahnsinns" preset. */
@@ -56,6 +62,11 @@ describe('findLegacyTimeCategories', () => {
 	it('finds nothing in a game without time categories', () => {
 		const categories: GameCategory[] = [{ id: 'map', name: 'Gespielte Karte', type: 'text', scope: 'match' }];
 		expect(findLegacyTimeCategories(categories)).toEqual({ startTimeId: null, endTimeId: null, durationId: null, dateId: null });
+	});
+
+	it('finds a standalone hand-entered duration category', () => {
+		const categories: GameCategory[] = [{ id: 'dur', name: 'Spieldauer', type: 'duration', scope: 'match' }];
+		expect(findLegacyTimeCategories(categories)).toEqual({ startTimeId: null, endTimeId: null, durationId: 'dur', dateId: null });
 	});
 });
 
@@ -101,6 +112,30 @@ describe('migrateHistoryEntry', () => {
 		const migrated = migrateHistoryEntry(entry, LEGACY_CATEGORIES, LEGACY_IDS);
 		expect(migrated.startedAt).toBe(new Date(2024, 4, 1, 23, 0).getTime());
 		expect(migrated.durationMinutes).toBe(90);
+	});
+
+	it('derives start and duration from a lone start time via the archive moment', () => {
+		// Archived (= "Partie beenden") at 22:00 with only a 19:30 start
+		// recorded: the archive moment is the best available end.
+		const entry = makeEntry({
+			endedAt: new Date(2024, 4, 1, 22, 0).getTime(),
+			categoryValues: { startTime: '19:30' },
+		});
+		const migrated = migrateHistoryEntry(entry, LEGACY_CATEGORIES, LEGACY_IDS);
+		expect(migrated.startedAt).toBe(new Date(2024, 4, 1, 19, 30).getTime());
+		expect(migrated.endedAt).toBe(entry.endedAt);
+		expect(migrated.durationMinutes).toBe(150);
+	});
+
+	it('derives the start from a standalone hand-entered duration', () => {
+		const categories: GameCategory[] = [{ id: 'dur', name: 'Dauer', type: 'duration', scope: 'match' }];
+		const legacy = findLegacyTimeCategories(categories);
+		const entry = makeEntry({ endedAt: new Date(2024, 4, 1, 22, 0).getTime(), categoryValues: { dur: 120 } });
+		const migrated = migrateHistoryEntry(entry, categories, legacy);
+		expect(migrated.durationMinutes).toBe(120);
+		expect(migrated.startedAt).toBe(new Date(2024, 4, 1, 20, 0).getTime());
+		expect(migrated.endedAt).toBe(entry.endedAt);
+		expect(migrated.categoryValues).toEqual({});
 	});
 
 	it('leaves an already migrated entry untouched', () => {
@@ -152,5 +187,57 @@ describe('migrateBuiltinMatchTimes', () => {
 		const result = migrateBuiltinMatchTimes([gameType], entries);
 		expect(result.changed).toBe(false);
 		expect(result.entries).toBe(entries);
+	});
+
+	describe('migrateActiveGameState', () => {
+		const NOW = new Date(2024, 4, 1, 20, 0).getTime();
+
+		function makeGame(overrides: Partial<GameState>): GameState {
+			return {
+				players: [],
+				rounds: [],
+				status: 'active',
+				currentRoundIndex: 0,
+				matchId: 'match-1',
+				gameTypeId: 'game-1',
+				categoryValues: {},
+				playerCategoryValues: {},
+				...overrides,
+			};
+		}
+
+		const gameTypes = [makeGameType('game-1', LEGACY_CATEGORIES)];
+
+		it('derives the running match start from its recorded values (anchored on now)', () => {
+			const game = makeGame({ categoryValues: { startTime: '19:30', map: 'Haus Lynch' } });
+			const migrated = migrateActiveGameState(game, gameTypes, NOW);
+			expect(migrated.startedAt).toBe(new Date(2024, 4, 1, 19, 30).getTime());
+			// A running match gets no end/duration - those are stamped on ending.
+			expect(migrated.endedAt).toBeUndefined();
+			expect(migrated.durationMinutes).toBeUndefined();
+			expect(migrated.categoryValues).toEqual({ map: 'Haus Lynch' });
+		});
+
+		it('migrates a finished (view-only) loaded match like an archived entry', () => {
+			const game = makeGame({
+				status: 'finished',
+				endedAt: new Date(2024, 4, 1, 23, 0).getTime(),
+				categoryValues: { date: '2024-05-01', startTime: '19:30', endTime: '22:45' },
+			});
+			const migrated = migrateActiveGameState(game, gameTypes, NOW);
+			expect(migrated.startedAt).toBe(new Date(2024, 4, 1, 19, 30).getTime());
+			expect(migrated.endedAt).toBe(new Date(2024, 4, 1, 22, 45).getTime());
+			expect(migrated.durationMinutes).toBe(195);
+		});
+
+		it.each([
+			['a match in the setup phase', { status: 'setup' as const, categoryValues: { startTime: '19:30' } }],
+			['a match that already has a start', { startedAt: 123, categoryValues: { startTime: '19:30' } }],
+			['a match without recorded time values', { categoryValues: {} }],
+			['a match without a game type', { gameTypeId: undefined, categoryValues: { startTime: '19:30' } }],
+		])('leaves %s untouched', (_name, overrides) => {
+			const game = makeGame(overrides);
+			expect(migrateActiveGameState(game, gameTypes, NOW)).toBe(game);
+		});
 	});
 });

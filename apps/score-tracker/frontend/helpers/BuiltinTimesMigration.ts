@@ -19,6 +19,7 @@ import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { GameCategory, GameCategoryValues } from './GameCategories';
 import { parseTimeToMinutes, resolveCategoryValues } from './GameCategories';
 import type { GameHistoryEntry } from './GameHistoryStorage';
+import type { GameState } from './GameStorage';
 import type { GameType } from './GameTypesStorage';
 
 const MINUTE_MS = 60000;
@@ -37,7 +38,10 @@ export type LegacyTimeCategoryIds = {
  * Locate the categories that used to play the role of the built-in times.
  * Preferred signal: a match-scope computed `duration` whose two sources are
  * `time` categories - that trio *is* start/end/duration by construction.
- * Without one, match-scope `time` categories are matched by name.
+ * Without one, match-scope `time` categories are matched by name, and a
+ * hand-entered `duration` category (its minutes were typed in, not derived)
+ * counts as the duration - so games that only ever recorded a duration
+ * migrate too, not just the full start/end setups.
  */
 export function findLegacyTimeCategories(categories: GameCategory[] | null | undefined): LegacyTimeCategoryIds {
 	const matchScope = (categories ?? []).filter((category) => category.scope === 'match');
@@ -61,7 +65,16 @@ export function findLegacyTimeCategories(categories: GameCategory[] | null | und
 	const timeCategories = matchScope.filter((category) => category.type === 'time');
 	const startTimeId = timeCategories.find((category) => /start|beginn|anfang/i.test(category.name))?.id ?? null;
 	const endTimeId = timeCategories.find((category) => category.id !== startTimeId && /end/i.test(category.name))?.id ?? null;
-	return { startTimeId, endTimeId, durationId: null, dateId };
+
+	// Standalone duration: prefer one that is named like a duration, fall back
+	// to the only duration category of the game (an unnamed second one would
+	// be guesswork - better to leave it alone).
+	const durationCategories = matchScope.filter((category) => category.type === 'duration');
+	const durationId =
+		durationCategories.find((category) => /dauer|spielzeit|l[äa]nge|duration/i.test(category.name))?.id ??
+		(durationCategories.length === 1 ? durationCategories[0].id : null);
+
+	return { startTimeId, endTimeId, durationId, dateId };
 }
 
 function hasLegacyTimeCategories(legacy: LegacyTimeCategoryIds): boolean {
@@ -139,7 +152,14 @@ export function migrateHistoryEntry(
 	const endedAt = endTimestamp ?? entry.endedAt;
 	if (startedAt != null && startedAt > endedAt) {
 		startedAt -= DAY_MS;
-		if (durationMinutes == null) durationMinutes = Math.round((endedAt - startedAt) / MINUTE_MS);
+	}
+	// Whatever is still missing derives from the archive moment: it is when
+	// "Partie beenden" was pressed, i.e. the best available end of the match.
+	if (startedAt == null && durationMinutes != null) {
+		startedAt = endedAt - durationMinutes * MINUTE_MS;
+	}
+	if (durationMinutes == null && startedAt != null && endedAt >= startedAt) {
+		durationMinutes = Math.round((endedAt - startedAt) / MINUTE_MS);
 	}
 
 	// The migrated values move into the built-in fields; keeping them around as
@@ -156,6 +176,40 @@ export function migrateHistoryEntry(
 		endedAt,
 		durationMinutes: durationMinutes ?? undefined,
 		categoryValues,
+	};
+}
+
+/**
+ * Same derivation for the match that is currently loaded (running, or a
+ * finished one opened for viewing) - it lives in the game state, not the
+ * history, so the entry migration alone would leave it behind. A running
+ * match anchors its day guess on "now" and gets no end/duration (those are
+ * stamped when it is ended); a finished one migrates like an archived entry.
+ */
+export function migrateActiveGameState(game: GameState, gameTypes: GameType[], now: number): GameState {
+	if (game.startedAt != null || game.status === 'setup' || !game.gameTypeId) return game;
+	const gameType = gameTypes.find((g) => g.id === game.gameTypeId);
+	const legacy = findLegacyTimeCategories(gameType?.categories);
+	if (!hasLegacyTimeCategories(legacy)) return game;
+
+	const pseudoEntry: GameHistoryEntry = {
+		id: game.matchId ?? 'active',
+		endedAt: game.endedAt ?? now,
+		roundsCount: 0,
+		players: [],
+		finalScores: {},
+		categoryValues: game.categoryValues,
+	};
+	const migrated = migrateHistoryEntry(pseudoEntry, gameType?.categories ?? [], legacy);
+	if (migrated === pseudoEntry) return game;
+
+	const isFinished = game.endedAt != null;
+	return {
+		...game,
+		startedAt: migrated.startedAt,
+		endedAt: isFinished ? migrated.endedAt : undefined,
+		durationMinutes: isFinished ? migrated.durationMinutes : undefined,
+		categoryValues: migrated.categoryValues,
 	};
 }
 
@@ -196,25 +250,42 @@ export function migrateBuiltinMatchTimes(
 const MIGRATION_FLAG_KEY = 'score-tracker-builtin-times-migration.json';
 
 /**
- * Run the migration exactly once per installation: the flag is written after
- * the first run, every later launch passes the data through untouched. Called
- * at startup between loading and dispatching game types + history - the store
- * dispatch of the migrated data persists it via the regular auto-save.
+ * Bump when the migration learns to derive more (a device that already ran an
+ * older version then runs the new one once more - safe, the migration is
+ * idempotent). v2: standalone duration categories, missing-piece fallbacks
+ * via the archive moment, and the currently loaded match.
+ */
+const MIGRATION_VERSION = 2;
+
+/**
+ * Run the migration exactly once per installation (per `MIGRATION_VERSION`):
+ * the flag is written after the run, every later launch passes the data
+ * through untouched. Called at startup between loading and dispatching game
+ * state + game types + history - the store dispatch of the migrated data
+ * persists it via the regular auto-save.
  */
 export async function runBuiltinTimesMigrationOnce(
 	gameTypes: GameType[],
 	entries: GameHistoryEntry[],
-): Promise<{ gameTypes: GameType[]; entries: GameHistoryEntry[] }> {
+	gameState: GameState,
+): Promise<{ gameTypes: GameType[]; entries: GameHistoryEntry[]; gameState: GameState }> {
 	try {
-		if ((await getStorageItem(MIGRATION_FLAG_KEY)) !== null) return { gameTypes, entries };
+		const flag = await getStorageItem(MIGRATION_FLAG_KEY);
+		if (flag !== null) {
+			const parsed = JSON.parse(flag) as { version?: number };
+			if ((parsed.version ?? 1) >= MIGRATION_VERSION) return { gameTypes, entries, gameState };
+		}
 	} catch {
 		// Unreadable flag: fall through and run - the migration is idempotent.
 	}
+	// The loaded match needs the legacy categories still in place, so it
+	// migrates before they are stripped from the game types.
+	const migratedGameState = migrateActiveGameState(gameState, gameTypes, Date.now());
 	const result = migrateBuiltinMatchTimes(gameTypes, entries);
 	try {
-		await setStorageItem(MIGRATION_FLAG_KEY, JSON.stringify({ migratedAt: Date.now() }));
+		await setStorageItem(MIGRATION_FLAG_KEY, JSON.stringify({ version: MIGRATION_VERSION, migratedAt: Date.now() }));
 	} catch (err) {
 		console.warn('[BuiltinTimesMigration] Failed to persist migration flag:', err);
 	}
-	return result;
+	return { gameTypes: result.gameTypes, entries: result.entries, gameState: migratedGameState };
 }

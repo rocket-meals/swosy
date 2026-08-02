@@ -213,13 +213,6 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted theme mode:', err);
 			});
-		loadGameState()
-			.then((state) => {
-				store.dispatch(loadGameStateAction(state));
-			})
-			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted game state:', err);
-			});
 		loadFriends()
 			.then((friends) => {
 				store.dispatch(loadFriendsAction(friends));
@@ -227,17 +220,19 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted friends:', err);
 			});
-		// Game types and history load together: the one-time migration of legacy
-		// time categories into the built-in match times (see
-		// BuiltinTimesMigration) needs both before either is dispatched.
-		Promise.all([loadGameTypes(), loadGameHistory()])
-			.then(async ([gameTypes, entries]) => {
-				const migrated = await runBuiltinTimesMigrationOnce(gameTypes, entries);
+		// Game state, game types and history load together: the one-time
+		// migration of legacy time categories into the built-in match times (see
+		// BuiltinTimesMigration) needs all three before any is dispatched - the
+		// currently loaded match migrates along with the archived ones.
+		Promise.all([loadGameState(), loadGameTypes(), loadGameHistory()])
+			.then(async ([gameState, gameTypes, entries]) => {
+				const migrated = await runBuiltinTimesMigrationOnce(gameTypes, entries, gameState);
+				store.dispatch(loadGameStateAction(migrated.gameState));
 				store.dispatch(loadGameTypesAction(migrated.gameTypes));
 				store.dispatch(loadGameHistoryAction(migrated.entries));
 			})
 			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted game types/history:', err);
+				console.warn('[Layout] Failed to load persisted game state/types/history:', err);
 			});
 		loadAppSettings()
 			.then((settings) => {
