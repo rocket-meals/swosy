@@ -111,12 +111,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L57
 
 - **Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:277
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L277
+  apps/score-tracker/frontend/components/CategoryValueRows.tsx:282
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L282
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/components/GameCategorySettings.tsx:329
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L329
+  apps/score-tracker/frontend/components/GameCategorySettings.tsx:335
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L335
 
 - **'../helpers/GameImageUpload' imported multiple times.**
   apps/score-tracker/frontend/components/GameImagePicker.tsx:21
@@ -159,8 +159,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L3
 
 - **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
-  apps/score-tracker/frontend/store/gameTypesSlice.ts:269
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L269
+  apps/score-tracker/frontend/store/gameTypesSlice.ts:281
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameTypesSlice.ts#L281
 
 - **Use the "RegExp.exec()" method instead.**
   apps/scripts/check-build-version.ts:10
