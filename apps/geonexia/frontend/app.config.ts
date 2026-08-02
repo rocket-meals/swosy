@@ -10,7 +10,7 @@ require('ts-node').register({
 	},
 });
 
-const { getBuildNumber } = require('./config.ts');
+const { getBuildNumber, getVersion } = require('./config.ts');
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
@@ -19,7 +19,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 		owner: 'baumgartner-software',
 		name: 'Geonexia',
 		slug: 'geonexia',
-		version: `1.0.${buildNumber}`,
+		version: getVersion(),
 		orientation: 'default',
 		icon: './assets/generated/icon.png',
 		scheme: 'geonexia',

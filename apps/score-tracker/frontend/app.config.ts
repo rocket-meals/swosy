@@ -10,7 +10,7 @@ require('ts-node').register({
 	},
 });
 
-const { getBuildNumber } = require('./config.ts');
+const { getBuildNumber, getVersion } = require('./config.ts');
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
@@ -19,7 +19,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 		owner: 'baumgartner-software',
 		name: 'Punktlandung',
 		slug: 'score-tracker',
-		version: `1.0.${buildNumber}`,
+		version: getVersion(),
 		orientation: 'default',
 		icon: './assets/icons/app_icon_source.png',
 		scheme: 'score-tracker',
