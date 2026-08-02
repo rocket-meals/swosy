@@ -8,38 +8,79 @@ on:
         required: false
         default: "Fehlerbehebungen und Aktualisierung von Bibliotheken."
 
+  # Daily check: as soon as the previous version cleared App Review (or was released)
+  # and a newer processed build exists, it is submitted automatically.
+  schedule:
+    - cron: '0 5 * * *'
+
+  # After a successful CI run a new iOS build may have been uploaded. Apple needs a
+  # while to process it, so the submit script waits for processing builds
+  # (IOS_SUBMIT_MAX_WAIT_MINUTES) and submits once the build turns VALID.
+  workflow_run:
+    workflows: ["🚀 CI"]
+    types: [completed]
+    branches: [master]
+
+# Serialize runs so a scheduled run and a post-CI run never submit concurrently.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   submit-for-review:
     name: "🚀 Submit latest build for App Review"
     runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Post-CI trigger only reacts to successful CI runs; schedule and manual runs always go.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
         with:
           ref: master
 
+      # Forks (tenant repositories) may not have the App Store Connect key configured -
+      # in that case automated runs should skip quietly instead of failing every day.
+      - name: "🔐 Check App Store Connect credentials"
+        id: guard
+        env:
+          ASC_KEY: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+        run: |
+          if [ -n "$ASC_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT ist nicht gesetzt - Submit wird übersprungen."
+          fi
+
       - name: "⚙️ Setup Node.js"
+        if: steps.guard.outputs.available == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "22.16.0"
 
       - name: "⚙️ Enable Corepack for Yarn v2"
+        if: steps.guard.outputs.available == 'true'
         run: corepack enable
 
       - name: "📦 Install dependencies"
+        if: steps.guard.outputs.available == 'true'
         # --mode=skip-build disables dependency lifecycle scripts (supply-chain hardening);
         # the submit script only needs ts-node/typescript, which require no build step.
         run: yarn install --immutable --mode=skip-build
 
       - name: "🔐 Prepare Apple App Store Connect API key"
+        if: steps.guard.outputs.available == 'true'
         uses: ./.github/actions/prepare-asc-api-key
         with:
           EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
 
       - name: "🏷️ Resolve customer from repository name"
+        if: steps.guard.outputs.available == 'true'
         run: bash scripts/customer-config.sh >> "$GITHUB_ENV"
 
       - name: "📱 Resolve iOS bundle identifier"
+        if: steps.guard.outputs.available == 'true'
         working-directory: ./apps/frontend/app
         run: |
           set -euo pipefail
@@ -56,6 +97,12 @@ jobs:
           echo "IOS_BUNDLE_ID=${BUNDLE_ID}" >> "$GITHUB_ENV"
 
       - name: "🚀 Submit latest build for App Review"
+        if: steps.guard.outputs.available == 'true'
         run: yarn workspace rocket-meals-scripts submit:ios:review
         env:
-          IOS_RELEASE_NOTES: ${{ inputs.release_notes }}
+          IOS_RELEASE_NOTES: ${{ inputs.release_notes || 'Fehlerbehebungen und Aktualisierung von Bibliotheken.' }}
+          # Scheduled and post-CI runs skip gracefully when there is nothing to submit
+          # and never re-submit versions Apple has rejected.
+          IOS_SUBMIT_AUTO: ${{ github.event_name != 'workflow_dispatch' }}
+          # Only the post-CI trigger waits for Apple to finish processing a fresh build.
+          IOS_SUBMIT_MAX_WAIT_MINUTES: ${{ github.event_name == 'workflow_run' && '90' || '0' }}
