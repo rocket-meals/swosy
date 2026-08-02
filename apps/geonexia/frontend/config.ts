@@ -15,6 +15,19 @@ export function getBuildNumber() {
 	return 18;
 }
 
+// DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
+// The ios-submit-review workflow reads this function: while the major version is
+// below 1 the app counts as still in development and is never submitted to
+// App Review automatically after a build. Raise to 1 for the first public release.
+export function getMajorVersion() {
+	return 0;
+}
+
+// Same semver scheme as apps/frontend/app: major.buildNumber.patch
+export function getVersion() {
+	return getMajorVersion() + '.' + getBuildNumber() + '.' + 0;
+}
+
 export const geonexiaConfig: CustomerConfig = {
 	projectName: 'Geonexia',
 	images: {
