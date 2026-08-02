@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 32 | 32 |
+| 🔧 Maintainability | 36 | 36 |
 
-**Total issues:** 40
+**Total issues:** 44
 
 ---
 
@@ -48,7 +48,7 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (32/32)
+## 🔧 Maintainability (36/36)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -87,36 +87,40 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L21
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/games/[id].tsx:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L84
-
-- **Remove this unused import of 'resetAll'.**
-  apps/score-tracker/frontend/app/index.tsx:47
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L47
-
-- **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/index.tsx:1182
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1182
-
-- **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/index.tsx:1201
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1201
-
-- **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/index.tsx:1186
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1186
-
-- **Replace this union type with a type alias.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:56
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L56
-
-- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:263
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L263
+  apps/score-tracker/frontend/app/games/[id].tsx:88
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L88
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/components/GameCategorySettings.tsx:212
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L212
+  apps/score-tracker/frontend/app/index.tsx:304
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L304
+
+- **Remove this unused import of 'resetAll'.**
+  apps/score-tracker/frontend/app/index.tsx:48
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L48
+
+- **Remove this useless assignment to variable "friends".**
+  apps/score-tracker/frontend/app/index.tsx:1261
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1261
+
+- **Remove this useless assignment to variable "toggleEditingPlayers".**
+  apps/score-tracker/frontend/app/index.tsx:1280
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1280
+
+- **Remove this useless assignment to variable "categoryValues".**
+  apps/score-tracker/frontend/app/index.tsx:1265
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1265
+
+- **Replace this union type with a type alias.**
+  apps/score-tracker/frontend/components/CategoryValueRows.tsx:57
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L57
+
+- **Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.**
+  apps/score-tracker/frontend/components/CategoryValueRows.tsx:277
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L277
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/score-tracker/frontend/components/GameCategorySettings.tsx:329
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L329
 
 - **'../helpers/GameImageUpload' imported multiple times.**
   apps/score-tracker/frontend/components/GameImagePicker.tsx:21
@@ -130,21 +134,33 @@
   apps/score-tracker/frontend/components/GameImagePicker.tsx:338
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
 
-- **Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.**
-  apps/score-tracker/frontend/helpers/GameCategories.ts:571
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L571
+- **Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.**
+  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:102
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L102
+
+- **Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.**
+  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:142
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L142
 
 - **The empty object is useless.**
-  apps/score-tracker/frontend/helpers/GameCategories.ts:219
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L219
+  apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:148
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L148
+
+- **Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.**
+  apps/score-tracker/frontend/helpers/GameCategories.ts:590
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L590
+
+- **The empty object is useless.**
+  apps/score-tracker/frontend/helpers/GameCategories.ts:225
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameCategories.ts#L225
 
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
   apps/score-tracker/frontend/helpers/GameRules.ts:486
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L486
 
 - **The empty object is useless.**
-  apps/score-tracker/frontend/store/gameSlice.ts:285
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L285
+  apps/score-tracker/frontend/store/gameSlice.ts:305
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L305
 
 - **Remove this unused import of 'GameStatus'.**
   apps/score-tracker/frontend/store/gameSlice.ts:3
