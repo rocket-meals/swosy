@@ -153,6 +153,7 @@ export const ComponentIds = {
 	GAME_CATEGORY_OPTION_IMAGE_REMOVE_ROW: 'game-category-option-image-remove-row',
 	GAME_CATEGORY_COMPUTED_TOGGLE: 'game-category-computed-toggle',
 	GAME_CATEGORY_DELETE_BUTTON: 'game-category-delete-button',
+	GAME_CATEGORY_RESET_BUTTON: 'game-category-reset-button',
 	GAME_CATEGORY_ID_ROW: 'game-category-id-row',
 	GAME_DETAIL_TRACK_SCORES_ROW: 'game-detail-track-scores-row',
 	GAMES_IMPORT_LOAD_MANSIONS_ROW: 'games-import-load-mansions-row',

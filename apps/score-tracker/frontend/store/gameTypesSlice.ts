@@ -236,6 +236,18 @@ const gameTypesSlice = createSlice({
 			if (category) category.computed = action.payload.computed;
 		},
 
+		/**
+		 * Overwrite a category with an earlier snapshot of itself (same id, kept
+		 * in place) - the category editor's "Änderungen zurücksetzen", which
+		 * restores the state from when the editor was opened.
+		 */
+		replaceGameCategory(state, action: PayloadAction<{ gameTypeId: string; category: GameCategory }>) {
+			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
+			if (!gameType?.categories) return;
+			const index = gameType.categories.findIndex((c) => c.id === action.payload.category.id);
+			if (index !== -1) gameType.categories[index] = action.payload.category;
+		},
+
 		/** Move a category one position up/down in the list. No-op at either edge. */
 		moveGameCategory(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; direction: 'up' | 'down' }>) {
 			const gameType = state.gameTypes.find((g) => g.id === action.payload.gameTypeId);
@@ -344,6 +356,7 @@ export const {
 	setGameCategoryType,
 	setGameCategoryScope,
 	setGameCategoryComputed,
+	replaceGameCategory,
 	moveGameCategory,
 	removeGameCategory,
 	addGameCategoryOption,

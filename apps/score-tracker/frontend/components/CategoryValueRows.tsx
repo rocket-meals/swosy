@@ -61,9 +61,14 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 	return 'middle';
 }
 
-/** Round thumbnail of an enum option's uploaded picture (see `GameCategoryOption.imageBase64`). */
-export function EnumOptionImage({ imageBase64, size = 28 }: Readonly<{ imageBase64: string; size?: number }>) {
-	return <Image source={{ uri: imageBase64 }} style={{ width: size, height: size, borderRadius: size / 2 }} resizeMode="cover" />;
+/**
+ * Thumbnail of an enum option's uploaded picture (see
+ * `GameCategoryOption.imageBase64`). The default size/radius matches the
+ * settings rows' 34pt icon wrapper exactly, so the picture fills the whole
+ * icon instead of floating small inside it.
+ */
+export function EnumOptionImage({ imageBase64, size = 34 }: Readonly<{ imageBase64: string; size?: number }>) {
+	return <Image source={{ uri: imageBase64 }} style={{ width: size, height: size, borderRadius: 8 }} resizeMode="cover" />;
 }
 
 // ─── Enum option raw data (shared "Rohdaten" row) ─────────────────────────────

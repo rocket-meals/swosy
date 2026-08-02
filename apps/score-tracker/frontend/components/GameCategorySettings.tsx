@@ -18,6 +18,7 @@ import {
 	removeGameCategoryOption,
 	renameGameCategory,
 	renameGameCategoryOption,
+	replaceGameCategory,
 	setGameCategoryComputed,
 	setGameCategoryOptionImage,
 	setGameCategoryScope,
@@ -33,6 +34,7 @@ import {
 	GAME_CATEGORY_TYPES,
 	GAME_CATEGORY_TYPE_HINTS,
 	GAME_CATEGORY_TYPE_LABELS,
+	cloneGameCategories,
 	durationSourceCandidates,
 	isComputedCategory,
 } from '../helpers/GameCategories';
@@ -42,6 +44,7 @@ import { categoryTypeIcon, EnumOptionImage, EnumOptionsRawDataRow } from './Cate
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
 const NEUTRAL_COLOR = '#6b7280';
+const WARNING_COLOR = '#f59e0b';
 const DEBUG_COLOR = '#7c3aed';
 
 function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bottom' | 'single' {
@@ -204,14 +207,26 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 					key={option.id}
 					label={option.label}
 					value=""
-					leftIcon={
-						option.imageBase64 ? (
-							<EnumOptionImage imageBase64={option.imageBase64} />
-						) : (
-							<MaterialCommunityIcons name="format-list-bulleted" size={20} color="#ffffff" />
-						)
+					// Tapping the icon on the LEFT manages the option's picture -
+					// deliberately far away from the delete button on the right.
+					// Without a picture it shows the image icon as an upload hint;
+					// with one, the picture fills the whole icon.
+					leftIconComponent={
+						<TouchableOpacity
+							nativeID={`${ComponentIds.GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX}${option.id}`}
+							onPress={() => handleOpenImageModal(option.id, option.label)}
+							hitSlop={6}
+							style={styles.optionIconButton}
+						>
+							{option.imageBase64 ? (
+								<EnumOptionImage imageBase64={option.imageBase64} />
+							) : (
+								<View style={styles.optionIconFallback}>
+									<Ionicons name="image-outline" size={20} color="#ffffff" />
+								</View>
+							)}
+						</TouchableOpacity>
 					}
-					iconBgColor={option.imageBase64 ? '#ffffff' : PRIMARY_COLOR}
 					modalTitle="Option"
 					placeholder="Name der Option"
 					saveLabel="Übernehmen"
@@ -220,21 +235,12 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 						dispatch(renameGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id, label }));
 					}}
 					rightElement={
-						<View style={styles.optionActions}>
-							<TouchableOpacity
-								nativeID={`${ComponentIds.GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX}${option.id}`}
-								onPress={() => handleOpenImageModal(option.id, option.label)}
-								hitSlop={8}
-							>
-								<Ionicons name="image-outline" size={20} color={option.imageBase64 ? PRIMARY_COLOR : NEUTRAL_COLOR} />
-							</TouchableOpacity>
-							<TouchableOpacity
-								onPress={() => dispatch(removeGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id }))}
-								hitSlop={8}
-							>
-								<Ionicons name="trash-outline" size={20} color={DANGER_COLOR} />
-							</TouchableOpacity>
-						</View>
+						<TouchableOpacity
+							onPress={() => dispatch(removeGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id }))}
+							hitSlop={8}
+						>
+							<Ionicons name="trash-outline" size={20} color={DANGER_COLOR} />
+						</TouchableOpacity>
 					}
 					groupPosition={index === 0 ? 'top' : 'middle'}
 				/>
@@ -381,6 +387,19 @@ export function GameCategoryEditorContent({
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 	const category = categories.find((c) => c.id === categoryId);
 
+	// Deep snapshot of the category as this editor was opened - the
+	// "Änderungen zurücksetzen" row at the bottom restores exactly this state
+	// (e.g. after an accidental tap on an option's delete button).
+	const [initialCategory] = useState<GameCategory | null>(() => (category ? cloneGameCategories([category])?.[0] ?? null : null));
+
+	const handleResetChanges = useCallback(() => {
+		if (!initialCategory) return;
+		// Clone again on every reset, so the snapshot stays untouched by the
+		// store and can be restored more than once.
+		const snapshot = cloneGameCategories([initialCategory])?.[0];
+		if (snapshot) dispatch(replaceGameCategory({ gameTypeId, category: snapshot }));
+	}, [dispatch, gameTypeId, initialCategory]);
+
 	if (!category) return null;
 
 	return (
@@ -480,6 +499,19 @@ export function GameCategoryEditorContent({
 				}}
 				groupPosition="single"
 			/>
+
+			{initialCategory && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_CATEGORY_RESET_BUTTON}
+					label="Änderungen zurücksetzen"
+					value="Stellt den Stand beim Öffnen dieses Dialogs wieder her - z.B. nach einem versehentlichen Löschen einer Option"
+					stackedValue
+					leftIcon={<Ionicons name="arrow-undo-outline" size={20} color="#ffffff" />}
+					iconBgColor={WARNING_COLOR}
+					handleFunction={handleResetChanges}
+					groupPosition="single"
+				/>
+			)}
 		</View>
 	);
 }
@@ -602,9 +634,17 @@ const styles = StyleSheet.create({
 	reorderButton: {
 		padding: 2,
 	},
-	optionActions: {
-		flexDirection: 'row',
+	// Mirrors SettingsList's 34pt icon wrapper (radius 8, 10pt gap to the text),
+	// so the tappable image button sits exactly where the row icon would.
+	optionIconButton: {
+		marginRight: 10,
+	},
+	optionIconFallback: {
+		width: 34,
+		height: 34,
+		borderRadius: 8,
 		alignItems: 'center',
-		gap: 12,
+		justifyContent: 'center',
+		backgroundColor: PRIMARY_COLOR,
 	},
 });
