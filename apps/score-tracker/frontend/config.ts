@@ -13,7 +13,7 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 19;
+	return 20;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
@@ -24,9 +24,13 @@ export function getMajorVersion() {
 	return 0;
 }
 
+export function getVersionPatch() {
+	return 0;
+}
+
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch
 export function getVersion() {
-	return getMajorVersion() + '.' + getBuildNumber() + '.' + 0;
+	return getMajorVersion() + '.' + getBuildNumber() + '.' + getVersionPatch();
 }
 
 export const scoreTrackerConfig: CustomerConfig = {
