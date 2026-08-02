@@ -16,16 +16,18 @@ on:
     types: [completed]
     branches: [master]
 
-# Serialize runs so a manual run and a post-CI run never submit concurrently.
+# Only the newest run per app survives: when several builds are created back to
+# back, a newer run cancels an older one that is still waiting for Apple to
+# process its (now outdated) build - the newest run submits the newest build.
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   submit-for-review:
     name: "🚀 Submit latest build for App Review"
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     # Post-CI trigger only reacts to successful CI runs; manual runs always go.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
@@ -99,5 +101,6 @@ jobs:
           # Post-CI runs skip gracefully when there is nothing to submit
           # and never re-submit versions Apple has rejected.
           IOS_SUBMIT_AUTO: ${{ github.event_name != 'workflow_dispatch' }}
-          # Only the post-CI trigger waits for Apple to finish processing a fresh build.
-          IOS_SUBMIT_MAX_WAIT_MINUTES: ${{ github.event_name == 'workflow_run' && '90' || '0' }}
+          # Only the post-CI trigger waits for Apple to finish processing a fresh build
+          # (up to 120 minutes from build upload until it is submittable).
+          IOS_SUBMIT_MAX_WAIT_MINUTES: ${{ github.event_name == 'workflow_run' && '120' || '0' }}

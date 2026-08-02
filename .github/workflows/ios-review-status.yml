@@ -1,0 +1,108 @@
+name: "🍎 iOS App Review Status"
+
+on:
+  # Daily status check: fails loudly when Apple rejected a version, succeeds with a
+  # hint when an approved version waits for its manual release, and is a quiet
+  # no-op otherwise.
+  schedule:
+    - cron: '30 5 * * *'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  check-review-status:
+    name: "🔍 Check App Review Status: ${{ matrix.app }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Rocket Meals: bundle id depends on the repository (tenant forks build
+          # their own app), resolved from the customer config below.
+          - app: "Rocket Meals"
+            upstream_only: false
+          - app: "Geonexia"
+            bundle_id: de.baumgartner-software.geonexia
+            upstream_only: true
+          - app: "Score Tracker"
+            bundle_id: de.baumgartner-software.score-tracker
+            upstream_only: true
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      # Geonexia and Score Tracker only exist in the upstream repository, and forks
+      # (tenant repositories) may not have the App Store Connect key configured -
+      # in both cases skip quietly instead of failing every day.
+      - name: "🔐 Check preconditions"
+        id: guard
+        env:
+          ASC_KEY: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+          UPSTREAM_ONLY: ${{ matrix.upstream_only }}
+        run: |
+          if [ "$UPSTREAM_ONLY" = "true" ] && [ "${{ github.repository }}" != "rocket-meals/rocket-meals" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ ${{ matrix.app }} wird nur im Upstream-Repository geprüft - übersprungen."
+          elif [ -z "$ASC_KEY" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT ist nicht gesetzt - übersprungen."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "⚙️ Setup Node.js"
+        if: steps.guard.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn v2"
+        if: steps.guard.outputs.available == 'true'
+        run: corepack enable
+
+      - name: "📦 Install dependencies"
+        if: steps.guard.outputs.available == 'true'
+        # --mode=skip-build disables dependency lifecycle scripts (supply-chain hardening);
+        # the status script only needs ts-node/typescript, which require no build step.
+        run: yarn install --immutable --mode=skip-build
+
+      - name: "🔐 Prepare Apple App Store Connect API key"
+        if: steps.guard.outputs.available == 'true'
+        uses: ./.github/actions/prepare-asc-api-key
+        with:
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+
+      - name: "🏷️ Resolve customer from repository name"
+        if: steps.guard.outputs.available == 'true' && matrix.bundle_id == ''
+        run: bash scripts/customer-config.sh >> "$GITHUB_ENV"
+
+      - name: "📱 Resolve iOS bundle identifier"
+        if: steps.guard.outputs.available == 'true'
+        working-directory: ./apps/frontend/app
+        env:
+          MATRIX_BUNDLE_ID: ${{ matrix.bundle_id }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$MATRIX_BUNDLE_ID" ]; then
+            BUNDLE_ID="$MATRIX_BUNDLE_ID"
+          else
+            BUNDLE_ID=$(node - <<'EOF'
+          require('ts-node').register({
+            transpileOnly: true,
+            compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
+          });
+          const { getCustomerConfig } = require('./config.ts');
+          console.log(getCustomerConfig().bundleIdIos);
+          EOF
+          )
+          fi
+          echo "IOS_BUNDLE_ID=${BUNDLE_ID}" >> "$GITHUB_ENV"
+
+      - name: "🔍 Check App Review status"
+        if: steps.guard.outputs.available == 'true'
+        run: yarn workspace rocket-meals-scripts check:ios:review-status
