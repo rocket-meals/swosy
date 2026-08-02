@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 35 | 35 |
+| 🔧 Maintainability | 34 | 34 |
 
-**Total issues:** 43
+**Total issues:** 42
 
 ---
 
@@ -48,7 +48,7 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (35/35)
+## 🔧 Maintainability (34/34)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -90,25 +90,21 @@
   apps/score-tracker/frontend/app/games/[id].tsx:88
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L88
 
-- **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/app/index.tsx:304
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L304
-
 - **Remove this unused import of 'resetAll'.**
-  apps/score-tracker/frontend/app/index.tsx:48
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L48
+  apps/score-tracker/frontend/app/index.tsx:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L49
 
 - **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/index.tsx:1261
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1261
+  apps/score-tracker/frontend/app/index.tsx:1310
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1310
 
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/index.tsx:1280
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1280
+  apps/score-tracker/frontend/app/index.tsx:1329
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1329
 
 - **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/index.tsx:1265
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1265
+  apps/score-tracker/frontend/app/index.tsx:1314
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1314
 
 - **Replace this union type with a type alias.**
   apps/score-tracker/frontend/components/CategoryValueRows.tsx:57
@@ -155,8 +151,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/GameRules.ts#L486
 
 - **The empty object is useless.**
-  apps/score-tracker/frontend/store/gameSlice.ts:305
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L305
+  apps/score-tracker/frontend/store/gameSlice.ts:318
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/gameSlice.ts#L318
 
 - **Remove this unused import of 'GameStatus'.**
   apps/score-tracker/frontend/store/gameSlice.ts:3
