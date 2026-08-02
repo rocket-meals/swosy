@@ -2,6 +2,7 @@ import { getStorageItem, setStorageItem } from 'repo-depkit-common-ui';
 import type { PlayerIdentity } from './PlayerIdentity';
 import type { GameCategoryValues } from './GameCategories';
 import type { GameState, Round } from './GameStorage';
+import { durationMinutesBetween } from './MatchTimes';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -14,7 +15,11 @@ export type GameHistoryPlayerEntry = PlayerIdentity & {
 
 export type GameHistoryEntry = {
 	id: string;
+	/** When the match was started - stamped by `startGame`. Absent on entries from before start tracking existed. */
+	startedAt?: number;
 	endedAt: number;
+	/** Minutes between `startedAt` and `endedAt`, stored at archive time (see helpers/MatchTimes). */
+	durationMinutes?: number;
 	roundsCount: number;
 	players: GameHistoryPlayerEntry[];
 	/** Final total score per player, keyed by `GameHistoryPlayerEntry.playerId`. */
@@ -78,7 +83,9 @@ export function buildHistoryEntry(game: GameState, params: { id: string; endedAt
 
 	return {
 		id: params.id,
+		startedAt: game.startedAt,
 		endedAt: params.endedAt,
+		durationMinutes: durationMinutesBetween(game.startedAt, params.endedAt) ?? undefined,
 		roundsCount: game.rounds.length,
 		players: game.players.map((player) => ({
 			playerId: player.id,

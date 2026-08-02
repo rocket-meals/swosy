@@ -23,7 +23,9 @@ const initialState: GameSliceState = {
 	matchId: undefined,
 	gameTypeId: undefined,
 	playerOrderState: undefined,
+	startedAt: undefined,
 	endedAt: undefined,
+	durationMinutes: undefined,
 	categoryValues: {},
 	playerCategoryValues: {},
 };
@@ -58,7 +60,9 @@ const gameSlice = createSlice({
 				matchId: action.payload.matchId,
 				gameTypeId: action.payload.gameTypeId,
 				playerOrderState: action.payload.playerOrderState,
+				startedAt: action.payload.startedAt,
 				endedAt: action.payload.endedAt,
+				durationMinutes: action.payload.durationMinutes,
 				categoryValues: action.payload.categoryValues ?? {},
 				playerCategoryValues: action.payload.playerCategoryValues ?? {},
 			};
@@ -211,6 +215,15 @@ const gameSlice = createSlice({
 		},
 
 		/**
+		 * Correct the automatically stamped start time of the running match by
+		 * hand (see helpers/MatchTimes). `null` clears it - such a match simply
+		 * has no recorded start and thus no duration.
+		 */
+		setStartedAt(state, action: PayloadAction<number | null>) {
+			state.startedAt = action.payload ?? undefined;
+		},
+
+		/**
 		 * Leave the setup phase and start the match. Round 1 always starts with
 		 * the first seat.
 		 *
@@ -229,7 +242,12 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = 0;
 			state.matchId = generateId();
 			state.playerOrderState = undefined;
+			// Built-in start tracking (see helpers/MatchTimes): pressing "Spiel
+			// starten" stamps the start; the end is stamped when the match is
+			// ended and the duration derived from the two.
+			state.startedAt = Date.now();
 			state.endedAt = undefined;
+			state.durationMinutes = undefined;
 		},
 
 		/**
@@ -281,7 +299,9 @@ const gameSlice = createSlice({
 				matchId: entry.id,
 				gameTypeId: entry.gameTypeId,
 				playerOrderState: undefined,
+				startedAt: entry.startedAt,
 				endedAt: entry.endedAt,
+				durationMinutes: entry.durationMinutes,
 				categoryValues: { ...(entry.categoryValues ?? {}) },
 				playerCategoryValues,
 			};
@@ -296,7 +316,10 @@ const gameSlice = createSlice({
 		reopenMatch(state) {
 			if (state.status !== 'finished') return;
 			state.status = 'active';
+			// The start stays - re-ending the match stamps a fresh end and
+			// recomputes the duration from the original start.
 			state.endedAt = undefined;
+			state.durationMinutes = undefined;
 		},
 
 		/** Move to the previous round (view/edit its scores). No-op at round 1. */
@@ -342,7 +365,9 @@ const gameSlice = createSlice({
 			state.currentRoundIndex = 0;
 			state.matchId = undefined;
 			state.playerOrderState = undefined;
+			state.startedAt = undefined;
 			state.endedAt = undefined;
+			state.durationMinutes = undefined;
 			state.categoryValues = {};
 			state.playerCategoryValues = {};
 		},
@@ -356,7 +381,9 @@ const gameSlice = createSlice({
 				currentRoundIndex: 0,
 				matchId: undefined,
 				gameTypeId: undefined,
+				startedAt: undefined,
 				endedAt: undefined,
+				durationMinutes: undefined,
 				categoryValues: {},
 				playerCategoryValues: {},
 			};
@@ -411,6 +438,7 @@ export const {
 	setGameType,
 	loadMatch,
 	reopenMatch,
+	setStartedAt,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,

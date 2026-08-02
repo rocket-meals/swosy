@@ -10,6 +10,7 @@ import type {
 	MatchSort,
 } from '../helpers/GameCategories';
 import { GAME_CATEGORY_SCOPE_LABELS, filterKindForType } from '../helpers/GameCategories';
+import { BUILTIN_DURATION_SORT_ID } from '../helpers/MatchTimes';
 import { ComponentIds } from '../constants/ComponentIds';
 import { CategoryValueRow } from './CategoryValueRows';
 
@@ -76,10 +77,12 @@ function BooleanFilterChips({
 	filter,
 	onChange,
 }: Readonly<{ category: GameCategory; filter: CategoryFilter | undefined; onChange: (filter: CategoryFilter | undefined) => void }>) {
-	const value = filter?.kind === 'boolean' ? filter.value : null;
+	// `undefined` = no filter at all; `null` = filter for "keine Angabe"
+	// (booleans are tri-state, see GameCategories).
+	const value = filter?.kind === 'boolean' ? filter.value : undefined;
 	return (
 		<View style={styles.chipRow}>
-			<Chip label="Alle" isActive={value === null} onPress={() => onChange(undefined)} />
+			<Chip label="Alle" isActive={value === undefined} onPress={() => onChange(undefined)} />
 			<Chip
 				nativeID={`${ComponentIds.GAME_DETAIL_FILTER_CHIP_PREFIX}${category.id}-yes`}
 				label="Ja"
@@ -91,6 +94,12 @@ function BooleanFilterChips({
 				label="Nein"
 				isActive={value === false}
 				onPress={() => onChange(value === false ? undefined : { kind: 'boolean', value: false })}
+			/>
+			<Chip
+				nativeID={`${ComponentIds.GAME_DETAIL_FILTER_CHIP_PREFIX}${category.id}-unset`}
+				label="Keine Angabe"
+				isActive={value === null}
+				onPress={() => onChange(value === null ? undefined : { kind: 'boolean', value: null })}
 			/>
 		</View>
 	);
@@ -230,6 +239,13 @@ export default function MatchFilterSort({
 					label="Datum"
 					isActive={sort.categoryId === null}
 					onPress={() => onSortChange({ ...sort, categoryId: null })}
+				/>
+				{/* Built-in duration of every match (see helpers/MatchTimes). */}
+				<Chip
+					nativeID={`${ComponentIds.GAME_DETAIL_SORT_CHIP_PREFIX}duration`}
+					label="Dauer"
+					isActive={sort.categoryId === BUILTIN_DURATION_SORT_ID}
+					onPress={() => onSortChange({ ...sort, categoryId: BUILTIN_DURATION_SORT_ID })}
 				/>
 				{sortableCategories.map((category) => (
 					<Chip

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -19,9 +19,12 @@ import {
 	renameGameCategory,
 	renameGameCategoryOption,
 	setGameCategoryComputed,
+	setGameCategoryOptionImage,
 	setGameCategoryScope,
 	setGameCategoryType,
 } from '../store/gameTypesSlice';
+import { ImagePickerUnavailableError, describeImageSize, pickGameImageAsDataUri } from '../helpers/GameImageUpload';
+import type { PickImageSource } from '../helpers/GameImageUpload';
 import type { AppDispatch, RootState } from '../store/store';
 import type { GameCategory, GameCategoryScope, GameCategoryType } from '../helpers/GameCategories';
 import {
@@ -34,7 +37,7 @@ import {
 	isComputedCategory,
 } from '../helpers/GameCategories';
 import { ComponentIds } from '../constants/ComponentIds';
-import { categoryTypeIcon, EnumOptionsRawDataRow } from './CategoryValueRows';
+import { categoryTypeIcon, EnumOptionImage, EnumOptionsRawDataRow } from './CategoryValueRows';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -88,11 +91,110 @@ function DurationSourceContent({
 	);
 }
 
+// ─── Enum option image (nested modal content, live-updating) ──────────────────
+//
+// Each enum option can carry its own small picture (e.g. the portrait of a
+// "Villen des Wahnsinns" investigator), stored inline as base64 like the
+// game's own uploaded image - see `GameCategoryOption.imageBase64`.
+
+function EnumOptionImageContent({
+	gameTypeId,
+	categoryId,
+	optionId,
+	onDone,
+}: Readonly<{ gameTypeId: string; categoryId: string; optionId: string; onDone: () => void }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const option = useSelector((state: RootState) =>
+		state.gameTypes.gameTypes
+			.find((g) => g.id === gameTypeId)
+			?.categories?.find((c) => c.id === categoryId)
+			?.options?.find((o) => o.id === optionId),
+	);
+	const [isUploading, setIsUploading] = useState(false);
+	const [uploadError, setUploadError] = useState<string | null>(null);
+
+	const handlePick = useCallback(
+		async (source: PickImageSource) => {
+			setUploadError(null);
+			setIsUploading(true);
+			try {
+				const dataUri = await pickGameImageAsDataUri(source);
+				if (dataUri) {
+					dispatch(setGameCategoryOptionImage({ gameTypeId, categoryId, optionId, imageBase64: dataUri }));
+					onDone();
+				}
+			} catch (err) {
+				console.warn('[GameCategorySettings] option image failed:', err);
+				setUploadError(err instanceof ImagePickerUnavailableError ? err.message : 'Das Bild konnte nicht übernommen werden.');
+			} finally {
+				setIsUploading(false);
+			}
+		},
+		[dispatch, gameTypeId, categoryId, optionId, onDone],
+	);
+
+	if (!option) return null;
+	const imageBase64 = option.imageBase64 ?? null;
+
+	return (
+		<View style={styles.modalContent}>
+			<SettingsList
+				nativeID={ComponentIds.GAME_CATEGORY_OPTION_IMAGE_PICK_ROW}
+				label="Bild auswählen"
+				value={
+					imageBase64
+						? `Eigenes Bild gespeichert (${describeImageSize(imageBase64)})`
+						: 'Aus der Galerie, wird verkleinert gespeichert'
+				}
+				stackedValue
+				leftIcon={imageBase64 ? <EnumOptionImage imageBase64={imageBase64} /> : <Ionicons name="image-outline" size={20} color="#ffffff" />}
+				iconBgColor={imageBase64 ? '#ffffff' : PRIMARY_COLOR}
+				rightElement={isUploading ? <ActivityIndicator size="small" color={PRIMARY_COLOR} /> : undefined}
+				handleFunction={isUploading ? undefined : () => handlePick('library')}
+				groupPosition="top"
+			/>
+			<SettingsList
+				nativeID={ComponentIds.GAME_CATEGORY_OPTION_IMAGE_CAMERA_ROW}
+				label="Foto aufnehmen"
+				leftIcon={<Ionicons name="camera-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={isUploading ? undefined : () => handlePick('camera')}
+				groupPosition={imageBase64 ? 'middle' : 'bottom'}
+			/>
+			{imageBase64 && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_CATEGORY_OPTION_IMAGE_REMOVE_ROW}
+					label="Bild entfernen"
+					leftIcon={<Ionicons name="close-circle-outline" size={20} color="#ffffff" />}
+					iconBgColor={DANGER_COLOR}
+					handleFunction={() => {
+						dispatch(setGameCategoryOptionImage({ gameTypeId, categoryId, optionId, imageBase64: null }));
+						onDone();
+					}}
+					groupPosition="bottom"
+				/>
+			)}
+			{uploadError !== null && <Text style={[styles.hint, { color: DANGER_COLOR }]}>{uploadError}</Text>}
+		</View>
+	);
+}
+
 // ─── Enum option list (part of the editor modal) ──────────────────────────────
 
 function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: string; category: GameCategory }>) {
 	const dispatch = useDispatch<AppDispatch>();
+	const { show, close } = useMyScrollViewModal();
 	const options = category.options ?? [];
+
+	const handleOpenImageModal = useCallback(
+		(optionId: string, optionLabel: string) => {
+			show({
+				title: `Bild: ${optionLabel}`,
+				children: <EnumOptionImageContent gameTypeId={gameTypeId} categoryId={category.id} optionId={optionId} onDone={close} />,
+			});
+		},
+		[show, close, gameTypeId, category.id],
+	);
 
 	return (
 		<>
@@ -102,8 +204,14 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 					key={option.id}
 					label={option.label}
 					value=""
-					leftIcon={<MaterialCommunityIcons name="format-list-bulleted" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
+					leftIcon={
+						option.imageBase64 ? (
+							<EnumOptionImage imageBase64={option.imageBase64} />
+						) : (
+							<MaterialCommunityIcons name="format-list-bulleted" size={20} color="#ffffff" />
+						)
+					}
+					iconBgColor={option.imageBase64 ? '#ffffff' : PRIMARY_COLOR}
 					modalTitle="Option"
 					placeholder="Name der Option"
 					saveLabel="Übernehmen"
@@ -112,12 +220,21 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 						dispatch(renameGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id, label }));
 					}}
 					rightElement={
-						<TouchableOpacity
-							onPress={() => dispatch(removeGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id }))}
-							hitSlop={8}
-						>
-							<Ionicons name="trash-outline" size={20} color={DANGER_COLOR} />
-						</TouchableOpacity>
+						<View style={styles.optionActions}>
+							<TouchableOpacity
+								nativeID={`${ComponentIds.GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX}${option.id}`}
+								onPress={() => handleOpenImageModal(option.id, option.label)}
+								hitSlop={8}
+							>
+								<Ionicons name="image-outline" size={20} color={option.imageBase64 ? PRIMARY_COLOR : NEUTRAL_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => dispatch(removeGameCategoryOption({ gameTypeId, categoryId: category.id, optionId: option.id }))}
+								hitSlop={8}
+							>
+								<Ionicons name="trash-outline" size={20} color={DANGER_COLOR} />
+							</TouchableOpacity>
+						</View>
 					}
 					groupPosition={index === 0 ? 'top' : 'middle'}
 				/>
@@ -484,5 +601,10 @@ const styles = StyleSheet.create({
 	},
 	reorderButton: {
 		padding: 2,
+	},
+	optionActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
 	},
 });

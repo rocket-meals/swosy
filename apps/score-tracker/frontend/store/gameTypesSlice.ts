@@ -25,10 +25,10 @@ function findCategory(state: GameTypesSliceState, gameTypeId: string, categoryId
 }
 
 /** Starting options of a freshly created `enum` category - the most common win/loss pair. */
-function defaultEnumOptions(): { id: string; label: string }[] {
+function defaultEnumOptions(): GameCategoryOption[] {
 	return [
-		{ id: generateId(), label: 'Gewonnen' },
-		{ id: generateId(), label: 'Verloren' },
+		{ id: generateId(), label: 'Gewonnen', imageBase64: null },
+		{ id: generateId(), label: 'Verloren', imageBase64: null },
 	];
 }
 
@@ -263,7 +263,7 @@ const gameTypesSlice = createSlice({
 		},
 
 		addGameCategoryOption: {
-			reducer(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; option: { id: string; label: string } }>) {
+			reducer(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; option: GameCategoryOption }>) {
 				const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
 				if (!category) return;
 				if (!category.options) category.options = [];
@@ -274,7 +274,7 @@ const gameTypesSlice = createSlice({
 					payload: {
 						gameTypeId: params.gameTypeId,
 						categoryId: params.categoryId,
-						option: { id: generateId(), label: params.label },
+						option: { id: generateId(), label: params.label, imageBase64: null } as GameCategoryOption,
 					},
 				};
 			},
@@ -301,6 +301,16 @@ const gameTypesSlice = createSlice({
 			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
 			const option = category?.options?.find((o) => o.id === action.payload.optionId);
 			if (option) option.label = action.payload.label;
+		},
+
+		/** Set (or clear, with `null`) an enum option's picture (a base64 `data:` URI, see GameImageUpload). */
+		setGameCategoryOptionImage(
+			state,
+			action: PayloadAction<{ gameTypeId: string; categoryId: string; optionId: string; imageBase64: string | null }>,
+		) {
+			const category = findCategory(state, action.payload.gameTypeId, action.payload.categoryId);
+			const option = category?.options?.find((o) => o.id === action.payload.optionId);
+			if (option) option.imageBase64 = action.payload.imageBase64;
 		},
 
 		removeGameCategoryOption(state, action: PayloadAction<{ gameTypeId: string; categoryId: string; optionId: string }>) {
@@ -339,6 +349,7 @@ export const {
 	addGameCategoryOption,
 	setGameCategoryOptions,
 	renameGameCategoryOption,
+	setGameCategoryOptionImage,
 	removeGameCategoryOption,
 	updateGameTypeFromPreset,
 	removeGameType,

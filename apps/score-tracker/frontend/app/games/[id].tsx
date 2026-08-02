@@ -44,10 +44,12 @@ import {
 	DEFAULT_MATCH_SORT,
 	compareCategoryValues,
 	formatCategoryValue,
+	formatDuration,
 	matchPassesFilters,
 	resolveCategoryValues,
 	summarizeCategoryValues,
 } from '../../helpers/GameCategories';
+import { BUILTIN_DURATION_SORT_ID } from '../../helpers/MatchTimes';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
@@ -77,7 +79,9 @@ function getGroupPosition(index: number, total: number): 'top' | 'middle' | 'bot
 /** Summary line of the "Sortieren & filtern" row, e.g. `Dauer ↑ · 2 Filter aktiv`. */
 function describeSortAndFilters(categories: GameCategory[], sort: MatchSort, filters: CategoryFilters): string {
 	const sortCategory = sort.categoryId ? categories.find((c) => c.id === sort.categoryId) : undefined;
-	const sortName = sortCategory ? sortCategory.name : 'Datum';
+	let sortName = 'Datum';
+	if (sort.categoryId === BUILTIN_DURATION_SORT_ID) sortName = 'Dauer';
+	else if (sortCategory) sortName = sortCategory.name;
 	const arrow = sort.direction === 'asc' ? '↑' : '↓';
 	const activeFilters = Object.keys(filters).length;
 	if (activeFilters === 0) return `${sortName} ${arrow}`;
@@ -89,7 +93,14 @@ function describeSortAndFilters(categories: GameCategory[], sort: MatchSort, fil
  * scored) plus whatever the game's own match categories recorded.
  */
 function describeMatchRow(
-	match: Readonly<{ winnerName?: string; winnerScore: number; roundsCount: number; players: unknown[]; categorySummary: string }>,
+	match: Readonly<{
+		winnerName?: string;
+		winnerScore: number;
+		roundsCount: number;
+		players: unknown[];
+		categorySummary: string;
+		durationMinutes?: number;
+	}>,
 	trackScores: boolean,
 ): string {
 	const parts: string[] = [];
@@ -101,6 +112,7 @@ function describeMatchRow(
 	} else {
 		parts.push(match.players.length === 1 ? '1 Spieler' : `${match.players.length} Spieler`);
 	}
+	if (match.durationMinutes != null) parts.push(`⏱️ ${formatDuration(match.durationMinutes)}`);
 	if (match.categorySummary) parts.push(match.categorySummary);
 	return parts.join(' · ');
 }
@@ -714,6 +726,7 @@ export default function GameTypeDetailScreen() {
 					entry,
 					isRunning: entry.id === runningMatch?.id,
 					endedAt: entry.endedAt,
+					durationMinutes: entry.durationMinutes,
 					roundsCount: entry.roundsCount,
 					players: entry.players,
 					winnerName: winner ? winner.name : undefined,
@@ -727,6 +740,14 @@ export default function GameTypeDetailScreen() {
 			})
 			.filter((match) => query === '' || matchSearchText(match, categories).includes(query))
 			.sort((a, b) => {
+				// Built-in duration sort: matches without a duration always last.
+				if (matchSort.categoryId === BUILTIN_DURATION_SORT_ID) {
+					if (a.durationMinutes == null && b.durationMinutes == null) return b.endedAt - a.endedAt;
+					if (a.durationMinutes == null) return 1;
+					if (b.durationMinutes == null) return -1;
+					const byDuration = (a.durationMinutes - b.durationMinutes) * directionFactor;
+					return byDuration !== 0 ? byDuration : b.endedAt - a.endedAt;
+				}
 				if (!sortCategory) return (a.endedAt - b.endedAt) * directionFactor;
 				const byCategory = compareCategoryValues(
 					sortCategory,

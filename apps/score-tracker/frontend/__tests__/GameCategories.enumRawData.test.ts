@@ -23,7 +23,7 @@ describe('parseEnumOptionsRawData', () => {
 		const rawData = enumOptionsToRawData(options);
 		// The export leads with the explanatory comment entry for pasted-along AIs.
 		expect((JSON.parse(rawData) as Record<string, unknown>[])[0][ENUM_OPTIONS_RAW_DATA_COMMENT_KEY]).toContain('"+"');
-		expect(parseEnumOptionsRawData(rawData)).toEqual(options);
+		expect(parseEnumOptionsRawData(rawData)).toEqual(options.map((option) => ({ ...option, imageBase64: null })));
 	});
 
 	it('treats "id": "+" as "create new" and generates distinct ids (Directus-style)', () => {
@@ -54,8 +54,25 @@ describe('parseEnumOptionsRawData', () => {
 
 	it('mixes kept and new entries, as pasted back after asking an AI to extend the list', () => {
 		const parsed = parseEnumOptionsRawData('[{"id": "opt-won", "label": "Gewonnen"}, "Unentschieden"]');
-		expect(parsed?.[0]).toEqual({ id: 'opt-won', label: 'Gewonnen' });
+		expect(parsed?.[0]).toEqual({ id: 'opt-won', label: 'Gewonnen', imageBase64: null });
 		expect(parsed?.[1].label).toBe('Unentschieden');
+	});
+
+	it('keeps an option image and inherits the stored one for id-keeping entries without the field', () => {
+		const current = [{ id: 'inv-1', label: 'Agatha Crane', imageBase64: 'data:image/jpeg;base64,AAAA' }];
+		const parsed = parseEnumOptionsRawData(
+			'[{"id": "inv-1", "label": "Agatha"}, {"id": "+", "label": "Rita", "imageBase64": "data:image/jpeg;base64,BBBB"}]',
+			current,
+		);
+		// Text-only edit of an exported list must not wipe the uploaded picture.
+		expect(parsed?.[0]).toEqual({ id: 'inv-1', label: 'Agatha', imageBase64: 'data:image/jpeg;base64,AAAA' });
+		expect(parsed?.[1].imageBase64).toBe('data:image/jpeg;base64,BBBB');
+	});
+
+	it('clears a stored image when the pasted entry explicitly nulls it', () => {
+		const current = [{ id: 'inv-1', label: 'Agatha Crane', imageBase64: 'data:image/jpeg;base64,AAAA' }];
+		const parsed = parseEnumOptionsRawData('[{"id": "inv-1", "label": "Agatha Crane", "imageBase64": null}]', current);
+		expect(parsed?.[0].imageBase64).toBeNull();
 	});
 
 	it('trims labels', () => {

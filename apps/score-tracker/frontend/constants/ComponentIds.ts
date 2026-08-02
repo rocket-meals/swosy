@@ -29,6 +29,11 @@ export const ComponentIds = {
 	GAME_FINISHED_BANNER: 'game-finished-banner',
 	GAME_FINISHED_VIEW_BANNER: 'game-finished-view-banner',
 
+	// Built-in match times (see helpers/MatchTimes)
+	GAME_MATCH_STARTED_AT_ROW: 'game-match-started-at-row',
+	GAME_MATCH_ENDED_AT_ROW: 'game-match-ended-at-row',
+	GAME_MATCH_DURATION_ROW: 'game-match-duration-row',
+
 	// Setup phase (round 0)
 	GAME_START_BUTTON: 'game-start-button',
 	GAME_SETUP_GAME_TYPE_ROW: 'game-setup-game-type-row',
@@ -142,6 +147,10 @@ export const ComponentIds = {
 	GAME_CATEGORY_TYPE_ROW_PREFIX: 'game-category-type-row-',
 	GAME_CATEGORY_SCOPE_ROW_PREFIX: 'game-category-scope-row-',
 	GAME_CATEGORY_ADD_OPTION_ROW: 'game-category-add-option-row',
+	GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX: 'game-category-option-image-button-',
+	GAME_CATEGORY_OPTION_IMAGE_PICK_ROW: 'game-category-option-image-pick-row',
+	GAME_CATEGORY_OPTION_IMAGE_CAMERA_ROW: 'game-category-option-image-camera-row',
+	GAME_CATEGORY_OPTION_IMAGE_REMOVE_ROW: 'game-category-option-image-remove-row',
 	GAME_CATEGORY_COMPUTED_TOGGLE: 'game-category-computed-toggle',
 	GAME_CATEGORY_DELETE_BUTTON: 'game-category-delete-button',
 	GAME_CATEGORY_ID_ROW: 'game-category-id-row',

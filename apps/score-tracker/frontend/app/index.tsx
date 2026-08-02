@@ -33,6 +33,7 @@ import {
 	setPlayerAvatar,
 	linkPlayerToFriend,
 	setGameType,
+	setStartedAt,
 	setCategoryValue,
 	setPlayerCategoryValue,
 	movePlayer,
@@ -65,7 +66,8 @@ import CardScoreEntryModal from '../components/CardScoreEntryModal';
 import CategoryValueRows from '../components/CategoryValueRows';
 import { computeNextStartingPlayerIndex } from '../helpers/GameRules';
 import type { GameCategory } from '../helpers/GameCategories';
-import { categoriesForScope, resolveCategoryValues, summarizeCategoryValues } from '../helpers/GameCategories';
+import { categoriesForScope, formatDuration, resolveCategoryValues, summarizeCategoryValues } from '../helpers/GameCategories';
+import { durationMinutesBetween, formatTimestampAsDateTime, parseDateTimeInput } from '../helpers/MatchTimes';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -236,6 +238,78 @@ function ScoreInputContent({
 // the player one is rendered inside a modal, where a closure-captured value
 // would otherwise keep showing whatever was recorded at open-time.
 
+/**
+ * The built-in start/end/duration rows of the running or finished match (see
+ * helpers/MatchTimes) - present for every game, without configuring anything:
+ * the start is stamped when the match starts (and can be corrected here), the
+ * end is stamped when it is ended, and the duration derives from the two.
+ */
+function MatchTimeRows({ readOnly }: Readonly<{ readOnly?: boolean }>) {
+	const dispatch = useDispatch<AppDispatch>();
+	const startedAt = useSelector((state: RootState) => state.game.startedAt);
+	const endedAt = useSelector((state: RootState) => state.game.endedAt);
+	const storedDuration = useSelector((state: RootState) => state.game.durationMinutes);
+
+	// While the match runs, the duration keeps counting from the start; the
+	// archived value is only fixed once the match is ended.
+	const duration = storedDuration ?? durationMinutesBetween(startedAt, endedAt ?? Date.now());
+	const startValue = startedAt != null ? formatTimestampAsDateTime(startedAt) : '—';
+
+	return (
+		<>
+			{readOnly ? (
+				<SettingsList
+					nativeID={ComponentIds.GAME_MATCH_STARTED_AT_ROW}
+					label="Startzeit"
+					value={startValue}
+					leftIcon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
+					iconBgColor="#6b7280"
+					groupPosition="top"
+				/>
+			) : (
+				<SettingsListTextInput
+					nativeID={ComponentIds.GAME_MATCH_STARTED_AT_ROW}
+					label="Startzeit"
+					value={startValue}
+					leftIcon={<Ionicons name="play-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					modalTitle="Startzeit"
+					placeholder="TT.MM.JJJJ HH:MM"
+					keyboardType="numbers-and-punctuation"
+					saveLabel="Übernehmen"
+					initialValue={startedAt != null ? formatTimestampAsDateTime(startedAt) : ''}
+					// An empty input clears the stamped start again; anything else
+					// has to be a real date + time before it can be saved.
+					checkTextInput={(next) => ({ isValid: next.trim() === '' || parseDateTimeInput(next) != null, value: next })}
+					suggestions={[{ key: 'now', value: formatTimestampAsDateTime(Date.now()), label: `Jetzt (${formatTimestampAsDateTime(Date.now())})` }]}
+					onSave={(next) => {
+						dispatch(setStartedAt(parseDateTimeInput(next)));
+					}}
+					groupPosition="top"
+				/>
+			)}
+			{endedAt != null && (
+				<SettingsList
+					nativeID={ComponentIds.GAME_MATCH_ENDED_AT_ROW}
+					label="Endzeit"
+					value={formatTimestampAsDateTime(endedAt)}
+					leftIcon={<Ionicons name="stop-outline" size={20} color="#ffffff" />}
+					iconBgColor={readOnly ? '#6b7280' : PRIMARY_COLOR}
+					groupPosition="middle"
+				/>
+			)}
+			<SettingsList
+				nativeID={ComponentIds.GAME_MATCH_DURATION_ROW}
+				label="Dauer"
+				value={duration != null ? `${formatDuration(duration)}${endedAt == null ? ' (läuft)' : ''}` : 'Wird beim Beenden berechnet'}
+				leftIcon={<Ionicons name="hourglass-outline" size={20} color="#ffffff" />}
+				iconBgColor="#6b7280"
+				groupPosition="bottom"
+			/>
+		</>
+	);
+}
+
 function MatchCategorySection({
 	categories,
 	gameTypeId,
@@ -243,14 +317,19 @@ function MatchCategorySection({
 }: Readonly<{ categories: GameCategory[]; gameTypeId?: string; readOnly?: boolean }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const values = useSelector((state: RootState) => state.game.categoryValues);
+	const status = useSelector((state: RootState) => state.game.status);
 	const matchCategories = useMemo(() => categoriesForScope(categories, 'match'), [categories]);
 	const resolved = useMemo(() => resolveCategoryValues(categories, values), [categories, values]);
 
-	if (matchCategories.length === 0) return null;
+	// The built-in times exist from the moment the match starts - in the setup
+	// phase there is nothing stamped yet.
+	const showTimeRows = status !== 'setup';
+	if (matchCategories.length === 0 && !showTimeRows) return null;
 
 	return (
 		<View style={styles.categorySection}>
 			<SettingsListGroupTitle title="Spielinfos" />
+			{showTimeRows && <MatchTimeRows readOnly={readOnly} />}
 			<CategoryValueRows
 				categories={matchCategories}
 				values={resolved}

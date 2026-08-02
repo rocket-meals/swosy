@@ -22,6 +22,7 @@ import { loadGameState } from '../helpers/GameStorage';
 import { loadFriends } from '../helpers/FriendsStorage';
 import { loadGameTypes } from '../helpers/GameTypesStorage';
 import { loadGameHistory } from '../helpers/GameHistoryStorage';
+import { runBuiltinTimesMigrationOnce } from '../helpers/BuiltinTimesMigration';
 import { loadAppSettings } from '../helpers/AppSettingsStorage';
 import { loadDebugState } from '../helpers/DebugStorage';
 import { installGlobalDebugErrorHandler } from '../helpers/DebugLogger';
@@ -226,19 +227,17 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted friends:', err);
 			});
-		loadGameTypes()
-			.then((gameTypes) => {
-				store.dispatch(loadGameTypesAction(gameTypes));
+		// Game types and history load together: the one-time migration of legacy
+		// time categories into the built-in match times (see
+		// BuiltinTimesMigration) needs both before either is dispatched.
+		Promise.all([loadGameTypes(), loadGameHistory()])
+			.then(async ([gameTypes, entries]) => {
+				const migrated = await runBuiltinTimesMigrationOnce(gameTypes, entries);
+				store.dispatch(loadGameTypesAction(migrated.gameTypes));
+				store.dispatch(loadGameHistoryAction(migrated.entries));
 			})
 			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted game types:', err);
-			});
-		loadGameHistory()
-			.then((entries) => {
-				store.dispatch(loadGameHistoryAction(entries));
-			})
-			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted game history:', err);
+				console.warn('[Layout] Failed to load persisted game types/history:', err);
 			});
 		loadAppSettings()
 			.then((settings) => {

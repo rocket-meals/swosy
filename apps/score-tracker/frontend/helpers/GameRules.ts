@@ -638,10 +638,12 @@ export const FLIP_SEVEN_PRESET: GamePreset = {
 // ─── Built-in "Villen des Wahnsinns" preset ───────────────────────────────────
 //
 // A co-op game that isn't scored with points at all (`trackScores: false`):
-// what's worth recording is when it was played, how long it took, which map
-// was chosen, how it ended - and per investigator whether they went insane.
-// Purely an example of what custom categories can express (see
-// helpers/GameCategories.ts); nothing here is specific to that game in code.
+// what's worth recording is which map was chosen, how it ended - and per
+// investigator whether they went insane. Start, end and duration of a match
+// are built-in fields of every match (see helpers/MatchTimes), so the preset
+// doesn't need time categories at all. Purely an example of what custom
+// categories can express (see helpers/GameCategories.ts); nothing here is
+// specific to that game in code.
 
 export const MANSIONS_OF_MADNESS_PRESET: GamePreset = {
 	name: 'Villen des Wahnsinns',
@@ -653,16 +655,6 @@ export const MANSIONS_OF_MADNESS_PRESET: GamePreset = {
 	rules: null,
 	trackScores: false,
 	categories: [
-		{ id: 'date', name: 'Spieltag', type: 'date', scope: 'match' },
-		{ id: 'startTime', name: 'Startzeit', type: 'time', scope: 'match' },
-		{ id: 'endTime', name: 'Endzeit', type: 'time', scope: 'match' },
-		{
-			id: 'duration',
-			name: 'Dauer',
-			type: 'duration',
-			scope: 'match',
-			computed: { fromCategoryId: 'startTime', toCategoryId: 'endTime' },
-		},
 		{ id: 'map', name: 'Gespielte Karte', type: 'text', scope: 'match' },
 		{
 			id: 'status',

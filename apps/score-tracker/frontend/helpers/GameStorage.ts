@@ -60,8 +60,15 @@ export type GameState = {
 	gameTypeId?: string;
 	/** Numeric state carried between rounds for a `startingPlayerMode: 'custom'` rule (see GameRules). */
 	playerOrderState?: number;
+	/** When the match was started - stamped automatically by `startGame` (see helpers/MatchTimes). */
+	startedAt?: number;
 	/** When the match ended - only set while `status` is `finished` (viewing an archived match). */
 	endedAt?: number;
+	/**
+	 * Minutes between `startedAt` and `endedAt`, stored when the match is
+	 * archived - only set while `status` is `finished` (see helpers/MatchTimes).
+	 */
+	durationMinutes?: number;
 	/** Values of the game type's match-scope categories (see GameCategories), keyed by category id. */
 	categoryValues?: GameCategoryValues;
 	/** Values of the game type's player-scope categories, keyed by player id and then category id. */
@@ -111,7 +118,9 @@ export async function loadGameState(): Promise<GameState> {
 				matchId: parsed.matchId,
 				gameTypeId: parsed.gameTypeId,
 				playerOrderState: parsed.playerOrderState,
+				startedAt: parsed.startedAt,
 				endedAt: parsed.endedAt,
+				durationMinutes: parsed.durationMinutes,
 				categoryValues: parsed.categoryValues ?? {},
 				playerCategoryValues: parsed.playerCategoryValues ?? {},
 			};

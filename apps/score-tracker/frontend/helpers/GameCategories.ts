@@ -32,7 +32,7 @@ export const GAME_CATEGORY_TYPE_LABELS: Record<GameCategoryType, string> = {
 
 export const GAME_CATEGORY_TYPE_HINTS: Record<GameCategoryType, string> = {
 	enum: 'Feste Auswahl, z.B. gewonnen / verloren',
-	boolean: 'Ja oder Nein, z.B. Wahnsinn',
+	boolean: 'Ja, Nein oder keine Angabe, z.B. Wahnsinn',
 	number: 'Freie Zahl, z.B. gefundene Hinweise',
 	date: 'Tagesdatum, z.B. Spieltag',
 	time: 'Uhrzeit, z.B. Startzeit',
@@ -54,6 +54,12 @@ export const GAME_CATEGORY_SCOPE_LABELS: Record<GameCategoryScope, string> = {
 export type GameCategoryOption = {
 	id: string;
 	label: string;
+	/**
+	 * Optional small picture of the option, stored inline as a base64 `data:`
+	 * URI (e.g. the portrait of a "Villen des Wahnsinns" investigator). Scaled
+	 * down before it is stored - see helpers/GameImageUpload.
+	 */
+	imageBase64?: string | null;
 };
 
 /**
@@ -322,7 +328,9 @@ export function compareCategoryValues(
  */
 export type CategoryFilter =
 	| { kind: 'enum'; optionIds: string[] }
-	| { kind: 'boolean'; value: boolean }
+	// Booleans are tri-state (Ja/Nein/keine Angabe): `value: null` filters for
+	// the matches where nothing was recorded.
+	| { kind: 'boolean'; value: boolean | null }
 	| { kind: 'text'; contains: string }
 	| { kind: 'range'; min: GameCategoryValue; max: GameCategoryValue };
 
@@ -366,6 +374,7 @@ export function categoryValuePassesFilter(
 			if (filter.optionIds.length === 0) return true;
 			return typeof value === 'string' && filter.optionIds.includes(value);
 		case 'boolean':
+			if (filter.value === null) return value == null || value === '';
 			return value === filter.value;
 		case 'text': {
 			const needle = filter.contains.trim().toLowerCase();
@@ -438,6 +447,7 @@ function isValidOptionShape(value: unknown): boolean {
 	if (typeof value !== 'object' || value === null) return false;
 	const v = value as Record<string, unknown>;
 	if (typeof v.label !== 'string') return false;
+	if (v.imageBase64 !== undefined && v.imageBase64 !== null && typeof v.imageBase64 !== 'string') return false;
 	return v.id === undefined || (typeof v.id === 'string' && v.id !== '');
 }
 
@@ -504,7 +514,11 @@ export function normalizeGameCategories(value: unknown): GameCategory[] | null {
 		name: category.name,
 		type: category.type,
 		scope: category.scope,
-		options: category.options?.map((option) => ({ id: option.id ?? generateId(), label: option.label })),
+		options: category.options?.map((option) => ({
+			id: option.id ?? generateId(),
+			label: option.label,
+			imageBase64: option.imageBase64 ?? null,
+		})),
 		computed: category.computed ?? null,
 	}));
 
@@ -543,6 +557,7 @@ export const ENUM_OPTIONS_RAW_DATA_COMMENT_KEY = '//';
 const ENUM_OPTIONS_RAW_DATA_COMMENT =
 	'Optionen dieser Auswahl-Kategorie. Bestehende "id"-Werte unverändert lassen - Partien speichern nur die id. ' +
 	'Neue Optionen bekommen "id": "+" (oder keine id, oder nur den Text als String) - die id wird beim Import generiert. ' +
+	'Optional kann eine Option ein Bild als "imageBase64" (data:-URI) tragen; ein Eintrag ohne dieses Feld behält beim Import sein gespeichertes Bild. ' +
 	'Dieser Kommentar-Eintrag wird beim Import ignoriert.';
 
 /**
@@ -561,6 +576,10 @@ export function enumOptionsToRawData(options: GameCategoryOption[] | undefined):
  *   values already recorded in matches keep pointing at their option
  * - `{ "id": "+", "label": "..." }`, `{ "label": "..." }` or a plain `"..."`
  *   string - a new option, id generated
+ * - an optional `"imageBase64"` (data: URI) is kept as the option's picture;
+ *   an entry that keeps its id but has no `imageBase64` field inherits the
+ *   picture stored on that option in `currentOptions` - so a text-only edited
+ *   export doesn't silently wipe uploaded images
  * - a `"//"` comment key is dropped from every entry; an entry that was only
  *   a comment (like the one the export prepends) is skipped
  *
@@ -568,7 +587,7 @@ export function enumOptionsToRawData(options: GameCategoryOption[] | undefined):
  * entry without a usable label, or two entries share an id - the caller keeps
  * the current options in that case instead of applying half an import.
  */
-export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | null {
+export function parseEnumOptionsRawData(value: string, currentOptions?: GameCategoryOption[]): GameCategoryOption[] | null {
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(value);
@@ -581,7 +600,7 @@ export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | n
 	for (const entry of parsed) {
 		if (typeof entry === 'string') {
 			if (entry.trim() === '') return null;
-			options.push({ id: generateId(), label: entry.trim() });
+			options.push({ id: generateId(), label: entry.trim(), imageBase64: null });
 			continue;
 		}
 		if (typeof entry !== 'object' || entry === null) return null;
@@ -590,8 +609,17 @@ export function parseEnumOptionsRawData(value: string): GameCategoryOption[] | n
 		if (typeof raw.label !== 'string' || raw.label.trim() === '') return null;
 		const id = raw.id;
 		if (id !== undefined && (typeof id !== 'string' || id === '')) return null;
+		const image = raw.imageBase64;
+		if (image !== undefined && image !== null && typeof image !== 'string') return null;
 		const keepId = typeof id === 'string' && id !== NEW_ENUM_OPTION_ID;
-		options.push({ id: keepId ? (id as string) : generateId(), label: raw.label.trim() });
+		const finalId = keepId ? (id as string) : generateId();
+		let imageBase64: string | null;
+		if (image !== undefined) {
+			imageBase64 = image === '' || image === null ? null : image;
+		} else {
+			imageBase64 = (keepId ? currentOptions?.find((option) => option.id === finalId)?.imageBase64 : null) ?? null;
+		}
+		options.push({ id: finalId, label: raw.label.trim(), imageBase64 });
 	}
 	if (options.length === 0) return null;
 

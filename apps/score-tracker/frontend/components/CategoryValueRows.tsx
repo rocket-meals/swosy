@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import {
 	SettingsList,
-	SettingsListBoolean,
+	SettingsListTriState,
 	SettingsListDate,
 	SettingsListNumberInput,
 	SettingsListSelectOptionSingle,
@@ -17,6 +17,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import type { GameCategory, GameCategoryType, GameCategoryValue, GameCategoryValues } from '../helpers/GameCategories';
 import {
+	EMPTY_CATEGORY_VALUE_LABEL,
 	displayDateToIso,
 	enumOptionsToRawData,
 	formatCategoryValue,
@@ -58,6 +59,11 @@ function groupPositionFor(index: number, total: number): 'top' | 'middle' | 'bot
 	if (index === 0) return 'top';
 	if (index === total - 1) return 'bottom';
 	return 'middle';
+}
+
+/** Round thumbnail of an enum option's uploaded picture (see `GameCategoryOption.imageBase64`). */
+export function EnumOptionImage({ imageBase64, size = 28 }: Readonly<{ imageBase64: string; size?: number }>) {
+	return <Image source={{ uri: imageBase64 }} style={{ width: size, height: size, borderRadius: size / 2 }} resizeMode="cover" />;
 }
 
 // ─── Enum option raw data (shared "Rohdaten" row) ─────────────────────────────
@@ -131,12 +137,14 @@ export function EnumOptionsRawDataRow({
 
 	const handleApply = useCallback(
 		(value: string) => {
-			const parsed = parseEnumOptionsRawData(value);
+			// Passing the current options lets id-keeping entries without an
+			// "imageBase64" field keep their stored picture.
+			const parsed = parseEnumOptionsRawData(value, options);
 			if (!parsed) return;
 			dispatch(setGameCategoryOptions({ gameTypeId, categoryId: category.id, options: parsed }));
 			showToast(parsed.length === 1 ? '1 Option übernommen' : `${parsed.length} Optionen übernommen`);
 		},
-		[dispatch, gameTypeId, category.id, showToast],
+		[dispatch, gameTypeId, category.id, options, showToast],
 	);
 
 	return (
@@ -222,8 +230,14 @@ function EnumOptionsContent({
 					key={option.id}
 					nativeID={`${ComponentIds.CATEGORY_VALUE_ENUM_OPTION_PREFIX}${category.id}-${option.id}`}
 					label={option.label}
-					leftIcon={<MaterialCommunityIcons name="format-list-bulleted" size={20} color="#ffffff" />}
-					iconBgColor={PRIMARY_COLOR}
+					leftIcon={
+						option.imageBase64 ? (
+							<EnumOptionImage imageBase64={option.imageBase64} />
+						) : (
+							<MaterialCommunityIcons name="format-list-bulleted" size={20} color="#ffffff" />
+						)
+					}
+					iconBgColor={option.imageBase64 ? '#ffffff' : PRIMARY_COLOR}
 					isSelected={selectedOptionId === option.id}
 					onPress={() => onSelect(option.id)}
 					groupPosition={groupPositionFor(index, options.length)}
@@ -281,7 +295,13 @@ export function CategoryValueRow({
 }>) {
 	const { show, close } = useMyScrollViewModal();
 	const nativeID = `${ComponentIds.CATEGORY_VALUE_ROW_PREFIX}${category.id}`;
-	const leftIcon = categoryTypeIcon(category.type);
+	// The selected enum option's uploaded picture (e.g. an investigator
+	// portrait) replaces the generic type icon on the row.
+	const selectedEnumImage =
+		category.type === 'enum' && typeof value === 'string'
+			? (category.options ?? []).find((option) => option.id === value)?.imageBase64 ?? null
+			: null;
+	const leftIcon = selectedEnumImage ? <EnumOptionImage imageBase64={selectedEnumImage} /> : categoryTypeIcon(category.type);
 
 	const handleOpenEnumModal = useCallback(() => {
 		show({
@@ -308,7 +328,7 @@ export function CategoryValueRow({
 				label={category.name}
 				value={formatCategoryValue(category, value)}
 				leftIcon={leftIcon}
-				iconBgColor="#6b7280"
+				iconBgColor={selectedEnumImage ? '#ffffff' : '#6b7280'}
 				groupPosition={groupPosition}
 			/>
 		);
@@ -343,23 +363,26 @@ export function CategoryValueRow({
 					label={category.name}
 					value={formatCategoryValue(category, value)}
 					leftIcon={leftIcon}
-					iconBgColor={PRIMARY_COLOR}
+					iconBgColor={selectedEnumImage ? '#ffffff' : PRIMARY_COLOR}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleOpenEnumModal}
 					groupPosition={groupPosition}
 				/>
 			);
 		case 'boolean':
+			// Tri-state on purpose: "keine Angabe" (the default) is a real state
+			// besides Ja and Nein, so an untouched match never reads as "Nein".
 			return (
-				<SettingsListBoolean
+				<SettingsListTriState
 					nativeID={nativeID}
 					label={category.name}
 					leftIcon={leftIcon}
 					iconBgColor={PRIMARY_COLOR}
-					isEnabled={value === true}
-					valueActive="Ja"
-					valueInactive="Nein"
-					onToggle={() => onChange(value !== true)}
+					value={typeof value === 'boolean' ? value : null}
+					labelTrue="Ja"
+					labelFalse="Nein"
+					labelUnset={EMPTY_CATEGORY_VALUE_LABEL}
+					onChange={(next) => onChange(next)}
 					groupPosition={groupPosition}
 				/>
 			);

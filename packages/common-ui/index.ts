@@ -37,6 +37,9 @@ export type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps, TextInputAp
 export { default as SettingsListBoolean } from './src/components/SettingsListBoolean';
 export type { SettingsListBooleanProps } from './src/components/SettingsListBoolean';
 
+export { default as SettingsListTriState } from './src/components/SettingsListTriState';
+export type { SettingsListTriStateProps, TriStateValue } from './src/components/SettingsListTriState';
+
 export { default as SettingsListGroupTitle } from './src/components/SettingsListGroupTitle';
 export type { SettingsListGroupTitleProps } from './src/components/SettingsListGroupTitle';
 
