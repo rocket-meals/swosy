@@ -62,6 +62,16 @@ function FeedbackAndSupportHeader() {
 	return <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />;
 }
 
+function PlaybookHeader() {
+	return <CustomStackHeader label={'Playbook'} key={'Playbook'} />;
+}
+
+function PlaybookComponentHeader() {
+	const { component } = useGlobalSearchParams<{ component?: string | string[] }>();
+	const componentName = Array.isArray(component) ? component[0] : component;
+	return <CustomStackHeader label={componentName ? `Playbook: ${componentName}` : 'Playbook'} key={'Playbook-Component'} />;
+}
+
 // Screen `options.header` render-props below are almost all "translate one key,
 // render Translated{Menu,Stack}Header" — these factories return a stable function
 // per call site instead of defining a new arrow (nested in this component's render
@@ -762,6 +772,20 @@ export default function Layout() {
 					options={{
 						headerShown: false,
 						title: translate(TranslationKeys.onboarding),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/playbook/index"
+					options={{
+						header: PlaybookHeader,
+						title: 'Playbook',
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/playbook/[component]"
+					options={{
+						header: PlaybookComponentHeader,
+						title: 'Playbook',
 					}}
 				/>
 				<Drawer.Screen

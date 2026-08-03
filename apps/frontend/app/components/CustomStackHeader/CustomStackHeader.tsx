@@ -28,6 +28,9 @@ const makeBackTrigger = (onPress: () => void, color: string) => (triggerProps: o
 // for the plain cases where the target doesn't depend on anything but the pathname.
 const GO_BACK_TARGET_RULES: { pathIncludes: string; target: string }[] = [
 	{ pathIncludes: `/${AppScreens.FOOD_OFFERS}/details`, target: `/${AppScreens.FOOD_OFFERS}` },
+	// Playbook detail -> playbook overview (trailing slash so the overview itself doesn't match)
+	{ pathIncludes: `/${AppScreens.EXPERIMENTELL}/playbook/`, target: `/${AppScreens.EXPERIMENTELL}/playbook` },
+	{ pathIncludes: `/${AppScreens.EXPERIMENTELL}/playbook`, target: `/${AppScreens.EXPERIMENTELL}` },
 	{ pathIncludes: `/${AppScreens.HOUSING}/details`, target: `/${AppScreens.HOUSING}` },
 	{ pathIncludes: `/${AppScreens.STATISTICS}`, target: `/${AppScreens.MANAGEMENT}` },
 	{ pathIncludes: `/${AppScreens.SUPPORT_TICKET}`, target: `/${AppScreens.SUPPORT_FAQ}` },
