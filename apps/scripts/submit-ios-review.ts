@@ -93,6 +93,7 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
         `App Store Version ${versionString} hat den Status "${state}" (Ablehnung durch Apple?). Automatische Wieder-Einreichung ist deaktiviert - bitte prüfen und bei Bedarf manuell per workflow_dispatch einreichen.`
       );
     }
+    await ensureAutomaticRelease(token, exactMatch);
     return exactMatch.id;
   }
 
@@ -109,7 +110,7 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
       data: {
         type: 'appStoreVersions',
         id: editableVersion.id,
-        attributes: { versionString },
+        attributes: { versionString, releaseType: 'AFTER_APPROVAL' },
       },
     });
     return editableVersion.id;
@@ -119,22 +120,38 @@ async function findOrCreateAppStoreVersion(token: string, appId: string, version
     const created = await ascRequest(token, 'POST', '/appStoreVersions', {
       data: {
         type: 'appStoreVersions',
-        attributes: { platform: 'IOS', versionString, releaseType: 'MANUAL' },
+        attributes: { platform: 'IOS', versionString, releaseType: 'AFTER_APPROVAL' },
         relationships: { app: { data: { type: 'apps', id: appId } } },
       },
     });
     return (created.data as JsonApiResource).id;
   } catch (error) {
     // Apple allows only one editable version at a time; e.g. while an approved version
-    // still waits for its manual release, creating the next one fails with 409. In auto
-    // mode that just means "not now" - the next automated or manual run will try again.
+    // (submitted before automatic releases) still waits for its release, creating the
+    // next one fails with 409. In auto mode that just means "not now" - the next
+    // automated or manual run will try again.
     if (AUTO_MODE && error instanceof AscApiError && error.status === 409) {
       throw new SkipSubmission(
-        `Neue App Store Version ${versionString} kann aktuell nicht angelegt werden (409 von App Store Connect) - z. B. wartet eine freigegebene Version noch auf den manuellen Release. Details: ${error.message}`
+        `Neue App Store Version ${versionString} kann aktuell nicht angelegt werden (409 von App Store Connect) - z. B. wurde eine freigegebene Version noch nicht veröffentlicht. Details: ${error.message}`
       );
     }
     throw error;
   }
+}
+
+// Versions are submitted with releaseType AFTER_APPROVAL so Apple publishes them right
+// after a successful review. Pre-existing drafts (auto-created first versions, versions
+// created before this default) may still carry MANUAL, so it is patched on reuse.
+async function ensureAutomaticRelease(token: string, version: JsonApiResource): Promise<void> {
+  if (version.attributes?.releaseType === 'AFTER_APPROVAL') return;
+  console.log(`   Setze releaseType von "${version.attributes?.releaseType}" auf "AFTER_APPROVAL" ...`);
+  await ascRequest(token, 'PATCH', `/appStoreVersions/${version.id}`, {
+    data: {
+      type: 'appStoreVersions',
+      id: version.id,
+      attributes: { releaseType: 'AFTER_APPROVAL' },
+    },
+  });
 }
 
 async function attachBuild(token: string, appStoreVersionId: string, buildId: string): Promise<void> {
