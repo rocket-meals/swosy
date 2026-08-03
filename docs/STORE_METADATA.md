@@ -66,6 +66,16 @@ Optionen (an das Workspace-Kommando anhängbar, z. B.
 
 `pull` schreibt zusätzlich Snapshots nach `reports/store-metadata/<app>.<store>.json`.
 
+### Manuell per GitHub Workflow
+
+Der Workflow **"🏪 Store Metadata: Pull / Push"** (`.github/workflows/store-metadata.yml`)
+kann per `workflow_dispatch` gestartet werden: Kommando (`pull`/`push`), App
+(`rocket-meals`/`geonexia`/`score-tracker`), Store (`all`/`apple`/`google`) und für
+`push` optional Dry-Run. Beim `pull` landen die Snapshots als JSON in der
+Console-Ausgabe, in der Job-Summary und als Workflow-Artifact (30 Tage) - es wird
+nichts ins Repo committet. Credentials kommen aus den Repo-Secrets
+`EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT` und `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
+
 ## Zugangsdaten
 
 **Apple** (gleicher Key wie der iOS-Submit-Workflow, Team-weit gültig - deckt alle
