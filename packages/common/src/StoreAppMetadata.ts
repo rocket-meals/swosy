@@ -55,7 +55,8 @@ export type AppleAppMetadata = {
 	ageRatingDeclaration?: AppleAgeRatingDeclarationAttributes;
 	// https://developer.apple.com/documentation/appstoreconnectapi/appcategory - e.g. 'FOOD_AND_DRINK'
 	primaryCategoryId?: string;
-	secondaryCategoryId?: string;
+	// null explicitly clears the secondary category in the store
+	secondaryCategoryId?: string | null;
 	contentRightsDeclaration?: 'DOES_NOT_USE_THIRD_PARTY_CONTENT' | 'USES_THIRD_PARTY_CONTENT';
 	// Applied to every locale of the app's "App-Informationen" (appInfoLocalizations).
 	privacyPolicyUrl?: string;
