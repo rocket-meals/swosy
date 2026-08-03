@@ -1,4 +1,4 @@
-// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
+// Hinweis: Neue SettingsList-Komponenten bitte in der Playbook-Registry (packages/common-ui/src/playbook) registrieren.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
