@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ_HfXtT4OT8cE4gH-ec","Change this code to not log user-controlled data.","rocket-meals_rocket-meals:apps/scripts/submit-ios-review.ts",372
 "AZ_CQBsm7LyVx862mpi1","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-geonexia.yml",39
 "AZ_CQBtZ7LyVx862mpi2","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-rocket-meals.yml",35
 "AZ_CQBt67LyVx862mpi3","Make sure that no untrusted code is executed from a fork.","rocket-meals_rocket-meals:.github/workflows/ios-submit-review-score-tracker.yml",39

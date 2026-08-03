@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 5 | 5 |
-| 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 42 | 42 |
+| 🔒 Security | 6 | 6 |
+| 🐛 Reliability | 4 | 4 |
+| 🔧 Maintainability | 46 | 40 |
 
-**Total issues:** 50
+**Total issues:** 56 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (5/5)
+## 🔒 Security (6/6)
 
 - **Lifecycle scripts are enabled by default in Yarn v2+.**
   .github/workflows/backend-schema-sync-pull.yml:55
@@ -34,7 +34,11 @@
   .github/workflows/ios-submit-review-score-tracker.yml:39
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L39
 
-## 🐛 Reliability (3/3)
+- **Change this code to not log user-controlled data.**
+  apps/scripts/submit-ios-review.ts:372
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L372
+
+## 🐛 Reliability (4/4)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
@@ -48,7 +52,11 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (42/42)
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  apps/scripts/store-metadata-diff.ts:48
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-diff.ts#L48
+
+## 🔧 Maintainability (40/46)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -194,27 +202,19 @@
   apps/scripts/check-build-version.ts:85
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
 
-- **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
-  apps/scripts/submit-ios-review.ts:307
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L307
+- **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
+  apps/scripts/store-metadata-apple.ts:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-apple.ts#L143
 
-- **Extract this nested ternary operation into an independent statement.**
-  packages/common-ui/src/playbook/registry.tsx:135
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L135
+- **'change.to' will use Object's default stringification format ('[object Object]') when stringified.**
+  apps/scripts/store-metadata-apple.ts:181
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-apple.ts#L181
 
-- **Extract this nested ternary operation into an independent statement.**
-  packages/common-ui/src/playbook/registry.tsx:136
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L136
+- **`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.**
+  apps/scripts/store-metadata-load.ts:20
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-load.ts#L20
 
-- **Extract this nested ternary operation into an independent statement.**
-  packages/common-ui/src/playbook/registry.tsx:188
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L188
-
-- **Extract this nested ternary operation into an independent statement.**
-  packages/common-ui/src/playbook/registryData.ts:290
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registryData.ts#L290
-
-- **function 'serializeKnobValue' is equivalent to `String`. Use `String` directly.**
-  packages/common-ui/src/playbook/registryData.ts:302
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registryData.ts#L302
+- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
+  apps/scripts/store-metadata.ts:169
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata.ts#L169
 
