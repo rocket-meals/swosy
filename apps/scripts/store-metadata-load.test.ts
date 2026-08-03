@@ -11,11 +11,35 @@ describe('loadStoreMetadataModule', () => {
     for (const entry of metadata) {
       expect(entry.apple?.ageRatingDeclaration?.gambling).toBe(false);
       // Documented deviation from the defaults, see docs/Apple Altersfreigabe.txt
-      expect(entry.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT_OR_MILD');
+      expect(entry.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT');
+      // Explicit null answers so the missing-field check does not flag them
+      expect(entry.apple?.ageRatingDeclaration?.developerAgeRatingInfoUrl).toBeNull();
       expect(entry.apple?.primaryCategoryId).toBe('FOOD_AND_DRINK');
       // Derived from config.ts baseUrl, same pattern as the Google SSO consent screen
       expect(entry.apple?.privacyPolicyUrl).toMatch(/^https:\/\/rocket-meals\.de\/[a-z-]+\/wikis\?custom_id=privacy-policy$/);
     }
+  });
+
+  it('keeps all tenants identical except name and per-tenant urls', () => {
+    const metadata = loadStoreMetadataModule('apps/frontend/app/store-metadata.ts');
+    expect(metadata).toHaveLength(3);
+
+    for (const entry of metadata) {
+      // Identical for every tenant
+      expect(entry.apple?.ageRatingDeclaration?.messagingAndChat).toBe(false);
+      expect(entry.apple?.ageRatingDeclaration?.userGeneratedContent).toBe(false);
+      expect(entry.apple?.contentRightsDeclaration).toBe('DOES_NOT_USE_THIRD_PARTY_CONTENT');
+      expect(entry.apple?.secondaryCategoryId).toBeNull();
+    }
+
+    // The age rating declarations must be exactly equal across all tenants
+    const [demo, swosy, studiFutter] = metadata;
+    expect(swosy.apple?.ageRatingDeclaration).toEqual(demo.apple?.ageRatingDeclaration);
+    expect(studiFutter.apple?.ageRatingDeclaration).toEqual(demo.apple?.ageRatingDeclaration);
+
+    // Only the per-tenant derived urls differ
+    expect(swosy.apple?.privacyChoicesUrl).toBe('https://rocket-meals.de/swosy/data-access');
+    expect(studiFutter.apple?.privacyChoicesUrl).toBe('https://rocket-meals.de/studi-futter/data-access');
   });
 
   it('loads the geonexia ground truth', () => {

@@ -9,20 +9,15 @@
 // questions (like the age rating questionnaire) only need to be answered here once.
 //
 // Bundle ids come from config.ts so they cannot drift apart from the builds.
-import { AppLinks, AppleAppMetadata, DEFAULT_APPLE_AGE_RATING_DECLARATION, GooglePlayAppMetadata, ROCKET_MEALS_WEB_HOST, StoreAppMetadata, WikiCustomIds } from 'repo-depkit-common';
+import { AppLinks, AppScreens, DEFAULT_APPLE_AGE_RATING_DECLARATION, ROCKET_MEALS_WEB_HOST, StoreAppMetadata, WikiCustomIds } from 'repo-depkit-common';
 import { CustomerConfig, devConfig, studiFutterConfig, swosyConfig } from './config';
 
-// Tenant-specific deviations from the shared metadata below (e.g. the privacy policy
-// url). Only what really differs per tenant belongs here.
-type TenantStoreOverrides = {
-	apple?: Partial<Omit<AppleAppMetadata, 'bundleId'>>;
-	google?: Partial<Omit<GooglePlayAppMetadata, 'packageName'>>;
-};
-
-// All tenants ship the same app and therefore share the same answers to Apple's age
-// rating questionnaire and the same category. The reasoning behind the answers is
-// documented in docs/Apple Altersfreigabe.txt - keep both in sync.
-function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverrides = {}): StoreAppMetadata {
+// All tenants (Demo, SWOSY, Studi|Futter) share the exact same metadata - only the app
+// name and the per-tenant derived urls (privacy policy, privacy choices) differ. The
+// values mirror the fully configured Rocket Meals demo app in App Store Connect (2025
+// questionnaire, pulled via "store-metadata pull"); the reasoning is documented in
+// docs/Apple Altersfreigabe.txt.
+function tenantStoreMetadata(config: CustomerConfig): StoreAppMetadata {
 	const metadata: StoreAppMetadata = {
 		displayName: config.projectName,
 	};
@@ -30,20 +25,18 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 		metadata.apple = {
 			bundleId: config.bundleIdIos,
 			primaryCategoryId: 'FOOD_AND_DRINK',
+			// Explicitly no secondary category - keeps all tenants identical.
+			secondaryCategoryId: null,
+			contentRightsDeclaration: 'DOES_NOT_USE_THIRD_PARTY_CONTENT',
 			// Every tenant web app serves its privacy policy as a public wiki page - the
 			// same url is used for the Google SSO consent screen (apps/backend/SSO_GOOGLE.md).
 			privacyPolicyUrl: AppLinks.getPublicWikiUrl(config.baseUrl, WikiCustomIds.PRIVACY_POLICY),
-			...overrides.apple,
+			privacyChoicesUrl: AppLinks.getPublicWebUrl(config.baseUrl, AppScreens.DATA_ACCESS),
 			ageRatingDeclaration: {
 				...DEFAULT_APPLE_AGE_RATING_DECLARATION,
 				// Canteens may list alcoholic drinks in their menus.
-				alcoholTobaccoOrDrugUseOrReferences: 'INFREQUENT_OR_MILD',
-				contests: 'INFREQUENT_OR_MILD',
-				// The capability questions of Apple's 2025 questionnaire (user generated
-				// content: yes, messaging/chat: yes - see docs/Apple Altersfreigabe.txt)
-				// can be added here once "store-metadata:pull" shows their API attribute
-				// names for the ageRatingDeclaration.
-				...overrides.apple?.ageRatingDeclaration,
+				alcoholTobaccoOrDrugUseOrReferences: 'INFREQUENT',
+				contests: 'INFREQUENT',
 			},
 		};
 	}
@@ -54,19 +47,11 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 			contactWebsite: ROCKET_MEALS_WEB_HOST,
 			// Store listing texts (title, descriptions) are tenant specific and not yet
 			// managed here - "store-metadata:pull" shows the current values from Google.
-			...overrides.google,
 		};
 	}
 	return metadata;
 }
 
 export function getStoreMetadata(): StoreAppMetadata[] {
-	return [
-		tenantStoreMetadata(devConfig),
-		// Tenant overrides win over the shared values, e.g.
-		// { apple: { privacyPolicyUrl: 'https://.../datenschutz' } } - "store-metadata:pull"
-		// shows what is currently stored in App Store Connect.
-		tenantStoreMetadata(swosyConfig, {}),
-		tenantStoreMetadata(studiFutterConfig, {}),
-	];
+	return [devConfig, swosyConfig, studiFutterConfig].map(tenantStoreMetadata);
 }

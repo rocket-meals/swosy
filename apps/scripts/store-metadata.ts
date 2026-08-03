@@ -119,7 +119,8 @@ async function handleApple(options: CliOptions, appleToken: string, entry: Store
   const plan = planApplePush(current, entry.apple);
 
   if (options.command === 'pull') {
-    const reportPath = writeReport(entry.displayName, 'apple', current);
+    // The snapshot marks unanswered questions so they are easy to spot in the JSON.
+    const reportPath = writeReport(entry.displayName, 'apple', { ...current, missingFields: plan.missingFields });
     console.log(`   Name: ${current.name}, Altersfreigabe: ${current.appStoreAgeRating ?? 'unbekannt'}, Content Rights: ${current.contentRightsDeclaration ?? 'unbekannt'}`);
     for (const appInfo of current.appInfos) {
       console.log(`   AppInfo ${appInfo.appInfoId} (${appInfo.state}${appInfo.editable ? ', bearbeitbar' : ''}): Kategorie ${appInfo.primaryCategoryId ?? '-'}`);
@@ -129,6 +130,10 @@ async function handleApple(options: CliOptions, appleToken: string, entry: Store
       console.log(`   ⚠️ Abweichungen zur Ground Truth (Store -> Soll):\n${formatChanges(driftedChanges, '      ')}`);
     } else {
       console.log('   ✅ Store entspricht der Ground Truth.');
+    }
+    if (plan.missingFields.length > 0) {
+      console.log(`   ❗ Unbeantwortete Altersfreigabe-Fragen (weder im Store noch in der Ground Truth): ${plan.missingFields.join(', ')}`);
+      console.log('      Ein push (und damit der nächste Review-Submit) schlägt fehl, bis diese Felder ergänzt sind.');
     }
     console.log(`   💾 Snapshot: ${reportPath}\n`);
     return;
