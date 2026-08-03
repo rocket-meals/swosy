@@ -111,12 +111,6 @@ const Index = () => {
 		},
 
 		{
-			key: 'test-use-modal',
-			label: translate(TranslationKeys.test_use_modal),
-			leftIcon: <MaterialCommunityIcons name="test-tube" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/test-use-modal'),
-		},
-		{
 			key: 'game-ideas',
 			label: translate(TranslationKeys.game_ideas),
 			leftIcon: <MaterialCommunityIcons name="gamepad-variant" size={24} color={theme.screen.icon} />,
@@ -127,12 +121,6 @@ const Index = () => {
 			label: translate(TranslationKeys.food_wishlist),
 			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/food-wishlist'),
-		},
-		{
-			key: 'feature-wishes',
-			label: translate(TranslationKeys.feature_wishes),
-			leftIcon: <MaterialCommunityIcons name="lightbulb-outline" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/feature-wishes'),
 		},
 		{
 			key: 'account-required-example',

@@ -199,6 +199,52 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		},
 	},
 	{
+		name: 'SettingsListSelectOptionSingle',
+		description: 'Selectable row with a radio button.',
+		knobs: {
+			label: { type: 'text', defaultValue: 'Option A' },
+			isSelected: { type: 'boolean', defaultValue: true },
+		},
+	},
+	{
+		name: 'SettingsListSelectOption',
+		description: 'Radio group built from a list of options.',
+		knobs: {
+			selectedOption: {
+				type: 'select',
+				defaultValue: 'medium',
+				options: ['small', 'medium', 'large'],
+				passAsProp: false,
+			},
+		},
+	},
+	{
+		name: 'SettingsListCoordinate',
+		description: 'Settings row linking to a map coordinate.',
+		knobs: {
+			label: { type: 'text', defaultValue: 'Location' },
+			latitude: { type: 'number', defaultValue: 52.283, passAsProp: false },
+			longitude: { type: 'number', defaultValue: 8.023, passAsProp: false },
+			mapsLabel: { type: 'text', defaultValue: 'Open in Maps' },
+			groupPosition: GROUP_POSITION_KNOB,
+		},
+	},
+	{
+		name: 'MyScrollViewModal',
+		description: 'Global scroll-view modal opened via useMyScrollViewModal.',
+		knobs: {
+			title: { type: 'text', defaultValue: 'Modal title', passAsProp: false },
+			body: { type: 'text', defaultValue: 'This modal is opened through the global modal system of common-ui.', passAsProp: false },
+		},
+	},
+	{
+		name: 'FeatureWishesScreen',
+		description: 'Full feature-wishes screen with in-memory demo data.',
+		knobs: {
+			isAdmin: { type: 'boolean', defaultValue: false },
+		},
+	},
+	{
 		name: 'MyAvatar',
 		description: 'DiceBear avatar renderer.',
 		knobs: {

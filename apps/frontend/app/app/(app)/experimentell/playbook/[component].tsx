@@ -96,7 +96,7 @@ const PlaybookComponentScreen = () => {
 				{!!entry.description && <Text style={{ ...styles.body, color: theme.screen.text }}>{entry.description}</Text>}
 
 				<SettingsListGroupTitle title="Preview" />
-				<View nativeID={CommonUiComponentIds.PLAYBOOK_TARGET} style={styles.target}>
+				<View nativeID={CommonUiComponentIds.PLAYBOOK_TARGET} style={[styles.target, entry.targetContainerStyle]}>
 					<TargetComponent {...componentProps} />
 				</View>
 

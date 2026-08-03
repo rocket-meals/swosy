@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Text } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import SettingsList from '../components/SettingsList';
@@ -29,6 +30,11 @@ import SettingsListDate from '../components/SettingsListDate';
 import SettingsListProgress from '../components/SettingsListProgress';
 import SettingsListLikeButton from '../components/SettingsListLikeButton';
 import SettingsListLikeDislikeFast from '../components/SettingsListLikeDislikeFast';
+import SettingsListSelectOptionSingle from '../components/SettingsListSelectOptionSingle';
+import SettingsListSelectOption from '../components/SettingsListSelectOption';
+import SettingsListCoordinate from '../components/SettingsListCoordinate';
+import FeatureWishesScreen from '../components/FeatureWishesScreen';
+import { useMyScrollViewModal } from '../components/GlobalModal/useMyScrollViewModal';
 import CardWithText from '../components/CardWithText';
 import QrCode from '../components/QrCode';
 import ScreenHeader from '../components/ScreenHeader';
@@ -58,6 +64,12 @@ interface PlaybookEntryRuntime {
 	 * interactive inside the playbook. Returned props override knob props.
 	 */
 	bindProps?: (values: Record<string, KnobValue>, setKnob: SetKnobValue) => Record<string, unknown>;
+	/**
+	 * Extra style for the view wrapping the component under test, e.g. a fixed
+	 * height for full-screen components that would otherwise collapse inside
+	 * the playbook's scroll view.
+	 */
+	targetContainerStyle?: ViewStyle;
 }
 
 export type PlaybookEntry = PlaybookEntryData & PlaybookEntryRuntime;
@@ -76,6 +88,29 @@ const ThemedText: React.FC<{ children: string }> = ({ children }) => {
 
 const LONG_TEXT_TITLE = 'This is an extremely long title that will not fit into a single line and therefore has to wrap.';
 const LONG_TEXT_VALUE = 'This very long value should also wrap nicely so that everything stays readable.';
+
+/** Demo trigger row for the global scroll-view modal (useMyScrollViewModal). */
+const ScrollViewModalDemo: React.FC<{ modalTitle: string; modalBody: string }> = ({ modalTitle, modalBody }) => {
+	const { theme } = useTheme();
+	const { show } = useMyScrollViewModal();
+	return (
+		<SettingsList
+			leftIcon={<ThemedIcon name="window-restore" />}
+			title={modalTitle}
+			value="Tap to open"
+			groupPosition="single"
+			handleFunction={() =>
+				show(
+					{
+						title: modalTitle,
+						children: <Text style={{ color: theme.screen.text, padding: 20 }}>{modalBody}</Text>,
+					},
+					{},
+				)
+			}
+		/>
+	);
+};
 
 const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 	SettingsList: {
@@ -175,6 +210,44 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 		baseProps: {
 			stats: { min: 2, q1: 4, median: 5, q3: 7, max: 9 },
 		},
+	},
+	SettingsListSelectOptionSingle: {
+		component: SettingsListSelectOptionSingle,
+		bindProps: (values, setKnob) => ({
+			onPress: () => setKnob('isSelected', values.isSelected !== true),
+		}),
+	},
+	SettingsListSelectOption: {
+		component: SettingsListSelectOption,
+		bindProps: (values, setKnob) => ({
+			options: [
+				{ id: 'small', label: 'Small' },
+				{ id: 'medium', label: 'Medium' },
+				{ id: 'large', label: 'Large' },
+			],
+			selectedOption: String(values.selectedOption),
+			onSelect: (option: { id: string }) => setKnob('selectedOption', option.id),
+		}),
+	},
+	SettingsListCoordinate: {
+		component: SettingsListCoordinate,
+		bindProps: (values) => ({
+			location: { latitude: Number(values.latitude), longitude: Number(values.longitude) },
+			value: `${values.latitude}, ${values.longitude}`,
+		}),
+	},
+	MyScrollViewModal: {
+		component: ScrollViewModalDemo,
+		bindProps: (values) => ({
+			modalTitle: String(values.title ?? ''),
+			modalBody: String(values.body ?? ''),
+		}),
+	},
+	FeatureWishesScreen: {
+		component: FeatureWishesScreen,
+		// Full-screen component (internal list) – needs a fixed height inside
+		// the playbook scroll view.
+		targetContainerStyle: { height: 520 },
 	},
 	MyAvatar: {
 		component: MyAvatar,

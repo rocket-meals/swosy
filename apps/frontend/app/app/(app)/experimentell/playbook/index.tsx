@@ -7,7 +7,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useKioskMode from '@/hooks/useKioskMode';
 import SettingsList from '@/components/SettingsList';
-import { CommonUiComponentIds, getPlaybookPath, playbookRegistryData } from 'repo-depkit-common-ui';
+import { CommonUiComponentIds, playbookRegistryData } from 'repo-depkit-common-ui';
 
 /**
  * Playbook overview – lists every common-ui component registered in the
@@ -22,7 +22,10 @@ const PlaybookIndex = () => {
 	const kioskMode = useKioskMode();
 
 	const openEntry = (name: string) => {
-		router.push(`${getPlaybookPath(name)}${kioskMode ? '?kioskMode=true' : ''}`);
+		router.push({
+			pathname: '/experimentell/playbook/[component]',
+			params: kioskMode ? { component: name, kioskMode: 'true' } : { component: name },
+		});
 	};
 
 	return (
