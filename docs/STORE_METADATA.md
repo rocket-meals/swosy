@@ -1,0 +1,87 @@
+# Store-Metadaten (App-Informationen) als Ground Truth
+
+Apple (App Store Connect) und Google (Play Console) fragen regelmäßig Metadaten ab -
+z. B. die Altersfreigabe unter "App-Informationen". Damit das nicht pro Tenant/App von
+Hand gepflegt werden muss, liegt die **Ground Truth versioniert im Repo** und wird per
+CLI mit den Stores abgeglichen.
+
+## Aufbau
+
+- **Typen + Defaults**: `packages/common/src/StoreAppMetadata.ts` (`repo-depkit-common`)
+- **Ground Truth pro App** (jede App verwaltet ihre Metadaten selbst):
+  - `apps/frontend/app/store-metadata.ts` (alle Rocket-Meals-Tenants: Demo, SWOSY, Studi|Futter)
+  - `apps/geonexia/frontend/store-metadata.ts`
+  - `apps/score-tracker/frontend/store-metadata.ts`
+- **CLI**: `apps/scripts/store-metadata.ts` (Workspace `rocket-meals-scripts`)
+
+Es werden **nur Felder verwaltet, die in der Ground Truth gesetzt sind** - alles andere
+bleibt in den Stores unangetastet. Die fachliche Begründung der Altersfreigabe-Antworten
+steht in `docs/Apple Altersfreigabe.txt`.
+
+## Kommandos
+
+```bash
+# Ist-Stand aus den Stores lesen + Abweichungen zur Ground Truth anzeigen
+yarn store-metadata:pull:rocket-meals
+yarn store-metadata:pull:geonexia
+yarn store-metadata:pull:score-tracker
+
+# Ground Truth in die Stores schreiben (nur abweichende Felder)
+yarn store-metadata:push:rocket-meals
+yarn store-metadata:push:geonexia
+yarn store-metadata:push:score-tracker
+```
+
+Optionen (an das Workspace-Kommando anhängbar, z. B.
+`yarn workspace rocket-meals-scripts store-metadata push --module apps/frontend/app/store-metadata.ts --dry-run`):
+
+- `--store apple|google` - nur einen Store abgleichen
+- `--app <filter>` - nur Apps, deren Name/BundleId/Package den Filter enthält
+- `--dry-run` - (push) nur anzeigen, nichts schreiben
+
+`pull` schreibt zusätzlich Snapshots nach `reports/store-metadata/<app>.<store>.json`.
+
+## Zugangsdaten
+
+**Apple** (gleicher Key wie der iOS-Submit-Workflow, Team-weit gültig - deckt alle
+Tenants ab):
+
+```bash
+export EXPO_ASC_API_KEY_PATH=/pfad/zum/AuthKey.p8
+# Key-ID und Issuer-ID kommen automatisch aus repo-depkit-common (AppleAppStoreConfig)
+```
+
+**Google** (Service-Account, in der Play Console unter "Einrichtung -> API-Zugriff" mit
+dem Entwicklerkonto verknüpfen, Rechte: "App-Informationen bearbeiten"):
+
+```bash
+export GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH=/pfad/zum/service-account.json
+# oder GOOGLE_PLAY_SERVICE_ACCOUNT_JSON mit dem JSON-Inhalt (für CI-Secrets)
+```
+
+Fehlen Zugangsdaten für einen Store, wird er mit Warnung übersprungen (außer er wurde
+explizit per `--store` angefordert).
+
+## Was wird verwaltet?
+
+| Feld | Apple | Google |
+| --- | --- | --- |
+| Altersfreigabe-Fragebogen (`ageRatingDeclaration`) | ✅ per API | ❌ keine öffentliche API |
+| Kategorien (`primaryCategoryId`/`secondaryCategoryId`) | ✅ | ❌ keine öffentliche API |
+| Content-Rights-Erklärung | ✅ | - |
+| Kontaktdaten / Standardsprache | - | ✅ (`edits/details`) |
+| Store-Eintrag (Titel, Beschreibungen) | (noch nicht) | ✅ (`edits/listings`) |
+
+## Bekannte Einschränkungen
+
+- **Apple**: Altersfreigabe und Kategorien sind nur änderbar, solange eine App-Store-
+  Version im Entwurfsstatus existiert (legt der Submit-Workflow ohnehin an). Die
+  Änderungen werden erst mit der nächsten eingereichten Version live.
+- **Apple 2025er-Fragebogen**: Apple hat den Fragebogen erweitert (neue Ratings
+  4+/9+/13+/16+/18+, Fähigkeiten wie "Benutzergenerierte Inhalte"). `pull` zeigt alle
+  Attribute, die Apple aktuell liefert - neue Fragen können direkt in der Ground Truth
+  ergänzt werden (der Typ ist dafür offen).
+- **Apple Datenschutz-Labels** ("App-Datenschutz"): keine öffentliche REST-API.
+- **Google Altersfreigabe** (Inhaltseinstufungs-Fragebogen) und **Datensicherheits-
+  Formular**: keine öffentliche API - bleiben manuell in der Play Console. Der Rest
+  (Listings, Kontaktdaten) läuft per API.

@@ -9,6 +9,7 @@
     "generate:eas": "ts-node --project ./tsconfig.json ./generate-eas-config.ts",
     "analyze:data-clumps": "ts-node --project ./tsconfig.json ./analyze-data-clumps.ts",
     "submit:ios:review": "ts-node --project ./tsconfig.json ./submit-ios-review.ts",
+    "store-metadata": "ts-node --project ./tsconfig.json ./store-metadata.ts",
     "apk:extract-url": "ts-node --project ./tsconfig.json ./android-preview-apk.ts extract",
     "build-number:compare-online": "ts-node --project ./tsconfig.json ./check-build-version.ts compare",
     "apk:update-readme": "ts-node --project ./tsconfig.json ./android-preview-apk.ts update-readme",
