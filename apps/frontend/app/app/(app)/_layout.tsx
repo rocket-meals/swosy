@@ -57,20 +57,31 @@ import { UserHelper } from '@/helper/UserHelper';
 
 const renderDrawerContent = (props: React.ComponentProps<typeof CustomDrawerContent>) => <CustomDrawerContent {...props} />;
 
-function FeedbackAndSupportHeader() {
+// The `header` screen option is invoked by react-navigation as a plain render
+// function, not mounted as a component. Hooks therefore MUST NOT be called in
+// the function passed to `header` directly — they would register on the
+// surrounding DrawerViewBase and crash with "Rendered more hooks than during
+// the previous render" as soon as the set of rendered scenes changes. Any
+// header that needs hooks lives in a *Content component rendered as an element
+// by a stable render function (same pattern as makeTranslated*Header below).
+function FeedbackAndSupportHeaderContent() {
 	const { translate } = useLanguage();
 	return <CustomStackHeader label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`} key={'Feedback & Support'} />;
 }
+
+const FeedbackAndSupportHeader = () => <FeedbackAndSupportHeaderContent />;
 
 function PlaybookHeader() {
 	return <CustomStackHeader label={'Playbook'} key={'Playbook'} />;
 }
 
-function PlaybookComponentHeader() {
+function PlaybookComponentHeaderContent() {
 	const { component } = useGlobalSearchParams<{ component?: string | string[] }>();
 	const componentName = Array.isArray(component) ? component[0] : component;
 	return <CustomStackHeader label={componentName ? `Playbook: ${componentName}` : 'Playbook'} key={'Playbook-Component'} />;
 }
+
+const PlaybookComponentHeader = () => <PlaybookComponentHeaderContent />;
 
 // Screen `options.header` render-props below are almost all "translate one key,
 // render Translated{Menu,Stack}Header" — these factories return a stable function

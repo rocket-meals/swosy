@@ -16,7 +16,11 @@ function makeTranslatedMenuHeader(labelKey: TranslationKeys, headerKey?: string)
 	return () => <TranslatedMenuHeader labelKey={labelKey} headerKey={headerKey} />;
 }
 
-function ChatDetailsHeader() {
+// Hooks must not run in the function passed to `header` itself (react-navigation
+// calls it as a plain function, so hooks would register on the surrounding
+// navigator component) — they live in this content component instead, rendered
+// as an element by the stable ChatDetailsHeader render function below.
+function ChatDetailsHeaderContent() {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const router = useRouter();
@@ -40,6 +44,8 @@ function ChatDetailsHeader() {
 		/>
 	);
 }
+
+const ChatDetailsHeader = () => <ChatDetailsHeaderContent />;
 
 export default function ChatsLayout() {
         const { theme } = useTheme();
