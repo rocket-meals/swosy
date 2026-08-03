@@ -57,6 +57,20 @@ describe('planApplePush', () => {
     expect(plan.localizationChanges).toEqual([]);
   });
 
+  it('flags unanswered store questions the ground truth does not answer', () => {
+    const withUnanswered: ApplePullResult = {
+      ...current,
+      appInfos: [
+        {
+          ...current.appInfos[1],
+          ageRatingDeclaration: { gambling: false, inAppControls: null, ageAssurance: null },
+        },
+      ],
+    };
+    const plan = planApplePush(withUnanswered, { bundleId: 'de.example.app', ageRatingDeclaration: { gambling: false, inAppControls: 'NONE' } });
+    expect(plan.missingFields).toEqual(['ageAssurance']);
+  });
+
   it('updates the privacy policy url for every locale that differs', () => {
     const plan = planApplePush(current, { bundleId: 'de.example.app', privacyPolicyUrl: 'https://new.example.com/datenschutz' });
     expect(plan.localizationChanges).toEqual([

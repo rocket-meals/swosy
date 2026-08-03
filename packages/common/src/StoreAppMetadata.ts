@@ -95,4 +95,7 @@ export const DEFAULT_APPLE_AGE_RATING_DECLARATION: AppleAgeRatingDeclarationAttr
 	unrestrictedWebAccess: false,
 	ageRatingOverride: 'NONE',
 	koreaAgeRatingOverride: 'NONE',
+	// null is a valid answer ("not a kids app") - set explicitly so it does not count
+	// as an unanswered question.
+	kidsAgeBand: null,
 };

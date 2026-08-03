@@ -66,6 +66,25 @@ Optionen (an das Workspace-Kommando anhängbar, z. B.
 
 `pull` schreibt zusätzlich Snapshots nach `reports/store-metadata/<app>.<store>.json`.
 
+### Unbeantwortete Fragen (fehlende Daten)
+
+Altersfreigabe-Fragen, die Apple als unbeantwortet meldet (`null` im Store) und die auch
+die Ground Truth nicht beantwortet, werden beim `pull` markiert (Console: `❗`, im
+Snapshot-JSON als `missingFields`). Ein echter `push` - und damit auch der Sync vor dem
+Review-Submit - **schlägt dann fehl** und listet die fehlenden Felder auf, damit
+auffällt, dass etwas ergänzt werden muss (z. B. wenn Apple den Fragebogen erweitert).
+`--dry-run` zeigt die Warnung nur an.
+
+### Snapshot in Ground Truth umwandeln
+
+```bash
+yarn workspace rocket-meals-scripts store-metadata:extract reports/store-metadata/rocket-meals.apple.json
+```
+
+Extrahiert aus einem Pull-Snapshot einen fertigen TypeScript-Block (Altersfreigabe,
+Kategorien, Content Rights, Datenschutz-URL) zum Einfügen in die `store-metadata.ts`.
+Unbeantwortete Fragen erscheinen als auskommentierte Zeilen mit `❗`-Markierung.
+
 ### Manuell per GitHub Workflow
 
 Der Workflow **"🏪 Store Metadata: Pull / Push"** (`.github/workflows/store-metadata.yml`)

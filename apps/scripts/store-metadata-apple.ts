@@ -108,6 +108,9 @@ export type ApplePushPlan = {
   categoryChanges: AttributeChange[];
   contentRightsChanges: AttributeChange[];
   localizationChanges: AppleLocalizationChanges[];
+  // Age rating questions Apple reports as unanswered (null in the store) that the
+  // ground truth does not answer either - e.g. after Apple extends the questionnaire.
+  missingFields: string[];
 };
 
 export function planApplePush(current: ApplePullResult, metadata: AppleAppMetadata): ApplePushPlan {
@@ -137,11 +140,30 @@ export function planApplePush(current: ApplePullResult, metadata: AppleAppMetada
     }
   }
 
-  return { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges };
+  const missingFields = Object.entries(targetAppInfo?.ageRatingDeclaration ?? {})
+    .filter(([key, value]) => value === null && metadata.ageRatingDeclaration?.[key] === undefined)
+    .map(([key]) => key);
+
+  return { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges, missingFields };
 }
 
 export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun: boolean): Promise<boolean> {
-  const { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges } = plan;
+  const { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges, missingFields } = plan;
+
+  // Unanswered questions the ground truth cannot fill mean the metadata is incomplete -
+  // a real push (and therefore the pre-submit sync) must fail so this gets fixed instead
+  // of a version silently reaching App Review with open questions.
+  if (missingFields.length > 0) {
+    const message =
+      `Apple: ${missingFields.length} Altersfreigabe-Frage(n) sind weder in App Store Connect beantwortet noch in der Ground Truth gesetzt: ` +
+      `${missingFields.join(', ')}. Bitte die Felder in der store-metadata.ts ergänzen (oder in App Store Connect beantworten und per "store-metadata pull" übernehmen).`;
+    if (dryRun) {
+      console.log(`   ⚠️ ${message}`);
+    } else {
+      throw new Error(message);
+    }
+  }
+
   const hasChanges = ageRatingChanges.length > 0 || categoryChanges.length > 0 || contentRightsChanges.length > 0 || localizationChanges.length > 0;
   if (!hasChanges) {
     console.log('   ✅ Apple: Keine Abweichungen - nichts zu tun.');
