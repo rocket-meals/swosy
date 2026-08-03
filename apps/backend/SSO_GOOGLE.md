@@ -10,7 +10,7 @@
   - Anwendungslogo: Auswählen
   - Startseite der Anwendung: `<URL>` (https://rocket-meals.github.io/<rocket-meals>/)
   - Link zur Datenschutzerklärung: `<URL>`
-    (https://rocket-meals.github.io/<rocket-meals>/wikis?wikis_custom_id=privacy-policy)
+    (https://rocket-meals.de/<rocket-meals>/wikis?custom_id=privacy-policy)
   - Authorisierte Domains
     - `rocket-meals.github.io`
     - `rocket-meals.de`

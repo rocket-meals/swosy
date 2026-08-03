@@ -17,7 +17,13 @@
     "clean-install": "yarn clean && yarn",
     "format": "prettier . --write",
     "lint": "eslint . --ext .js,.ts,.tsx --fix",
-    "analyze-data-clumps": "yarn workspace rocket-meals-scripts analyze:data-clumps"
+    "analyze-data-clumps": "yarn workspace rocket-meals-scripts analyze:data-clumps",
+    "store-metadata:pull:rocket-meals": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/frontend/app/store-metadata.ts",
+    "store-metadata:push:rocket-meals": "yarn workspace rocket-meals-scripts store-metadata push --module apps/frontend/app/store-metadata.ts",
+    "store-metadata:pull:geonexia": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/geonexia/frontend/store-metadata.ts",
+    "store-metadata:push:geonexia": "yarn workspace rocket-meals-scripts store-metadata push --module apps/geonexia/frontend/store-metadata.ts",
+    "store-metadata:pull:score-tracker": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/score-tracker/frontend/store-metadata.ts",
+    "store-metadata:push:score-tracker": "yarn workspace rocket-meals-scripts store-metadata push --module apps/score-tracker/frontend/store-metadata.ts"
   },
   "workspaces": [
     "apps/frontend/app",

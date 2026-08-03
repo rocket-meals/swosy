@@ -1,0 +1,144 @@
+name: "🏪 Store Metadata: Pull / Push"
+
+# Manual sync of the app store metadata ("App-Informationen") with the ground truth in
+# the repo - see docs/STORE_METADATA.md. "pull" reads the current values from Apple /
+# Google and prints them as JSON to the console (plus job summary and artifact),
+# "push" writes the ground truth to the stores (only fields that drifted).
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "pull = Ist-Stand lesen (JSON-Ausgabe), push = Ground Truth in die Stores schreiben"
+        type: choice
+        required: true
+        default: "pull"
+        options:
+          - pull
+          - push
+      app:
+        description: "Welche App (Ground-Truth-Modul)"
+        type: choice
+        required: true
+        default: "rocket-meals"
+        options:
+          - rocket-meals
+          - geonexia
+          - score-tracker
+      store:
+        description: "Welche Stores abgleichen"
+        type: choice
+        required: true
+        default: "all"
+        options:
+          - all
+          - apple
+          - google
+      dry_run:
+        description: "push: nur anzeigen, was sich ändern würde (nichts schreiben)"
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  store-metadata:
+    name: "🏪 ${{ inputs.command }} (${{ inputs.app }}, ${{ inputs.store }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn v2"
+        run: corepack enable
+
+      - name: "📦 Install dependencies"
+        # --mode=skip-build disables dependency lifecycle scripts (supply-chain hardening);
+        # the sync script only needs ts-node/typescript, which require no build step.
+        run: yarn install --immutable --mode=skip-build
+
+      # Missing credentials only skip a store when store=all - an explicit
+      # --store apple/google fails loudly in the CLI instead.
+      - name: "🔐 Check App Store Connect credentials"
+        id: asc-guard
+        env:
+          ASC_KEY: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+        run: |
+          if [ -n "$ASC_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT ist nicht gesetzt - Apple wird übersprungen."
+          fi
+
+      - name: "🔐 Prepare Apple App Store Connect API key"
+        if: steps.asc-guard.outputs.available == 'true'
+        uses: ./.github/actions/prepare-asc-api-key
+        with:
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+
+      - name: "🏪 Run store-metadata ${{ inputs.command }}"
+        env:
+          COMMAND: ${{ inputs.command }}
+          APP: ${{ inputs.app }}
+          STORE: ${{ inputs.store }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          # Play-Console-Service-Account (Einrichtung -> API-Zugriff), als JSON-Inhalt.
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+
+          case "$APP" in
+            rocket-meals) MODULE="apps/frontend/app/store-metadata.ts" ;;
+            geonexia) MODULE="apps/geonexia/frontend/store-metadata.ts" ;;
+            score-tracker) MODULE="apps/score-tracker/frontend/store-metadata.ts" ;;
+            *) echo "Unbekannte App: $APP"; exit 1 ;;
+          esac
+
+          ARGS=("$COMMAND" --module "$MODULE")
+          if [ "$STORE" != "all" ]; then
+            ARGS+=(--store "$STORE")
+          fi
+          if [ "$COMMAND" = "push" ] && [ "$DRY_RUN" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+
+          yarn workspace rocket-meals-scripts store-metadata "${ARGS[@]}"
+
+      - name: "📄 Print pulled metadata as JSON"
+        if: inputs.command == 'pull'
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          FILES=(reports/store-metadata/*.json)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "Keine Snapshots unter reports/store-metadata/ gefunden."
+            exit 0
+          fi
+
+          for FILE in "${FILES[@]}"; do
+            echo "===== ${FILE} ====="
+            cat "$FILE"
+            echo ""
+            {
+              echo "### \`${FILE}\`"
+              echo '```json'
+              cat "$FILE"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: "💾 Upload pulled metadata as artifact"
+        if: inputs.command == 'pull'
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-metadata-${{ inputs.app }}
+          path: reports/store-metadata/
+          if-no-files-found: ignore
+          retention-days: 30

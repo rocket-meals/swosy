@@ -15,6 +15,10 @@ export type CustomerConfig = {
 	baseUrl: string;
 	server_url: string;
 	appleAppId?: string;
+	// Controls whether the iOS submit workflow submits new builds to App Review.
+	// Defaults to true when not set; set to false for apps that must never be submitted
+	// automatically (e.g. the Rocket Meals demo/test app).
+	iosAppStoreReviewSubmitEnabled?: boolean;
         images: {
                 company_logo_source_path: string;
                 company_logo_source_get_for_react_native: () => ImageSourcePropType;
@@ -79,6 +83,8 @@ export const devConfig: CustomerConfig = {
 	baseUrl: '/rocket-meals',
 	server_url: ServerHelper.TEST_SERVER_CONFIG.server_url,
 	appleAppId: '6483930801',
+	// The demo app is only for testing - builds are uploaded but never submitted to App Review.
+	iosAppStoreReviewSubmitEnabled: false,
 	images: {
 		company_logo_source_path: 'assets/images/customers/rocket-meals/company.png',
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/rocket-meals/company.png')},
@@ -98,6 +104,7 @@ export const swosyConfig: CustomerConfig = {
 	baseUrl: '/swosy',
 	server_url: ServerHelper.SWOSY_SERVER_CONFIG.server_url,
 	appleAppId: '6667117575',
+	iosAppStoreReviewSubmitEnabled: true,
 	images: {
 		company_logo_source_path: 'assets/images/customers/swosy/company.png',
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/swosy/company.png')},
@@ -117,6 +124,7 @@ export const studiFutterConfig: CustomerConfig = {
 	baseUrl: '/studi-futter',
 	server_url: ServerHelper.STUDI_FUTTER_SERVER_CONFIG.server_url,
 	appleAppId: '1548108390',
+	iosAppStoreReviewSubmitEnabled: true,
 	images: {
 		company_logo_source_path: 'assets/images/customers/studi-futter/company.png',
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
