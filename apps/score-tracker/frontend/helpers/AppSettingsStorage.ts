@@ -10,12 +10,15 @@ export type AppSettingsState = {
 	columnsPortrait: ColumnsCount;
 	columnsLandscape: ColumnsCount;
 	gamesSortMode: GamesSortMode;
+	/** Whether the first-launch onboarding was completed (or skipped). */
+	onboardingCompleted: boolean;
 };
 
 const DEFAULT_APP_SETTINGS: AppSettingsState = {
 	columnsPortrait: 1,
 	columnsLandscape: 2,
 	gamesSortMode: 'lastPlayed',
+	onboardingCompleted: false,
 };
 
 const APP_SETTINGS_KEY = 'score-tracker-app-settings.json';
@@ -51,6 +54,7 @@ export async function loadAppSettings(): Promise<AppSettingsState> {
 			columnsPortrait: normalizeColumnsCount(parsed.columnsPortrait, DEFAULT_APP_SETTINGS.columnsPortrait),
 			columnsLandscape: normalizeColumnsCount(parsed.columnsLandscape, DEFAULT_APP_SETTINGS.columnsLandscape),
 			gamesSortMode: normalizeGamesSortMode(parsed.gamesSortMode, DEFAULT_APP_SETTINGS.gamesSortMode),
+			onboardingCompleted: parsed.onboardingCompleted === true,
 		};
 	} catch {
 		return DEFAULT_APP_SETTINGS;
