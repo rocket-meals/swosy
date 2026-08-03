@@ -19,6 +19,12 @@ type TenantStoreOverrides = {
 	google?: Partial<Omit<GooglePlayAppMetadata, 'packageName'>>;
 };
 
+// Every tenant web app serves its privacy policy as a public wiki page - the same url
+// is used for the Google SSO consent screen (documented in apps/backend/SSO_GOOGLE.md).
+function tenantPrivacyPolicyUrl(config: CustomerConfig): string {
+	return `https://rocket-meals.github.io${config.baseUrl}/wikis?wikis_custom_id=privacy-policy`;
+}
+
 // All tenants ship the same app and therefore share the same answers to Apple's age
 // rating questionnaire and the same category. The reasoning behind the answers is
 // documented in docs/Apple Altersfreigabe.txt - keep both in sync.
@@ -30,6 +36,7 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 		metadata.apple = {
 			bundleId: config.bundleIdIos,
 			primaryCategoryId: 'FOOD_AND_DRINK',
+			privacyPolicyUrl: tenantPrivacyPolicyUrl(config),
 			...overrides.apple,
 			ageRatingDeclaration: {
 				...DEFAULT_APPLE_AGE_RATING_DECLARATION,
@@ -60,10 +67,10 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 export function getStoreMetadata(): StoreAppMetadata[] {
 	return [
 		tenantStoreMetadata(devConfig),
-		tenantStoreMetadata(swosyConfig, {
-			// Example: apple: { privacyPolicyUrl: 'https://.../datenschutz' }
-			// "store-metadata:pull" shows the value currently stored in App Store Connect.
-		}),
+		// Tenant overrides win over the shared values, e.g.
+		// { apple: { privacyPolicyUrl: 'https://.../datenschutz' } } - "store-metadata:pull"
+		// shows what is currently stored in App Store Connect.
+		tenantStoreMetadata(swosyConfig, {}),
 		tenantStoreMetadata(studiFutterConfig, {}),
 	];
 }

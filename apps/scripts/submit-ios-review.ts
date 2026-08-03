@@ -272,26 +272,22 @@ type Credentials = { keyId: string; issuerId: string; privateKeyPath: string };
 // Before submitting, the "App-Informationen" (age rating declaration, categories,
 // privacy urls) are aligned with the ground truth from STORE_METADATA_MODULE - see
 // docs/STORE_METADATA.md. This runs after findOrCreateAppStoreVersion so an editable
-// AppInfo is guaranteed to exist. A failed sync must not block the submission itself
-// (the build would otherwise never reach the review), so errors only log loudly.
+// AppInfo is guaranteed to exist. A failed sync BLOCKS the submission: a version must
+// not reach App Review with metadata that drifted from the ground truth. Only a run
+// without STORE_METADATA_MODULE (sync not configured, e.g. local invocation) skips.
 async function syncStoreMetadata(token: string, bundleId: string): Promise<void> {
   const modulePath = process.env.STORE_METADATA_MODULE;
   if (!modulePath) {
     console.log('   ⏭️ STORE_METADATA_MODULE ist nicht gesetzt - Metadaten-Sync wird übersprungen.');
     return;
   }
-  try {
-    const entry = loadStoreMetadataModule(modulePath).find(candidate => candidate.apple?.bundleId === bundleId);
-    if (!entry?.apple) {
-      console.log(`   ⏭️ Keine Apple Ground Truth für "${bundleId}" in ${modulePath} - Metadaten-Sync wird übersprungen.`);
-      return;
-    }
-    const current = await pullAppleMetadata(token, entry.apple);
-    const plan = planApplePush(current, entry.apple);
-    await applyApplePush(token, plan, false);
-  } catch (error) {
-    console.error(`   ⚠️ Store-Metadaten-Sync fehlgeschlagen - die Einreichung läuft trotzdem weiter: ${error instanceof Error ? error.message : error}`);
+  const entry = loadStoreMetadataModule(modulePath).find(candidate => candidate.apple?.bundleId === bundleId);
+  if (!entry?.apple) {
+    throw new Error(`Keine Apple Ground Truth für "${bundleId}" in ${modulePath} - bitte einen Eintrag ergänzen (siehe docs/STORE_METADATA.md).`);
   }
+  const current = await pullAppleMetadata(token, entry.apple);
+  const plan = planApplePush(current, entry.apple);
+  await applyApplePush(token, plan, false);
 }
 
 async function attemptSubmission(bundleId: string, releaseNotes: string, credentials: Credentials): Promise<void> {

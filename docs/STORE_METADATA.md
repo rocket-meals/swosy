@@ -25,8 +25,15 @@ Die `ios-submit-review-*`-Workflows setzen `STORE_METADATA_MODULE`, dadurch glei
 `apps/scripts/submit-ios-review.ts` die App-Informationen **vor jeder Review-Einreichung**
 mit der Ground Truth ab - genau dann existiert garantiert eine bearbeitbare Version.
 Neue Apple-Pflichtangaben also einfach in der Ground Truth ergänzen; der nächste Submit
-verteilt sie. Ein fehlgeschlagener Metadaten-Sync blockiert die Einreichung nicht,
-sondern loggt eine deutliche Warnung.
+verteilt sie. **Ein fehlgeschlagener Metadaten-Sync blockiert die Einreichung** (der
+Workflow schlägt fehl): Es darf keine Version mit veralteten App-Informationen zur
+Review gehen. Nur wenn `STORE_METADATA_MODULE` gar nicht gesetzt ist (z. B. lokaler
+Aufruf), wird der Sync mit Log-Hinweis übersprungen.
+
+Die Datenschutz-URL der Rocket-Meals-Tenants wird aus der `baseUrl` in `config.ts`
+abgeleitet (`https://rocket-meals.github.io/<tenant>/wikis?wikis_custom_id=privacy-policy`,
+gleiches Schema wie beim Google-SSO-Zustimmungsbildschirm, siehe
+`apps/backend/SSO_GOOGLE.md`) und kann pro Tenant per Override ersetzt werden.
 
 ## Review-Submit pro Tenant deaktivieren
 
