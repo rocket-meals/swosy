@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 5 | 5 |
 | 🐛 Reliability | 3 | 3 |
-| 🔧 Maintainability | 37 | 37 |
+| 🔧 Maintainability | 42 | 42 |
 
-**Total issues:** 45
+**Total issues:** 50
 
 ---
 
@@ -48,7 +48,7 @@
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
-## 🔧 Maintainability (37/37)
+## 🔧 Maintainability (42/42)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -197,4 +197,24 @@
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
   apps/scripts/submit-ios-review.ts:307
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L307
+
+- **Extract this nested ternary operation into an independent statement.**
+  packages/common-ui/src/playbook/registry.tsx:135
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L135
+
+- **Extract this nested ternary operation into an independent statement.**
+  packages/common-ui/src/playbook/registry.tsx:136
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L136
+
+- **Extract this nested ternary operation into an independent statement.**
+  packages/common-ui/src/playbook/registry.tsx:188
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registry.tsx#L188
+
+- **Extract this nested ternary operation into an independent statement.**
+  packages/common-ui/src/playbook/registryData.ts:290
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registryData.ts#L290
+
+- **function 'serializeKnobValue' is equivalent to `String`. Use `String` directly.**
+  packages/common-ui/src/playbook/registryData.ts:302
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/playbook/registryData.ts#L302
 
