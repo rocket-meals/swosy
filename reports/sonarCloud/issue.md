@@ -195,6 +195,6 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
 
 - **Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.**
-  apps/scripts/submit-ios-review.ts:290
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L290
+  apps/scripts/submit-ios-review.ts:307
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L307
 
