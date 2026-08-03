@@ -1,4 +1,4 @@
-import { extractRawExpoToken } from './index';
+import { extractRawExpoToken } from '../app/index';
 
 describe('extractRawExpoToken', () => {
 	it('extracts the raw token from ExponentPushToken[...] notation', () => {
