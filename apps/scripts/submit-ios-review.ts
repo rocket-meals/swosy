@@ -1,4 +1,6 @@
 import { AscApiError, JsonApiResource, asArray, ascRequest, createAppStoreConnectToken, findAppId, readRequiredEnv } from './asc-api';
+import { applyApplePush, planApplePush, pullAppleMetadata } from './store-metadata-apple';
+import { loadStoreMetadataModule } from './store-metadata-load';
 
 // https://developer.apple.com/documentation/appstoreconnectapi/appstoreversionstate
 const SUBMITTABLE_APP_VERSION_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'INVALID_BINARY']);
@@ -267,6 +269,31 @@ function sleepMinutes(minutes: number): Promise<void> {
 
 type Credentials = { keyId: string; issuerId: string; privateKeyPath: string };
 
+// Before submitting, the "App-Informationen" (age rating declaration, categories,
+// privacy urls) are aligned with the ground truth from STORE_METADATA_MODULE - see
+// docs/STORE_METADATA.md. This runs after findOrCreateAppStoreVersion so an editable
+// AppInfo is guaranteed to exist. A failed sync must not block the submission itself
+// (the build would otherwise never reach the review), so errors only log loudly.
+async function syncStoreMetadata(token: string, bundleId: string): Promise<void> {
+  const modulePath = process.env.STORE_METADATA_MODULE;
+  if (!modulePath) {
+    console.log('   ⏭️ STORE_METADATA_MODULE ist nicht gesetzt - Metadaten-Sync wird übersprungen.');
+    return;
+  }
+  try {
+    const entry = loadStoreMetadataModule(modulePath).find(candidate => candidate.apple?.bundleId === bundleId);
+    if (!entry?.apple) {
+      console.log(`   ⏭️ Keine Apple Ground Truth für "${bundleId}" in ${modulePath} - Metadaten-Sync wird übersprungen.`);
+      return;
+    }
+    const current = await pullAppleMetadata(token, entry.apple);
+    const plan = planApplePush(current, entry.apple);
+    await applyApplePush(token, plan, false);
+  } catch (error) {
+    console.error(`   ⚠️ Store-Metadaten-Sync fehlgeschlagen - die Einreichung läuft trotzdem weiter: ${error instanceof Error ? error.message : error}`);
+  }
+}
+
 async function attemptSubmission(bundleId: string, releaseNotes: string, credentials: Credentials): Promise<void> {
   // The App Store Connect JWT expires after 15 minutes, so every attempt of the
   // retry loop below needs a fresh one.
@@ -289,6 +316,9 @@ async function attemptSubmission(bundleId: string, releaseNotes: string, credent
 
   console.log('📝 Aktualisiere Changelog-Text (What\'s New) ...');
   await updateReleaseNotes(token, appStoreVersionId, releaseNotes);
+
+  console.log('📋 Gleiche App-Informationen (Altersfreigabe & Co) mit der Ground Truth ab ...');
+  await syncStoreMetadata(token, bundleId);
 
   console.log('🔍 Prüfe auf bereits laufende Review-Einreichung ...');
   const reusableSubmissionId = await findReusableReviewSubmission(token, appId);

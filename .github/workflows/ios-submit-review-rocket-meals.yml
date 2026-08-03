@@ -101,28 +101,37 @@ jobs:
         if: steps.guard.outputs.available == 'true' && steps.release-check.outputs.submit == 'true'
         run: bash scripts/customer-config.sh >> "$GITHUB_ENV"
 
-      - name: "📱 Resolve iOS bundle identifier"
+      - name: "📱 Resolve iOS bundle identifier and submit flag"
         if: steps.guard.outputs.available == 'true' && steps.release-check.outputs.submit == 'true'
         working-directory: ./apps/frontend/app
         run: |
           set -euo pipefail
 
-          BUNDLE_ID=$(node - <<'EOF'
+          node - <<'EOF' >> "$GITHUB_ENV"
           require('ts-node').register({
             transpileOnly: true,
             compilerOptions: { module: 'Node16', moduleResolution: 'node16' },
           });
           const { getCustomerConfig } = require('./config.ts');
-          console.log(getCustomerConfig().bundleIdIos);
+          const config = getCustomerConfig();
+          console.log(`IOS_BUNDLE_ID=${config.bundleIdIos}`);
+          // Apps like the Rocket Meals demo/test app set iosAppStoreReviewSubmitEnabled
+          // to false so their builds are never submitted to App Review.
+          console.log(`IOS_REVIEW_SUBMIT_ENABLED=${config.iosAppStoreReviewSubmitEnabled !== false}`);
           EOF
-          )
-          echo "IOS_BUNDLE_ID=${BUNDLE_ID}" >> "$GITHUB_ENV"
+
+      - name: "⏭️ Review submit is disabled for this app"
+        if: steps.guard.outputs.available == 'true' && steps.release-check.outputs.submit == 'true' && env.IOS_REVIEW_SUBMIT_ENABLED != 'true'
+        run: echo "⏭️ iosAppStoreReviewSubmitEnabled ist für diesen Tenant (${IOS_BUNDLE_ID}) deaktiviert (config.ts) - es wird nichts zur Review eingereicht."
 
       - name: "🚀 Submit latest build for App Review"
-        if: steps.guard.outputs.available == 'true' && steps.release-check.outputs.submit == 'true'
+        if: steps.guard.outputs.available == 'true' && steps.release-check.outputs.submit == 'true' && env.IOS_REVIEW_SUBMIT_ENABLED == 'true'
         run: yarn workspace rocket-meals-scripts submit:ios:review
         env:
           IOS_RELEASE_NOTES: ${{ inputs.release_notes || 'Fehlerbehebungen und Aktualisierung von Bibliotheken.' }}
+          # Ground truth for the pre-submit metadata sync (Altersfreigabe & Co),
+          # see docs/STORE_METADATA.md.
+          STORE_METADATA_MODULE: apps/frontend/app/store-metadata.ts
           # Post-CI runs skip gracefully when there is nothing to submit
           # and never re-submit versions Apple has rejected.
           IOS_SUBMIT_AUTO: ${{ github.event_name != 'workflow_dispatch' }}

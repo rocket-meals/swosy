@@ -18,6 +18,7 @@ describe('planApplePush', () => {
         ageRatingDeclaration: { gambling: false, violenceCartoonOrFantasy: 'NONE' },
         primaryCategoryId: 'FOOD_AND_DRINK',
         secondaryCategoryId: undefined,
+        localizations: [],
       },
       {
         appInfoId: 'info-editable',
@@ -27,6 +28,10 @@ describe('planApplePush', () => {
         ageRatingDeclaration: { gambling: true, violenceCartoonOrFantasy: 'NONE' },
         primaryCategoryId: 'EDUCATION',
         secondaryCategoryId: undefined,
+        localizations: [
+          { localizationId: 'loc-de', locale: 'de-DE', privacyPolicyUrl: 'https://old.example.com/datenschutz', privacyChoicesUrl: undefined },
+          { localizationId: 'loc-en', locale: 'en-US', privacyPolicyUrl: undefined, privacyChoicesUrl: undefined },
+        ],
       },
     ],
   };
@@ -49,6 +54,15 @@ describe('planApplePush', () => {
     expect(plan.ageRatingChanges).toEqual([]);
     expect(plan.categoryChanges).toEqual([]);
     expect(plan.contentRightsChanges).toEqual([]);
+    expect(plan.localizationChanges).toEqual([]);
+  });
+
+  it('updates the privacy policy url for every locale that differs', () => {
+    const plan = planApplePush(current, { bundleId: 'de.example.app', privacyPolicyUrl: 'https://new.example.com/datenschutz' });
+    expect(plan.localizationChanges).toEqual([
+      { localizationId: 'loc-de', locale: 'de-DE', changes: [{ key: 'privacyPolicyUrl', from: 'https://old.example.com/datenschutz', to: 'https://new.example.com/datenschutz' }] },
+      { localizationId: 'loc-en', locale: 'en-US', changes: [{ key: 'privacyPolicyUrl', from: undefined, to: 'https://new.example.com/datenschutz' }] },
+    ]);
   });
 });
 

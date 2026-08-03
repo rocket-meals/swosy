@@ -44,6 +44,9 @@ export type AppleAppMetadata = {
 	primaryCategoryId?: string;
 	secondaryCategoryId?: string;
 	contentRightsDeclaration?: 'DOES_NOT_USE_THIRD_PARTY_CONTENT' | 'USES_THIRD_PARTY_CONTENT';
+	// Applied to every locale of the app's "App-Informationen" (appInfoLocalizations).
+	privacyPolicyUrl?: string;
+	privacyChoicesUrl?: string;
 };
 
 // https://developers.google.com/android-publisher/api-ref/rest/v3/edits.listings

@@ -11,6 +11,13 @@ import { AttributeChange, changesToAttributeObject, computeAttributeChanges, for
 // soon as a new app store version draft exists.
 const EDITABLE_APP_INFO_STATES = new Set(['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED', 'METADATA_REJECTED', 'WAITING_FOR_REVIEW']);
 
+export type AppleAppInfoLocalizationSnapshot = {
+  localizationId: string;
+  locale: string | undefined;
+  privacyPolicyUrl: string | undefined;
+  privacyChoicesUrl: string | undefined;
+};
+
 export type AppleAppInfoSnapshot = {
   appInfoId: string;
   state: string | undefined;
@@ -19,6 +26,7 @@ export type AppleAppInfoSnapshot = {
   ageRatingDeclaration: Record<string, unknown>;
   primaryCategoryId: string | undefined;
   secondaryCategoryId: string | undefined;
+  localizations: AppleAppInfoLocalizationSnapshot[];
 };
 
 export type ApplePullResult = {
@@ -34,18 +42,29 @@ function relationshipId(resource: JsonApiResource, relationship: string): string
   return resource.relationships?.[relationship]?.data?.id;
 }
 
+async function fetchAppInfoLocalizations(token: string, appInfoId: string): Promise<AppleAppInfoLocalizationSnapshot[]> {
+  const result = await ascRequest(token, 'GET', `/appInfos/${appInfoId}/appInfoLocalizations`);
+  return asArray(result.data).map(localization => ({
+    localizationId: localization.id,
+    locale: localization.attributes?.locale as string | undefined,
+    privacyPolicyUrl: localization.attributes?.privacyPolicyUrl as string | undefined,
+    privacyChoicesUrl: localization.attributes?.privacyChoicesUrl as string | undefined,
+  }));
+}
+
 async function fetchAppInfos(token: string, appId: string): Promise<{ appInfos: AppleAppInfoSnapshot[]; appStoreAgeRating: string | undefined }> {
   const query = new URLSearchParams({ include: 'ageRatingDeclaration,primaryCategory,secondaryCategory' });
   const result = await ascRequest(token, 'GET', `/apps/${appId}/appInfos?${query}`);
   const included = result.included ?? [];
 
   let appStoreAgeRating: string | undefined;
-  const appInfos = asArray(result.data).map(appInfo => {
+  const appInfos: AppleAppInfoSnapshot[] = [];
+  for (const appInfo of asArray(result.data)) {
     const ageRatingDeclarationId = relationshipId(appInfo, 'ageRatingDeclaration');
     const declaration = included.find(item => item.type === 'ageRatingDeclarations' && item.id === ageRatingDeclarationId);
     const state = (appInfo.attributes?.state ?? appInfo.attributes?.appStoreState) as string | undefined;
     appStoreAgeRating = (appInfo.attributes?.appStoreAgeRating as string | undefined) ?? appStoreAgeRating;
-    return {
+    appInfos.push({
       appInfoId: appInfo.id,
       state,
       editable: state !== undefined && EDITABLE_APP_INFO_STATES.has(state),
@@ -53,8 +72,9 @@ async function fetchAppInfos(token: string, appId: string): Promise<{ appInfos: 
       ageRatingDeclaration: declaration?.attributes ?? {},
       primaryCategoryId: relationshipId(appInfo, 'primaryCategory'),
       secondaryCategoryId: relationshipId(appInfo, 'secondaryCategory'),
-    };
-  });
+      localizations: await fetchAppInfoLocalizations(token, appInfo.id),
+    });
+  }
 
   return { appInfos, appStoreAgeRating };
 }
@@ -75,12 +95,19 @@ export async function pullAppleMetadata(token: string, metadata: AppleAppMetadat
   };
 }
 
+export type AppleLocalizationChanges = {
+  localizationId: string;
+  locale: string | undefined;
+  changes: AttributeChange[];
+};
+
 export type ApplePushPlan = {
   current: ApplePullResult;
   targetAppInfo: AppleAppInfoSnapshot | undefined;
   ageRatingChanges: AttributeChange[];
   categoryChanges: AttributeChange[];
   contentRightsChanges: AttributeChange[];
+  localizationChanges: AppleLocalizationChanges[];
 };
 
 export function planApplePush(current: ApplePullResult, metadata: AppleAppMetadata): ApplePushPlan {
@@ -98,18 +125,30 @@ export function planApplePush(current: ApplePullResult, metadata: AppleAppMetada
 
   const contentRightsChanges = computeAttributeChanges({ contentRightsDeclaration: metadata.contentRightsDeclaration }, { contentRightsDeclaration: current.contentRightsDeclaration });
 
-  return { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges };
+  // The privacy urls apply to every locale of the app's "App-Informationen".
+  const localizationChanges: AppleLocalizationChanges[] = [];
+  for (const localization of targetAppInfo?.localizations ?? []) {
+    const changes = computeAttributeChanges(
+      { privacyPolicyUrl: metadata.privacyPolicyUrl, privacyChoicesUrl: metadata.privacyChoicesUrl },
+      { privacyPolicyUrl: localization.privacyPolicyUrl, privacyChoicesUrl: localization.privacyChoicesUrl }
+    );
+    if (changes.length > 0) {
+      localizationChanges.push({ localizationId: localization.localizationId, locale: localization.locale, changes });
+    }
+  }
+
+  return { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges };
 }
 
 export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun: boolean): Promise<boolean> {
-  const { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges } = plan;
-  const hasChanges = ageRatingChanges.length > 0 || categoryChanges.length > 0 || contentRightsChanges.length > 0;
+  const { current, targetAppInfo, ageRatingChanges, categoryChanges, contentRightsChanges, localizationChanges } = plan;
+  const hasChanges = ageRatingChanges.length > 0 || categoryChanges.length > 0 || contentRightsChanges.length > 0 || localizationChanges.length > 0;
   if (!hasChanges) {
     console.log('   ✅ Apple: Keine Abweichungen - nichts zu tun.');
     return false;
   }
 
-  if ((ageRatingChanges.length > 0 || categoryChanges.length > 0) && targetAppInfo && !targetAppInfo.editable) {
+  if ((ageRatingChanges.length > 0 || categoryChanges.length > 0 || localizationChanges.length > 0) && targetAppInfo && !targetAppInfo.editable) {
     throw new Error(
       `Apple: Es gibt Abweichungen, aber keine bearbeitbare AppInfo (Status: ${targetAppInfo.state}). ` +
         'Altersfreigabe und Kategorien sind nur änderbar, solange eine App-Store-Version im Entwurfsstatus existiert. ' +
@@ -143,6 +182,15 @@ export async function applyApplePush(token: string, plan: ApplePushPlan, dryRun:
       }
       await ascRequest(token, 'PATCH', `/appInfos/${targetAppInfo.appInfoId}`, {
         data: { type: 'appInfos', id: targetAppInfo.appInfoId, relationships },
+      });
+    }
+  }
+
+  for (const { localizationId, locale, changes } of localizationChanges) {
+    console.log(`   📝 Apple App-Informationen (${locale}):\n${formatChanges(changes, '      ')}`);
+    if (!dryRun) {
+      await ascRequest(token, 'PATCH', `/appInfoLocalizations/${localizationId}`, {
+        data: { type: 'appInfoLocalizations', id: localizationId, attributes: changesToAttributeObject(changes) },
       });
     }
   }

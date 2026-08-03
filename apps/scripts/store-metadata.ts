@@ -124,7 +124,7 @@ async function handleApple(options: CliOptions, appleToken: string, entry: Store
     for (const appInfo of current.appInfos) {
       console.log(`   AppInfo ${appInfo.appInfoId} (${appInfo.state}${appInfo.editable ? ', bearbeitbar' : ''}): Kategorie ${appInfo.primaryCategoryId ?? '-'}`);
     }
-    const driftedChanges = [...plan.ageRatingChanges, ...plan.categoryChanges, ...plan.contentRightsChanges];
+    const driftedChanges = [...plan.ageRatingChanges, ...plan.categoryChanges, ...plan.contentRightsChanges, ...plan.localizationChanges.flatMap(localization => localization.changes)];
     if (driftedChanges.length > 0) {
       console.log(`   ⚠️ Abweichungen zur Ground Truth (Store -> Soll):\n${formatChanges(driftedChanges, '      ')}`);
     } else {

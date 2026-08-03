@@ -9,7 +9,8 @@ CLI mit den Stores abgeglichen.
 
 - **Typen + Defaults**: `packages/common/src/StoreAppMetadata.ts` (`repo-depkit-common`)
 - **Ground Truth pro App** (jede App verwaltet ihre Metadaten selbst):
-  - `apps/frontend/app/store-metadata.ts` (alle Rocket-Meals-Tenants: Demo, SWOSY, Studi|Futter)
+  - `apps/frontend/app/store-metadata.ts` (alle Rocket-Meals-Tenants: Demo, SWOSY,
+    Studi|Futter - gemeinsame Werte mit wenigen Tenant-Overrides, z. B. Datenschutz-URL)
   - `apps/geonexia/frontend/store-metadata.ts`
   - `apps/score-tracker/frontend/store-metadata.ts`
 - **CLI**: `apps/scripts/store-metadata.ts` (Workspace `rocket-meals-scripts`)
@@ -17,6 +18,23 @@ CLI mit den Stores abgeglichen.
 Es werden **nur Felder verwaltet, die in der Ground Truth gesetzt sind** - alles andere
 bleibt in den Stores unangetastet. Die fachliche Begründung der Altersfreigabe-Antworten
 steht in `docs/Apple Altersfreigabe.txt`.
+
+## Automatischer Sync im Submit-Workflow
+
+Die `ios-submit-review-*`-Workflows setzen `STORE_METADATA_MODULE`, dadurch gleicht
+`apps/scripts/submit-ios-review.ts` die App-Informationen **vor jeder Review-Einreichung**
+mit der Ground Truth ab - genau dann existiert garantiert eine bearbeitbare Version.
+Neue Apple-Pflichtangaben also einfach in der Ground Truth ergänzen; der nächste Submit
+verteilt sie. Ein fehlgeschlagener Metadaten-Sync blockiert die Einreichung nicht,
+sondern loggt eine deutliche Warnung.
+
+## Review-Submit pro Tenant deaktivieren
+
+In `apps/frontend/app/config.ts` steuert `iosAppStoreReviewSubmitEnabled` pro Tenant, ob
+der Submit-Workflow Builds zur App-Review einreicht. Die Rocket-Meals-Demo-App steht auf
+`false` (reine Test-App), SWOSY und Studi|Futter auf `true`. Nicht gesetzt bedeutet
+`true`. Der Workflow überspringt den Submit-Step dann komplett (mit Log-Hinweis) - auch
+bei manuellen `workflow_dispatch`-Läufen.
 
 ## Kommandos
 
@@ -69,6 +87,7 @@ explizit per `--store` angefordert).
 | Altersfreigabe-Fragebogen (`ageRatingDeclaration`) | ✅ per API | ❌ keine öffentliche API |
 | Kategorien (`primaryCategoryId`/`secondaryCategoryId`) | ✅ | ❌ keine öffentliche API |
 | Content-Rights-Erklärung | ✅ | - |
+| Datenschutz-URL (`privacyPolicyUrl`/`privacyChoicesUrl`) | ✅ (alle Sprachen) | ❌ keine öffentliche API |
 | Kontaktdaten / Standardsprache | - | ✅ (`edits/details`) |
 | Store-Eintrag (Titel, Beschreibungen) | (noch nicht) | ✅ (`edits/listings`) |
 
