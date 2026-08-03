@@ -9,7 +9,7 @@
 // questions (like the age rating questionnaire) only need to be answered here once.
 //
 // Bundle ids come from config.ts so they cannot drift apart from the builds.
-import { AppleAppMetadata, DEFAULT_APPLE_AGE_RATING_DECLARATION, GooglePlayAppMetadata, StoreAppMetadata } from 'repo-depkit-common';
+import { AppLinks, AppleAppMetadata, DEFAULT_APPLE_AGE_RATING_DECLARATION, GooglePlayAppMetadata, ROCKET_MEALS_WEB_HOST, StoreAppMetadata, WikiCustomIds } from 'repo-depkit-common';
 import { CustomerConfig, devConfig, studiFutterConfig, swosyConfig } from './config';
 
 // Tenant-specific deviations from the shared metadata below (e.g. the privacy policy
@@ -18,12 +18,6 @@ type TenantStoreOverrides = {
 	apple?: Partial<Omit<AppleAppMetadata, 'bundleId'>>;
 	google?: Partial<Omit<GooglePlayAppMetadata, 'packageName'>>;
 };
-
-// Every tenant web app serves its privacy policy as a public wiki page - the same url
-// is used for the Google SSO consent screen (documented in apps/backend/SSO_GOOGLE.md).
-function tenantPrivacyPolicyUrl(config: CustomerConfig): string {
-	return `https://rocket-meals.de${config.baseUrl}/wikis?custom_id=privacy-policy`;
-}
 
 // All tenants ship the same app and therefore share the same answers to Apple's age
 // rating questionnaire and the same category. The reasoning behind the answers is
@@ -36,7 +30,9 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 		metadata.apple = {
 			bundleId: config.bundleIdIos,
 			primaryCategoryId: 'FOOD_AND_DRINK',
-			privacyPolicyUrl: tenantPrivacyPolicyUrl(config),
+			// Every tenant web app serves its privacy policy as a public wiki page - the
+			// same url is used for the Google SSO consent screen (apps/backend/SSO_GOOGLE.md).
+			privacyPolicyUrl: AppLinks.getPublicWikiUrl(config.baseUrl, WikiCustomIds.PRIVACY_POLICY),
 			...overrides.apple,
 			ageRatingDeclaration: {
 				...DEFAULT_APPLE_AGE_RATING_DECLARATION,
@@ -55,7 +51,7 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 		metadata.google = {
 			packageName: config.bundleIdAndroid,
 			contactEmail: 'nils@baumgartner-software.de',
-			contactWebsite: 'https://rocket-meals.de',
+			contactWebsite: ROCKET_MEALS_WEB_HOST,
 			// Store listing texts (title, descriptions) are tenant specific and not yet
 			// managed here - "store-metadata:pull" shows the current values from Google.
 			...overrides.google,
