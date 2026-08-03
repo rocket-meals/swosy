@@ -2,9 +2,13 @@ import * as fs from 'node:fs';
 import { JsonApiResource, asArray, ascRequest, createAppStoreConnectToken, findAppId, readRequiredEnv } from './asc-api';
 
 // Daily App Review status check. Exit code semantics for CI:
-// - Apple (or the developer) rejected a version           -> exit 1 (red run = action needed)
-// - a version is approved and waits for the manual release -> exit 0 with a loud hint
-// - anything else (in review, released, draft, ...)        -> exit 0, nothing to do
+// - Apple (or the developer) rejected a version              -> exit 1 (red run = action needed)
+// - a version is approved and waits for its developer release -> release it now (exit 1 if that fails)
+// - anything else (in review, released, draft, ...)           -> exit 0, nothing to do
+//
+// New submissions use releaseType AFTER_APPROVAL (Apple publishes right after the
+// review), so the release branch here only catches versions submitted before that
+// default or switched back to MANUAL in App Store Connect.
 
 // https://developer.apple.com/documentation/appstoreconnectapi/appstoreversionstate
 const REJECTED_APP_VERSION_STATES = new Set(['REJECTED', 'METADATA_REJECTED', 'DEVELOPER_REJECTED', 'INVALID_BINARY']);
@@ -84,11 +88,18 @@ async function main(): Promise<void> {
 
   const releasable = versions.filter(v => RELEASABLE_APP_VERSION_STATES.has(versionState(v)));
   if (releasable.length > 0) {
+    for (const version of releasable) {
+      console.log(`🚀 Version ${versionString(version)} wurde von Apple freigegeben - veröffentliche sie jetzt ...`);
+      await ascRequest(token, 'POST', '/appStoreVersionReleaseRequests', {
+        data: {
+          type: 'appStoreVersionReleaseRequests',
+          relationships: { appStoreVersion: { data: { type: 'appStoreVersions', id: version.id } } },
+        },
+      });
+    }
     const details = releasable.map(v => versionString(v)).join(', ');
-    appendStepSummary([`🎉 **Freigegeben - kann veröffentlicht werden:** ${details}`, '']);
-    console.log(
-      `🎉 Version(en) ${details} wurden von Apple freigegeben und können in App Store Connect veröffentlicht werden.`
-    );
+    appendStepSummary([`🚀 **Freigegeben und automatisch veröffentlicht:** ${details}`, '']);
+    console.log(`🎉 Version(en) ${details} wurden automatisch im App Store veröffentlicht.`);
     return;
   }
 

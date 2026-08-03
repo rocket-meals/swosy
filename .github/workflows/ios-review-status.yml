@@ -1,9 +1,9 @@
 name: "🍎 iOS App Review Status"
 
 on:
-  # Daily status check: fails loudly when Apple rejected a version, succeeds with a
-  # hint when an approved version waits for its manual release, and is a quiet
-  # no-op otherwise.
+  # Daily status check: fails loudly when Apple rejected a version, automatically
+  # publishes an approved version that still waits for its developer release (new
+  # submissions release themselves via AFTER_APPROVAL), and is a quiet no-op otherwise.
   schedule:
     - cron: '30 5 * * *'
 
