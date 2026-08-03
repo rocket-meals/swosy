@@ -11,11 +11,34 @@ describe('loadStoreMetadataModule', () => {
     for (const entry of metadata) {
       expect(entry.apple?.ageRatingDeclaration?.gambling).toBe(false);
       // Documented deviation from the defaults, see docs/Apple Altersfreigabe.txt
-      expect(entry.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT_OR_MILD');
+      expect(entry.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT');
+      // Explicit null answers so the missing-field check does not flag them
+      expect(entry.apple?.ageRatingDeclaration?.developerAgeRatingInfoUrl).toBeNull();
       expect(entry.apple?.primaryCategoryId).toBe('FOOD_AND_DRINK');
       // Derived from config.ts baseUrl, same pattern as the Google SSO consent screen
       expect(entry.apple?.privacyPolicyUrl).toMatch(/^https:\/\/rocket-meals\.de\/[a-z-]+\/wikis\?custom_id=privacy-policy$/);
     }
+  });
+
+  it('applies the tenant overrides on top of the shared metadata', () => {
+    const metadata = loadStoreMetadataModule('apps/frontend/app/store-metadata.ts');
+    const demo = metadata.find(entry => entry.apple?.bundleId === 'de.baumgartner-software.rocket-meals-demo');
+    const swosy = metadata.find(entry => entry.apple?.bundleId === 'de.baumgartner-software.swosy');
+    const studiFutter = metadata.find(entry => entry.apple?.bundleId === 'de.stwh.app');
+
+    expect(demo?.apple?.ageRatingDeclaration?.messagingAndChat).toBe(false);
+    expect(demo?.apple?.contentRightsDeclaration).toBe('DOES_NOT_USE_THIRD_PARTY_CONTENT');
+
+    expect(swosy?.apple?.ageRatingDeclaration?.messagingAndChat).toBe(true);
+    expect(swosy?.apple?.ageRatingDeclaration?.userGeneratedContent).toBe(true);
+    // Shared answers must survive the override merge
+    expect(swosy?.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT');
+    expect(swosy?.apple?.contentRightsDeclaration).toBe('USES_THIRD_PARTY_CONTENT');
+    expect(swosy?.apple?.secondaryCategoryId).toBe('NAVIGATION');
+    expect(swosy?.apple?.privacyChoicesUrl).toBe('https://rocket-meals.de/swosy/data-access');
+
+    expect(studiFutter?.apple?.secondaryCategoryId).toBe('EDUCATION');
+    expect(studiFutter?.apple?.ageRatingDeclaration?.userGeneratedContent).toBe(true);
   });
 
   it('loads the geonexia ground truth', () => {

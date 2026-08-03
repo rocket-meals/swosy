@@ -72,12 +72,16 @@ export class AppLinks {
     return this.build(AppScreens.CAMPUS, params);
   }
 
+  // Public web url of a tenant app screen, e.g. https://rocket-meals.de/swosy/data-access
+  static getPublicWebUrl(tenantBaseUrl: string, path: AppScreens | string, params: AppLinkParam[] = []): string {
+    return `${ROCKET_MEALS_WEB_HOST}${tenantBaseUrl}/${this.build(path, params)}`;
+  }
+
   // Public web url of a tenant's wiki page, e.g.
   // https://rocket-meals.de/swosy/wikis?custom_id=privacy-policy - used as the privacy
   // policy link in the app stores and the Google SSO consent screen.
   static getPublicWikiUrl(tenantBaseUrl: string, customId: WikiCustomIds | string): string {
-    const fullPath = this.build(AppScreens.WIKIS, [{ key: WIKIS_CUSTOM_ID_PARAM, value: customId }]);
-    return `${ROCKET_MEALS_WEB_HOST}${tenantBaseUrl}/${fullPath}`;
+    return this.getPublicWebUrl(tenantBaseUrl, AppScreens.WIKIS, [{ key: WIKIS_CUSTOM_ID_PARAM, value: customId }]);
   }
 
   static getGithubPagesBaseUrl(repositoryOwner: string, repositoryName: string): string {

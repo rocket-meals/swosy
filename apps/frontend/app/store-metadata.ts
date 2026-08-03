@@ -9,7 +9,7 @@
 // questions (like the age rating questionnaire) only need to be answered here once.
 //
 // Bundle ids come from config.ts so they cannot drift apart from the builds.
-import { AppLinks, AppleAppMetadata, DEFAULT_APPLE_AGE_RATING_DECLARATION, GooglePlayAppMetadata, ROCKET_MEALS_WEB_HOST, StoreAppMetadata, WikiCustomIds } from 'repo-depkit-common';
+import { AppLinks, AppScreens, AppleAppMetadata, DEFAULT_APPLE_AGE_RATING_DECLARATION, GooglePlayAppMetadata, ROCKET_MEALS_WEB_HOST, StoreAppMetadata, WikiCustomIds } from 'repo-depkit-common';
 import { CustomerConfig, devConfig, studiFutterConfig, swosyConfig } from './config';
 
 // Tenant-specific deviations from the shared metadata below (e.g. the privacy policy
@@ -30,19 +30,19 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 		metadata.apple = {
 			bundleId: config.bundleIdIos,
 			primaryCategoryId: 'FOOD_AND_DRINK',
+			contentRightsDeclaration: 'DOES_NOT_USE_THIRD_PARTY_CONTENT',
 			// Every tenant web app serves its privacy policy as a public wiki page - the
 			// same url is used for the Google SSO consent screen (apps/backend/SSO_GOOGLE.md).
 			privacyPolicyUrl: AppLinks.getPublicWikiUrl(config.baseUrl, WikiCustomIds.PRIVACY_POLICY),
 			...overrides.apple,
+			// Answers of the updated (2025) Apple questionnaire, pulled from the fully
+			// configured Rocket Meals demo app in App Store Connect. The reasoning is
+			// documented in docs/Apple Altersfreigabe.txt - keep both in sync.
 			ageRatingDeclaration: {
 				...DEFAULT_APPLE_AGE_RATING_DECLARATION,
 				// Canteens may list alcoholic drinks in their menus.
-				alcoholTobaccoOrDrugUseOrReferences: 'INFREQUENT_OR_MILD',
-				contests: 'INFREQUENT_OR_MILD',
-				// The capability questions of Apple's 2025 questionnaire (user generated
-				// content: yes, messaging/chat: yes - see docs/Apple Altersfreigabe.txt)
-				// can be added here once "store-metadata:pull" shows their API attribute
-				// names for the ageRatingDeclaration.
+				alcoholTobaccoOrDrugUseOrReferences: 'INFREQUENT',
+				contests: 'INFREQUENT',
 				...overrides.apple?.ageRatingDeclaration,
 			},
 		};
@@ -60,13 +60,26 @@ function tenantStoreMetadata(config: CustomerConfig, overrides: TenantStoreOverr
 	return metadata;
 }
 
+// Tenant overrides win over the shared values. They mirror what is configured in App
+// Store Connect for each tenant - "store-metadata:pull" shows the current store values.
 export function getStoreMetadata(): StoreAppMetadata[] {
 	return [
 		tenantStoreMetadata(devConfig),
-		// Tenant overrides win over the shared values, e.g.
-		// { apple: { privacyPolicyUrl: 'https://.../datenschutz' } } - "store-metadata:pull"
-		// shows what is currently stored in App Store Connect.
-		tenantStoreMetadata(swosyConfig, {}),
-		tenantStoreMetadata(studiFutterConfig, {}),
+		tenantStoreMetadata(swosyConfig, {
+			apple: {
+				contentRightsDeclaration: 'USES_THIRD_PARTY_CONTENT',
+				secondaryCategoryId: 'NAVIGATION',
+				privacyChoicesUrl: AppLinks.getPublicWebUrl(swosyConfig.baseUrl, AppScreens.DATA_ACCESS),
+				// The tenant apps offer chat/support and user generated content (see
+				// docs/Apple Altersfreigabe.txt), unlike the demo app.
+				ageRatingDeclaration: { messagingAndChat: true, userGeneratedContent: true },
+			},
+		}),
+		tenantStoreMetadata(studiFutterConfig, {
+			apple: {
+				secondaryCategoryId: 'EDUCATION',
+				ageRatingDeclaration: { messagingAndChat: true, userGeneratedContent: true },
+			},
+		}),
 	];
 }
