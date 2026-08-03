@@ -2,8 +2,7 @@ import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import { base64url } from './base64url';
 
-// Shared App Store Connect API helpers used by submit-ios-review.ts and
-// check-ios-review-status.ts.
+// Shared App Store Connect API helpers used by submit-ios-review.ts.
 
 export const API_BASE = 'https://api.appstoreconnect.apple.com/v1';
 
