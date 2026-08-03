@@ -185,6 +185,16 @@ export const ComponentIds = {
 	DICE_MODE_BUTTON_PREFIX: 'dice-mode-button-',
 	DICE_ROLL_BUTTON: 'dice-roll-button',
 
+	// First-launch onboarding
+	ONBOARDING_SKIP_BUTTON: 'onboarding-skip-button',
+	ONBOARDING_NEXT_BUTTON: 'onboarding-next-button',
+	ONBOARDING_BACK_BUTTON: 'onboarding-return-button',
+
+	// Settings screen: legal & support
+	SETTINGS_PRIVACY_ROW: 'settings-privacy-row',
+	SETTINGS_SUPPORT_ROW: 'settings-support-row',
+	SETTINGS_REPLAY_ONBOARDING_ROW: 'settings-replay-onboarding-row',
+
 	// Settings screen: debug mode
 	SETTINGS_VERSION_ROW: 'settings-version-row',
 	SETTINGS_FOOTER: 'settings-footer',

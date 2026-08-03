@@ -27,9 +27,10 @@ import { loadAppSettings } from '../helpers/AppSettingsStorage';
 import { loadDebugState } from '../helpers/DebugStorage';
 import { installGlobalDebugErrorHandler } from '../helpers/DebugLogger';
 import type { RootState } from '../store/store';
-import { getAppIconInsideExpoLocalSaved } from '../config';
+import { getAppIconInsideExpoLocalSaved, getCustomerConfig } from '../config';
 import { ComponentIds } from '../constants/ComponentIds';
 import ExpoUpdateLoader from '../components/ExpoUpdateLoader';
+import OnboardingScreen from '../components/OnboardingScreen';
 import { useExpoUpdateForegroundCheck } from '../hooks/useExpoUpdateForegroundCheck';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -121,7 +122,7 @@ function ThemedDrawerNavigator() {
 				<Drawer.Screen
 					name="settings/index"
 					options={{
-						title: 'Settings',
+						title: 'Einstellungen',
 						drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 					}}
 				/>
@@ -173,7 +174,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 		},
 		{
 			key: 'settings/index',
-			label: 'Settings',
+			label: 'Einstellungen',
 			nativeID: ComponentIds.DRAWER_ITEM_SETTINGS,
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('settings/index'),
@@ -183,13 +184,30 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	return (
 		<AppDrawer
 			logoSource={getAppIconInsideExpoLocalSaved()}
-			title="Score Tracker"
+			title={getCustomerConfig().projectName}
 			items={items}
 			activeKey={activeKey}
 			primaryColor={PRIMARY_COLOR}
 			onLogoPress={() => props.navigation.navigate('index')}
 		/>
 	);
+}
+
+// ─── Onboarding gate ──────────────────────────────────────────────────────────
+
+/**
+ * Shows the first-launch tour instead of the app until it was completed (or
+ * skipped). `onboardingCompleted` stays `undefined` until the persisted app
+ * settings are hydrated, so returning users go straight into the app without
+ * the tour flashing up; only a resolved `false` shows it.
+ */
+function OnboardingGate({ children }: Readonly<{ children: React.ReactNode }>) {
+	const onboardingCompleted = useSelector((state: RootState) => state.appSettings.onboardingCompleted);
+
+	if (onboardingCompleted === false) {
+		return <OnboardingScreen />;
+	}
+	return <>{children}</>;
 }
 
 // ─── Root layout ──────────────────────────────────────────────────────────────
@@ -256,7 +274,9 @@ export default function Layout() {
 								<ToastProvider>
 									<ModalProvider>
 										<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
-											<ThemedDrawerNavigator />
+											<OnboardingGate>
+												<ThemedDrawerNavigator />
+											</OnboardingGate>
 										</KeyboardAvoidingView>
 									</ModalProvider>
 								</ToastProvider>

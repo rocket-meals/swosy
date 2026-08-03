@@ -137,7 +137,9 @@ store.subscribe(() => {
 	const appSettings = state.appSettings;
 	if (appSettings !== _lastSavedAppSettings) {
 		_lastSavedAppSettings = appSettings;
-		saveAppSettings(appSettings);
+		// `onboardingCompleted` is tri-state in the slice (undefined until
+		// hydrated) but persisted as a plain boolean.
+		saveAppSettings({ ...appSettings, onboardingCompleted: appSettings.onboardingCompleted === true });
 	}
 
 	const debug = state.debug;

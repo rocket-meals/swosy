@@ -8,12 +8,20 @@ export type AppSettingsSliceState = {
 	columnsPortrait: ColumnsCount;
 	columnsLandscape: ColumnsCount;
 	gamesSortMode: GamesSortMode;
+	/**
+	 * Whether the first-launch onboarding was completed (or skipped).
+	 * `undefined` until the persisted settings are hydrated - the onboarding
+	 * gate in app/_layout only shows the intro once this resolved to `false`,
+	 * so returning users never see it flash while the state loads.
+	 */
+	onboardingCompleted: boolean | undefined;
 };
 
 const initialState: AppSettingsSliceState = {
 	columnsPortrait: 1,
 	columnsLandscape: 2,
 	gamesSortMode: 'lastPlayed',
+	onboardingCompleted: undefined,
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
@@ -27,6 +35,7 @@ const appSettingsSlice = createSlice({
 			state.columnsPortrait = action.payload.columnsPortrait;
 			state.columnsLandscape = action.payload.columnsLandscape;
 			state.gamesSortMode = action.payload.gamesSortMode;
+			state.onboardingCompleted = action.payload.onboardingCompleted === true;
 		},
 
 		setColumnsPortrait(state, action: PayloadAction<ColumnsCount>) {
@@ -40,8 +49,16 @@ const appSettingsSlice = createSlice({
 		setGamesSortMode(state, action: PayloadAction<GamesSortMode>) {
 			state.gamesSortMode = action.payload;
 		},
+
+		/**
+		 * Mark the first-launch onboarding as done (or reset it to `false` via the
+		 * settings screen's "Einführung erneut ansehen" row, which shows it again).
+		 */
+		setOnboardingCompleted(state, action: PayloadAction<boolean>) {
+			state.onboardingCompleted = action.payload;
+		},
 	},
 });
 
-export const { loadAppSettings, setColumnsPortrait, setColumnsLandscape, setGamesSortMode } = appSettingsSlice.actions;
+export const { loadAppSettings, setColumnsPortrait, setColumnsLandscape, setGamesSortMode, setOnboardingCompleted } = appSettingsSlice.actions;
 export default appSettingsSlice.reducer;

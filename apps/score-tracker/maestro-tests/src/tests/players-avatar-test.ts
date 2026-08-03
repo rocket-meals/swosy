@@ -27,6 +27,9 @@ const test = new MaestroTestCase({
 test
 	.openPage('http://localhost:8082/players')
 	.waitForAnimationToEnd()
+	// First launch shows the onboarding tour - skip it (no-op when already dismissed)
+	.optionalTapOnId(ComponentIds.ONBOARDING_SKIP_BUTTON)
+	.waitForAnimationToEnd()
 
 	// Create a friend - opens the friend edit modal right away
 	.tapOnId(ComponentIds.PLAYERS_SCREEN_ADD_BUTTON)
