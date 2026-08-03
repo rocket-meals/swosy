@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ_JemDQCTt6OHkq3EXb","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/OnboardingScreen.tsx",96
+"AZ_JemDQCTt6OHkq3EXc","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/OnboardingScreen.tsx",139
 "AZ_ImTrLkMhpq5gU48_G","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",50
 "AZ_ImTrLkMhpq5gU48_H","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",53
 "AZ_HfXtu4OT8cE4gH-ee","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",150

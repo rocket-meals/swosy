@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 48 | 36 |
+| 🔧 Maintainability | 50 | 36 |
 
-**Total issues:** 62 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 64 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -72,7 +72,7 @@
   apps/scripts/store-metadata-extract.ts:53
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
 
-## 🔧 Maintainability (36/48)
+## 🔧 Maintainability (36/50)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -158,6 +158,14 @@
   apps/score-tracker/frontend/components/GameImagePicker.tsx:338
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
 
+- **Mark the props of the component as read-only.**
+  apps/score-tracker/frontend/components/OnboardingScreen.tsx:96
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/OnboardingScreen.tsx#L96
+
+- **Mark the props of the component as read-only.**
+  apps/score-tracker/frontend/components/OnboardingScreen.tsx:139
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/OnboardingScreen.tsx#L139
+
 - **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
   apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts:115
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/helpers/BuiltinTimesMigration.ts#L115
@@ -209,12 +217,4 @@
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/scripts/check-build-version.ts:23
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
-
-- **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
-  apps/scripts/check-build-version.ts:78
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L78
-
-- **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
-  apps/scripts/check-build-version.ts:85
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
 
