@@ -22,7 +22,7 @@ type TenantStoreOverrides = {
 // Every tenant web app serves its privacy policy as a public wiki page - the same url
 // is used for the Google SSO consent screen (documented in apps/backend/SSO_GOOGLE.md).
 function tenantPrivacyPolicyUrl(config: CustomerConfig): string {
-	return `https://rocket-meals.github.io${config.baseUrl}/wikis?wikis_custom_id=privacy-policy`;
+	return `https://rocket-meals.de${config.baseUrl}/wikis?custom_id=privacy-policy`;
 }
 
 // All tenants ship the same app and therefore share the same answers to Apple's age

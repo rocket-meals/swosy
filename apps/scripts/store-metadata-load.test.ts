@@ -14,7 +14,7 @@ describe('loadStoreMetadataModule', () => {
       expect(entry.apple?.ageRatingDeclaration?.alcoholTobaccoOrDrugUseOrReferences).toBe('INFREQUENT_OR_MILD');
       expect(entry.apple?.primaryCategoryId).toBe('FOOD_AND_DRINK');
       // Derived from config.ts baseUrl, same pattern as the Google SSO consent screen
-      expect(entry.apple?.privacyPolicyUrl).toMatch(/^https:\/\/rocket-meals\.github\.io\/[a-z-]+\/wikis\?wikis_custom_id=privacy-policy$/);
+      expect(entry.apple?.privacyPolicyUrl).toMatch(/^https:\/\/rocket-meals\.de\/[a-z-]+\/wikis\?custom_id=privacy-policy$/);
     }
   });
 

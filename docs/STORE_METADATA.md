@@ -31,7 +31,7 @@ Review gehen. Nur wenn `STORE_METADATA_MODULE` gar nicht gesetzt ist (z. B. loka
 Aufruf), wird der Sync mit Log-Hinweis übersprungen.
 
 Die Datenschutz-URL der Rocket-Meals-Tenants wird aus der `baseUrl` in `config.ts`
-abgeleitet (`https://rocket-meals.github.io/<tenant>/wikis?wikis_custom_id=privacy-policy`,
+abgeleitet (`https://rocket-meals.de/<tenant>/wikis?custom_id=privacy-policy`,
 gleiches Schema wie beim Google-SSO-Zustimmungsbildschirm, siehe
 `apps/backend/SSO_GOOGLE.md`) und kann pro Tenant per Override ersetzt werden.
 
