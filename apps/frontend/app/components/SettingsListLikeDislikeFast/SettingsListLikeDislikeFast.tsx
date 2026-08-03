@@ -1,4 +1,4 @@
-// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
+// Hinweis: Neue SettingsList-Komponenten bitte in der Playbook-Registry (packages/common-ui/src/playbook) registrieren.
 import React from 'react';
 import { SettingsListLikeDislikeFast as CommonSettingsListLikeDislikeFast } from 'repo-depkit-common-ui';
 import type { SettingsListLikeDislikeFastProps } from 'repo-depkit-common-ui';

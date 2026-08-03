@@ -21,4 +21,11 @@ export enum CommonUiComponentIds {
 	AVATAR_EDITOR_DEBUG_PRESET_PREFIX = 'avatar-editor-debug-preset-',
 	AVATAR_EDITOR_CUSTOMIZE_ROW = 'avatar-editor-customize-row',
 	AVATAR_EDITOR_CATEGORY_LIST = 'avatar-editor-category-list',
+
+	// Component playbook (see src/playbook). The wrapper around the component
+	// under test plus the prefixes for list items, knob rows and variant rows.
+	PLAYBOOK_TARGET = 'playbook-target',
+	PLAYBOOK_ITEM_PREFIX = 'playbook-item-',
+	PLAYBOOK_KNOB_PREFIX = 'playbook-knob-',
+	PLAYBOOK_VARIANT_PREFIX = 'playbook-variant-',
 }

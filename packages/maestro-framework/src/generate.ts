@@ -42,18 +42,25 @@ export async function generateMaestroTests(testsDir: string, generatedDir: strin
 		const modulePath = path.join(testsDir, testFile);
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const testModule = require(modulePath) as { default?: unknown };
-		const testCase = testModule.default;
+		const exported = testModule.default;
 
-		if (!(testCase instanceof MaestroTestCase)) {
+		// A test file may export a single MaestroTestCase or an array of them
+		// (e.g. one generated test per playbook registry entry).
+		const testCases = Array.isArray(exported) ? exported : [exported];
+		const validTestCases = testCases.filter((testCase): testCase is MaestroTestCase => testCase instanceof MaestroTestCase);
+
+		if (validTestCases.length === 0) {
 			console.warn(
-				`Skipping ${testFile}: default export is not a MaestroTestCase instance.`,
+				`Skipping ${testFile}: default export is not a MaestroTestCase instance (or array of instances).`,
 			);
 			continue;
 		}
 
-		const outputName = `${testCase.outputFileName}.yaml`;
-		const outputPath = path.join(generatedDir, outputName);
-		fs.writeFileSync(outputPath, testCase.toYaml(), 'utf-8');
-		console.log(`Generated: ${outputPath}`);
+		for (const testCase of validTestCases) {
+			const outputName = `${testCase.outputFileName}.yaml`;
+			const outputPath = path.join(generatedDir, outputName);
+			fs.writeFileSync(outputPath, testCase.toYaml(), 'utf-8');
+			console.log(`Generated: ${outputPath}`);
+		}
 	}
 }

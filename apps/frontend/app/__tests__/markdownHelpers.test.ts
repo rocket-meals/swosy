@@ -1,4 +1,4 @@
-import { PARSE_MARKDOWN_REGEX, extractTextAndLink } from './markdownHelpers';
+import { PARSE_MARKDOWN_REGEX, extractTextAndLink } from '../app/(app)/course-timetable/markdownHelpers';
 
 describe('extractTextAndLink correctness', () => {
 	it('extracts the label, link and remaining text', () => {

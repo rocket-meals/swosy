@@ -32,6 +32,12 @@ const Index = () => {
 
 	const listItems = [
 		{
+			key: 'playbook',
+			label: 'Playbook (Common-UI Komponenten)',
+			leftIcon: <MaterialCommunityIcons name="puzzle-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/playbook'),
+		},
+		{
 			key: 'onboarding',
 			label: translate(TranslationKeys.onboarding),
 			leftIcon: <MaterialCommunityIcons name="rocket-launch" size={24} color={theme.screen.icon} />,
@@ -98,30 +104,12 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/app-download'),
 		},
 		{
-			key: 'react-native-qrcode-svg',
-			label: translate(TranslationKeys.react_native_qrcode_svg),
-			leftIcon: <MaterialCommunityIcons name="qrcode" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/react-native-qrcode-svg'),
-		},
-		{
 			key: 'markdown-test',
 			label: translate(TranslationKeys.markdown_test),
 			leftIcon: <MaterialCommunityIcons name="language-markdown-outline" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/markdown-test'),
 		},
 
-		{
-			key: 'settings-list-components',
-			label: 'SettingsList Komponenten',
-			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/settings-list-components'),
-		},
-		{
-			key: 'test-use-modal',
-			label: translate(TranslationKeys.test_use_modal),
-			leftIcon: <MaterialCommunityIcons name="test-tube" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/test-use-modal'),
-		},
 		{
 			key: 'game-ideas',
 			label: translate(TranslationKeys.game_ideas),
@@ -133,12 +121,6 @@ const Index = () => {
 			label: translate(TranslationKeys.food_wishlist),
 			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/food-wishlist'),
-		},
-		{
-			key: 'feature-wishes',
-			label: translate(TranslationKeys.feature_wishes),
-			leftIcon: <MaterialCommunityIcons name="lightbulb-outline" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/feature-wishes'),
 		},
 		{
 			key: 'account-required-example',

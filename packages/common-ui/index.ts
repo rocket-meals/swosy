@@ -149,3 +149,17 @@ export type {
 	SettingsListSqliteStorageProps,
 	SettingsListSqliteStorageTexts,
 } from './src/components/SettingsListSqliteStorage';
+
+// Component playbook (interactive component gallery + test registry)
+export { playbookRegistry, getPlaybookEntry, buildPlaybookProps } from './src/playbook/registry';
+export type { PlaybookEntry, SetKnobValue } from './src/playbook/registry';
+export {
+	playbookRegistryData,
+	getPlaybookEntryData,
+	getPlaybookPath,
+	getDefaultKnobValues,
+	parseKnobValue,
+	serializeKnobValue,
+	resolveKnobValues,
+} from './src/playbook/registryData';
+export type { PlaybookEntryData, KnobDefinition, KnobType, KnobValue } from './src/playbook/registryData';
