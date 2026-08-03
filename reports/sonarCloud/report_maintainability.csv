@@ -1,8 +1,10 @@
 Key,Message,Component,Line
-"AZ_HfXtu4OT8cE4gH-ee","Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",143
-"AZ_HfXtu4OT8cE4gH-ef","'change.to' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",181
+"AZ_ImTrLkMhpq5gU48_G","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",50
+"AZ_ImTrLkMhpq5gU48_H","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",53
+"AZ_HfXtu4OT8cE4gH-ee","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",150
+"AZ_HfXtu4OT8cE4gH-ef","'change.to' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",203
 "AZ_HfXt54OT8cE4gH-eg","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:apps/scripts/store-metadata-load.ts",20
-"AZ_HfXrM4OT8cE4gH-eb","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata.ts",169
+"AZ_HfXrM4OT8cE4gH-eb","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata.ts",174
 "AZ_HG7ZcUuTJtAa61ed5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",135
 "AZ_HG7ZcUuTJtAa61ed6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",136
 "AZ_HG7ZcUuTJtAa61ed7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",188

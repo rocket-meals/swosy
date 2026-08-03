@@ -4,15 +4,15 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 6 | 6 |
-| 🐛 Reliability | 4 | 4 |
-| 🔧 Maintainability | 46 | 40 |
+| 🔒 Security | 9 | 9 |
+| 🐛 Reliability | 5 | 5 |
+| 🔧 Maintainability | 48 | 36 |
 
-**Total issues:** 56 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 62 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (6/6)
+## 🔒 Security (9/9)
 
 - **Lifecycle scripts are enabled by default in Yarn v2+.**
   .github/workflows/backend-schema-sync-pull.yml:55
@@ -34,11 +34,23 @@
   .github/workflows/ios-submit-review-score-tracker.yml:39
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L39
 
+- **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
+  apps/scripts/store-metadata-extract.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L82
+
+- **A path canonicalized from CLI-controlled data must be validated before use.**
+  apps/scripts/store-metadata-extract.ts:82
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L82
+
+- **Change this code to prevent confidential data from leaking in logs.**
+  apps/scripts/store-metadata-extract.ts:83
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L83
+
 - **Change this code to not log user-controlled data.**
   apps/scripts/submit-ios-review.ts:372
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L372
 
-## 🐛 Reliability (4/4)
+## 🐛 Reliability (5/5)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
@@ -56,7 +68,11 @@
   apps/scripts/store-metadata-diff.ts:48
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-diff.ts#L48
 
-## 🔧 Maintainability (40/46)
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/scripts/store-metadata-extract.ts:53
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
+
+## 🔧 Maintainability (36/48)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -201,20 +217,4 @@
 - **Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.**
   apps/scripts/check-build-version.ts:85
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L85
-
-- **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
-  apps/scripts/store-metadata-apple.ts:143
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-apple.ts#L143
-
-- **'change.to' will use Object's default stringification format ('[object Object]') when stringified.**
-  apps/scripts/store-metadata-apple.ts:181
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-apple.ts#L181
-
-- **`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.**
-  apps/scripts/store-metadata-load.ts:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-load.ts#L20
-
-- **Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.**
-  apps/scripts/store-metadata.ts:169
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata.ts#L169
 
