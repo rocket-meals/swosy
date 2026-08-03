@@ -1,45 +1,45 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-08-03T16:12:44.682Z",
+  "report_timestamp": "2026-08-03T17:05:54.104Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 106,
-          "average": 1.5313274336283187,
-          "amountSavedValuesForKeys": 4326,
+          "average": 1.5302816901408451,
+          "amountSavedValuesForKeys": 4346,
           "amountKeys": 28
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 75,
-          "average": 2.275,
-          "amountSavedValuesForKeys": 1638,
+          "average": 2.279166666666667,
+          "amountSavedValuesForKeys": 1641,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 106,
-          "average": 1.5455519828510182,
-          "amountSavedValuesForKeys": 4326,
+          "average": 1.5444207533759773,
+          "amountSavedValuesForKeys": 4346,
           "amountKeys": 29
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4957,
-        "detection_time_ms": 97,
+        "ast_generation_time_ms": 4733,
+        "detection_time_ms": 94,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1020-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 125.49,
-          "os_memory_free": 14829682688,
-          "os_memory_total": 16766414848,
+          "os_uptime": 129.89,
+          "os_memory_free": 14857363456,
+          "os_memory_total": 16766423040,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "711fe5129f23eb41c999fad11cdc7c1a62831b43",
-    "project_commit_hash": "711fe5129f23eb41c999fad11cdc7c1a62831b43",
+    "project_version": "54222c1a9fd9a4fd72166d08e31d3abb1ec8724b",
+    "project_commit_hash": "54222c1a9fd9a4fd72166d08e31d3abb1ec8724b",
     "project_tag": null,
-    "project_commit_date": "1785773449",
+    "project_commit_date": "1785776635",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 599,
-    "number_of_classes_or_interfaces": 1292,
-    "number_of_methods": 1479,
-    "number_of_data_fields": 4326,
-    "number_of_method_parameters": 1638
+    "number_of_classes_or_interfaces": 1293,
+    "number_of_methods": 1480,
+    "number_of_data_fields": 4346,
+    "number_of_method_parameters": 1641
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -804,9 +804,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 68,
               "startColumn": 2,
-              "endLine": 54,
+              "endLine": 68,
               "endColumn": 17
             }
           },
@@ -829,9 +829,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 55,
+              "startLine": 69,
               "startColumn": 2,
-              "endLine": 55,
+              "endLine": 69,
               "endColumn": 28
             }
           },
@@ -854,9 +854,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 56,
+              "startLine": 70,
               "startColumn": 2,
-              "endLine": 56,
+              "endLine": 70,
               "endColumn": 27
             }
           },
@@ -879,9 +879,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 71,
               "startColumn": 2,
-              "endLine": 57,
+              "endLine": 71,
               "endColumn": 17
             }
           },
@@ -1224,9 +1224,9 @@
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 68,
             "startColumn": 2,
-            "endLine": 54,
+            "endLine": 68,
             "endColumn": 17
           }
         },
@@ -1249,9 +1249,9 @@
             }
           },
           "position": {
-            "startLine": 55,
+            "startLine": 69,
             "startColumn": 2,
-            "endLine": 55,
+            "endLine": 69,
             "endColumn": 28
           }
         },
@@ -1274,9 +1274,9 @@
             }
           },
           "position": {
-            "startLine": 56,
+            "startLine": 70,
             "startColumn": 2,
-            "endLine": 56,
+            "endLine": 70,
             "endColumn": 27
           }
         },
@@ -1299,9 +1299,9 @@
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 71,
             "startColumn": 2,
-            "endLine": 57,
+            "endLine": 71,
             "endColumn": 17
           }
         }
