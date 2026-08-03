@@ -13,7 +13,8 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 20;
+	// 21: iOS privacy manifest + Android blockedPermissions (native changes).
+	return 21;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
@@ -33,8 +34,18 @@ export function getVersion() {
 	return getMajorVersion() + '.' + getBuildNumber() + '.' + getVersionPatch();
 }
 
+// Contact address shown in the settings screen (support row) and used as the
+// Google Play contact email in store-metadata.ts.
+export const SUPPORT_EMAIL = 'nils@baumgartner-software.de';
+
+// Public privacy policy for the app stores (App Store Connect "App-Informationen"
+// and the in-app "Datenschutzerklärung" row link to the same ground truth).
+export const PRIVACY_POLICY_URL = 'https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/PRIVACY.md';
+
 export const scoreTrackerConfig: CustomerConfig = {
-	projectName: 'Score Tracker',
+	// User-facing brand name - matches `name` in app.config.ts (home screen) so
+	// the store listing, the device and the in-app branding all say the same.
+	projectName: 'Punktlandung',
 	// App Store Connect Apple-ID (App-Informationen -> Apple-ID), required for
 	// non-interactive "eas submit" (injected as submit.production.ios.ascAppId).
 	appleAppId: '6791191897',

@@ -4,7 +4,7 @@
 //   yarn store-metadata:pull:score-tracker
 //   yarn store-metadata:push:score-tracker
 import { DEFAULT_APPLE_AGE_RATING_DECLARATION, StoreAppMetadata } from 'repo-depkit-common';
-import { scoreTrackerConfig } from './config';
+import { PRIVACY_POLICY_URL, SUPPORT_EMAIL, scoreTrackerConfig } from './config';
 
 export function getStoreMetadata(): StoreAppMetadata[] {
 	return [
@@ -13,6 +13,12 @@ export function getStoreMetadata(): StoreAppMetadata[] {
 			apple: {
 				// Keep in sync with ios.bundleIdentifier in app.config.ts
 				bundleId: 'de.baumgartner-software.score-tracker',
+				primaryCategoryId: 'UTILITIES',
+				// Explicitly no secondary category.
+				secondaryCategoryId: null,
+				// Served from the public repo; the in-app "Datenschutzerklärung"
+				// (settings screen) mirrors the same text.
+				privacyPolicyUrl: PRIVACY_POLICY_URL,
 				ageRatingDeclaration: {
 					...DEFAULT_APPLE_AGE_RATING_DECLARATION,
 				},
@@ -20,6 +26,8 @@ export function getStoreMetadata(): StoreAppMetadata[] {
 			google: {
 				// Keep in sync with android.package in app.config.ts
 				packageName: 'com.scoretracker.app',
+				defaultLanguage: 'de-DE',
+				contactEmail: SUPPORT_EMAIL,
 			},
 		},
 	];

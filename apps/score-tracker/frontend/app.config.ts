@@ -31,6 +31,31 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			config: {
 				usesNonExemptEncryption: false,
 			},
+			// Apple privacy manifest (required for App Review): the app collects
+			// no data off-device - everything is stored locally. The accessed-API
+			// reasons cover the React Native/Expo SDK internals (UserDefaults,
+			// boot time, disk space, file timestamps), same as apps/geonexia.
+			privacyManifests: {
+				NSPrivacyCollectedDataTypes: [],
+				NSPrivacyAccessedAPITypes: [
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+						NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
+						NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
+						NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+						NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
+					},
+				],
+			},
 		},
 		android: {
 			adaptiveIcon: {
@@ -38,6 +63,10 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 				backgroundColor: '#ffffff',
 			},
 			package: 'com.scoretracker.app',
+			// Android 13+ uses the system photo picker (expo-image-picker), so the
+			// broad media permissions are not needed and would only raise Play
+			// Console questions - block them like apps/geonexia does.
+			blockedPermissions: ['android.permission.READ_MEDIA_IMAGES', 'android.permission.READ_MEDIA_VIDEO'],
 			versionCode: buildNumber,
 		},
 		web: {
