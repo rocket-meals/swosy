@@ -1,12 +1,28 @@
 Key,Message,Component,Line
-"AZ_Me8juSk-vE5ewKpIG","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",109
-"AZ_Me8juSk-vE5ewKpIH","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",186
-"AZ_Me8juSk-vE5ewKpII","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",186
-"AZ_Me8mNSk-vE5ewKpIJ","Remove this unused import of 'resetAll'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",49
-"AZ_Me8mNSk-vE5ewKpIK","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",429
-"AZ_Me8mNSk-vE5ewKpIL","Remove this useless assignment to variable ""friends"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1337
-"AZ_Me8mNSk-vE5ewKpIM","Remove this useless assignment to variable ""categoryValues"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1341
-"AZ_Me8mNSk-vE5ewKpIN","Remove this useless assignment to variable ""toggleEditingPlayers"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1356
+"AZ_PGq43vJ2gITN2EHtp","Remove this unused import of 'SettingsListTextInput'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",9
+"AZ_PGq75vJ2gITN2EHtq","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",122
+"AZ_PGq75vJ2gITN2EHtr","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",186
+"AZ_PGq75vJ2gITN2EHts","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",186
+"AZ_PGq75vJ2gITN2EHtt","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",192
+"AZ_PGq75vJ2gITN2EHtu","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",192
+"AZ_PGq75vJ2gITN2EHtv","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/ShareImportContent.tsx",265
+"AZ_PGq4HvJ2gITN2EHtn","Refactor this function to reduce its Cognitive Complexity from 32 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/ShareCodec.ts",120
+"AZ_PGq4HvJ2gITN2EHto","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/ShareCodec.ts",172
+"AZ_PGq3PvJ2gITN2EHtm","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/ShareImportPlan.ts",59
+"AZ_PGqabvJ2gITN2EHtf","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",51
+"AZ_PGqabvJ2gITN2EHtg","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",54
+"AZ_PGqabvJ2gITN2EHth","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",74
+"AZ_PGqabvJ2gITN2EHtj","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",189
+"AZ_PGqabvJ2gITN2EHtk","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",196
+"AZ_PGqabvJ2gITN2EHtl","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",236
+"AZ_Me8juSk-vE5ewKpIG","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",110
+"AZ_Me8juSk-vE5ewKpIH","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",197
+"AZ_Me8juSk-vE5ewKpII","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/index.tsx",197
+"AZ_Me8mNSk-vE5ewKpIJ","Remove this unused import of 'resetAll'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",50
+"AZ_Me8mNSk-vE5ewKpIK","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",431
+"AZ_Me8mNSk-vE5ewKpIL","Remove this useless assignment to variable ""friends"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1362
+"AZ_Me8mNSk-vE5ewKpIM","Remove this useless assignment to variable ""categoryValues"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1366
+"AZ_Me8mNSk-vE5ewKpIN","Remove this useless assignment to variable ""toggleEditingPlayers"".","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/match/index.tsx",1381
 "AZ_JemDQCTt6OHkq3EXb","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/OnboardingScreen.tsx",96
 "AZ_JemDQCTt6OHkq3EXc","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/OnboardingScreen.tsx",139
 "AZ_ImTrLkMhpq5gU48_G","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/scripts/store-metadata-extract.ts",50
@@ -38,13 +54,13 @@ Key,Message,Component,Line
 "AZ-zOK-DGRVy9SslAC60","Async method 'resolveFoodofferToCreateOrLog' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",1324
 "AZ-zOK42GRVy9SslAC6y","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",353
 "AZ-troKbdnmC--q0OpVh","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts",200
-"AZ-kpc65MS4027xJKxyM","Remove this unused import of 'GameType'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",39
+"AZ-kpc65MS4027xJKxyM","Remove this unused import of 'GameType'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",38
 "AZ-ihYHsRNMUYcNiZYmc","'../helpers/GameImageUpload' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",21
 "AZ-ihYHsRNMUYcNiZYmd","'../helpers/GameImageUpload' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",23
 "AZ-iWbnxE1zZThhKZLay","Remove this unused import of 'setGameTypeIcon'.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",21
 "AZ-iWbi6E1zZThhKZLax","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameRules.ts",486
 "AZ-iWbsBE1zZThhKZLa6","Use `export…from` to re-export `defaultImageQuery`.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameImagePicker.tsx",338
-"AZ-gpv0EN7uvEWkOHr2c","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",88
+"AZ-gpv0EN7uvEWkOHr2c","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/[id].tsx",89
 "AZ-gpvy0N7uvEWkOHr2b","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/gameTypesSlice.ts",281
 "AZ-gpv09N7uvEWkOHr2d","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/components/GameCategorySettings.tsx",335
 "AZ-gpvwCN7uvEWkOHr2a","The empty object is useless.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameCategories.ts",225
