@@ -25,6 +25,14 @@ https://github.com/rocket-meals/studi-futter
 **Rocket Meals (Frontend):** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/AIHxB8Ozu-UoAyY1563cEHDcnRm9MWiaCVikyZ4wBBI.apk)
 <!-- android-preview-apk:frontend:end -->
 
+<!-- android-preview-apk:score-tracker:start -->
+**Score Tracker:** 📱 Noch keine Android Preview APK gebaut - der Link erscheint hier nach dem nächsten Build.
+<!-- android-preview-apk:score-tracker:end -->
+
+<!-- android-preview-apk:geonexia:start -->
+**Geonexia:** 📱 Noch keine Android Preview APK gebaut - der Link erscheint hier nach dem nächsten Build.
+<!-- android-preview-apk:geonexia:end -->
+
 # 🚀 Rocket Meals
 
 **Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von
