@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
 import CountdownTimeInputModal from '../../components/CountdownTimeInputModal';
+import { generateId } from '../../helpers/RandomHelper';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -40,6 +41,10 @@ export default function TimerScreen() {
 	const [isRunning, setIsRunning] = useState(false);
 	// Elapsed time in ms (in both modes we count up and derive the remaining time).
 	const [elapsedMs, setElapsedMs] = useState(0);
+	// Identifies the current timer run. Starting a preset while the timer is already
+	// running keeps isRunning at true, so a fresh id forces the tick effect to
+	// re-anchor instead of continuing from the old start timestamp.
+	const [runId, setRunId] = useState<string>(() => generateId());
 
 	// Tick while running. Interval-based (250ms) with a start-timestamp anchor so
 	// the display stays accurate even when intervals fire late.
@@ -54,7 +59,7 @@ export default function TimerScreen() {
 		}, 250);
 		return () => clearInterval(interval);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isRunning]);
+	}, [isRunning, runId]);
 
 	const remainingMs = countdownMs - elapsedMs;
 	const isFinished = mode === 'countdown' && remainingMs <= 0;
@@ -86,6 +91,7 @@ export default function TimerScreen() {
 		setMode('countdown');
 		setCountdownMs(seconds * 1000);
 		setElapsedMs(0);
+		setRunId(generateId());
 		setIsRunning(true);
 	}, []);
 
