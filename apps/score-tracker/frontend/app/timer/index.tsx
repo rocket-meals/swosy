@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
+import CountdownTimeInputModal from '../../components/CountdownTimeInputModal';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -15,9 +16,12 @@ type TimerMode = 'stopwatch' | 'countdown';
 
 function formatTime(totalMs: number): string {
 	const totalSeconds = Math.max(0, Math.ceil(totalMs / 1000));
-	const minutes = Math.floor(totalSeconds / 60);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
 	const seconds = totalSeconds % 60;
-	return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+	const minSec = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+	// Hours only appear for custom start times beyond an hour.
+	return hours > 0 ? `${hours}:${minSec}` : minSec;
 }
 
 function formatPreset(seconds: number): string {
@@ -28,6 +32,7 @@ function formatPreset(seconds: number): string {
 export default function TimerScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const [mode, setMode] = useState<TimerMode>('stopwatch');
 	// Countdown duration in ms; only relevant in countdown mode.
@@ -84,6 +89,21 @@ export default function TimerScreen() {
 		setIsRunning(true);
 	}, []);
 
+	const handleStartCustomTime = useCallback(
+		(seconds: number) => {
+			closeModal();
+			handleSelectPreset(seconds);
+		},
+		[closeModal, handleSelectPreset],
+	);
+
+	const handleOpenCustomTime = useCallback(() => {
+		showModal({
+			title: '⏱️ Eigene Startzeit',
+			children: <CountdownTimeInputModal onStart={handleStartCustomTime} />,
+		});
+	}, [showModal, handleStartCustomTime]);
+
 	const displayMs = mode === 'countdown' ? remainingMs : elapsedMs;
 	const displayColor = isFinished ? DANGER_COLOR : theme.screen.text;
 
@@ -112,7 +132,9 @@ export default function TimerScreen() {
 
 				{/* Time display */}
 				<View style={styles.displayWrapper}>
-					<Text style={[styles.timeText, { color: displayColor }]}>{formatTime(displayMs)}</Text>
+					<Text style={[styles.timeText, { color: displayColor }]} numberOfLines={1} adjustsFontSizeToFit>
+						{formatTime(displayMs)}
+					</Text>
 					{isFinished && <Text style={[styles.finishedText, { color: DANGER_COLOR }]}>⏰ Zeit abgelaufen!</Text>}
 				</View>
 
@@ -153,6 +175,17 @@ export default function TimerScreen() {
 						</TouchableOpacity>
 					))}
 				</View>
+
+				{/* Custom countdown start time (opens the HH:MM:SS entry modal) */}
+				<TouchableOpacity
+					nativeID={ComponentIds.TIMER_CUSTOM_TIME_BUTTON}
+					style={[styles.customTimeButton, { borderColor: PRIMARY_COLOR }]}
+					onPress={handleOpenCustomTime}
+					activeOpacity={0.7}
+				>
+					<Ionicons name="create-outline" size={18} color={PRIMARY_COLOR} />
+					<Text style={[styles.presetButtonText, { color: PRIMARY_COLOR }]}>Eigene Startzeit</Text>
+				</TouchableOpacity>
 			</ScrollView>
 		</View>
 	);
@@ -232,5 +265,15 @@ const styles = StyleSheet.create({
 	presetButtonText: {
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	customTimeButton: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 8,
+		borderWidth: 1.5,
+		borderRadius: 10,
+		paddingVertical: 12,
+		marginTop: 10,
 	},
 });
