@@ -6,11 +6,9 @@ import {
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListSelectOptionSingle,
-	SettingsListTextInput,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
@@ -25,6 +23,7 @@ import { generateId } from '../../helpers/RandomHelper';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
 import ShareImportContent from '../../components/ShareImportContent';
+import ShareExportContent from '../../components/ShareExportContent';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -111,7 +110,7 @@ export default function GamesScreen() {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
-	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const { show: showNestedModal, close: closeNestedModal } = useMyScrollViewModal();
 
 	// Played matches and most recent match per game type (derived from the
 	// archived history). `lastPlayedAt` drives the default sort order.
@@ -189,17 +188,25 @@ export default function GamesScreen() {
 	// pasting the export of a whole Partie here imports just its Spiel (see
 	// components/ShareImportContent).
 	const handleOpenImportModal = useCallback(() => {
-		showImportModal({
+		showNestedModal({
 			title: 'Spiel importieren',
-			children: <ShareImportContent mode="games" onClose={closeImportModal} />,
+			children: <ShareImportContent mode="games" onClose={closeNestedModal} />,
 		});
-	}, [showImportModal, closeImportModal]);
+	}, [showNestedModal, closeNestedModal]);
 
-	// Copies all games as shareable templates in the common export format
-	// (see helpers/ShareCodec).
-	const handleExportAll = useCallback(async () => {
-		await Clipboard.setStringAsync(encodeShareBundle(buildGamesShareBundle(gameTypes)));
-	}, [gameTypes]);
+	// Share all games as templates in the common export format (see helpers/
+	// ShareCodec) - offered via the export modal (clipboard or share sheet).
+	const handleExportAll = useCallback(() => {
+		showNestedModal({
+			title: 'Alle Spiele exportieren',
+			children: (
+				<ShareExportContent
+					text={encodeShareBundle(buildGamesShareBundle(gameTypes))}
+					info={`Der Export enthält ${gameTypes.length === 1 ? '1 Spiel' : `${gameTypes.length} Spiele`} als Vorlagen. Ein anderer Spieler kann sie im Spiele-Bereich über „Spiel importieren“ einfügen.`}
+				/>
+			),
+		});
+	}, [gameTypes, showNestedModal]);
 
 	const handleOpenSettingsModal = useCallback(() => {
 		showModal({
@@ -219,10 +226,9 @@ export default function GamesScreen() {
 					<SettingsList
 						nativeID={ComponentIds.GAMES_SETTINGS_EXPORT_ALL_ROW}
 						label="Alle Spiele exportieren"
-						value="Kopiert alle Spiele als JSON in die Zwischenablage"
-						stackedValue
 						leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
+						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 						handleFunction={handleExportAll}
 						groupPosition="top"
 					/>
@@ -244,24 +250,13 @@ export default function GamesScreen() {
 						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleLoadMansions}
-						groupPosition="middle"
-					/>
-					<SettingsList
-						nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
-						label="Spiel importieren"
-						value="Export aus der Zwischenablage einfügen - auch aus einem Partie-Export"
-						stackedValue
-						leftIcon={<Ionicons name="clipboard-outline" size={20} color="#ffffff" />}
-						iconBgColor={PRIMARY_COLOR}
-						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-						handleFunction={handleOpenImportModal}
 						groupPosition="bottom"
 					/>
 					<GamesSortSection />
 				</View>
 			),
 		});
-	}, [showModal, handleAddGameTypeFromModal, handleExportAll, handleLoadFlipSeven, handleLoadMansions, handleOpenImportModal]);
+	}, [showModal, handleAddGameTypeFromModal, handleExportAll, handleLoadFlipSeven, handleLoadMansions]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
@@ -341,6 +336,15 @@ export default function GamesScreen() {
 						leftIcon={<Ionicons name="add-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
 						handleFunction={handleAddGameType}
+						groupPosition="middle"
+					/>
+					<SettingsList
+						nativeID={ComponentIds.GAMES_SCREEN_IMPORT_ROW}
+						label="Spiel importieren"
+						leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+						handleFunction={handleOpenImportModal}
 						groupPosition="bottom"
 					/>
 				</View>

@@ -23,7 +23,6 @@ import {
 	AvatarStyle,
 } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
-import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import {
@@ -66,6 +65,7 @@ import { generateId } from '../../helpers/RandomHelper';
 import GameTypeIcon from '../../components/GameTypeIcon';
 import { makeGameHeaderTitle } from '../../components/GameHeaderTitle';
 import CardScoreEntryModal from '../../components/CardScoreEntryModal';
+import ShareExportContent from '../../components/ShareExportContent';
 import CategoryValueRows from '../../components/CategoryValueRows';
 import { computeNextStartingPlayerIndex } from '../../helpers/GameRules';
 import type { GameCategory } from '../../helpers/GameCategories';
@@ -1059,18 +1059,27 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 	const friends = useSelector((state: RootState) => state.friends.friends);
 	const selectedGameType = game.gameTypeId ? gameTypes.find((g) => g.id === game.gameTypeId) : undefined;
 	const trackScores = selectedGameType?.trackScores ?? true;
+	const { show: showExportModal } = useMyScrollViewModal();
 
 	/**
-	 * Copy this Partie as a shareable export string to the clipboard: the match
-	 * itself plus its Spiel and the participating Freunde, so the receiver can
-	 * import everything in one go (see helpers/ShareCodec). The snapshot uses
-	 * the same builder as archiving, but doesn't archive anything.
+	 * Share this Partie: the match itself plus its Spiel and the participating
+	 * Freunde as one export string (see helpers/ShareCodec), offered via the
+	 * export modal (copy to clipboard or platform share sheet). The snapshot
+	 * uses the same builder as archiving, but doesn't archive anything.
 	 */
-	const handleExportMatch = useCallback(async () => {
+	const handleExportMatch = useCallback(() => {
 		const entry = buildHistoryEntry(game, { id: game.matchId ?? generateId(), endedAt: game.endedAt ?? Date.now() });
 		const bundle = buildMatchShareBundle({ entry, gameType: selectedGameType, friends });
-		await Clipboard.setStringAsync(encodeShareBundle(bundle));
-	}, [game, selectedGameType, friends]);
+		showExportModal({
+			title: 'Partie exportieren',
+			children: (
+				<ShareExportContent
+					text={encodeShareBundle(bundle)}
+					info="Der Export enthält diese Partie, das Spiel und die teilnehmenden Freunde als Text. Ein anderer Spieler kann ihn auf dem Start-Screen über „Partie importieren“ einfügen - Spiel und Freunde werden dabei mit angelegt, falls sie noch fehlen."
+				/>
+			),
+		});
+	}, [game, selectedGameType, friends, showExportModal]);
 
 	/**
 	 * Mark the match's rounds as finished: archive the match (it appears as
@@ -1114,10 +1123,9 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 			<SettingsList
 				nativeID={ComponentIds.GAME_SETTINGS_EXPORT_MATCH}
 				label="Partie exportieren"
-				value="Partie, Spiel & Freunde als Text in die Zwischenablage kopieren - zum Teilen mit anderen Spielern"
-				stackedValue
 				leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={handleExportMatch}
 				groupPosition="top"
 			/>

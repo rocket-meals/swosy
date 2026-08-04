@@ -29,6 +29,7 @@ import { buildFriendsShareBundle, encodeShareBundle } from '../../helpers/ShareC
 import { ComponentIds } from '../../constants/ComponentIds';
 import { logDebug } from '../../helpers/DebugLogger';
 import ShareImportContent from '../../components/ShareImportContent';
+import ShareExportContent from '../../components/ShareExportContent';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -56,11 +57,21 @@ function ExportFriendsRow({
 	nativeID?: string;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 }>) {
-	// Copies the friends in the common export format (see helpers/ShareCodec) -
-	// the same envelope a Partie export uses.
-	const handleExport = useCallback(async () => {
-		await Clipboard.setStringAsync(encodeShareBundle(buildFriendsShareBundle(friends)));
-	}, [friends]);
+	const { show: showExportModal } = useMyScrollViewModal();
+
+	// Share the friends in the common export format (see helpers/ShareCodec) -
+	// offered via the export modal (clipboard or share sheet).
+	const handleExport = useCallback(() => {
+		showExportModal({
+			title: label,
+			children: (
+				<ShareExportContent
+					text={encodeShareBundle(buildFriendsShareBundle(friends))}
+					info={`Der Export enthält ${friends.length === 1 ? `„${friends[0].name}“` : `${friends.length} Freunde`} als Text. Ein anderer Spieler kann ihn im Spieler-Bereich über „Freunde importieren“ einfügen.`}
+				/>
+			),
+		});
+	}, [friends, label, showExportModal]);
 
 	return (
 		<SettingsList
@@ -69,6 +80,7 @@ function ExportFriendsRow({
 			value={friends.length === 1 ? friends[0].name : `${friends.length} Freunde`}
 			leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
 			iconBgColor={PRIMARY_COLOR}
+			rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 			handleFunction={handleExport}
 			groupPosition={groupPosition}
 		/>
@@ -330,6 +342,8 @@ export default function PlayersScreen() {
 		handleOpenFriendModal(action.payload.id);
 	}, [friends.length, dispatch, handleOpenFriendModal]);
 
+	// Import lives directly on the screen (next to "Spieler erstellen") - the
+	// options modal only keeps the export of the whole roster.
 	const handleOpenOptionsModal = useCallback(() => {
 		showModal({
 			title: '⚙️ Optionen',
@@ -340,9 +354,8 @@ export default function PlayersScreen() {
 						nativeID={ComponentIds.PLAYERS_OPTIONS_EXPORT_ALL_ROW}
 						friends={friends}
 						label="Alle Freunde exportieren"
-						groupPosition="top"
+						groupPosition="single"
 					/>
-					<ImportFriendsRow nativeID={ComponentIds.PLAYERS_OPTIONS_IMPORT_ROW} groupPosition="bottom" />
 				</View>
 			),
 		});
@@ -402,15 +415,17 @@ export default function PlayersScreen() {
 			<ScrollView
 				contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 32 }]}
 			>
-				<TouchableOpacity
-					nativeID={ComponentIds.PLAYERS_SCREEN_ADD_BUTTON}
-					style={[styles.addFriendButton, { borderColor: PRIMARY_COLOR }]}
-					onPress={handleAddFriend}
-					activeOpacity={0.7}
-				>
-					<Ionicons name="person-add-outline" size={22} color={PRIMARY_COLOR} />
-					<Text style={[styles.addFriendButtonText, { color: PRIMARY_COLOR }]}>Spieler erstellen</Text>
-				</TouchableOpacity>
+				<View style={styles.createFriendRows}>
+					<SettingsList
+						nativeID={ComponentIds.PLAYERS_SCREEN_ADD_BUTTON}
+						label="Spieler erstellen"
+						leftIcon={<Ionicons name="person-add-outline" size={20} color="#ffffff" />}
+						iconBgColor={PRIMARY_COLOR}
+						handleFunction={handleAddFriend}
+						groupPosition="top"
+					/>
+					<ImportFriendsRow nativeID={ComponentIds.PLAYERS_SCREEN_IMPORT_ROW} groupPosition="bottom" />
+				</View>
 
 				{friends.length === 0 ? (
 					<View style={styles.emptyContainer}>
@@ -459,20 +474,8 @@ const styles = StyleSheet.create({
 	modalContent: {
 		padding: 10,
 	},
-	addFriendButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 8,
-		borderWidth: 1.5,
-		borderStyle: 'dashed',
-		borderRadius: 12,
-		paddingVertical: 14,
+	createFriendRows: {
 		marginBottom: 12,
-	},
-	addFriendButtonText: {
-		fontSize: 15,
-		fontWeight: '600',
 	},
 	emptyContainer: {
 		flex: 1,

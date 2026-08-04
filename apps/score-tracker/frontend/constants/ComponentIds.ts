@@ -29,6 +29,10 @@ export const ComponentIds = {
 	START_SCREEN_STATS: 'start-screen-stats',
 	START_SCREEN_IMPORT_ROW: 'start-screen-import-row',
 
+	// Shared export modal (see components/ShareExportContent)
+	SHARE_EXPORT_COPY_BUTTON: 'share-export-copy-button',
+	SHARE_EXPORT_SHARE_BUTTON: 'share-export-share-button',
+
 	// Shared import modal (see components/ShareImportContent)
 	SHARE_IMPORT_CLIPBOARD_BUTTON: 'share-import-clipboard-button',
 	SHARE_IMPORT_TEXT_INPUT: 'share-import-text-input',
@@ -117,6 +121,7 @@ export const ComponentIds = {
 
 	// Players (friends) screen
 	PLAYERS_SCREEN_ADD_BUTTON: 'players-screen-add-button',
+	PLAYERS_SCREEN_IMPORT_ROW: 'players-screen-import-row',
 	PLAYERS_SCREEN_OPTIONS_BUTTON: 'players-screen-options-button',
 	PLAYERS_SCREEN_SEARCH_INPUT: 'players-screen-search-input',
 	PLAYERS_SCREEN_FRIEND_ROW_PREFIX: 'players-screen-friend-row-',
@@ -132,6 +137,7 @@ export const ComponentIds = {
 	GAMES_SCREEN_SETTINGS_BUTTON: 'games-screen-settings-button',
 	GAMES_SCREEN_QUICK_MATCH_ROW: 'games-screen-quick-match-row',
 	GAMES_SCREEN_CREATE_GAME_ROW: 'games-screen-create-game-row',
+	GAMES_SCREEN_IMPORT_ROW: 'games-screen-import-game-row',
 	GAMES_SETTINGS_CREATE_GAME_ROW: 'games-settings-create-game-row',
 	GAMES_SETTINGS_EXPORT_ALL_ROW: 'games-settings-export-all-row',
 	GAMES_SETTINGS_SORT_LAST_PLAYED: 'games-settings-sort-last-played',

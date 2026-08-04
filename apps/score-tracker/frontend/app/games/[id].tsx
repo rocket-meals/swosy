@@ -57,6 +57,7 @@ import { makeGameHeaderTitle } from '../../components/GameHeaderTitle';
 import GameCategorySettings from '../../components/GameCategorySettings';
 import { GameImagePickerContent, GameImageSearchHeader, ImageQueryObservable, defaultImageQuery } from '../../components/GameImagePicker';
 import ShareImportContent from '../../components/ShareImportContent';
+import ShareExportContent from '../../components/ShareExportContent';
 import { findImageUrlForGameName } from '../../helpers/ImageSearch';
 import { describeImageSize, isInlineImage } from '../../helpers/GameImageUpload';
 import MatchFilterSort from '../../components/MatchFilterSort';
@@ -379,12 +380,20 @@ function GameTypeSettingsContent({
 		await Clipboard.setStringAsync(gameTypeId);
 	}, [gameTypeId]);
 
-	// Copies the game as a shareable template in the common export format
-	// (see helpers/ShareCodec) - the same envelope a Partie export uses.
-	const handleExportPreset = useCallback(async () => {
+	// Share the game as a template in the common export format (see helpers/
+	// ShareCodec) - offered via the export modal (clipboard or share sheet).
+	const handleExportPreset = useCallback(() => {
 		if (!gameType) return;
-		await Clipboard.setStringAsync(encodeShareBundle(buildGamesShareBundle([gameType])));
-	}, [gameType]);
+		showModal({
+			title: 'Spiel exportieren',
+			children: (
+				<ShareExportContent
+					text={encodeShareBundle(buildGamesShareBundle([gameType]))}
+					info={`Der Export enthält „${gameType.name}“ als Vorlage. Ein anderer Spieler kann sie im Spiele-Bereich über „Spiel importieren“ einfügen.`}
+				/>
+			),
+		});
+	}, [gameType, showModal]);
 
 	// Import from a shared export string. Full mode: pasting the export of a
 	// Partie here brings the Partie plus its Spiel/Freunde along - with the
@@ -602,6 +611,7 @@ function GameTypeSettingsContent({
 				value={gameType.name}
 				leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={handleExportPreset}
 				groupPosition="top"
 			/>
