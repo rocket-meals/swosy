@@ -30,7 +30,7 @@ https://github.com/rocket-meals/studi-futter
 <!-- android-preview-apk:score-tracker:end -->
 
 <!-- android-preview-apk:geonexia:start -->
-**Geonexia:** 📱 Noch keine Android Preview APK gebaut - der Link erscheint hier nach dem nächsten Build.
+**Geonexia:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/qMwFglGQbDT2UNvX8bXHTrBsFvejNKHkWFl31fTkDs8.apk)
 <!-- android-preview-apk:geonexia:end -->
 
 # 🚀 Rocket Meals
