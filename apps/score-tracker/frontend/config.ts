@@ -13,8 +13,8 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	// 21: iOS privacy manifest + Android blockedPermissions (native changes).
-	return 21;
+	// 22: Trigger new builds incl. Android preview APK link in the README.
+	return 22;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
