@@ -35,6 +35,7 @@ import { ComponentIds } from '../../constants/ComponentIds';
 import { logDebug } from '../../helpers/DebugLogger';
 import ShareImportContent from '../../components/ShareImportContent';
 import ShareExportContent from '../../components/ShareExportContent';
+import GameTypeIcon from '../../components/GameTypeIcon';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -159,12 +160,15 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 				return {
 					id: entry.id,
 					entry,
+					gameType,
 					endedAt: entry.endedAt,
 					roundsCount: entry.roundsCount,
 					score: entry.finalScores[playerEntry.playerId] ?? 0,
 					rank,
 					totalPlayers: entry.players.length,
-					gameLabel: gameType ? `${gameType.icon} ${gameType.name}` : undefined,
+					// The game's logo circle already carries its icon/image, so the
+					// label only needs the name (same as the games list).
+					gameLabel: gameType?.name,
 				};
 			})
 			.sort((a, b) => b.endedAt - a.endedAt);
@@ -315,6 +319,13 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 						label={game.gameLabel ? `${game.gameLabel} · ${formatDate(game.endedAt)}` : formatDate(game.endedAt)}
 						value={`${game.score} Punkte · Platz ${game.rank}/${game.totalPlayers} · ${game.roundsCount} Runden`}
 						stackedValue
+						leftIconComponent={
+							game.gameType ? (
+								<View style={styles.gameIconWrapper}>
+									<GameTypeIcon icon={game.gameType.icon} imageUrl={game.gameType.imageUrl} size={40} />
+								</View>
+							) : undefined
+						}
 						leftIcon={<Ionicons name="trophy-outline" size={20} color="#ffffff" />}
 						iconBgColor={friend.color}
 						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
@@ -511,6 +522,9 @@ const styles = StyleSheet.create({
 	},
 	createFriendRows: {
 		marginBottom: 12,
+	},
+	gameIconWrapper: {
+		marginRight: 12,
 	},
 	emptyContainer: {
 		flex: 1,
