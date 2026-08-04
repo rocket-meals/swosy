@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme, type Theme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
-import { computeRoll, type DieResult, type PoolDie, type RollMode, type RollResult } from '../../helpers/DiceRollHelper';
+import { computeRoll, type DieResult, type DieRollPair, type PoolDie, type RollMode, type RollResult } from '../../helpers/DiceRollHelper';
 
 type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -39,25 +39,49 @@ const ROLL_MODES: { key: RollMode; label: string; icon: MCIName }[] = [
 	{ key: 'disadvantage', label: 'Nachteil', icon: 'arrow-down-bold-circle-outline' },
 ];
 
-function DiceValueRow({ dice, theme, keptIds }: Readonly<{ dice: DieResult[]; theme: Theme; keptIds?: ReadonlySet<string> }>) {
+function DiceValueRow({ dice, theme }: Readonly<{ dice: DieResult[]; theme: Theme }>) {
 	return (
 		<View style={styles.resultsRow}>
-			{dice.map((die) => {
-				const isKept = keptIds?.has(die.id) ?? false;
-				const isDimmed = keptIds != null && !isKept;
-				return (
-					<View
-						key={die.id}
-						style={[
-							styles.resultBadge,
-							{ backgroundColor: theme.screen.iconBg, borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: isDimmed ? 0.45 : 1 },
-						]}
-					>
-						<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
-						<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
-					</View>
-				);
-			})}
+			{dice.map((die) => (
+				<View key={die.id} style={[styles.resultBadge, { backgroundColor: theme.screen.iconBg }]}>
+					<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
+					<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
+				</View>
+			))}
+		</View>
+	);
+}
+
+// One die in advantage/disadvantage mode: both of its rolled values side by
+// side, with the kept one outlined. `revealed` is false while the roll
+// animation is still shuffling so nothing gives away the outcome mid-shuffle.
+function DiePairBadge({ die, theme, revealed }: Readonly<{ die: DieRollPair; theme: Theme; revealed: boolean }>) {
+	return (
+		<View style={[styles.pairBadge, { backgroundColor: theme.screen.iconBg }]}>
+			<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
+			<View style={styles.pairValuesRow}>
+				{(['A', 'B'] as const).map((rollKey) => {
+					const isKept = revealed && die.kept === rollKey;
+					const isDimmed = revealed && die.kept !== rollKey;
+					return (
+						<View
+							key={rollKey}
+							style={[
+								styles.pairValueBox,
+								{
+									backgroundColor: theme.screen.background,
+									borderColor: isKept ? PRIMARY_COLOR : 'transparent',
+									opacity: isDimmed ? 0.45 : 1,
+								},
+							]}
+						>
+							<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>
+								{rollKey === 'A' ? die.valueA : die.valueB}
+							</Text>
+						</View>
+					);
+				})}
+			</View>
 		</View>
 	);
 }
@@ -261,21 +285,11 @@ export default function DiceScreen() {
 							</>
 						) : (
 							<>
-								{(['A', 'B'] as const).map((rollKey, index) => {
-									const roll = rollKey === 'A' ? results.rollA : results.rollB;
-									// Only reveal per die which value counts once the shuffle has
-									// settled - while still animating, both rolls are shown neutrally
-									// so nothing gives away the outcome mid-shuffle.
-									const keptIds = isRolling
-										? undefined
-										: new Set(roll.dice.filter((die) => results.keptRollById[die.id] === rollKey).map((die) => die.id));
-									return (
-										<View key={rollKey} style={styles.rollSet}>
-											<Text style={[styles.rollSetLabel, { color: theme.screen.placeholder }]}>Wurf {index + 1}</Text>
-											<DiceValueRow dice={roll.dice} theme={theme} keptIds={keptIds} />
-										</View>
-									);
-								})}
+								<View style={styles.resultsRow}>
+									{results.dice.map((die) => (
+										<DiePairBadge key={die.id} die={die} theme={theme} revealed={!isRolling} />
+									))}
+								</View>
 								<Text style={[styles.totalText, { color: theme.screen.text }]}>Summe: {results.keptTotal}</Text>
 							</>
 						)}
@@ -414,18 +428,6 @@ const styles = StyleSheet.create({
 		paddingTop: 32,
 		paddingHorizontal: 16,
 	},
-	rollSet: {
-		width: '100%',
-		alignItems: 'center',
-		marginBottom: 16,
-	},
-	rollSetLabel: {
-		marginBottom: 8,
-		fontSize: 13,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-		letterSpacing: 0.4,
-	},
 	resultsRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -438,7 +440,6 @@ const styles = StyleSheet.create({
 		width: 64,
 		height: 64,
 		borderRadius: 14,
-		borderWidth: 2,
 	},
 	resultBadgeSides: {
 		fontSize: 11,
@@ -447,6 +448,25 @@ const styles = StyleSheet.create({
 	resultBadgeValue: {
 		fontSize: 24,
 		fontWeight: '700',
+	},
+	pairBadge: {
+		alignItems: 'center',
+		gap: 6,
+		paddingVertical: 8,
+		paddingHorizontal: 8,
+		borderRadius: 14,
+	},
+	pairValuesRow: {
+		flexDirection: 'row',
+		gap: 6,
+	},
+	pairValueBox: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: 48,
+		height: 48,
+		borderRadius: 12,
+		borderWidth: 2,
 	},
 	totalText: {
 		fontSize: 22,

@@ -1,13 +1,14 @@
 /**
  * Regression test for advantage/disadvantage picking the wrong dice.
  *
- * computeRoll used to compare the TOTALS of the two rolls and keep the whole
+ * computeRoll used to compare the TOTALS of two whole rolls and keep the
  * winning roll. With more than one die that is wrong: a die's worse value
  * could count just because its roll happened to win overall (reported with
  * W10+W4+W6 rolling 7/4/1 vs 8/3/4 - the old code kept the whole second roll
- * and its W4 showed 3 even though the first roll's W4 showed 4). Advantage and
- * disadvantage are decided per die: each die keeps its own higher (advantage)
- * or lower (disadvantage) value, and the result is the sum of the kept values.
+ * and its W4 counted 3 even though the first roll's W4 showed 4). Advantage
+ * and disadvantage are decided per die: each die is rolled twice, keeps its
+ * own higher (advantage) or lower (disadvantage) value, and the result is the
+ * sum of the kept values.
  */
 
 jest.mock('../helpers/RandomHelper', () => ({
@@ -25,6 +26,8 @@ const POOL = [
 	{ id: 'die-3', sides: 6 },
 ];
 
+// Values are consumed pool-first: one full pass over the pool for the first
+// roll of every die, then a second pass for the second roll.
 function queueRolls(values: number[]) {
 	mockRandomDieValue.mockReset();
 	for (const value of values) {
@@ -43,14 +46,17 @@ describe('computeRoll', () => {
 	});
 
 	it('advantage keeps each die\'s higher value, not the roll with the higher total', () => {
-		// Roll A: 7/4/1 (total 12), roll B: 8/3/4 (total 15). Whole-roll advantage
-		// would keep roll B for 15; per-die advantage keeps 8, 4 and 4 for 16.
+		// First values 7/4/1 (total 12), second values 8/3/4 (total 15).
+		// Whole-roll advantage would keep the second roll for 15; per-die
+		// advantage keeps 8, 4 and 4 for 16.
 		queueRolls([7, 4, 1, 8, 3, 4]);
 		const result = computeRoll(POOL, 'advantage');
 		if (result.mode !== 'advantage') throw new Error('expected advantage result');
-		expect(result.rollA.total).toBe(12);
-		expect(result.rollB.total).toBe(15);
-		expect(result.keptRollById).toEqual({ 'die-1': 'B', 'die-2': 'A', 'die-3': 'B' });
+		expect(result.dice).toEqual([
+			{ id: 'die-1', sides: 10, valueA: 7, valueB: 8, kept: 'B' },
+			{ id: 'die-2', sides: 4, valueA: 4, valueB: 3, kept: 'A' },
+			{ id: 'die-3', sides: 6, valueA: 1, valueB: 4, kept: 'B' },
+		]);
 		expect(result.keptTotal).toBe(16);
 	});
 
@@ -58,21 +64,21 @@ describe('computeRoll', () => {
 		queueRolls([7, 4, 1, 8, 3, 4]);
 		const result = computeRoll(POOL, 'disadvantage');
 		if (result.mode !== 'disadvantage') throw new Error('expected disadvantage result');
-		expect(result.keptRollById).toEqual({ 'die-1': 'A', 'die-2': 'B', 'die-3': 'A' });
+		expect(result.dice.map((die) => die.kept)).toEqual(['A', 'B', 'A']);
 		expect(result.keptTotal).toBe(7 + 3 + 1);
 	});
 
-	it('keeps the first roll\'s value on a per-die tie', () => {
+	it('keeps the first value on a per-die tie', () => {
 		queueRolls([5, 2, 3, 5, 2, 3]);
 		const advantage = computeRoll(POOL, 'advantage');
 		if (advantage.mode !== 'advantage') throw new Error('expected advantage result');
-		expect(advantage.keptRollById).toEqual({ 'die-1': 'A', 'die-2': 'A', 'die-3': 'A' });
+		expect(advantage.dice.map((die) => die.kept)).toEqual(['A', 'A', 'A']);
 		expect(advantage.keptTotal).toBe(10);
 
 		queueRolls([5, 2, 3, 5, 2, 3]);
 		const disadvantage = computeRoll(POOL, 'disadvantage');
 		if (disadvantage.mode !== 'disadvantage') throw new Error('expected disadvantage result');
-		expect(disadvantage.keptRollById).toEqual({ 'die-1': 'A', 'die-2': 'A', 'die-3': 'A' });
+		expect(disadvantage.dice.map((die) => die.kept)).toEqual(['A', 'A', 'A']);
 		expect(disadvantage.keptTotal).toBe(10);
 	});
 
