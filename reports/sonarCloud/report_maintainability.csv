@@ -15,9 +15,9 @@ Key,Message,Component,Line
 "AZ_HfXtu4OT8cE4gH-ef","'change.to' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",203
 "AZ_HfXt54OT8cE4gH-eg","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:apps/scripts/store-metadata-load.ts",20
 "AZ_HfXrM4OT8cE4gH-eb","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata.ts",174
-"AZ_HG7ZcUuTJtAa61ed5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",136
-"AZ_HG7ZcUuTJtAa61ed6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",137
-"AZ_HG7ZcUuTJtAa61ed7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",196
+"AZ_HG7ZcUuTJtAa61ed5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",137
+"AZ_HG7ZcUuTJtAa61ed6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",138
+"AZ_HG7ZcUuTJtAa61ed7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",198
 "AZ_HG7csUuTJtAa61ed8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",302
 "AZ_HG7csUuTJtAa61ed9","function 'serializeKnobValue' is equivalent to `String`. Use `String` directly.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",314
 "AZ_EeHeTkMhpq5gUNw8t","'../helpers/GameHistoryStorage' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",11
