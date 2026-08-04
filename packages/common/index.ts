@@ -31,3 +31,4 @@ export * from './src/GpsRouteTypes';
 export * from './src/MapOverlayTypes';
 export * from './src/UiAccentTypes';
 export * from './src/BoxplotHelper';
+export * from './src/CompressionHelper';

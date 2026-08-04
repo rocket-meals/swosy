@@ -537,6 +537,15 @@ export function parseGamePreset(text: string): GamePreset | null {
 	} catch {
 		return null;
 	}
+	return parseGamePresetValue(parsed);
+}
+
+/**
+ * Same validation as `parseGamePreset`, but starting from an already parsed
+ * value - for callers that carry presets nested inside a larger JSON payload
+ * (see helpers/ShareCodec).
+ */
+export function parseGamePresetValue(parsed: unknown): GamePreset | null {
 	if (typeof parsed !== 'object' || parsed === null) return null;
 	const v = parsed as Record<string, unknown>;
 	if (!isValidGamePresetScalarFields(v)) return null;

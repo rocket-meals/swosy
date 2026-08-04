@@ -21,14 +21,14 @@ import {
 	setFriendColor,
 	setFriendAvatar,
 	removeFriend,
-	importFriends,
 } from '../../store/friendsSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import type { Friend } from '../../helpers/FriendsStorage';
-import { parseFriendsExport } from '../../helpers/FriendsStorage';
+import { buildFriendsShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { logDebug } from '../../helpers/DebugLogger';
+import ShareImportContent from '../../components/ShareImportContent';
 
 const PRIMARY_COLOR = '#2563eb';
 const DANGER_COLOR = '#dc2626';
@@ -56,8 +56,10 @@ function ExportFriendsRow({
 	nativeID?: string;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 }>) {
+	// Copies the friends in the common export format (see helpers/ShareCodec) -
+	// the same envelope a Partie export uses.
 	const handleExport = useCallback(async () => {
-		await Clipboard.setStringAsync(JSON.stringify(friends, null, 2));
+		await Clipboard.setStringAsync(encodeShareBundle(buildFriendsShareBundle(friends)));
 	}, [friends]);
 
 	return (
@@ -80,25 +82,27 @@ function ImportFriendsRow({
 	nativeID?: string;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 }>) {
-	const dispatch = useDispatch<AppDispatch>();
+	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+
+	// Only the friends of an export are consumed here - pasting the export of
+	// a whole Partie imports just its Freunde (see components/ShareImportContent).
+	const handleOpenImportModal = useCallback(() => {
+		showImportModal({
+			title: 'Freunde importieren',
+			children: <ShareImportContent mode="friends" onClose={closeImportModal} />,
+		});
+	}, [showImportModal, closeImportModal]);
 
 	return (
-		<SettingsListTextInput
+		<SettingsList
 			nativeID={nativeID}
 			label="Freunde importieren"
+			value="Export aus der Zwischenablage einfügen - auch aus einem Partie-Export"
+			stackedValue
 			leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 			iconBgColor={PRIMARY_COLOR}
-			modalTitle="Freunde importieren"
-			placeholder='[{"id": "...", "name": "Anna", "color": "#2563eb", "createdAt": 0}]'
-			saveLabel="Importieren"
-			multiline
-			numberOfLines={10}
-			textAlignVertical="top"
-			checkTextInput={(value) => ({ isValid: parseFriendsExport(value) !== null, value })}
-			onSave={(value) => {
-				const parsed = parseFriendsExport(value);
-				if (parsed) dispatch(importFriends(parsed));
-			}}
+			rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+			handleFunction={handleOpenImportModal}
 			groupPosition={groupPosition}
 		/>
 	);

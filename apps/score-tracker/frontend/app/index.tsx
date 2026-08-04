@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList, SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import { loadMatch, resetScores, setGameType } from '../store/gameSlice';
@@ -13,6 +13,7 @@ import { buildHistoryEntry, hasRecordedResults } from '../helpers/GameHistorySto
 import { generateId } from '../helpers/RandomHelper';
 import { ComponentIds } from '../constants/ComponentIds';
 import GameTypeIcon from '../components/GameTypeIcon';
+import ShareImportContent from '../components/ShareImportContent';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -114,6 +115,7 @@ export default function StartScreen() {
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
 	const friends = useSelector((state: RootState) => state.friends.friends);
+	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
 
 	const greeting = getGreeting(new Date());
 
@@ -177,6 +179,15 @@ export default function StartScreen() {
 		dispatch(setGameType(undefined));
 		router.push('/match');
 	}, [archiveRunningMatch, dispatch]);
+
+	// Import a shared export (a Partie with its Spiel and Freunden, or plain
+	// Spiele/Freunde) from the clipboard - see components/ShareImportContent.
+	const handleOpenImportModal = useCallback(() => {
+		showImportModal({
+			title: 'Partie importieren',
+			children: <ShareImportContent mode="all" onClose={closeImportModal} />,
+		});
+	}, [showImportModal, closeImportModal]);
 
 	const matchRowCount = (lastPlayedGameType ? 1 : 0) + (hasRunningMatch || latestEntry ? 1 : 0);
 	const showLastMatchRow = hasRunningMatch || latestEntry != null;
@@ -254,6 +265,17 @@ export default function StartScreen() {
 					iconBgColor={PRIMARY_COLOR}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/games')}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					nativeID={ComponentIds.START_SCREEN_IMPORT_ROW}
+					label="Partie importieren"
+					value="Export eines anderen Spielers aus der Zwischenablage einfügen"
+					stackedValue
+					leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
+					iconBgColor={PRIMARY_COLOR}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenImportModal}
 					groupPosition="bottom"
 				/>
 
