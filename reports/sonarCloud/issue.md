@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 5 | 5 |
-| 🔧 Maintainability | 50 | 36 |
+| 🔧 Maintainability | 53 | 36 |
 
-**Total issues:** 64 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 67 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -72,7 +72,7 @@
   apps/scripts/store-metadata-extract.ts:53
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
 
-## 🔧 Maintainability (36/50)
+## 🔧 Maintainability (36/53)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -114,25 +114,37 @@
   apps/score-tracker/frontend/app/games/[id].tsx:88
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L88
 
+- **Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.**
+  apps/score-tracker/frontend/app/index.tsx:109
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L109
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/score-tracker/frontend/app/index.tsx:186
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L186
+
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/index.tsx:429
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L429
+  apps/score-tracker/frontend/app/index.tsx:186
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L186
 
 - **Remove this unused import of 'resetAll'.**
-  apps/score-tracker/frontend/app/index.tsx:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L49
+  apps/score-tracker/frontend/app/match/index.tsx:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L49
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/match/index.tsx:429
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L429
 
 - **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/index.tsx:1337
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1337
-
-- **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/index.tsx:1356
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1356
+  apps/score-tracker/frontend/app/match/index.tsx:1337
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1337
 
 - **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/index.tsx:1341
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L1341
+  apps/score-tracker/frontend/app/match/index.tsx:1341
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1341
+
+- **Remove this useless assignment to variable "toggleEditingPlayers".**
+  apps/score-tracker/frontend/app/match/index.tsx:1356
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1356
 
 - **Replace this union type with a type alias.**
   apps/score-tracker/frontend/components/CategoryValueRows.tsx:57
@@ -205,16 +217,4 @@
 - **'../helpers/GameHistoryStorage' imported multiple times.**
   apps/score-tracker/frontend/store/store.ts:14
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/store/store.ts#L14
-
-- **Use the "RegExp.exec()" method instead.**
-  apps/scripts/check-build-version.ts:10
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L10
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/scripts/check-build-version.ts:11
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L11
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/scripts/check-build-version.ts:23
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/check-build-version.ts#L23
 
