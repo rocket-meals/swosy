@@ -187,9 +187,8 @@ export const ComponentIds = {
 	TIMER_START_PAUSE_BUTTON: 'timer-start-pause-button',
 	TIMER_RESET_BUTTON: 'timer-reset-button',
 	TIMER_CUSTOM_TIME_BUTTON: 'timer-custom-time-button',
-	TIMER_CUSTOM_TIME_DISPLAY: 'timer-custom-time-display',
-	TIMER_CUSTOM_TIME_INPUT: 'timer-custom-time-input',
-	TIMER_CUSTOM_TIME_CLEAR_BUTTON: 'timer-custom-time-clear-button',
+	// Segment fields (common-ui TimeInputFields), suffixed with hours/minutes/seconds.
+	TIMER_CUSTOM_TIME_FIELD_PREFIX: 'timer-custom-time-field-',
 	TIMER_CUSTOM_TIME_START_BUTTON: 'timer-custom-time-start-button',
 
 	// Dice screen

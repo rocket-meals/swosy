@@ -27,6 +27,7 @@ import SettingsListEditable from '../components/SettingsListEditable';
 import SettingsListTextInput from '../components/SettingsListTextInput';
 import SettingsListNumberInput from '../components/SettingsListNumberInput';
 import SettingsListDate from '../components/SettingsListDate';
+import SettingsListTimeInput from '../components/SettingsListTimeInput';
 import SettingsListProgress from '../components/SettingsListProgress';
 import SettingsListLikeButton from '../components/SettingsListLikeButton';
 import SettingsListLikeDislikeFast from '../components/SettingsListLikeDislikeFast';
@@ -159,6 +160,13 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 			value: String(values.value ?? ''),
 			initialValue: Number(values.value ?? 0),
 			onSave: (saved: number) => setKnob('value', saved),
+		}),
+	},
+	SettingsListTimeInput: {
+		component: SettingsListTimeInput,
+		bindProps: (values, setKnob) => ({
+			initialValue: Number(values.value ?? 0),
+			onSave: (totalSeconds: number) => setKnob('value', totalSeconds),
 		}),
 	},
 	SettingsListDate: {

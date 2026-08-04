@@ -22,6 +22,11 @@ export enum CommonUiComponentIds {
 	AVATAR_EDITOR_CUSTOMIZE_ROW = 'avatar-editor-customize-row',
 	AVATAR_EDITOR_CATEGORY_LIST = 'avatar-editor-category-list',
 
+	// Segmented time input (see SettingsListTimeInput). The field prefix is
+	// suffixed with the unit name: hours / minutes / seconds.
+	TIME_INPUT_FIELD_PREFIX = 'common-ui-time-input-field-',
+	TIME_INPUT_SAVE_BUTTON = 'common-ui-time-input-save-button',
+
 	// Component playbook (see src/playbook). The wrapper around the component
 	// under test plus the prefixes for list items, knob rows and variant rows.
 	PLAYBOOK_TARGET = 'playbook-target',

@@ -122,6 +122,18 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		},
 	},
 	{
+		name: 'SettingsListTimeInput',
+		description: 'Settings row opening a segmented HH:MM:SS duration input modal.',
+		knobs: {
+			label: { type: 'text', defaultValue: 'Duration' },
+			value: { type: 'number', defaultValue: 5400, passAsProp: false, label: 'value (seconds)' },
+			hoursEnabled: { type: 'boolean', defaultValue: true },
+			minutesEnabled: { type: 'boolean', defaultValue: true },
+			secondsEnabled: { type: 'boolean', defaultValue: true },
+			groupPosition: GROUP_POSITION_KNOB,
+		},
+	},
+	{
 		name: 'SettingsListDate',
 		description: 'Settings row opening a date input modal (DD.MM.YYYY).',
 		knobs: {

@@ -79,6 +79,17 @@ export type { SettingsListBoxplotProps } from './src/components/SettingsListBoxp
 export { default as SettingsListNumberInput } from './src/components/SettingsListNumberInput';
 export type { SettingsListNumberInputProps } from './src/components/SettingsListNumberInput';
 
+export { default as SettingsListTimeInput, TimeInputFields } from './src/components/SettingsListTimeInput';
+export type { SettingsListTimeInputProps, TimeInputFieldsProps, TimeUnit, TimeUnitsEnabled } from './src/components/SettingsListTimeInput';
+export {
+	enabledTimeUnits,
+	splitSecondsToSegments,
+	segmentsToSeconds,
+	formatSecondsWithUnits,
+	sanitizeTimeSegmentText,
+	padTimeSegment,
+} from './src/components/SettingsListTimeInput';
+
 export { default as AppDrawer } from './src/components/AppDrawer';
 export type { AppDrawerProps, DrawerItem, DrawerItemBaseFields } from './src/components/AppDrawer';
 
