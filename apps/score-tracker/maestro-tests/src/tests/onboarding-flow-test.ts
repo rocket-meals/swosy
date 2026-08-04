@@ -1,7 +1,7 @@
 /**
  * onboarding-flow-test.ts – Tests the first-launch onboarding tour: on a fresh
  * profile the tour appears before the app, "Weiter" walks through all steps,
- * the last step's "Los geht's!" closes the tour and lands on the game screen.
+ * the last step's "Los geht's!" closes the tour and lands on the start screen.
  */
 
 import { MaestroTestCase } from 'repo-depkit-maestro-framework';
@@ -32,8 +32,8 @@ test
 	.tapOnId(ComponentIds.ONBOARDING_NEXT_BUTTON)
 	.waitForAnimationToEnd()
 
-	// The tour is gone and the setup phase of the game screen is visible
-	.assertVisibleId(ComponentIds.GAME_ADD_PLAYER_BUTTON)
-	.takeScreenshot('onboarding-finished-game-screen');
+	// The tour is gone and the start screen is visible
+	.assertVisibleId(ComponentIds.START_SCREEN_QUICK_MATCH_ROW)
+	.takeScreenshot('onboarding-finished-start-screen');
 
 export default test;

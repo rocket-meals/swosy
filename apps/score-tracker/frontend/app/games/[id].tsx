@@ -818,7 +818,7 @@ export default function GameTypeDetailScreen() {
 		// setup phase instead of carrying over the previous match's roster.
 		dispatch(resetScores({ clearPlayers: true }));
 		dispatch(setGameType(gameType.id));
-		router.push('/');
+		router.push('/match');
 	}, [gameType, archiveRunningMatch, dispatch]);
 
 	// Tapping a match opens it: the running one is already loaded; an archived
@@ -831,7 +831,7 @@ export default function GameTypeDetailScreen() {
 				archiveRunningMatch();
 				dispatch(loadMatch(entry));
 			}
-			router.push('/');
+			router.push('/match');
 		},
 		[archiveRunningMatch, dispatch],
 	);
