@@ -270,15 +270,13 @@ export default function DiceScreen() {
 										? undefined
 										: new Set(roll.dice.filter((die) => results.keptRollById[die.id] === rollKey).map((die) => die.id));
 									return (
-										<View key={rollKey} style={[styles.rollSet, { borderColor: theme.screen.border }]}>
-											<View style={styles.rollSetHeader}>
-												<Text style={[styles.rollSetLabel, { color: theme.screen.text }]}>Wurf {index + 1}</Text>
-											</View>
+										<View key={rollKey} style={styles.rollSet}>
+											<Text style={[styles.rollSetLabel, { color: theme.screen.placeholder }]}>Wurf {index + 1}</Text>
 											<DiceValueRow dice={roll.dice} theme={theme} keptIds={keptIds} />
 										</View>
 									);
 								})}
-								<Text style={[styles.totalText, { color: theme.screen.text }]}>Ergebnis: {results.keptTotal}</Text>
+								<Text style={[styles.totalText, { color: theme.screen.text }]}>Summe: {results.keptTotal}</Text>
 							</>
 						)}
 					</View>
@@ -419,19 +417,10 @@ const styles = StyleSheet.create({
 	rollSet: {
 		width: '100%',
 		alignItems: 'center',
-		paddingVertical: 14,
-		paddingHorizontal: 12,
-		borderRadius: 14,
-		borderWidth: StyleSheet.hairlineWidth,
-		marginBottom: 12,
-	},
-	rollSetHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-		marginBottom: 10,
+		marginBottom: 16,
 	},
 	rollSetLabel: {
+		marginBottom: 8,
 		fontSize: 13,
 		fontWeight: '700',
 		textTransform: 'uppercase',
