@@ -44,7 +44,7 @@ export async function loadFriends(): Promise<Friend[]> {
 
 // ─── Import/export ──────────────────────────────────────────────────────────
 
-function isValidFriend(value: unknown): value is Friend {
+export function isValidFriend(value: unknown): value is Friend {
 	if (typeof value !== 'object' || value === null) return false;
 	const candidate = value as Record<string, unknown>;
 	return (
@@ -67,6 +67,15 @@ export function parseFriendsExport(text: string): Friend[] | null {
 	} catch {
 		return null;
 	}
+	return parseFriendsValue(parsed);
+}
+
+/**
+ * Same validation as `parseFriendsExport`, but starting from an already parsed
+ * value - for callers that carry friends nested inside a larger JSON payload
+ * (see helpers/ShareCodec).
+ */
+export function parseFriendsValue(parsed: unknown): Friend[] | null {
 	if (!Array.isArray(parsed) || parsed.length === 0) return null;
 	if (!parsed.every(isValidFriend)) return null;
 	return parsed;

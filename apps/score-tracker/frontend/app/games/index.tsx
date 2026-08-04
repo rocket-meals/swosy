@@ -18,11 +18,13 @@ import { setGamesSortMode } from '../../store/appSettingsSlice';
 import { resetScores, setGameType } from '../../store/gameSlice';
 import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
-import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET, gameTypeToPreset, parseGamePreset } from '../../helpers/GameRules';
+import { FLIP_SEVEN_PRESET, MANSIONS_OF_MADNESS_PRESET } from '../../helpers/GameRules';
+import { buildGamesShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
 import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
 import { generateId } from '../../helpers/RandomHelper';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
+import ShareImportContent from '../../components/ShareImportContent';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -109,6 +111,7 @@ export default function GamesScreen() {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState('');
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
 
 	// Played matches and most recent match per game type (derived from the
 	// archived history). `lastPlayedAt` drives the default sort order.
@@ -182,21 +185,20 @@ export default function GamesScreen() {
 		router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
 	}, [dispatch, closeModal]);
 
-	const handleImportPreset = useCallback(
-		(value: string) => {
-			const preset = parseGamePreset(value);
-			if (!preset) return;
-			const action = dispatch(addGameTypeFromPreset(preset));
-			closeModal();
-			router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
-		},
-		[dispatch, closeModal],
-	);
+	// Import Spiele from a shared export string. Only the games are consumed -
+	// pasting the export of a whole Partie here imports just its Spiel (see
+	// components/ShareImportContent).
+	const handleOpenImportModal = useCallback(() => {
+		showImportModal({
+			title: 'Spiel importieren',
+			children: <ShareImportContent mode="games" onClose={closeImportModal} />,
+		});
+	}, [showImportModal, closeImportModal]);
 
-	// Copies all games as shareable templates (same JSON format the per-game
-	// export on the detail screen produces, just as an array).
+	// Copies all games as shareable templates in the common export format
+	// (see helpers/ShareCodec).
 	const handleExportAll = useCallback(async () => {
-		await Clipboard.setStringAsync(JSON.stringify(gameTypes.map(gameTypeToPreset), null, 2));
+		await Clipboard.setStringAsync(encodeShareBundle(buildGamesShareBundle(gameTypes)));
 	}, [gameTypes]);
 
 	const handleOpenSettingsModal = useCallback(() => {
@@ -244,26 +246,22 @@ export default function GamesScreen() {
 						handleFunction={handleLoadMansions}
 						groupPosition="middle"
 					/>
-					<SettingsListTextInput
+					<SettingsList
 						nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
 						label="Spiel importieren"
+						value="Export aus der Zwischenablage einfügen - auch aus einem Partie-Export"
+						stackedValue
 						leftIcon={<Ionicons name="clipboard-outline" size={20} color="#ffffff" />}
 						iconBgColor={PRIMARY_COLOR}
-						modalTitle="Spiel importieren"
-						placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
-						saveLabel="Importieren"
-						multiline
-						numberOfLines={10}
-						textAlignVertical="top"
-						checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
-						onSave={handleImportPreset}
+						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+						handleFunction={handleOpenImportModal}
 						groupPosition="bottom"
 					/>
 					<GamesSortSection />
 				</View>
 			),
 		});
-	}, [showModal, handleAddGameTypeFromModal, handleExportAll, handleLoadFlipSeven, handleLoadMansions, handleImportPreset]);
+	}, [showModal, handleAddGameTypeFromModal, handleExportAll, handleLoadFlipSeven, handleLoadMansions, handleOpenImportModal]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({

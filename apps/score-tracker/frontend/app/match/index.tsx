@@ -23,6 +23,7 @@ import {
 	AvatarStyle,
 } from 'repo-depkit-common-ui';
 import type { AvatarConfig } from 'repo-depkit-common-ui';
+import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import {
@@ -57,6 +58,7 @@ import { PLAYER_COLORS } from '../../helpers/GameStorage';
 import type { Player } from '../../helpers/GameStorage';
 import type { GameType } from '../../helpers/GameTypesStorage';
 import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
+import { buildMatchShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
 import type { Friend } from '../../helpers/FriendsStorage';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { logDebug } from '../../helpers/DebugLogger';
@@ -1054,8 +1056,21 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 	const dispatch = useDispatch<AppDispatch>();
 	const game = useSelector((state: RootState) => state.game);
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
+	const friends = useSelector((state: RootState) => state.friends.friends);
 	const selectedGameType = game.gameTypeId ? gameTypes.find((g) => g.id === game.gameTypeId) : undefined;
 	const trackScores = selectedGameType?.trackScores ?? true;
+
+	/**
+	 * Copy this Partie as a shareable export string to the clipboard: the match
+	 * itself plus its Spiel and the participating Freunde, so the receiver can
+	 * import everything in one go (see helpers/ShareCodec). The snapshot uses
+	 * the same builder as archiving, but doesn't archive anything.
+	 */
+	const handleExportMatch = useCallback(async () => {
+		const entry = buildHistoryEntry(game, { id: game.matchId ?? generateId(), endedAt: game.endedAt ?? Date.now() });
+		const bundle = buildMatchShareBundle({ entry, gameType: selectedGameType, friends });
+		await Clipboard.setStringAsync(encodeShareBundle(bundle));
+	}, [game, selectedGameType, friends]);
 
 	/**
 	 * Mark the match's rounds as finished: archive the match (it appears as
@@ -1096,6 +1111,16 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 	return (
 		<>
 			<SettingsListGroupTitle title="Partie" />
+			<SettingsList
+				nativeID={ComponentIds.GAME_SETTINGS_EXPORT_MATCH}
+				label="Partie exportieren"
+				value="Partie, Spiel & Freunde als Text in die Zwischenablage kopieren - zum Teilen mit anderen Spielern"
+				stackedValue
+				leftIcon={<Ionicons name="share-outline" size={20} color="#ffffff" />}
+				iconBgColor={PRIMARY_COLOR}
+				handleFunction={handleExportMatch}
+				groupPosition="top"
+			/>
 			{game.status === 'active' && (
 				<SettingsList
 					nativeID={ComponentIds.GAME_SETTINGS_END_MATCH}
@@ -1105,7 +1130,7 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 					leftIcon={<Ionicons name="flag-outline" size={20} color="#ffffff" />}
 					iconBgColor={SUCCESS_COLOR}
 					handleFunction={handleEndMatch}
-					groupPosition="top"
+					groupPosition="middle"
 				/>
 			)}
 			{game.status === 'finished' && (
@@ -1117,7 +1142,7 @@ function MatchOptionsSection({ onClose }: Readonly<{ onClose: () => void }>) {
 					leftIcon={<Ionicons name="lock-open-outline" size={20} color="#ffffff" />}
 					iconBgColor={SUCCESS_COLOR}
 					handleFunction={handleReopenMatch}
-					groupPosition="top"
+					groupPosition="middle"
 				/>
 			)}
 			{game.status === 'active' && trackScores && (

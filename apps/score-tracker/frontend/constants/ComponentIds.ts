@@ -27,6 +27,21 @@ export const ComponentIds = {
 	START_SCREEN_TIMER_ROW: 'start-screen-timer-row',
 	START_SCREEN_DICE_ROW: 'start-screen-dice-row',
 	START_SCREEN_STATS: 'start-screen-stats',
+	START_SCREEN_IMPORT_ROW: 'start-screen-import-row',
+
+	// Shared import modal (see components/ShareImportContent)
+	SHARE_IMPORT_CLIPBOARD_BUTTON: 'share-import-clipboard-button',
+	SHARE_IMPORT_TEXT_INPUT: 'share-import-text-input',
+	SHARE_IMPORT_SUBMIT_BUTTON: 'share-import-submit-button',
+	SHARE_IMPORT_RESET_BUTTON: 'share-import-reset-button',
+	SHARE_IMPORT_DONE_BUTTON: 'share-import-done-button',
+	SHARE_IMPORT_GAME_ROW_PREFIX: 'share-import-game-row-',
+	SHARE_IMPORT_GAME_UPDATE_PREFIX: 'share-import-game-update-',
+	SHARE_IMPORT_GAME_KEEP_PREFIX: 'share-import-game-keep-',
+	SHARE_IMPORT_FRIEND_ROW_PREFIX: 'share-import-friend-row-',
+	SHARE_IMPORT_FRIEND_SAME_PREFIX: 'share-import-friend-same-',
+	SHARE_IMPORT_FRIEND_NEW_PREFIX: 'share-import-friend-new-',
+	SHARE_IMPORT_FRIEND_RENAME_PREFIX: 'share-import-friend-rename-',
 
 	// Game screen header
 	GAME_HEADER_BACK_BUTTON: 'game-header-back-button',
@@ -92,6 +107,7 @@ export const ComponentIds = {
 	GAME_SETTINGS_COLUMNS_LANDSCAPE_2: 'game-settings-columns-landscape-2',
 	GAME_SETTINGS_RESET_SCORES: 'game-settings-reset-scores',
 	GAME_SETTINGS_END_MATCH: 'game-settings-end-match',
+	GAME_SETTINGS_EXPORT_MATCH: 'game-settings-export-match',
 	GAME_SETTINGS_REOPEN_MATCH: 'game-settings-reopen-match',
 	GAME_SETTINGS_DELETE_MATCH: 'game-settings-delete-match',
 	GAME_SETTINGS_PLAYER_ROW_PREFIX: 'game-settings-player-row-',

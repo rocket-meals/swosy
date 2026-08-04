@@ -28,7 +28,6 @@ import {
 	setGameTypeTrackScores,
 	setGameTypeVersion,
 	updateGameTypeFromPreset,
-	addGameTypeFromPreset,
 	removeGameType,
 } from '../../store/gameTypesSlice';
 import { loadMatch, resetScores, setGameType } from '../../store/gameSlice';
@@ -39,6 +38,7 @@ import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistory
 import type { ScoringMode, GameType } from '../../helpers/GameTypesStorage';
 import type { StartingPlayerMode } from '../../helpers/GameRules';
 import { gameTypeToPreset, parseGamePreset, STARTING_PLAYER_MODES, ROTATE_PLAYER_ORDER_RULE } from '../../helpers/GameRules';
+import { buildGamesShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
 import type { CategoryFilters, GameCategory, GameCategoryValues, MatchSort } from '../../helpers/GameCategories';
 import {
 	DEFAULT_MATCH_SORT,
@@ -56,6 +56,7 @@ import GameTypeIcon from '../../components/GameTypeIcon';
 import { makeGameHeaderTitle } from '../../components/GameHeaderTitle';
 import GameCategorySettings from '../../components/GameCategorySettings';
 import { GameImagePickerContent, GameImageSearchHeader, ImageQueryObservable, defaultImageQuery } from '../../components/GameImagePicker';
+import ShareImportContent from '../../components/ShareImportContent';
 import { findImageUrlForGameName } from '../../helpers/ImageSearch';
 import { describeImageSize, isInlineImage } from '../../helpers/GameImageUpload';
 import MatchFilterSort from '../../components/MatchFilterSort';
@@ -378,20 +379,22 @@ function GameTypeSettingsContent({
 		await Clipboard.setStringAsync(gameTypeId);
 	}, [gameTypeId]);
 
+	// Copies the game as a shareable template in the common export format
+	// (see helpers/ShareCodec) - the same envelope a Partie export uses.
 	const handleExportPreset = useCallback(async () => {
 		if (!gameType) return;
-		await Clipboard.setStringAsync(JSON.stringify(gameTypeToPreset(gameType), null, 2));
+		await Clipboard.setStringAsync(encodeShareBundle(buildGamesShareBundle([gameType])));
 	}, [gameType]);
 
-	const handleImportPreset = useCallback(
-		(value: string) => {
-			const preset = parseGamePreset(value);
-			if (!preset) return;
-			const action = dispatch(addGameTypeFromPreset(preset));
-			router.push({ pathname: '/games/[id]', params: { id: action.payload.id } });
-		},
-		[dispatch],
-	);
+	// Import from a shared export string. Full mode: pasting the export of a
+	// Partie here brings the Partie plus its Spiel/Freunde along - with the
+	// name/version check against the local games (see ShareImportPlan).
+	const handleOpenImportModal = useCallback(() => {
+		showModal({
+			title: 'Importieren',
+			children: <ShareImportContent mode="all" onClose={closeModal} />,
+		});
+	}, [showModal, closeModal]);
 
 	// Only clears the score-entry rules (card picker) - a custom player-order
 	// rule living in the same `rules` object, if any, is kept intact.
@@ -602,19 +605,15 @@ function GameTypeSettingsContent({
 				handleFunction={handleExportPreset}
 				groupPosition="top"
 			/>
-			<SettingsListTextInput
+			<SettingsList
 				nativeID={ComponentIds.GAMES_IMPORT_PRESET_ROW}
-				label="Spiel importieren"
+				label="Importieren"
+				value="Partie oder Spiel aus der Zwischenablage einfügen"
+				stackedValue
 				leftIcon={<Ionicons name="download-outline" size={20} color="#ffffff" />}
 				iconBgColor={PRIMARY_COLOR}
-				modalTitle="Spiel importieren"
-				placeholder='{"name": "...", "icon": "🃏", "scoringMode": "highWins", "rules": {...}}'
-				saveLabel="Importieren"
-				multiline
-				numberOfLines={10}
-				textAlignVertical="top"
-				checkTextInput={(value) => ({ isValid: parseGamePreset(value) !== null, value })}
-				onSave={handleImportPreset}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenImportModal}
 				groupPosition="bottom"
 			/>
 
