@@ -9,6 +9,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import { DateHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { router, useNavigation } from 'expo-router';
 import { addGameType, addGameTypeFromPreset } from '../../store/gameTypesSlice';
@@ -272,6 +273,17 @@ export default function GamesScreen() {
 		) : (
 			filteredGameTypes.map((gameType, index) => {
 				const count = matchCounts[gameType.id] ?? 0;
+				// The row's subtitle mirrors the active sort: last-played date when
+				// sorting by date, match count otherwise.
+				const lastPlayed = lastPlayedAt[gameType.id];
+				const value =
+					gamesSortMode === 'lastPlayed'
+						? lastPlayed
+							? `Zuletzt gespielt: ${DateHelper.getHumanReadableDate(new Date(lastPlayed), false)}`
+							: 'Noch keine Partie'
+						: count === 1
+							? '1 Partie'
+							: `${count} Partien`;
 				return (
 					<SettingsList
 						key={gameType.id}
@@ -282,7 +294,7 @@ export default function GamesScreen() {
 							</View>
 						}
 						label={gameType.name}
-						value={count === 1 ? '1 Partie' : `${count} Partien`}
+						value={value}
 						stackedValue
 						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 						handleFunction={() => router.push({ pathname: '/games/[id]', params: { id: gameType.id } })}
