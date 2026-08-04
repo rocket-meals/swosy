@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme, type Theme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
-import { randomDieValue } from '../../helpers/RandomHelper';
+import { computeRoll, type DieResult, type PoolDie, type RollMode, type RollResult } from '../../helpers/DiceRollHelper';
 
 type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -33,55 +33,31 @@ function diceIconForSides(sides: number): MCIName {
 	return DICE_TYPE_ICON[sides] ?? FALLBACK_ICON;
 }
 
-type RollMode = 'sum' | 'advantage' | 'disadvantage';
-
 const ROLL_MODES: { key: RollMode; label: string; icon: MCIName }[] = [
 	{ key: 'sum', label: 'Summe', icon: 'sigma' },
 	{ key: 'advantage', label: 'Vorteil', icon: 'arrow-up-bold-circle-outline' },
 	{ key: 'disadvantage', label: 'Nachteil', icon: 'arrow-down-bold-circle-outline' },
 ];
 
-type PoolDie = { id: string; sides: number };
-type DieResult = PoolDie & { value: number };
-type DiceRoll = { dice: DieResult[]; total: number };
-type RollResult =
-	| { mode: 'sum'; dice: DieResult[]; total: number }
-	| { mode: 'advantage' | 'disadvantage'; rollA: DiceRoll; rollB: DiceRoll; keptRoll: 'A' | 'B'; keptTotal: number };
-
-function rollValue(sides: number): number {
-	return randomDieValue(sides);
-}
-
-function rollPoolOnce(pool: PoolDie[]): DiceRoll {
-	const dice = pool.map((die) => ({ ...die, value: rollValue(die.sides) }));
-	return { dice, total: dice.reduce((sum, die) => sum + die.value, 0) };
-}
-
-// Nothing is hidden or "loaded": for advantage/disadvantage the whole pool is
-// genuinely rolled twice and BOTH rolls are shown - only the roll with the
-// higher (advantage) or lower (disadvantage) total is highlighted as the one
-// that counts. A natural generalisation of the classic single-d20 "roll
-// twice, keep one" rule to an arbitrary dice pool.
-function computeRoll(pool: PoolDie[], mode: RollMode): RollResult {
-	const rollA = rollPoolOnce(pool);
-	if (mode === 'sum') {
-		return { mode, dice: rollA.dice, total: rollA.total };
-	}
-	const rollB = rollPoolOnce(pool);
-	const rollAWins = mode === 'advantage' ? rollA.total >= rollB.total : rollA.total <= rollB.total;
-	const keptRoll = rollAWins ? 'A' : 'B';
-	return { mode, rollA, rollB, keptRoll, keptTotal: keptRoll === 'A' ? rollA.total : rollB.total };
-}
-
-function DiceValueRow({ dice, theme }: Readonly<{ dice: DieResult[]; theme: Theme }>) {
+function DiceValueRow({ dice, theme, keptIds }: Readonly<{ dice: DieResult[]; theme: Theme; keptIds?: ReadonlySet<string> }>) {
 	return (
 		<View style={styles.resultsRow}>
-			{dice.map((die) => (
-				<View key={die.id} style={[styles.resultBadge, { backgroundColor: theme.screen.iconBg }]}>
-					<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
-					<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
-				</View>
-			))}
+			{dice.map((die) => {
+				const isKept = keptIds?.has(die.id) ?? false;
+				const isDimmed = keptIds != null && !isKept;
+				return (
+					<View
+						key={die.id}
+						style={[
+							styles.resultBadge,
+							{ backgroundColor: theme.screen.iconBg, borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: isDimmed ? 0.45 : 1 },
+						]}
+					>
+						<Text style={[styles.resultBadgeSides, { color: theme.screen.placeholder }]}>W{die.sides}</Text>
+						<Text style={[styles.resultBadgeValue, { color: theme.screen.text }]}>{die.value}</Text>
+					</View>
+				);
+			})}
 		</View>
 	);
 }
@@ -268,6 +244,13 @@ export default function DiceScreen() {
 						</TouchableOpacity>
 					))}
 				</View>
+				{rollMode !== 'sum' && (
+					<Text style={[styles.hintText, { color: theme.screen.placeholder }]}>
+						{rollMode === 'advantage'
+							? 'Jeder Würfel wird zweimal geworfen - pro Würfel zählt der höhere Wert.'
+							: 'Jeder Würfel wird zweimal geworfen - pro Würfel zählt der niedrigere Wert.'}
+					</Text>
+				)}
 
 				{results && (
 					<View style={styles.resultsArea}>
@@ -280,28 +263,18 @@ export default function DiceScreen() {
 							<>
 								{(['A', 'B'] as const).map((rollKey, index) => {
 									const roll = rollKey === 'A' ? results.rollA : results.rollB;
-									// Only reveal which roll counts once the shuffle has settled - while
-									// still animating, both rolls are shown neutrally so nothing gives
-									// away the outcome mid-shuffle.
-									const isKept = !isRolling && results.keptRoll === rollKey;
+									// Only reveal per die which value counts once the shuffle has
+									// settled - while still animating, both rolls are shown neutrally
+									// so nothing gives away the outcome mid-shuffle.
+									const keptIds = isRolling
+										? undefined
+										: new Set(roll.dice.filter((die) => results.keptRollById[die.id] === rollKey).map((die) => die.id));
 									return (
-										<View
-											key={rollKey}
-											style={[
-												styles.rollSet,
-												{ borderColor: isKept ? PRIMARY_COLOR : 'transparent', opacity: !isRolling && !isKept ? 0.55 : 1 },
-											]}
-										>
+										<View key={rollKey} style={[styles.rollSet, { borderColor: theme.screen.border }]}>
 											<View style={styles.rollSetHeader}>
 												<Text style={[styles.rollSetLabel, { color: theme.screen.text }]}>Wurf {index + 1}</Text>
-												{isKept && (
-													<View style={styles.keptBadge}>
-														<Text style={styles.keptBadgeText}>zählt</Text>
-													</View>
-												)}
 											</View>
-											<DiceValueRow dice={roll.dice} theme={theme} />
-											<Text style={[styles.rollSetTotal, { color: theme.screen.text }]}>Summe: {roll.total}</Text>
+											<DiceValueRow dice={roll.dice} theme={theme} keptIds={keptIds} />
 										</View>
 									);
 								})}
@@ -449,7 +422,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		paddingHorizontal: 12,
 		borderRadius: 14,
-		borderWidth: 2,
+		borderWidth: StyleSheet.hairlineWidth,
 		marginBottom: 12,
 	},
 	rollSetHeader: {
@@ -464,23 +437,6 @@ const styles = StyleSheet.create({
 		textTransform: 'uppercase',
 		letterSpacing: 0.4,
 	},
-	keptBadge: {
-		paddingHorizontal: 8,
-		paddingVertical: 2,
-		borderRadius: 10,
-		backgroundColor: PRIMARY_COLOR,
-	},
-	keptBadgeText: {
-		color: '#ffffff',
-		fontSize: 11,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-	},
-	rollSetTotal: {
-		fontSize: 16,
-		fontWeight: '700',
-		marginTop: 10,
-	},
 	resultsRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -493,6 +449,7 @@ const styles = StyleSheet.create({
 		width: 64,
 		height: 64,
 		borderRadius: 14,
+		borderWidth: 2,
 	},
 	resultBadgeSides: {
 		fontSize: 11,
