@@ -162,7 +162,7 @@ export default function GamesScreen() {
 		}
 		dispatch(resetScores({ clearPlayers: true }));
 		dispatch(setGameType(undefined));
-		router.push('/');
+		router.push('/match');
 	}, [activeGame, dispatch]);
 
 	const handleAddGameTypeFromModal = useCallback(() => {

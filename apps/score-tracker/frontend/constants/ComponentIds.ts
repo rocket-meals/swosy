@@ -10,12 +10,23 @@
  */
 export const ComponentIds = {
 	// Drawer navigation
-	DRAWER_ITEM_GAME: 'drawer-item-game',
+	DRAWER_ITEM_START: 'drawer-item-start',
 	DRAWER_ITEM_GAMES: 'drawer-item-games',
 	DRAWER_ITEM_PLAYERS: 'drawer-item-players',
 	DRAWER_ITEM_TIMER: 'drawer-item-timer',
 	DRAWER_ITEM_DICE: 'drawer-item-dice',
 	DRAWER_ITEM_SETTINGS: 'drawer-item-settings',
+
+	// Start screen (home, shown after onboarding)
+	START_SCREEN_GREETING: 'start-screen-greeting',
+	START_SCREEN_NEW_MATCH_ROW: 'start-screen-new-match-row',
+	START_SCREEN_LAST_MATCH_ROW: 'start-screen-last-match-row',
+	START_SCREEN_QUICK_MATCH_ROW: 'start-screen-quick-match-row',
+	START_SCREEN_MY_GAMES_ROW: 'start-screen-my-games-row',
+	START_SCREEN_FRIENDS_ROW: 'start-screen-friends-row',
+	START_SCREEN_TIMER_ROW: 'start-screen-timer-row',
+	START_SCREEN_DICE_ROW: 'start-screen-dice-row',
+	START_SCREEN_STATS: 'start-screen-stats',
 
 	// Game screen header
 	GAME_HEADER_BACK_BUTTON: 'game-header-back-button',

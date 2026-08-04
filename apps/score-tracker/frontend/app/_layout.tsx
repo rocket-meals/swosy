@@ -80,8 +80,17 @@ function ThemedDrawerNavigator() {
 				<Drawer.Screen
 					name="index"
 					options={{
+						title: 'Start',
+						drawerIcon: makeDrawerIcon(Ionicons, 'home-outline'),
+					}}
+				/>
+				{/* The running match is reached from the start screen (or a game's
+				    Partien list), not from the sidebar - so no drawer item for it. */}
+				<Drawer.Screen
+					name="match/index"
+					options={{
 						title: 'Aktuelle Partie',
-						drawerIcon: makeDrawerIcon(Ionicons, 'game-controller-outline'),
+						drawerItemStyle: { display: 'none' },
 					}}
 				/>
 				<Drawer.Screen
@@ -139,9 +148,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const items: DrawerItem[] = [
 		{
 			key: 'index',
-			label: 'Aktuelle Partie',
-			nativeID: ComponentIds.DRAWER_ITEM_GAME,
-			renderIcon: (_, color) => <Ionicons name="game-controller-outline" size={24} color={color} />,
+			label: 'Start',
+			nativeID: ComponentIds.DRAWER_ITEM_START,
+			renderIcon: (_, color) => <Ionicons name="home-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{

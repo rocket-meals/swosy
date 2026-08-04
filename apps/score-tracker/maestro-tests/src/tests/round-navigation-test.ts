@@ -21,6 +21,11 @@ test
 	.optionalTapOnId(ComponentIds.ONBOARDING_SKIP_BUTTON)
 	.waitForAnimationToEnd()
 
+	// The app opens on the start screen - "Schnelles Spiel" jumps into the
+	// setup phase of a fresh match
+	.tapOnId(ComponentIds.START_SCREEN_QUICK_MATCH_ROW)
+	.waitForAnimationToEnd()
+
 	// Setup: two guest players (the chooser stays open between adds), then
 	// close the chooser and start the game
 	.tapOnId(ComponentIds.GAME_ADD_PLAYER_BUTTON)
