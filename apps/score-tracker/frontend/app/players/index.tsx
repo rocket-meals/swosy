@@ -14,7 +14,7 @@ import {
 } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import {
 	addFriend,
 	renameFriend,
@@ -22,8 +22,13 @@ import {
 	setFriendAvatar,
 	removeFriend,
 } from '../../store/friendsSlice';
+import { loadMatch } from '../../store/gameSlice';
+import { archiveGame } from '../../store/gameHistorySlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { PLAYER_COLORS } from '../../helpers/GameStorage';
+import type { GameHistoryEntry } from '../../helpers/GameHistoryStorage';
+import { buildHistoryEntry, hasRecordedResults } from '../../helpers/GameHistoryStorage';
+import { generateId } from '../../helpers/RandomHelper';
 import type { Friend } from '../../helpers/FriendsStorage';
 import { buildFriendsShareBundle, encodeShareBundle } from '../../helpers/ShareCodec';
 import { ComponentIds } from '../../constants/ComponentIds';
@@ -137,6 +142,7 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 	const historyEntries = useSelector((state: RootState) => state.gameHistory.entries);
 	const gameTypes = useSelector((state: RootState) => state.gameTypes.gameTypes);
 	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
+	const activeGame = useSelector((state: RootState) => state.game);
 	const { show: showColorModal, close: closeColorModal } = useMyScrollViewModal();
 
 	const friendGames = useMemo(() => {
@@ -152,6 +158,7 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 				const gameType = entry.gameTypeId ? gameTypes.find((g) => g.id === entry.gameTypeId) : undefined;
 				return {
 					id: entry.id,
+					entry,
 					endedAt: entry.endedAt,
 					roundsCount: entry.roundsCount,
 					score: entry.finalScores[playerEntry.playerId] ?? 0,
@@ -185,6 +192,32 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 		dispatch(removeFriend(friend.id));
 		onClose();
 	}, [friend, dispatch, onClose]);
+
+	// Tapping a Partie jumps to it on the match screen - same behavior as the
+	// match list on the game detail screen: a reopened running match is already
+	// loaded, an archived one is loaded view-only after the running match (if
+	// anything was recorded in it) is archived so it isn't lost.
+	const handleOpenMatch = useCallback(
+		(entry: GameHistoryEntry) => {
+			const isRunning = activeGame.status === 'active' && activeGame.matchId === entry.id;
+			if (!isRunning) {
+				if (activeGame.status === 'active' && activeGame.players.length > 0 && hasRecordedResults(activeGame)) {
+					dispatch(
+						archiveGame(
+							buildHistoryEntry(activeGame, {
+								id: activeGame.matchId ?? generateId(),
+								endedAt: activeGame.endedAt ?? Date.now(),
+							}),
+						),
+					);
+				}
+				dispatch(loadMatch(entry));
+			}
+			onClose();
+			router.push('/match');
+		},
+		[activeGame, dispatch, onClose],
+	);
 
 	const handleCopyId = useCallback(async () => {
 		if (!friend) return;
@@ -284,6 +317,8 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 						stackedValue
 						leftIcon={<Ionicons name="trophy-outline" size={20} color="#ffffff" />}
 						iconBgColor={friend.color}
+						rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+						handleFunction={() => handleOpenMatch(game.entry)}
 						groupPosition={getGroupPosition(index, friendGames.length)}
 					/>
 				))
