@@ -23,7 +23,9 @@ export enum CommonUiComponentIds {
 	AVATAR_EDITOR_CATEGORY_LIST = 'avatar-editor-category-list',
 
 	// Segmented time input (see SettingsListTimeInput). The field prefix is
-	// suffixed with the unit name: hours / minutes / seconds.
+	// suffixed with the unit name: hours / minutes / seconds. The row id is
+	// used by the playbook interaction test to open the modal.
+	TIME_INPUT_ROW = 'common-ui-time-input-row',
 	TIME_INPUT_FIELD_PREFIX = 'common-ui-time-input-field-',
 	TIME_INPUT_SAVE_BUTTON = 'common-ui-time-input-save-button',
 

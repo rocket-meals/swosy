@@ -41,6 +41,7 @@ import QrCode from '../components/QrCode';
 import ScreenHeader from '../components/ScreenHeader';
 import Boxplot from '../components/Boxplot';
 import MyAvatar, { AvatarStyle } from '../components/MyAvatar';
+import { CommonUiComponentIds } from '../constants/ComponentIds';
 import {
 	KnobValue,
 	PlaybookEntryData,
@@ -164,6 +165,7 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 	},
 	SettingsListTimeInput: {
 		component: SettingsListTimeInput,
+		baseProps: { nativeID: CommonUiComponentIds.TIME_INPUT_ROW },
 		bindProps: (values, setKnob) => ({
 			initialValue: Number(values.value ?? 0),
 			onSave: (totalSeconds: number) => setKnob('value', totalSeconds),

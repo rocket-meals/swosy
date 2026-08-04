@@ -147,7 +147,11 @@ const TimeInputFields: React.FC<TimeInputFieldsProps> = ({
 								onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) => handleKeyPress(unit, event)}
 								onFocus={() => setFocusedUnit(unit)}
 								onBlur={() => handleBlur(unit)}
-								onSubmitEditing={index === units.length - 1 ? onSubmit : undefined}
+								// "Next" on the keyboard advances to the following segment (the
+								// last one submits); blurOnSubmit={false} keeps the keyboard
+								// open while the focus moves.
+								onSubmitEditing={index === units.length - 1 ? onSubmit : () => focusUnit(units[index + 1])}
+								blurOnSubmit={index === units.length - 1}
 								keyboardType="number-pad"
 								returnKeyType={index === units.length - 1 ? 'done' : 'next'}
 								maxLength={2}
