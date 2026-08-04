@@ -60,7 +60,10 @@ const TimeInputFields: React.FC<TimeInputFieldsProps> = ({
 		[hoursEnabled, minutesEnabled, secondsEnabled],
 	);
 
+	// Fields start empty (the "00" is only a placeholder) unless an existing
+	// non-zero value is being edited - then its segments are pre-filled.
 	const [segmentTexts, setSegmentTexts] = useState<Partial<Record<TimeUnit, string>>>(() => {
+		if (initialSeconds <= 0) return {};
 		const segments = splitSecondsToSegments(initialSeconds, { hoursEnabled, minutesEnabled, secondsEnabled });
 		const texts: Partial<Record<TimeUnit, string>> = {};
 		for (const unit of enabledTimeUnits({ hoursEnabled, minutesEnabled, secondsEnabled })) {
@@ -105,8 +108,12 @@ const TimeInputFields: React.FC<TimeInputFieldsProps> = ({
 
 	const handleBlur = useCallback((unit: TimeUnit) => {
 		setFocusedUnit((prev) => (prev === unit ? null : prev));
-		// Normalize to the 2-digit display form ("5" -> "05", "" -> "00").
-		setSegmentTexts((prev) => ({ ...prev, [unit]: padTimeSegment(prev[unit] ?? '') }));
+		// Normalize typed values to the 2-digit display form ("5" -> "05");
+		// untouched fields stay empty so the "00" placeholder keeps showing.
+		setSegmentTexts((prev) => {
+			const text = prev[unit] ?? '';
+			return text === '' ? prev : { ...prev, [unit]: padTimeSegment(text) };
+		});
 	}, []);
 
 	return (
@@ -134,6 +141,8 @@ const TimeInputFields: React.FC<TimeInputFieldsProps> = ({
 								nativeID={nativeIDPrefix ? `${nativeIDPrefix}${unit}` : undefined}
 								style={[styles.segmentInput, { color: theme.sheet.text }]}
 								value={segmentTexts[unit] ?? ''}
+								placeholder="00"
+								placeholderTextColor={theme.sheet.placeholder}
 								onChangeText={(text: string) => handleChangeText(unit, text)}
 								onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) => handleKeyPress(unit, event)}
 								onFocus={() => setFocusedUnit(unit)}
