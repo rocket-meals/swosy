@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
-| 🐛 Reliability | 11 | 11 |
-| 🔧 Maintainability | 80 | 30 |
+| 🐛 Reliability | 12 | 12 |
+| 🔧 Maintainability | 82 | 29 |
 
-**Total issues:** 100 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 103 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -50,7 +50,7 @@
   apps/scripts/submit-ios-review.ts:372
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L372
 
-## 🐛 Reliability (11/11)
+## 🐛 Reliability (12/12)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
@@ -71,6 +71,10 @@
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/scripts/store-metadata-extract.ts:53
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common/licenses/collectLicenses.ts:137
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/licenses/collectLicenses.ts#L137
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   packages/common/src/CompressionHelper.ts:54
@@ -96,7 +100,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (30/80)
+## 🔧 Maintainability (29/82)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -213,8 +217,4 @@
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/stats/index.tsx:303
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L303
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:464
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L464
 
