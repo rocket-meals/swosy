@@ -35,7 +35,7 @@ import {
 } from '../../helpers/StatsHelper';
 import { ComponentIds } from '../../constants/ComponentIds';
 import GameTypeIcon from '../../components/GameTypeIcon';
-import YearActivityGrid from '../../components/YearActivityGrid';
+import YearActivityGrid, { YearActivityGridWeekdayHeader } from '../../components/YearActivityGrid';
 
 const PRIMARY_COLOR = '#2563eb';
 const SUCCESS_COLOR = '#16a34a';
@@ -76,8 +76,11 @@ function StatTile({ value, label, color }: Readonly<{ value: string; label: stri
 function YearOverviewContent() {
 	const entries = useSelector((state: RootState) => state.gameHistory.entries);
 	const grid = useMemo(() => buildYearActivityGrid(entries, new Date()), [entries]);
+	// No extra horizontal padding: the grid columns must line up with the
+	// weekday labels in the modal's sticky header, which only get the scroll
+	// content's own padding.
 	return (
-		<View style={styles.modalContent}>
+		<View style={styles.yearModalContent}>
 			<Text style={styles.modalIntro}>
 				{grid.activeDayCount === 1
 					? 'An 1 Tag in den letzten 12 Monaten gespielt.'
@@ -313,7 +316,11 @@ export default function StatsScreen() {
 
 	// ── Modals ──
 	const handleOpenYearOverview = useCallback(() => {
-		showModal({ title: '📅 Jahresübersicht', children: <YearOverviewContent /> });
+		showModal({
+			title: '📅 Jahresübersicht',
+			stickyHeaderComponent: <YearActivityGridWeekdayHeader />,
+			children: <YearOverviewContent />,
+		});
 	}, [showModal]);
 
 	const handleOpenWeekdays = useCallback(() => {
@@ -643,6 +650,9 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		padding: 10,
+	},
+	yearModalContent: {
+		paddingVertical: 10,
 	},
 	modalIntro: {
 		fontSize: 14,
