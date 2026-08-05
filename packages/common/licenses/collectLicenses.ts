@@ -1,24 +1,43 @@
-'use strict';
-
 /**
  * Collects open-source license information for an app and all of its
  * workspace dependencies (e.g. repo-depkit-common, repo-depkit-common-ui).
  *
- * Intended to be called from an app's metro.config.js so the generated
- * license list is refreshed on every bundler start (expo start / expo export /
- * EAS build) and always reflects the currently *installed* versions from
- * node_modules — no manual maintenance and no extra CI job required.
+ * Intended to be called from an app's metro.config.js (loaded via ts-node)
+ * so the generated license list is refreshed whenever Metro bundles the app -
+ * expo start, expo export, EAS builds and EAS updates (OTA) all go through
+ * Metro, so the list always reflects the currently *installed* versions from
+ * node_modules. No manual maintenance and no extra CI job required.
  *
- * Plain CommonJS with zero dependencies so it can run inside metro.config.js.
+ * Node-only code (fs/path) - never import this from app/runtime code.
  */
 
-const fs = require('node:fs');
-const path = require('node:path');
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+export type LicenseEntry = {
+	name: string;
+	version: string;
+	license: string;
+	repository?: string;
+	licenseUrl?: string;
+};
+
+type PackageJsonRepository = string | { url?: string; directory?: string };
+
+type PackageJson = {
+	version?: string;
+	license?: string | { type?: string };
+	licenses?: Array<string | { type?: string }>;
+	repository?: PackageJsonRepository;
+	homepage?: string;
+	dependencies?: Record<string, string>;
+	peerDependencies?: Record<string, string>;
+};
 
 const WORKSPACE_PROTOCOL = 'workspace:';
 const LICENSE_FILE_PATTERN = /^(licen[cs]e|copying)(\.(md|txt|markdown))?$/i;
 
-function readJson(filePath) {
+function readJson(filePath: string): PackageJson {
 	return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
@@ -27,7 +46,7 @@ function readJson(filePath) {
  * node_modules chain starting at `startDir` (handles hoisting in the
  * yarn workspace monorepo).
  */
-function findInstalledPackageDir(name, startDir) {
+function findInstalledPackageDir(name: string, startDir: string): string | null {
 	let dir = startDir;
 	for (;;) {
 		const candidate = path.join(dir, 'node_modules', ...name.split('/'));
@@ -47,20 +66,20 @@ function findInstalledPackageDir(name, startDir) {
  * of the app and of every workspace package it depends on, recursively.
  * Workspace packages themselves are followed but not reported.
  */
-function collectDirectDependencyNames(appDir) {
-	const names = new Set();
-	const visitedPackageJsons = new Set();
+function collectDirectDependencyNames(appDir: string): Set<string> {
+	const names = new Set<string>();
+	const visitedPackageJsons = new Set<string>();
 	const queue = [appDir];
 
 	while (queue.length > 0) {
-		const dir = queue.pop();
+		const dir = queue.pop() as string;
 		const packageJsonPath = path.join(dir, 'package.json');
 		if (visitedPackageJsons.has(packageJsonPath)) {
 			continue;
 		}
 		visitedPackageJsons.add(packageJsonPath);
 
-		let pkg;
+		let pkg: PackageJson;
 		try {
 			pkg = readJson(packageJsonPath);
 		} catch {
@@ -83,7 +102,7 @@ function collectDirectDependencyNames(appDir) {
 	return names;
 }
 
-function normalizeRepositoryUrl(repository, homepage) {
+function normalizeRepositoryUrl(repository: PackageJsonRepository | undefined, homepage: string | undefined): string | undefined {
 	let url = typeof repository === 'string' ? repository : repository?.url;
 	if (!url) {
 		return typeof homepage === 'string' ? homepage.trim() : undefined;
@@ -103,7 +122,7 @@ function normalizeRepositoryUrl(repository, homepage) {
 	return url.startsWith('http') ? url : undefined;
 }
 
-function findLicenseFileName(packageDir) {
+function findLicenseFileName(packageDir: string): string | undefined {
 	try {
 		return fs.readdirSync(packageDir).find((entry) => LICENSE_FILE_PATTERN.test(entry));
 	} catch {
@@ -111,7 +130,7 @@ function findLicenseFileName(packageDir) {
 	}
 }
 
-function buildLicenseUrl(repositoryUrl, repositoryDirectory, licenseFileName) {
+function buildLicenseUrl(repositoryUrl: string | undefined, repositoryDirectory: string | undefined, licenseFileName: string | undefined): string | undefined {
 	if (!repositoryUrl || !licenseFileName || !repositoryUrl.startsWith('https://github.com/')) {
 		return repositoryUrl;
 	}
@@ -119,7 +138,7 @@ function buildLicenseUrl(repositoryUrl, repositoryDirectory, licenseFileName) {
 	return `${repositoryUrl}/blob/HEAD/${directoryPrefix}${licenseFileName}`;
 }
 
-function normalizeLicense(license, licenses) {
+function normalizeLicense(license: PackageJson['license'], licenses: PackageJson['licenses']): string {
 	if (typeof license === 'string') {
 		return license;
 	}
@@ -139,15 +158,15 @@ function normalizeLicense(license, licenses) {
  * Build the license entry list for the app at `appDir`.
  * Returns entries sorted by package name.
  */
-function collectLicenses(appDir) {
-	const entries = [];
+export function collectLicenses(appDir: string): LicenseEntry[] {
+	const entries: LicenseEntry[] = [];
 	for (const name of collectDirectDependencyNames(appDir)) {
 		const packageDir = findInstalledPackageDir(name, appDir);
 		if (!packageDir) {
 			console.warn(`[collectLicenses] Package "${name}" is not installed - skipping.`);
 			continue;
 		}
-		let pkg;
+		let pkg: PackageJson;
 		try {
 			pkg = readJson(path.join(packageDir, 'package.json'));
 		} catch (error) {
@@ -168,15 +187,15 @@ function collectLicenses(appDir) {
 	return entries;
 }
 
-function renderGeneratedFile(entries) {
+function renderGeneratedFile(entries: LicenseEntry[]): string {
 	const lines = [
 		'// AUTO-GENERATED FILE - DO NOT EDIT MANUALLY.',
 		'//',
-		'// Generated by packages/common/licenses/collectLicenses.cjs, which is',
-		'// invoked from this app\'s metro.config.js on every bundler start',
-		'// (expo start / expo export / EAS build). It lists the currently',
-		'// installed direct dependencies of this app and of its workspace',
-		'// packages (repo-depkit-common, repo-depkit-common-ui, ...).',
+		'// Generated by packages/common/licenses/collectLicenses.ts, which is',
+		"// invoked from this app's metro.config.js whenever Metro bundles the",
+		'// app (expo start / expo export / EAS build / EAS update). It lists',
+		'// the currently installed direct dependencies of this app and of its',
+		'// workspace packages (repo-depkit-common, repo-depkit-common-ui, ...).',
 		'//',
 		'// The file is committed so type checks and tests work without running',
 		'// Metro; it rewrites itself whenever the installed dependencies change.',
@@ -213,7 +232,7 @@ function renderGeneratedFile(entries) {
  *
  * Never throws: bundling must not fail because of license collection.
  */
-function writeLicenseFile({ appDir, outputPath }) {
+export function writeLicenseFile({ appDir, outputPath }: { appDir: string; outputPath: string }): void {
 	try {
 		const entries = collectLicenses(appDir);
 		if (entries.length === 0) {
@@ -222,7 +241,7 @@ function writeLicenseFile({ appDir, outputPath }) {
 			return;
 		}
 		const content = renderGeneratedFile(entries);
-		let previous;
+		let previous: string | undefined;
 		try {
 			previous = fs.readFileSync(outputPath, 'utf8');
 		} catch {
@@ -237,5 +256,3 @@ function writeLicenseFile({ appDir, outputPath }) {
 		console.warn('[collectLicenses] Failed to generate license file:', error);
 	}
 }
-
-module.exports = { collectLicenses, writeLicenseFile };
