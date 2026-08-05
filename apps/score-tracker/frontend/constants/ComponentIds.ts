@@ -15,6 +15,9 @@ export const ComponentIds = {
 	DRAWER_ITEM_PLAYERS: 'drawer-item-players',
 	DRAWER_ITEM_TIMER: 'drawer-item-timer',
 	DRAWER_ITEM_DICE: 'drawer-item-dice',
+	DRAWER_ITEM_TOOLS: 'drawer-item-tools',
+	// Only rendered while the debug mode is active (see app/_layout).
+	DRAWER_ITEM_PLAYBOOK: 'drawer-item-playbook',
 	DRAWER_ITEM_SETTINGS: 'drawer-item-settings',
 
 	// Start screen (home, shown after onboarding)
@@ -226,6 +229,10 @@ export const ComponentIds = {
 	ONBOARDING_SKIP_BUTTON: 'onboarding-skip-button',
 	ONBOARDING_NEXT_BUTTON: 'onboarding-next-button',
 	ONBOARDING_BACK_BUTTON: 'onboarding-return-button',
+
+	// Tools screen (external tools, see app/tools)
+	TOOLS_CATEGORY_ROW_PREFIX: 'tools-category-row-',
+	TOOLS_LINK_ROW_PREFIX: 'tools-link-row-',
 
 	// Settings screen: legal & support
 	SETTINGS_PRIVACY_ROW: 'settings-privacy-row',
