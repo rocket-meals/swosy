@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 11 | 11 |
-| 🔧 Maintainability | 73 | 30 |
+| 🔧 Maintainability | 80 | 30 |
 
-**Total issues:** 93 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 100 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -96,7 +96,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (30/73)
+## 🔧 Maintainability (30/80)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -190,31 +190,31 @@
   apps/score-tracker/frontend/app/players/index.tsx:76
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
 
-- **Replace this union type with a type alias.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:57
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L57
-
-- **Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.**
-  apps/score-tracker/frontend/components/CategoryValueRows.tsx:282
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/CategoryValueRows.tsx#L282
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/stats/index.tsx:142
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L142
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/components/GameCategorySettings.tsx:335
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameCategorySettings.tsx#L335
+  apps/score-tracker/frontend/app/stats/index.tsx:194
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L194
 
-- **'../helpers/GameImageUpload' imported multiple times.**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:21
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L21
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/score-tracker/frontend/app/stats/index.tsx:212
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L212
 
-- **'../helpers/GameImageUpload' imported multiple times.**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:23
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L23
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/stats/index.tsx:282
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L282
 
-- **Use `export…from` to re-export `defaultImageQuery`.**
-  apps/score-tracker/frontend/components/GameImagePicker.tsx:338
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/GameImagePicker.tsx#L338
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/stats/index.tsx:291
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L291
 
-- **Mark the props of the component as read-only.**
-  apps/score-tracker/frontend/components/OnboardingScreen.tsx:96
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/OnboardingScreen.tsx#L96
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/stats/index.tsx:300
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L300
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/stats/index.tsx:457
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L457
 
