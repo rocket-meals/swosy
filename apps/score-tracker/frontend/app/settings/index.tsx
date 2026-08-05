@@ -5,6 +5,7 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import {
 	LicenseInformation,
+	getLicensesFromExtra,
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
@@ -13,7 +14,6 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import licenses from '../../constants/licenses.generated';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThemeMode } from '../../store/themeSlice';
@@ -105,6 +105,7 @@ export default function SettingsScreen() {
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 	const appName = getCustomerConfig().projectName;
+	const licenses = getLicensesFromExtra(Constants.expoConfig?.extra);
 
 	// Revealed for this app session by pressing the footer logo/version (see
 	// handleFooterPress below). Not persisted on its own - debugMode itself

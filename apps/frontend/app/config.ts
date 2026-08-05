@@ -196,7 +196,7 @@ export function getGeneratedAssetsPath(): string {
 	return `./assets/generated/${customer}`;
 }
 
-export function getFinalConfig(config?: any) {
+export function getFinalConfig(config?: any, licenses?: unknown[]) {
 	const customerConfig: CustomerConfig = getCustomerConfig();
 	const generatedPath = getGeneratedAssetsPath();
 	return {
@@ -372,6 +372,7 @@ export function getFinalConfig(config?: any) {
 				eas: {
 					projectId: customerConfig.easProjectId,
 				},
+				licenses: licenses ?? [],
 			},
 			owner: 'baumgartner-software',
 			runtimeVersion: {
