@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import {
+	LicenseInformation,
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
@@ -12,6 +13,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import licenses from '../../constants/licenses.generated';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThemeMode } from '../../store/themeSlice';
@@ -152,6 +154,13 @@ export default function SettingsScreen() {
 		});
 	}, [showModal]);
 
+	const handleOpenLicenses = useCallback(() => {
+		showModal({
+			title: '📦 Open-Source-Lizenzen',
+			children: <LicenseInformation packages={licenses} linkColor={PRIMARY_COLOR} />,
+		});
+	}, [showModal]);
+
 	const handleContactSupport = useCallback(() => {
 		const subject = encodeURIComponent(`${appName} App - Feedback (Version ${appVersion})`);
 		Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}`).catch((err) => {
@@ -236,7 +245,16 @@ export default function SettingsScreen() {
 					leftIcon={<MaterialCommunityIcons name="numeric" size={22} color="#ffffff" />}
 					label="Version"
 					value={appVersion}
-					groupPosition="single"
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={PRIMARY_COLOR}
+					leftIcon={<Ionicons name="code-slash-outline" size={22} color="#ffffff" />}
+					label="Open-Source-Lizenzen"
+					value={`${licenses.length} Pakete`}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenLicenses}
+					groupPosition="bottom"
 				/>
 
 				{showDebugSection && (

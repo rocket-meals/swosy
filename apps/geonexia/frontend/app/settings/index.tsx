@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
+	LicenseInformation,
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
@@ -12,6 +13,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import licenses from '../../constants/licenses.generated';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -369,6 +371,7 @@ export default function SettingsScreen() {
 	const { show: showSpeechModal } = useMyScrollViewModal();
 	const { show: showTTSLogModal, close: closeTTSLogModal } = useMyScrollViewModal();
 	const { show: showAdvancedModal } = useMyScrollViewModal();
+	const { show: showLicensesModal } = useMyScrollViewModal();
 	const { showAlert } = useGeonexiaAlert();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
@@ -445,6 +448,13 @@ export default function SettingsScreen() {
 			children: <TTSLogContent theme={theme} onClear={closeTTSLogModal} />,
 		});
 	}, [showTTSLogModal, closeTTSLogModal, theme]);
+
+	const handleOpenLicenses = useCallback(() => {
+		showLicensesModal({
+			title: '📦 Open Source Licenses',
+			children: <LicenseInformation packages={licenses} linkColor={PRIMARY_COLOR} />,
+		});
+	}, [showLicensesModal]);
 
 	const handleOpenAdvancedSettings = useCallback(() => {
 		showAdvancedModal({
@@ -825,9 +835,9 @@ export default function SettingsScreen() {
 					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
 					label="Open Source"
-					value="View licenses"
+					value={`${licenses.length} licenses`}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={() => {}}
+					handleFunction={handleOpenLicenses}
 					groupPosition="bottom"
 				/>
 
