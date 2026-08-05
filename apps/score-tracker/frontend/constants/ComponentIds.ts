@@ -15,6 +15,7 @@ export const ComponentIds = {
 	DRAWER_ITEM_PLAYERS: 'drawer-item-players',
 	DRAWER_ITEM_TIMER: 'drawer-item-timer',
 	DRAWER_ITEM_DICE: 'drawer-item-dice',
+	DRAWER_ITEM_STATS: 'drawer-item-stats',
 	DRAWER_ITEM_TOOLS: 'drawer-item-tools',
 	// Only rendered while the debug mode is active (see app/_layout).
 	DRAWER_ITEM_PLAYBOOK: 'drawer-item-playbook',
@@ -31,6 +32,23 @@ export const ComponentIds = {
 	START_SCREEN_DICE_ROW: 'start-screen-dice-row',
 	START_SCREEN_STATS: 'start-screen-stats',
 	START_SCREEN_IMPORT_ROW: 'start-screen-import-row',
+	START_SCREEN_STATS_ROW: 'start-screen-statistics-row',
+
+	// Statistics screen (app/stats)
+	STATS_SCREEN_YEAR_ROW: 'stats-screen-year-row',
+	STATS_SCREEN_PLAYTIME_ROW: 'stats-screen-playtime-row',
+	STATS_SCREEN_STREAK_ROW: 'stats-screen-streak-row',
+	STATS_SCREEN_WEEKDAY_ROW: 'stats-screen-weekday-row',
+	STATS_SCREEN_GAME_FILTER_ROW: 'stats-screen-game-filter-row',
+	STATS_SCREEN_DURATION_BOXPLOT: 'stats-screen-duration-boxplot',
+	STATS_SCREEN_FRIEND_FILTER_ROW: 'stats-screen-friend-filter-row',
+	STATS_SCREEN_FRIEND_BOXPLOT: 'stats-screen-friend-boxplot',
+	STATS_SCREEN_TOP_GAMES_ROW: 'stats-screen-top-games-row',
+	STATS_SCREEN_TOP_FRIENDS_ROW: 'stats-screen-top-friends-row',
+	STATS_SCREEN_WINS_ROW: 'stats-screen-wins-row',
+	STATS_YEAR_GRID: 'stats-year-grid',
+	STATS_GAME_FILTER_OPTION_PREFIX: 'stats-game-filter-option-',
+	STATS_FRIEND_FILTER_OPTION_PREFIX: 'stats-friend-filter-option-',
 
 	// Shared export modal (see components/ShareExportContent)
 	SHARE_EXPORT_COPY_BUTTON: 'share-export-copy-button',

@@ -129,6 +129,13 @@ function ThemedDrawerNavigator() {
 					}}
 				/>
 				<Drawer.Screen
+					name="stats/index"
+					options={{
+						title: 'Statistik',
+						drawerIcon: makeDrawerIcon(Ionicons, 'stats-chart-outline'),
+					}}
+				/>
+				<Drawer.Screen
 					name="tools/index"
 					options={{
 						title: 'Weitere Tools',
@@ -207,6 +214,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			nativeID: ComponentIds.DRAWER_ITEM_DICE,
 			renderIcon: (_, color) => <MaterialCommunityIcons name="dice-multiple-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('dice/index'),
+		},
+		{
+			key: 'stats/index',
+			label: 'Statistik',
+			nativeID: ComponentIds.DRAWER_ITEM_STATS,
+			renderIcon: (_, color) => <Ionicons name="stats-chart-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('stats/index'),
 		},
 		{
 			key: 'tools/index',

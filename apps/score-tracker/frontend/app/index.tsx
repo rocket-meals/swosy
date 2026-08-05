@@ -308,6 +308,16 @@ export default function StartScreen() {
 					iconBgColor={TOOLS_COLOR}
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/dice')}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					nativeID={ComponentIds.START_SCREEN_STATS_ROW}
+					label="Statistik"
+					value="Spielzeit, Serien und Rekorde"
+					leftIcon={<Ionicons name="stats-chart-outline" size={20} color="#ffffff" />}
+					iconBgColor={TOOLS_COLOR}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/stats')}
 					groupPosition="bottom"
 				/>
 
