@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 11 | 11 |
-| 🔧 Maintainability | 69 | 30 |
+| 🔧 Maintainability | 73 | 30 |
 
-**Total issues:** 89 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 93 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -96,7 +96,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (30/69)
+## 🔧 Maintainability (30/73)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -135,12 +135,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L21
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/games/[id].tsx:89
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L89
+  apps/score-tracker/frontend/app/games/[id].tsx:90
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/[id].tsx#L90
 
-- **Remove this unused import of 'SettingsListTextInput'.**
-  apps/score-tracker/frontend/app/games/index.tsx:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/index.tsx#L9
+- **Extract this nested ternary operation into an independent statement.**
+  apps/score-tracker/frontend/app/games/index.tsx:281
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/index.tsx#L281
+
+- **Extract this nested ternary operation into an independent statement.**
+  apps/score-tracker/frontend/app/games/index.tsx:284
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/index.tsx#L284
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/games/index.tsx:206
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/games/index.tsx#L206
 
 - **Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.**
   apps/score-tracker/frontend/app/index.tsx:110
@@ -155,24 +163,32 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L197
 
 - **Remove this unused import of 'resetAll'.**
-  apps/score-tracker/frontend/app/match/index.tsx:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L50
+  apps/score-tracker/frontend/app/match/index.tsx:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L49
 
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/match/index.tsx:431
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L431
 
 - **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/match/index.tsx:1362
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1362
+  apps/score-tracker/frontend/app/match/index.tsx:1370
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1370
 
 - **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/match/index.tsx:1366
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1366
+  apps/score-tracker/frontend/app/match/index.tsx:1374
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1374
 
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
-  apps/score-tracker/frontend/app/match/index.tsx:1381
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1381
+  apps/score-tracker/frontend/app/match/index.tsx:1389
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1389
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/players/index.tsx:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/players/index.tsx:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
 
 - **Replace this union type with a type alias.**
   apps/score-tracker/frontend/components/CategoryValueRows.tsx:57
@@ -201,20 +217,4 @@
 - **Mark the props of the component as read-only.**
   apps/score-tracker/frontend/components/OnboardingScreen.tsx:96
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/OnboardingScreen.tsx#L96
-
-- **Mark the props of the component as read-only.**
-  apps/score-tracker/frontend/components/OnboardingScreen.tsx:139
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/OnboardingScreen.tsx#L139
-
-- **Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.**
-  apps/score-tracker/frontend/components/ShareImportContent.tsx:122
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/ShareImportContent.tsx#L122
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/components/ShareImportContent.tsx:186
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/ShareImportContent.tsx#L186
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/components/ShareImportContent.tsx:186
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/components/ShareImportContent.tsx#L186
 
