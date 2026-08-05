@@ -124,7 +124,7 @@ class BitReader {
   read(width: number): number {
     let value = 0;
     for (let i = 0; i < width; i++) {
-      const byte = this.bytes[this.position >> 3];
+      const byte = this.bytes[this.position >> 3] as number;
       const bit = (byte >> (7 - (this.position & 7))) & 1;
       value = (value << 1) | bit;
       this.position++;
@@ -138,7 +138,7 @@ class BitReader {
 function bytesToBase64(bytes: number[]): string {
   let result = '';
   for (let i = 0; i < bytes.length; i += 3) {
-    const b0 = bytes[i];
+    const b0 = bytes[i] as number;
     const b1 = bytes[i + 1];
     const b2 = bytes[i + 2];
     result += BASE64_ALPHABET[b0 >> 2];
@@ -235,7 +235,7 @@ export class CompressionHelper {
       if (code < INITIAL_DICT_SIZE) {
         entry = String.fromCharCode(code);
       } else if (code < dictSize) {
-        entry = dict[code - INITIAL_DICT_SIZE];
+        entry = dict[code - INITIAL_DICT_SIZE] as string;
       } else if (code === dictSize && previous !== null) {
         // The classic LZW corner case: the encoder used the entry it was just
         // about to add - it must start with the previous sequence.
