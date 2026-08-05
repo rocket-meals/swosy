@@ -30,6 +30,9 @@ export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/
 export { CommonUiComponentIds } from './src/constants/ComponentIds';
 
 // Components
+export { default as LicenseInformation } from './src/components/LicenseInformation';
+export type { LicenseInformationProps, LicensePackageInfo } from './src/components/LicenseInformation';
+
 export { default as SettingsList } from './src/components/SettingsList';
 export type { SettingsListProps, SettingsListItemBaseProps } from './src/components/SettingsList';
 export type { FormFieldStatusProps, AffixProps, ModalSheetBaseProps, TextInputAppearanceProps } from './src/components/SettingsList/formFieldTypes';
