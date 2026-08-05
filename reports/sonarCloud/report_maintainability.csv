@@ -1,11 +1,11 @@
 Key,Message,Component,Line
-"AZ_Qpsa0v1udd7F-hf3S","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",142
-"AZ_Qpsa0v1udd7F-hf3T","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",194
-"AZ_Qpsa0v1udd7F-hf3U","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",212
-"AZ_Qpsa0v1udd7F-hf3V","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",282
-"AZ_Qpsa0v1udd7F-hf3W","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",291
-"AZ_Qpsa0v1udd7F-hf3X","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",300
-"AZ_Qpsa0v1udd7F-hf3Y","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",457
+"AZ_Qpsa0v1udd7F-hf3S","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",145
+"AZ_Qpsa0v1udd7F-hf3T","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",197
+"AZ_Qpsa0v1udd7F-hf3U","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",215
+"AZ_Qpsa0v1udd7F-hf3V","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",285
+"AZ_Qpsa0v1udd7F-hf3W","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",294
+"AZ_Qpsa0v1udd7F-hf3X","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",303
+"AZ_Qpsa0v1udd7F-hf3Y","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",464
 "AZ_POKrIUiMoGYIla87F","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",281
 "AZ_POKrIUiMoGYIla87G","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",284
 "AZ_PKvTSumUKKR8hluPG","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/games/index.tsx",206

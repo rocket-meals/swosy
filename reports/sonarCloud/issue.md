@@ -191,30 +191,30 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:142
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L142
+  apps/score-tracker/frontend/app/stats/index.tsx:145
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L145
 
 - **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/app/stats/index.tsx:194
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L194
+  apps/score-tracker/frontend/app/stats/index.tsx:197
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L197
 
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/score-tracker/frontend/app/stats/index.tsx:212
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L212
+  apps/score-tracker/frontend/app/stats/index.tsx:215
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L215
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:282
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L282
+  apps/score-tracker/frontend/app/stats/index.tsx:285
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L285
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:291
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L291
+  apps/score-tracker/frontend/app/stats/index.tsx:294
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L294
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:300
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L300
+  apps/score-tracker/frontend/app/stats/index.tsx:303
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L303
 
 - **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:457
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L457
+  apps/score-tracker/frontend/app/stats/index.tsx:464
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L464
 
