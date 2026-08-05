@@ -60,9 +60,9 @@ export type YearActivityDay = {
 };
 
 export type YearActivityGridData = {
-	/** 52 weeks, oldest first; each week holds 7 days Monday→Sunday. */
+	/** 52 weeks, newest first; each week holds 7 days Monday→Sunday. */
 	weeks: YearActivityDay[][];
-	/** Month label per week column (e.g. 'Jan'), null when the column starts no new month. */
+	/** Month label per week row (e.g. 'Jan'), null when the row starts no new month (read newest→oldest). */
 	monthLabels: (string | null)[];
 	/** Days in the shown range with at least one match. */
 	activeDayCount: number;
@@ -71,7 +71,7 @@ export type YearActivityGridData = {
 const MONTH_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
 /**
- * Builds the data for the GitHub-like year overview: 52 week columns ending
+ * Builds the data for the GitHub-like year overview: 52 week rows starting
  * with the current week, each a Monday→Sunday run of per-day match counts.
  */
 export function buildYearActivityGrid(entries: GameHistoryEntry[], now: Date): YearActivityGridData {
@@ -87,12 +87,12 @@ export function buildYearActivityGrid(entries: GameHistoryEntry[], now: Date): Y
 	let activeDayCount = 0;
 
 	for (let week = 0; week < YEAR_GRID_WEEKS; week++) {
-		// Building each date from local date parts keeps the columns aligned to
+		// Building each date from local date parts keeps the rows aligned to
 		// calendar days across DST changes.
 		const weekStart = new Date(
 			currentMonday.getFullYear(),
 			currentMonday.getMonth(),
-			currentMonday.getDate() - 7 * (YEAR_GRID_WEEKS - 1 - week),
+			currentMonday.getDate() - 7 * week,
 		);
 		const month = weekStart.getMonth();
 		monthLabels.push(month === previousMonth ? null : MONTH_SHORT[month]);

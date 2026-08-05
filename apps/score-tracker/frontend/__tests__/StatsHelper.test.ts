@@ -119,25 +119,25 @@ describe('buildYearActivityGrid', () => {
 	// A Wednesday.
 	const now = new Date(2026, 7, 5, 12, 0);
 
-	it('builds 52 Monday-aligned weeks ending with the current week', () => {
+	it('builds 52 Monday-aligned weeks starting with the current week', () => {
 		const grid = buildYearActivityGrid([], now);
 		expect(grid.weeks).toHaveLength(YEAR_GRID_WEEKS);
 		for (const week of grid.weeks) {
 			expect(week).toHaveLength(7);
 		}
-		// Last column is the current week: Monday (03.08.) through Sunday (09.08.).
-		const lastWeek = grid.weeks[YEAR_GRID_WEEKS - 1];
-		expect(formatDayIndex(lastWeek[0].dayIndex)).toBe('03.08.2026');
-		expect(formatDayIndex(lastWeek[6].dayIndex)).toBe('09.08.2026');
+		// First row is the current week: Monday (03.08.) through Sunday (09.08.).
+		const currentWeek = grid.weeks[0];
+		expect(formatDayIndex(currentWeek[0].dayIndex)).toBe('03.08.2026');
+		expect(formatDayIndex(currentWeek[6].dayIndex)).toBe('09.08.2026');
 		// Consecutive cells are consecutive days across the whole grid.
-		const first = grid.weeks[0][0].dayIndex;
-		expect(lastWeek[6].dayIndex - first).toBe(YEAR_GRID_WEEKS * 7 - 1);
+		const oldest = grid.weeks[YEAR_GRID_WEEKS - 1][0].dayIndex;
+		expect(currentWeek[6].dayIndex - oldest).toBe(YEAR_GRID_WEEKS * 7 - 1);
 	});
 
 	it('marks days after today as future', () => {
 		const grid = buildYearActivityGrid([], now);
-		const lastWeek = grid.weeks[YEAR_GRID_WEEKS - 1];
-		expect(lastWeek.map((day) => day.isFuture)).toEqual([false, false, false, true, true, true, true]);
+		const currentWeek = grid.weeks[0];
+		expect(currentWeek.map((day) => day.isFuture)).toEqual([false, false, false, true, true, true, true]);
 	});
 
 	it('fills in per-day match counts and the active day count', () => {
@@ -149,16 +149,16 @@ describe('buildYearActivityGrid', () => {
 			entry({ endedAt: eveningOf(2024, 1, 1) }),
 		];
 		const grid = buildYearActivityGrid(entries, now);
-		const lastWeek = grid.weeks[YEAR_GRID_WEEKS - 1];
-		expect(lastWeek[0].count).toBe(1);
-		expect(lastWeek[1].count).toBe(2);
+		const currentWeek = grid.weeks[0];
+		expect(currentWeek[0].count).toBe(1);
+		expect(currentWeek[1].count).toBe(2);
 		expect(grid.activeDayCount).toBe(2);
 	});
 
-	it('labels a column when a new month starts', () => {
+	it('labels a row when a new month starts (read newest→oldest)', () => {
 		const grid = buildYearActivityGrid([], now);
 		expect(grid.monthLabels).toHaveLength(YEAR_GRID_WEEKS);
-		// The first column is always labelled; afterwards only on month changes.
+		// The first row is always labelled; afterwards only on month changes.
 		expect(grid.monthLabels[0]).not.toBeNull();
 		const labels = grid.monthLabels.filter((label) => label !== null);
 		expect(labels.length).toBeGreaterThanOrEqual(11);
