@@ -136,6 +136,29 @@ function ThemedDrawerNavigator() {
 					}}
 				/>
 				<Drawer.Screen
+					name="tools/index"
+					options={{
+						title: 'Weitere Tools',
+						drawerIcon: makeDrawerIcon(Ionicons, 'construct-outline'),
+					}}
+				/>
+				{/* Component playbook (dev tooling) - visible in the custom drawer
+				    content only while the debug mode is active (see settings). */}
+				<Drawer.Screen
+					name="playbook/index"
+					options={{
+						title: 'Playbook',
+						drawerIcon: makeDrawerIcon(Ionicons, 'extension-puzzle-outline'),
+					}}
+				/>
+				<Drawer.Screen
+					name="playbook/[component]"
+					options={{
+						title: 'Playbook',
+						drawerItemStyle: { display: 'none' },
+					}}
+				/>
+				<Drawer.Screen
 					name="settings/index"
 					options={{
 						title: 'Einstellungen',
@@ -151,6 +174,10 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
+	// The playbook (component gallery, dev tooling) only appears while the debug
+	// mode is active - toggled in the settings' hidden Debug section (revealed by
+	// pressing the footer logo).
+	const debugMode = useSelector((state: RootState) => state.debug.debugMode);
 
 	const items: DrawerItem[] = [
 		{
@@ -195,6 +222,24 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="stats-chart-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('stats/index'),
 		},
+		{
+			key: 'tools/index',
+			label: 'Weitere Tools',
+			nativeID: ComponentIds.DRAWER_ITEM_TOOLS,
+			renderIcon: (_, color) => <Ionicons name="construct-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('tools/index'),
+		},
+		...(debugMode
+			? [
+					{
+						key: 'playbook/index',
+						label: 'Playbook',
+						nativeID: ComponentIds.DRAWER_ITEM_PLAYBOOK,
+						renderIcon: (_: boolean, color: string) => <Ionicons name="extension-puzzle-outline" size={24} color={color} />,
+						onPress: () => props.navigation.navigate('playbook/index'),
+					},
+				]
+			: []),
 		{
 			key: 'settings/index',
 			label: 'Einstellungen',
