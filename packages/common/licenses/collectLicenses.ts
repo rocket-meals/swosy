@@ -1,13 +1,28 @@
 /**
  * Collects open-source license information for an app and all of its
- * workspace dependencies (e.g. repo-depkit-common, repo-depkit-common-ui).
+ * workspace dependencies (e.g. repo-depkit-common, repo-depkit-common-ui) by
+ * reading each dependency's own installed package.json from node_modules -
+ * no data is hand-maintained or duplicated, only normalized (license shape,
+ * repository URL) so the same fields can be rendered consistently.
  *
- * Intended to be called from an app's app.config.ts (already loaded via
- * ts-node in every app) and placed into the Expo config's `extra` field, so
- * it gets embedded into the app manifest on every `expo export` / EAS build /
- * EAS update - no generated source file, nothing to commit, and OTA updates
- * carry the dependency versions that were installed when the update was
- * published.
+ * Usage: require via the package subpath, not the repo-depkit-common main
+ * entry (`import ... from 'repo-depkit-common'`), so it never gets pulled
+ * into an app's RN/Metro bundle, only into Node-only config contexts:
+ *
+ *   const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
+ *
+ * Call it from an app's app.config.ts (which already registers ts-node) and
+ * place the result into the Expo config's `extra` field, e.g. `extra.licenses`.
+ * Expo embeds `extra` into the app manifest on every config evaluation -
+ * expo start, expo export, EAS build and EAS update (OTA) all evaluate
+ * app.config.ts fresh - so no generated source file is needed, nothing has
+ * to be committed, and an OTA update alone ships the dependency versions
+ * that were installed when the update was published. `extra` is bundled as
+ * a plain asset/resource file on native (not a size-limited manifest entry)
+ * and fetched as part of the update manifest on OTA - keep it in the tens
+ * of KB, not MB, since that manifest is fetched on every app launch/update
+ * check. A license list for ~100 packages serializes to ~15-20 KB, which is
+ * negligible.
  *
  * Node-only code (fs/path) - never import this from app/runtime code.
  */

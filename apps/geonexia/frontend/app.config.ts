@@ -11,7 +11,7 @@ require('ts-node').register({
 });
 
 const { getBuildNumber, getVersion } = require('./config.ts');
-const { collectLicenses } = require('../../../packages/common/licenses/collectLicenses.ts');
+const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
