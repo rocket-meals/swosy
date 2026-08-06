@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 
 /**
- * A single entry of the auto-generated open-source license list
- * (see packages/common/licenses/collectLicenses.cjs).
+ * A single entry of the auto-collected open-source license list
+ * (see packages/common/licenses/collectLicenses.ts).
  */
 export type LicensePackageInfo = {
 	name: string;

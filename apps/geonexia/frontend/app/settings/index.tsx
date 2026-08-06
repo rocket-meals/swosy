@@ -3,6 +3,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	LicenseInformation,
+	getLicensesFromExtra,
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
@@ -13,7 +14,6 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import licenses from '../../constants/licenses.generated';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -375,6 +375,7 @@ export default function SettingsScreen() {
 	const { showAlert } = useGeonexiaAlert();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+	const licenses = getLicensesFromExtra(Constants.expoConfig?.extra);
 
 	const handleOpenThemeSelection = useCallback(() => {
 		showModal({

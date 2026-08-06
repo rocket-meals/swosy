@@ -11,6 +11,7 @@ require('ts-node').register({
 });
 
 const { getBuildNumber, getVersion } = require('./config.ts');
+const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
@@ -120,6 +121,12 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 				apiKey: process.env.GOOGLE_IMAGE_SEARCH_API_KEY ?? '',
 				searchEngineId: process.env.GOOGLE_IMAGE_SEARCH_ENGINE_ID ?? '',
 			},
+			// Open-source dependency versions of this app and of its workspace
+			// packages (repo-depkit-common, repo-depkit-common-ui, ...), collected
+			// from node_modules at config-evaluation time (expo start / export /
+			// build / update) and read at runtime via
+			// Constants.expoConfig.extra.licenses.
+			licenses: collectLicenses(__dirname),
 		}
 	};
 };
