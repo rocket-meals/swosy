@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
-| 🐛 Reliability | 12 | 12 |
-| 🔧 Maintainability | 82 | 29 |
+| 🐛 Reliability | 13 | 13 |
+| 🔧 Maintainability | 83 | 28 |
 
-**Total issues:** 103 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 105 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -50,7 +50,7 @@
   apps/scripts/submit-ios-review.ts:372
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/submit-ios-review.ts#L372
 
-## 🐛 Reliability (12/12)
+## 🐛 Reliability (13/13)
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   apps/score-tracker/frontend/helpers/ImageSearch.ts:168
@@ -71,6 +71,10 @@
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
   apps/scripts/store-metadata-extract.ts:53
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
+
+- **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
+  packages/common-ui/src/components/CustomMarkdown/MarkdownLinkHelper.ts:83
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common-ui/src/components/CustomMarkdown/MarkdownLinkHelper.ts#L83
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
   packages/common/licenses/collectLicenses.ts:153
@@ -100,7 +104,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (29/82)
+## 🔧 Maintainability (28/83)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -213,8 +217,4 @@
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/stats/index.tsx:294
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L294
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:303
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L303
 

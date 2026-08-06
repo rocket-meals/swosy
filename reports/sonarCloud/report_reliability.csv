@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ_ZFtb-4GWqYiG8MC2P","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common-ui/src/components/CustomMarkdown/MarkdownLinkHelper.ts",83
 "AZ_RxFXYFsM_WksbAx-9","Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",153
 "AZ_PGqabvJ2gITN2EHtg","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",54
 "AZ_PGqabvJ2gITN2EHth","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:packages/common/src/CompressionHelper.ts",74

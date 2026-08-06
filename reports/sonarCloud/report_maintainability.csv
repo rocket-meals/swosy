@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ_ZFtaL4GWqYiG8MC2O","Remove this unused import of 'StyleSheet'.","rocket-meals_rocket-meals:packages/common-ui/src/components/CustomMarkdown/CustomMarkdown.tsx",2
 "AZ_RxFXYFsM_WksbAx-7","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",105
 "AZ_RxFXYFsM_WksbAx-8","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",105
 "AZ_Qpsa0v1udd7F-hf3S","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",145
@@ -44,11 +45,11 @@ Key,Message,Component,Line
 "AZ_HfXtu4OT8cE4gH-ef","'change.to' will use Object's default stringification format ('[object Object]') when stringified.","rocket-meals_rocket-meals:apps/scripts/store-metadata-apple.ts",203
 "AZ_HfXt54OT8cE4gH-eg","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:apps/scripts/store-metadata-load.ts",20
 "AZ_HfXrM4OT8cE4gH-eb","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/scripts/store-metadata.ts",174
-"AZ_HG7ZcUuTJtAa61ed5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",137
-"AZ_HG7ZcUuTJtAa61ed6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",138
-"AZ_HG7ZcUuTJtAa61ed7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",198
-"AZ_HG7csUuTJtAa61ed8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",302
-"AZ_HG7csUuTJtAa61ed9","function 'serializeKnobValue' is equivalent to `String`. Use `String` directly.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",314
+"AZ_HG7ZcUuTJtAa61ed5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",138
+"AZ_HG7ZcUuTJtAa61ed6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",139
+"AZ_HG7ZcUuTJtAa61ed7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registry.tsx",199
+"AZ_HG7csUuTJtAa61ed8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",337
+"AZ_HG7csUuTJtAa61ed9","function 'serializeKnobValue' is equivalent to `String`. Use `String` directly.","rocket-meals_rocket-meals:packages/common-ui/src/playbook/registryData.ts",349
 "AZ_EeHeTkMhpq5gUNw8t","'../helpers/GameHistoryStorage' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",11
 "AZ_EeHeTkMhpq5gUNw8u","'../helpers/GameHistoryStorage' imported multiple times.","rocket-meals_rocket-meals:apps/score-tracker/frontend/store/store.ts",14
 "AZ_Dn36j1vMCp7SkBLUp","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/helpers/GameCategories.ts",590
