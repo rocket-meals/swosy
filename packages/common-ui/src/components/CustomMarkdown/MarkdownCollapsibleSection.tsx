@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Animated, LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Collapsible from 'react-native-collapsible';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 
@@ -12,15 +11,45 @@ export type MarkdownCollapsibleSectionProps = {
 	startCollapsed?: boolean;
 };
 
+const ANIMATION_DURATION = 250;
+
+// Deliberately not react-native-collapsible: its async measure() returns 0 on
+// react-native-web until the content has been visible once, so the first expand
+// animates to an empty section. Content here stays mounted (clipped to height 0
+// while collapsed) so onLayout always knows the real height before the first toggle.
 const MarkdownCollapsibleSection: React.FC<MarkdownCollapsibleSectionProps> = ({ headerText, children, customColor, startCollapsed = false }) => {
 	const [collapsed, setCollapsed] = useState(startCollapsed);
+	const [animating, setAnimating] = useState(false);
+	const contentHeightRef = useRef(0);
+	const animatedHeight = useRef(new Animated.Value(0)).current;
 	const { theme, isDark } = useTheme();
 	const resolvedColor = customColor || theme.primary;
 	const contrastColor = myContrastColor(resolvedColor, theme, isDark);
 
+	const onContentLayout = (event: LayoutChangeEvent) => {
+		contentHeightRef.current = event.nativeEvent.layout.height;
+	};
+
+	const toggle = () => {
+		const nextCollapsed = !collapsed;
+		setCollapsed(nextCollapsed);
+		if (contentHeightRef.current === 0) {
+			return;
+		}
+		setAnimating(true);
+		animatedHeight.setValue(nextCollapsed ? contentHeightRef.current : 0);
+		Animated.timing(animatedHeight, {
+			toValue: nextCollapsed ? 0 : contentHeightRef.current,
+			duration: ANIMATION_DURATION,
+			useNativeDriver: false,
+		}).start(() => setAnimating(false));
+	};
+
+	const contentWrapperStyle = animating ? { height: animatedHeight, overflow: 'hidden' as const } : collapsed ? styles.contentCollapsed : undefined;
+
 	return (
 		<View style={[styles.headerContainer, { borderColor: resolvedColor }]}>
-			<TouchableOpacity onPress={() => setCollapsed((prev) => !prev)}>
+			<TouchableOpacity onPress={toggle} accessibilityRole="button" accessibilityState={{ expanded: !collapsed }}>
 				<View
 					style={[
 						styles.header,
@@ -39,9 +68,11 @@ const MarkdownCollapsibleSection: React.FC<MarkdownCollapsibleSectionProps> = ({
 					</View>
 				</View>
 			</TouchableOpacity>
-			<Collapsible collapsed={collapsed} align="center">
-				<View style={[styles.content, { backgroundColor: theme.screen.background }]}>{children}</View>
-			</Collapsible>
+			<Animated.View style={contentWrapperStyle}>
+				<View onLayout={onContentLayout}>
+					<View style={[styles.content, { backgroundColor: theme.screen.background }]}>{children}</View>
+				</View>
+			</Animated.View>
 		</View>
 	);
 };
@@ -81,5 +112,9 @@ const styles = StyleSheet.create({
 		paddingVertical: 20,
 		borderBottomLeftRadius: 12,
 		borderBottomRightRadius: 12,
+	},
+	contentCollapsed: {
+		height: 0,
+		overflow: 'hidden',
 	},
 });
