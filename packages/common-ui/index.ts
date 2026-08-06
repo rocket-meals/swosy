@@ -159,6 +159,9 @@ export type { MyCustomColorPickerProps } from './src/components/MyCustomColorPic
 export { default as SettingsListAvatar } from './src/components/SettingsListAvatar';
 export type { SettingsListAvatarProps } from './src/components/SettingsListAvatar';
 
+export { default as SimpleMarkdown } from './src/components/SimpleMarkdown/SimpleMarkdown';
+export type { SimpleMarkdownProps } from './src/components/SimpleMarkdown/SimpleMarkdown';
+
 export { default as SettingsListSqliteStorage } from './src/components/SettingsListSqliteStorage';
 export type {
 	SettingsListSqliteStorageProps,

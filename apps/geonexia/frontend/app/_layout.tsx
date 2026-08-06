@@ -274,12 +274,28 @@ function ThemedDrawerNavigator() {
 					drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 				}}
 			/>
+			{/* Reached only via the drawer footer links, not as a regular menu item. */}
+			<Drawer.Screen
+				name="privacy-policy/index"
+				options={{
+					title: 'Datenschutzerklärung',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name="impressum/index"
+				options={{
+					title: 'Impressum',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
 		</Drawer>
 		</>
 	);
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
+	const { theme } = useTheme();
 	const activeKey = props.state.routes[props.state.index].name;
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 
@@ -354,6 +370,18 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 		},
 	];
 
+	const footerContent = (
+		<>
+			<TouchableOpacity onPress={() => props.navigation.navigate('privacy-policy/index')}>
+				<Text style={[styles.footerLink, { color: theme.drawer.link }]}>Datenschutzerklärung</Text>
+			</TouchableOpacity>
+			<Text style={[styles.footerBar, { color: theme.drawer.link }]}>|</Text>
+			<TouchableOpacity onPress={() => props.navigation.navigate('impressum/index')}>
+				<Text style={[styles.footerLink, { color: theme.drawer.link }]}>Impressum</Text>
+			</TouchableOpacity>
+		</>
+	);
+
 	return (
 		<AppDrawer
 			logoSource={getAppIconInsideExpoLocalSaved()}
@@ -362,6 +390,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			activeKey={activeKey}
 			primaryColor="#2563eb"
 			onLogoPress={() => props.navigation.navigate('index')}
+			footerContent={footerContent}
 		/>
 	);
 }
@@ -722,5 +751,12 @@ const styles = StyleSheet.create({
 		color: '#374151',
 		fontWeight: '600',
 		fontSize: 15,
+	},
+	footerLink: {
+		fontSize: 14,
+		paddingHorizontal: 2,
+	},
+	footerBar: {
+		marginHorizontal: 10,
 	},
 });

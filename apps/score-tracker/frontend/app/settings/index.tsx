@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet, Text, TouchableOpacity, Image, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import {
 	LicenseInformation,
@@ -43,59 +44,9 @@ function themeModeLabel(mode: ThemeMode): string {
 const DEBUG_COLOR = '#7c3aed';
 const SUCCESS_COLOR = '#16a34a';
 
-// ─── Privacy policy (shown in a modal from the "Rechtliches" section) ─────────
-//
-// Mirrors apps/score-tracker/PRIVACY.md - the public version linked in the app
-// stores. Keep both in sync when the data handling changes.
-
-function PrivacySection({ title, children }: Readonly<{ title: string; children: string }>) {
-	const { theme } = useTheme();
-	return (
-		<View style={styles.privacySection}>
-			<Text style={[styles.privacyHeading, { color: theme.screen.text }]}>{title}</Text>
-			<Text style={[styles.privacyText, { color: theme.screen.text }]}>{children}</Text>
-		</View>
-	);
-}
-
-function PrivacyPolicyContent() {
-	const { theme } = useTheme();
-	return (
-		<View style={styles.privacyContainer}>
-			<PrivacySection title="Kurz gesagt">
-				Diese App funktioniert ohne Konto und ohne eigene Server. Alle Inhalte, die du anlegst (Spiele, Partien,
-				Punkte, Freunde, Einstellungen, Bilder), werden ausschließlich lokal auf deinem Gerät gespeichert. Es gibt
-				kein Tracking, keine Werbung und keine Analyse-Dienste.
-			</PrivacySection>
-			<PrivacySection title="Lokale Daten">
-				Deine Daten verlassen dein Gerät nicht, außer du exportierst sie selbst (z. B. über die Export-Funktionen in
-				die Zwischenablage). Du kannst alle Daten jederzeit unter Einstellungen → Speicher → „Speicher leeren"
-				löschen - oder durch Deinstallation der App.
-			</PrivacySection>
-			<PrivacySection title="Bildersuche (optional)">
-				Wenn du für ein Spiel die Bildersuche nutzt, wird dein Suchbegriff an öffentliche Bilddienste (Wikimedia
-				Commons, Openverse, ggf. Google) übertragen, um Ergebnisse zu laden. Dabei wird - wie bei jedem
-				Internet-Abruf - deine IP-Adresse an den jeweiligen Dienst übermittelt. Ausgewählte Bilder werden nur lokal
-				gespeichert.
-			</PrivacySection>
-			<PrivacySection title="App-Updates">
-				Die App prüft beim Start über den Dienst EAS Update (Expo) auf Aktualisierungen. Dabei wird deine IP-Adresse
-				technisch bedingt an Expo übermittelt; es werden keine persönlichen Daten übertragen.
-			</PrivacySection>
-			<PrivacySection title="Fotos und Kamera">
-				Der Zugriff auf Fotos oder Kamera erfolgt nur, wenn du einem Spiel ein eigenes Bild geben möchtest, und erst
-				nach deiner ausdrücklichen Freigabe. Die Bilder bleiben lokal auf dem Gerät.
-			</PrivacySection>
-			<PrivacySection title="Verantwortlich / Kontakt">
-				{`Baumgartner Software\nE-Mail: ${SUPPORT_EMAIL}`}
-			</PrivacySection>
-			<Text style={[styles.privacyText, { color: theme.screen.placeholder }]}>Stand: August 2026</Text>
-		</View>
-	);
-}
-
 export default function SettingsScreen() {
 	const { theme } = useTheme();
+	const router = useRouter();
 	const insets = useSafeAreaInsets();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
@@ -149,11 +100,12 @@ export default function SettingsScreen() {
 	}, [showModal, closeModal, dispatch, selectedTheme]);
 
 	const handleOpenPrivacyPolicy = useCallback(() => {
-		showModal({
-			title: 'Datenschutzerklärung',
-			children: <PrivacyPolicyContent />,
-		});
-	}, [showModal]);
+		router.push('/privacy-policy');
+	}, [router]);
+
+	const handleOpenImpressum = useCallback(() => {
+		router.push('/impressum');
+	}, [router]);
 
 	const handleOpenLicenses = useCallback(() => {
 		showModal({
@@ -236,6 +188,15 @@ export default function SettingsScreen() {
 					value="Alle Daten bleiben auf deinem Gerät"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleOpenPrivacyPolicy}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					nativeID={ComponentIds.SETTINGS_IMPRESSUM_ROW}
+					iconBgColor="#6b7280"
+					leftIcon={<Ionicons name="document-text-outline" size={22} color="#ffffff" />}
+					label="Impressum"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenImpressum}
 					groupPosition="bottom"
 				/>
 
@@ -331,21 +292,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	listContent: {
-	},
-	privacyContainer: {
-		paddingBottom: 24,
-		gap: 16,
-	},
-	privacySection: {
-		gap: 4,
-	},
-	privacyHeading: {
-		fontSize: 16,
-		fontWeight: '700',
-	},
-	privacyText: {
-		fontSize: 15,
-		lineHeight: 22,
 	},
 	logsContainer: {
 		marginTop: 8,

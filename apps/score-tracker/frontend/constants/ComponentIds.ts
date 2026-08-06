@@ -254,6 +254,7 @@ export const ComponentIds = {
 
 	// Settings screen: legal & support
 	SETTINGS_PRIVACY_ROW: 'settings-privacy-row',
+	SETTINGS_IMPRESSUM_ROW: 'settings-impressum-row',
 	SETTINGS_SUPPORT_ROW: 'settings-support-row',
 	SETTINGS_REPLAY_ONBOARDING_ROW: 'settings-replay-onboarding-row',
 
