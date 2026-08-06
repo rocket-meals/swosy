@@ -30,7 +30,7 @@ import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
 import { MarkingContent } from '../MarkingBottomSheet';
 import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
-import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 import { useMyScrollviewModalPriceGroupSettings } from '@/hooks/useMyScrollviewModalPriceGroupSettings';
 
@@ -309,7 +309,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           title: translate(TranslationKeys.description),
           children: (
             <View style={{ gap: 20 }}>
-              <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+              <CustomMarkdown content={foodDescription} textColor={theme.screen.text} />
               <RateAppSettingsItem />
             </View>
           ),

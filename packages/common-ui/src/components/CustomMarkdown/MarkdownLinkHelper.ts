@@ -1,8 +1,14 @@
-import { UriScheme } from '@/constants/UriScheme';
-import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
-import { StringHelper } from 'repo-depkit-common';
-
+// Bounded coordinate pattern: `-?\d+(?:\.\d+)?` cannot backtrack pathologically.
 const COORDINATE_PATTERN = /-?\d+(?:\.\d+)?/g;
+
+export enum UriScheme {
+	HTTP = 'http:',
+	HTTPS = 'https:',
+	TEL = 'tel:',
+	MAILTO = 'mailto:',
+	GEO = 'geo:',
+	MAPS = 'maps:',
+}
 
 export type ResolvedLocationHref = {
 	resolvedHref?: string;
@@ -10,7 +16,11 @@ export type ResolvedLocationHref = {
 	coordinates: { latitude: number; longitude: number } | null;
 };
 
-export const parseCoordinatesFromUri = (uri: string, scheme: UriScheme) => {
+function getGoogleMapsUrl(latitude: number, longitude: number): string {
+	return `https://www.google.com/maps?q=${latitude},${longitude}`;
+}
+
+export function parseCoordinatesFromUri(uri: string, scheme: UriScheme): { latitude: number; longitude: number } | null {
 	if (!uri) {
 		return null;
 	}
@@ -35,10 +45,10 @@ export const parseCoordinatesFromUri = (uri: string, scheme: UriScheme) => {
 		return null;
 	}
 
-	return { latitude, longitude } as const;
-};
+	return { latitude, longitude };
+}
 
-export const resolveLocationHref = (href: string | null | undefined): ResolvedLocationHref => {
+export function resolveLocationHref(href: string | null | undefined): ResolvedLocationHref {
 	if (!href) {
 		return { resolvedHref: undefined, scheme: null, coordinates: null };
 	}
@@ -66,12 +76,11 @@ export const resolveLocationHref = (href: string | null | undefined): ResolvedLo
 	const coordinatePayload = trimmedHref.slice(scheme.length).trim();
 	const coordinates = parseCoordinatesFromUri(trimmedHref, scheme);
 	if (coordinates) {
-		const mapsUrl = CommonSystemActionHelper.getGoogleMapsUrl(coordinates.latitude, coordinates.longitude);
-		return { resolvedHref: mapsUrl, scheme, coordinates };
+		return { resolvedHref: getGoogleMapsUrl(coordinates.latitude, coordinates.longitude), scheme, coordinates };
 	}
 
 	if (coordinatePayload) {
-		const fallbackQuery = StringHelper.replaceAllWithOptions({ str: coordinatePayload, find: String.raw`^[,\s]+|[,\s]+$`, replace: '' });
+		const fallbackQuery = coordinatePayload.replace(/^[,\s]+|[,\s]+$/g, '');
 		if (fallbackQuery) {
 			return {
 				resolvedHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`,
@@ -82,4 +91,4 @@ export const resolveLocationHref = (href: string | null | undefined): ResolvedLo
 	}
 
 	return { resolvedHref: trimmedHref, scheme, coordinates: null };
-};
+}

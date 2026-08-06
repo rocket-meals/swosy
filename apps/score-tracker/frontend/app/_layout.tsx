@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, ToastProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
@@ -165,6 +165,21 @@ function ThemedDrawerNavigator() {
 						drawerIcon: makeDrawerIcon(Ionicons, 'settings-outline'),
 					}}
 				/>
+				{/* Reached only via the drawer footer links, not as a regular menu item. */}
+				<Drawer.Screen
+					name="privacy-policy/index"
+					options={{
+						title: 'Datenschutzerklärung',
+						drawerItemStyle: { display: 'none' },
+					}}
+				/>
+				<Drawer.Screen
+					name="impressum/index"
+					options={{
+						title: 'Impressum',
+						drawerItemStyle: { display: 'none' },
+					}}
+				/>
 			</Drawer>
 		</>
 	);
@@ -173,6 +188,7 @@ function ThemedDrawerNavigator() {
 // ─── Drawer content ───────────────────────────────────────────────────────────
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
+	const { theme } = useTheme();
 	const activeKey = props.state.routes[props.state.index].name;
 	// The playbook (component gallery, dev tooling) only appears while the debug
 	// mode is active - toggled in the settings' hidden Debug section (revealed by
@@ -249,6 +265,18 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 		},
 	];
 
+	const footerContent = (
+		<>
+			<TouchableOpacity onPress={() => props.navigation.navigate('privacy-policy/index')}>
+				<Text style={[styles.footerLink, { color: theme.drawer.link }]}>Datenschutzerklärung</Text>
+			</TouchableOpacity>
+			<Text style={[styles.footerBar, { color: theme.drawer.link }]}>|</Text>
+			<TouchableOpacity onPress={() => props.navigation.navigate('impressum/index')}>
+				<Text style={[styles.footerLink, { color: theme.drawer.link }]}>Impressum</Text>
+			</TouchableOpacity>
+		</>
+	);
+
 	return (
 		<AppDrawer
 			logoSource={getAppIconInsideExpoLocalSaved()}
@@ -257,6 +285,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			activeKey={activeKey}
 			primaryColor={PRIMARY_COLOR}
 			onLogoPress={() => props.navigation.navigate('index')}
+			footerContent={footerContent}
 		/>
 	);
 }
@@ -360,5 +389,12 @@ export default function Layout() {
 const styles = StyleSheet.create({
 	keyboardAvoidingView: {
 		flex: 1,
+	},
+	footerLink: {
+		fontSize: 14,
+		paddingHorizontal: 2,
+	},
+	footerBar: {
+		marginHorizontal: 10,
 	},
 });

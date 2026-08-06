@@ -6287,6 +6287,16 @@
     "tr": "Örnek: konum (geo:)",
     "zh": "示例：位置（geo:）"
   },
+  "markdown_example_sections": {
+    "de": "Beispiel: ausklappbare Abschnitte",
+    "en": "Example: collapsible sections",
+    "ar": "Example: collapsible sections",
+    "es": "Ejemplo: secciones plegables",
+    "fr": "Exemple : sections repliables",
+    "ru": "Пример: сворачиваемые разделы",
+    "tr": "Örnek: daraltılabilir bölümler",
+    "zh": "示例：可折叠区块"
+  },
   "tap_to_edit": {
     "de": "Tippen zum Bearbeiten",
     "en": "Tap to edit",

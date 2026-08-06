@@ -5,7 +5,7 @@ import { Image, Text, View } from 'react-native';
 import { CollectibleAt } from 'repo-depkit-common';
 import BaseBottomSheet from '../BaseBottomSheet';
 import CollectibleSpot from '../CollectibleItem/CollectibleSpot';
-import MyMarkdown from '../MyMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -65,7 +65,7 @@ export const MarkingContent: React.FC = () => {
 						}}
 					/>
 				</View>
-				<MyMarkdown content={description} />
+				<CustomMarkdown content={description} />
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
 			</View>
 		</>

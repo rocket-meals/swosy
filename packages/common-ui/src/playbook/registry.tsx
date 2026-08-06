@@ -41,6 +41,7 @@ import QrCode from '../components/QrCode';
 import ScreenHeader from '../components/ScreenHeader';
 import Boxplot from '../components/Boxplot';
 import MyAvatar, { AvatarStyle } from '../components/MyAvatar';
+import CustomMarkdown from '../components/CustomMarkdown/CustomMarkdown';
 import { CommonUiComponentIds } from '../constants/ComponentIds';
 import {
 	KnobValue,
@@ -264,6 +265,12 @@ const runtimeByName: Record<string, PlaybookEntryRuntime> = {
 		bindProps: (values) => ({
 			style: values.style as AvatarStyle,
 		}),
+	},
+	CustomMarkdown: {
+		component: CustomMarkdown,
+		// Renders its own scrollable content (tables/images/sections) - give it
+		// room instead of collapsing inside the playbook's outer scroll view.
+		targetContainerStyle: { minHeight: 600 },
 	},
 };
 

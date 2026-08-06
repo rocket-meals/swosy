@@ -10,7 +10,7 @@ import { isWeb } from '@/constants/Constants';
 import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
@@ -89,7 +89,7 @@ const Index = () => {
 					</View>
 				)}
 				{!loading && hasWikiContent && wiki?.translations && (
-					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} backgroundColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} />
+					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} accentColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} collapsibleSections />
 				)}
 				{!loading && !hasWikiContent && (
 					<Text style={{ color: theme.screen.text, padding: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>

@@ -1,0 +1,140 @@
+import MarkdownIt from 'markdown-it';
+import { StringHelper } from './StringHelper';
+
+type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
+
+// Derived from MarkdownIt's own public API instead of importing the
+// `markdown-it/lib/token` subpath directly - that subpath isn't declared in
+// the package's `exports` map and can fail to resolve depending on the
+// bundler/module-resolution settings of the consuming app.
+type Token = ReturnType<MarkdownItInstance['parse']>[number];
+
+export type MarkdownBlockNode =
+	| { type: 'html'; html: string }
+	| { type: 'heading'; text: string; level: number }
+	| { type: 'section'; header: string; level: number; children: MarkdownBlockNode[] };
+
+export type ParseMarkdownOptions = {
+	/**
+	 * When true, `##`/`###`/... headings (level >= 2) open a nested,
+	 * collapsible section instead of rendering as a plain heading - the
+	 * consuming UI decides how to render a 'section' node (e.g. as an
+	 * accordion). Level-1 headings (`#`) are always plain headings, matching
+	 * how a document title reads. Defaults to false (every heading is plain).
+	 */
+	collapsibleSections?: boolean;
+};
+
+function createMarkdownIt(): MarkdownItInstance {
+	return new MarkdownIt({ html: true, breaks: true });
+}
+
+// CommonMark link destinations can't contain a raw, unescaped space, so a
+// `[text](geo:52.1, 8.0)`-style link (space after the comma) silently fails to
+// parse as a link and falls through as literal text. Location links are the
+// only ones content authors realistically write with a space in the
+// coordinates, so strip whitespace from just those destinations before parsing.
+const LOCATION_LINK_DESTINATION_PATTERN = /\((geo:|maps:|latlon:)([^)]*)\)/gi;
+
+export function sanitizeLocationLinkWhitespace(sourceContent: string): string {
+	return sourceContent.replace(LOCATION_LINK_DESTINATION_PATTERN, (_match, scheme, coordinates) => `(${scheme}${coordinates.replace(/\s+/g, '')})`);
+}
+
+/**
+ * Normalizes the various ways authored content ends up with a literal
+ * backslash-n, a real CRLF, or raw `<br>`/`<p>` HTML into real newlines that
+ * markdown-it's block parser understands. Order matters: the literal `\n`
+ * replacement runs first, so it also consumes the `\n` half of a literal
+ * `\r\n` sequence before the dedicated `\r\n` pass would otherwise see it -
+ * kept as-is to match the pre-existing, already-shipped behavior.
+ */
+export function normalizeLinebreaks(sourceContent: string): string {
+	let result = sourceContent;
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: String.raw`\n`, replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: String.raw`\r\n`, replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '<br/>', replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '</br>', replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '<br>', replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '<p/>', replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '</p>', replace: '\n' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '<p>', replace: '\n' });
+	return result;
+}
+
+function headingLevel(token: Token): number {
+	return Number(token.tag.slice(1)) || 1;
+}
+
+/**
+ * Groups a flat markdown-it block token stream into a heading-based tree:
+ * every heading at or below a section's own level closes that section (and
+ * any of its still-open ancestors), matching how a reader would expect
+ * `## A` / `### A.1` / `## B` to nest (`A.1` under `A`, `B` a sibling of `A`,
+ * not a child). Returns the built blocks and the index just past what this
+ * call consumed - the recursive call for a nested section stops as soon as it
+ * sees a heading at or above its own level and hands control back up.
+ */
+function buildBlocks(tokens: Token[], md: MarkdownItInstance, env: unknown, collapsibleSections: boolean, startIdx: number, stopLevel: number | null): [MarkdownBlockNode[], number] {
+	const blocks: MarkdownBlockNode[] = [];
+	let htmlBuffer: Token[] = [];
+	let idx = startIdx;
+
+	const flushHtml = () => {
+		if (htmlBuffer.length > 0) {
+			blocks.push({ type: 'html', html: md.renderer.render(htmlBuffer, md.options, env) });
+			htmlBuffer = [];
+		}
+	};
+
+	while (idx < tokens.length) {
+		const token = tokens[idx];
+
+		if (token.type === 'heading_open') {
+			const level = headingLevel(token);
+			if (stopLevel !== null && level <= stopLevel) {
+				break;
+			}
+
+			flushHtml();
+			const headingText = (tokens[idx + 1]?.content ?? '').trim();
+			idx += 3; // heading_open, inline, heading_close - always adjacent for ATX/Setext headings.
+
+			if (collapsibleSections && level >= 2) {
+				const [children, nextIdx] = buildBlocks(tokens, md, env, collapsibleSections, idx, level);
+				blocks.push({ type: 'section', header: headingText, level, children });
+				idx = nextIdx;
+			} else {
+				blocks.push({ type: 'heading', text: headingText, level });
+			}
+			continue;
+		}
+
+		htmlBuffer.push(token);
+		idx += 1;
+	}
+
+	flushHtml();
+	return [blocks, idx];
+}
+
+/**
+ * Parses markdown content (CommonMark via markdown-it - tables, images,
+ * nested lists, inline formatting all supported) into a small block tree a
+ * UI layer can render: plain HTML chunks (as already-rendered HTML strings,
+ * ready for an HTML-to-native renderer), plain headings, and - opt-in via
+ * `collapsibleSections` - nested sections for `##`+ headings.
+ */
+export function parseMarkdownToBlocks(rawContent: string, options: ParseMarkdownOptions = {}): MarkdownBlockNode[] {
+	const collapsibleSections = options.collapsibleSections ?? false;
+
+	let content = rawContent || '';
+	content = normalizeLinebreaks(content);
+	content = sanitizeLocationLinkWhitespace(content);
+
+	const md = createMarkdownIt();
+	const env = {};
+	const tokens = md.parse(content, env);
+
+	const [blocks] = buildBlocks(tokens, md, env, collapsibleSections, 0, null);
+	return blocks;
+}

@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { View, TextInput } from 'react-native';
 import { CollectibleAt } from 'repo-depkit-common';
 
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -36,9 +36,10 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 				{housingTranslations && (
 					<CustomMarkdown
 						content={getTextFromTranslation(housingTranslations, language) || ''}
-						backgroundColor={housingAreaColor}
+						accentColor={housingAreaColor}
 						imageWidth={'100%'}
 						imageHeight={400}
+						collapsibleSections
 					/>
 				)}
 			</View>

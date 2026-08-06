@@ -8,8 +8,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import MyMarkdown from '@/components/MyMarkdown';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 
 type MarkdownExample = {
 	id: string;
@@ -50,7 +49,7 @@ const MarkdownTestScreen = () => {
 		[translate]
 	);
 
-	const geoMarkdownContent = '[Route anzeigen](geo:52.27158519499881, 8.04527493587901)';
+	const sectionsMarkdownContent = String.raw`## Abschnitt A\n\nInhalt von A.\n\n### A.1\n\nVerschachtelter Inhalt.\n\n## Abschnitt B\n\nInhalt von B.`;
 
 	const openEditor = () => {
 		openTextInputModal({
@@ -76,21 +75,21 @@ const MarkdownTestScreen = () => {
 
 				<View style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
 					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{translate(TranslationKeys.markdown_custom_output)}</Text>
-					<MyMarkdown content={customMarkdown} textColor={theme.screen.text} />
+					<CustomMarkdown content={customMarkdown} textColor={theme.screen.text} />
 				</View>
 
 				{markdownExamples.map(example => (
 					<View key={example.id} style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
 						<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{example.title}</Text>
-						<MyMarkdown content={example.content} textColor={theme.screen.text} />
+						<CustomMarkdown content={example.content} textColor={theme.screen.text} />
 					</View>
 				))}
 
-				{/* Building/campus/housing description text uses CustomMarkdown (not MyMarkdown) -
-				    keep a geo: example here too so both renderers stay covered. */}
+				{/* Building/campus/housing description text (and wiki pages) enable
+				    collapsibleSections - shown here so that mode stays covered too. */}
 				<View style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
-					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{`${translate(TranslationKeys.markdown_example_geo)} (CustomMarkdown)`}</Text>
-					<CustomMarkdown content={geoMarkdownContent} backgroundColor={theme.screen.iconBg} />
+					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{`${translate(TranslationKeys.markdown_example_sections)} (collapsibleSections)`}</Text>
+					<CustomMarkdown content={sectionsMarkdownContent} textColor={theme.screen.text} collapsibleSections />
 				</View>
 			</View>
 		</ScrollView>

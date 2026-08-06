@@ -21,7 +21,7 @@ import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabe
 import { SET_CANTEEN_FEEDBACK_LABELS } from '@/redux/Types/types';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
@@ -512,7 +512,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
-						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+						<CustomMarkdown content={beforeElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
 				<View
@@ -581,7 +581,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				</View>
 				{afterElement && (
 					<View style={styles.elementContainer}>
-						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+						<CustomMarkdown content={afterElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
 				{feedbacks && feedbacks.length > 0 && (
