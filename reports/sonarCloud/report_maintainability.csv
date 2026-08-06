@@ -1,6 +1,6 @@
 Key,Message,Component,Line
-"AZ_RxFXYFsM_WksbAx-7","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",89
-"AZ_RxFXYFsM_WksbAx-8","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",89
+"AZ_RxFXYFsM_WksbAx-7","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",105
+"AZ_RxFXYFsM_WksbAx-8","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",105
 "AZ_Qpsa0v1udd7F-hf3S","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",145
 "AZ_Qpsa0v1udd7F-hf3T","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",197
 "AZ_Qpsa0v1udd7F-hf3U","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/score-tracker/frontend/app/stats/index.tsx",215

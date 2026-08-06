@@ -73,8 +73,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/scripts/store-metadata-extract.ts#L53
 
 - **Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.**
-  packages/common/licenses/collectLicenses.ts:137
-  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/licenses/collectLicenses.ts#L137
+  packages/common/licenses/collectLicenses.ts:153
+  https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/licenses/collectLicenses.ts#L153
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   packages/common/src/CompressionHelper.ts:54
