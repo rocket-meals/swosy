@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 83 | 28 |
+| 🔧 Maintainability | 84 | 28 |
 
-**Total issues:** 105 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 106 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -104,7 +104,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (28/83)
+## 🔧 Maintainability (28/84)
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
