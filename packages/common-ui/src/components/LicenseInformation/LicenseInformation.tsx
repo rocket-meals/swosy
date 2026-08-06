@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import CollapsibleView from '../Collapsible/CollapsibleView';
 
 /**
  * A single entry of the auto-collected open-source license list
@@ -62,6 +63,8 @@ const LicenseInformation: React.FC<LicenseInformationProps> = ({ packages, linkC
 							style={[styles.header, { backgroundColor: theme.screen.iconBg }]}
 							onPress={() => setExpandedName(isExpanded ? null : pkg.name)}
 							activeOpacity={0.7}
+							accessibilityRole="button"
+							accessibilityState={{ expanded: isExpanded }}
 						>
 							<Text style={[styles.name, { color: theme.screen.text }]} numberOfLines={1}>
 								{pkg.name}
@@ -71,7 +74,7 @@ const LicenseInformation: React.FC<LicenseInformationProps> = ({ packages, linkC
 								<Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={theme.screen.icon} />
 							</View>
 						</TouchableOpacity>
-						{isExpanded && (
+						<CollapsibleView collapsed={!isExpanded}>
 							<View style={styles.details}>
 								<DetailRow label="License" value={pkg.license} linkColor={linkColor} />
 								{pkg.repository ? <DetailRow label="Repository" value={pkg.repository} url={pkg.repository} linkColor={linkColor} /> : null}
@@ -79,7 +82,7 @@ const LicenseInformation: React.FC<LicenseInformationProps> = ({ packages, linkC
 									<DetailRow label="License URL" value={pkg.licenseUrl} url={pkg.licenseUrl} linkColor={linkColor} />
 								) : null}
 							</View>
-						)}
+						</CollapsibleView>
 					</View>
 				);
 			})}

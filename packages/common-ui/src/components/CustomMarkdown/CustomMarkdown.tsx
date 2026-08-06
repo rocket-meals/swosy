@@ -4,7 +4,7 @@ import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel } f
 import { MarkdownBlockNode, parseMarkdownToBlocks } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
-import MarkdownCollapsibleSection from './MarkdownCollapsibleSection';
+import CollapsibleSection from '../Collapsible/CollapsibleSection';
 import MarkdownRedirectButton from './MarkdownRedirectButton';
 import { resolveLocationHref } from './MarkdownLinkHelper';
 import styles from './styles';
@@ -127,7 +127,7 @@ const HTML_ELEMENT_MODELS = {
  * inline formatting) via react-native-render-html, plus two things plain
  * CommonMark doesn't have - buttonized links (email/phone/location/plain,
  * see MarkdownRedirectButton) and, opt-in via `collapsibleSections`, nested
- * accordion sections for `##`+ headings (see MarkdownCollapsibleSection).
+ * accordion sections for `##`+ headings (see CollapsibleSection).
  *
  * `renderLink`/`renderImage`/`renderText` let a caller swap in its own
  * rendering for those three node kinds; left unset, links/images use this
@@ -139,6 +139,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 	accentColor,
 	textColor,
 	collapsibleSections = false,
+	sectionsStartCollapsed = false,
 	imageWidth,
 	imageHeight,
 	renderLink,
@@ -189,9 +190,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 				case 'section':
 					return (
 						<View key={key} style={styles.section}>
-							<MarkdownCollapsibleSection headerText={block.header} customColor={accent}>
+							<CollapsibleSection headerText={block.header} customColor={accent} startCollapsed={sectionsStartCollapsed}>
 								{renderBlocks(block.children, key)}
-							</MarkdownCollapsibleSection>
+							</CollapsibleSection>
 						</View>
 					);
 				case 'html':

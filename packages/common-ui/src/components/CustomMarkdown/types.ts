@@ -37,6 +37,13 @@ export interface CustomMarkdownProps {
 	 * for longer, structured content such as a wiki page.
 	 */
 	collapsibleSections?: boolean;
+	/**
+	 * Whether collapsible sections start closed. Defaults to false (expanded):
+	 * legal/accessibility-sensitive content (privacy policy, imprint, wiki
+	 * pages) must be readable without any interaction, so only opt into
+	 * collapsed sections for content where that is not a concern.
+	 */
+	sectionsStartCollapsed?: boolean;
 	imageWidth?: string | number;
 	imageHeight?: string | number;
 	/** Renders `<a>` tags (email/phone/location/plain links). Default: a themed button (repo-depkit-common-ui's MarkdownRedirectButton). */

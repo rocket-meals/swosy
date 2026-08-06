@@ -289,6 +289,7 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		knobs: {
 			content: { type: 'text', defaultValue: MARKDOWN_DEMO_CONTENT },
 			collapsibleSections: { type: 'boolean', defaultValue: true },
+			sectionsStartCollapsed: { type: 'boolean', defaultValue: false },
 		},
 	},
 	{

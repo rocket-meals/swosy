@@ -9,7 +9,7 @@ import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_PLAN } from '@/redux/Types/types';
-import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
+import { CollapsibleSection } from 'repo-depkit-common-ui';
 import { isWeb } from '@/constants/Constants';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -274,7 +274,7 @@ const Index = () => {
 				</TouchableOpacity>
 
 				<View style={{ width: '100%' }}>
-					<CustomCollapsible headerText={translate(TranslationKeys.food_attributes)} customColor={theme.screen.iconBg}>
+					<CollapsibleSection headerText={translate(TranslationKeys.food_attributes)} customColor={theme.screen.iconBg}>
 						<ScrollView style={styles.attributeListContainer} contentContainerStyle={styles.attributeListContent}>
 							{foodAttributes?.map((attribute: any) => {
 									return (
@@ -315,7 +315,7 @@ const Index = () => {
 									);
 								})}
 						</ScrollView>
-					</CustomCollapsible>
+					</CollapsibleSection>
 				</View>
 
 				<TouchableOpacity

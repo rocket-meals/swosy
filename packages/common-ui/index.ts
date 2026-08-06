@@ -165,8 +165,10 @@ export { resolveLocationHref, parseCoordinatesFromUri, UriScheme } from './src/c
 export type { ResolvedLocationHref } from './src/components/CustomMarkdown/MarkdownLinkHelper';
 export { default as MarkdownRedirectButton } from './src/components/CustomMarkdown/MarkdownRedirectButton';
 export type { MarkdownRedirectButtonProps } from './src/components/CustomMarkdown/MarkdownRedirectButton';
-export { default as MarkdownCollapsibleSection } from './src/components/CustomMarkdown/MarkdownCollapsibleSection';
-export type { MarkdownCollapsibleSectionProps } from './src/components/CustomMarkdown/MarkdownCollapsibleSection';
+export { default as CollapsibleView } from './src/components/Collapsible/CollapsibleView';
+export type { CollapsibleViewProps } from './src/components/Collapsible/CollapsibleView';
+export { default as CollapsibleSection } from './src/components/Collapsible/CollapsibleSection';
+export type { CollapsibleSectionProps } from './src/components/Collapsible/CollapsibleSection';
 
 export { default as SettingsListSqliteStorage } from './src/components/SettingsListSqliteStorage';
 export type {
