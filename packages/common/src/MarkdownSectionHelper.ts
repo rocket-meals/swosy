@@ -87,7 +87,9 @@ function buildBlocks(tokens: Token[], md: MarkdownItInstance, env: unknown, coll
 	};
 
 	while (idx < tokens.length) {
-		const token = tokens[idx];
+		// Guaranteed by the loop condition (idx < tokens.length); narrows past
+		// noUncheckedIndexedAccess's `Token | undefined` for consumers of this package.
+		const token = tokens[idx]!;
 
 		if (token.type === 'heading_open') {
 			const level = headingLevel(token);
