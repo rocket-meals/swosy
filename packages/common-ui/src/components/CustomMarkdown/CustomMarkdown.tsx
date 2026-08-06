@@ -1,16 +1,18 @@
 import { DimensionValue, Image, Linking, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import CustomCollapsible from '../CustomCollapsible/CustomCollapsible';
-import RedirectButton from '../RedirectButton';
+import { StringHelper } from 'repo-depkit-common';
+import MarkdownCollapsibleSection from './MarkdownCollapsibleSection';
+import MarkdownRedirectButton from './MarkdownRedirectButton';
 import styles from './styles';
 import { CustomMarkdownProps } from './types';
-import { myContrastColor } from '@/helper/ColorHelper';
-import { useAppSelector } from '@/redux/hooks';
-import { useTheme } from '@/hooks/useTheme';
-import { StringHelper } from 'repo-depkit-common';
-import { resolveLocationHref } from '@/helper/MarkdownLinkHelper';
+import { myContrastColor } from '../../helpers/ColorHelper';
+import { useTheme } from '../../context/ThemeContext';
+import { resolveLocationHref } from './MarkdownLinkHelper';
 
-// Regex patterns for different content types
+// Regex patterns for different content types. Every quantifier is bounded
+// ({1,500} / {1,2000} / {0,5000}) so a pathological, non-matching input (e.g.
+// a very long unterminated bracket) cannot force runtime proportional to an
+// attacker-controlled input length (SonarCloud: super-linear regex backtracking).
 export const CONTENT_PATTERNS = {
 	email: /\[([^\]]{1,500})]\((mailto:[^)]{1,2000})\)/,
 	location: /\[([^\]]{1,500})]\(((?:geo|maps):[^)]{1,2000})\)/i,
@@ -183,18 +185,50 @@ const processMarkdownContent = (lines: string[]) => {
 
 const calculateMarginLeft = (level: number, indent = 0) => level * 16 + indent * 4;
 
+// **bold** and *italic* within paragraph text. Bold is tried first so
+// "**x**" isn't consumed as "*" + "*x*" + "*".
+const EMPHASIS_PATTERN = /\*\*(.{1,2000}?)\*\*|\*(.{1,2000}?)\*/g;
+
+// Splits paragraph text into plain/bold/italic segments. Every other content
+// type (headings, images, email/location/link buttons) is unaffected -
+// emphasis markers only ever occur inside plain paragraph text.
+const renderEmphasis = (text: string): React.ReactNode[] => {
+	const nodes: React.ReactNode[] = [];
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+	let segmentIndex = 0;
+	EMPHASIS_PATTERN.lastIndex = 0;
+
+	while ((match = EMPHASIS_PATTERN.exec(text)) !== null) {
+		if (match.index > lastIndex) {
+			nodes.push(text.slice(lastIndex, match.index));
+		}
+		if (match[1] !== undefined) {
+			nodes.push(<Text key={`b-${segmentIndex++}`} style={{ fontWeight: '700' }}>{match[1]}</Text>);
+		} else {
+			nodes.push(<Text key={`i-${segmentIndex++}`} style={{ fontStyle: 'italic' }}>{match[2]}</Text>);
+		}
+		lastIndex = EMPHASIS_PATTERN.lastIndex;
+	}
+
+	if (lastIndex < text.length) {
+		nodes.push(text.slice(lastIndex));
+	}
+
+	return nodes;
+};
+
 // Component for rendering text with proper formatting
 const TextContent = ({ text, level, indent, textColor }: { text: string; level: number; indent: number; textColor: string }) => (
 	<Text
 		style={{
 			fontSize: 16,
-			fontFamily: 'Poppins_400Regular',
 			color: textColor,
 			marginLeft: calculateMarginLeft(level, indent),
 			lineHeight: 24,
 		}}
 	>
-		{text}
+		{renderEmphasis(text)}
 	</Text>
 );
 
@@ -244,7 +278,6 @@ const ImageContent = ({
 						style={{
 							fontSize: 12,
 							color: textColor,
-							fontFamily: 'Poppins_400Regular',
 							textAlign: 'center',
 							fontStyle: 'italic',
 						}}
@@ -277,16 +310,22 @@ const ImageContent = ({
 	);
 };
 
+/**
+ * Renders a constrained markdown dialect (headings, nested collapsible
+ * sections, paragraphs, images, and email/location/link buttons) used for
+ * wiki-style content across the apps: rocket-meals wikis, and the Score
+ * Tracker / Geonexia privacy policy & imprint pages.
+ */
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
-	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { theme, isDark } = useTheme();
+	const accentColor = backgroundColor || theme.primary;
 
 	const getContent = () => {
 		if (content) {
 			const rawText = content;
 			const lines = rawText.split('\n');
 
-			const contrastColor = myContrastColor(backgroundColor || primaryColor, theme, mode === 'dark');
+			const contrastColor = myContrastColor(accentColor, theme, isDark);
 
 			// Main renderer for content items
 			const renderContentItem = (item: any, level: number, index: number) => {
@@ -297,7 +336,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 								key={`heading-${level}-${index}`}
 								style={{
 									fontSize: 24,
-									fontFamily: 'Poppins_600SemiBold',
+									fontWeight: '600',
 									color: theme.screen.text,
 									marginTop: level === 0 ? 0 : 12,
 									marginBottom: 12,
@@ -317,14 +356,14 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 					case 'email':
 						return (
 							<View key={`email-${level}-${index}`} style={{ marginLeft: calculateMarginLeft(level, item.indent || 0), marginBottom: 10 }}>
-								<RedirectButton type="email" label={item.displayText} onClick={() => Linking.openURL(`mailto:${item.email}`)} backgroundColor={backgroundColor || ''} color={contrastColor} />
+								<MarkdownRedirectButton type="email" label={item.displayText} onClick={() => Linking.openURL(`mailto:${item.email}`)} backgroundColor={backgroundColor} color={contrastColor} />
 							</View>
 						);
 
 					case 'link':
 						return (
 							<View key={`link-${level}-${index}`} style={{ marginLeft: calculateMarginLeft(level, item.indent || 0), marginBottom: 10 }}>
-								<RedirectButton type="link" label={item.displayText} onClick={() => Linking.openURL(item.url)} backgroundColor={backgroundColor || ''} color={contrastColor} />
+								<MarkdownRedirectButton type="link" label={item.displayText} onClick={() => Linking.openURL(item.url)} backgroundColor={backgroundColor} color={contrastColor} />
 							</View>
 						);
 
@@ -332,7 +371,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 						const { resolvedHref } = resolveLocationHref(item.url);
 						return (
 							<View key={`location-${level}-${index}`} style={{ marginLeft: calculateMarginLeft(level, item.indent || 0), marginBottom: 10 }}>
-								<RedirectButton type="location" label={item.displayText} onClick={() => resolvedHref && Linking.openURL(resolvedHref)} backgroundColor={backgroundColor || ''} color={contrastColor} />
+								<MarkdownRedirectButton type="location" label={item.displayText} onClick={() => resolvedHref && Linking.openURL(resolvedHref)} backgroundColor={backgroundColor} color={contrastColor} />
 							</View>
 						);
 					}
@@ -343,9 +382,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 					case 'collapsible':
 						return (
 							<View key={`collapsible-${level}-${index}`} style={{ marginTop: level > 0 ? 5 : 10 }}>
-								<CustomCollapsible headerText={item.header} customColor={backgroundColor || ''} startCollapsed={item.startCollapsed}>
+								<MarkdownCollapsibleSection headerText={item.header} customColor={backgroundColor} startCollapsed={item.startCollapsed}>
 									{renderContent(item.items, level + 1)}
-								</CustomCollapsible>
+								</MarkdownCollapsibleSection>
 							</View>
 						);
 

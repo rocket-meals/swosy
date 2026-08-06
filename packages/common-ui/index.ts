@@ -159,8 +159,10 @@ export type { MyCustomColorPickerProps } from './src/components/MyCustomColorPic
 export { default as SettingsListAvatar } from './src/components/SettingsListAvatar';
 export type { SettingsListAvatarProps } from './src/components/SettingsListAvatar';
 
-export { default as SimpleMarkdown } from './src/components/SimpleMarkdown/SimpleMarkdown';
-export type { SimpleMarkdownProps } from './src/components/SimpleMarkdown/SimpleMarkdown';
+export { default as CustomMarkdown, CONTENT_PATTERNS } from './src/components/CustomMarkdown/CustomMarkdown';
+export type { CustomMarkdownProps } from './src/components/CustomMarkdown/types';
+export { resolveLocationHref, parseCoordinatesFromUri, UriScheme } from './src/components/CustomMarkdown/MarkdownLinkHelper';
+export type { ResolvedLocationHref } from './src/components/CustomMarkdown/MarkdownLinkHelper';
 
 export { default as SettingsListSqliteStorage } from './src/components/SettingsListSqliteStorage';
 export type {

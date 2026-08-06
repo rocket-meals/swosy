@@ -9,7 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import MyMarkdown from '@/components/MyMarkdown';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 
 type MarkdownExample = {
 	id: string;

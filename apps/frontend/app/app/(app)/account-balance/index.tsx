@@ -24,7 +24,7 @@ import moneySad from '@/assets/animations/accountBalance/moneySad.json';
 import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';

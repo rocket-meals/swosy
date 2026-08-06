@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import styles from '../styles';
 import { TranslationKeys } from '@/locales/keys';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { CustomMarkdown } from 'repo-depkit-common-ui';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 

@@ -25,7 +25,7 @@ import {
 	useFonts
 } from '@expo-google-fonts/poppins';
 import {Image, KeyboardAvoidingView, Platform, View} from 'react-native';
-import {ThemeProvider} from '@/context/ThemeContext';
+import {ThemeProvider, useTheme as useCommonUiTheme} from '@/context/ThemeContext';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
@@ -70,6 +70,22 @@ function AppSettingsProvider({ children }: Readonly<{ children: React.ReactNode 
 			{children}
 		</SettingsProvider>
 	);
+}
+
+// Keeps the shared repo-depkit-common-ui ThemeProvider (used by components ported
+// from/shared with the other apps, e.g. CustomMarkdown) in sync with the app's own
+// redux-driven theme selection (`@/hooks/useTheme`, still the source of truth for the
+// rest of the app's chrome) - otherwise it would default to following the OS scheme
+// only, ignoring an explicit light/dark override the user made in Settings.
+function ThemeSyncBridge() {
+	const selectedTheme = useAppSelector((state) => state.settings.selectedTheme);
+	const { setThemeMode } = useCommonUiTheme();
+
+	useEffect(() => {
+		setThemeMode(selectedTheme as 'light' | 'dark' | 'systematic');
+	}, [selectedTheme, setThemeMode]);
+
+	return null;
 }
 
 export default function Layout() {
@@ -176,6 +192,7 @@ export default function Layout() {
 						<PersistGate loading={null} persistor={persistor}>
 							<RootSiblingParent>
 								<ThemeProvider>
+									<ThemeSyncBridge />
 									<ModalContextProvider>
 										<AppSettingsProvider>
 											<ModalRenderer>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { SimpleMarkdown, useTheme } from 'repo-depkit-common-ui';
+import { CustomMarkdown, useTheme } from 'repo-depkit-common-ui';
 import { getPrivacyPolicyMarkdown } from '../../constants/PrivacyPolicy';
 
 export default function PrivacyPolicyScreen() {
@@ -8,7 +8,7 @@ export default function PrivacyPolicyScreen() {
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
-			<SimpleMarkdown content={getPrivacyPolicyMarkdown()} />
+			<CustomMarkdown content={getPrivacyPolicyMarkdown()} />
 		</ScrollView>
 	);
 }
