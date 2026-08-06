@@ -39,6 +39,33 @@ export interface PlaybookEntryData {
 	knobs: Record<string, KnobDefinition>;
 }
 
+const MARKDOWN_DEMO_CONTENT = `# Markdown Playbook Demo
+
+Regular paragraph with **bold**, *italic* and a [plain link](https://example.com).
+
+## Contact
+
+- [Write us](mailto:info@example.com)
+- [Call us](tel:+491702215430)
+- [Find us](geo:52.283,8.023)
+
+## Table
+
+| Feature | Supported |
+| --- | --- |
+| Tables | yes |
+| Images | yes |
+| Buttonized links | yes |
+
+## Image
+
+![Placeholder image](https://picsum.photos/seed/playbook/400/200)
+
+### Nested section
+
+This paragraph is inside a section nested one level deeper.
+`;
+
 const GROUP_POSITION_KNOB: KnobDefinition = {
 	type: 'select',
 	defaultValue: 'single',
@@ -254,6 +281,14 @@ export const playbookRegistryData: PlaybookEntryData[] = [
 		description: 'Full feature-wishes screen with in-memory demo data.',
 		knobs: {
 			isAdmin: { type: 'boolean', defaultValue: false },
+		},
+	},
+	{
+		name: 'CustomMarkdown',
+		description: 'Markdown renderer: tables, images, buttonized links (email/tel/location/plain) and optional collapsible sections for ##+ headings.',
+		knobs: {
+			content: { type: 'text', defaultValue: MARKDOWN_DEMO_CONTENT },
+			collapsibleSections: { type: 'boolean', defaultValue: true },
 		},
 	},
 	{

@@ -38,9 +38,10 @@ const ListFooterComponent: React.FC<ListFooterComponentProps> = ({
                     {afterElement && (
                         <CustomMarkdown
                             content={afterElement?.content || ''}
-                            backgroundColor={foods_area_color}
+                            accentColor={foods_area_color}
                             imageWidth={440}
                             imageHeight={293}
+                            collapsibleSections
                         />
                     )}
                 </View>

@@ -18,6 +18,7 @@
     "react-native-gesture-handler": "*",
     "react-native-qrcode-svg": "*",
     "react-native-reanimated": "*",
+    "react-native-render-html": "*",
     "react-native-safe-area-context": "*",
     "react-native-svg": "*",
     "react-native-webview": "*"

@@ -512,7 +512,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
-						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+						<CustomMarkdown content={beforeElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
 				<View
@@ -581,7 +581,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				</View>
 				{afterElement && (
 					<View style={styles.elementContainer}>
-						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+						<CustomMarkdown content={afterElement?.content || ''} accentColor={foods_area_color} imageWidth={440} imageHeight={293} collapsibleSections />
 					</View>
 				)}
 				{feedbacks && feedbacks.length > 0 && (

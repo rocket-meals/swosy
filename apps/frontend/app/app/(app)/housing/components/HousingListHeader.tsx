@@ -36,9 +36,10 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 				{housingTranslations && (
 					<CustomMarkdown
 						content={getTextFromTranslation(housingTranslations, language) || ''}
-						backgroundColor={housingAreaColor}
+						accentColor={housingAreaColor}
 						imageWidth={'100%'}
 						imageHeight={400}
+						collapsibleSections
 					/>
 				)}
 			</View>

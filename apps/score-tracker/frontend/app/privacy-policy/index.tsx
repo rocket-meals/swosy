@@ -8,7 +8,7 @@ export default function PrivacyPolicyScreen() {
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
-			<CustomMarkdown content={getPrivacyPolicyMarkdown()} />
+			<CustomMarkdown content={getPrivacyPolicyMarkdown()} collapsibleSections />
 		</ScrollView>
 	);
 }

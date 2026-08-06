@@ -89,7 +89,7 @@ const Index = () => {
 					</View>
 				)}
 				{!loading && hasWikiContent && wiki?.translations && (
-					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} backgroundColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} />
+					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} accentColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} collapsibleSections />
 				)}
 				{!loading && !hasWikiContent && (
 					<Text style={{ color: theme.screen.text, padding: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>

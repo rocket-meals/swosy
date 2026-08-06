@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 
 export type MarkdownRedirectButtonProps = {
-	type: 'email' | 'link' | 'location';
+	type: 'email' | 'tel' | 'link' | 'location';
 	label: string;
 	backgroundColor?: string;
 	color?: string;
@@ -37,6 +37,8 @@ const MarkdownRedirectButton: React.FC<MarkdownRedirectButtonProps> = ({ type, l
 	let typeIcon: React.ReactNode;
 	if (type === 'email') {
 		typeIcon = <MaterialCommunityIcons name="email" size={24} color={color || contrastColor} />;
+	} else if (type === 'tel') {
+		typeIcon = <FontAwesome6 name="phone" size={20} color={color || contrastColor} />;
 	} else if (type === 'location') {
 		typeIcon = <Ionicons name="navigate" size={24} color={color || contrastColor} />;
 	} else {
