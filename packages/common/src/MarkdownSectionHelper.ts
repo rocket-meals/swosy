@@ -26,7 +26,15 @@ export type ParseMarkdownOptions = {
 };
 
 function createMarkdownIt(): MarkdownItInstance {
-	return new MarkdownIt({ html: true, breaks: true });
+	const md = new MarkdownIt({ html: true, breaks: true });
+	// Authored content (WYSIWYG fields, copy-pasted documents) regularly carries
+	// tab/4-space indentation that CommonMark would turn into an indented code
+	// block - swallowing links, formatting and line breaks into one literal
+	// blob (e.g. the privacy policy "Kontakt" section). Content authors never
+	// mean indentation as code, so indented code blocks are disabled; fenced
+	// ``` blocks still work for intentional code.
+	md.disable('code');
+	return md;
 }
 
 // CommonMark link destinations can't contain a raw, unescaped space, so a

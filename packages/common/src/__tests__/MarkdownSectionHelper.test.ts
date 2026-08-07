@@ -138,6 +138,31 @@ describe('parseMarkdownToBlocks - html headings mixed with markdown', () => {
 	});
 });
 
+describe('parseMarkdownToBlocks - tab/space-indented content', () => {
+	// Regression: the privacy policy "Kontakt" section was authored with every
+	// line tab-indented. CommonMark turns indented lines into an indented code
+	// block, so the whole section rendered as one literal blob - markdown links
+	// stayed `[text](url)` text and no contact buttons appeared.
+	it('parses links in tab-indented content instead of treating it as a code block', () => {
+		const content = '## Kontakt\n\n\tWende dich bitte an unsere Datenschutzbeauftragte.\n\n\tE-Mail:\n\n\t[info@example.com](mailto:info@example.com)\n\n\tWebsite:\n\n\t[https://example.com](https://example.com)';
+		const blocks = parseMarkdownToBlocks(content, { collapsibleSections: true });
+
+		expect(blocks[0]).toMatchObject({ type: 'section', header: 'Kontakt', level: 2 });
+		const section = blocks[0] as { children: { type: string; html?: string }[] };
+		const html = section.children.map((child) => child.html ?? '').join('');
+		expect(html).not.toContain('<pre>');
+		expect(html).toContain('href="mailto:info@example.com"');
+		expect(html).toContain('href="https://example.com"');
+	});
+
+	it('keeps fenced code blocks as code', () => {
+		const blocks = parseMarkdownToBlocks('```\nconst a = 1;\n```');
+		const html = (blocks[0] as { html: string }).html;
+		expect(html).toContain('<pre>');
+		expect(html).toContain('const a = 1;');
+	});
+});
+
 describe('parseMarkdownToBlocks - reference-style links resolve across chunks', () => {
 	it('resolves a reference link even when split across separate rendered html chunks by a heading', () => {
 		const blocks = parseMarkdownToBlocks('[link][ref]\n\n## Heading\n\ntext\n\n[ref]: https://example.com', { collapsibleSections: true });
