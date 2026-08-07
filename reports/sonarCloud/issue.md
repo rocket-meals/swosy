@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 9 | 9 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 84 | 28 |
+| 🔧 Maintainability | 85 | 28 |
 
-**Total issues:** 106 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 107 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -104,7 +104,11 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (28/84)
+## 🔧 Maintainability (28/85)
+
+- **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts#L30
 
 - **Refactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:1248
@@ -213,8 +217,4 @@
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/stats/index.tsx:285
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L285
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:294
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L294
 

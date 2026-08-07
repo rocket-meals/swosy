@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ_bhgSmh08MZ_CNlF2h","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts",30
 "AZ_ZdY2aVTkoKe_w_Fkw","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/Collapsible/CollapsibleView.tsx",45
 "AZ_ZFtaL4GWqYiG8MC2O","Remove this unused import of 'StyleSheet'.","rocket-meals_rocket-meals:packages/common-ui/src/components/CustomMarkdown/CustomMarkdown.tsx",2
 "AZ_RxFXYFsM_WksbAx-7","The empty object is useless.","rocket-meals_rocket-meals:packages/common/licenses/collectLicenses.ts",105
