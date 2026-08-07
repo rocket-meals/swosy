@@ -462,9 +462,10 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
 
   console.log('recipient_emails: ');
   console.log(recipient_emails);
+  let mailAttachmentsFolderId = await myDatabaseHelper.getMailAttachmentsFolderId();
   for (let recipient_email of recipient_emails) {
     console.log('Send mail to: ' + recipient_email);
-    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '.pdf', MyFileTypes.PDF, myDatabaseHelper);
+    let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + '_' + formSubmission.id + '.pdf', MyFileTypes.PDF, myDatabaseHelper, mailAttachmentsFolderId);
     let attachments = {
       create: [
         {
