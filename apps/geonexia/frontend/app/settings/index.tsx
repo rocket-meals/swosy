@@ -60,7 +60,7 @@ import {
 	loadWalkedEdgesRedLine,
 	loadDevWalkedEdgesRedLine,
 } from '../../helpers/HexTileStorage';
-import { getCompanyLogoLocalSaved } from '../../config';
+import { getCompanyLogoLocalSaved, getVersion } from '../../config';
 import { loadTTSLog, clearTTSLog, type TTSLogEntry } from '../../helpers/TTSLogStorage';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
@@ -374,7 +374,11 @@ export default function SettingsScreen() {
 	const { show: showLicensesModal } = useMyScrollViewModal();
 	const { showAlert } = useGeonexiaAlert();
 
-	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+	// Version straight from the JS bundle (config.ts), NOT from
+	// Constants.expoConfig: the latter reflects the natively embedded manifest,
+	// so OTA updates (which only bump the patch version) would never show up
+	// and users could not verify they are running the latest update.
+	const appVersion = getVersion();
 	const licenses = getLicensesFromExtra(Constants.expoConfig?.extra);
 
 	const handleOpenThemeSelection = useCallback(() => {

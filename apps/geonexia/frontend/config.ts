@@ -26,8 +26,8 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
-	// 6: dense GPS tracks again: no deferred background location batching
-	return 6;
+	// 7: settings screen shows the OTA patch version (read from JS bundle)
+	return 7;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch
