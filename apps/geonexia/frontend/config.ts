@@ -26,8 +26,8 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
-	// 4: timely TTS announcements + duck music only while speaking
-	return 4;
+	// 5: never stop other apps' music: always use the app audio session for TTS
+	return 5;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch

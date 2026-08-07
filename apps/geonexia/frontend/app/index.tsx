@@ -3775,9 +3775,10 @@ function trySpeakAnnouncement(
 	options: Parameters<typeof speakAnnouncement>[2],
 	source: string,
 	logContext: string,
+	duckOthers: boolean = true,
 ): void {
 	try {
-		speakAnnouncement(text, langCode, options, source, RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+		speakAnnouncement(text, langCode, options, source, { ...RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS, duckOthers });
 	} catch (err) {
 		console.warn(`[RecordScreen] ${logContext} failed:`, err);
 	}
@@ -3807,7 +3808,7 @@ function announceKmMilestoneIfNeeded(
 			announcePace: curSs.announcePace,
 			announceSpeedKmh: curSs.announceSpeed,
 		});
-		trySpeakAnnouncement(text, langCode, { rate: speechRateToNumber(curSs.speechRate) }, 'km_milestone', 'Km milestone announcement');
+		trySpeakAnnouncement(text, langCode, { rate: speechRateToNumber(curSs.speechRate) }, 'km_milestone', 'Km milestone announcement', curSs.duckMusicDuringTTS);
 	}
 }
 
@@ -3857,8 +3858,7 @@ function announcePaceHintTransitionIfDue(options: {
 	trySpeakAnnouncement(text, langCode, {
 		volume: curSs.volume,
 		rate: speechRateToNumber(curSs.speechRate),
-		useApplicationAudioSession: curSs.duckMusicDuringTTS,
-	}, 'pace_hint', 'Pace hint announcement');
+	}, 'pace_hint', 'Pace hint announcement', curSs.duckMusicDuringTTS);
 	lastPaceHintTimeRef.current = now;
 }
 
@@ -3869,8 +3869,7 @@ function announceOnTargetIfDue(next: PaceHintState, prev: PaceHintState, curSs: 
 	trySpeakAnnouncement(text, langCode, {
 		volume: curSs.volume,
 		rate: speechRateToNumber(curSs.speechRate),
-		useApplicationAudioSession: curSs.duckMusicDuringTTS,
-	}, 'pace_hint_on_target', 'On-target announcement');
+	}, 'pace_hint_on_target', 'On-target announcement', curSs.duckMusicDuringTTS);
 }
 
 /** Evaluates and (if needed) speaks a pace-hint transition announcement
@@ -4933,7 +4932,7 @@ export default function RecordScreen() {
 				try {
 					speakAnnouncement(text, langCode, {
 						rate: speechRateToNumber(curSs.speechRate),
-					}, 'background', RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+					}, 'background', { ...RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS, duckOthers: curSs.duckMusicDuringTTS });
 				} catch (err) {
 					console.warn('[RecordScreen] Background announcement failed:', err);
 				}
@@ -5726,8 +5725,7 @@ export default function RecordScreen() {
 					speakAnnouncement(text, langCode, {
 						volume: curSs.volume,
 						rate: speechRateToNumber(curSs.speechRate),
-						useApplicationAudioSession: curSs.duckMusicDuringTTS,
-					}, 'periodic', RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+					}, 'periodic', { ...RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS, duckOthers: curSs.duckMusicDuringTTS });
 				} catch (err) {
 					console.warn('[RecordScreen] Periodic announcement failed:', err);
 				}

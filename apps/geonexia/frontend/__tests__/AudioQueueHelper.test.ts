@@ -159,6 +159,28 @@ describe('AudioQueueHelper', () => {
 		expect(setAudioModeMock).toHaveBeenCalledWith(expect.objectContaining({ interruptionMode: 'mixWithOthers' }));
 	});
 
+	test('duckOthers: false mixes with music instead of ducking it', async () => {
+		AudioQueue.enqueueAnnouncement('hello', 'de', undefined, 'sample', { duckOthers: false });
+		await flushMicrotasks();
+
+		expect(setAudioModeMock).toHaveBeenCalledWith(expect.objectContaining({ interruptionMode: 'mixWithOthers' }));
+		expect(setAudioModeMock).not.toHaveBeenCalledWith(expect.objectContaining({ interruptionMode: 'duckOthers' }));
+		expect(setIsAudioActiveMock).toHaveBeenCalledWith(true);
+		expect(speakMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('never lets the synthesizer use its private audio session', async () => {
+		// A caller passing useApplicationAudioSession: false must be overridden —
+		// the private session hard-stops other apps' music and stays active,
+		// stopping the music again on every app foreground.
+		AudioQueue.enqueueAnnouncement('hello', 'de', { useApplicationAudioSession: false }, 'sample');
+		await flushMicrotasks();
+
+		expect(speakMock).toHaveBeenCalledTimes(1);
+		const options = lastSpeakOptions() as SpeakOptions & { useApplicationAudioSession?: boolean };
+		expect(options.useApplicationAudioSession).toBe(true);
+	});
+
 	test('clearAudioQueue stops speech and prevents a pending item from starting', async () => {
 		AudioQueue.enqueueAnnouncement('hello', 'de', undefined, 'periodic');
 		// Clear before the async ducking activation resolves.
