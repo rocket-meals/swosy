@@ -75,5 +75,8 @@ export enum CollectionNames {
 export const CollectionFieldNames = {
   [CollectionNames.FOODS]: {
     IMAGE: 'image',
+  },
+  [CollectionNames.MAILS]: {
+    ATTACHMENTS: 'attachments',
   }
 }

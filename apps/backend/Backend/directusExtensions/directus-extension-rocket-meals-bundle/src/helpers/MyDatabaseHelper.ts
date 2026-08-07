@@ -310,6 +310,12 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     return new DirectusFieldsServiceHelper(this);
   }
 
+  async getMailAttachmentsFolderId(): Promise<string | undefined> {
+    let fieldsServiceHelper = this.getFieldsServiceHelper();
+    const folder = await fieldsServiceHelper.getFolderIdForFileFieldInCollection(CollectionNames.MAILS, CollectionFieldNames[CollectionNames.MAILS].ATTACHMENTS);
+    return folder || undefined;
+  }
+
   async getFoodsImageFolderId(): Promise<string | undefined> {
     console.log('MyDatabaseHelper.getFoodsImageFolderId - fieldsMeta:');
     let fieldsServiceHelper = this.getFieldsServiceHelper();
