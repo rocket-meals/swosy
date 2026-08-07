@@ -6,7 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
-import { CustomMarkdown } from 'repo-depkit-common-ui';
+import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { useDispatch } from 'react-redux';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { ChatMessagesHelper } from '@/redux/actions/Chats/ChatMessages';
@@ -229,7 +229,7 @@ const ChatDetailsScreen = () => {
 		return (
 			<View style={[styles.messageItem, { alignSelf: isMe ? 'flex-end' : 'flex-start' }]}>
 				<View style={[styles.bubble, { backgroundColor: bgColor }]}>
-					<CustomMarkdown content={item.message} textColor={textColor} />
+					<MyMarkdownProjectColored content={item.message} textColor={textColor} />
 				</View>
 				<Text
 					style={{
@@ -255,7 +255,7 @@ const ChatDetailsScreen = () => {
                 return (
                         <View style={styles.initialMessageWrapper}>
                                 <View style={[styles.bubble, styles.initialMessageBubble, { backgroundColor: bgColor }]}>
-                                        <CustomMarkdown content={initialMessage} textColor={textColor} />
+                                        <MyMarkdownProjectColored content={initialMessage} textColor={textColor} />
                                 </View>
                         </View>
                 );

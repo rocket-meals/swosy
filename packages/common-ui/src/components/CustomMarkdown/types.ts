@@ -7,6 +7,9 @@ export type MarkdownLinkRenderProps = {
 	/** Already resolved - e.g. a `geo:`/`maps:`/`latlon:` link is turned into a Google Maps https URL. */
 	href: string;
 	text: string;
+	/** The accent color (the markdown's `accentColor` or the theme's primary color). */
+	backgroundColor: string;
+	/** Contrast color matching `backgroundColor`, for text/icons rendered on top of it. */
 	color: string;
 	onPress: () => void;
 };

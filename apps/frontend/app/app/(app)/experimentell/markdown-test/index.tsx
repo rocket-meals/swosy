@@ -8,7 +8,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
-import { CustomMarkdown } from 'repo-depkit-common-ui';
+import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 
 type MarkdownExample = {
 	id: string;
@@ -75,13 +75,13 @@ const MarkdownTestScreen = () => {
 
 				<View style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
 					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{translate(TranslationKeys.markdown_custom_output)}</Text>
-					<CustomMarkdown content={customMarkdown} textColor={theme.screen.text} />
+					<MyMarkdownProjectColored content={customMarkdown} textColor={theme.screen.text} />
 				</View>
 
 				{markdownExamples.map(example => (
 					<View key={example.id} style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
 						<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{example.title}</Text>
-						<CustomMarkdown content={example.content} textColor={theme.screen.text} />
+						<MyMarkdownProjectColored content={example.content} textColor={theme.screen.text} />
 					</View>
 				))}
 
@@ -89,7 +89,7 @@ const MarkdownTestScreen = () => {
 				    collapsibleSections - shown here so that mode stays covered too. */}
 				<View style={[styles.section, { backgroundColor: theme.screen.iconBg }]}>
 					<Text style={[styles.sectionTitle, { color: theme.screen.text }]}>{`${translate(TranslationKeys.markdown_example_sections)} (collapsibleSections)`}</Text>
-					<CustomMarkdown content={sectionsMarkdownContent} textColor={theme.screen.text} collapsibleSections />
+					<MyMarkdownProjectColored content={sectionsMarkdownContent} textColor={theme.screen.text} collapsibleSections />
 				</View>
 			</View>
 		</ScrollView>

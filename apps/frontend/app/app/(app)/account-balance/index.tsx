@@ -24,7 +24,7 @@ import moneySad from '@/assets/animations/accountBalance/moneySad.json';
 import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CustomMarkdown } from 'repo-depkit-common-ui';
+import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
@@ -450,7 +450,7 @@ const AccountBalanceScreen: React.FC<AccountBalanceScreenProps> = ({ autoStartNf
 					</View>
 					<Text style={{ ...styles.value, color: theme.header.text }}>{profile?.credit_balance_date_updated ? format(profile?.credit_balance_date_updated, 'dd.MM.yyyy HH:mm') : ''}</Text>
 				</View>
-				<View style={styles.additionalInfoContainer}>{appSettings?.balance_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} accentColor={balance_area_color} imageWidth={'100%'} imageHeight={400} collapsibleSections />}</View>
+				<View style={styles.additionalInfoContainer}>{appSettings?.balance_translations && <MyMarkdownProjectColored content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} accentColor={balance_area_color} imageWidth={'100%'} imageHeight={400} collapsibleSections />}</View>
 				<DebugView
 					title={translate(TranslationKeys.debugErrors)}
 					logs={debugLogMessages}

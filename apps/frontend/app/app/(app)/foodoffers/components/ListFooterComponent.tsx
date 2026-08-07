@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import styles from '../styles';
 import { TranslationKeys } from '@/locales/keys';
-import { CustomMarkdown } from 'repo-depkit-common-ui';
+import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
@@ -36,7 +36,7 @@ const ListFooterComponent: React.FC<ListFooterComponentProps> = ({
             {afterElement && (
                 <View style={styles.elementContainer}>
                     {afterElement && (
-                        <CustomMarkdown
+                        <MyMarkdownProjectColored
                             content={afterElement?.content || ''}
                             accentColor={foods_area_color}
                             imageWidth={440}

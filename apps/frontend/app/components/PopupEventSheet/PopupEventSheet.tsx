@@ -8,7 +8,7 @@ import { PopupEventSheetProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
 import ProjectButton from '../ProjectButton';
-import { CustomMarkdown } from 'repo-depkit-common-ui';
+import MyMarkdownProjectColored from '@/components/MyMarkdownProjectColored';
 import { RateAppSettingsItem } from '../RateAppSettingsItem/RateAppSettingsItem';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -99,7 +99,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 						/>
 					</View>
 				)}
-				{rawText ? <CustomMarkdown content={rawText} textColor={theme.screen.text} /> : null}
+				{rawText ? <MyMarkdownProjectColored content={rawText} textColor={theme.screen.text} /> : null}
 			</View>
 			{eventData?.show_app_rating_button ? (
 				<View style={{ width: '100%', marginTop: 20 }}>

@@ -40,7 +40,7 @@ function resolveFinalHref(href: string, kind: MarkdownLinkKind): string {
 	return resolveLocationHref(href).resolvedHref ?? href;
 }
 
-function makeLinkRenderer(color: string, renderLink: CustomMarkdownProps['renderLink']): CustomBlockRenderer {
+function makeLinkRenderer(backgroundColor: string, color: string, renderLink: CustomMarkdownProps['renderLink']): CustomBlockRenderer {
 	return function LinkRenderer(props: any) {
 		const href: string = props.tnode.attributes.href ?? '';
 		const text: string = props.tnode.data || props.children[0]?.data || href;
@@ -49,9 +49,9 @@ function makeLinkRenderer(color: string, renderLink: CustomMarkdownProps['render
 		const onPress = () => finalHref && openLinkSafely(finalHref);
 
 		if (renderLink) {
-			return <>{renderLink({ kind, href: finalHref, text, color, onPress })}</>;
+			return <>{renderLink({ kind, href: finalHref, text, backgroundColor, color, onPress })}</>;
 		}
-		return <MarkdownRedirectButton type={kind} label={text} onClick={onPress} color={color} />;
+		return <MarkdownRedirectButton type={kind} label={text} onClick={onPress} backgroundColor={backgroundColor} color={color} />;
 	};
 }
 
@@ -168,13 +168,13 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 	);
 	const customRenderers = useMemo(
 		() => ({
-			a: makeLinkRenderer(contrastColor, renderLink),
+			a: makeLinkRenderer(accent, contrastColor, renderLink),
 			img: makeImageRenderer(renderImage, resolvedTextColor, imageWidth, imageHeight),
 			p: makeParagraphRenderer(renderText, resolvedTextColor),
 			sub: makeSubRenderer(16, resolvedTextColor),
 			sup: makeSupRenderer(16, resolvedTextColor),
 		}),
-		[contrastColor, renderLink, renderImage, resolvedTextColor, imageWidth, imageHeight, renderText],
+		[accent, contrastColor, renderLink, renderImage, resolvedTextColor, imageWidth, imageHeight, renderText],
 	);
 
 	const renderBlocks = (nodes: MarkdownBlockNode[], keyPrefix: string): React.ReactNode[] =>
