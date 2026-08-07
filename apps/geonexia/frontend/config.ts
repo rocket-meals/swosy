@@ -26,8 +26,8 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
-	// 5: never stop other apps' music: always use the app audio session for TTS
-	return 5;
+	// 6: dense GPS tracks again: no deferred background location batching
+	return 6;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch

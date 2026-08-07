@@ -845,30 +845,22 @@ function getRecordingLocationOptions(gpsTimeIntervalMs: number): Location.Locati
 /**
  * Options for the background location task during activity recording.
  *
+ * Deliberately does NOT set `deferredUpdatesInterval`: deferred (batched)
+ * background fixes let iOS suspend the app between batches and in practice
+ * delivered far fewer fixes than configured (~1 fix per 2 minutes instead of
+ * one per 15 seconds), producing unusably sparse GPS tracks. Batching also
+ * froze the JS timers, so speech announcements arrived late and all at once.
+ * Every fix is delivered immediately; the recording track has priority over
+ * the battery savings.
+ *
  * @param gpsTimeIntervalMs  User-selected GPS interval in milliseconds.
- * @param speechEnabled      Whether speech announcements are enabled. Deferred
- *                           (batched) background fixes save battery, but let
- *                           iOS suspend the app between batches — the JS
- *                           timers freeze and periodic/km announcements then
- *                           arrive far too late and all at once on the next
- *                           wake-up. With speech enabled every fix is
- *                           delivered immediately so announcements play on
- *                           time.
  */
-function getBackgroundRecordingLocationOptions(
-	gpsTimeIntervalMs: number,
-	speechEnabled: boolean,
-): Location.LocationTaskOptions {
+function getBackgroundRecordingLocationOptions(gpsTimeIntervalMs: number): Location.LocationTaskOptions {
 	return {
 		...getRecordingLocationOptions(gpsTimeIntervalMs),
 		// Fitness lets iOS aggressively power-manage the location hardware
 		// for workout-style movement patterns.
 		activityType: Location.ActivityType.Fitness,
-		// Batch background fixes so iOS can wake the app roughly once per
-		// configured interval instead of on every single GPS fix
-		// (`timeInterval` alone has no effect on iOS) — but only when speech
-		// is off, see `speechEnabled` above.
-		deferredUpdatesInterval: speechEnabled ? 0 : gpsTimeIntervalMs,
 		showsBackgroundLocationIndicator: true,
 		foregroundService: {
 			notificationTitle: 'Activity Recording',
@@ -4985,26 +4977,10 @@ export default function RecordScreen() {
 	// startRecording skips the background audio session when speech is disabled
 	// (it keeps the app awake and costs battery). If the user enables speech
 	// while a recording is running, activate the session now so announcements
-	// remain audible when the app is backgrounded. Also re-register the
-	// background location task without deferred batching (see
-	// getBackgroundRecordingLocationOptions) so announcements stay timely.
+	// remain audible when the app is backgrounded.
 	useEffect(() => {
 		if (isRecording && speechSettings.enabled) {
 			void enableBackgroundAudio();
-			void (async () => {
-				try {
-					const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
-					if (isTaskRunning && isRecordingRef.current) {
-						const gpsTimeIntervalMs = store.getState().gpsInterval.intervalSeconds * 1000;
-						await Location.startLocationUpdatesAsync(
-							ACTIVITY_LOCATION_TASK,
-							getBackgroundRecordingLocationOptions(gpsTimeIntervalMs, true),
-						);
-					}
-				} catch (err) {
-					console.warn('[RecordScreen] Failed to update background location options for speech:', err);
-				}
-			})();
 		}
 	}, [isRecording, speechSettings.enabled]);
 
@@ -5879,7 +5855,7 @@ export default function RecordScreen() {
 				_onLocationUpdate = handleLocationUpdate;
 				await Location.startLocationUpdatesAsync(
 					ACTIVITY_LOCATION_TASK,
-					getBackgroundRecordingLocationOptions(gpsTimeIntervalMs, speechSettingsRef.current.enabled),
+					getBackgroundRecordingLocationOptions(gpsTimeIntervalMs),
 				);
 				console.log('[RecordScreen] Background location updates started.');
 			} else {
