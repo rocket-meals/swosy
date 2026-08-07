@@ -1,4 +1,4 @@
-import { normalizeLinebreaks, parseMarkdownToBlocks, sanitizeLocationLinkWhitespace } from 'repo-depkit-common';
+import { convertHtmlHeadingsToMarkdown, normalizeLinebreaks, parseMarkdownToBlocks, sanitizeLinkDestinationGap, sanitizeLocationLinkWhitespace } from 'repo-depkit-common';
 
 describe('sanitizeLocationLinkWhitespace', () => {
 	it('strips whitespace from geo/maps/latlon link destinations', () => {
@@ -9,6 +9,32 @@ describe('sanitizeLocationLinkWhitespace', () => {
 
 	it('leaves unrelated links untouched', () => {
 		expect(sanitizeLocationLinkWhitespace('[Website](https://example.com/a b)')).toBe('[Website](https://example.com/a b)');
+	});
+});
+
+describe('convertHtmlHeadingsToMarkdown', () => {
+	it('converts an html heading (with attributes) to a markdown heading', () => {
+		expect(convertHtmlHeadingsToMarkdown('<h1>Impressum</h1>').trim()).toBe('# Impressum');
+		expect(convertHtmlHeadingsToMarkdown('<h2 style="color: red">Herausgeber:</h2>').trim()).toBe('## Herausgeber:');
+	});
+
+	it('collapses inner whitespace of a multi-line heading', () => {
+		expect(convertHtmlHeadingsToMarkdown('<h3>Multi\n  line</h3>').trim()).toBe('### Multi line');
+	});
+
+	it('leaves content without html headings untouched', () => {
+		expect(convertHtmlHeadingsToMarkdown('Just **markdown** text.')).toBe('Just **markdown** text.');
+	});
+});
+
+describe('sanitizeLinkDestinationGap', () => {
+	it('closes a space or line break between link text and a known-scheme destination', () => {
+		expect(sanitizeLinkDestinationGap('[mail] (mailto:a@b.de)')).toBe('[mail](mailto:a@b.de)');
+		expect(sanitizeLinkDestinationGap('[site]\n(https://example.com)')).toBe('[site](https://example.com)');
+	});
+
+	it('leaves ordinary text with brackets and parentheses untouched', () => {
+		expect(sanitizeLinkDestinationGap('siehe [1] (Anmerkung)')).toBe('siehe [1] (Anmerkung)');
 	});
 });
 
@@ -84,6 +110,31 @@ describe('parseMarkdownToBlocks - collapsible sections', () => {
 	it('a level-1 heading closes any open sections', () => {
 		const blocks = parseMarkdownToBlocks('## A\n\ntext\n\n# Title\n\n## B\n\ntext', { collapsibleSections: true });
 		expect(blocks.map((b) => b.type)).toEqual(['section', 'heading', 'section']);
+	});
+});
+
+describe('parseMarkdownToBlocks - html headings mixed with markdown', () => {
+	// Regression: markdown-it (html: true) swallows all lines after a raw
+	// block-level tag (until a blank line) into one raw HTML block, so links
+	// on the lines after `<h2>...</h2>` stayed literal `[text](url)` text.
+	it('parses markdown links on the lines directly after an html heading', () => {
+		const content = '<h2>Kontakt</h2>\nE-Mail: [info@example.com](mailto:info@example.com)\nWebsite: [example.com](https://example.com)';
+		const blocks = parseMarkdownToBlocks(content);
+		expect(blocks[0]).toEqual({ type: 'heading', text: 'Kontakt', level: 2 });
+		const html = (blocks[1] as { html: string }).html;
+		expect(html).toContain('href="mailto:info@example.com"');
+		expect(html).toContain('href="https://example.com"');
+	});
+
+	it('turns html headings into collapsible sections when enabled', () => {
+		const blocks = parseMarkdownToBlocks('<h2>Herausgeber:</h2>\nText mit [Link](https://example.com)', { collapsibleSections: true });
+		expect(blocks[0]).toMatchObject({ type: 'section', header: 'Herausgeber:', level: 2 });
+	});
+
+	it('parses a link whose destination is separated by a line break from its text', () => {
+		const blocks = parseMarkdownToBlocks('E-Mail: [info@example.com]\n(mailto:info@example.com)');
+		const html = (blocks[0] as { html: string }).html;
+		expect(html).toContain('href="mailto:info@example.com"');
 	});
 });
 

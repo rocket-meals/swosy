@@ -40,6 +40,32 @@ export function sanitizeLocationLinkWhitespace(sourceContent: string): string {
 	return sourceContent.replace(LOCATION_LINK_DESTINATION_PATTERN, (_match, scheme, coordinates) => `(${scheme}${coordinates.replace(/\s+/g, '')})`);
 }
 
+// Authored content (e.g. a Directus WYSIWYG field) may mix raw HTML headings
+// with markdown syntax. markdown-it (html: true) treats everything from a
+// block-level HTML tag until the next blank line as one raw HTML block, so
+// markdown on the lines after `<h2>...</h2>` (links, bold, line breaks, ...)
+// silently stays literal text. Converting HTML headings to markdown headings
+// keeps the heading, lets the surrounding markdown parse again, and makes
+// `collapsibleSections` work for such content too.
+const HTML_HEADING_PATTERN = /<h([1-6])(?:\s[^>]*)?>([\s\S]*?)<\/h\1\s*>/gi;
+
+export function convertHtmlHeadingsToMarkdown(sourceContent: string): string {
+	return sourceContent.replace(HTML_HEADING_PATTERN, (_match, level, text) => {
+		const headingText = String(text).replace(/\s+/g, ' ').trim();
+		return `\n\n${'#'.repeat(Number(level))} ${headingText}\n\n`;
+	});
+}
+
+// A link written as `[text] (https://...)` - or with a line break between the
+// closing bracket and the destination - is not a CommonMark link and would
+// fall through as literal text. When the destination starts with a known
+// scheme the author clearly meant a link, so close the gap for just those.
+const LINK_DESTINATION_GAP_PATTERN = /\]\s+\((?=https?:|mailto:|tel:|geo:|maps:|latlon:)/gi;
+
+export function sanitizeLinkDestinationGap(sourceContent: string): string {
+	return sourceContent.replace(LINK_DESTINATION_GAP_PATTERN, '](');
+}
+
 /**
  * Normalizes the various ways authored content ends up with a literal
  * backslash-n, a real CRLF, or raw `<br>`/`<p>` HTML into real newlines that
@@ -131,6 +157,8 @@ export function parseMarkdownToBlocks(rawContent: string, options: ParseMarkdown
 
 	let content = rawContent || '';
 	content = normalizeLinebreaks(content);
+	content = convertHtmlHeadingsToMarkdown(content);
+	content = sanitizeLinkDestinationGap(content);
 	content = sanitizeLocationLinkWhitespace(content);
 
 	const md = createMarkdownIt();
