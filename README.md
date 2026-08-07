@@ -78,6 +78,14 @@ cd rocket-meals
 yarn install
 ```
 
+## 🔢 Versionierung
+
+Die App-Version setzt sich aus `Major.BuildNumber.Patch` zusammen (siehe `getMajorVersion()`, `getBuildNumber()` und `getVersionPatch()` in der `config.ts` der jeweiligen App, z.&nbsp;B. `apps/frontend/app/config.ts`).
+
+**Wichtig:** Jeder Push, Merge oder jede Änderung am Code bringt eine Erhöhung der Patch-Nummer (`getVersionPatch()`) der betroffenen App(s) mit sich. Ändert sich geteilter Code (z.&nbsp;B. unter `packages/`), muss die Patch-Nummer in allen Apps erhöht werden, die diesen Code verwenden. So lässt sich in der App (Einstellungen → Version) jederzeit erkennen, ob die neueste Version läuft.
+
+Bei nativen Änderungen (z.&nbsp;B. Expo-Plugins) muss zusätzlich die Build-Nummer (`getBuildNumber()`) erhöht werden — Details dazu in der `AGENTS.md`.
+
 ## ⏰ Update und Env-Generierung
 
 Das Skript `scripts/update-and-generate-env.sh` führt folgende Schritte aus:

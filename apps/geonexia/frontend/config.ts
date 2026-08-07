@@ -25,7 +25,7 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-	return 0;
+	return 1;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch

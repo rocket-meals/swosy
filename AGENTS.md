@@ -40,6 +40,12 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 - **English names only** for screen folders, component files, and route paths. Do not use German words in file or folder names.
 - **Prefer common-ui components.** When displaying data, always prefer reusing components from `repo-depkit-common-ui` (e.g. `SettingsList`, `SettingsListGroupTitle`, `SettingsListProgress`, `SettingsListBoolean`, etc.) over building custom implementations from scratch.
 
+## Patch version increment on every change
+
+- **Every push, merge or code change must increment the patch version** (`getVersionPatch()` in the affected app's `config.ts`) by at least 1.
+- When shared code changes (e.g. anything under `packages/`), increment the patch version of **every app that consumes that code** (`apps/frontend/app`, `apps/score-tracker/frontend`, `apps/geonexia/frontend`, ...).
+- The patch version is shown in the app settings screen (`getVersionInternalForAppsettingsScreen()`), so users can verify they are running the latest OTA update.
+
 ## Expo Plugins: Build number increment
 
 - **Whenever an Expo plugin is added or updated in any frontend project** (i.e. any change inside the `plugins` array in an `app.config.ts`), the `config.ts` file of that project **must** have its build number incremented.
