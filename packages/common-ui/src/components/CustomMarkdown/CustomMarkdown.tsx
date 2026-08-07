@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { DimensionValue, Image, Linking, Platform, StyleProp, StyleSheet, Text, TextInput, TextStyle, View, useWindowDimensions } from 'react-native';
+import { DimensionValue, Image, Linking, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import RenderHtml, { CustomBlockRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
 import { MarkdownBlockNode, parseMarkdownToBlocks } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
@@ -11,20 +11,6 @@ import styles from './styles';
 import { CustomMarkdownProps, MarkdownLinkKind } from './types';
 
 export type { CustomMarkdownProps, MarkdownLinkKind, MarkdownLinkRenderProps, MarkdownImageRenderProps, MarkdownTextRenderProps } from './types';
-
-// On iOS <Text selectable> only offers "Copy" for the whole block on long
-// press - partial selection with drag handles needs a non-editable multiline
-// TextInput. Android and web get real partial selection from Text directly.
-const SelectableText: React.FC<{ style?: StyleProp<TextStyle>; children: string }> = ({ style, children }) => {
-	if (Platform.OS !== 'ios') {
-		return (
-			<Text selectable style={style}>
-				{children}
-			</Text>
-		);
-	}
-	return <TextInput editable={false} multiline scrollEnabled={false} style={style} value={children} />;
-};
 
 function openLinkSafely(url: string) {
 	Linking.openURL(url).catch((err) => console.error('Failed to open URL:', err));
@@ -103,20 +89,16 @@ function makeImageRenderer(renderImage: CustomMarkdownProps['renderImage'], text
 // Only intercepts a paragraph with pure text content (no nested <a>/<img>/<strong>/...) -
 // anything richer keeps using react-native-render-html's own default renderer so links,
 // bold text, etc. inside a paragraph never break because of a custom text renderer.
-// Plain paragraphs go through SelectableText so iOS gets partial selection too.
 function makeParagraphRenderer(renderText: CustomMarkdownProps['renderText'], textColor: string): CustomBlockRenderer {
 	return function ParagraphRenderer(props: any) {
-		const { TDefaultRenderer, tnode, style } = props;
+		const { TDefaultRenderer, tnode } = props;
 		const children = tnode?.children ?? [];
 		const isPlainText = children.every((child: any) => !child.tagName);
-		if (!isPlainText) {
+		if (!renderText || !isPlainText) {
 			return <TDefaultRenderer {...props} />;
 		}
 		const text = children.map((child: any) => child.data ?? '').join('');
-		if (renderText) {
-			return <>{renderText({ text, style: { color: textColor, fontSize: 16 } })}</>;
-		}
-		return <SelectableText style={style}>{text}</SelectableText>;
+		return <>{renderText({ text, style: { color: textColor, fontSize: 16 } })}</>;
 	};
 }
 
@@ -201,9 +183,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 			switch (block.type) {
 				case 'heading':
 					return (
-						<SelectableText key={key} style={[styles.heading, block.level === 1 ? styles.headingLevel1 : styles.headingLevelOther, { color: resolvedTextColor }]}>
+						<Text key={key} selectable style={[styles.heading, block.level === 1 ? styles.headingLevel1 : styles.headingLevelOther, { color: resolvedTextColor }]}>
 							{block.text}
-						</SelectableText>
+						</Text>
 					);
 				case 'section':
 					return (
