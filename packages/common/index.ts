@@ -34,4 +34,3 @@ export * from './src/MapOverlayTypes';
 export * from './src/UiAccentTypes';
 export * from './src/BoxplotHelper';
 export * from './src/CompressionHelper';
-export * from './src/VersionPatch';

@@ -1,7 +1,3 @@
-import { getCommonVersionPatch } from 'repo-depkit-common/src/VersionPatch';
-// Subpath import on purpose: the package index pulls React Native components
-// into the Node-side expo config evaluation (see app.config.ts).
-import { getCommonUiVersionPatch } from 'repo-depkit-common-ui/src/VersionPatch';
 import { ImageSourcePropType } from 'react-native';
 
 export type CustomerConfig = {
@@ -29,15 +25,10 @@ export function getMajorVersion() {
 	return 0;
 }
 
-// App-local change counter: bump on every change to THIS app's own code.
-// Changes to shared packages are counted by the packages themselves (see
-// getCommonVersionPatch/getCommonUiVersionPatch) and flow into the sum below.
-export function getLocalVersionPatch() {
-	return 0;
-}
-
 export function getVersionPatch() {
-	return getLocalVersionPatch() + getCommonVersionPatch() + getCommonUiVersionPatch();
+	// 3: the summed-patch experiment already shipped patch 2 from master;
+	// never decrease the visible patch version.
+	return 3;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch
