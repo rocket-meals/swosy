@@ -49,6 +49,7 @@ import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../he
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { clearAudioQueue } from '../helpers/AudioQueueHelper';
+import { setRecordingActive } from '../helpers/RecordingActivityTracker';
 import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
 import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
 import type { PaceHintState } from '../helpers/TTSHelper';
@@ -5762,6 +5763,7 @@ export default function RecordScreen() {
 			// PACE_HINT_COOLDOWN_MS (same warm-up concept as SPEED_WARMUP_MS).
 			lastPaceHintTimeRef.current = Date.now();
 			isRecordingRef.current = true;
+			setRecordingActive(true);
 			setIsRecording(true);
 			setFollowMode(true);
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
@@ -5883,6 +5885,7 @@ export default function RecordScreen() {
 			}
 			showAlert('Error', 'Run recording could not be started.');
 			isRecordingRef.current = false;
+			setRecordingActive(false);
 			setIsRecording(false);
 			if (timerRef.current) {
 				clearInterval(timerRef.current);
@@ -6023,6 +6026,7 @@ export default function RecordScreen() {
 		}
 
 		isRecordingRef.current = false;
+		setRecordingActive(false);
 		setIsRecording(false);
 		setIsPaused(false);
 		isPausedRef.current = false;

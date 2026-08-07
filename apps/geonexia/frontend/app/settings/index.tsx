@@ -60,7 +60,7 @@ import {
 	loadWalkedEdgesRedLine,
 	loadDevWalkedEdgesRedLine,
 } from '../../helpers/HexTileStorage';
-import { getCompanyLogoLocalSaved, getVersion } from '../../config';
+import { getCompanyLogoLocalSaved, getVersionInternalForAppsettingsScreen } from '../../config';
 import { loadTTSLog, clearTTSLog, type TTSLogEntry } from '../../helpers/TTSLogStorage';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
@@ -378,7 +378,7 @@ export default function SettingsScreen() {
 	// Constants.expoConfig: the latter reflects the natively embedded manifest,
 	// so OTA updates (which only bump the patch version) would never show up
 	// and users could not verify they are running the latest update.
-	const appVersion = getVersion();
+	const appVersion = getVersionInternalForAppsettingsScreen();
 	const licenses = getLicensesFromExtra(Constants.expoConfig?.extra);
 
 	const handleOpenThemeSelection = useCallback(() => {

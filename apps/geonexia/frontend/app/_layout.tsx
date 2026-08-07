@@ -42,6 +42,8 @@ import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
+import ExpoUpdateLoader from '../components/ExpoUpdateLoader';
+import { useExpoUpdateForegroundCheck } from '../hooks/useExpoUpdateForegroundCheck';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -566,6 +568,8 @@ async function applyMissingForestBillboardsOnStartup(records: Record<string, any
 }
 
 export default function Layout() {
+	useExpoUpdateForegroundCheck();
+
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
@@ -665,6 +669,7 @@ export default function Layout() {
 		<Provider store={store}>
 		<AppErrorBoundary>
 		<GestureHandlerRootView style={{ flex: 1 }}>
+			<ExpoUpdateLoader>
 			<SafeAreaProvider>
 				<ThemeProvider>
 					<ThemeSyncBridge />
@@ -677,6 +682,7 @@ export default function Layout() {
 					</SettingsProvider>
 				</ThemeProvider>
 			</SafeAreaProvider>
+			</ExpoUpdateLoader>
 		</GestureHandlerRootView>
 		</AppErrorBoundary>
 		</Provider>
