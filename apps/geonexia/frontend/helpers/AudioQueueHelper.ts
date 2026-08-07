@@ -1,10 +1,35 @@
 import * as Speech from 'expo-speech';
 import { appendTTSLogEntry, SpokenTextFields } from './TTSLogStorage';
+import { activateSpeechDucking, scheduleSpeechDuckingRelease } from './SpeechAudioSession';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface QueueItem extends SpokenTextFields {
 	options?: Omit<Speech.SpeechOptions, 'language' | 'onDone' | 'onError' | 'onStopped'>;
+	/** Timestamp (ms) when the item was enqueued; used for the max-age check. */
+	enqueuedAt: number;
+	/** Maximum age (ms) an item may reach before playback; older items are dropped. */
+	maxAgeMs?: number;
+}
+
+/**
+ * Per-announcement queue behaviour.
+ */
+export interface EnqueueAnnouncementOptions {
+	/**
+	 * Drop the item instead of speaking it when it waited longer than this
+	 * many milliseconds in the queue. Stats announcements (distance, pace, …)
+	 * are worthless once stale — after the app was suspended in the background
+	 * they used to pile up and then play "all at once" with outdated values.
+	 */
+	maxAgeMs?: number;
+	/**
+	 * Replace any pending (not yet playing) items with the same `source`
+	 * instead of queueing another one. Ensures at most one announcement per
+	 * kind waits in the queue — after a background wake-up only the newest
+	 * periodic/km/pace announcement is spoken instead of the whole backlog.
+	 */
+	replaceSameSource?: boolean;
 }
 
 // ─── Module-level queue state ─────────────────────────────────────────────────
@@ -23,15 +48,50 @@ const MAX_QUEUE_LENGTH = 3;
 
 const _queue: QueueItem[] = [];
 let _isPlaying = false;
+/** Incremented by clearAudioQueue so an in-flight (awaiting audio session)
+ * item does not start speaking after the user stopped announcements. */
+let _stopGeneration = 0;
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
-function processNext(): void {
-	if (_isPlaying || _queue.length === 0) return;
-	const item = _queue.shift();
-	if (item == null) return;
-	_isPlaying = true;
+function logDroppedItem(item: QueueItem, reason: string): void {
+	console.warn(`[AudioQueueHelper] Dropping announcement (${reason}):`, item.source);
+	void appendTTSLogEntry({
+		timestamp: Date.now(),
+		text: item.text,
+		languageCode: item.languageCode,
+		success: false,
+		error: `dropped: ${reason}`,
+		source: item.source,
+	});
+}
 
+/** Remove expired items from the front of the queue so stale announcements
+ * (e.g. queued while the app was suspended) are never spoken. */
+function dropExpiredItems(): void {
+	const now = Date.now();
+	while (_queue.length > 0) {
+		const head = _queue[0];
+		if (head.maxAgeMs != null && now - head.enqueuedAt > head.maxAgeMs) {
+			_queue.shift();
+			logDroppedItem(head, 'stale');
+		} else {
+			break;
+		}
+	}
+}
+
+function finishItem(): void {
+	_isPlaying = false;
+	if (_queue.length === 0) {
+		// Queue drained – give the music its volume back (debounced).
+		scheduleSpeechDuckingRelease();
+	} else {
+		processNext();
+	}
+}
+
+function speakItem(item: QueueItem): void {
 	try {
 		Speech.speak(item.text, {
 			useApplicationAudioSession: true,
@@ -45,8 +105,7 @@ function processNext(): void {
 					success: true,
 					source: item.source,
 				});
-				_isPlaying = false;
-				processNext();
+				finishItem();
 			},
 			onError: (err) => {
 				const message = err instanceof Error ? err.message : String(err);
@@ -59,12 +118,12 @@ function processNext(): void {
 					error: message,
 					source: item.source,
 				});
-				_isPlaying = false;
-				processNext();
+				finishItem();
 			},
 			onStopped: () => {
 				// Manual stop via clearAudioQueue – do not advance to next item.
 				_isPlaying = false;
+				scheduleSpeechDuckingRelease();
 			},
 		});
 	} catch (err) {
@@ -78,8 +137,41 @@ function processNext(): void {
 			error: message,
 			source: item.source,
 		});
-		_isPlaying = false;
-		processNext();
+		finishItem();
+	}
+}
+
+function processNext(): void {
+	if (_isPlaying) return;
+	dropExpiredItems();
+	if (_queue.length === 0) {
+		scheduleSpeechDuckingRelease();
+		return;
+	}
+	const item = _queue.shift();
+	if (item == null) return;
+	_isPlaying = true;
+
+	// Duck other apps' music only for the duration of the announcement (plus a
+	// short debounce), not for the whole recording. Items that explicitly opt
+	// out of the application audio session skip the ducking activation.
+	const wantsDucking = item.options?.useApplicationAudioSession !== false;
+	if (wantsDucking) {
+		const generation = _stopGeneration;
+		void activateSpeechDucking()
+			.catch(() => { /* logged inside activateSpeechDucking */ })
+			.then(() => {
+				if (generation !== _stopGeneration) {
+					// clearAudioQueue was called while the audio session was being
+					// activated – do not start speaking a cancelled announcement.
+					_isPlaying = false;
+					scheduleSpeechDuckingRelease();
+					return;
+				}
+				speakItem(item);
+			});
+	} else {
+		speakItem(item);
 	}
 }
 
@@ -95,22 +187,44 @@ function processNext(): void {
  * @param options       Additional expo-speech options (excluding `language`,
  *                      `onDone`, `onError`, `onStopped`).
  * @param source        Label for logging (e.g. `"km_milestone"`, `"pace_hint"`).
+ * @param queueOptions  Queue behaviour: staleness limit and same-source
+ *                      coalescing (see {@link EnqueueAnnouncementOptions}).
  */
 export function enqueueAnnouncement(
 	text: string,
 	languageCode: string,
 	options?: Omit<Speech.SpeechOptions, 'language' | 'onDone' | 'onError' | 'onStopped'>,
 	source: string = 'unknown',
+	queueOptions?: EnqueueAnnouncementOptions,
 ): void {
+	// Coalesce: a newer announcement of the same kind supersedes pending ones
+	// (e.g. only the most recent periodic stats update is worth hearing).
+	if (queueOptions?.replaceSameSource) {
+		for (let i = _queue.length - 1; i >= 0; i--) {
+			if (_queue[i].source === source) {
+				const [replaced] = _queue.splice(i, 1);
+				if (replaced != null) {
+					logDroppedItem(replaced, 'superseded');
+				}
+			}
+		}
+	}
 	// Drop the oldest queued (not yet playing) item once the cap is reached so
 	// the queue can never grow without bound — see MAX_QUEUE_LENGTH above.
 	if (_queue.length >= MAX_QUEUE_LENGTH) {
 		const dropped = _queue.shift();
 		if (dropped) {
-			console.warn('[AudioQueueHelper] Queue full, dropping stale announcement:', dropped.source);
+			logDroppedItem(dropped, 'queue full');
 		}
 	}
-	_queue.push({ text, languageCode, options, source });
+	_queue.push({
+		text,
+		languageCode,
+		options,
+		source,
+		enqueuedAt: Date.now(),
+		maxAgeMs: queueOptions?.maxAgeMs,
+	});
 	processNext();
 }
 
@@ -120,10 +234,12 @@ export function enqueueAnnouncement(
  */
 export function clearAudioQueue(): void {
 	_queue.length = 0;
+	_stopGeneration++;
 	try {
 		Speech.stop();
 	} catch (err) {
 		console.warn('[AudioQueueHelper] Speech.stop threw:', err);
 	}
 	// _isPlaying is reset by the onStopped callback of Speech.speak.
+	scheduleSpeechDuckingRelease();
 }

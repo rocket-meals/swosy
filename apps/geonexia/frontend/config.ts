@@ -25,9 +25,9 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
-	// 3: the summed-patch experiment already shipped patch 2 from master;
-	// never decrease the visible patch version.
-	return 3;
+	// Never decrease the visible patch version.
+	// 4: timely TTS announcements + duck music only while speaking
+	return 4;
 }
 
 // Same semver scheme as apps/frontend/app: major.buildNumber.patch
