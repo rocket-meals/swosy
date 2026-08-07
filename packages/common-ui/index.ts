@@ -189,3 +189,7 @@ export {
 	resolveKnobValues,
 } from './src/playbook/registryData';
 export type { PlaybookEntryData, KnobDefinition, KnobType, KnobValue } from './src/playbook/registryData';
+
+// Patch counter for the summed app version - config.ts consumers must use the
+// subpath 'repo-depkit-common-ui/src/VersionPatch' instead of this index.
+export { getCommonUiVersionPatch } from './src/VersionPatch';

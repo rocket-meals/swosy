@@ -82,7 +82,21 @@ yarn install
 
 Die App-Version setzt sich aus `Major.BuildNumber.Patch` zusammen (siehe `getMajorVersion()`, `getBuildNumber()` und `getVersionPatch()` in der `config.ts` der jeweiligen App, z.&nbsp;B. `apps/frontend/app/config.ts`).
 
-**Wichtig:** Jeder Push, Merge oder jede Änderung am Code bringt eine Erhöhung der Patch-Nummer (`getVersionPatch()`) der betroffenen App(s) mit sich. Ändert sich geteilter Code (z.&nbsp;B. unter `packages/`), muss die Patch-Nummer in allen Apps erhöht werden, die diesen Code verwenden. So lässt sich in der App (Einstellungen → Version) jederzeit erkennen, ob die neueste Version läuft.
+Die Patch-Nummer einer App ist eine **Summe** aus mehreren Zählern:
+
+```
+getVersionPatch() = getLocalVersionPatch()      // config.ts der App
+                  + getCommonVersionPatch()     // packages/common/src/VersionPatch.ts
+                  + getCommonUiVersionPatch()   // packages/common-ui/src/VersionPatch.ts
+```
+
+**Wichtig:** Jeder Push, Merge oder jede Änderung am Code bringt eine Erhöhung der Patch-Nummer mit sich — und zwar genau dort, wo die Änderung passiert:
+
+- Änderung am Code **einer App** → `getLocalVersionPatch()` in der `config.ts` dieser App erhöhen.
+- Änderung in **`packages/common`** → `getCommonVersionPatch()` in `packages/common/src/VersionPatch.ts` erhöhen.
+- Änderung in **`packages/common-ui`** → `getCommonUiVersionPatch()` in `packages/common-ui/src/VersionPatch.ts` erhöhen.
+
+Ein Bump in einem geteilten Paket erhöht so automatisch die sichtbare Patch-Nummer **aller** Apps, die das Paket nutzen. Kein Zähler darf jemals verringert oder zurückgesetzt werden — die Summe muss stets monoton steigen. So lässt sich in der App (Einstellungen → Version) jederzeit erkennen, ob die neueste Version läuft.
 
 Bei nativen Änderungen (z.&nbsp;B. Expo-Plugins) muss zusätzlich die Build-Nummer (`getBuildNumber()`) erhöht werden — Details dazu in der `AGENTS.md`.
 

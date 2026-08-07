@@ -1,5 +1,9 @@
 // This file can not have any imports. See app.config.ts as it will transpile this file to  JavaScript
 import { ServerHelper } from 'repo-depkit-common';
+import { getCommonVersionPatch } from 'repo-depkit-common/src/VersionPatch';
+// Subpath import on purpose: the package index pulls React Native components
+// into the Node-side expo config evaluation (see app.config.ts).
+import { getCommonUiVersionPatch } from 'repo-depkit-common-ui/src/VersionPatch';
 import {ImageSourcePropType} from "react-native";
 
 export { EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE } from 'repo-depkit-common';
@@ -46,8 +50,15 @@ export function getMajorVersion() {
 	return 21;
 }
 
+// App-local change counter: bump on every change to THIS app's own code.
+// Changes to shared packages are counted by the packages themselves (see
+// getCommonVersionPatch/getCommonUiVersionPatch) and flow into the sum below.
+export function getLocalVersionPatch() {
+        return 6;
+}
+
 export function getVersionPatch() {
-        return 8;
+        return getLocalVersionPatch() + getCommonVersionPatch() + getCommonUiVersionPatch();
 }
 
 export function getVersionInternalForAppsettingsScreen() {

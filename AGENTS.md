@@ -42,8 +42,13 @@ Bei React-Dateien sollen **Styles, Export und Logik in derselben Datei** bleiben
 
 ## Patch version increment on every change
 
-- **Every push, merge or code change must increment the patch version** (`getVersionPatch()` in the affected app's `config.ts`) by at least 1.
-- When shared code changes (e.g. anything under `packages/`), increment the patch version of **every app that consumes that code** (`apps/frontend/app`, `apps/score-tracker/frontend`, `apps/geonexia/frontend`, ...).
+- **Every push, merge or code change must increment a patch counter** by at least 1 — exactly where the change happens:
+  - App code changed → bump `getLocalVersionPatch()` in that app's `config.ts`.
+  - `packages/common` changed → bump `getCommonVersionPatch()` in `packages/common/src/VersionPatch.ts`.
+  - `packages/common-ui` changed → bump `getCommonUiVersionPatch()` in `packages/common-ui/src/VersionPatch.ts`.
+- Each app's visible patch version is the **sum**: `getVersionPatch() = getLocalVersionPatch() + getCommonVersionPatch() + getCommonUiVersionPatch()`. A bump in a shared package therefore automatically raises the patch version of every consuming app.
+- **Never decrease or reset any counter** — the summed patch version must stay monotonically increasing.
+- In an app's `config.ts`, import the common-ui counter via the subpath `repo-depkit-common-ui/src/VersionPatch` (never via the package index, which would pull React Native components into the Node-side expo config evaluation).
 - The patch version is shown in the app settings screen (`getVersionInternalForAppsettingsScreen()`), so users can verify they are running the latest OTA update.
 
 ## Expo Plugins: Build number increment
