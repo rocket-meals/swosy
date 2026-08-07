@@ -63,7 +63,7 @@ const DefaultMarkdownImage: React.FC<{ url: string; altText: string; textColor: 
 	if (error) {
 		return (
 			<View style={[styles.imageErrorBox, { borderColor: textColor }]}>
-				<Text style={[styles.imageErrorText, { color: textColor }]}>{altText}</Text>
+				<Text selectable style={[styles.imageErrorText, { color: textColor }]}>{altText}</Text>
 			</View>
 		);
 	}
@@ -105,14 +105,14 @@ function makeParagraphRenderer(renderText: CustomMarkdownProps['renderText'], te
 function makeSubRenderer(fontSize: number, textColor: string) {
 	return (props: any) => {
 		const text = props.tnode.data || props.children[0]?.data;
-		return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
+		return <Text selectable style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
 	};
 }
 
 function makeSupRenderer(fontSize: number, textColor: string) {
 	return (props: any) => {
 		const text = props.tnode.data || props.children[0]?.data;
-		return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
+		return <Text selectable style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
 	};
 }
 
@@ -183,7 +183,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
 			switch (block.type) {
 				case 'heading':
 					return (
-						<Text key={key} style={[styles.heading, block.level === 1 ? styles.headingLevel1 : styles.headingLevelOther, { color: resolvedTextColor }]}>
+						<Text key={key} selectable style={[styles.heading, block.level === 1 ? styles.headingLevel1 : styles.headingLevelOther, { color: resolvedTextColor }]}>
 							{block.text}
 						</Text>
 					);
