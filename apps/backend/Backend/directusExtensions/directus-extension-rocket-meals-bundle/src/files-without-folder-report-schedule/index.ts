@@ -4,7 +4,6 @@ import { MyDefineHook } from '../helpers/MyDefineHook';
 
 const HOOK_NAME = 'files-without-folder-report-schedule';
 
-const UNREFERENCED_MARKER = '**[UNREFERENZIERT]**';
 const CANDIDATE_ID_CHUNK_SIZE = 250;
 
 type SpecificCollection = { [key: string]: string | DatabaseTypes.DirectusFiles };
@@ -115,23 +114,28 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
     // e.g. as mail attachment) from files that are truly unreferenced.
     const candidateFileIds = filesWithoutFolder.map((file: DatabaseTypes.DirectusFiles) => file.id);
     const referencedFileIds = await findReferencedFileIds(candidateFileIds, myDatabaseHelper);
-    const unreferencedAmount = filesWithoutFolder.length - referencedFileIds.size;
 
-    apiContext.logger.info(HOOK_NAME + ': ' + unreferencedAmount + ' of them are not referenced by any item.');
+    const filesWithoutFolderButReferenced = filesWithoutFolder.filter((file: DatabaseTypes.DirectusFiles) => referencedFileIds.has(file.id));
+    const filesWithoutReference = filesWithoutFolder.filter((file: DatabaseTypes.DirectusFiles) => !referencedFileIds.has(file.id));
 
-    const fileList = filesWithoutFolder
-      .map((file: DatabaseTypes.DirectusFiles) => {
-        const marker = referencedFileIds.has(file.id) ? '' : ' ' + UNREFERENCED_MARKER;
-        return `- ${file.title || file.filename_download} (ID: ${file.id})${marker}`;
-      })
-      .join('\n');
+    apiContext.logger.info(HOOK_NAME + ': ' + filesWithoutReference.length + ' of them are not referenced by any item.');
 
-    const subject = 'Dateien ohne Ordner gefunden (' + filesWithoutFolder.length + ', davon ' + unreferencedAmount + ' unreferenziert)';
+    const formatFileList = (files: DatabaseTypes.DirectusFiles[]): string => {
+      if (files.length === 0) {
+        return '_keine_';
+      }
+      return files.map(file => `- ${file.title || file.filename_download} (ID: ${file.id})`).join('\n');
+    };
+
+    const subject = 'Dateien ohne Ordner oder Referenz gefunden (' + filesWithoutFolder.length + ')';
     const markdown_content =
-      `Es wurden **${filesWithoutFolder.length}** Datei(en) gefunden, die in keinem Ordner liegen.\n\n` +
-      `Davon werden **${unreferencedAmount}** Datei(en) von keinem Eintrag referenziert (markiert mit ${UNREFERENCED_MARKER}).\n` +
-      `Die übrigen Dateien sind referenziert (z.B. als Mail-Anhang) und nur unsortiert.\n\n` +
-      fileList;
+      `Es wurden **${filesWithoutFolder.length}** auffällige Datei(en) gefunden.\n\n` +
+      `## Dateien ohne Ordner: ${filesWithoutFolderButReferenced.length}\n\n` +
+      `Diese Dateien sind referenziert (z.B. als Mail-Anhang), liegen aber in keinem Ordner:\n\n` +
+      formatFileList(filesWithoutFolderButReferenced) +
+      `\n\n## Dateien ohne Referenz: ${filesWithoutReference.length}\n\n` +
+      `Diese Dateien werden von keinem Eintrag referenziert:\n\n` +
+      formatFileList(filesWithoutReference);
 
     await myDatabaseHelper.sendMail({
       recipient: MailAdresses.SupportMail,
