@@ -354,6 +354,56 @@ export function buildBackgroundAnnouncement(locale: string): string {
 	}
 }
 
+// ─── Auto-pause announcements ────────────────────────────────────────────────
+
+/**
+ * Build a localised TTS announcement for when the recording is automatically
+ * paused because the GPS position stopped moving.
+ */
+export function buildAutoPauseAnnouncement(locale: string): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	switch (langCode) {
+		case 'de':
+			return 'Keine Bewegung erkannt. Die Aufzeichnung wird pausiert.';
+		case 'fr':
+			return "Aucun mouvement détecté. L'enregistrement est mis en pause.";
+		case 'es':
+			return 'No se detecta movimiento. La grabación se ha pausado.';
+		case 'it':
+			return 'Nessun movimento rilevato. La registrazione è in pausa.';
+		case 'pt':
+			return 'Nenhum movimento detectado. A gravação foi pausada.';
+		case 'nl':
+			return 'Geen beweging gedetecteerd. De opname is gepauzeerd.';
+		default:
+			return 'No movement detected. Recording paused.';
+	}
+}
+
+/**
+ * Build a localised TTS announcement for when the recording automatically
+ * resumes after movement is detected again.
+ */
+export function buildAutoResumeAnnouncement(locale: string): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	switch (langCode) {
+		case 'de':
+			return 'Bewegung erkannt. Die Aufzeichnung wird fortgesetzt.';
+		case 'fr':
+			return "Mouvement détecté. L'enregistrement reprend.";
+		case 'es':
+			return 'Movimiento detectado. La grabación continúa.';
+		case 'it':
+			return 'Movimento rilevato. La registrazione riprende.';
+		case 'pt':
+			return 'Movimento detectado. A gravação continua.';
+		case 'nl':
+			return 'Beweging gedetecteerd. De opname gaat verder.';
+		default:
+			return 'Movement detected. Recording resumed.';
+	}
+}
+
 // ─── Pace hint announcement ──────────────────────────────────────────────────
 
 /**
