@@ -672,6 +672,14 @@ jobs:
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           working-directory: ./apps/tag-und-jahr/frontend
+      # --auto-submit cannot link an App Store Connect API key to a new app in
+      # non-interactive mode ("App Store Connect API Keys cannot be set up in
+      # --non-interactive mode"). The submit profile therefore references the
+      # key locally (ascApiKeyPath/-Id/-IssuerId in eas.json); this step places
+      # the .p8 written by prepare-asc-api-key at that path. The file is
+      # gitignored (*.p8).
+      - name: "🔑 Provide ASC API key for auto-submit"
+        run: cp "$EXPO_ASC_API_KEY_PATH" ./apps/tag-und-jahr/frontend/asc-api-key.p8
       - name: "🛠️ Build and Submit Tag und Jahr iOS App"
         run: eas build --platform ios --non-interactive --auto-submit
         working-directory: ./apps/tag-und-jahr/frontend
