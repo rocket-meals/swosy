@@ -30,7 +30,7 @@ https://github.com/rocket-meals/studi-futter
 <!-- android-preview-apk:score-tracker:end -->
 
 <!-- android-preview-apk:tag-und-jahr:start -->
-**Tag und Jahr:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/JD-XI6ngz2a8kNG1XJYySyT9JEoXieXBO5UoCYJakrM.apk)
+**Tag und Jahr:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/cXsU01n6ik8IJumt-3qMgIBezFeFYNzLoUby5Hjc2M8.apk)
 <!-- android-preview-apk:tag-und-jahr:end -->
 
 <!-- android-preview-apk:geonexia:start -->
