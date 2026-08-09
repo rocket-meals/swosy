@@ -1,0 +1,102 @@
+name: 'EAS Init Project'
+description: >-
+  Ensures the Expo app in the given directory is linked to an EAS project.
+  Checks for a configured projectId first; otherwise runs `eas init`, which
+  creates the project on EAS (or reuses the existing one with the same
+  owner/slug). With a static app.json, eas init writes the projectId itself.
+  With a dynamic config (app.config.ts) eas init cannot write the file and
+  exits non-zero after printing the projectId - this action tolerates that,
+  extracts the id and injects `extra.eas.projectId` into app.config.ts itself.
+
+inputs:
+  EXPO_TOKEN:
+    required: true
+    description: Expo Access Token (für EAS CLI)
+  working-directory:
+    required: true
+    description: Verzeichnis der Expo-App relativ zum Repo-Root (z.B. ./apps/geonexia/frontend)
+
+outputs:
+  project-id:
+    description: Die EAS-Projekt-ID der App (leer, wenn sie bereits konfiguriert war)
+    value: ${{ steps.init.outputs.project-id }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "🔧 Ensure EAS project is initialized"
+      id: init
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+      run: |
+        set -euo pipefail
+
+        if grep -q 'projectId' app.config.ts 2>/dev/null || grep -q '"projectId"' app.json 2>/dev/null; then
+          echo "✅ EAS project already configured"
+          echo "project-id=" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        echo "EAS project not yet configured, running eas init..."
+        set +e
+        OUTPUT=$(eas init --non-interactive --force 2>&1)
+        EXIT_CODE=$?
+        set -e
+        echo "$OUTPUT"
+
+        # Static config (app.json): eas init wrote the projectId itself.
+        if grep -q '"projectId"' app.json 2>/dev/null; then
+          echo "✅ eas init wrote the projectId into app.json"
+          echo "project-id=$(node -e 'console.log(require("./app.json").expo?.extra?.eas?.projectId ?? "")')" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        # Dynamic config (app.config.ts): eas init created/linked the project but
+        # cannot write the file ("Cannot automatically write to dynamic config")
+        # and exits non-zero. The printed output contains the projectId - extract
+        # it and write it into app.config.ts ourselves.
+        PROJECT_ID=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
+        if [ -z "$PROJECT_ID" ]; then
+          echo "❌ eas init failed (exit $EXIT_CODE) and no projectId was found in its output."
+          exit ${EXIT_CODE:-1}
+        fi
+
+        echo "Injecting projectId $PROJECT_ID into app.config.ts..."
+        PROJECT_ID="$PROJECT_ID" node <<'NODEEOF'
+        const fs = require('fs');
+        const projectId = process.env.PROJECT_ID;
+        let content = fs.readFileSync('./app.config.ts', 'utf8');
+
+        if (/\bprojectId\b/.test(content)) {
+          console.log('app.config.ts already contains a projectId, nothing to do');
+          process.exit(0);
+        }
+
+        const easBlock = `eas: {\n\t\t\t\tprojectId: '${projectId}',\n\t\t\t},\n\t\t\t`;
+        const withExtra = content.replace(/(\bextra\s*:\s*\{\s*\n)/, `$1\t\t\t${easBlock.trimEnd()}\n`);
+        if (withExtra !== content) {
+          content = withExtra;
+        } else {
+          // No extra block yet: add one before the closing brace of the returned config.
+          const block = `\t\textra: {\n\t\t\teas: {\n\t\t\t\tprojectId: '${projectId}',\n\t\t\t},\n\t\t},\n`;
+          const patched = content.replace(/(\n\t\};\n\};?\s*)$/, `\n${block}$1`);
+          if (patched === content) {
+            console.error('Could not find an insertion point for extra.eas.projectId in app.config.ts');
+            process.exit(1);
+          }
+          content = patched;
+        }
+
+        fs.writeFileSync('./app.config.ts', content);
+        console.log('app.config.ts patched successfully');
+        NODEEOF
+
+        if ! grep -q 'projectId' app.config.ts; then
+          echo "❌ Patching app.config.ts failed - projectId still missing."
+          exit 1
+        fi
+
+        echo "✅ EAS project $PROJECT_ID initialized and written to app.config.ts"
+        echo "project-id=$PROJECT_ID" >> "$GITHUB_OUTPUT"

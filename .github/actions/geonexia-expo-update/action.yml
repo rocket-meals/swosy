@@ -61,17 +61,10 @@ runs:
         ./scripts/generateIcons.sh "$ICON_SOURCE" "$COMPANY_LOGO" "./apps/geonexia/frontend/assets/generated/"
 
     - name: "🔧 Initialize EAS project if not configured"
-      run: |
-        if grep -q 'projectId' app.config.ts 2>/dev/null || grep -q '"projectId"' app.json 2>/dev/null; then
-          echo "EAS project already configured"
-        else
-          echo "EAS project not yet configured, running eas init..."
-          eas init --non-interactive --force
-        fi
-      working-directory: ./apps/geonexia/frontend
-      shell: bash
-      env:
+      uses: ./.github/actions/eas-init-project
+      with:
         EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+        working-directory: ./apps/geonexia/frontend
 
     - name: "🔧 Configure EAS Update settings (loop until complete)"
       run: |
