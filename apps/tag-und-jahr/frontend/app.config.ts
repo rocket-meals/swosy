@@ -27,7 +27,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 		userInterfaceStyle: 'automatic',
 		ios: {
 			supportsTablet: true,
-			bundleIdentifier: 'de.baumgartner-software.tag-und-jahr',
+			bundleIdentifier: 'de.baumgartner-software.day-and-year',
 			buildNumber: buildNumber.toString(),
 			config: {
 				usesNonExemptEncryption: false,

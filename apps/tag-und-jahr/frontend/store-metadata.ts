@@ -12,7 +12,7 @@ export function getStoreMetadata(): StoreAppMetadata[] {
 			displayName: tagUndJahrConfig.projectName,
 			apple: {
 				// Keep in sync with ios.bundleIdentifier in app.config.ts
-				bundleId: 'de.baumgartner-software.tag-und-jahr',
+				bundleId: 'de.baumgartner-software.day-and-year',
 				primaryCategoryId: 'LIFESTYLE',
 				// Explicitly no secondary category.
 				secondaryCategoryId: null,

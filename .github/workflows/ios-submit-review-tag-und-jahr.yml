@@ -91,7 +91,7 @@ jobs:
         if: steps.release-check.outputs.submit == 'true'
         run: yarn workspace rocket-meals-scripts submit:ios:review
         env:
-          IOS_BUNDLE_ID: de.baumgartner-software.tag-und-jahr
+          IOS_BUNDLE_ID: de.baumgartner-software.day-and-year
           IOS_RELEASE_NOTES: ${{ inputs.release_notes || 'Fehlerbehebungen und Aktualisierung von Bibliotheken.' }}
           # Ground truth for the pre-submit metadata sync (Altersfreigabe & Co),
           # see docs/STORE_METADATA.md.
