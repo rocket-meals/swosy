@@ -33,9 +33,9 @@ Das Widget teilt Daten mit der App über die App Group `group.de.baumgartner-sof
 1. [developer.apple.com → Identifiers → App Groups](https://developer.apple.com/account/resources/identifiers/list/applicationGroup) → **+** → App Group `group.de.baumgartner-software.day-and-year` registrieren.
 2. Identifiers → App IDs → `de.baumgartner-software.day-and-year` → Capability **App Groups** → **Configure** → die Gruppe anhaken → **Save**.
 3. Dasselbe für `de.baumgartner-software.day-and-year.ExpoWidgetsTarget`.
-4. Das Speichern invalidiert die vorhandenen Provisioning Profiles – das ist gewollt: Der nächste CI-Lauf regeneriert sie automatisch (Credentials-Bootstrap), dann inklusive App Group.
+4. Danach einfach den CI-Lauf neu starten – mehr ist nicht nötig.
 
-Der Credentials-Bootstrap in der CI **prüft** anschließend, dass die frisch erzeugten Profile die App Group wirklich enthalten, und bricht sonst mit genau dieser Anleitung ab – so scheitert ein fehlender Schritt sofort und verständlich statt ~25 Minuten später als kryptischer Xcode-Signing-Fehler.
+Der Credentials-Bootstrap in der CI **prüft** anschließend, dass die Provisioning Profiles die App Group wirklich enthalten. Wichtig dabei: eas-cli selbst validiert bei Profilen nur Zertifikat, Bundle-ID, Ablaufdatum und Portal-Status – **nicht** die Entitlements. Ein Profil, das vor der App-Group-Zuweisung erzeugt wurde, bleibt daher aus eas-Sicht „gültig", obwohl das Xcode-Signing damit scheitert. Der Bootstrap **heilt das selbst**: Fehlt die Gruppe im Profil, löscht er das veraltete Profil im Portal (dokumentierter Endpunkt `DELETE /v1/profiles/{id}`) und lässt eas ein frisches erzeugen, das die zugewiesene Gruppe enthält. Nur wenn die Gruppe auch danach fehlt (Portal-Schritt nicht gemacht), bricht der Job sofort mit genau dieser Anleitung ab – statt ~25 Minuten später als kryptischer Xcode-Signing-Fehler.
 
 ### Apple-Capabilities (App Groups, Push)
 
