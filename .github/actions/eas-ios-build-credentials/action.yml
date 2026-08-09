@@ -1,0 +1,63 @@
+name: 'EAS iOS Build Credentials'
+description: >-
+  Ensures the iOS build credentials of an Expo app exist on the EAS servers,
+  without any interactive prompt. `eas build --non-interactive` never creates
+  missing credentials (a brand-new app fails with "Credentials are not set up.
+  Run this command again in interactive mode."), so this action runs eas-cli's
+  interactive `credentials:configure-build` flow headless via
+  scripts/eas-setup-ios-build-credentials.js: the App Store Connect API key
+  (EXPO_ASC_* environment variables, exported by prepare-asc-api-key) covers
+  the Apple authentication and the few remaining confirm prompts are
+  auto-answered (reuse the team's distribution certificate, generate missing
+  provisioning profiles - including ones for app extensions such as widgets).
+  Idempotent: valid existing credentials are validated and left untouched.
+
+inputs:
+  EXPO_TOKEN:
+    required: true
+    description: Expo Access Token (für EAS CLI)
+  working-directory:
+    required: true
+    description: Verzeichnis der Expo-App relativ zum Repo-Root (z.B. ./apps/tag-und-jahr/frontend)
+  build-profile:
+    required: false
+    default: production
+    description: EAS Build-Profil aus eas.json, dessen Credentials eingerichtet werden
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "🔐 Ensure iOS build credentials (headless bootstrap)"
+      shell: bash
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+      run: |
+        set -euo pipefail
+
+        # The EXPO_ASC_* variables are exported into the job environment by the
+        # prepare-asc-api-key action (part of setup-and-install when the ASC key
+        # content is passed) - without them Apple authentication is impossible.
+        for VAR in EXPO_ASC_API_KEY_PATH EXPO_ASC_KEY_ID EXPO_ASC_ISSUER_ID EXPO_APPLE_TEAM_ID EXPO_APPLE_TEAM_TYPE; do
+          if [ -z "${!VAR:-}" ]; then
+            echo "❌ $VAR is not set. Pass EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT to setup-and-install (or run prepare-asc-api-key) before this action."
+            exit 1
+          fi
+        done
+
+        # Resolve the eas-cli package root from the eas binary on PATH
+        # (installed by expo/expo-github-action): <root>/bin/run -> <root>.
+        EAS_BIN=$(command -v eas)
+        EAS_CLI_ROOT=$(node -e "
+          const fs = require('fs');
+          const path = require('path');
+          let p = fs.realpathSync(process.argv[1]);
+          console.log(path.resolve(p, '..', '..'));
+        " "$EAS_BIN")
+        if [ ! -f "$EAS_CLI_ROOT/build/prompts.js" ]; then
+          echo "eas binary at $EAS_BIN did not lead to an eas-cli package root ($EAS_CLI_ROOT), installing a private copy..."
+          EAS_CLI_ROOT="$RUNNER_TEMP/eas-cli-bootstrap/node_modules/eas-cli"
+          npm install --prefix "$RUNNER_TEMP/eas-cli-bootstrap" eas-cli
+        fi
+        echo "Using eas-cli at $EAS_CLI_ROOT"
+
+        EAS_CLI_ROOT="$EAS_CLI_ROOT" node scripts/eas-setup-ios-build-credentials.js "${{ inputs.working-directory }}" "${{ inputs.build-profile }}"
