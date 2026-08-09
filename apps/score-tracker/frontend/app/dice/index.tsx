@@ -5,6 +5,17 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme, type Theme } from 'repo-depkit-common-ui';
 import { ComponentIds } from '../../constants/ComponentIds';
 import { computeRoll, type DieResult, type DieRollPair, type PoolDie, type RollMode, type RollResult } from '../../helpers/DiceRollHelper';
+import {
+	appendDiceHistoryEntry,
+	buildDiceHistoryEntry,
+	collectHistorySides,
+	computeDiceHistoryStats,
+	filterHistoryEntries,
+	loadDiceHistory,
+	saveDiceHistory,
+	type DiceHistoryEntry,
+} from '../../helpers/DiceHistoryStorage';
+import { generateId } from '../../helpers/RandomHelper';
 
 type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -38,6 +49,25 @@ const ROLL_MODES: { key: RollMode; label: string; icon: MCIName }[] = [
 	{ key: 'advantage', label: 'Vorteil', icon: 'arrow-up-bold-circle-outline' },
 	{ key: 'disadvantage', label: 'Nachteil', icon: 'arrow-down-bold-circle-outline' },
 ];
+
+/** How many history rows are rendered - the stats always cover the full history. */
+const MAX_HISTORY_ROWS = 50;
+
+function modeLabel(mode: RollMode): string {
+	return ROLL_MODES.find((entry) => entry.key === mode)?.label ?? mode;
+}
+
+function formatRolledAt(timestamp: number): string {
+	const date = new Date(timestamp);
+	const day = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+	const time = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+	return `${day} ${time}`;
+}
+
+function formatAverage(average: number | null): string {
+	if (average === null) return '-';
+	return average.toFixed(1).replace('.', ',');
+}
 
 function DiceValueRow({ dice, theme }: Readonly<{ dice: DieResult[]; theme: Theme }>) {
 	return (
@@ -86,6 +116,34 @@ function DiePairBadge({ die, theme, revealed }: Readonly<{ die: DieRollPair; the
 	);
 }
 
+// One archived roll: timestamp and mode on the left, the counted value of every
+// die in the middle (maximum rolls highlighted - that's what the counter above
+// tallies), the roll's total on the right.
+function HistoryEntryRow({ entry, theme }: Readonly<{ entry: DiceHistoryEntry; theme: Theme }>) {
+	return (
+		<View nativeID={`${ComponentIds.DICE_HISTORY_ENTRY_PREFIX}${entry.id}`} style={[styles.historyRow, { backgroundColor: theme.screen.iconBg }]}>
+			<View style={styles.historyRowLeft}>
+				<Text style={[styles.historyRowTime, { color: theme.screen.placeholder }]}>{formatRolledAt(entry.rolledAt)}</Text>
+				<Text style={[styles.historyRowMode, { color: theme.screen.placeholder }]}>{modeLabel(entry.mode)}</Text>
+			</View>
+			<View style={styles.historyRowDice}>
+				{entry.dice.map((die, index) => {
+					const isMax = die.value === die.sides;
+					return (
+						<Text
+							key={`${entry.id}-${index}`}
+							style={[styles.historyRowDie, { color: isMax ? PRIMARY_COLOR : theme.screen.text, fontWeight: isMax ? '700' : '400' }]}
+						>
+							W{die.sides}: {die.value}
+						</Text>
+					);
+				})}
+			</View>
+			<Text style={[styles.historyRowTotal, { color: theme.screen.text }]}>{entry.total}</Text>
+		</View>
+	);
+}
+
 export default function DiceScreen() {
 	const { theme } = useTheme();
 	const insets = useSafeAreaInsets();
@@ -96,8 +154,27 @@ export default function DiceScreen() {
 	const [customSidesText, setCustomSidesText] = useState('');
 	const [results, setResults] = useState<RollResult | null>(null);
 	const [isRolling, setIsRolling] = useState(false);
+	const [history, setHistory] = useState<DiceHistoryEntry[]>([]);
+	/** Active die-type filter for the history section - `null` shows everything. */
+	const [historyFilter, setHistoryFilter] = useState<number | null>(null);
 	const animationRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const nextIdRef = useRef(0);
+
+	// Guards the save effect below: without it the initial empty state would be
+	// written to disk while the load is still in flight and could wipe the
+	// stored history.
+	const historyLoadedRef = useRef(false);
+
+	useEffect(() => {
+		let cancelled = false;
+		loadDiceHistory().then((entries) => {
+			historyLoadedRef.current = true;
+			if (!cancelled) setHistory(entries);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	const addDie = useCallback((sides: number) => {
 		if (!Number.isFinite(sides) || sides < MIN_CUSTOM_SIDES || pool.length >= MAX_POOL_SIZE) return;
@@ -122,23 +199,44 @@ export default function DiceScreen() {
 		setShowCustomInput(false);
 	}, [customSidesText, addDie, pool.length]);
 
+	/** Archive a finished roll: prepend to the (capped) history and persist it. */
+	const recordRoll = useCallback((roll: RollResult) => {
+		const entry = buildDiceHistoryEntry(roll, { id: generateId(), rolledAt: Date.now() });
+		setHistory((prev) => appendDiceHistoryEntry(prev, entry));
+	}, []);
+
+	// Persisting in an effect (instead of inside recordRoll) keeps the saved
+	// state in lockstep with whatever React actually committed.
+	useEffect(() => {
+		if (!historyLoadedRef.current) return;
+		void saveDiceHistory(history);
+	}, [history]);
+
+	const clearHistory = useCallback(() => {
+		setHistory([]);
+		setHistoryFilter(null);
+	}, []);
+
 	// Shuffle the faces rapidly for a moment before settling on the final roll -
 	// cheap "animation" without needing reanimated. Each tick is already a
 	// genuine full roll via computeRoll, so the very last tick before the
-	// interval clears simply becomes the final result.
+	// interval clears simply becomes the final result - only that one is
+	// recorded in the history.
 	const handleRoll = useCallback(() => {
 		if (isRolling || pool.length === 0) return;
 		setIsRolling(true);
 		const startedAt = Date.now();
 		animationRef.current = setInterval(() => {
-			setResults(computeRoll(pool, rollMode));
+			const roll = computeRoll(pool, rollMode);
+			setResults(roll);
 			if (Date.now() - startedAt >= ROLL_ANIMATION_MS && animationRef.current) {
 				clearInterval(animationRef.current);
 				animationRef.current = null;
 				setIsRolling(false);
+				recordRoll(roll);
 			}
 		}, ROLL_ANIMATION_STEP_MS);
-	}, [pool, isRolling, rollMode]);
+	}, [pool, isRolling, rollMode, recordRoll]);
 
 	useEffect(() => {
 		return () => {
@@ -152,6 +250,21 @@ export default function DiceScreen() {
 	} else if (pool.length === 0) {
 		rollButtonLabel = 'Wähle zuerst Würfel';
 	}
+
+	const historySides = collectHistorySides(history);
+	// A stale filter (its die type vanished from the history, e.g. after
+	// clearing) falls back to "Alle" instead of showing an empty section.
+	const effectiveFilter = historyFilter !== null && historySides.includes(historyFilter) ? historyFilter : null;
+	const filteredHistory = filterHistoryEntries(history, effectiveFilter);
+	const historyStats = computeDiceHistoryStats(history, effectiveFilter);
+	const visibleHistory = filteredHistory.slice(0, MAX_HISTORY_ROWS);
+
+	const historyStatItems: { key: string; label: string; value: string }[] = [
+		{ key: 'rolls', label: 'Würfe', value: String(historyStats.rollCount) },
+		{ key: 'max', label: effectiveFilter !== null ? `Max (${effectiveFilter})` : 'Max', value: `${historyStats.maxCount}×` },
+		{ key: 'min', label: 'Einsen', value: `${historyStats.minCount}×` },
+		{ key: 'avg', label: 'Ø', value: formatAverage(historyStats.average) },
+	];
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -294,6 +407,84 @@ export default function DiceScreen() {
 							</>
 						)}
 					</View>
+				)}
+
+				{history.length > 0 && (
+					<>
+						<View style={styles.sectionHeaderRow}>
+							<SettingsListGroupTitle title="Historie" />
+							<TouchableOpacity
+								nativeID={ComponentIds.DICE_HISTORY_CLEAR_BUTTON}
+								onPress={clearHistory}
+								hitSlop={8}
+								style={styles.clearButton}
+							>
+								<Ionicons name="close-circle" size={16} color={theme.screen.placeholder} />
+								<Text style={[styles.clearButtonText, { color: theme.screen.placeholder }]}>Leeren</Text>
+							</TouchableOpacity>
+						</View>
+
+						<View style={styles.historyFilterRow}>
+							<TouchableOpacity
+								nativeID={ComponentIds.DICE_HISTORY_FILTER_ALL_BUTTON}
+								style={[
+									styles.historyFilterChip,
+									{ borderColor: PRIMARY_COLOR },
+									effectiveFilter === null && { backgroundColor: PRIMARY_COLOR },
+								]}
+								onPress={() => setHistoryFilter(null)}
+								activeOpacity={0.7}
+							>
+								<Text style={[styles.historyFilterChipText, { color: effectiveFilter === null ? '#ffffff' : PRIMARY_COLOR }]}>
+									Alle
+								</Text>
+							</TouchableOpacity>
+							{historySides.map((sides) => {
+								const selected = effectiveFilter === sides;
+								return (
+									<TouchableOpacity
+										key={sides}
+										nativeID={`${ComponentIds.DICE_HISTORY_FILTER_PREFIX}${sides}`}
+										style={[
+											styles.historyFilterChip,
+											{ borderColor: PRIMARY_COLOR },
+											selected && { backgroundColor: PRIMARY_COLOR },
+										]}
+										onPress={() => setHistoryFilter(selected ? null : sides)}
+										activeOpacity={0.7}
+									>
+										<MaterialCommunityIcons name={diceIconForSides(sides)} size={16} color={selected ? '#ffffff' : PRIMARY_COLOR} />
+										<Text style={[styles.historyFilterChipText, { color: selected ? '#ffffff' : PRIMARY_COLOR }]}>W{sides}</Text>
+									</TouchableOpacity>
+								);
+							})}
+						</View>
+
+						<View nativeID={ComponentIds.DICE_HISTORY_STATS_ROW} style={styles.historyStatsRow}>
+							{historyStatItems.map((item) => (
+								<View key={item.key} style={[styles.historyStatBox, { backgroundColor: theme.screen.iconBg }]}>
+									<Text style={[styles.historyStatValue, { color: theme.screen.text }]}>{item.value}</Text>
+									<Text style={[styles.historyStatLabel, { color: theme.screen.placeholder }]}>{item.label}</Text>
+								</View>
+							))}
+						</View>
+						<Text style={[styles.hintText, { color: theme.screen.placeholder }]}>
+							{effectiveFilter !== null
+								? `Max (${effectiveFilter}) zählt, wie oft die ${effectiveFilter} mit einem W${effectiveFilter} gewürfelt wurde.`
+								: 'Max zählt, wie oft ein Würfel seinen höchsten Wert zeigte - z.B. die 20 auf einem W20.'}
+						</Text>
+
+						<View style={styles.historyList}>
+							{visibleHistory.map((entry) => (
+								<HistoryEntryRow key={entry.id} entry={entry} theme={theme} />
+							))}
+						</View>
+						{filteredHistory.length > visibleHistory.length && (
+							<Text style={[styles.hintText, { color: theme.screen.placeholder }]}>
+								Nur die letzten {MAX_HISTORY_ROWS} Würfe werden angezeigt - die Zähler oben umfassen alle.
+							</Text>
+						)}
+					</>
 				)}
 			</ScrollView>
 
@@ -472,6 +663,82 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: '700',
 		marginTop: 16,
+	},
+	historyFilterRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+		paddingHorizontal: 16,
+	},
+	historyFilterChip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingVertical: 6,
+		paddingHorizontal: 12,
+		borderWidth: 1.5,
+		borderRadius: 16,
+	},
+	historyFilterChipText: {
+		fontSize: 13,
+		fontWeight: '700',
+	},
+	historyStatsRow: {
+		flexDirection: 'row',
+		gap: 8,
+		paddingHorizontal: 16,
+		marginTop: 12,
+	},
+	historyStatBox: {
+		flex: 1,
+		alignItems: 'center',
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	historyStatValue: {
+		fontSize: 17,
+		fontWeight: '700',
+	},
+	historyStatLabel: {
+		fontSize: 11,
+		fontWeight: '600',
+		marginTop: 2,
+	},
+	historyList: {
+		gap: 6,
+		paddingHorizontal: 16,
+		marginTop: 12,
+	},
+	historyRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 10,
+		paddingVertical: 8,
+		paddingHorizontal: 10,
+		borderRadius: 10,
+	},
+	historyRowLeft: {
+		width: 78,
+	},
+	historyRowTime: {
+		fontSize: 12,
+		fontWeight: '600',
+	},
+	historyRowMode: {
+		fontSize: 11,
+	},
+	historyRowDice: {
+		flex: 1,
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		columnGap: 8,
+	},
+	historyRowDie: {
+		fontSize: 13,
+	},
+	historyRowTotal: {
+		fontSize: 16,
+		fontWeight: '700',
 	},
 	footer: {
 		borderTopWidth: StyleSheet.hairlineWidth,

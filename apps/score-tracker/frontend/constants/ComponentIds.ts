@@ -243,6 +243,15 @@ export const ComponentIds = {
 	DICE_MODE_BUTTON_PREFIX: 'dice-mode-button-',
 	DICE_ROLL_BUTTON: 'dice-roll-button',
 
+	// Dice screen: roll history
+	// NOT 'dice-history-filter-all': Maestro id matchers append '.*', so the
+	// per-type filter prefix must not be a prefix of the all-filter's id.
+	DICE_HISTORY_FILTER_ALL_BUTTON: 'dice-history-all-filter-button',
+	DICE_HISTORY_FILTER_PREFIX: 'dice-history-filter-',
+	DICE_HISTORY_STATS_ROW: 'dice-history-stats-row',
+	DICE_HISTORY_ENTRY_PREFIX: 'dice-history-entry-',
+	DICE_HISTORY_CLEAR_BUTTON: 'dice-history-clear-button',
+
 	// First-launch onboarding
 	ONBOARDING_SKIP_BUTTON: 'onboarding-skip-button',
 	ONBOARDING_NEXT_BUTTON: 'onboarding-next-button',
