@@ -41,6 +41,7 @@ jobs:
       frontend: ${{ steps.changes.outputs.frontend }}
       geonexia: ${{ steps.changes.outputs.geonexia }}
       score_tracker: ${{ steps.changes.outputs.score_tracker }}
+      tag_und_jahr: ${{ steps.changes.outputs.tag_und_jahr }}
       any_changed: ${{ steps.changes.outputs.any_changed }}
     steps:
       - name: "🔄 Checkout PR Head"
@@ -64,17 +65,20 @@ jobs:
             echo "frontend=true" >> "$GITHUB_OUTPUT"
             echo "geonexia=true" >> "$GITHUB_OUTPUT"
             echo "score_tracker=true" >> "$GITHUB_OUTPUT"
+            echo "tag_und_jahr=true" >> "$GITHUB_OUTPUT"
             echo "any_changed=true" >> "$GITHUB_OUTPUT"
           else
             FRONTEND_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/frontend/' || true)
             GEONEXIA_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/geonexia/' || true)
             SCORE_TRACKER_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/score-tracker/' || true)
+            TAG_UND_JAHR_CHANGED=$(echo "$CHANGED" | grep -cE '^apps/tag-und-jahr/' || true)
 
             [ "$FRONTEND_CHANGED" -gt "0" ] && echo "frontend=true" >> "$GITHUB_OUTPUT" || echo "frontend=false" >> "$GITHUB_OUTPUT"
             [ "$GEONEXIA_CHANGED" -gt "0" ] && echo "geonexia=true" >> "$GITHUB_OUTPUT" || echo "geonexia=false" >> "$GITHUB_OUTPUT"
             [ "$SCORE_TRACKER_CHANGED" -gt "0" ] && echo "score_tracker=true" >> "$GITHUB_OUTPUT" || echo "score_tracker=false" >> "$GITHUB_OUTPUT"
+            [ "$TAG_UND_JAHR_CHANGED" -gt "0" ] && echo "tag_und_jahr=true" >> "$GITHUB_OUTPUT" || echo "tag_und_jahr=false" >> "$GITHUB_OUTPUT"
 
-            if [ "$FRONTEND_CHANGED" -gt "0" ] || [ "$GEONEXIA_CHANGED" -gt "0" ] || [ "$SCORE_TRACKER_CHANGED" -gt "0" ]; then
+            if [ "$FRONTEND_CHANGED" -gt "0" ] || [ "$GEONEXIA_CHANGED" -gt "0" ] || [ "$SCORE_TRACKER_CHANGED" -gt "0" ] || [ "$TAG_UND_JAHR_CHANGED" -gt "0" ]; then
               echo "any_changed=true" >> "$GITHUB_OUTPUT"
             else
               echo "any_changed=false" >> "$GITHUB_OUTPUT"
@@ -137,12 +141,30 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           PR_TITLE: ${{ github.event.pull_request.title }}
 
+      - name: "🕰️ EAS Update – Tag und Jahr"
+        if: needs.detect-changes.outputs.tag_und_jahr == 'true'
+        run: |
+          # Until the first master CI run has created the EAS project (eas init in
+          # the tag-und-jahr-expo-update action), there is no project to update.
+          if ! grep -q 'projectId' app.config.ts; then
+            echo "⏭️ Tag und Jahr has no EAS project yet - skipping preview update."
+            exit 0
+          fi
+          eas update --branch "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
+            --platform all --non-interactive
+        working-directory: ./apps/tag-und-jahr/frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+
       - name: "💬 Comment on PR"
         uses: actions/github-script@v7
         env:
           FRONTEND_CHANGED: ${{ needs.detect-changes.outputs.frontend }}
           GEONEXIA_CHANGED: ${{ needs.detect-changes.outputs.geonexia }}
           SCORE_TRACKER_CHANGED: ${{ needs.detect-changes.outputs.score_tracker }}
+          TAG_UND_JAHR_CHANGED: ${{ needs.detect-changes.outputs.tag_und_jahr }}
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
@@ -152,11 +174,13 @@ jobs:
             const frontendChanged = process.env.FRONTEND_CHANGED === 'true';
             const geonexiaChanged = process.env.GEONEXIA_CHANGED === 'true';
             const scoreTrackerChanged = process.env.SCORE_TRACKER_CHANGED === 'true';
+            const tagUndJahrChanged = process.env.TAG_UND_JAHR_CHANGED === 'true';
 
             const appLines = [
               frontendChanged     ? '- ✅ Frontend (rocket-meals)' : '- ⏭️ Frontend (rocket-meals) – skipped (no changes)',
               geonexiaChanged     ? '- ✅ Geonexia'                : '- ⏭️ Geonexia – skipped (no changes)',
               scoreTrackerChanged ? '- ✅ Score Tracker'           : '- ⏭️ Score Tracker – skipped (no changes)',
+              tagUndJahrChanged   ? '- ✅ Tag und Jahr'             : '- ⏭️ Tag und Jahr – skipped (no changes)',
             ];
 
             const body = [

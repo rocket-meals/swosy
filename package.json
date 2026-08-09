@@ -23,12 +23,15 @@
     "store-metadata:pull:geonexia": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/geonexia/frontend/store-metadata.ts",
     "store-metadata:push:geonexia": "yarn workspace rocket-meals-scripts store-metadata push --module apps/geonexia/frontend/store-metadata.ts",
     "store-metadata:pull:score-tracker": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/score-tracker/frontend/store-metadata.ts",
-    "store-metadata:push:score-tracker": "yarn workspace rocket-meals-scripts store-metadata push --module apps/score-tracker/frontend/store-metadata.ts"
+    "store-metadata:push:score-tracker": "yarn workspace rocket-meals-scripts store-metadata push --module apps/score-tracker/frontend/store-metadata.ts",
+    "store-metadata:pull:tag-und-jahr": "yarn workspace rocket-meals-scripts store-metadata pull --module apps/tag-und-jahr/frontend/store-metadata.ts",
+    "store-metadata:push:tag-und-jahr": "yarn workspace rocket-meals-scripts store-metadata push --module apps/tag-und-jahr/frontend/store-metadata.ts"
   },
   "workspaces": [
     "apps/frontend/app",
     "apps/geonexia/frontend",
     "apps/score-tracker/frontend",
+    "apps/tag-und-jahr/frontend",
     "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle",
     "apps/scripts",
     "apps/*",

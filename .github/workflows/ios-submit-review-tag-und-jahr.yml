@@ -1,0 +1,104 @@
+name: "🍎 iOS Submit for Review: Tag und Jahr"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: "Changelog-Text (What's New), der in App Store Connect gesetzt wird"
+        required: false
+        default: "Fehlerbehebungen und Aktualisierung von Bibliotheken."
+
+  # After a successful CI run a new iOS build may have been uploaded. Apple needs a
+  # while to process it, so the submit script waits for processing builds
+  # (IOS_SUBMIT_MAX_WAIT_MINUTES) and submits once the build turns VALID.
+  workflow_run:
+    workflows: ["🚀 CI"]
+    types: [completed]
+    branches: [master]
+
+# Only the newest run per app survives: when several builds are created back to
+# back, a newer run cancels an older one that is still waiting for Apple to
+# process its (now outdated) build - the newest run submits the newest build.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  submit-for-review:
+    name: "🚀 Submit latest build for App Review"
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    # Tag und Jahr is only built in the upstream repository, so automated (post-CI)
+    # runs are upstream-only; manual dispatch stays possible everywhere. The post-CI
+    # trigger additionally reacts only to successful CI runs.
+    if: >-
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name == 'workflow_dispatch' || github.repository == 'rocket-meals/rocket-meals')
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      # While getMajorVersion() in the app's config.ts is below 1 the app is still in
+      # development - automated runs must not submit it to App Review. A manual
+      # workflow_dispatch bypasses this gate deliberately.
+      - name: "🔢 Check release readiness (major version)"
+        id: release-check
+        env:
+          CONFIG_PATH: apps/tag-und-jahr/frontend/config.ts
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          MAJOR=$(node -e '
+            const fs = require("fs");
+            const content = fs.readFileSync(process.env.CONFIG_PATH, "utf-8");
+            const match = content.match(/function\s+getMajorVersion\s*\(\)[^{]*\{[\s\S]*?return\s+(\d+)/);
+            if (!match) { console.error("getMajorVersion() not found in " + process.env.CONFIG_PATH); process.exit(1); }
+            console.log(match[1]);
+          ')
+          echo "Major version: $MAJOR"
+          if [ "$EVENT_NAME" != "workflow_dispatch" ] && [ "$MAJOR" -lt 1 ]; then
+            echo "submit=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ Major version $MAJOR is below 1 - app is still in development, automated submit is skipped."
+          else
+            echo "submit=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "⚙️ Setup Node.js"
+        if: steps.release-check.outputs.submit == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn v2"
+        if: steps.release-check.outputs.submit == 'true'
+        run: corepack enable
+
+      - name: "📦 Install dependencies"
+        if: steps.release-check.outputs.submit == 'true'
+        # --mode=skip-build disables dependency lifecycle scripts (supply-chain hardening);
+        # the submit script only needs ts-node/typescript, which require no build step.
+        run: yarn install --immutable --mode=skip-build
+
+      - name: "🔐 Prepare Apple App Store Connect API key"
+        if: steps.release-check.outputs.submit == 'true'
+        uses: ./.github/actions/prepare-asc-api-key
+        with:
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+
+      - name: "🚀 Submit latest build for App Review"
+        if: steps.release-check.outputs.submit == 'true'
+        run: yarn workspace rocket-meals-scripts submit:ios:review
+        env:
+          IOS_BUNDLE_ID: de.baumgartner-software.day-and-year
+          IOS_RELEASE_NOTES: ${{ inputs.release_notes || 'Fehlerbehebungen und Aktualisierung von Bibliotheken.' }}
+          # Ground truth for the pre-submit metadata sync (Altersfreigabe & Co),
+          # see docs/STORE_METADATA.md.
+          STORE_METADATA_MODULE: apps/tag-und-jahr/frontend/store-metadata.ts
+          # Post-CI runs skip gracefully when there is nothing to submit
+          # and never re-submit versions Apple has rejected.
+          IOS_SUBMIT_AUTO: ${{ github.event_name != 'workflow_dispatch' }}
+          # Only the post-CI trigger waits for Apple to finish processing a fresh build
+          # (up to 120 minutes from build upload until it is submittable).
+          IOS_SUBMIT_MAX_WAIT_MINUTES: ${{ github.event_name == 'workflow_run' && '120' || '0' }}

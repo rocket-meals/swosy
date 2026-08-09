@@ -25,6 +25,7 @@ on:
           - rocket-meals
           - geonexia
           - score-tracker
+          - tag-und-jahr
       store:
         description: "Welche Stores abgleichen"
         type: choice
@@ -97,6 +98,7 @@ jobs:
             rocket-meals) MODULE="apps/frontend/app/store-metadata.ts" ;;
             geonexia) MODULE="apps/geonexia/frontend/store-metadata.ts" ;;
             score-tracker) MODULE="apps/score-tracker/frontend/store-metadata.ts" ;;
+            tag-und-jahr) MODULE="apps/tag-und-jahr/frontend/store-metadata.ts" ;;
             *) echo "Unbekannte App: $APP"; exit 1 ;;
           esac
 
