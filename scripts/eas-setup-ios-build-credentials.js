@@ -20,6 +20,18 @@
 // in interactive mode anyway. The run is idempotent: with valid credentials in
 // place it validates them and changes nothing.
 //
+// It also fixes eas-cli's Apple capability auto-sync (which must ALWAYS stay
+// enabled - never set EXPO_NO_CAPABILITY_SYNC=1 in this repository): current
+// eas-cli/@expo/apple-utils sends one big PATCH /v1/bundleIds/{id} with inline
+// capability attributes, which today's App Store Connect API rejects with
+// "Unexpected or invalid value at 'data.relationships.bundleIdCapabilities.
+// data.[0].attributes'". This script replaces that single call with the
+// documented per-capability requests (POST /v1/bundleIdCapabilities to enable,
+// DELETE /v1/bundleIdCapabilities/{id} to disable) - same sync semantics, same
+// desired state, working request format. Once the capabilities match, later
+// syncs (e.g. inside `eas build`) produce an empty patch request and never hit
+// the broken code path.
+//
 // Usage:
 //   EAS_CLI_ROOT=/path/to/node_modules/eas-cli \
 //   node scripts/eas-setup-ios-build-credentials.js <project-dir> [profile]
@@ -29,8 +41,10 @@
 //   EXPO_TOKEN             Expo access token (EAS authentication)
 //   EXPO_ASC_API_KEY_PATH  path to the App Store Connect API .p8 key
 //   EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE
+const crypto = require('node:crypto');
 const path = require('node:path');
 const fs = require('node:fs');
+const { createRequire } = require('node:module');
 
 function fail(message) {
 	console.error(`❌ ${message}`);
@@ -92,6 +106,103 @@ prompts.promptAsync = async (questions) => {
 };
 
 prompts.pressAnyKeyToContinueAsync = async () => {};
+
+// ─── Fix Apple capability auto-sync ──────────────────────────────────────────
+// Replace apple-utils' broken bulk PATCH (rejected by today's ASC API) with the
+// documented per-capability requests, talking directly to the App Store Connect
+// API using the same .p8 key. Auto-sync itself stays fully enabled.
+
+function base64url(input) {
+	return Buffer.from(input).toString('base64url');
+}
+
+function createAscApiToken() {
+	const now = Math.floor(Date.now() / 1000);
+	const header = { alg: 'ES256', kid: process.env.EXPO_ASC_KEY_ID, typ: 'JWT' };
+	const payload = { iss: process.env.EXPO_ASC_ISSUER_ID, iat: now - 10, exp: now + 10 * 60, aud: 'appstoreconnect-v1' };
+	const signingInput = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(payload))}`;
+	const key = fs.readFileSync(process.env.EXPO_ASC_API_KEY_PATH, 'utf8');
+	// JWT ES256 requires the raw (IEEE P1363) signature encoding.
+	const signature = crypto.sign('sha256', Buffer.from(signingInput), { key, dsaEncoding: 'ieee-p1363' });
+	return `${signingInput}.${signature.toString('base64url')}`;
+}
+
+async function ascRequestAsync(method, pathname, body) {
+	const response = await fetch(`https://api.appstoreconnect.apple.com${pathname}`, {
+		method,
+		headers: {
+			Authorization: `Bearer ${createAscApiToken()}`,
+			'Content-Type': 'application/json',
+		},
+		body: body ? JSON.stringify(body) : undefined,
+	});
+	if (response.status === 204) {
+		return null;
+	}
+	const text = await response.text();
+	const json = text ? JSON.parse(text) : null;
+	if (!response.ok) {
+		const error = new Error(`ASC API ${method} ${pathname} failed with ${response.status}: ${text}`);
+		error.status = response.status;
+		error.details = json;
+		throw error;
+	}
+	return json;
+}
+
+async function enableCapabilityAsync(bundleIdId, operation) {
+	try {
+		await ascRequestAsync('POST', '/v1/bundleIdCapabilities', {
+			data: {
+				type: 'bundleIdCapabilities',
+				attributes: {
+					capabilityType: operation.capabilityType,
+					settings: operation.settings ?? [],
+				},
+				relationships: {
+					bundleId: { data: { type: 'bundleIds', id: bundleIdId } },
+				},
+			},
+		});
+		console.log(`[capability-sync] enabled ${operation.capabilityType}`);
+	} catch (error) {
+		// 409 = capability already enabled - the desired state is reached.
+		if (error.status === 409) {
+			console.log(`[capability-sync] ${operation.capabilityType} already enabled`);
+			return;
+		}
+		throw error;
+	}
+}
+
+async function disableCapabilityAsync(bundleIdId, operation) {
+	const listing = await ascRequestAsync('GET', `/v1/bundleIds/${bundleIdId}/bundleIdCapabilities?limit=200`);
+	const existing = listing?.data?.find((capability) => capability.attributes?.capabilityType === operation.capabilityType);
+	if (!existing) {
+		console.log(`[capability-sync] ${operation.capabilityType} already disabled`);
+		return;
+	}
+	await ascRequestAsync('DELETE', `/v1/bundleIdCapabilities/${existing.id}`);
+	console.log(`[capability-sync] disabled ${operation.capabilityType}`);
+}
+
+// Resolve exactly the @expo/apple-utils copy that eas-cli itself uses.
+const easCliRequire = createRequire(path.join(easCliRoot, 'build', 'prompts.js'));
+const appleUtils = easCliRequire('@expo/apple-utils');
+if (typeof appleUtils.BundleId?.prototype?.updateBundleIdCapabilityAsync !== 'function') {
+	fail('Could not patch @expo/apple-utils: BundleId.updateBundleIdCapabilityAsync not found (eas-cli internals changed?)');
+}
+appleUtils.BundleId.prototype.updateBundleIdCapabilityAsync = async function (operations) {
+	const list = Array.isArray(operations) ? operations : [operations];
+	console.log(`[capability-sync] syncing ${list.length} capability change(s) for ${this.attributes?.identifier ?? this.id} via per-capability ASC API requests`);
+	for (const operation of list) {
+		if (operation.option === 'OFF') {
+			await disableCapabilityAsync(this.id, operation);
+		} else {
+			await enableCapabilityAsync(this.id, operation);
+		}
+	}
+};
 
 process.chdir(projectDir);
 
