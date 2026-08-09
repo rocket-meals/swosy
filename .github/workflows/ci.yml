@@ -672,6 +672,11 @@ jobs:
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           working-directory: ./apps/tag-und-jahr/frontend
+          # The App Group must exist and be assigned to both bundle ids (one-time
+          # manual portal step, see apps/tag-und-jahr/README.md) - verified here
+          # so a missing assignment fails fast instead of deep in the Xcode build.
+          verify-app-group: group.de.baumgartner-software.day-and-year
+          verify-bundle-ids: de.baumgartner-software.day-and-year,de.baumgartner-software.day-and-year.ExpoWidgetsTarget
       # --auto-submit cannot link an App Store Connect API key to a new app in
       # non-interactive mode ("App Store Connect API Keys cannot be set up in
       # --non-interactive mode"). The submit profile therefore references the

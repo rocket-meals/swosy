@@ -23,6 +23,19 @@ inputs:
     required: false
     default: production
     description: EAS Build-Profil aus eas.json, dessen Credentials eingerichtet werden
+  verify-app-group:
+    required: false
+    default: ''
+    description: >-
+      Optional: App-Group-ID, die in den erzeugten App-Store-Provisioning-Profiles
+      enthalten sein MUSS. App Groups kann Apples oeffentliche API nicht anlegen
+      oder zuweisen (kein /v1/appGroups) - das ist ein einmaliger manueller
+      Schritt im Developer-Portal. Diese Pruefung macht einen fehlenden Schritt
+      sofort sichtbar, statt erst im Xcode-Signing des EAS-Builds.
+  verify-bundle-ids:
+    required: false
+    default: ''
+    description: Kommagetrennte Bundle-IDs, deren neuestes App-Store-Profil auf verify-app-group geprueft wird
 
 runs:
   using: 'composite'
@@ -31,6 +44,8 @@ runs:
       shell: bash
       env:
         EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+        VERIFY_APP_GROUP: ${{ inputs.verify-app-group }}
+        VERIFY_BUNDLE_IDS: ${{ inputs.verify-bundle-ids }}
       run: |
         set -euo pipefail
 

@@ -32,6 +32,16 @@
 // syncs (e.g. inside `eas build`) produce an empty patch request and never hit
 // the broken code path.
 //
+// One thing CANNOT be automated: creating an App Group and assigning it to
+// bundle ids. Apple's public App Store Connect API has no /v1/appGroups
+// endpoint - only the cookie-authenticated (Apple-ID login) developer portal
+// can do this, which is why eas-cli logs "Skipping capability identifier
+// syncing" in CI. That one-time manual step is documented in
+// apps/tag-und-jahr/README.md. To surface a missing assignment immediately
+// (instead of ~25 minutes later as a cryptic Xcode signing error), this script
+// verifies after the credentials setup that the freshly issued provisioning
+// profiles actually contain the expected App Group (VERIFY_* env vars below).
+//
 // Usage:
 //   EAS_CLI_ROOT=/path/to/node_modules/eas-cli \
 //   node scripts/eas-setup-ios-build-credentials.js <project-dir> [profile]
@@ -41,6 +51,11 @@
 //   EXPO_TOKEN             Expo access token (EAS authentication)
 //   EXPO_ASC_API_KEY_PATH  path to the App Store Connect API .p8 key
 //   EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE
+//
+// Optional env (post-setup verification):
+//   VERIFY_APP_GROUP       App Group id the profiles must contain
+//   VERIFY_BUNDLE_IDS      comma-separated bundle ids whose newest App Store
+//                          profile is checked for VERIFY_APP_GROUP
 const crypto = require('node:crypto');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -204,12 +219,74 @@ appleUtils.BundleId.prototype.updateBundleIdCapabilityAsync = async function (op
 	}
 };
 
+// ─── Post-setup verification: App Group inside the provisioning profiles ────
+// Apple's public API cannot create or assign App Groups (no /v1/appGroups),
+// so a missing assignment can only come from the manual portal step not being
+// done yet. Detect it here, before an EAS build is started and fails deep in
+// the Xcode signing stage.
+
+async function verifyProfilesContainAppGroupAsync(bundleIdentifiers, appGroup) {
+	const problems = [];
+	for (const bundleIdentifier of bundleIdentifiers) {
+		const bundleIdListing = await ascRequestAsync('GET', `/v1/bundleIds?filter[identifier]=${encodeURIComponent(bundleIdentifier)}&limit=200`);
+		const bundleIdResource = bundleIdListing?.data?.find((entry) => entry.attributes?.identifier === bundleIdentifier);
+		if (!bundleIdResource) {
+			problems.push(`Bundle id ${bundleIdentifier} not found in the Apple developer portal.`);
+			continue;
+		}
+		const profileListing = await ascRequestAsync(
+			'GET',
+			`/v1/bundleIds/${bundleIdResource.id}/profiles?fields[profiles]=name,profileState,profileType,createdDate,profileContent&limit=200`
+		);
+		const appStoreProfiles = (profileListing?.data ?? [])
+			.filter((entry) => entry.attributes?.profileType === 'IOS_APP_STORE' && entry.attributes?.profileState === 'ACTIVE')
+			.sort((a, b) => new Date(b.attributes.createdDate) - new Date(a.attributes.createdDate));
+		const newestProfile = appStoreProfiles[0];
+		if (!newestProfile) {
+			problems.push(`No active App Store provisioning profile found for ${bundleIdentifier}.`);
+			continue;
+		}
+		const profileContent = Buffer.from(newestProfile.attributes.profileContent, 'base64').toString('latin1');
+		if (!profileContent.includes(appGroup)) {
+			problems.push(`Provisioning profile "${newestProfile.attributes.name}" for ${bundleIdentifier} does not contain the App Group ${appGroup}.`);
+		} else {
+			console.log(`[verify] profile for ${bundleIdentifier} contains App Group ${appGroup}`);
+		}
+	}
+	if (problems.length) {
+		console.error('');
+		for (const problem of problems) {
+			console.error(`❌ ${problem}`);
+		}
+		console.error('');
+		console.error('The App Group must be created and assigned ONCE manually - the public App Store');
+		console.error('Connect API cannot manage App Groups (no /v1/appGroups endpoint), so no CI job can');
+		console.error('do this for you:');
+		console.error('');
+		console.error(`  1. https://developer.apple.com/account/resources/identifiers/list/applicationGroup`);
+		console.error(`     -> "+" -> register the App Group "${appGroup}".`);
+		for (const bundleIdentifier of bundleIdentifiers) {
+			console.error(`  2. Identifiers -> App IDs -> ${bundleIdentifier} -> capability "App Groups"`);
+			console.error(`     -> Configure -> select "${appGroup}" -> Save.`);
+		}
+		console.error('  3. Saving invalidates the existing provisioning profiles - simply re-run this');
+		console.error('     workflow afterwards: the credentials bootstrap regenerates them automatically');
+		console.error('     and they will then include the App Group.');
+		fail('Provisioning profiles are missing the required App Group.');
+	}
+}
+
 process.chdir(projectDir);
 
 const ConfigureBuild = require(path.join(easCliRoot, 'build', 'commands', 'credentials', 'configure-build.js')).default;
 
 ConfigureBuild.run(['--platform', 'ios', '--profile', profile], easCliRoot)
-	.then(() => {
+	.then(async () => {
+		const appGroup = process.env.VERIFY_APP_GROUP;
+		const bundleIdentifiers = (process.env.VERIFY_BUNDLE_IDS || '').split(',').map((entry) => entry.trim()).filter(Boolean);
+		if (appGroup && bundleIdentifiers.length) {
+			await verifyProfilesContainAppGroupAsync(bundleIdentifiers, appGroup);
+		}
 		console.log('✅ iOS build credentials are set up');
 	})
 	.catch((error) => {
