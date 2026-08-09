@@ -26,6 +26,12 @@ Anders als bei einem manuell gepflegten Xcode-Projekt entsteht das Widget hier k
 - **Tagespunkt:** `Sekunden seit örtlicher Mitternacht / 86.400 × 360°`, Start oben, im Uhrzeigersinn.
 - **Jahresmarke:** `Zeit seit letztem 21. März / Jahreszyklus × 360°`, Start oben am Frühlingsbeginn, im Uhrzeigersinn.
 
+### Apple-Capabilities (App Groups, Push)
+
+> ⚠️ **Niemals `EXPO_NO_CAPABILITY_SYNC=1` setzen.** Die Apple-Capabilities (App Groups für das Widget, Push Notifications) sollen **immer automatisch** mit den Entitlements der App synchronisiert werden – manuelles Pflegen im Developer-Portal driftet zwangsläufig auseinander.
+>
+> Hintergrund: eas-cli/`@expo/apple-utils` schickt den Capability-Sync als einen Sammel-PATCH, den die heutige App-Store-Connect-API ablehnt („Unexpected or invalid value at 'data.relationships.bundleIdCapabilities.data.[0].attributes'"). Der Credentials-Bootstrap ([`scripts/eas-setup-ios-build-credentials.js`](../../scripts/eas-setup-ios-build-credentials.js), läuft in der CI vor `eas build`) ersetzt deshalb genau diesen einen Aufruf durch die dokumentierten Einzel-Requests (POST/DELETE `/v1/bundleIdCapabilities`) – gleiche Sync-Semantik, funktionierendes Request-Format. Sobald die Capabilities stimmen, ist jeder weitere Sync (auch der in `eas build`) ein No-op und der fehlerhafte Codepfad wird gar nicht mehr erreicht. Sollte der Fehler upstream gefixt werden, kann dieser Patch entfallen; der Auto-Sync bleibt in jedem Fall an.
+
 ### Grenzen
 
 - `expo-widgets` ist als Alpha gekennzeichnet – API-Details können sich mit künftigen SDKs ändern.
