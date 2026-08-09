@@ -11,6 +11,7 @@ import displaySettingsReducer from './displaySettingsSlice';
 import playerInformationReducer from './playerInformationSlice';
 import mapSearchReducer from './mapSearchSlice';
 import replaySettingsReducer from './replaySettingsSlice';
+import autoPauseReducer from './autoPauseSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, saveWalkedEdgesRedLine, saveDevWalkedEdgesRedLine } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
@@ -21,10 +22,12 @@ import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import { saveReplaySettings } from '../helpers/ReplaySettingsStorage';
+import { saveAutoPauseSettings } from '../helpers/AutoPauseStorage';
 import { PlayerInformation, savePlayerInformation } from '../helpers/PlayerInformationStorage';
 import type { SpeechSettingsState } from './speechSettingsSlice';
 import type { DisplaySettingsState } from './displaySettingsSlice';
 import type { ReplaySettingsState } from './replaySettingsSlice';
+import type { AutoPauseSettingsState } from './autoPauseSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
 
@@ -44,6 +47,7 @@ export const store = configureStore({
 		playerInformation: playerInformationReducer,
 		mapSearch: mapSearchReducer,
 		replaySettings: replaySettingsReducer,
+		autoPause: autoPauseReducer,
 	},
 });
 
@@ -165,6 +169,9 @@ const displaySettingsRef: DebounceRef<DisplaySettingsState> = { timer: null, las
 // Auto-persist replay settings to disk whenever they change.
 const replaySettingsRef: DebounceRef<ReplaySettingsState> = { timer: null, lastSaved: null };
 
+// Auto-persist auto-pause settings to disk whenever they change.
+const autoPauseSettingsRef: DebounceRef<AutoPauseSettingsState> = { timer: null, lastSaved: null };
+
 // Auto-persist player information to disk whenever it changes.
 const playerInformationRef: ImmediateRef<PlayerInformation> = { lastSaved: null };
 
@@ -192,6 +199,7 @@ store.subscribe(() => {
 	});
 
 	persistDebounced(state.replaySettings, replaySettingsRef, saveReplaySettings);
+	persistDebounced(state.autoPause, autoPauseSettingsRef, saveAutoPauseSettings);
 });
 
 // ─── Type helpers ─────────────────────────────────────────────────────────────

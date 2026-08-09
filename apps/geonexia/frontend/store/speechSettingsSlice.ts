@@ -42,6 +42,8 @@ export type SpeechSettingsState = {
 
 	/** Announce when the app moves to the background during a recording */
 	announceAppInBackground: boolean;
+	/** Announce when the recording auto-pauses (no movement) and auto-resumes */
+	announceAutoPause: boolean;
 } & AnnouncementToggles;
 
 export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
@@ -71,6 +73,7 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	announcePaceAvg: false,
 	announceSpeedAvg: false,
 	announceAppInBackground: true,
+	announceAutoPause: true,
 };
 
 const initialState: SpeechSettingsState = { ...SPEECH_SETTINGS_DEFAULTS };

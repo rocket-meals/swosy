@@ -30,7 +30,8 @@ export function getMajorVersion() {
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
 	// 8: fix OTA delivery (stable runtime version) + update-on-start loader
-	return 8;
+	// 9: auto-pause recording when the GPS position stops moving
+	return 9;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
