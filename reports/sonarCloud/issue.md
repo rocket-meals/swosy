@@ -4,15 +4,19 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 9 | 9 |
+| 🔒 Security | 11 | 11 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 85 | 28 |
+| 🔧 Maintainability | 92 | 26 |
 
-**Total issues:** 107 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 116 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (9/9)
+## 🔒 Security (11/11)
+
+- **Lifecycle scripts are enabled by default in Yarn v2+.**
+  .github/actions/tag-und-jahr-expo-update/action.yml:47
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/tag-und-jahr-expo-update/action.yml#L47
 
 - **Lifecycle scripts are enabled by default in Yarn v2+.**
   .github/workflows/backend-schema-sync-pull.yml:55
@@ -33,6 +37,10 @@
 - **Make sure that no untrusted code is executed from a fork.**
   .github/workflows/ios-submit-review-score-tracker.yml:39
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-score-tracker.yml#L39
+
+- **Make sure that no untrusted code is executed from a fork.**
+  .github/workflows/ios-submit-review-tag-und-jahr.yml:39
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/workflows/ios-submit-review-tag-und-jahr.yml#L39
 
 - **LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.**
   apps/scripts/store-metadata-extract.ts:82
@@ -104,7 +112,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (28/85)
+## 🔧 Maintainability (26/92)
 
 - **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:29
@@ -137,6 +145,22 @@
 - **The empty object is useless.**
   apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts:200
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts#L200
+
+- **Use the opposite operator (<=) instead.**
+  apps/geonexia/frontend/app/activities/[id].tsx:834
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L834
+
+- **Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.**
+  apps/geonexia/frontend/app/index.tsx:5626
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5626
+
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/geonexia/frontend/app/index.tsx:5832
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5832
+
+- **Refactor this code to not use nested template literals.**
+  apps/geonexia/frontend/helpers/TTSSessionLog.ts:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSSessionLog.ts#L84
 
 - **Remove this unused import of 'GameType'.**
   apps/score-tracker/frontend/app/games/[id].tsx:38
@@ -193,28 +217,4 @@
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
   apps/score-tracker/frontend/app/match/index.tsx:1389
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1389
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/players/index.tsx:76
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/players/index.tsx:76
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:145
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L145
-
-- **Extract this nested ternary operation into an independent statement.**
-  apps/score-tracker/frontend/app/stats/index.tsx:197
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L197
-
-- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/score-tracker/frontend/app/stats/index.tsx:215
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L215
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/stats/index.tsx:285
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/stats/index.tsx#L285
 
