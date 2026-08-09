@@ -1,6 +1,7 @@
 import * as Speech from 'expo-speech';
 import { appendTTSLogEntry, SpokenTextFields } from './TTSLogStorage';
 import { activateSpeechSession, scheduleSpeechSessionRelease } from './SpeechAudioSession';
+import { recordTTSSessionEvent, TTSSessionLogEvent } from './TTSSessionLog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -63,8 +64,20 @@ let _stopGeneration = 0;
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
+/** Session-log event per drop reason (see {@link logDroppedItem}). */
+const DROP_REASON_EVENTS: Record<string, TTSSessionLogEvent> = {
+	'stale': 'dropped_stale',
+	'superseded': 'superseded',
+	'queue full': 'dropped_queue_full',
+};
+
 function logDroppedItem(item: QueueItem, reason: string): void {
 	console.warn(`[AudioQueueHelper] Dropping announcement (${reason}):`, item.source);
+	recordTTSSessionEvent(DROP_REASON_EVENTS[reason] ?? 'dropped_stale', {
+		source: item.source,
+		text: item.text,
+		detail: `waitedMs=${Date.now() - item.enqueuedAt}`,
+	});
 	void appendTTSLogEntry({
 		timestamp: Date.now(),
 		text: item.text,
@@ -101,6 +114,12 @@ function finishItem(): void {
 }
 
 function speakItem(item: QueueItem): void {
+	const startedAt = Date.now();
+	recordTTSSessionEvent('speak_start', {
+		source: item.source,
+		text: item.text,
+		detail: `waitedMs=${startedAt - item.enqueuedAt}`,
+	});
 	try {
 		Speech.speak(item.text, {
 			...item.options,
@@ -113,6 +132,11 @@ function speakItem(item: QueueItem): void {
 			useApplicationAudioSession: true,
 			language: item.languageCode,
 			onDone: () => {
+				recordTTSSessionEvent('speak_done', {
+					source: item.source,
+					text: item.text,
+					detail: `speakingMs=${Date.now() - startedAt}`,
+				});
 				void appendTTSLogEntry({
 					timestamp: Date.now(),
 					text: item.text,
@@ -125,6 +149,11 @@ function speakItem(item: QueueItem): void {
 			onError: (err) => {
 				const message = err instanceof Error ? err.message : String(err);
 				console.warn('[AudioQueueHelper] Speech error:', message);
+				recordTTSSessionEvent('speak_error', {
+					source: item.source,
+					text: item.text,
+					detail: `speakingMs=${Date.now() - startedAt}, error=${message}`,
+				});
 				void appendTTSLogEntry({
 					timestamp: Date.now(),
 					text: item.text,
@@ -137,6 +166,11 @@ function speakItem(item: QueueItem): void {
 			},
 			onStopped: () => {
 				// Manual stop via clearAudioQueue – do not advance to next item.
+				recordTTSSessionEvent('speak_stopped', {
+					source: item.source,
+					text: item.text,
+					detail: `speakingMs=${Date.now() - startedAt}`,
+				});
 				_isPlaying = false;
 				scheduleSpeechSessionRelease();
 			},
@@ -144,6 +178,11 @@ function speakItem(item: QueueItem): void {
 	} catch (err) {
 		const message = err instanceof Error ? err.message : String(err);
 		console.warn('[AudioQueueHelper] Speech.speak threw:', message);
+		recordTTSSessionEvent('speak_error', {
+			source: item.source,
+			text: item.text,
+			detail: `threw=${message}`,
+		});
 		void appendTTSLogEntry({
 			timestamp: Date.now(),
 			text: item.text,
@@ -169,6 +208,10 @@ function processNext(): void {
 
 	// Affect other apps' music (duck or mix) only for the duration of the
 	// announcement (plus a short debounce), not for the whole recording.
+	recordTTSSessionEvent('audio_session_activating', {
+		source: item.source,
+		detail: `duckOthers=${item.duckOthers}`,
+	});
 	const generation = _stopGeneration;
 	void activateSpeechSession(item.duckOthers)
 		.catch(() => { /* logged inside activateSpeechSession */ })
@@ -176,6 +219,10 @@ function processNext(): void {
 			if (generation !== _stopGeneration) {
 				// clearAudioQueue was called while the audio session was being
 				// activated – do not start speaking a cancelled announcement.
+				recordTTSSessionEvent('cancelled_before_speak', {
+					source: item.source,
+					text: item.text,
+				});
 				_isPlaying = false;
 				scheduleSpeechSessionRelease();
 				return;
@@ -235,6 +282,11 @@ export function enqueueAnnouncement(
 		maxAgeMs: queueOptions?.maxAgeMs,
 		duckOthers: queueOptions?.duckOthers !== false,
 	});
+	recordTTSSessionEvent('enqueued', {
+		source,
+		text,
+		detail: `queueLength=${_queue.length}, isPlaying=${_isPlaying}`,
+	});
 	processNext();
 }
 
@@ -243,6 +295,9 @@ export function enqueueAnnouncement(
  * Call this when recording stops or when the user cancels announcements.
  */
 export function clearAudioQueue(): void {
+	recordTTSSessionEvent('queue_cleared', {
+		detail: `pending=${_queue.length}, isPlaying=${_isPlaying}`,
+	});
 	_queue.length = 0;
 	_stopGeneration++;
 	try {

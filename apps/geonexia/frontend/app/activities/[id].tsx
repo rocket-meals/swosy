@@ -824,6 +824,23 @@ function migrateActivityStatsQuartiles(a: SavedActivity): SavedActivity {
 }
 
 /**
+ * Migrate an activity saved before `gpsIntervalSeconds` was recorded by
+ * approximating the recording frequency as duration / number of GPS points
+ * and persisting it. Returns the activity unchanged when the field is already
+ * present or no approximation is possible (manual activities without GPS
+ * points, zero duration).
+ */
+function migrateActivityGpsInterval(a: SavedActivity): SavedActivity {
+	if (a.gpsIntervalSeconds != null || a.routePoints.length === 0 || !(a.stats.durationSeconds > 0)) {
+		return a;
+	}
+	const approxSeconds = a.stats.durationSeconds / a.routePoints.length;
+	const updated = { ...a, gpsIntervalSeconds: Math.round(approxSeconds * 100) / 100 };
+	saveActivity(updated);
+	return updated;
+}
+
+/**
  * Straßen/Wege mode: the GPS-connected track is not rendered at all. The
  * road-match effect sends the road-matched line as speed-colored
  * routeSegments once the road network has been fetched.
@@ -1096,6 +1113,9 @@ export default function ActivityDetailScreen() {
 
 				// Migrate activities saved before the speed boxplot quartiles were introduced.
 				a = migrateActivityStatsQuartiles(a);
+
+				// Migrate activities saved before the GPS interval was recorded.
+				a = migrateActivityGpsInterval(a);
 
 				setActivity(a);
 
