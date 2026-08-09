@@ -73,6 +73,7 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 		},
 		updates: {
 			enabled: true,
+			url: 'https://u.expo.dev/354220f2-0d5a-46a0-bf47-15d8433432a9',
 			fallbackToCacheTimeout: 10 * 1000,
 		},
 		runtimeVersion: {
@@ -119,6 +120,11 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			typedRoutes: true,
 		},
 		extra: {
+			eas: {
+				// Created by the first tag-und-jahr-expo-update CI run (eas init),
+				// see https://expo.dev/accounts/baumgartner-software/projects/tag-und-jahr
+				projectId: '354220f2-0d5a-46a0-bf47-15d8433432a9',
+			},
 			// Open-source dependency versions of this app and of its workspace
 			// packages, collected from node_modules at config-evaluation time
 			// (expo start / export / build / update) and read at runtime via
