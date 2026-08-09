@@ -32,6 +32,16 @@
 // syncs (e.g. inside `eas build`) produce an empty patch request and never hit
 // the broken code path.
 //
+// One thing CANNOT be automated: creating an App Group and assigning it to
+// bundle ids. Apple's public App Store Connect API has no /v1/appGroups
+// endpoint - only the cookie-authenticated (Apple-ID login) developer portal
+// can do this, which is why eas-cli logs "Skipping capability identifier
+// syncing" in CI. That one-time manual step is documented in
+// apps/tag-und-jahr/README.md. To surface a missing assignment immediately
+// (instead of ~25 minutes later as a cryptic Xcode signing error), this script
+// verifies after the credentials setup that the freshly issued provisioning
+// profiles actually contain the expected App Group (VERIFY_* env vars below).
+//
 // Usage:
 //   EAS_CLI_ROOT=/path/to/node_modules/eas-cli \
 //   node scripts/eas-setup-ios-build-credentials.js <project-dir> [profile]
@@ -41,6 +51,11 @@
 //   EXPO_TOKEN             Expo access token (EAS authentication)
 //   EXPO_ASC_API_KEY_PATH  path to the App Store Connect API .p8 key
 //   EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID, EXPO_APPLE_TEAM_TYPE
+//
+// Optional env (post-setup verification):
+//   VERIFY_APP_GROUP       App Group id the profiles must contain
+//   VERIFY_BUNDLE_IDS      comma-separated bundle ids whose newest App Store
+//                          profile is checked for VERIFY_APP_GROUP
 const crypto = require('node:crypto');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -204,12 +219,108 @@ appleUtils.BundleId.prototype.updateBundleIdCapabilityAsync = async function (op
 	}
 };
 
+// ─── Post-setup verification: App Group inside the provisioning profiles ────
+// Apple's public API cannot create or assign App Groups (no /v1/appGroups), so
+// that part is a one-time manual portal step. eas-cli's own profile validation
+// checks certificate, bundle id, expiry and portal status - NOT the profile's
+// entitlements. A profile created BEFORE the App Group was assigned can
+// therefore stay "valid" forever while Xcode signing keeps failing. This
+// verification detects that, self-heals by deleting the stale portal profile
+// (documented DELETE /v1/profiles/{id}) and re-running the credentials setup so
+// eas issues a fresh profile - which then includes the assigned App Group. Only
+// if the group STILL is missing afterwards (portal step not done) it fails with
+// step-by-step instructions.
+
+async function collectAppGroupProblemsAsync(bundleIdentifiers, appGroup) {
+	const problems = [];
+	for (const bundleIdentifier of bundleIdentifiers) {
+		const bundleIdListing = await ascRequestAsync('GET', `/v1/bundleIds?filter[identifier]=${encodeURIComponent(bundleIdentifier)}&limit=200`);
+		const bundleIdResource = bundleIdListing?.data?.find((entry) => entry.attributes?.identifier === bundleIdentifier);
+		if (!bundleIdResource) {
+			problems.push({ bundleIdentifier, message: `Bundle id ${bundleIdentifier} not found in the Apple developer portal.` });
+			continue;
+		}
+		const profileListing = await ascRequestAsync(
+			'GET',
+			`/v1/bundleIds/${bundleIdResource.id}/profiles?fields[profiles]=name,profileState,profileType,createdDate,profileContent&limit=200`
+		);
+		const appStoreProfiles = (profileListing?.data ?? [])
+			.filter((entry) => entry.attributes?.profileType === 'IOS_APP_STORE' && entry.attributes?.profileState === 'ACTIVE')
+			.sort((a, b) => new Date(b.attributes.createdDate) - new Date(a.attributes.createdDate));
+		const newestProfile = appStoreProfiles[0];
+		if (!newestProfile) {
+			problems.push({ bundleIdentifier, message: `No active App Store provisioning profile found for ${bundleIdentifier}.` });
+			continue;
+		}
+		const profileContent = Buffer.from(newestProfile.attributes.profileContent, 'base64').toString('latin1');
+		if (!profileContent.includes(appGroup)) {
+			problems.push({
+				bundleIdentifier,
+				staleProfile: { id: newestProfile.id, name: newestProfile.attributes.name },
+				message: `Provisioning profile "${newestProfile.attributes.name}" for ${bundleIdentifier} does not contain the App Group ${appGroup}.`,
+			});
+		} else {
+			console.log(`[verify] profile for ${bundleIdentifier} contains App Group ${appGroup}`);
+		}
+	}
+	return problems;
+}
+
+function reportAppGroupProblemsAndFail(problems, bundleIdentifiers, appGroup) {
+	console.error('');
+	for (const problem of problems) {
+		console.error(`❌ ${problem.message}`);
+	}
+	console.error('');
+	console.error('The App Group must be created and assigned ONCE manually - the public App Store');
+	console.error('Connect API cannot manage App Groups (no /v1/appGroups endpoint), so no CI job can');
+	console.error('do this for you:');
+	console.error('');
+	console.error(`  1. https://developer.apple.com/account/resources/identifiers/list/applicationGroup`);
+	console.error(`     -> "+" -> register the App Group "${appGroup}".`);
+	for (const bundleIdentifier of bundleIdentifiers) {
+		console.error(`  2. Identifiers -> App IDs -> ${bundleIdentifier} -> capability "App Groups"`);
+		console.error(`     -> Configure -> select "${appGroup}" -> Save.`);
+	}
+	console.error('  3. Re-run this workflow afterwards: stale provisioning profiles are replaced');
+	console.error('     automatically and will then include the App Group.');
+	fail('Provisioning profiles are missing the required App Group.');
+}
+
+async function verifyProfilesContainAppGroupAsync(bundleIdentifiers, appGroup, runCredentialsSetupAsync) {
+	let problems = await collectAppGroupProblemsAsync(bundleIdentifiers, appGroup);
+	const staleProfiles = problems.filter((problem) => problem.staleProfile);
+	if (staleProfiles.length) {
+		// Self-heal: the profiles predate the App Group assignment (or the
+		// assignment is missing). Deleting them on the portal makes eas-cli's
+		// validation fail ("does not exist in Apple Developer Portal"), so the
+		// re-run below issues fresh profiles that pick up the current bundle id
+		// configuration - including an assigned App Group.
+		for (const problem of staleProfiles) {
+			console.log(`[verify] deleting stale provisioning profile "${problem.staleProfile.name}" (${problem.staleProfile.id}) to force regeneration...`);
+			await ascRequestAsync('DELETE', `/v1/profiles/${problem.staleProfile.id}`);
+		}
+		console.log('[verify] re-running credentials setup to regenerate the deleted profiles...');
+		await runCredentialsSetupAsync();
+		problems = await collectAppGroupProblemsAsync(bundleIdentifiers, appGroup);
+	}
+	if (problems.length) {
+		reportAppGroupProblemsAndFail(problems, bundleIdentifiers, appGroup);
+	}
+}
+
 process.chdir(projectDir);
 
 const ConfigureBuild = require(path.join(easCliRoot, 'build', 'commands', 'credentials', 'configure-build.js')).default;
+const runCredentialsSetupAsync = () => ConfigureBuild.run(['--platform', 'ios', '--profile', profile], easCliRoot);
 
-ConfigureBuild.run(['--platform', 'ios', '--profile', profile], easCliRoot)
-	.then(() => {
+runCredentialsSetupAsync()
+	.then(async () => {
+		const appGroup = process.env.VERIFY_APP_GROUP;
+		const bundleIdentifiers = (process.env.VERIFY_BUNDLE_IDS || '').split(',').map((entry) => entry.trim()).filter(Boolean);
+		if (appGroup && bundleIdentifiers.length) {
+			await verifyProfilesContainAppGroupAsync(bundleIdentifiers, appGroup, runCredentialsSetupAsync);
+		}
 		console.log('✅ iOS build credentials are set up');
 	})
 	.catch((error) => {

@@ -26,6 +26,17 @@ Anders als bei einem manuell gepflegten Xcode-Projekt entsteht das Widget hier k
 - **Tagespunkt:** `Sekunden seit örtlicher Mitternacht / 86.400 × 360°`, Start oben, im Uhrzeigersinn.
 - **Jahresmarke:** `Zeit seit letztem 21. März / Jahreszyklus × 360°`, Start oben am Frühlingsbeginn, im Uhrzeigersinn.
 
+### Einmalige manuelle Einrichtung: App Group
+
+Das Widget teilt Daten mit der App über die App Group `group.de.baumgartner-software.day-and-year`. **App Groups anlegen und Bundle-IDs zuweisen kann Apples öffentliche App-Store-Connect-API nicht** (es gibt keinen `/v1/appGroups`-Endpunkt; nur das Cookie-basierte Developer-Portal kann das – deshalb loggt eas-cli in der CI „Skipping capability identifier syncing"). Dieser eine Schritt ist daher manuell, einmalig:
+
+1. [developer.apple.com → Identifiers → App Groups](https://developer.apple.com/account/resources/identifiers/list/applicationGroup) → **+** → App Group `group.de.baumgartner-software.day-and-year` registrieren.
+2. Identifiers → App IDs → `de.baumgartner-software.day-and-year` → Capability **App Groups** → **Configure** → die Gruppe anhaken → **Save**.
+3. Dasselbe für `de.baumgartner-software.day-and-year.ExpoWidgetsTarget`.
+4. Danach einfach den CI-Lauf neu starten – mehr ist nicht nötig.
+
+Der Credentials-Bootstrap in der CI **prüft** anschließend, dass die Provisioning Profiles die App Group wirklich enthalten. Wichtig dabei: eas-cli selbst validiert bei Profilen nur Zertifikat, Bundle-ID, Ablaufdatum und Portal-Status – **nicht** die Entitlements. Ein Profil, das vor der App-Group-Zuweisung erzeugt wurde, bleibt daher aus eas-Sicht „gültig", obwohl das Xcode-Signing damit scheitert. Der Bootstrap **heilt das selbst**: Fehlt die Gruppe im Profil, löscht er das veraltete Profil im Portal (dokumentierter Endpunkt `DELETE /v1/profiles/{id}`) und lässt eas ein frisches erzeugen, das die zugewiesene Gruppe enthält. Nur wenn die Gruppe auch danach fehlt (Portal-Schritt nicht gemacht), bricht der Job sofort mit genau dieser Anleitung ab – statt ~25 Minuten später als kryptischer Xcode-Signing-Fehler.
+
 ### Apple-Capabilities (App Groups, Push)
 
 > ⚠️ **Niemals `EXPO_NO_CAPABILITY_SYNC=1` setzen.** Die Apple-Capabilities (App Groups für das Widget, Push Notifications) sollen **immer automatisch** mit den Entitlements der App synchronisiert werden – manuelles Pflegen im Developer-Portal driftet zwangsläufig auseinander.
