@@ -47,8 +47,7 @@ export const tagUndJahrConfig: CustomerConfig = {
 	projectName: 'Tag und Jahr',
 	// App Store Connect Apple-ID (App-Informationen -> Apple-ID), required for
 	// non-interactive "eas submit" (injected as submit.production.ios.ascAppId).
-	// Fill in once the app has been created in App Store Connect.
-	appleAppId: undefined,
+	appleAppId: '6799734478',
 	images: {
 		company_logo_source_get_for_react_native: () => require('./assets/icons/app_icon_source.png'),
 	},
