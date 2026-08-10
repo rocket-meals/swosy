@@ -52,7 +52,10 @@ export function FoodWidgetPreview({ size, meals, mealsPerPage }: Readonly<{ size
 
 	const page = pages[Math.min(pageIndex, pages.length - 1)];
 	const spacing = 2;
-	const layout = computeGridLayout(page.length, size, size, spacing);
+	// Width-driven square grid, exactly like the widget: columns fill the full
+	// width, the height follows from the square cells (fit, never bleed).
+	const layout = computeGridLayout(page.length, false);
+	const cellSize = (size - spacing * (layout.columns - 1)) / layout.columns;
 	const cells: (Meal | null)[] = [];
 	for (let index = 0; index < layout.cellCount; index++) {
 		cells.push(index < page.length ? page[index] : null);
@@ -60,9 +63,9 @@ export function FoodWidgetPreview({ size, meals, mealsPerPage }: Readonly<{ size
 
 	return (
 		<View style={[styles.canvas, { width: size, height: size, backgroundColor: FOOD_BACKGROUND_DARK }]}>
-			<View style={{ width: layout.columns * layout.cellSize + spacing * (layout.columns - 1), flexDirection: 'row', flexWrap: 'wrap', gap: spacing }}>
+			<View style={{ width: size, flexDirection: 'row', flexWrap: 'wrap', gap: spacing }}>
 				{cells.map((meal, index) => (
-					<View key={`cell-${index}`} style={{ width: layout.cellSize, height: layout.cellSize, backgroundColor: PLACEHOLDER_DARK }}>
+					<View key={`cell-${index}`} style={{ width: cellSize, height: cellSize, backgroundColor: PLACEHOLDER_DARK }}>
 						{meal?.imageUrl ? <Image source={{ uri: meal.imageUrl }} style={styles.cellImage} resizeMode="cover" /> : null}
 						{meal && !meal.imageUrl ? <Text style={styles.cellFallback}>🍴</Text> : null}
 					</View>
