@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T04:18:33.083Z",
+  "generatedAt": "2026-08-10T03:40:13.072Z",
   "baseUrl": "http://localhost:8081/rocket-meals",
   "axeCoreVersion": "4.12.1",
   "tags": [
@@ -15,10 +15,10 @@
   },
   "totals": {
     "critical": 1,
-    "serious": 7,
-    "moderate": 77,
+    "serious": 6,
+    "moderate": 188,
     "minor": 0,
-    "violations": 85,
+    "violations": 195,
     "screensWithErrors": 0
   },
   "screens": [
@@ -198,25 +198,6 @@
       "url": "http://localhost:8081/rocket-meals/housing?kioskMode=true",
       "violations": [
         {
-          "id": "color-contrast",
-          "impact": "serious",
-          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-          "help": "Elements must meet minimum color contrast ratio thresholds",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axe-puppeteer",
-          "wcagTags": [
-            "wcag2aa",
-            "wcag143"
-          ],
-          "nodeCount": 1,
-          "nodes": [
-            {
-              "target": ".r-q4m81j",
-              "html": "<div dir=\"auto\" class=\"css-146c3p1 r-q4m81j\" style=\"font-size: 16px; color: rgb(255, 255, 255);\">Failed to load apartments</div>",
-              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.63 (foreground color: #ffffff, background color: #ff3333, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
-            }
-          ]
-        },
-        {
           "id": "region",
           "impact": "moderate",
           "description": "Ensure all page content is contained by landmarks",
@@ -238,7 +219,7 @@
           ]
         }
       ],
-      "passCount": 24,
+      "passCount": 21,
       "incompleteCount": 2
     },
     {
@@ -452,22 +433,547 @@
           "help": "All page content should be contained by landmarks",
           "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer",
           "wcagTags": [],
-          "nodeCount": 2,
+          "nodeCount": 107,
           "nodes": [
             {
-              "target": ".r-dnmrzs",
+              "target": ".r-1p0dtai.r-ipm5af.r-dnmrzs",
               "html": "<div class=\"css-g5y9jx r-1p0dtai...\" style=\"position: absolute; ...\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             },
             {
-              "target": ".r-13awgt0.r-18u37iz.css-g5y9jx > .r-13awgt0.css-g5y9jx > .r-13awgt0.css-g5y9jx",
-              "html": "<div class=\"css-g5y9jx r-13awgt0\">",
+              "target": ".r-184en5c",
+              "html": "<div class=\"css-g5y9jx r-184en5c r-12vffkv\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(1) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(2) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(3) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(4) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(5) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(6) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(7) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(8) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(9) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(10) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(11) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(12) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(13) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(14) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(15) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(16) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(17) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(18) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(19) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(20) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(21) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(22) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(23) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(24) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(25) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(26) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(27) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(28) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(29) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(30) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(31) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(32) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(33) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(34) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(35) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(36) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(37) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(38) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(39) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(40) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(41) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(42) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(43) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(44) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(45) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(46) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(47) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(48) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(49) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(50) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(51) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(52) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(53) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(54) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(55) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(56) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(57) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(58) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(59) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(60) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(61) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(62) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(63) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(64) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(65) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(66) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(67) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(68) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(69) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(70) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(71) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(72) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(73) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(74) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(75) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(76) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(77) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(78) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(79) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(80) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(81) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(82) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(83) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(84) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(85) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(86) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(87) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(88) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(89) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(90) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(91) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(92) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(93) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(94) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(95) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(96) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(97) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(98) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(99) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(100) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(101) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(102) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(103) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(104) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-rs99b7.r-1dzdj1l.r-1udh08x:nth-child(105) > .r-1w2pmg.r-633pao.r-1udh08x",
+              "html": "<div class=\"css-g5y9jx r-1w2pmg r-1udh08x r-633pao\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
           ]
         }
       ],
-      "passCount": 17,
+      "passCount": 22,
       "incompleteCount": 2
     },
     {
@@ -1182,17 +1688,47 @@
           "help": "All page content should be contained by landmarks",
           "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axe-puppeteer",
           "wcagTags": [],
-          "nodeCount": 1,
+          "nodeCount": 7,
           "nodes": [
             {
-              "target": ".r-1p0dtai",
-              "html": "<div class=\"css-g5y9jx r-13awgt0 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af\" style=\"background-color: rgb(242, 242, 242); display: flex;\">",
+              "target": ".r-184en5c",
+              "html": "<div class=\"css-g5y9jx r-184en5c r-12vffkv\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-150rngu.r-eqz5dr.r-16y2uox > .css-g5y9jx > .r-1loqt21.r-1otgn73.r-1i6wzkk:nth-child(1)",
+              "html": "<div tabindex=\"0\" class=\"css-g5y9jx r-1i6wzkk r-lrvibr r-1loqt21 r-1otgn73\" style=\"width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-radius: 12px; padding: 10px 20px; margin-bottom: 20px; background-color: rgb(224, 224, 224); transition-duration: 0s;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-150rngu.r-eqz5dr.r-16y2uox > .css-g5y9jx > .r-1loqt21.r-1otgn73.r-1i6wzkk:nth-child(2)",
+              "html": "<div tabindex=\"0\" class=\"css-g5y9jx r-1i6wzkk r-lrvibr r-1loqt21 r-1otgn73\" style=\"width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-radius: 12px; padding: 10px 20px; margin-bottom: 20px; background-color: rgb(224, 224, 224); transition-duration: 0s;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-1loqt21.r-1otgn73.r-1i6wzkk:nth-child(3)",
+              "html": "<div tabindex=\"0\" class=\"css-g5y9jx r-1i6wzkk r-lrvibr r-1loqt21 r-1otgn73\" style=\"width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-radius: 12px; padding: 10px 20px; margin-bottom: 20px; background-color: rgb(224, 224, 224); transition-duration: 0s;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-1loqt21.r-1otgn73.r-1i6wzkk:nth-child(4)",
+              "html": "<div tabindex=\"0\" class=\"css-g5y9jx r-1i6wzkk r-lrvibr r-1loqt21 r-1otgn73\" style=\"width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-radius: 12px; padding: 10px 20px; margin-bottom: 20px; background-color: rgb(224, 224, 224); transition-duration: 0s;\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-105ug2t",
+              "html": "<div class=\"css-g5y9jx r-105ug2t\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "target": ".r-12vffkv.r-1i6wzkk.r-lrvibr",
+              "html": "<div aria-disabled=\"true\" tabindex=\"-1\" class=\"css-g5y9jx r-1i6wzkk...\" style=\"width: 100%; flex-di...\">",
               "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
             }
           ]
         }
       ],
-      "passCount": 22,
+      "passCount": 28,
       "incompleteCount": 1
     },
     {
