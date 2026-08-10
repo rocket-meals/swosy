@@ -112,6 +112,18 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 								initialLayout: 'widgets/TagUndJahrWidget.tsx',
 							},
 						},
+						{
+							// Must match the name passed to createWidget in
+							// widgets/FoodWidget.tsx. Experimental: shows today's meals of
+							// a canteen picked in the app settings.
+							name: 'FoodWidget',
+							displayName: 'Speisen heute',
+							description: 'Zeigt die Speisen des heutigen Tages der gewählten Mensa (experimentell).',
+							ios: {
+								supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge'],
+								initialLayout: 'widgets/FoodWidget.tsx',
+							},
+						},
 					],
 				},
 			],
