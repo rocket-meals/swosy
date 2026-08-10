@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Canteen, fetchCanteensAsync, fetchTodaysMealsAsync, Meal } from '../../helpers/foodApi';
 import { FOOD_SERVERS, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
@@ -10,9 +10,10 @@ import { ClockWidgetPreview, FoodWidgetPreview } from '../../components/WidgetPr
 
 const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 
-// Experimental playground: pick a Rocket Meals server and canteen, choose how
-// many meals the food widget shows at once, then push today's menu into the
-// widget timeline. Deliberately no caching - data is fetched fresh on demand.
+// Experimental playground. Everything auto-saves: changing an option persists
+// it immediately and refreshes the matching home screen widget - there is no
+// explicit save button. The preview at the top mirrors the selected widget,
+// and only the settings of the selected widget are shown below it.
 export default function Settings() {
 	const { width } = useWindowDimensions();
 	const [previewKind, setPreviewKind] = useState<'clock' | 'food'>('clock');
@@ -26,12 +27,16 @@ export default function Settings() {
 	const [busy, setBusy] = useState(false);
 	const [status, setStatus] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	// Canteen alias from the stored settings, so auto-save works before the
+	// canteen list has loaded.
+	const storedCanteenAliasRef = useRef<string | null>(null);
 
 	// Hydrate persisted settings once.
 	useEffect(() => {
 		loadClockSettingsAsync().then(setClockSettings);
 		loadFoodWidgetSettingsAsync().then((stored) => {
 			if (stored) {
+				storedCanteenAliasRef.current = stored.canteenAlias;
 				setServerKey(stored.serverKey);
 				setCanteenId(stored.canteenId);
 				setMealCount(stored.mealCount);
@@ -80,62 +85,57 @@ export default function Settings() {
 		};
 	}, [serverKey]);
 
-	// Load today's meals for the preview as soon as server and canteen are
-	// known (hydrated from storage or freshly picked) - no caching, the
-	// preview simply reflects what the widget would show.
+	// Auto-save + widget refresh whenever the food widget configuration is
+	// complete or changes: fetch today's meals (feeds the preview) and push
+	// them into the widget timeline.
 	useEffect(() => {
 		const server = getFoodServer(serverKey ?? undefined);
 		if (!server || !canteenId) {
 			return;
 		}
+		const canteenAlias =
+			canteens.find((entry) => entry.id === canteenId)?.alias ?? storedCanteenAliasRef.current ?? canteenId;
 		let cancelled = false;
-		fetchTodaysMealsAsync(server.serverUrl, canteenId)
-			.then((loaded) => {
-				if (!cancelled) {
-					setMeals(loaded);
+		setBusy(true);
+		setError(null);
+		(async () => {
+			try {
+				const todaysMeals = await fetchTodaysMealsAsync(server.serverUrl, canteenId);
+				if (cancelled) {
+					return;
 				}
-			})
-			.catch(() => {
-				// Preview only - errors surface via the explicit button flow.
-			});
+				setMeals(todaysMeals);
+				const settings = { serverKey: server.key, canteenId, canteenAlias, mealCount };
+				storedCanteenAliasRef.current = canteenAlias;
+				await saveFoodWidgetSettingsAsync(settings);
+				await syncFoodWidgetTimelineAsync(settings, todaysMeals);
+				if (!cancelled) {
+					setStatus(
+						todaysMeals.length === 0
+							? `Gespeichert - heute keine Speisen für ${canteenAlias}.`
+							: `Gespeichert - ${todaysMeals.length} Speisen für ${canteenAlias} ans Widget übergeben.`
+					);
+				}
+			} catch (err) {
+				if (!cancelled) {
+					setError(`Speisen konnten nicht geladen werden: ${(err as Error).message}`);
+				}
+			} finally {
+				if (!cancelled) {
+					setBusy(false);
+				}
+			}
+		})();
 		return () => {
 			cancelled = true;
 		};
-	}, [serverKey, canteenId]);
-
-	const applyToWidget = useCallback(async () => {
-		const server = getFoodServer(serverKey ?? undefined);
-		const canteen = canteens.find((entry) => entry.id === canteenId);
-		if (!server || !canteen) {
-			setError('Bitte zuerst Server und Mensa wählen.');
-			return;
-		}
-		setBusy(true);
-		setError(null);
-		setStatus(null);
-		try {
-			const todaysMeals = await fetchTodaysMealsAsync(server.serverUrl, canteen.id);
-			const settings = { serverKey: server.key, canteenId: canteen.id, canteenAlias: canteen.alias, mealCount };
-			await saveFoodWidgetSettingsAsync(settings);
-			await syncFoodWidgetTimelineAsync(settings, todaysMeals);
-			setMeals(todaysMeals);
-			setStatus(
-				todaysMeals.length === 0
-					? `Heute keine Speisen für ${canteen.alias} - Widget zeigt einen Hinweis.`
-					: `${todaysMeals.length} Speisen geladen und ans Widget übergeben.`
-			);
-		} catch (err) {
-			setError(`Speisen konnten nicht geladen werden: ${(err as Error).message}`);
-		} finally {
-			setBusy(false);
-		}
-	}, [serverKey, canteens, canteenId, mealCount]);
+	}, [serverKey, canteenId, mealCount, canteens]);
 
 	const previewSize = Math.min(width - 40, 329);
 
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={styles.content}>
-			<Text style={styles.heading}>Widget-Vorschau</Text>
+			<Text style={styles.heading}>Widget</Text>
 			<View style={styles.chipRow}>
 				<Chip label="Kalender" selected={previewKind === 'clock'} onPress={() => setPreviewKind('clock')} />
 				<Chip label="Food-Widget" selected={previewKind === 'food'} onPress={() => setPreviewKind('food')} />
@@ -148,100 +148,100 @@ export default function Settings() {
 				)}
 			</View>
 			<Text style={styles.hint}>
-				So sieht das Widget mit den aktuellen Einstellungen aus. Das Food-Widget blättert hier live alle 10 Sekunden - auf dem
-				Home-Bildschirm bietet die Timeline iOS denselben Takt an, das System darf Wechsel aber zusammenfassen.
+				Vorschau mit den aktuellen Einstellungen - Änderungen speichern automatisch und aktualisieren das Home-Widget sofort.
+				{previewKind === 'food'
+					? ' Das Food-Widget blättert hier live alle 10 Sekunden; auf dem Home-Bildschirm bietet die Timeline iOS denselben Takt an, das System darf Wechsel aber zusammenfassen.'
+					: ''}
 			</Text>
 
-			<Text style={[styles.heading, styles.headingSpaced]}>Uhr</Text>
-			<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
-			<View style={styles.chipRow}>
-				<Chip label="Frühling (21.03.)" selected={clockSettings.yearStart === 'spring'} onPress={() => updateClockSettings({ yearStart: 'spring' })} />
-				<Chip label="Neujahr (01.01.)" selected={clockSettings.yearStart === 'newyear'} onPress={() => updateClockSettings({ yearStart: 'newyear' })} />
-			</View>
+			{previewKind === 'clock' ? (
+				<>
+					<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
+					<View style={styles.chipRow}>
+						<Chip
+							label="Frühling (21.03.)"
+							selected={clockSettings.yearStart === 'spring'}
+							onPress={() => updateClockSettings({ yearStart: 'spring' })}
+						/>
+						<Chip
+							label="Neujahr (01.01.)"
+							selected={clockSettings.yearStart === 'newyear'}
+							onPress={() => updateClockSettings({ yearStart: 'newyear' })}
+						/>
+					</View>
 
-			<Text style={styles.sectionTitle}>Tagesanzeige</Text>
-			<View style={styles.chipRow}>
-				<Chip label="Tagesfortschritt" selected={clockSettings.dayDisplay === 'progress'} onPress={() => updateClockSettings({ dayDisplay: 'progress' })} />
-				<Chip label="Sonne & Mond" selected={clockSettings.dayDisplay === 'sunmoon'} onPress={() => updateClockSettings({ dayDisplay: 'sunmoon' })} />
-			</View>
-			{clockSettings.dayDisplay === 'sunmoon' ? (
-				<Text style={styles.hint}>
-					Sonne und Mond wandern über den Horizont: Sonne von 06:00 (links) bis 18:00 (rechts), der Mond übernimmt die Nacht. Darüber
-					Himmel, darunter Erde.
-				</Text>
-			) : null}
+					<Text style={styles.sectionTitle}>Tagesanzeige</Text>
+					<View style={styles.chipRow}>
+						<Chip
+							label="Tagesfortschritt"
+							selected={clockSettings.dayDisplay === 'progress'}
+							onPress={() => updateClockSettings({ dayDisplay: 'progress' })}
+						/>
+						<Chip
+							label="Sonne & Mond"
+							selected={clockSettings.dayDisplay === 'sunmoon'}
+							onPress={() => updateClockSettings({ dayDisplay: 'sunmoon' })}
+						/>
+					</View>
+					{clockSettings.dayDisplay === 'sunmoon' ? (
+						<Text style={styles.hint}>
+							Sonne und Mond wandern über den Horizont: Sonne von 06:00 (links) bis 18:00 (rechts), der Mond übernimmt die Nacht.
+							Darüber Himmel, darunter Erde.
+						</Text>
+					) : null}
+				</>
+			) : (
+				<>
+					<Text style={styles.sectionTitle}>Server</Text>
+					<View style={styles.chipRow}>
+						{FOOD_SERVERS.map((server) => (
+							<Chip
+								key={server.key}
+								label={server.label}
+								selected={server.key === serverKey}
+								onPress={() => {
+									setServerKey(server.key);
+									setCanteenId(null);
+									setMeals(null);
+									setStatus(null);
+								}}
+							/>
+						))}
+					</View>
 
-			<Text style={[styles.heading, styles.headingSpaced]}>Food-Widget (experimentell)</Text>
-			<Text style={styles.hint}>
-				Zeigt die Speisen des heutigen Tages als Foto-Raster im Home-Widget. iOS-Widgets können nicht wischen - stattdessen blättert
-				die Timeline automatisch weiter (alle 10 Sekunden in der ersten Stunde, danach minütlich; iOS kann Wechsel je nach
-				System-Budget zusammenfassen).
-			</Text>
+					<Text style={styles.sectionTitle}>Mensa</Text>
+					{canteensLoading ? <ActivityIndicator color={CLOCK_COLORS.yearDisc} /> : null}
+					{!canteensLoading && serverKey == null ? <Text style={styles.hint}>Zuerst einen Server wählen.</Text> : null}
+					<View style={styles.chipRow}>
+						{canteens.map((canteen) => (
+							<Chip
+								key={canteen.id}
+								label={canteen.alias}
+								selected={canteen.id === canteenId}
+								onPress={() => {
+									setCanteenId(canteen.id);
+									setStatus(null);
+								}}
+							/>
+						))}
+					</View>
 
-			<Text style={styles.sectionTitle}>Server</Text>
-			<View style={styles.chipRow}>
-				{FOOD_SERVERS.map((server) => (
-					<Chip
-						key={server.key}
-						label={server.label}
-						selected={server.key === serverKey}
-						onPress={() => {
-							setServerKey(server.key);
-							setCanteenId(null);
-							setMeals(null);
-							setStatus(null);
-						}}
-					/>
-				))}
-			</View>
+					<Text style={styles.sectionTitle}>Bilder pro Seite</Text>
+					<View style={styles.chipRow}>
+						{MEAL_COUNT_OPTIONS.map((count) => (
+							<Chip key={count} label={`${count}`} selected={count === mealCount} onPress={() => setMealCount(count)} />
+						))}
+					</View>
 
-			<Text style={styles.sectionTitle}>Mensa</Text>
-			{canteensLoading ? <ActivityIndicator color={CLOCK_COLORS.yearDisc} /> : null}
-			{!canteensLoading && serverKey == null ? <Text style={styles.hint}>Zuerst einen Server wählen.</Text> : null}
-			<View style={styles.chipRow}>
-				{canteens.map((canteen) => (
-					<Chip
-						key={canteen.id}
-						label={canteen.alias}
-						selected={canteen.id === canteenId}
-						onPress={() => {
-							setCanteenId(canteen.id);
-							setMeals(null);
-							setStatus(null);
-						}}
-					/>
-				))}
-			</View>
+					{busy ? <ActivityIndicator style={styles.busyIndicator} color={CLOCK_COLORS.dayDot} /> : null}
+					{status ? <Text style={styles.status}>{status}</Text> : null}
+					{error ? <Text style={styles.error}>{error}</Text> : null}
 
-			<Text style={styles.sectionTitle}>Bilder pro Seite</Text>
-			<View style={styles.chipRow}>
-				{MEAL_COUNT_OPTIONS.map((count) => (
-					<Chip key={count} label={`${count}`} selected={count === mealCount} onPress={() => setMealCount(count)} />
-				))}
-			</View>
-
-			<Pressable style={[styles.applyButton, busy && styles.applyButtonDisabled]} onPress={applyToWidget} disabled={busy}>
-				{busy ? <ActivityIndicator color="#2b2b28" /> : <Text style={styles.applyButtonText}>Speisen laden & Widget aktualisieren</Text>}
-			</Pressable>
-
-			{status ? <Text style={styles.status}>{status}</Text> : null}
-			{error ? <Text style={styles.error}>{error}</Text> : null}
-
-			{meals && meals.length > 0 ? (
-				<View style={styles.preview}>
-					<Text style={styles.sectionTitle}>Heutige Speisen</Text>
-					{meals.map((meal, index) => (
-						<View key={`preview-${index}`} style={styles.mealRow}>
-							<Text style={styles.mealName}>{meal.name}</Text>
-							{meal.price ? <Text style={styles.mealPrice}>{meal.price}</Text> : null}
-						</View>
-					))}
-				</View>
-			) : null}
-
-			<Text style={styles.hint}>
-				Widget hinzufügen: Home-Bildschirm lange drücken → Bearbeiten → Widget hinzufügen → „Tag und Jahr" → „Speisen heute".
-			</Text>
+					<Text style={styles.hint}>
+						Widget hinzufügen: Home-Bildschirm lange drücken → Bearbeiten → Widget hinzufügen → „Tag und Jahr" → „Speisen heute".
+					</Text>
+				</>
+			)}
 		</ScrollView>
 	);
 }
@@ -268,9 +268,6 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: '600',
 		marginBottom: 8,
-	},
-	headingSpaced: {
-		marginTop: 32,
 	},
 	previewContainer: {
 		marginTop: 12,
@@ -314,20 +311,9 @@ const styles = StyleSheet.create({
 		color: '#2b2b28',
 		fontWeight: '600',
 	},
-	applyButton: {
-		marginTop: 24,
-		backgroundColor: CLOCK_COLORS.dayDot,
-		borderRadius: 12,
-		paddingVertical: 14,
-		alignItems: 'center',
-	},
-	applyButtonDisabled: {
-		opacity: 0.6,
-	},
-	applyButtonText: {
-		color: '#0d2321',
-		fontSize: 15,
-		fontWeight: '600',
+	busyIndicator: {
+		marginTop: 16,
+		alignSelf: 'flex-start',
 	},
 	status: {
 		color: '#9fe3b0',
@@ -338,25 +324,5 @@ const styles = StyleSheet.create({
 		color: '#f2a9a0',
 		fontSize: 13,
 		marginTop: 12,
-	},
-	preview: {
-		marginTop: 8,
-	},
-	mealRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		gap: 12,
-		paddingVertical: 6,
-		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderBottomColor: 'rgba(255,255,255,0.12)',
-	},
-	mealName: {
-		color: '#e8ebf1',
-		fontSize: 14,
-		flexShrink: 1,
-	},
-	mealPrice: {
-		color: '#c8cfdc',
-		fontSize: 14,
 	},
 });

@@ -1,33 +1,26 @@
 import { computeGridLayout } from '../helpers/gridLayout';
 
-describe('computeGridLayout', () => {
-	it('lays out 4 items as an exact 2x2 grid on a square canvas', () => {
-		const layout = computeGridLayout(4, 160, 160, 2);
-		expect(layout.columns).toBe(2);
-		expect(layout.rows).toBe(2);
-		expect(layout.cellCount).toBe(4);
-		expect(layout.cellSize).toBe(79);
+describe('computeGridLayout (width-driven square grid)', () => {
+	it('lays out 4 items as a 2x2 grid on a square widget', () => {
+		expect(computeGridLayout(4, false)).toEqual({ columns: 2, rows: 2, cellCount: 4 });
 	});
 
-	it('pads 3 items on a square canvas to a 2x2 grid with one placeholder', () => {
-		const layout = computeGridLayout(3, 160, 160, 2);
-		expect(layout.columns).toBe(2);
-		expect(layout.rows).toBe(2);
-		expect(layout.cellCount).toBe(4);
+	it('pads 3 items on a square widget to a 2x2 grid with one placeholder', () => {
+		expect(computeGridLayout(3, false)).toEqual({ columns: 2, rows: 2, cellCount: 4 });
 	});
 
-	it('covers the canvas in both dimensions (bleed, never letterbox)', () => {
-		const spacing = 2;
-		for (const count of [2, 3, 4, 5, 6, 8]) {
-			const layout = computeGridLayout(count, 348, 160, spacing);
-			const gridWidth = layout.columns * layout.cellSize + spacing * (layout.columns - 1);
-			const gridHeight = layout.rows * layout.cellSize + spacing * (layout.rows - 1);
-			expect(gridWidth).toBeGreaterThanOrEqual(348);
-			expect(gridHeight).toBeGreaterThanOrEqual(160);
+	it('never has more rows than columns, so the grid never exceeds the widget height', () => {
+		for (let count = 1; count <= 12; count++) {
+			const square = computeGridLayout(count, false);
+			expect(square.rows).toBeLessThanOrEqual(square.columns);
+			const wide = computeGridLayout(count, true);
+			// Wide (2:1) widgets need roughly twice as many columns as rows.
+			expect(wide.rows * 2).toBeLessThanOrEqual(wide.columns * 2);
+			expect(wide.columns).toBeGreaterThanOrEqual(square.columns);
 		}
 	});
 
 	it('returns an empty layout for zero items', () => {
-		expect(computeGridLayout(0, 160, 160, 2).cellCount).toBe(0);
+		expect(computeGridLayout(0, false).cellCount).toBe(0);
 	});
 });
