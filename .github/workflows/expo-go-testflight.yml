@@ -1,0 +1,125 @@
+name: "🧪 Expo Go Client → TestFlight"
+
+# Baut mit `eas go` einen eigenen Expo-Go-Client für eine wählbare SDK-Version
+# und schiebt ihn in das interne TestFlight-Team. Hintergrund: Die App-Store-
+# Version von Expo Go hängt auf SDK 54 fest (Apple-Review), neuere SDKs sind
+# dort nicht verfügbar. `eas go` legt dafür eine eigene App unter unserem
+# Apple-Team in App Store Connect an (eigene Bundle-ID) - unabhängig von der
+# offiziellen Expo-Go-App.
+#
+# Der Build läuft auf EAS-Servern und zählt als Workflow-Minuten, nicht gegen
+# die EAS-Build-Quota. Ein erneuter Lauf mit derselben Bundle-ID aktualisiert
+# die bestehende App in App Store Connect, statt eine neue anzulegen.
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdk_version:
+        description: 'Expo SDK Version (z.B. 57); leer = neueste von EAS unterstützte'
+        required: false
+        default: '57'
+      app_name:
+        description: 'App-Name in App Store Connect / TestFlight'
+        required: false
+        default: 'Baumgartner Expo Go'
+      bundle_id:
+        description: 'iOS Bundle-ID (stabil lassen, damit Läufe dieselbe App aktualisieren); leer = von EAS generiert'
+        required: false
+        default: 'de.baumgartner-software.expo-go'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  build-expo-go:
+    name: "🚀 Build Expo Go SDK ${{ github.event.inputs.sdk_version || 'latest' }} & submit to TestFlight"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+
+      # Forks (Tenant-Repositories) haben die Secrets ggf. nicht konfiguriert -
+      # dann sauber überspringen statt fehlschlagen (gleiches Muster wie in den
+      # ios-submit-review-Workflows).
+      - name: "🔐 Check EAS & App Store Connect credentials"
+        id: guard
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_KEY: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ Secret EXPO_TOKEN ist nicht gesetzt - Workflow wird übersprungen."
+          elif [ -z "$ASC_KEY" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "⏭️ Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT ist nicht gesetzt - Workflow wird übersprungen."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "⚙️ Setup Node.js"
+        if: steps.guard.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: "⚙️ Enable Corepack for Yarn v2"
+        if: steps.guard.outputs.available == 'true'
+        run: corepack enable
+
+      # prepare-asc-api-key braucht ts-node aus den Workspace-Dependencies;
+      # --mode=skip-build lässt Lifecycle-Skripte aus (Supply-Chain-Härtung).
+      - name: "📦 Install dependencies"
+        if: steps.guard.outputs.available == 'true'
+        run: yarn install --immutable --mode=skip-build
+
+      # Schreibt den .p8-Key auf Platte und exportiert EXPO_ASC_API_KEY_PATH,
+      # EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID und
+      # EXPO_APPLE_TEAM_TYPE - die EAS CLI liest diese Variablen für die
+      # nicht-interaktive TestFlight-Submission.
+      - name: "🔐 Prepare Apple App Store Connect API key"
+        if: steps.guard.outputs.available == 'true'
+        uses: ./.github/actions/prepare-asc-api-key
+        with:
+          EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
+
+      - name: "🚀 Build & submit Expo Go via eas go"
+        if: steps.guard.outputs.available == 'true'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          SDK_VERSION: ${{ github.event.inputs.sdk_version }}
+          APP_NAME: ${{ github.event.inputs.app_name }}
+          BUNDLE_ID: ${{ github.event.inputs.bundle_id }}
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [ -n "$SDK_VERSION" ]; then
+            ARGS+=(--sdk-version "$SDK_VERSION")
+          fi
+          if [ -n "$APP_NAME" ]; then
+            ARGS+=(--name "$APP_NAME")
+          fi
+          if [ -n "$BUNDLE_ID" ]; then
+            ARGS+=(--bundle-id "$BUNDLE_ID")
+          fi
+          echo "▶️ npx eas-cli go ${ARGS[*]}"
+          npx --yes eas-cli@latest go "${ARGS[@]}"
+
+      - name: "🖨️ Summary"
+        if: steps.guard.outputs.available == 'true'
+        env:
+          SDK_VERSION: ${{ github.event.inputs.sdk_version }}
+          APP_NAME: ${{ github.event.inputs.app_name }}
+        run: |
+          {
+            echo "## 🧪 Expo Go Client → TestFlight"
+            echo ""
+            echo "- **SDK-Version:** ${SDK_VERSION:-latest}"
+            echo "- **App:** ${APP_NAME}"
+            echo ""
+            echo "Der Build wurde an App Store Connect übermittelt. Sobald Apple ihn"
+            echo "verarbeitet hat, erscheint er im **internen TestFlight-Team** und kann"
+            echo "auf iPhones installiert werden."
+          } >> "$GITHUB_STEP_SUMMARY"
