@@ -1,8 +1,8 @@
 Key,Message,Component,Line
+"AZ_rK9ndnZEST5sNyyOo","Do not use Array index in keys","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/widgets/FoodWidget.tsx",52
 "AZ_q2RoeUduJcvPJKmAL","Do not use Array index in keys","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/app/settings/index.tsx",156
 "AZ_q2RrxUduJcvPJKmAN","""studi-futter"" | ""swosy"" | ""rocket-meals"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/helpers/foodServers.ts",31
-"AZ_q2RriUduJcvPJKmAM","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/helpers/widgetSync.ts",62
-"AZ_q2RsVUduJcvPJKmAO","Do not use Array index in keys","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/widgets/FoodWidget.tsx",47
+"AZ_q2RriUduJcvPJKmAM","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/helpers/widgetSync.ts",99
 "AZ_ny-jrHB_X69K27h4p","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",78
 "AZ_ny-jrHB_X69K27h4q","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",79
 "AZ_ny-jrHB_X69K27h4r","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",80
