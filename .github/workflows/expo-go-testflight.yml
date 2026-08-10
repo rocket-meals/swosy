@@ -15,9 +15,20 @@ on:
   workflow_dispatch:
     inputs:
       sdk_version:
-        description: 'Expo SDK Version (z.B. 57); leer = neueste von EAS unterstützte'
-        required: false
+        description: 'Expo SDK Version (Dropdown); "latest" = neueste von EAS unterstützte'
+        required: true
+        type: choice
         default: '57'
+        options:
+          - '57'
+          - '56'
+          - '55'
+          - '54'
+          - 'latest'
+      sdk_version_custom:
+        description: 'Expo SDK Version (Freitext, z.B. 58) - übersteuert das Dropdown, falls gesetzt'
+        required: false
+        default: ''
       app_name:
         description: 'App-Name in App Store Connect / TestFlight'
         required: false
@@ -33,7 +44,7 @@ concurrency:
 
 jobs:
   build-expo-go:
-    name: "🚀 Build Expo Go SDK ${{ github.event.inputs.sdk_version || 'latest' }} & submit to TestFlight"
+    name: "🚀 Build Expo Go SDK ${{ github.event.inputs.sdk_version_custom || github.event.inputs.sdk_version }} & submit to TestFlight"
     runs-on: ubuntu-latest
     timeout-minutes: 120
     # Nur im Upstream-Repository ausführen - Tenant-Forks sollen keinen
@@ -92,13 +103,15 @@ jobs:
         if: steps.guard.outputs.available == 'true'
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          SDK_VERSION: ${{ github.event.inputs.sdk_version }}
+          # Freitext übersteuert das Dropdown; 'latest' bedeutet: kein
+          # --sdk-version-Flag, EAS nimmt die neueste unterstützte Version.
+          SDK_VERSION: ${{ github.event.inputs.sdk_version_custom || github.event.inputs.sdk_version }}
           APP_NAME: ${{ github.event.inputs.app_name }}
           BUNDLE_ID: ${{ github.event.inputs.bundle_id }}
         run: |
           set -euo pipefail
           ARGS=()
-          if [ -n "$SDK_VERSION" ]; then
+          if [ -n "$SDK_VERSION" ] && [ "$SDK_VERSION" != "latest" ]; then
             ARGS+=(--sdk-version "$SDK_VERSION")
           fi
           if [ -n "$APP_NAME" ]; then
@@ -113,7 +126,7 @@ jobs:
       - name: "🖨️ Summary"
         if: steps.guard.outputs.available == 'true'
         env:
-          SDK_VERSION: ${{ github.event.inputs.sdk_version }}
+          SDK_VERSION: ${{ github.event.inputs.sdk_version_custom || github.event.inputs.sdk_version }}
           APP_NAME: ${{ github.event.inputs.app_name }}
         run: |
           {
