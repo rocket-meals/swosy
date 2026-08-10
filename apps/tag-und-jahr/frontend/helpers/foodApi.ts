@@ -82,7 +82,7 @@ export function getMealImageUrl(offer: RawFoodoffer, serverUrl: string): string 
 	const image = offer.food?.image;
 	const fileId = typeof image === 'string' ? image : image?.id;
 	if (fileId) {
-		return `${serverUrl}/assets/${fileId}?width=160&height=160&fit=cover&quality=60`;
+		return `${serverUrl}/assets/${fileId}?width=512&height=512&fit=cover&quality=70`;
 	}
 	return offer.food?.image_remote_url ?? undefined;
 }

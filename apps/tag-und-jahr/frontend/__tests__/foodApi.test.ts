@@ -48,7 +48,7 @@ describe('getMealName', () => {
 describe('getMealImageUrl', () => {
 	it('builds a scaled Directus assets url from the food image id', () => {
 		expect(getMealImageUrl({ id: '1', food: { image: 'file-123' } }, SERVER_URL)).toBe(
-			`${SERVER_URL}/assets/file-123?width=160&height=160&fit=cover&quality=60`
+			`${SERVER_URL}/assets/file-123?width=512&height=512&fit=cover&quality=70`
 		);
 		expect(getMealImageUrl({ id: '1', food: { image: { id: 'file-456' } } }, SERVER_URL)).toContain('/assets/file-456?');
 	});
@@ -69,7 +69,7 @@ describe('toMeals', () => {
 			SERVER_URL
 		);
 		expect(meals).toEqual([
-			{ name: 'Schnitzel', price: '2,50 €', imageUrl: `${SERVER_URL}/assets/file-123?width=160&height=160&fit=cover&quality=60` },
+			{ name: 'Schnitzel', price: '2,50 €', imageUrl: `${SERVER_URL}/assets/file-123?width=512&height=512&fit=cover&quality=70` },
 		]);
 	});
 });

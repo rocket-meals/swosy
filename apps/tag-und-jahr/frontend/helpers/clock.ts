@@ -61,3 +61,37 @@ export function getDayAngleDegrees(date: Date): number {
 export function getYearAngleDegrees(date: Date): number {
 	return getYearFraction(date) * 360;
 }
+
+/**
+ * Fraction [0, 1) of the calendar year (1 January to 1 January) that has
+ * passed - the alternative "Neujahr" year start.
+ */
+export function getCalendarYearFraction(date: Date): number {
+	const startOfYear = new Date(date.getFullYear(), 0, 1);
+	const startOfNextYear = new Date(date.getFullYear() + 1, 0, 1);
+	return (date.getTime() - startOfYear.getTime()) / (startOfNextYear.getTime() - startOfYear.getTime());
+}
+
+/**
+ * Year mark angle for a configurable year start: 'spring' anchors 21 March at
+ * twelve o'clock, 'newyear' anchors 1 January there.
+ */
+export function getYearAngleDegreesFor(date: Date, yearStart: 'spring' | 'newyear'): number {
+	return (yearStart === 'newyear' ? getCalendarYearFraction(date) : getYearFraction(date)) * 360;
+}
+
+/**
+ * Sun angle in degrees for the "Sonne & Mond" day display: one full clockwise
+ * revolution per 24h, anchored at the LEFT horizon point at 06:00 local time
+ * (so 12:00 = top, 18:00 = right horizon, 00:00 = bottom, i.e. below the
+ * horizon). The moon is the same motion shifted by 12 hours.
+ */
+export function getSunAngleDegrees(date: Date): number {
+	const hoursSinceSix = (getDayFraction(date) * 24 - 6 + 24) % 24;
+	return (hoursSinceSix / 24) * 360;
+}
+
+/** Moon angle: the sun's motion shifted by 12 hours (above horizon 18:00-06:00). */
+export function getMoonAngleDegrees(date: Date): number {
+	return (getSunAngleDegrees(date) + 180) % 360;
+}
