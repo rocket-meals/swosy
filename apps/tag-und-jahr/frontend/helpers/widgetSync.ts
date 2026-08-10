@@ -15,14 +15,19 @@ export const TIMELINE_STEP_MINUTES = 30;
 export const TIMELINE_DAYS = 7;
 
 // Auto-pagination of the food widget: the timeline advances to the next page
-// every 10 seconds for the first hour after a sync, afterwards once per
-// minute until the end of the day (keeps the entry count bounded). NOTE:
-// WidgetKit treats entry dates as the EARLIEST render moment and may coalesce
-// sub-minute entries depending on system budget - the timeline offers the
-// 10s cadence, iOS decides how closely it follows it.
+// every 10 seconds for the first 15 minutes after a sync, then once per
+// minute for three hours, then every 30 minutes until the end of the day.
+// The tapering keeps the total entry count around ~300 - the widget
+// extension parses the WHOLE stored timeline on every reload, and thousands
+// of entries can blow its tight memory/time budget (blank/black widget).
+// NOTE: WidgetKit treats entry dates as the EARLIEST render moment and may
+// coalesce sub-minute entries depending on system budget - the timeline
+// offers the 10s cadence, iOS decides how closely it follows it.
 export const FOOD_FAST_STEP_SECONDS = 10;
-export const FOOD_FAST_WINDOW_MINUTES = 60;
+export const FOOD_FAST_WINDOW_MINUTES = 15;
 export const FOOD_SLOW_STEP_SECONDS = 60;
+export const FOOD_SLOW_WINDOW_MINUTES = 180;
+export const FOOD_TAIL_STEP_SECONDS = 30 * 60;
 
 /**
  * The dates of all clock timeline entries: every half hour boundary from the
@@ -47,11 +52,15 @@ export function getTimelineEntryDates(now: Date, days: number = TIMELINE_DAYS): 
 export function getFoodTimelineEntryDates(now: Date): Date[] {
 	const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
 	const fastUntil = Math.min(now.getTime() + FOOD_FAST_WINDOW_MINUTES * 60 * 1000, endOfDay);
+	const slowUntil = Math.min(fastUntil + FOOD_SLOW_WINDOW_MINUTES * 60 * 1000, endOfDay);
 	const dates: Date[] = [];
 	for (let time = now.getTime(); time < fastUntil; time += FOOD_FAST_STEP_SECONDS * 1000) {
 		dates.push(new Date(time));
 	}
-	for (let time = fastUntil; time < endOfDay; time += FOOD_SLOW_STEP_SECONDS * 1000) {
+	for (let time = fastUntil; time < slowUntil; time += FOOD_SLOW_STEP_SECONDS * 1000) {
+		dates.push(new Date(time));
+	}
+	for (let time = slowUntil; time < endOfDay; time += FOOD_TAIL_STEP_SECONDS * 1000) {
 		dates.push(new Date(time));
 	}
 	return dates;
