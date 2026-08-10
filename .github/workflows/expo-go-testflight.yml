@@ -10,6 +10,13 @@ name: "🧪 Expo Go Client → TestFlight"
 # Der Build läuft auf EAS-Servern und zählt als Workflow-Minuten, nicht gegen
 # die EAS-Build-Quota. Ein erneuter Lauf mit derselben Bundle-ID aktualisiert
 # die bestehende App in App Store Connect, statt eine neue anzulegen.
+#
+# Wichtig: `eas go` funktioniert NICHT mit Robot-Tokens ("This action is not
+# supported for robot users") - das übliche EXPO_TOKEN-Secret (Robot
+# "GitHubActions") reicht daher nicht. Es braucht das Secret
+# EXPO_PERSONAL_TOKEN mit einem persönlichen Access Token eines echten
+# Expo-Accounts: expo.dev → eigener User-Account (nicht die Organisation) →
+# Access tokens → "Create token".
 
 on:
   workflow_dispatch:
@@ -60,12 +67,15 @@ jobs:
       - name: "🔐 Check EAS & App Store Connect credentials"
         id: guard
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PERSONAL_TOKEN: ${{ secrets.EXPO_PERSONAL_TOKEN }}
           ASC_KEY: ${{ secrets.EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT }}
         run: |
-          if [ -z "$EXPO_TOKEN" ]; then
+          if [ -z "$EXPO_PERSONAL_TOKEN" ]; then
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "⏭️ Secret EXPO_TOKEN ist nicht gesetzt - Workflow wird übersprungen."
+            echo "⏭️ Secret EXPO_PERSONAL_TOKEN ist nicht gesetzt - Workflow wird übersprungen."
+            echo "ℹ️ 'eas go' unterstützt keine Robot-Tokens (wie EXPO_TOKEN). Bitte auf expo.dev"
+            echo "   im eigenen User-Account (nicht der Organisation) unter 'Access tokens' einen"
+            echo "   Token erstellen und als Repo-Secret EXPO_PERSONAL_TOKEN hinterlegen."
           elif [ -z "$ASC_KEY" ]; then
             echo "available=false" >> "$GITHUB_OUTPUT"
             echo "⏭️ Secret EXPO_APPLE_APPSTORECONNECT_API_KEY_CONTENT ist nicht gesetzt - Workflow wird übersprungen."
@@ -102,7 +112,9 @@ jobs:
       - name: "🚀 Build & submit Expo Go via eas go"
         if: steps.guard.outputs.available == 'true'
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          # Persönlicher Token statt Robot-Token - 'eas go' bricht mit
+          # "This action is not supported for robot users" ab.
+          EXPO_TOKEN: ${{ secrets.EXPO_PERSONAL_TOKEN }}
           # Freitext übersteuert das Dropdown; 'latest' bedeutet: kein
           # --sdk-version-Flag, EAS nimmt die neueste unterstützte Version.
           SDK_VERSION: ${{ github.event.inputs.sdk_version_custom || github.event.inputs.sdk_version }}
