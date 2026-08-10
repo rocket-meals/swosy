@@ -36,6 +36,9 @@ jobs:
     name: "🚀 Build Expo Go SDK ${{ github.event.inputs.sdk_version || 'latest' }} & submit to TestFlight"
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # Nur im Upstream-Repository ausführen - Tenant-Forks sollen keinen
+    # eigenen Expo-Go-Client bauen (gleiche Absicht wie check-repository in ci.yml).
+    if: github.repository == 'rocket-meals/rocket-meals'
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
