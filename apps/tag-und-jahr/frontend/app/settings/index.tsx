@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Canteen, fetchCanteensAsync, fetchTodaysMealsAsync, Meal } from '../../helpers/foodApi';
 import { FOOD_SERVERS, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
 import { loadFoodWidgetSettingsAsync, saveFoodWidgetSettingsAsync } from '../../helpers/foodWidgetSettings';
 import { CLOCK_COLORS } from '../../helpers/clockDesign';
 import { ClockSettings, DEFAULT_CLOCK_SETTINGS, loadClockSettingsAsync, saveClockSettingsAsync } from '../../helpers/clockSettings';
 import { syncFoodWidgetTimelineAsync, syncWidgetTimeline } from '../../helpers/widgetSync';
+import { ClockWidgetPreview, FoodWidgetPreview } from '../../components/WidgetPreview';
 
 const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 
@@ -13,6 +14,8 @@ const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 // many meals the food widget shows at once, then push today's menu into the
 // widget timeline. Deliberately no caching - data is fetched fresh on demand.
 export default function Settings() {
+	const { width } = useWindowDimensions();
+	const [previewKind, setPreviewKind] = useState<'clock' | 'food'>('clock');
 	const [clockSettings, setClockSettings] = useState<ClockSettings>(DEFAULT_CLOCK_SETTINGS);
 	const [serverKey, setServerKey] = useState<FoodServerKey | null>(null);
 	const [canteens, setCanteens] = useState<Canteen[]>([]);
@@ -77,6 +80,29 @@ export default function Settings() {
 		};
 	}, [serverKey]);
 
+	// Load today's meals for the preview as soon as server and canteen are
+	// known (hydrated from storage or freshly picked) - no caching, the
+	// preview simply reflects what the widget would show.
+	useEffect(() => {
+		const server = getFoodServer(serverKey ?? undefined);
+		if (!server || !canteenId) {
+			return;
+		}
+		let cancelled = false;
+		fetchTodaysMealsAsync(server.serverUrl, canteenId)
+			.then((loaded) => {
+				if (!cancelled) {
+					setMeals(loaded);
+				}
+			})
+			.catch(() => {
+				// Preview only - errors surface via the explicit button flow.
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [serverKey, canteenId]);
+
 	const applyToWidget = useCallback(async () => {
 		const server = getFoodServer(serverKey ?? undefined);
 		const canteen = canteens.find((entry) => entry.id === canteenId);
@@ -105,9 +131,28 @@ export default function Settings() {
 		}
 	}, [serverKey, canteens, canteenId, mealCount]);
 
+	const previewSize = Math.min(width - 40, 329);
+
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={styles.content}>
-			<Text style={styles.heading}>Uhr</Text>
+			<Text style={styles.heading}>Widget-Vorschau</Text>
+			<View style={styles.chipRow}>
+				<Chip label="Kalender" selected={previewKind === 'clock'} onPress={() => setPreviewKind('clock')} />
+				<Chip label="Food-Widget" selected={previewKind === 'food'} onPress={() => setPreviewKind('food')} />
+			</View>
+			<View style={styles.previewContainer}>
+				{previewKind === 'clock' ? (
+					<ClockWidgetPreview size={previewSize} settings={clockSettings} />
+				) : (
+					<FoodWidgetPreview size={previewSize} meals={meals ?? []} mealsPerPage={mealCount} />
+				)}
+			</View>
+			<Text style={styles.hint}>
+				So sieht das Widget mit den aktuellen Einstellungen aus. Das Food-Widget blättert hier live alle 10 Sekunden - auf dem
+				Home-Bildschirm bietet die Timeline iOS denselben Takt an, das System darf Wechsel aber zusammenfassen.
+			</Text>
+
+			<Text style={[styles.heading, styles.headingSpaced]}>Uhr</Text>
 			<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
 			<View style={styles.chipRow}>
 				<Chip label="Frühling (21.03.)" selected={clockSettings.yearStart === 'spring'} onPress={() => updateClockSettings({ yearStart: 'spring' })} />
@@ -226,6 +271,10 @@ const styles = StyleSheet.create({
 	},
 	headingSpaced: {
 		marginTop: 32,
+	},
+	previewContainer: {
+		marginTop: 12,
+		marginBottom: 4,
 	},
 	hint: {
 		color: '#c8cfdc',
