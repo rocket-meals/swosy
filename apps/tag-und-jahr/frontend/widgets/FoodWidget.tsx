@@ -1,70 +1,90 @@
-import { HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, cornerRadius, font, foregroundStyle, frame, lineLimit, padding } from '@expo/ui/swift-ui/modifiers';
+import { HStack, Image, Rectangle, Text, VStack, ZStack } from '@expo/ui/swift-ui';
+import { containerBackground, cornerRadius, font, foregroundStyle, frame, padding, resizable } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 
-// Experimental widget: shows today's meals of the configured canteen. The app
-// fetches the data (settings screen / app start), downloads the meal photos
-// into the shared app group container and schedules everything as timeline
-// props - WidgetKit cannot swipe, so when there are more meals than fit on one
-// "page", the timeline rotates through the pages every 30 minutes instead
-// (see helpers/widgetSync.ts).
+// Experimental widget: a pure photo grid of today's meals - no texts, square
+// images filling the widget with light spacing. The app fetches the data,
+// downloads the photos into the shared app group container and schedules the
+// pages as timeline entries: WidgetKit cannot swipe, so the timeline
+// auto-paginates instead (10-second steps for the first hour, then
+// per-minute; iOS may coalesce sub-minute entries depending on its budget -
+// see helpers/widgetSync.ts).
 export type FoodWidgetProps = {
-	/** Canteen name shown as the header. */
-	title?: string;
 	/** Meals of the current page; imagePath is a file:// photo in the app group. */
 	meals?: { name: string; price: string; imagePath?: string }[];
-	/** Small footer line, e.g. "Seite 1/2 · Stand 12:30". */
-	footer?: string;
 };
 
 const FoodWidgetLayout = (props: FoodWidgetProps, environment: WidgetEnvironment) => {
 	'widget';
 	// The 'widget' directive isolates this function: no imports and no module
 	// scope values are available in here, so colors and sizes live inline.
-	// IMPORTANT: the widget renderer drops nested arrays inside mixed children,
-	// so the mapped meal rows must live in their own VStack (sole child = array).
+	// NOTE: the widget renderer drops nested arrays inside mixed children, so
+	// mapped rows/cells always live in their own stack (sole child = array).
 	const isDark = environment.colorScheme === 'dark';
 	const backgroundColor = isDark ? '#1e232e' : '#f6f2e9';
-	const titleColor = isDark ? '#e6a83c' : '#8a5a19';
-	const textColor = isDark ? '#f2f0ea' : '#2b2b28';
+	const placeholderColor = isDark ? '#2c3342' : '#e4ddcd';
 	const mutedColor = isDark ? '#9aa3b2' : '#8b8677';
 
-	const family = environment.widgetFamily;
-	const isSmall = family === 'systemSmall';
-	const titleSize = isSmall ? 11 : 13;
-	const rowSize = isSmall ? 10 : 12;
-	const footerSize = isSmall ? 8 : 10;
-	const photoSize = isSmall ? 18 : 28;
-
 	const meals = props.meals ?? [];
-	const title = props.title ?? 'Speisen heute';
 
-	return (
-		<VStack alignment="leading" spacing={isSmall ? 3 : 5} modifiers={[frame({ maxWidth: 9999, maxHeight: 9999, alignment: 'topLeading' }), padding({ all: isSmall ? 4 : 8 }), containerBackground(backgroundColor, 'widget')]}>
-			<Text modifiers={[font({ size: titleSize, weight: 'bold' }), foregroundStyle(titleColor), lineLimit(1)]}>{title}</Text>
-			{meals.length === 0 ? (
-				<Text modifiers={[font({ size: rowSize }), foregroundStyle(mutedColor)]}>
+	if (meals.length === 0) {
+		return (
+			<ZStack modifiers={[frame({ maxWidth: 9999, maxHeight: 9999 }), containerBackground(backgroundColor, 'widget')]}>
+				<Text modifiers={[font({ size: 11 }), foregroundStyle(mutedColor), padding({ all: 8 })]}>
 					Keine Daten - in der App unter Einstellungen eine Mensa wählen.
 				</Text>
-			) : (
-				<VStack alignment="leading" spacing={isSmall ? 2 : 4}>
-					{meals.map((meal, index) => (
-						<HStack key={`meal-${index}`} spacing={isSmall ? 4 : 6}>
-							{meal.imagePath ? (
-								<Image uiImage={meal.imagePath} modifiers={[frame({ width: photoSize, height: photoSize }), cornerRadius(isSmall ? 4 : 6)]} />
-							) : (
-								<Image systemName="fork.knife" size={photoSize - 6} color={mutedColor} modifiers={[frame({ width: photoSize, height: photoSize })]} />
-							)}
-							<Text modifiers={[font({ size: rowSize }), foregroundStyle(textColor), lineLimit(isSmall ? 1 : 2)]}>{meal.name}</Text>
-							<Spacer />
-							{meal.price ? <Text modifiers={[font({ size: rowSize }), foregroundStyle(mutedColor)]}>{meal.price}</Text> : null}
-						</HStack>
-					))}
-				</VStack>
-			)}
-			<Spacer />
-			{props.footer ? <Text modifiers={[font({ size: footerSize }), foregroundStyle(mutedColor), lineLimit(1)]}>{props.footer}</Text> : null}
-		</VStack>
+			</ZStack>
+		);
+	}
+
+	// Grid geometry: content margins are disabled, so the canvas is roughly the
+	// full widget. Sizes are conservative estimates of the smallest device
+	// variant per family (no GeometryReader in the widget runtime).
+	const family = environment.widgetFamily;
+	const isMedium = family === 'systemMedium';
+	const isLarge = family === 'systemLarge' || family === 'systemExtraLarge';
+	const canvasWidth = isLarge ? 322 : isMedium ? 310 : 148;
+	const canvasHeight = isLarge ? 322 : 148;
+	const spacing = 2;
+
+	// Square-ish grid: on the 2:1 medium widget twice as many columns as rows.
+	const count = meals.length;
+	const columns = Math.max(1, Math.ceil(Math.sqrt(isMedium ? count * 2 : count)));
+	const rows = Math.max(1, Math.ceil(count / columns));
+	const cellSize = Math.floor(
+		Math.min((canvasWidth - spacing * (columns - 1)) / columns, (canvasHeight - spacing * (rows - 1)) / rows)
+	);
+
+	// Chunk the meals into grid rows (plain loops - keep the isolated runtime simple).
+	const gridRows: { name: string; imagePath?: string }[][] = [];
+	for (let index = 0; index < count; index += columns) {
+		gridRows.push(meals.slice(index, index + columns));
+	}
+
+	return (
+		<ZStack modifiers={[frame({ maxWidth: 9999, maxHeight: 9999 }), containerBackground(backgroundColor, 'widget')]}>
+			<VStack spacing={spacing}>
+				{gridRows.map((row, rowIndex) => (
+					<HStack key={`row-${rowIndex}`} spacing={spacing}>
+						{row.map((meal, cellIndex) => (
+							<ZStack key={`cell-${rowIndex}-${cellIndex}`} modifiers={[frame({ width: cellSize, height: cellSize })]}>
+								{meal.imagePath ? (
+									<Image
+										uiImage={meal.imagePath}
+										modifiers={[resizable(), frame({ width: cellSize, height: cellSize }), cornerRadius(4)]}
+									/>
+								) : (
+									<ZStack modifiers={[frame({ width: cellSize, height: cellSize })]}>
+										<Rectangle modifiers={[frame({ width: cellSize, height: cellSize }), foregroundStyle(placeholderColor), cornerRadius(4)]} />
+										<Image systemName="fork.knife" size={Math.max(12, cellSize * 0.3)} color={mutedColor} />
+									</ZStack>
+								)}
+							</ZStack>
+						))}
+					</HStack>
+				))}
+			</VStack>
+		</ZStack>
 	);
 };
 

@@ -4,7 +4,8 @@ import { Canteen, fetchCanteensAsync, fetchTodaysMealsAsync, Meal } from '../../
 import { FOOD_SERVERS, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
 import { loadFoodWidgetSettingsAsync, saveFoodWidgetSettingsAsync } from '../../helpers/foodWidgetSettings';
 import { CLOCK_COLORS } from '../../helpers/clockDesign';
-import { syncFoodWidgetTimelineAsync } from '../../helpers/widgetSync';
+import { ClockSettings, DEFAULT_CLOCK_SETTINGS, loadClockSettingsAsync, saveClockSettingsAsync } from '../../helpers/clockSettings';
+import { syncFoodWidgetTimelineAsync, syncWidgetTimeline } from '../../helpers/widgetSync';
 
 const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 
@@ -12,6 +13,7 @@ const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 // many meals the food widget shows at once, then push today's menu into the
 // widget timeline. Deliberately no caching - data is fetched fresh on demand.
 export default function Settings() {
+	const [clockSettings, setClockSettings] = useState<ClockSettings>(DEFAULT_CLOCK_SETTINGS);
 	const [serverKey, setServerKey] = useState<FoodServerKey | null>(null);
 	const [canteens, setCanteens] = useState<Canteen[]>([]);
 	const [canteensLoading, setCanteensLoading] = useState(false);
@@ -24,12 +26,23 @@ export default function Settings() {
 
 	// Hydrate persisted settings once.
 	useEffect(() => {
+		loadClockSettingsAsync().then(setClockSettings);
 		loadFoodWidgetSettingsAsync().then((stored) => {
 			if (stored) {
 				setServerKey(stored.serverKey);
 				setCanteenId(stored.canteenId);
 				setMealCount(stored.mealCount);
 			}
+		});
+	}, []);
+
+	// Persist a clock display option and refresh the clock widget right away.
+	const updateClockSettings = useCallback((update: Partial<ClockSettings>) => {
+		setClockSettings((previous) => {
+			const next = { ...previous, ...update };
+			saveClockSettingsAsync(next).catch((err) => console.warn('[settings] saving clock settings failed:', err));
+			syncWidgetTimeline(next);
+			return next;
 		});
 	}, []);
 
@@ -94,10 +107,30 @@ export default function Settings() {
 
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={styles.content}>
-			<Text style={styles.heading}>Food-Widget (experimentell)</Text>
+			<Text style={styles.heading}>Uhr</Text>
+			<Text style={styles.sectionTitle}>Jahresbeginn (oben)</Text>
+			<View style={styles.chipRow}>
+				<Chip label="Frühling (21.03.)" selected={clockSettings.yearStart === 'spring'} onPress={() => updateClockSettings({ yearStart: 'spring' })} />
+				<Chip label="Neujahr (01.01.)" selected={clockSettings.yearStart === 'newyear'} onPress={() => updateClockSettings({ yearStart: 'newyear' })} />
+			</View>
+
+			<Text style={styles.sectionTitle}>Tagesanzeige</Text>
+			<View style={styles.chipRow}>
+				<Chip label="Tagesfortschritt" selected={clockSettings.dayDisplay === 'progress'} onPress={() => updateClockSettings({ dayDisplay: 'progress' })} />
+				<Chip label="Sonne & Mond" selected={clockSettings.dayDisplay === 'sunmoon'} onPress={() => updateClockSettings({ dayDisplay: 'sunmoon' })} />
+			</View>
+			{clockSettings.dayDisplay === 'sunmoon' ? (
+				<Text style={styles.hint}>
+					Sonne und Mond wandern über den Horizont: Sonne von 06:00 (links) bis 18:00 (rechts), der Mond übernimmt die Nacht. Darüber
+					Himmel, darunter Erde.
+				</Text>
+			) : null}
+
+			<Text style={[styles.heading, styles.headingSpaced]}>Food-Widget (experimentell)</Text>
 			<Text style={styles.hint}>
-				Zeigt die Speisen des heutigen Tages als Home-Widget. iOS-Widgets können nicht wischen - bei mehr Speisen als angezeigt
-				rotiert das Widget etwa alle 30 Minuten durch die Seiten.
+				Zeigt die Speisen des heutigen Tages als Foto-Raster im Home-Widget. iOS-Widgets können nicht wischen - stattdessen blättert
+				die Timeline automatisch weiter (alle 10 Sekunden in der ersten Stunde, danach minütlich; iOS kann Wechsel je nach
+				System-Budget zusammenfassen).
 			</Text>
 
 			<Text style={styles.sectionTitle}>Server</Text>
@@ -135,7 +168,7 @@ export default function Settings() {
 				))}
 			</View>
 
-			<Text style={styles.sectionTitle}>Speisen gleichzeitig</Text>
+			<Text style={styles.sectionTitle}>Bilder pro Seite</Text>
 			<View style={styles.chipRow}>
 				{MEAL_COUNT_OPTIONS.map((count) => (
 					<Chip key={count} label={`${count}`} selected={count === mealCount} onPress={() => setMealCount(count)} />
@@ -190,6 +223,9 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: '600',
 		marginBottom: 8,
+	},
+	headingSpaced: {
+		marginTop: 32,
 	},
 	hint: {
 		color: '#c8cfdc',

@@ -121,6 +121,9 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 							description: 'Zeigt die Speisen des heutigen Tages der gewählten Mensa (experimentell).',
 							ios: {
 								supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge'],
+								// Pure photo grid - the images should fill the widget, so the
+								// system margins are disabled.
+								contentMarginsDisabled: true,
 								initialLayout: 'widgets/FoodWidget.tsx',
 							},
 						},

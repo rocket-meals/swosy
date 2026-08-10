@@ -49,13 +49,20 @@ Der Credentials-Bootstrap in der CI **prüft** anschließend, dass die Provision
 - Das Widget benötigt einen Development Build bzw. TestFlight-Build (nicht Expo Go) und iOS 17 oder neuer.
 - Auf Android und im Web läuft nur die In-App-Ansicht; das Home-Widget ist iOS-only (der Android-Support von `expo-widgets` ist noch experimentell und hier bewusst nicht aktiviert).
 
+## Uhr-Themes
+
+Im Drawer-Menü → **Einstellungen** lassen sich zwei Anzeige-Optionen der Uhr umschalten (gelten für App und Widget – das Widget bekommt sie als Timeline-Props):
+
+- **Jahresbeginn (oben)**: Frühling (21.03., Standard) oder Neujahr (01.01.) – bestimmt, welches Datum der rote Strich bei zwölf Uhr markiert.
+- **Tagesanzeige**: „Tagesfortschritt" (der klassische blaue Punkt) oder **„Sonne & Mond"**: Die innere Scheibe zeigt oben Himmel, unten Erde, getrennt durch eine Horizontlinie. Die Sonne wandert von 06:00 (links) über den Zenit (12:00) nach 18:00 (rechts), der Mond übernimmt spiegelbildlich die Nacht – beide laufen einmal in 24 h um, unter dem Horizont verschwinden sie hinter der Erde.
+
 ## Food-Widget (experimentell)
 
-Neben der Jahresuhr enthält die App testweise ein zweites Widget **„Speisen heute"**: Es zeigt die Speisen des heutigen Tages einer Mensa. Konfiguriert wird es in der App (Drawer-Menü → **Einstellungen**):
+Neben der Jahresuhr enthält die App testweise ein zweites Widget **„Speisen heute"**: ein reines **Foto-Raster** der heutigen Speisen einer Mensa (quadratische Bilder, minimales Spacing, keine Texte). Konfiguriert wird es in der App (Drawer-Menü → **Einstellungen**):
 
 - **Server**: Studi-Futter, SWOSY oder Rocket Meals (Test) – die Mensen des gewählten Servers werden live per Directus-API geladen (bewusst ohne Cache, reines Experiment).
-- **Mensa** und **Anzahl gleichzeitig angezeigter Speisen** (2/4/6/8) wählen, dann „Speisen laden & Widget aktualisieren".
-- iOS-Widgets können **nicht wischen** (WidgetKit erlaubt keine Gesten außer Tippen). Gibt es mehr Speisen als angezeigt, rotiert das Widget stattdessen etwa alle 30 Minuten durch die Seiten (über Timeline-Einträge).
+- **Mensa** und **Bilder pro Seite** (2/4/6/8) wählen, dann „Speisen laden & Widget aktualisieren". Die Fotos werden in den geteilten App-Group-Container geladen (Widgets können keine Netzwerkbilder laden).
+- iOS-Widgets können **nicht wischen** (WidgetKit erlaubt keine Gesten außer Tippen). Stattdessen **blättert die Timeline automatisch**: Einträge im 10-Sekunden-Takt für die erste Stunde nach einem Sync, danach minütlich bis Tagesende. Wichtig: WidgetKit behandelt Eintragszeiten als *frühesten* Renderzeitpunkt und darf Wechsel je nach System-Budget zusammenfassen – die 10 Sekunden sind ein Angebot an iOS, keine Garantie.
 - Die App aktualisiert das Widget zusätzlich bei jedem Start/Foreground mit dem Tagesmenü der gespeicherten Mensa.
 
 **Expo OTA (EAS Update)** ist für die App aktiv: `updates.url` + `runtimeVersion: appVersion` in der `app.config.ts`, veröffentlicht vom CI-Job `tag-und-jahr-expo-update` (Channel `production` auf master). Da die Runtime-Version an die App-Version gekoppelt ist, erreichen OTA-Updates nur Builds derselben Version – nach nativen Änderungen (wie dem neuen Widget) muss daher die Build-Nummer in [`frontend/config.ts`](frontend/config.ts) erhöht werden; reine JS-Änderungen kommen danach OTA.
