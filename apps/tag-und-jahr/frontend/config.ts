@@ -13,8 +13,8 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	// 1: Initial scaffold of the Tag und Jahr widget app.
-	return 1;
+	// 2: Drawer navigation, settings screen and the experimental food widget.
+	return 2;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion

@@ -3,7 +3,7 @@ import { AppState, StyleSheet, Text, useWindowDimensions, View } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import YearClock from '../components/YearClock';
 import { CLOCK_COLORS } from '../helpers/clockDesign';
-import { syncWidgetTimeline } from '../helpers/widgetSync';
+import { refreshFoodWidgetFromStoredSettingsAsync, syncWidgetTimeline } from '../helpers/widgetSync';
 
 export default function Index() {
 	const { width, height } = useWindowDimensions();
@@ -16,14 +16,16 @@ export default function Index() {
 		return () => clearInterval(interval);
 	}, []);
 
-	// Refresh the widget timeline on every start and whenever the app returns
-	// to the foreground, so the home screen widget always has ~7 days of
-	// half-hour states scheduled.
+	// Refresh the widget timelines on every start and whenever the app returns
+	// to the foreground: the year clock gets ~7 days of half-hour states, the
+	// experimental food widget gets today's menu (if configured in settings).
 	useEffect(() => {
 		syncWidgetTimeline();
+		refreshFoodWidgetFromStoredSettingsAsync();
 		const subscription = AppState.addEventListener('change', (state) => {
 			if (state === 'active') {
 				syncWidgetTimeline();
+				refreshFoodWidgetFromStoredSettingsAsync();
 			}
 		});
 		return () => subscription.remove();

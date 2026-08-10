@@ -49,6 +49,17 @@ Der Credentials-Bootstrap in der CI **prüft** anschließend, dass die Provision
 - Das Widget benötigt einen Development Build bzw. TestFlight-Build (nicht Expo Go) und iOS 17 oder neuer.
 - Auf Android und im Web läuft nur die In-App-Ansicht; das Home-Widget ist iOS-only (der Android-Support von `expo-widgets` ist noch experimentell und hier bewusst nicht aktiviert).
 
+## Food-Widget (experimentell)
+
+Neben der Jahresuhr enthält die App testweise ein zweites Widget **„Speisen heute"**: Es zeigt die Speisen des heutigen Tages einer Mensa. Konfiguriert wird es in der App (Drawer-Menü → **Einstellungen**):
+
+- **Server**: Studi-Futter, SWOSY oder Rocket Meals (Test) – die Mensen des gewählten Servers werden live per Directus-API geladen (bewusst ohne Cache, reines Experiment).
+- **Mensa** und **Anzahl gleichzeitig angezeigter Speisen** (2/4/6/8) wählen, dann „Speisen laden & Widget aktualisieren".
+- iOS-Widgets können **nicht wischen** (WidgetKit erlaubt keine Gesten außer Tippen). Gibt es mehr Speisen als angezeigt, rotiert das Widget stattdessen etwa alle 30 Minuten durch die Seiten (über Timeline-Einträge).
+- Die App aktualisiert das Widget zusätzlich bei jedem Start/Foreground mit dem Tagesmenü der gespeicherten Mensa.
+
+**Expo OTA (EAS Update)** ist für die App aktiv: `updates.url` + `runtimeVersion: appVersion` in der `app.config.ts`, veröffentlicht vom CI-Job `tag-und-jahr-expo-update` (Channel `production` auf master). Da die Runtime-Version an die App-Version gekoppelt ist, erreichen OTA-Updates nur Builds derselben Version – nach nativen Änderungen (wie dem neuen Widget) muss daher die Build-Nummer in [`frontend/config.ts`](frontend/config.ts) erhöht werden; reine JS-Änderungen kommen danach OTA.
+
 ## Entwicklung
 
 ```bash

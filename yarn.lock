@@ -5693,6 +5693,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/vector-icons@npm:^15.0.2":
+  version: 15.1.1
+  resolution: "@expo/vector-icons@npm:15.1.1"
+  peerDependencies:
+    expo-font: ">=14.0.4"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/fdd50c90484934204b90d345904fa69ca788a5de704d62b3cb580c52aa4cf4bffe1c05c509d043cf2b6842f1bdad6b78585524f3c6ae5f77e36385d83c0aa577
+  languageName: node
+  linkType: hard
+
 "@expo/vector-icons@npm:^15.0.3":
   version: 15.0.3
   resolution: "@expo/vector-icons@npm:15.0.3"
@@ -17978,6 +17989,19 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/7d686aa7305071d02a914d11581c763f83cd32c0c04b6a46852c458b81f96e2cbef4178e4526450b14a8bd684be7889ed8445e06cca038005082425b2900267f
+  languageName: node
+  linkType: hard
+
+"expo-sqlite@npm:~57.0.1":
+  version: 57.0.1
+  resolution: "expo-sqlite@npm:57.0.1"
+  dependencies:
+    await-lock: "npm:^2.2.2"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/8de0477b9776e945f7c3b01dc6e0604be9289b036b552731cd7e4f73df2e51fce4175c805045927699e521e5b59f169fd9efb03c2479adb119fe42354e835e98
   languageName: node
   linkType: hard
 
@@ -31447,6 +31471,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/runtime": "npm:^7.26.0"
     "@expo/ui": "npm:~57.0.9"
+    "@expo/vector-icons": "npm:^15.0.2"
     "@react-native/jest-preset": "npm:0.86.2"
     "@types/node": "npm:^24.9.1"
     "@types/react": "npm:~19.2.0"
@@ -31456,6 +31481,7 @@ __metadata:
     expo-linking: "npm:~57.0.5"
     expo-router: "npm:~57.0.11"
     expo-splash-screen: "npm:~57.0.5"
+    expo-sqlite: "npm:~57.0.1"
     expo-status-bar: "npm:~57.0.1"
     expo-system-ui: "npm:~57.0.2"
     expo-updates: "npm:~57.0.12"
