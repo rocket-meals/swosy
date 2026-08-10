@@ -2,6 +2,9 @@
   "name": "tag-und-jahr",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
