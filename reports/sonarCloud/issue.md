@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 11 | 11 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 96 | 26 |
+| 🔧 Maintainability | 97 | 26 |
 
-**Total issues:** 120 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 121 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -112,7 +112,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (26/96)
+## 🔧 Maintainability (26/97)
 
 - **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:29
