@@ -4,7 +4,7 @@ import { Canteen, fetchCanteensAsync, fetchTodaysMealsAsync, Meal } from '../../
 import { FOOD_SERVERS, FoodServerKey, getFoodServer } from '../../helpers/foodServers';
 import { loadFoodWidgetSettingsAsync, saveFoodWidgetSettingsAsync } from '../../helpers/foodWidgetSettings';
 import { CLOCK_COLORS } from '../../helpers/clockDesign';
-import { syncFoodWidgetTimeline } from '../../helpers/widgetSync';
+import { syncFoodWidgetTimelineAsync } from '../../helpers/widgetSync';
 
 const MEAL_COUNT_OPTIONS = [2, 4, 6, 8];
 
@@ -78,7 +78,7 @@ export default function Settings() {
 			const todaysMeals = await fetchTodaysMealsAsync(server.serverUrl, canteen.id);
 			const settings = { serverKey: server.key, canteenId: canteen.id, canteenAlias: canteen.alias, mealCount };
 			await saveFoodWidgetSettingsAsync(settings);
-			syncFoodWidgetTimeline(settings, todaysMeals);
+			await syncFoodWidgetTimelineAsync(settings, todaysMeals);
 			setMeals(todaysMeals);
 			setStatus(
 				todaysMeals.length === 0

@@ -47,17 +47,54 @@ export function syncWidgetTimeline(now: Date = new Date()): void {
 }
 
 /**
+ * Downloads the meal photos into the shared app group container
+ * (widgetsDirectory) so the widget extension can read them - widgets cannot
+ * load network images themselves. Returns the meals with local file paths.
+ * Failures are per-image and non-fatal: the widget then simply shows the row
+ * without a photo.
+ */
+async function downloadMealImagesAsync(meals: Meal[]): Promise<Meal[]> {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const { widgetsDirectory } = require('expo-widgets');
+	if (!widgetsDirectory) {
+		return meals;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const FileSystem = require('expo-file-system/legacy');
+	const baseDirectory = widgetsDirectory.endsWith('/') ? widgetsDirectory : `${widgetsDirectory}/`;
+	return await Promise.all(
+		meals.map(async (meal, index) => {
+			if (!meal.imageUrl) {
+				return meal;
+			}
+			try {
+				const target = `${baseDirectory}food-widget-meal-${index}.jpg`;
+				const result = await FileSystem.downloadAsync(meal.imageUrl, target);
+				if (result.status !== 200) {
+					return meal;
+				}
+				return { ...meal, imagePath: result.uri };
+			} catch (error) {
+				console.warn(`[widgetSync] photo download failed for ${meal.name}:`, error);
+				return meal;
+			}
+		})
+	);
+}
+
+/**
  * Schedules the food widget timeline from already fetched meals. WidgetKit
  * cannot swipe, so when there are more meals than fit on one page the
  * half-hour timeline entries rotate through the pages instead. The timeline
  * only covers today - tomorrow's menu is unknown until the app runs again.
  */
-export function syncFoodWidgetTimeline(settings: FoodWidgetSettings, meals: Meal[], now: Date = new Date()): void {
+export async function syncFoodWidgetTimelineAsync(settings: FoodWidgetSettings, rawMeals: Meal[], now: Date = new Date()): Promise<void> {
 	if (Platform.OS !== 'ios') {
 		return;
 	}
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const widget = require('../widgets/FoodWidget').default;
+	const meals = await downloadMealImagesAsync(rawMeals);
 
 	const updatedAt = `${now.getHours()}:${`${now.getMinutes()}`.padStart(2, '0')}`;
 	const pages = paginateMeals(meals, settings.mealCount);
@@ -105,7 +142,7 @@ export async function refreshFoodWidgetFromStoredSettingsAsync(): Promise<void> 
 			return;
 		}
 		const meals = await fetchTodaysMealsAsync(server.serverUrl, settings.canteenId);
-		syncFoodWidgetTimeline(settings, meals);
+		await syncFoodWidgetTimelineAsync(settings, meals);
 	} catch (error) {
 		console.warn('[widgetSync] food widget refresh failed:', error);
 	}

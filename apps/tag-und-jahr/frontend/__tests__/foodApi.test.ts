@@ -1,4 +1,6 @@
-import { formatEuro, formatLocalDate, getMealName, paginateMeals, toMeals } from '../helpers/foodApi';
+import { formatEuro, formatLocalDate, getMealImageUrl, getMealName, paginateMeals, toMeals } from '../helpers/foodApi';
+
+const SERVER_URL = 'https://example.rocket-meals.de/rocket-meals/api';
 
 describe('formatLocalDate', () => {
 	it('formats with zero-padded month and day', () => {
@@ -43,13 +45,32 @@ describe('getMealName', () => {
 	});
 });
 
+describe('getMealImageUrl', () => {
+	it('builds a scaled Directus assets url from the food image id', () => {
+		expect(getMealImageUrl({ id: '1', food: { image: 'file-123' } }, SERVER_URL)).toBe(
+			`${SERVER_URL}/assets/file-123?width=160&height=160&fit=cover&quality=60`
+		);
+		expect(getMealImageUrl({ id: '1', food: { image: { id: 'file-456' } } }, SERVER_URL)).toContain('/assets/file-456?');
+	});
+
+	it('falls back to the remote url, then undefined', () => {
+		expect(getMealImageUrl({ id: '1', food: { image_remote_url: 'https://example.org/pic.jpg' } }, SERVER_URL)).toBe('https://example.org/pic.jpg');
+		expect(getMealImageUrl({ id: '1' }, SERVER_URL)).toBeUndefined();
+	});
+});
+
 describe('toMeals', () => {
-	it('drops offers of archived foods and maps name/price', () => {
-		const meals = toMeals([
-			{ id: '1', price_student: 2.5, food: { alias: 'Schnitzel', status: 'published', translations: [] } },
-			{ id: '2', price_student: 1, food: { alias: 'Altes Gericht', status: 'archived', translations: [] } },
+	it('drops offers of archived foods and maps name/price/image', () => {
+		const meals = toMeals(
+			[
+				{ id: '1', price_student: 2.5, food: { alias: 'Schnitzel', status: 'published', image: 'file-123', translations: [] } },
+				{ id: '2', price_student: 1, food: { alias: 'Altes Gericht', status: 'archived', translations: [] } },
+			],
+			SERVER_URL
+		);
+		expect(meals).toEqual([
+			{ name: 'Schnitzel', price: '2,50 €', imageUrl: `${SERVER_URL}/assets/file-123?width=160&height=160&fit=cover&quality=60` },
 		]);
-		expect(meals).toEqual([{ name: 'Schnitzel', price: '2,50 €' }]);
 	});
 });
 

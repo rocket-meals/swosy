@@ -31477,6 +31477,7 @@ __metadata:
     "@types/react": "npm:~19.2.0"
     expo: "npm:57.0.11"
     expo-constants: "npm:~57.0.9"
+    expo-file-system: "npm:~57.0.2"
     expo-font: "npm:~57.0.1"
     expo-linking: "npm:~57.0.5"
     expo-router: "npm:~57.0.11"

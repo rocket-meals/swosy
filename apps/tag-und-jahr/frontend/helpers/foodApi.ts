@@ -12,6 +12,10 @@ export type Canteen = {
 export type Meal = {
 	name: string;
 	price: string;
+	/** Remote photo of the meal (Directus assets URL), if the food has one. */
+	imageUrl?: string;
+	/** Local file:// path of the downloaded photo inside widgetsDirectory. */
+	imagePath?: string;
 };
 
 type DirectusListResponse<T> = {
@@ -26,6 +30,8 @@ type RawTranslation = {
 type RawFood = {
 	alias?: string | null;
 	status?: string | null;
+	image?: string | { id?: string } | null;
+	image_remote_url?: string | null;
 	translations?: RawTranslation[] | null;
 };
 
@@ -68,13 +74,27 @@ export function getMealName(offer: RawFoodoffer): string {
 	return german?.name ?? any?.name ?? offer.food?.alias ?? offer.alias ?? 'Unbekanntes Gericht';
 }
 
+/**
+ * Photo URL of a food: the Directus asset (server-side scaled down for the
+ * widget) first, a remote URL as fallback.
+ */
+export function getMealImageUrl(offer: RawFoodoffer, serverUrl: string): string | undefined {
+	const image = offer.food?.image;
+	const fileId = typeof image === 'string' ? image : image?.id;
+	if (fileId) {
+		return `${serverUrl}/assets/${fileId}?width=160&height=160&fit=cover&quality=60`;
+	}
+	return offer.food?.image_remote_url ?? undefined;
+}
+
 /** Maps raw food offers to the widget's meal shape, dropping archived foods. */
-export function toMeals(offers: RawFoodoffer[]): Meal[] {
+export function toMeals(offers: RawFoodoffer[], serverUrl: string): Meal[] {
 	return offers
 		.filter((offer) => offer.food?.status !== 'archived')
 		.map((offer) => ({
 			name: getMealName(offer),
 			price: formatEuro(offer.price_student),
+			imageUrl: getMealImageUrl(offer, serverUrl),
 		}));
 }
 
@@ -112,12 +132,12 @@ export async function fetchCanteensAsync(serverUrl: string): Promise<Canteen[]> 
 
 export async function fetchTodaysMealsAsync(serverUrl: string, canteenId: string, today: Date = new Date()): Promise<Meal[]> {
 	const params = new URLSearchParams({
-		fields: 'id,alias,price_student,food.alias,food.status,food.translations.name,food.translations.languages_code',
+		fields: 'id,alias,price_student,food.alias,food.status,food.image,food.image_remote_url,food.translations.name,food.translations.languages_code',
 		limit: '-1',
 		filter: JSON.stringify({
 			_and: [{ canteen: { _eq: canteenId } }, { date: { _eq: formatLocalDate(today) } }],
 		}),
 	});
 	const response = await fetchJsonAsync<DirectusListResponse<RawFoodoffer>>(`${serverUrl}/items/foodoffers?${params}`);
-	return toMeals(response.data ?? []);
+	return toMeals(response.data ?? [], serverUrl);
 }
