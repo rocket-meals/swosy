@@ -47,8 +47,7 @@ import type { SpeechSettingsState } from '../store/speechSettingsSlice';
 import { resetMapSearchState, setMapSearchName, toggleMapSearchKey } from '../store/mapSearchSlice';
 import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../helpers/JsonFileTransferHelper';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, buildAutoPauseAnnouncement, buildAutoResumeAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
-import { advanceAutoPauseAnchor, AutoPauseAnchor, hasMovedBeyondRadius, isStationaryLongEnough } from '../helpers/AutoPauseHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { clearAudioQueue } from '../helpers/AudioQueueHelper';
 import { setRecordingActive } from '../helpers/RecordingActivityTracker';
 import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
@@ -3762,9 +3761,6 @@ const RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS = {
 	replaceSameSource: true,
 } as const;
 
-/** How often the auto-pause stationary check runs while recording. */
-const AUTO_PAUSE_CHECK_INTERVAL_MS = 1000;
-
 /** Speaks a TTS announcement, swallowing and logging (rather than throwing) any error. */
 function trySpeakAnnouncement(
 	text: string,
@@ -3807,85 +3803,6 @@ function announceKmMilestoneIfNeeded(
 		});
 		trySpeakAnnouncement(text, langCode, { rate: speechRateToNumber(curSs.speechRate) }, 'km_milestone', 'Km milestone announcement', curSs.duckMusicDuringTTS);
 	}
-}
-
-// ─── RecordScreen: auto-pause helpers ─────────────────────────────────────────
-
-/** Speaks the auto-pause / auto-resume hint, respecting the speech master
- * toggle and the "Automatische Pause" announcement toggle. */
-function announceAutoPauseTransition(
-	kind: 'pause' | 'resume',
-	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>,
-): void {
-	const curSs = speechSettingsRef.current;
-	if (!curSs.enabled || !curSs.announceAutoPause) return;
-	const locale = getLocales()[0]?.languageTag ?? 'en-US';
-	const langCode = locale.split('-')[0].toLowerCase();
-	const text = kind === 'pause' ? buildAutoPauseAnnouncement(locale) : buildAutoResumeAnnouncement(locale);
-	trySpeakAnnouncement(text, langCode, {
-		volume: curSs.volume,
-		rate: speechRateToNumber(curSs.speechRate),
-	}, kind === 'pause' ? 'auto_pause' : 'auto_resume', 'Auto-pause announcement', curSs.duckMusicDuringTTS);
-}
-
-/**
- * Periodic tick evaluating whether the recording should auto-pause because the
- * stationary anchor has not moved for the configured delay. Timer-driven
- * rather than GPS-driven: the platform delivers no fixes at all while the
- * user stands still (GPS_DISTANCE_INTERVAL_METERS), so stillness can only be
- * observed by a clock.
- */
-function evaluateAutoPauseOnTick(options: {
-	isRecordingRef: React.MutableRefObject<boolean>;
-	isPausedRef: React.MutableRefObject<boolean>;
-	joystickActiveRef: React.MutableRefObject<boolean>;
-	movedPlayerManuallyRef: React.MutableRefObject<boolean>;
-	autoPauseAnchorRef: React.MutableRefObject<AutoPauseAnchor | null>;
-	autoPausedRef: React.MutableRefObject<boolean>;
-	pauseRecordingRef: React.MutableRefObject<(() => void) | null>;
-	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>;
-}): void {
-	const {
-		isRecordingRef, isPausedRef, joystickActiveRef, movedPlayerManuallyRef,
-		autoPauseAnchorRef, autoPausedRef, pauseRecordingRef, speechSettingsRef,
-	} = options;
-	if (!isRecordingRef.current || isPausedRef.current) return;
-	// While the joystick substitutes GPS, real fixes are not recorded and the
-	// stationary anchor goes stale – it must not trigger a pause.
-	if (joystickActiveRef.current || movedPlayerManuallyRef.current) return;
-	const { enabled, delaySeconds } = store.getState().autoPause;
-	if (!enabled) return;
-	const anchor = autoPauseAnchorRef.current;
-	if (!anchor || !isStationaryLongEnough(anchor, Date.now(), delaySeconds)) return;
-	pauseRecordingRef.current?.();
-	autoPausedRef.current = true;
-	announceAutoPauseTransition('pause', speechSettingsRef);
-}
-
-/**
- * Handles a location update while auto-paused: resumes the recording as soon
- * as the position moves beyond the movement radius around the stationary
- * anchor. Returns true when the recording was resumed – the caller then
- * processes the point as a normal recorded fix so the track continues from
- * the spot where movement restarted.
- */
-function maybeAutoResumeFromMovement(options: {
-	point: RoutePoint;
-	fromJoystick: boolean;
-	autoPausedRef: React.MutableRefObject<boolean>;
-	autoPauseAnchorRef: React.MutableRefObject<AutoPauseAnchor | null>;
-	resumeRecordingRef: React.MutableRefObject<(() => void) | null>;
-	speechSettingsRef: React.MutableRefObject<SpeechSettingsState>;
-}): boolean {
-	const { point, fromJoystick, autoPausedRef, autoPauseAnchorRef, resumeRecordingRef, speechSettingsRef } = options;
-	if (fromJoystick || !autoPausedRef.current) return false;
-	if (!store.getState().autoPause.enabled) return false;
-	const anchor = autoPauseAnchorRef.current;
-	if (!anchor || !hasMovedBeyondRadius(anchor, point)) return false;
-	resumeRecordingRef.current?.();
-	autoPauseAnchorRef.current = { lat: point.lat, lng: point.lng, timestamp: point.timestamp };
-	announceAutoPauseTransition('resume', speechSettingsRef);
-	return true;
 }
 
 /** Instantaneous pace (min/km) from GPS speed, or average pace as a fallback when GPS speed is unavailable/too low. */
@@ -4583,21 +4500,6 @@ export default function RecordScreen() {
 	const isPausedRef = useRef(false);
 	const accumulatedSecondsRef = useRef(0);
 
-	// Auto-pause: true while the current pause was triggered automatically by
-	// missing movement (as opposed to the manual pause button). Only an
-	// automatic pause is auto-resumed when movement is detected again.
-	const autoPausedRef = useRef(false);
-	// Stationary anchor for auto-pause detection: the last position where
-	// movement was detected. Null outside recordings.
-	const autoPauseAnchorRef = useRef<AutoPauseAnchor | null>(null);
-	// Interval running the stationary check while recording.
-	const autoPauseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-	// Ref mirrors of pauseRecording/resumeRecording so handleLocationUpdate and
-	// the auto-pause tick (both created earlier in the component) can call them
-	// without stale closures. Assigned below, after the callbacks are defined.
-	const pauseRecordingRef = useRef<(() => void) | null>(null);
-	const resumeRecordingRef = useRef<(() => void) | null>(null);
-
 	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
 
 	// Pre-run route selection: selected route to follow during the next recording.
@@ -4959,7 +4861,6 @@ export default function RecordScreen() {
 			_onLocationUpdate = null;
 			fgSubRef.current?.remove();
 			if (timerRef.current) clearInterval(timerRef.current);
-			if (autoPauseTimerRef.current) clearInterval(autoPauseTimerRef.current);
 			if (periodicAnnouncementTimerRef.current) clearInterval(periodicAnnouncementTimerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
@@ -5625,18 +5526,11 @@ export default function RecordScreen() {
 		// AppState 'active' handler re-syncs the display on return.
 		const appActive = AppState.currentState === 'active';
 		if (isPausedRef.current) {
-			// Auto-resume: when the pause was automatic and the position moved
-			// beyond the movement radius, resume and record this point normally.
-			const resumed = maybeAutoResumeFromMovement({
-				point, fromJoystick, autoPausedRef, autoPauseAnchorRef, resumeRecordingRef, speechSettingsRef,
+			applyPausedLocationUpdate({
+				point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef,
+				lastAcceptedGpsPointRef, mapRef, centerMapOnPosition,
 			});
-			if (!resumed) {
-				applyPausedLocationUpdate({
-					point, fromJoystick, appActive, movedPlayerManuallyRef, debugPlayerPositionRef,
-					lastAcceptedGpsPointRef, mapRef, centerMapOnPosition,
-				});
-				return;
-			}
+			return;
 		}
 
 		// ── GPS speed filter (real GPS only) ─────────────────────────────────────
@@ -5645,13 +5539,6 @@ export default function RecordScreen() {
 		// glitch / noise spike.
 		if (maybeFilterGpsPoint(fromJoystick, point, isRecordingRef, joystickActiveRef, movedPlayerManuallyRef, lastAcceptedGpsPointRef, selectedSportTypeRef)) {
 			return;
-		}
-
-		// Advance the auto-pause stationary anchor for accepted real GPS fixes:
-		// the anchor follows the position while moving and ages while standing
-		// still (the timer-driven check pauses once it is old enough).
-		if (!fromJoystick && isRecordingRef.current) {
-			autoPauseAnchorRef.current = advanceAutoPauseAnchor(autoPauseAnchorRef.current, point);
 		}
 
 		const next = [...routePointsRef.current, point];
@@ -5871,8 +5758,6 @@ export default function RecordScreen() {
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
 			lastAnnouncedKmRef.current = 0;
-			autoPausedRef.current = false;
-			autoPauseAnchorRef.current = null;
 			paceHintStateRef.current = 'on_target';
 			// Initialise to now so the first pace-hint announcement is delayed by
 			// PACE_HINT_COOLDOWN_MS (same warm-up concept as SPEED_WARMUP_MS).
@@ -5900,17 +5785,6 @@ export default function RecordScreen() {
 
 			// Start periodic (time-based) speech announcements if enabled
 			startPeriodicAnnouncementTimer();
-
-			// Evaluate auto-pause once per second while recording. Timer-driven:
-			// the platform delivers no GPS fixes while the user stands still
-			// (GPS_DISTANCE_INTERVAL_METERS), so incoming points alone cannot
-			// detect stillness.
-			autoPauseTimerRef.current = setInterval(() => {
-				evaluateAutoPauseOnTick({
-					isRecordingRef, isPausedRef, joystickActiveRef, movedPlayerManuallyRef,
-					autoPauseAnchorRef, autoPausedRef, pauseRecordingRef, speechSettingsRef,
-				});
-			}, AUTO_PAUSE_CHECK_INTERVAL_MS);
 
 			// ── Debug replay: emit GPS points from a recorded activity instead of real GPS ──
 			if (isDebugMode && debugReplayActivityRef.current && debugReplayActivityRef.current.routePoints.length > 0) {
@@ -6016,10 +5890,6 @@ export default function RecordScreen() {
 			if (timerRef.current) {
 				clearInterval(timerRef.current);
 				timerRef.current = null;
-			}
-			if (autoPauseTimerRef.current) {
-				clearInterval(autoPauseTimerRef.current);
-				autoPauseTimerRef.current = null;
 			}
 			stopPeriodicAnnouncementTimer();
 		}
@@ -6142,12 +6012,6 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
-		if (autoPauseTimerRef.current) {
-			clearInterval(autoPauseTimerRef.current);
-			autoPauseTimerRef.current = null;
-		}
-		autoPausedRef.current = false;
-		autoPauseAnchorRef.current = null;
 		stopPeriodicAnnouncementTimer();
 
 		try {
@@ -6286,9 +6150,6 @@ export default function RecordScreen() {
 			timerRef.current = null;
 		}
 		stopPeriodicAnnouncementTimer();
-		// A pause is manual by default; the auto-pause tick sets autoPausedRef
-		// back to true right after calling this when it triggered the pause.
-		autoPausedRef.current = false;
 		isPausedRef.current = true;
 		setIsPaused(true);
 	}, [stopPeriodicAnnouncementTimer]);
@@ -6306,19 +6167,9 @@ export default function RecordScreen() {
 		// navigated via joystick during the pause, GPS will smoothly re-anchor
 		// to the physical device location from the current player position.
 		movedPlayerManuallyRef.current = false;
-		// Restart stillness detection from the current position so a resume
-		// without any subsequent movement auto-pauses again after the delay.
-		autoPausedRef.current = false;
-		const pos = debugPlayerPositionRef.current;
-		autoPauseAnchorRef.current = pos ? { lat: pos.lat, lng: pos.lng, timestamp: Date.now() } : null;
 		isPausedRef.current = false;
 		setIsPaused(false);
 	}, [startPeriodicAnnouncementTimer]);
-
-	// Ref mirrors for the auto-pause logic inside handleLocationUpdate and the
-	// stationary-check tick, which are defined before these callbacks exist.
-	pauseRecordingRef.current = pauseRecording;
-	resumeRecordingRef.current = resumeRecording;
 
 	// Handle the record button press. In debug mode, show a replay selection modal first.
 	// Outside debug mode (or if already recording), delegate directly to startRecording.

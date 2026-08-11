@@ -677,16 +677,6 @@ export default function SpeechSettingsContent() {
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
 			/>
-			<SettingsListBoolean
-				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="pause-circle-outline" size={22} color="#ffffff" />}
-				label="Automatische Pause"
-				isEnabled={settings.announceAutoPause}
-				onToggle={() => update({ announceAutoPause: !settings.announceAutoPause })}
-				valueActive="Wird angesagt"
-				valueInactive="Deaktiviert"
-				groupPosition="middle"
-			/>
 			<SettingsList
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialIcons name="play-circle-filled" size={22} color="#ffffff" />}
