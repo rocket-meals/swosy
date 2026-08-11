@@ -13,13 +13,18 @@ require('ts-node').register({
 const { getBuildNumber, getVersion } = require('./config.ts');
 const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
 
-module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
+// The legacy top-level `privacy` field was dropped from the ExpoConfig type,
+// but it is still read for classic (pre-EAS) Expo projects, so widen the type.
+module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig & { privacy: 'public' | 'unlisted' | 'hidden' } {
 	const buildNumber = getBuildNumber();
 	return {
 		...config,
 		owner: 'baumgartner-software',
 		name: 'Punktlandung',
 		slug: 'score-tracker',
+		// Expo project page visibility (legacy classic-project field): the
+		// project predates EAS-only visibility handling, so keep it public.
+		privacy: 'public',
 		version: getVersion(),
 		orientation: 'default',
 		icon: './assets/icons/app_icon_source.png',
