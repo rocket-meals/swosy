@@ -29,8 +29,9 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
-	// 8: fix OTA delivery (stable runtime version) + update-on-start loader
-	return 8;
+	// 9: GPS tracking + TTS announcements reset to pre-2026-07-10 behavior;
+	//    tappable speed/pace stats open a history bar chart modal
+	return 9;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
