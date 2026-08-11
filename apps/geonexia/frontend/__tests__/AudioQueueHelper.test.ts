@@ -28,7 +28,6 @@ type SpeakOptions = {
 // module-level state, so every test needs its own module instance and the
 // mock instances that belong to the same registry.
 let AudioQueue: typeof import('../helpers/AudioQueueHelper');
-let SessionLog: typeof import('../helpers/TTSSessionLog');
 let speakMock: jest.Mock;
 let stopMock: jest.Mock;
 let setAudioModeMock: jest.Mock;
@@ -53,7 +52,6 @@ beforeEach(() => {
 	jest.setSystemTime(new Date('2026-01-01T10:00:00Z'));
 	/* eslint-disable @typescript-eslint/no-require-imports */
 	AudioQueue = require('../helpers/AudioQueueHelper');
-	SessionLog = require('../helpers/TTSSessionLog');
 	const speech = require('expo-speech');
 	speakMock = speech.speak as jest.Mock;
 	stopMock = speech.stop as jest.Mock;
@@ -191,37 +189,5 @@ describe('AudioQueueHelper', () => {
 
 		expect(stopMock).toHaveBeenCalled();
 		expect(speakMock).not.toHaveBeenCalled();
-	});
-
-	test('records the full event stream in the TTS session log', async () => {
-		SessionLog.startTTSSessionLog();
-
-		AudioQueue.enqueueAnnouncement('one', 'de', undefined, 'periodic');
-		await flushMicrotasks();
-		// Supersede a pending item of the same source while 'one' is playing.
-		AudioQueue.enqueueAnnouncement('stale', 'de', undefined, 'periodic', { replaceSameSource: true });
-		AudioQueue.enqueueAnnouncement('fresh', 'de', undefined, 'periodic', { replaceSameSource: true });
-		lastSpeakOptions().onDone?.();
-		await flushMicrotasks();
-		lastSpeakOptions().onDone?.();
-		await flushMicrotasks();
-		AudioQueue.clearAudioQueue();
-
-		const events = SessionLog.finishTTSSessionLog().map((e) => e.event);
-		expect(events).toEqual([
-			'session_started',
-			'enqueued',                  // one
-			'audio_session_activating',  // one
-			'speak_start',               // one
-			'enqueued',                  // stale
-			'superseded',                // stale replaced by fresh
-			'enqueued',                  // fresh
-			'speak_done',                // one
-			'audio_session_activating',  // fresh
-			'speak_start',               // fresh
-			'speak_done',                // fresh
-			'queue_cleared',
-			'session_finished',
-		]);
 	});
 });

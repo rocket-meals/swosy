@@ -49,7 +49,6 @@ import { buildJsonExportFilename, pickJsonFromFile, saveJsonToFile } from '../he
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, buildAutoPauseAnnouncement, buildAutoResumeAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { advanceAutoPauseAnchor, AutoPauseAnchor, hasMovedBeyondRadius, isStationaryLongEnough } from '../helpers/AutoPauseHelper';
-import { startTTSSessionLog, finishTTSSessionLog } from '../helpers/TTSSessionLog';
 import { clearAudioQueue } from '../helpers/AudioQueueHelper';
 import { setRecordingActive } from '../helpers/RecordingActivityTracker';
 import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
@@ -829,15 +828,17 @@ const GPS_PATH_INTERPOLATION_MAX_CELLS = 200;
  * Location options for activity recording, derived from the user-selected GPS
  * interval.
  *
- * Always uses `Accuracy.BestForNavigation`, regardless of the configured
- * interval: recording quality and timely fix delivery have priority over
- * battery savings. The lower accuracy tiers let the platform power-manage the
- * GPS hardware, which in practice delayed fixes at longer intervals — and with
- * them everything driven by incoming fixes, including speech announcements.
+ * `Accuracy.BestForNavigation` keeps the GPS hardware permanently at full
+ * power (Apple recommends it only for plugged-in turn-by-turn navigation), so
+ * it is only used for near-continuous intervals; all longer intervals use
+ * `Accuracy.Highest` so the background task keeps receiving reliable fixes
+ * regardless of the configured interval.
  */
 function getRecordingLocationOptions(gpsTimeIntervalMs: number): Location.LocationOptions {
+	const intervalSec = gpsTimeIntervalMs / 1000;
+	const accuracy = intervalSec <= 2 ? Location.Accuracy.BestForNavigation : Location.Accuracy.Highest;
 	return {
-		accuracy: Location.Accuracy.BestForNavigation,
+		accuracy,
 		timeInterval: gpsTimeIntervalMs,
 		distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 	};
@@ -862,10 +863,6 @@ function getBackgroundRecordingLocationOptions(gpsTimeIntervalMs: number): Locat
 		// Fitness lets iOS aggressively power-manage the location hardware
 		// for workout-style movement patterns.
 		activityType: Location.ActivityType.Fitness,
-		// Never let iOS pause location delivery to save battery: a paused
-		// location session suspends the whole app, freezing JS timers — speech
-		// announcements then arrive late and bunched up on the next wake.
-		pausesUpdatesAutomatically: false,
 		showsBackgroundLocationIndicator: true,
 		foregroundService: {
 			notificationTitle: 'Activity Recording',
@@ -4878,9 +4875,6 @@ export default function RecordScreen() {
 	selectedSportTypeRef.current = selectedSportType;
 	// Timestamp of the last recording snapshot persisted to disk (crash recovery).
 	const lastSnapshotSaveRef = useRef(0);
-	// GPS interval (seconds) the current recording was started with; stored on
-	// the saved activity so the recording frequency is known afterwards.
-	const recordingGpsIntervalSecondsRef = useRef<number | null>(null);
 
 	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }, zoom?: number) => {
 		if (!mapRef.current) return;
@@ -5867,10 +5861,6 @@ export default function RecordScreen() {
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
 			lastSnapshotSaveRef.current = 0;
-			recordingGpsIntervalSecondsRef.current = gpsTimeIntervalMs / 1000;
-			// Collect every TTS pipeline event of this recording; attached to the
-			// saved activity for debugging late or missing announcements.
-			startTTSSessionLog();
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -6032,8 +6022,6 @@ export default function RecordScreen() {
 				autoPauseTimerRef.current = null;
 			}
 			stopPeriodicAnnouncementTimer();
-			// Discard the TTS session log of the failed start.
-			finishTTSSessionLog();
 		}
 	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer, refreshSearchHighlight, isDebugMode]);
 
@@ -6275,10 +6263,6 @@ export default function RecordScreen() {
 			routeId: selectedRouteRef.current?.id ?? undefined,
 			walkedEdgesRedLine: store.getState().hexTiles.walkedEdgesRedLine.slice(),
 			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
-			gpsIntervalSeconds: recordingGpsIntervalSecondsRef.current ?? undefined,
-			// Collected after clearAudioQueue above, so the final queue_cleared
-			// event is included.
-			ttsLog: finishTTSSessionLog(),
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
