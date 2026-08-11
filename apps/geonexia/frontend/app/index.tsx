@@ -824,18 +824,25 @@ const GPS_DISTANCE_INTERVAL_METERS = 5;
 const GPS_PATH_INTERPOLATION_MAX_CELLS = 200;
 
 /**
- * Location options for activity recording, derived from the user-selected GPS
- * interval.
+ * Battery-aware location options for activity recording, derived from the
+ * user-selected GPS interval.
  *
  * `Accuracy.BestForNavigation` keeps the GPS hardware permanently at full
  * power (Apple recommends it only for plugged-in turn-by-turn navigation), so
- * it is only used for near-continuous intervals; all longer intervals use
- * `Accuracy.Highest` so the background task keeps receiving reliable fixes
- * regardless of the configured interval.
+ * it is only used for near-continuous intervals. Longer intervals map to
+ * lower-power accuracy levels. This matters especially on iOS, where
+ * `timeInterval` is ignored by the OS (it is Android-only), so the accuracy
+ * level and `distanceInterval` are the only effective battery levers for the
+ * location hardware itself.
  */
 function getRecordingLocationOptions(gpsTimeIntervalMs: number): Location.LocationOptions {
 	const intervalSec = gpsTimeIntervalMs / 1000;
-	const accuracy = intervalSec <= 2 ? Location.Accuracy.BestForNavigation : Location.Accuracy.Highest;
+	let accuracy = Location.Accuracy.High;
+	if (intervalSec <= 2) {
+		accuracy = Location.Accuracy.BestForNavigation;
+	} else if (intervalSec <= 10) {
+		accuracy = Location.Accuracy.Highest;
+	}
 	return {
 		accuracy,
 		timeInterval: gpsTimeIntervalMs,
