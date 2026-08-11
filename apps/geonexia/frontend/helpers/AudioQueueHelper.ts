@@ -9,18 +9,6 @@ interface QueueItem extends SpokenTextFields {
 
 // ─── Module-level queue state ─────────────────────────────────────────────────
 
-/**
- * Hard cap on the number of pending announcements. Without this, a
- * misconfigured periodic interval (or a run of km-milestone/pace-hint
- * announcements arriving faster than they can be spoken) makes the queue
- * grow without bound for the entire duration of a run — the app ends up
- * talking non-stop with increasingly stale information and can eventually
- * crash from the unbounded memory growth. When the cap is hit, the oldest
- * pending (not-yet-spoken) item is dropped in favour of the newest one, so
- * the runner always hears the most current stats.
- */
-const MAX_QUEUE_LENGTH = 3;
-
 const _queue: QueueItem[] = [];
 let _isPlaying = false;
 
@@ -102,14 +90,6 @@ export function enqueueAnnouncement(
 	options?: Omit<Speech.SpeechOptions, 'language' | 'onDone' | 'onError' | 'onStopped'>,
 	source: string = 'unknown',
 ): void {
-	// Drop the oldest queued (not yet playing) item once the cap is reached so
-	// the queue can never grow without bound — see MAX_QUEUE_LENGTH above.
-	if (_queue.length >= MAX_QUEUE_LENGTH) {
-		const dropped = _queue.shift();
-		if (dropped) {
-			console.warn('[AudioQueueHelper] Queue full, dropping stale announcement:', dropped.source);
-		}
-	}
 	_queue.push({ text, languageCode, options, source });
 	processNext();
 }

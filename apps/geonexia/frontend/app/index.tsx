@@ -4348,14 +4348,6 @@ export default function RecordScreen() {
 	const lastPaceHintTimeRef = useRef(0);
 	/** Minimum cooldown between pace hint announcements (ms). */
 	const PACE_HINT_COOLDOWN_MS = 15_000;
-	/**
-	 * Minimum allowed interval between periodic announcements (seconds).
-	 * Speaking a full stats announcement can take several seconds, so an
-	 * interval shorter than this makes the announcement queue back up for the
-	 * entire run. Persisted settings are clamped to this floor here as a
-	 * defensive measure, even though the settings UI also enforces it.
-	 */
-	const MIN_PERIODIC_ANNOUNCEMENT_INTERVAL_SEC = 10;
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -5522,9 +5514,8 @@ export default function RecordScreen() {
 		stopPeriodicAnnouncementTimer();
 		const ss = speechSettingsRef.current;
 		if (!ss.enabled) return;
-		const configuredIntervalSec = ss.intervalTimeMinutes * 60 + ss.intervalTimeSeconds;
-		if (configuredIntervalSec <= 0) return;
-		const intervalSec = Math.max(configuredIntervalSec, MIN_PERIODIC_ANNOUNCEMENT_INTERVAL_SEC);
+		const intervalSec = ss.intervalTimeMinutes * 60 + ss.intervalTimeSeconds;
+		if (intervalSec <= 0) return;
 
 		periodicAnnouncementTimerRef.current = setInterval(() => {
 			if (!isRecordingRef.current || isPausedRef.current || !speechSettingsRef.current.enabled) return;
