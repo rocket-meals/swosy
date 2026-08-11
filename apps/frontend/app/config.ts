@@ -376,7 +376,11 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 			},
 			owner: 'baumgartner-software',
 			runtimeVersion: {
-				policy: 'appVersion',
+				// Production builds are tied to the app version, but Expo Go only
+				// loads updates whose runtime version has the exposdk:<version>
+				// form. The PR preview workflow publishes an additional update
+				// with EXPO_GO_PREVIEW=true so PRs can be tested in Expo Go.
+				policy: process.env.EXPO_GO_PREVIEW === 'true' ? 'sdkVersion' : 'appVersion',
 			},
 		},
 	};

@@ -114,6 +114,11 @@ jobs:
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
             --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
             --platform all --non-interactive
+          # Second publish with an exposdk:<version> runtime so the PR can be
+          # opened in Expo Go (development builds use the appVersion runtime above).
+          EXPO_GO_PREVIEW=true eas update --branch "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }} (Expo Go): $PR_TITLE" \
+            --platform all --non-interactive
         working-directory: ./apps/frontend/app
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -125,6 +130,9 @@ jobs:
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
             --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
             --platform all --non-interactive
+          EXPO_GO_PREVIEW=true eas update --branch "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }} (Expo Go): $PR_TITLE" \
+            --platform all --non-interactive
         working-directory: ./apps/geonexia/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -135,6 +143,9 @@ jobs:
         run: |
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
             --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
+            --platform all --non-interactive
+          EXPO_GO_PREVIEW=true eas update --branch "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }} (Expo Go): $PR_TITLE" \
             --platform all --non-interactive
         working-directory: ./apps/score-tracker/frontend
         env:
@@ -152,6 +163,9 @@ jobs:
           fi
           eas update --branch "pr-${{ github.event.pull_request.number }}" \
             --message "PR #${{ github.event.pull_request.number }}: $PR_TITLE" \
+            --platform all --non-interactive
+          EXPO_GO_PREVIEW=true eas update --branch "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }} (Expo Go): $PR_TITLE" \
             --platform all --non-interactive
         working-directory: ./apps/tag-und-jahr/frontend
         env:
@@ -187,12 +201,17 @@ jobs:
               marker,
               '## 📱 Expo Preview Update',
               '',
-              `An EAS Update has been published for this PR on branch \`${branch}\`.`,
+              `An EAS Update has been published for this PR on branch \`${branch}\`. Each app receives two updates: one for development builds (appVersion runtime) and one for Expo Go (exposdk runtime).`,
               '',
-              '**How to test:**',
+              '**How to test in a Development Build:**',
               `1. Open a **Development Build** of the app`,
               `2. Switch the update channel/branch to \`${branch}\``,
               '3. The app will load the latest code from this PR',
+              '',
+              '**How to test in Expo Go:**',
+              `1. Open **Expo Go** – its SDK version must match this PR's Expo SDK`,
+              `2. Sign in, open the project and select branch \`${branch}\``,
+              '3. Open the update marked **(Expo Go)**',
               '',
               '**Apps updated:**',
               ...appLines,
