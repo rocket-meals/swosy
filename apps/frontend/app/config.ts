@@ -203,9 +203,6 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 		expo: {
 			name: customerConfig.projectName,
 			slug: customerConfig.projectSlug,
-			// Expo project page visibility (legacy classic-project field): the
-			// projects predate EAS-only visibility handling, so keep them public.
-			privacy: 'public',
 			version: getVersion(),
 			orientation: 'default',
 			icon: `${generatedPath}/icon.png`,
