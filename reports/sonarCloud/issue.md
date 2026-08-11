@@ -147,20 +147,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts#L200
 
 - **Use the opposite operator (<=) instead.**
-  apps/geonexia/frontend/app/activities/[id].tsx:834
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L834
+  apps/geonexia/frontend/app/activities/[id].tsx
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx
 
-- **Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.**
-  apps/geonexia/frontend/app/index.tsx:5626
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5626
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/geonexia/frontend/app/index.tsx:5358
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5358
 
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/geonexia/frontend/app/index.tsx:5832
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5832
+  apps/geonexia/frontend/app/index.tsx
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx
 
 - **Refactor this code to not use nested template literals.**
-  apps/geonexia/frontend/helpers/TTSSessionLog.ts:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSSessionLog.ts#L84
+  apps/geonexia/frontend/helpers/TTSSessionLog.ts
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSSessionLog.ts
 
 - **Remove this unused import of 'GameType'.**
   apps/score-tracker/frontend/app/games/[id].tsx:38
