@@ -843,42 +843,6 @@ function getRecordingLocationOptions(gpsTimeIntervalMs: number): Location.Locati
 	};
 }
 
-/**
- * Options for the background location task during activity recording.
- *
- * @param gpsTimeIntervalMs  User-selected GPS interval in milliseconds.
- * @param speechEnabled      Whether speech announcements are enabled. Deferred
- *                           (batched) background fixes save battery, but let
- *                           iOS suspend the app between batches — the JS
- *                           timers freeze and periodic/km announcements then
- *                           arrive far too late and all at once on the next
- *                           wake-up. With speech enabled every fix is
- *                           delivered immediately so announcements play on
- *                           time.
- */
-function getBackgroundRecordingLocationOptions(
-	gpsTimeIntervalMs: number,
-	speechEnabled: boolean,
-): Location.LocationTaskOptions {
-	return {
-		...getRecordingLocationOptions(gpsTimeIntervalMs),
-		// Fitness lets iOS aggressively power-manage the location hardware
-		// for workout-style movement patterns.
-		activityType: Location.ActivityType.Fitness,
-		// Batch background fixes so iOS can wake the app roughly once per
-		// configured interval instead of on every single GPS fix
-		// (`timeInterval` alone has no effect on iOS) — but only when speech
-		// is off, see `speechEnabled` above.
-		deferredUpdatesInterval: speechEnabled ? 0 : gpsTimeIntervalMs,
-		showsBackgroundLocationIndicator: true,
-		foregroundService: {
-			notificationTitle: 'Activity Recording',
-			notificationBody: 'Geonexia is recording your activity in the background.',
-			notificationColor: PRIMARY_COLOR,
-		},
-	};
-}
-
 // ─── Background task ──────────────────────────────────────────────────────────
 
 const ACTIVITY_LOCATION_TASK = 'geonexia-activity-location';
@@ -3755,20 +3719,6 @@ function trackVisitedHexCells(
 	}
 }
 
-/**
- * Announcements that carry live stats are worthless once stale. When iOS
- * suspends the app between deferred background GPS batches, queued
- * announcements used to pile up and then play all at once with outdated
- * values on the next wake-up. Items older than this are dropped instead of
- * spoken; combined with `replaceSameSource` at most one announcement per
- * kind ever waits in the queue.
- */
-const RECORDING_ANNOUNCEMENT_MAX_AGE_MS = 30_000;
-const RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS = {
-	maxAgeMs: RECORDING_ANNOUNCEMENT_MAX_AGE_MS,
-	replaceSameSource: true,
-} as const;
-
 /** Speaks a TTS announcement, swallowing and logging (rather than throwing) any error. */
 function trySpeakAnnouncement(
 	text: string,
@@ -3778,7 +3728,7 @@ function trySpeakAnnouncement(
 	logContext: string,
 ): void {
 	try {
-		speakAnnouncement(text, langCode, options, source, RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+		speakAnnouncement(text, langCode, options, source);
 	} catch (err) {
 		console.warn(`[RecordScreen] ${logContext} failed:`, err);
 	}
@@ -4934,7 +4884,7 @@ export default function RecordScreen() {
 				try {
 					speakAnnouncement(text, langCode, {
 						rate: speechRateToNumber(curSs.speechRate),
-					}, 'background', RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+					}, 'background');
 				} catch (err) {
 					console.warn('[RecordScreen] Background announcement failed:', err);
 				}
@@ -4987,26 +4937,10 @@ export default function RecordScreen() {
 	// startRecording skips the background audio session when speech is disabled
 	// (it keeps the app awake and costs battery). If the user enables speech
 	// while a recording is running, activate the session now so announcements
-	// remain audible when the app is backgrounded. Also re-register the
-	// background location task without deferred batching (see
-	// getBackgroundRecordingLocationOptions) so announcements stay timely.
+	// remain audible when the app is backgrounded.
 	useEffect(() => {
 		if (isRecording && speechSettings.enabled) {
 			void enableBackgroundAudio();
-			void (async () => {
-				try {
-					const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
-					if (isTaskRunning && isRecordingRef.current) {
-						const gpsTimeIntervalMs = store.getState().gpsInterval.intervalSeconds * 1000;
-						await Location.startLocationUpdatesAsync(
-							ACTIVITY_LOCATION_TASK,
-							getBackgroundRecordingLocationOptions(gpsTimeIntervalMs, true),
-						);
-					}
-				} catch (err) {
-					console.warn('[RecordScreen] Failed to update background location options for speech:', err);
-				}
-			})();
 		}
 	}, [isRecording, speechSettings.enabled]);
 
@@ -5728,7 +5662,7 @@ export default function RecordScreen() {
 						volume: curSs.volume,
 						rate: speechRateToNumber(curSs.speechRate),
 						useApplicationAudioSession: curSs.duckMusicDuringTTS,
-					}, 'periodic', RECORDING_ANNOUNCEMENT_QUEUE_OPTIONS);
+					}, 'periodic');
 				} catch (err) {
 					console.warn('[RecordScreen] Periodic announcement failed:', err);
 				}
@@ -5881,10 +5815,22 @@ export default function RecordScreen() {
 			if (useBackground) {
 				console.log('[RecordScreen] Starting background location updates via TaskManager...');
 				_onLocationUpdate = handleLocationUpdate;
-				await Location.startLocationUpdatesAsync(
-					ACTIVITY_LOCATION_TASK,
-					getBackgroundRecordingLocationOptions(gpsTimeIntervalMs, speechSettingsRef.current.enabled),
-				);
+				await Location.startLocationUpdatesAsync(ACTIVITY_LOCATION_TASK, {
+					...getRecordingLocationOptions(gpsTimeIntervalMs),
+					// Fitness lets iOS aggressively power-manage the location hardware
+					// for workout-style movement patterns.
+					activityType: Location.ActivityType.Fitness,
+					// Batch background fixes so iOS can wake the app roughly once per
+					// configured interval instead of on every single GPS fix
+					// (`timeInterval` alone has no effect on iOS).
+					deferredUpdatesInterval: gpsTimeIntervalMs,
+					showsBackgroundLocationIndicator: true,
+					foregroundService: {
+						notificationTitle: 'Activity Recording',
+						notificationBody: 'Geonexia is recording your activity in the background.',
+						notificationColor: PRIMARY_COLOR,
+					},
+				});
 				console.log('[RecordScreen] Background location updates started.');
 			} else {
 				console.log('[RecordScreen] Background permission denied – falling back to foreground-only tracking.');
