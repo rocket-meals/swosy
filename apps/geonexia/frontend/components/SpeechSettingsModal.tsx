@@ -295,7 +295,8 @@ export default function SpeechSettingsContent() {
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
 			rate: speechRateToNumber(settings.speechRate),
-		}, 'sample', { duckOthers: settings.duckMusicDuringTTS });
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
 	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Play content example (based on enabled toggles) ─────────────────────
@@ -318,7 +319,8 @@ export default function SpeechSettingsContent() {
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
 			rate: speechRateToNumber(settings.speechRate),
-		}, 'sample', { duckOthers: settings.duckMusicDuringTTS });
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
 	}, [langCode, settings]);
 
 	// ─── Play faster hint example ─────────────────────────────────────────────
@@ -330,7 +332,8 @@ export default function SpeechSettingsContent() {
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
 			rate: speechRateToNumber(settings.speechRate),
-		}, 'sample', { duckOthers: settings.duckMusicDuringTTS });
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
 	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Play slower hint example ─────────────────────────────────────────────
@@ -342,7 +345,8 @@ export default function SpeechSettingsContent() {
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
 			rate: speechRateToNumber(settings.speechRate),
-		}, 'sample', { duckOthers: settings.duckMusicDuringTTS });
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
 	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Volume stepper ───────────────────────────────────────────────────────
@@ -543,9 +547,7 @@ export default function SpeechSettingsContent() {
 						speakAnnouncement(
 							langCode === 'de' ? 'Hinweiston' : 'Hint tone',
 							langCode,
-							{ volume: settings.volume, rate: speechRateToNumber(settings.speechRate) },
-							'sample',
-							{ duckOthers: settings.duckMusicDuringTTS },
+							{ volume: settings.volume, rate: speechRateToNumber(settings.speechRate), useApplicationAudioSession: settings.duckMusicDuringTTS },
 						);
 					}
 				}}

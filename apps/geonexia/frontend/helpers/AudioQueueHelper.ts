@@ -1,6 +1,6 @@
 import * as Speech from 'expo-speech';
 import { appendTTSLogEntry, SpokenTextFields } from './TTSLogStorage';
-import { activateSpeechSession, scheduleSpeechSessionRelease } from './SpeechAudioSession';
+import { activateSpeechDucking, scheduleSpeechDuckingRelease } from './SpeechAudioSession';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -10,8 +10,6 @@ interface QueueItem extends SpokenTextFields {
 	enqueuedAt: number;
 	/** Maximum age (ms) an item may reach before playback; older items are dropped. */
 	maxAgeMs?: number;
-	/** Whether other apps' music is ducked while this item is spoken. */
-	duckOthers: boolean;
 }
 
 /**
@@ -32,13 +30,6 @@ export interface EnqueueAnnouncementOptions {
 	 * periodic/km/pace announcement is spoken instead of the whole backlog.
 	 */
 	replaceSameSource?: boolean;
-	/**
-	 * true (default): other apps' music is lowered while the announcement is
-	 * spoken. false: the music keeps playing at full volume and the
-	 * announcement plays over it. Music is never stopped/interrupted either
-	 * way.
-	 */
-	duckOthers?: boolean;
 }
 
 // ─── Module-level queue state ─────────────────────────────────────────────────
@@ -94,7 +85,7 @@ function finishItem(): void {
 	_isPlaying = false;
 	if (_queue.length === 0) {
 		// Queue drained – give the music its volume back (debounced).
-		scheduleSpeechSessionRelease();
+		scheduleSpeechDuckingRelease();
 	} else {
 		processNext();
 	}
@@ -103,14 +94,8 @@ function finishItem(): void {
 function speakItem(item: QueueItem): void {
 	try {
 		Speech.speak(item.text, {
-			...item.options,
-			// The shared synthesizer must NEVER use its private audio session
-			// (`useApplicationAudioSession: false`): the private session hard-stops
-			// other apps' music instead of ducking it, and it stays active for the
-			// synthesizer's lifetime — iOS then re-asserts it on every foreground,
-			// stopping the user's music every time the app is opened. Whether the
-			// music ducks or mixes is controlled via SpeechAudioSession instead.
 			useApplicationAudioSession: true,
+			...item.options,
 			language: item.languageCode,
 			onDone: () => {
 				void appendTTSLogEntry({
@@ -138,7 +123,7 @@ function speakItem(item: QueueItem): void {
 			onStopped: () => {
 				// Manual stop via clearAudioQueue – do not advance to next item.
 				_isPlaying = false;
-				scheduleSpeechSessionRelease();
+				scheduleSpeechDuckingRelease();
 			},
 		});
 	} catch (err) {
@@ -160,28 +145,34 @@ function processNext(): void {
 	if (_isPlaying) return;
 	dropExpiredItems();
 	if (_queue.length === 0) {
-		scheduleSpeechSessionRelease();
+		scheduleSpeechDuckingRelease();
 		return;
 	}
 	const item = _queue.shift();
 	if (item == null) return;
 	_isPlaying = true;
 
-	// Affect other apps' music (duck or mix) only for the duration of the
-	// announcement (plus a short debounce), not for the whole recording.
-	const generation = _stopGeneration;
-	void activateSpeechSession(item.duckOthers)
-		.catch(() => { /* logged inside activateSpeechSession */ })
-		.then(() => {
-			if (generation !== _stopGeneration) {
-				// clearAudioQueue was called while the audio session was being
-				// activated – do not start speaking a cancelled announcement.
-				_isPlaying = false;
-				scheduleSpeechSessionRelease();
-				return;
-			}
-			speakItem(item);
-		});
+	// Duck other apps' music only for the duration of the announcement (plus a
+	// short debounce), not for the whole recording. Items that explicitly opt
+	// out of the application audio session skip the ducking activation.
+	const wantsDucking = item.options?.useApplicationAudioSession !== false;
+	if (wantsDucking) {
+		const generation = _stopGeneration;
+		void activateSpeechDucking()
+			.catch(() => { /* logged inside activateSpeechDucking */ })
+			.then(() => {
+				if (generation !== _stopGeneration) {
+					// clearAudioQueue was called while the audio session was being
+					// activated – do not start speaking a cancelled announcement.
+					_isPlaying = false;
+					scheduleSpeechDuckingRelease();
+					return;
+				}
+				speakItem(item);
+			});
+	} else {
+		speakItem(item);
+	}
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -233,7 +224,6 @@ export function enqueueAnnouncement(
 		source,
 		enqueuedAt: Date.now(),
 		maxAgeMs: queueOptions?.maxAgeMs,
-		duckOthers: queueOptions?.duckOthers !== false,
 	});
 	processNext();
 }
@@ -251,5 +241,5 @@ export function clearAudioQueue(): void {
 		console.warn('[AudioQueueHelper] Speech.stop threw:', err);
 	}
 	// _isPlaying is reset by the onStopped callback of Speech.speak.
-	scheduleSpeechSessionRelease();
+	scheduleSpeechDuckingRelease();
 }
