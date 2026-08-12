@@ -830,6 +830,17 @@ let _onLocationUpdate: ((point: RoutePoint) => void) | null = null;
 
 TaskManager.defineTask(ACTIVITY_LOCATION_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
 	if (error || !data) return;
+	// When the app was fully closed (swiped away / terminated) during a
+	// recording, the OS keeps the background location task alive and relaunches
+	// the JS runtime headlessly for each update. In that fresh runtime no
+	// recording is active (_onLocationUpdate is unset), so stop the task:
+	// GPS may only stay active while the app is open or in the background,
+	// never after it has been closed. The crash-recovery snapshot preserves
+	// the interrupted activity for the next app start.
+	if (!_onLocationUpdate) {
+		await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
+		return;
+	}
 	const locations = (data as { locations: Location.LocationObject[] }).locations;
 	if (!Array.isArray(locations)) return;
 	for (const loc of locations) {
@@ -4714,6 +4725,20 @@ export default function RecordScreen() {
 	}, []);
 
 	useEffect(() => {
+		// A previous session may have been terminated mid-recording (app swiped
+		// away), leaving the background location task registered with the OS.
+		// Stop it on startup so GPS is not queried without an active recording.
+		void (async () => {
+			try {
+				const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
+				if (isTaskRunning && !isRecordingRef.current) {
+					await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK);
+					console.log('[RecordScreen] Stopped leftover background location task from a previous session.');
+				}
+			} catch (err) {
+				console.warn('[RecordScreen] Leftover background task check failed:', err);
+			}
+		})();
 		return () => {
 			// Cleanup on unmount: stop any active tracking
 			_onLocationUpdate = null;
@@ -5712,6 +5737,9 @@ export default function RecordScreen() {
 						notificationTitle: 'Activity Recording',
 						notificationBody: 'Geonexia is recording your activity in the background.',
 						notificationColor: PRIMARY_COLOR,
+						// Stop the Android foreground service (and GPS) when the user
+						// closes the app; tracking may only continue in the background.
+						killServiceOnDestroy: true,
 					},
 				});
 				console.log('[RecordScreen] Background location updates started.');
