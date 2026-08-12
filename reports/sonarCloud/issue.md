@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 11 | 11 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 96 | 26 |
+| 🔧 Maintainability | 95 | 26 |
 
-**Total issues:** 120 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 119 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -112,7 +112,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (26/96)
+## 🔧 Maintainability (26/95)
 
 - **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:29
@@ -146,21 +146,17 @@
   apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts:200
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts#L200
 
-- **Use the opposite operator (<=) instead.**
-  apps/geonexia/frontend/app/activities/[id].tsx
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx
+- **Remove this useless assignment to variable "liveSpeedKmh".**
+  apps/geonexia/frontend/app/index.tsx:4331
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L4331
+
+- **Prefer `.at(…)` over `[….length - index]`.**
+  apps/geonexia/frontend/app/index.tsx:5429
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5429
 
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/geonexia/frontend/app/index.tsx:5358
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5358
-
-- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/geonexia/frontend/app/index.tsx
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx
-
-- **Refactor this code to not use nested template literals.**
-  apps/geonexia/frontend/helpers/TTSSessionLog.ts
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/TTSSessionLog.ts
+  apps/geonexia/frontend/app/index.tsx:5383
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5383
 
 - **Remove this unused import of 'GameType'.**
   apps/score-tracker/frontend/app/games/[id].tsx:38
@@ -217,4 +213,8 @@
 - **Remove this useless assignment to variable "toggleEditingPlayers".**
   apps/score-tracker/frontend/app/match/index.tsx:1389
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1389
+
+- **Refactor this code to not use nested template literals.**
+  apps/score-tracker/frontend/app/players/index.tsx:76
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/players/index.tsx#L76
 

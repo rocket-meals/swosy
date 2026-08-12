@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ_yQOL1pgUJmaIr0f7D","Remove this useless assignment to variable ""liveSpeedKmh"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4331
+"AZ_yQOL1pgUJmaIr0f7E","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5429
 "AZ_rjWWpiiRzAXeKHrKM","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/app/settings/index.tsx",17
 "AZ_rjWZuiiRzAXeKHrKN","Do not use Array index in keys","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/components/WidgetPreview.tsx",68
 "AZ_rTPX2Zu4Ig3zpugeq","Do not use Array index in keys","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/widgets/FoodWidget.tsx",66
@@ -6,10 +8,7 @@ Key,Message,Component,Line
 "AZ_ny-jrHB_X69K27h4p","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",78
 "AZ_ny-jrHB_X69K27h4q","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",79
 "AZ_ny-jrHB_X69K27h4r","Verify that argument is of correct type: expected 'number' instead of 'number | undefined'.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/scripts/generate-app-icon.js",80
-"AZ_mDo6nwr7A0FAxuFXv","Use the opposite operator (<=) instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",
-"AZ_mDozYwr7A0FAxuFXu","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TTSSessionLog.ts",
-"AZ_mDo87wr7A0FAxuFXw","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5358
-"AZ_mDo87wr7A0FAxuFXx","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",
+"AZ_mDo87wr7A0FAxuFXw","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5383
 "AZ_bhgSmh08MZ_CNlF2h","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts",29
 "AZ_ZdY2aVTkoKe_w_Fkw","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/Collapsible/CollapsibleView.tsx",45
 "AZ_ZFtaL4GWqYiG8MC2O","Remove this unused import of 'StyleSheet'.","rocket-meals_rocket-meals:packages/common-ui/src/components/CustomMarkdown/CustomMarkdown.tsx",2
