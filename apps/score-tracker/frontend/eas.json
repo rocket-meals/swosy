@@ -1,5 +1,14 @@
 {
   "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "node": "22.16.0",
+      "channel": "development"
+    },
     "preview": {
       "android": {
         "buildType": "apk"
