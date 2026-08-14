@@ -48,7 +48,7 @@ Die Links werden bei jedem Build-Nummern-Bump automatisch aktualisiert.
 <!-- dev-client:frontend:end -->
 
 <!-- dev-client:score-tracker:start -->
-**Score Tracker Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+**Score Tracker Dev Client v0.22.3:** 🤖 [Android APK](https://expo.dev/artifacts/eas/FfqitQTNiaN1gMOCSD5iQI0UMtoZj7UpXKS8qut-6uE.apk) · 🍏 [iOS (Ad-hoc Install)](https://expo.dev/accounts/baumgartner-software/projects/score-tracker/builds/c125251b-5670-4c3a-8993-aeb3f0141f09)
 <!-- dev-client:score-tracker:end -->
 
 <!-- dev-client:tag-und-jahr:start -->
