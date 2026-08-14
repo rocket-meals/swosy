@@ -52,7 +52,7 @@ Die Links werden bei jedem Build-Nummern-Bump automatisch aktualisiert.
 <!-- dev-client:score-tracker:end -->
 
 <!-- dev-client:tag-und-jahr:start -->
-**Tag und Jahr Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+**Tag und Jahr Dev Client v0.3.0:** 🤖 [Android APK](https://expo.dev/artifacts/eas/zJnhrBFFRKRepsc8dIfoBcqNM5_jruDX-NFQ3xPQuV0.apk) · 🍏 [iOS (Ad-hoc Install)](https://expo.dev/accounts/baumgartner-software/projects/tag-und-jahr/builds/643dba6a-060d-47b5-b569-10b625544d73)
 <!-- dev-client:tag-und-jahr:end -->
 
 <!-- dev-client:geonexia:start -->
