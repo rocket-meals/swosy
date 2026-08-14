@@ -22,7 +22,7 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-ic
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
-import { MathHelper } from 'repo-depkit-common';
+import { MathHelper, fetchWeatherAtCoordinates } from 'repo-depkit-common';
 import type { MapOverlayIdentity } from 'repo-depkit-common';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
@@ -51,7 +51,7 @@ import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, bu
 import { clearAudioQueue } from '../helpers/AudioQueueHelper';
 import { setRecordingActive } from '../helpers/RecordingActivityTracker';
 import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
-import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
+import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, appendPointsToRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
 import type { PaceHintState } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
@@ -830,27 +830,34 @@ let _onLocationUpdate: ((point: RoutePoint) => void) | null = null;
 
 TaskManager.defineTask(ACTIVITY_LOCATION_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
 	if (error || !data) return;
-	// When the app was fully closed (swiped away / terminated) during a
-	// recording, the OS keeps the background location task alive and relaunches
-	// the JS runtime headlessly for each update. In that fresh runtime no
-	// recording is active (_onLocationUpdate is unset), so stop the task:
-	// GPS may only stay active while the app is open or in the background,
-	// never after it has been closed. The crash-recovery snapshot preserves
-	// the interrupted activity for the next app start.
-	if (!_onLocationUpdate) {
-		await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
-		return;
-	}
 	const locations = (data as { locations: Location.LocationObject[] }).locations;
 	if (!Array.isArray(locations)) return;
-	for (const loc of locations) {
-		const point: RoutePoint = {
-			lat: loc.coords.latitude,
-			lng: loc.coords.longitude,
-			altitude: loc.coords.altitude,
-			speed: loc.coords.speed,
-			timestamp: loc.timestamp,
-		};
+	const points: RoutePoint[] = locations.map((loc) => ({
+		lat: loc.coords.latitude,
+		lng: loc.coords.longitude,
+		altitude: loc.coords.altitude,
+		speed: loc.coords.speed,
+		timestamp: loc.timestamp,
+	}));
+	// No active recording in this JS runtime. Two possible reasons:
+	// 1. The OS killed the app process mid-recording and relaunched the runtime
+	//    headlessly for this update. The run is still ongoing – keep capturing
+	//    it by appending the points to the crash-recovery snapshot so the
+	//    recovery on the next app start has the complete track. Stopping the
+	//    task here (as an earlier version did) killed legitimate background
+	//    recordings and made GPS capture unreliable.
+	// 2. The task is a stale leftover with no fresh snapshot – then GPS must
+	//    not stay active without a recording, so stop the task. Fully closing
+	//    the app (swipe away) is additionally handled natively on Android via
+	//    the foreground service's killServiceOnDestroy.
+	if (!_onLocationUpdate) {
+		const appended = await appendPointsToRecordingSnapshot(points);
+		if (!appended) {
+			await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
+		}
+		return;
+	}
+	for (const point of points) {
 		if (_onLocationUpdate) {
 			_onLocationUpdate(point);
 		}
@@ -6016,6 +6023,22 @@ export default function RecordScreen() {
 			walkedEdgesRedLineResolution: RED_LINE_GRID_RESOLUTION,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
+
+		// Best-effort: look up the weather at the START GPS point for the time
+		// the run started (free Open-Meteo API, no key required). Failures
+		// (offline, 404, timeout, …) resolve to null and simply leave the
+		// weather fields unset – the user can still fill them in manually.
+		const weather = await fetchWeatherAtCoordinates({
+			latitude: points[0].lat,
+			longitude: points[0].lng,
+			time: startTimeRef.current,
+			timeoutMs: 8_000,
+		});
+		if (weather) {
+			activity.weatherTemperature = Math.round(weather.temperatureCelsius * 10) / 10;
+			activity.weatherType = weather.condition;
+		}
+
 		try {
 			await saveActivity(activity);
 		} catch (err) {

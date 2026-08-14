@@ -31,7 +31,9 @@ export function getVersionPatch() {
 	// Never decrease the visible patch version.
 	// 9: GPS tracking + TTS announcements reset to pre-2026-07-10 behavior;
 	//    tappable speed/pace stats open a history bar chart modal
-	return 9;
+	// 10: reliable background GPS capture (headless updates feed the crash
+	//     snapshot instead of stopping the task); weather saved on activities
+	return 10;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
