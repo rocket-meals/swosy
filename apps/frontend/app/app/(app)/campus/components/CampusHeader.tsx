@@ -27,7 +27,7 @@ const HeaderIconButton = ({
     nativeID?: string;
     children: React.ReactNode;
 }) => (
-    <IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} nativeID={nativeID}>
+    <IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} id={nativeID}>
         {children}
     </IconButton>
 );

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const rnResolver = require('react-native/jest/resolver.js');
+const rnResolver = require('@react-native/jest-preset/jest/resolver.js');
 
 function customJestResolver(modulePath, options) {
     const originalPackageFilter = options.packageFilter;

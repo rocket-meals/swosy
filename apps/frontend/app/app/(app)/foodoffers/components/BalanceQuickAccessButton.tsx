@@ -42,7 +42,7 @@ const BalanceTriggerButton = ({
 		{...triggerProps}
 		onPress={onPress}
 		style={style}
-		nativeID={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
+		id={AppComponentIds.FOODOFFERS_BALANCE_QUICK_ACCESS}
 	>
 		<Octicons name="credit-card" size={24} color={color} />
 	</IconButton>

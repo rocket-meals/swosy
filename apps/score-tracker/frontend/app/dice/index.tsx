@@ -276,7 +276,7 @@ export default function DiceScreen() {
 						return (
 							<TouchableOpacity
 								key={sides}
-								nativeID={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}${sides}`}
+								id={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}${sides}`}
 								style={[styles.typeChip, { borderColor: PRIMARY_COLOR, opacity: disabled ? 0.4 : 1 }]}
 								onPress={() => addDie(sides)}
 								disabled={disabled}
@@ -288,7 +288,7 @@ export default function DiceScreen() {
 						);
 					})}
 					<TouchableOpacity
-						nativeID={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}custom`}
+						id={`${ComponentIds.DICE_TYPE_BUTTON_PREFIX}custom`}
 						style={[styles.typeChip, { borderColor: PRIMARY_COLOR, opacity: isRolling || pool.length >= MAX_POOL_SIZE ? 0.4 : 1 }]}
 						onPress={() => setShowCustomInput((prev) => !prev)}
 						disabled={isRolling || pool.length >= MAX_POOL_SIZE}
@@ -314,7 +314,7 @@ export default function DiceScreen() {
 							onSubmitEditing={handleAddCustom}
 						/>
 						<TouchableOpacity
-							nativeID={ComponentIds.DICE_CUSTOM_ADD_BUTTON}
+							id={ComponentIds.DICE_CUSTOM_ADD_BUTTON}
 							style={[styles.customAddButton, { backgroundColor: PRIMARY_COLOR, opacity: isRolling || pool.length >= MAX_POOL_SIZE ? 0.4 : 1 }]}
 							onPress={handleAddCustom}
 							disabled={isRolling || pool.length >= MAX_POOL_SIZE}
@@ -329,7 +329,7 @@ export default function DiceScreen() {
 					<SettingsListGroupTitle title={`Ausgewählte Würfel (${pool.length})`} />
 					{pool.length > 0 && (
 						<TouchableOpacity
-							nativeID={ComponentIds.DICE_POOL_CLEAR_BUTTON}
+							id={ComponentIds.DICE_POOL_CLEAR_BUTTON}
 							onPress={clearPool}
 							disabled={isRolling}
 							hitSlop={8}
@@ -349,7 +349,7 @@ export default function DiceScreen() {
 						{pool.map((die) => (
 							<TouchableOpacity
 								key={die.id}
-								nativeID={`${ComponentIds.DICE_POOL_ITEM_PREFIX}${die.id}`}
+								id={`${ComponentIds.DICE_POOL_ITEM_PREFIX}${die.id}`}
 								style={[styles.poolChip, { backgroundColor: PRIMARY_COLOR, opacity: isRolling ? 0.6 : 1 }]}
 								onPress={() => removeDie(die.id)}
 								disabled={isRolling}
@@ -368,7 +368,7 @@ export default function DiceScreen() {
 					{ROLL_MODES.map((mode) => (
 						<TouchableOpacity
 							key={mode.key}
-							nativeID={`${ComponentIds.DICE_MODE_BUTTON_PREFIX}${mode.key}`}
+							id={`${ComponentIds.DICE_MODE_BUTTON_PREFIX}${mode.key}`}
 							style={[styles.modeButton, rollMode === mode.key && { backgroundColor: PRIMARY_COLOR }, { opacity: isRolling ? 0.6 : 1 }]}
 							onPress={() => setRollMode(mode.key)}
 							disabled={isRolling}
@@ -414,7 +414,7 @@ export default function DiceScreen() {
 						<View style={styles.sectionHeaderRow}>
 							<SettingsListGroupTitle title="Historie" />
 							<TouchableOpacity
-								nativeID={ComponentIds.DICE_HISTORY_CLEAR_BUTTON}
+								id={ComponentIds.DICE_HISTORY_CLEAR_BUTTON}
 								onPress={clearHistory}
 								hitSlop={8}
 								style={styles.clearButton}
@@ -426,7 +426,7 @@ export default function DiceScreen() {
 
 						<View style={styles.historyFilterRow}>
 							<TouchableOpacity
-								nativeID={ComponentIds.DICE_HISTORY_FILTER_ALL_BUTTON}
+								id={ComponentIds.DICE_HISTORY_FILTER_ALL_BUTTON}
 								style={[
 									styles.historyFilterChip,
 									{ borderColor: PRIMARY_COLOR },
@@ -444,7 +444,7 @@ export default function DiceScreen() {
 								return (
 									<TouchableOpacity
 										key={sides}
-										nativeID={`${ComponentIds.DICE_HISTORY_FILTER_PREFIX}${sides}`}
+										id={`${ComponentIds.DICE_HISTORY_FILTER_PREFIX}${sides}`}
 										style={[
 											styles.historyFilterChip,
 											{ borderColor: PRIMARY_COLOR },
@@ -490,7 +490,7 @@ export default function DiceScreen() {
 
 			<View style={[styles.footer, { paddingBottom: insets.bottom + 12, backgroundColor: theme.screen.background, borderTopColor: theme.screen.border }]}>
 				<TouchableOpacity
-					nativeID={ComponentIds.DICE_ROLL_BUTTON}
+					id={ComponentIds.DICE_ROLL_BUTTON}
 					style={[styles.rollButton, { backgroundColor: PRIMARY_COLOR, opacity: isRolling || pool.length === 0 ? 0.5 : 1 }]}
 					onPress={handleRoll}
 					disabled={isRolling || pool.length === 0}

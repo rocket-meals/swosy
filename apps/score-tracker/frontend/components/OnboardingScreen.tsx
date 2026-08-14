@@ -300,7 +300,7 @@ export default function OnboardingScreen() {
 			>
 				<View style={styles.skipRow}>
 					<TouchableOpacity
-						nativeID={ComponentIds.ONBOARDING_SKIP_BUTTON}
+						id={ComponentIds.ONBOARDING_SKIP_BUTTON}
 						onPress={handleFinish}
 						hitSlop={12}
 						accessibilityRole="button"
@@ -402,7 +402,7 @@ export default function OnboardingScreen() {
 				<View style={styles.buttonRow}>
 					{stepIndex > 0 ? (
 						<TouchableOpacity
-							nativeID={ComponentIds.ONBOARDING_BACK_BUTTON}
+							id={ComponentIds.ONBOARDING_BACK_BUTTON}
 							style={[styles.backButton, { borderColor: theme.screen.border }]}
 							onPress={handleBack}
 							activeOpacity={0.7}
@@ -414,7 +414,7 @@ export default function OnboardingScreen() {
 						<View style={styles.backButtonPlaceholder} />
 					)}
 					<TouchableOpacity
-						nativeID={ComponentIds.ONBOARDING_NEXT_BUTTON}
+						id={ComponentIds.ONBOARDING_NEXT_BUTTON}
 						style={[styles.nextButton, { backgroundColor: PRIMARY_COLOR }]}
 						onPress={handleNext}
 						activeOpacity={0.8}
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	heroIcon: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

@@ -46,7 +46,7 @@ export default function ShareExportContent({ text, info }: Readonly<{ text: stri
 		<View style={styles.container}>
 			<Text style={[styles.hint, { color: theme.screen.placeholder }]}>{info}</Text>
 			<TouchableOpacity
-				nativeID={ComponentIds.SHARE_EXPORT_COPY_BUTTON}
+				id={ComponentIds.SHARE_EXPORT_COPY_BUTTON}
 				style={[styles.primaryButton, { backgroundColor: copied ? SUCCESS_COLOR : PRIMARY_COLOR }]}
 				onPress={handleCopy}
 				activeOpacity={0.8}
@@ -55,7 +55,7 @@ export default function ShareExportContent({ text, info }: Readonly<{ text: stri
 				<Text style={styles.primaryButtonText}>{copied ? 'Erfolgreich kopiert' : 'In Zwischenablage kopieren'}</Text>
 			</TouchableOpacity>
 			<TouchableOpacity
-				nativeID={ComponentIds.SHARE_EXPORT_SHARE_BUTTON}
+				id={ComponentIds.SHARE_EXPORT_SHARE_BUTTON}
 				style={[styles.primaryButton, { backgroundColor: PRIMARY_COLOR }]}
 				onPress={handleShare}
 				activeOpacity={0.8}

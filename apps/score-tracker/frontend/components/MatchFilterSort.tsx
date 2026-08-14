@@ -27,7 +27,7 @@ function Chip({
 	const { theme } = useTheme();
 	return (
 		<TouchableOpacity
-			nativeID={nativeID}
+			id={nativeID}
 			onPress={onPress}
 			activeOpacity={0.7}
 			style={[
@@ -257,7 +257,7 @@ export default function MatchFilterSort({
 					/>
 				))}
 				<TouchableOpacity
-					nativeID={ComponentIds.GAME_DETAIL_SORT_DIRECTION_BUTTON}
+					id={ComponentIds.GAME_DETAIL_SORT_DIRECTION_BUTTON}
 					onPress={() => onSortChange({ ...sort, direction: sort.direction === 'asc' ? 'desc' : 'asc' })}
 					activeOpacity={0.7}
 					style={[styles.chip, styles.directionChip, { borderColor: theme.screen.border }]}
@@ -289,7 +289,7 @@ export default function MatchFilterSort({
 
 			{Object.keys(filters).length > 0 && (
 				<TouchableOpacity
-					nativeID={ComponentIds.GAME_DETAIL_FILTER_RESET}
+					id={ComponentIds.GAME_DETAIL_FILTER_RESET}
 					onPress={() => onFiltersChange({})}
 					activeOpacity={0.7}
 					style={[styles.resetButton, { borderColor: theme.screen.border }]}

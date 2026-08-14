@@ -55,7 +55,7 @@ const Index = () => {
 				}}
 			>
 				<TouchableOpacity
-					nativeID={ComponentIds.MONITOR_FOODPLAN_WEEK_CANTEEN_BUTTON}
+					id={ComponentIds.MONITOR_FOODPLAN_WEEK_CANTEEN_BUTTON}
 					style={{
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
@@ -96,7 +96,7 @@ const Index = () => {
 					</View>
 				</View>
 				<TouchableOpacity
-					nativeID={ComponentIds.MONITOR_FOODPLAN_WEEK_BIGSCREEN_BUTTON}
+					id={ComponentIds.MONITOR_FOODPLAN_WEEK_BIGSCREEN_BUTTON}
 					style={{
 						...styles.button,
 						backgroundColor: theme.screen.iconBg,

@@ -213,7 +213,7 @@ function EnumOptionsEditor({ gameTypeId, category }: Readonly<{ gameTypeId: stri
 					// with one, the picture fills the whole icon.
 					leftIconComponent={
 						<TouchableOpacity
-							nativeID={`${ComponentIds.GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX}${option.id}`}
+							id={`${ComponentIds.GAME_CATEGORY_OPTION_IMAGE_BUTTON_PREFIX}${option.id}`}
 							onPress={() => handleOpenImageModal(option.id, option.label)}
 							hitSlop={6}
 							style={styles.optionIconButton}
@@ -573,7 +573,7 @@ export default function GameCategorySettings({ gameTypeId }: Readonly<{ gameType
 					rightElement={
 						<View style={styles.reorderButtons}>
 							<TouchableOpacity
-								nativeID={`${ComponentIds.GAME_CATEGORY_MOVE_UP_PREFIX}${category.id}`}
+								id={`${ComponentIds.GAME_CATEGORY_MOVE_UP_PREFIX}${category.id}`}
 								onPress={() => dispatch(moveGameCategory({ gameTypeId, categoryId: category.id, direction: 'up' }))}
 								disabled={index === 0}
 								hitSlop={8}
@@ -582,7 +582,7 @@ export default function GameCategorySettings({ gameTypeId }: Readonly<{ gameType
 								<Ionicons name="chevron-up" size={18} color={index === 0 ? theme.screen.border : theme.screen.text} />
 							</TouchableOpacity>
 							<TouchableOpacity
-								nativeID={`${ComponentIds.GAME_CATEGORY_MOVE_DOWN_PREFIX}${category.id}`}
+								id={`${ComponentIds.GAME_CATEGORY_MOVE_DOWN_PREFIX}${category.id}`}
 								onPress={() => dispatch(moveGameCategory({ gameTypeId, categoryId: category.id, direction: 'down' }))}
 								disabled={index === categories.length - 1}
 								hitSlop={8}

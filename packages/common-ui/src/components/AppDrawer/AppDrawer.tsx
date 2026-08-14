@@ -58,7 +58,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 				key={item.key ?? index}
 				style={[styles.menuItem, { backgroundColor: bgColor }]}
 				onPress={item.onPress}
-				nativeID={item.nativeID}
+				id={item.nativeID}
 			>
 				<View style={[styles.menuIconOuter, { minWidth: iconMinWidth }]}>
 					<View style={styles.menuIconInner} onLayout={handleIconInnerLayout}>

@@ -41,7 +41,7 @@ export default function CountdownTimeInputModal({
 			/>
 
 			<TouchableOpacity
-				nativeID={ComponentIds.TIMER_CUSTOM_TIME_START_BUTTON}
+				id={ComponentIds.TIMER_CUSTOM_TIME_START_BUTTON}
 				style={[styles.startButton, { backgroundColor: PRIMARY_COLOR, opacity: canStart ? 1 : 0.5 }]}
 				onPress={handleStart}
 				disabled={!canStart}

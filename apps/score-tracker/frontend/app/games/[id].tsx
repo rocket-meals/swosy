@@ -305,7 +305,7 @@ function MatchParticipants({ players }: Readonly<{ players: GameHistoryPlayerEnt
 function GameDetailBackButton({ color }: Readonly<{ color: string }>) {
 	return (
 		<TouchableOpacity
-			nativeID={ComponentIds.GAME_DETAIL_BACK_BUTTON}
+			id={ComponentIds.GAME_DETAIL_BACK_BUTTON}
 			onPress={() => router.replace('/games')}
 			style={styles.headerBackButton}
 		>
@@ -651,7 +651,7 @@ function GameTypeSettingsContent({
 function GameDetailHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; onOpenSettings: () => void }>) {
 	return (
 		<TouchableOpacity
-			nativeID={ComponentIds.GAME_DETAIL_SETTINGS_BUTTON}
+			id={ComponentIds.GAME_DETAIL_SETTINGS_BUTTON}
 			onPress={onOpenSettings}
 			style={styles.headerButton}
 		>

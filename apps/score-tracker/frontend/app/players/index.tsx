@@ -343,7 +343,7 @@ function FriendEditContent({ friendId, onClose }: Readonly<{ friendId: string; o
 function PlayersHeaderRight({ color, onPress }: Readonly<{ color: string; onPress: () => void }>) {
 	return (
 		<TouchableOpacity
-			nativeID={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}
+			id={ComponentIds.PLAYERS_SCREEN_OPTIONS_BUTTON}
 			onPress={onPress}
 			style={styles.headerButton}
 		>

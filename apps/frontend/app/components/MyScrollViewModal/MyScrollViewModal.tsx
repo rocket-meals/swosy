@@ -75,9 +75,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
       <BottomSheetFlatList
         data={data}
         keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        ListHeaderComponent={headerComponent}
-        ListFooterComponent={footerComponent}
+        renderItem={info => <>{renderItem(info)}</>}
+        ListHeaderComponent={<>{headerComponent}</>}
+        ListFooterComponent={<>{footerComponent}</>}
         style={containerStyle}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}

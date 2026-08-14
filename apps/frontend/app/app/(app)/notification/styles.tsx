@@ -56,8 +56,9 @@ export default StyleSheet.create({
 		width: '98%',
 	},
 	label: {
-		wordWrap: 'break-word',
-		textOverflow: 'ellipsis',
+		// wordWrap/textOverflow are web-only CSS properties not covered by the
+		// React Native style types (since RN 0.86); react-native-web still applies them.
+		...({ wordWrap: 'break-word', textOverflow: 'ellipsis' } as object),
 		fontSize: 16,
 		color: '#333',
 	},

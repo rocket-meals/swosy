@@ -204,7 +204,7 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 					<Text style={styles.summaryText}>{summary}</Text>
 				</View>
 				<TouchableOpacity
-					nativeID={ComponentIds.SHARE_IMPORT_DONE_BUTTON}
+					id={ComponentIds.SHARE_IMPORT_DONE_BUTTON}
 					style={[styles.primaryButton, { backgroundColor: PRIMARY_COLOR }]}
 					onPress={onClose}
 					activeOpacity={0.8}
@@ -222,7 +222,7 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 			<View style={styles.container}>
 				<Text style={[styles.hint, { color: theme.screen.placeholder }]}>{importHint(mode)}</Text>
 				<TouchableOpacity
-					nativeID={ComponentIds.SHARE_IMPORT_CLIPBOARD_BUTTON}
+					id={ComponentIds.SHARE_IMPORT_CLIPBOARD_BUTTON}
 					style={[styles.primaryButton, { backgroundColor: PRIMARY_COLOR }]}
 					onPress={handleLoadClipboard}
 					activeOpacity={0.8}
@@ -380,7 +380,7 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 			)}
 
 			<TouchableOpacity
-				nativeID={ComponentIds.SHARE_IMPORT_SUBMIT_BUTTON}
+				id={ComponentIds.SHARE_IMPORT_SUBMIT_BUTTON}
 				style={[styles.primaryButton, { backgroundColor: SUCCESS_COLOR }]}
 				onPress={handleImport}
 				activeOpacity={0.8}
@@ -388,7 +388,7 @@ export default function ShareImportContent({ mode, onClose }: Readonly<{ mode: I
 				<Ionicons name="download-outline" size={18} color="#ffffff" />
 				<Text style={styles.primaryButtonText}>Importieren</Text>
 			</TouchableOpacity>
-			<TouchableOpacity nativeID={ComponentIds.SHARE_IMPORT_RESET_BUTTON} style={styles.secondaryButton} onPress={handleReset} activeOpacity={0.7}>
+			<TouchableOpacity id={ComponentIds.SHARE_IMPORT_RESET_BUTTON} style={styles.secondaryButton} onPress={handleReset} activeOpacity={0.7}>
 				<Text style={[styles.secondaryButtonText, { color: theme.screen.placeholder }]}>Anderen Export einfügen</Text>
 			</TouchableOpacity>
 		</View>

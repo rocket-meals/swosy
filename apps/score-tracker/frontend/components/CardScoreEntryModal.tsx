@@ -193,7 +193,7 @@ export default function CardScoreEntryModal({
 							return (
 								<TouchableOpacity
 									key={item.id}
-									nativeID={`${ComponentIds.GAME_CARD_SCORE_CARD_PREFIX}${item.id}`}
+									id={`${ComponentIds.GAME_CARD_SCORE_CARD_PREFIX}${item.id}`}
 									style={[
 										styles.card,
 										{ borderColor: PRIMARY_COLOR, backgroundColor: selected ? PRIMARY_COLOR : 'transparent' },
@@ -225,7 +225,7 @@ export default function CardScoreEntryModal({
 			)}
 
 			<TouchableOpacity
-				nativeID={ComponentIds.GAME_CARD_SCORE_SAVE_BUTTON}
+				id={ComponentIds.GAME_CARD_SCORE_SAVE_BUTTON}
 				style={[styles.saveButton, { backgroundColor: PRIMARY_COLOR }]}
 				onPress={handleSave}
 				activeOpacity={0.8}

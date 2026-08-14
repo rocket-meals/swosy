@@ -114,7 +114,7 @@ const Index = () => {
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={[styles.header, { backgroundColor: theme.screen.background }]}>
 				<TouchableOpacity
-					nativeID={ComponentIds.MONITOR_LIST_WEEK_CURRENT_WEEK_BUTTON}
+					id={ComponentIds.MONITOR_LIST_WEEK_CURRENT_WEEK_BUTTON}
 					style={{
 						...styles.currentWeekButton,
 						backgroundColor: foods_area_color,

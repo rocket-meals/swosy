@@ -190,7 +190,7 @@ function ScoreInputContent({
 				</View>
 			</View>
 			<TouchableOpacity
-				nativeID={ComponentIds.GAME_SCORE_INPUT_SAVE_BUTTON}
+				id={ComponentIds.GAME_SCORE_INPUT_SAVE_BUTTON}
 				style={[styles.scoreInputSaveButton, { backgroundColor: PRIMARY_COLOR }]}
 				onPress={handleSave}
 				activeOpacity={0.8}
@@ -530,7 +530,7 @@ function PlayerTile({
 
 	return (
 		<TouchableOpacity
-			nativeID={nativeID}
+			id={nativeID}
 			onPress={onPress}
 			activeOpacity={0.8}
 			style={[
@@ -701,7 +701,7 @@ function PlayerSetupRow({
 			rightIcon={
 				<View style={styles.selectedPlayerActions}>
 					<TouchableOpacity
-						nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_UP_PREFIX}${player.id}`}
+						id={`${ComponentIds.GAME_PLAYER_ROW_MOVE_UP_PREFIX}${player.id}`}
 						onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
 						disabled={!canMoveUp}
 						hitSlop={8}
@@ -710,7 +710,7 @@ function PlayerSetupRow({
 						<Ionicons name="chevron-up" size={20} color={canMoveUp ? theme.screen.text : theme.screen.border} />
 					</TouchableOpacity>
 					<TouchableOpacity
-						nativeID={`${ComponentIds.GAME_PLAYER_ROW_MOVE_DOWN_PREFIX}${player.id}`}
+						id={`${ComponentIds.GAME_PLAYER_ROW_MOVE_DOWN_PREFIX}${player.id}`}
 						onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
 						disabled={!canMoveDown}
 						hitSlop={8}
@@ -719,7 +719,7 @@ function PlayerSetupRow({
 						<Ionicons name="chevron-down" size={20} color={canMoveDown ? theme.screen.text : theme.screen.border} />
 					</TouchableOpacity>
 					<TouchableOpacity
-						nativeID={`${ComponentIds.GAME_PLAYER_ROW_EDIT_PREFIX}${player.id}`}
+						id={`${ComponentIds.GAME_PLAYER_ROW_EDIT_PREFIX}${player.id}`}
 						onPress={onEdit}
 						hitSlop={8}
 						style={styles.reorderButton}
@@ -892,7 +892,7 @@ function AddPlayerContent({
 							rightIcon={
 								<View style={styles.selectedPlayerActions}>
 									<TouchableOpacity
-										nativeID={`${ComponentIds.GAME_ADD_PLAYER_MOVE_UP_PREFIX}${player.id}`}
+										id={`${ComponentIds.GAME_ADD_PLAYER_MOVE_UP_PREFIX}${player.id}`}
 										onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'up' }))}
 										disabled={index === 0}
 										hitSlop={8}
@@ -901,7 +901,7 @@ function AddPlayerContent({
 										<Ionicons name="chevron-up" size={20} color={index === 0 ? theme.screen.border : theme.screen.text} />
 									</TouchableOpacity>
 									<TouchableOpacity
-										nativeID={`${ComponentIds.GAME_ADD_PLAYER_MOVE_DOWN_PREFIX}${player.id}`}
+										id={`${ComponentIds.GAME_ADD_PLAYER_MOVE_DOWN_PREFIX}${player.id}`}
 										onPress={() => dispatch(movePlayer({ playerId: player.id, direction: 'down' }))}
 										disabled={index === players.length - 1}
 										hitSlop={8}
@@ -914,7 +914,7 @@ function AddPlayerContent({
 										/>
 									</TouchableOpacity>
 									<TouchableOpacity
-										nativeID={`${ComponentIds.GAME_ADD_PLAYER_EDIT_PREFIX}${player.id}`}
+										id={`${ComponentIds.GAME_ADD_PLAYER_EDIT_PREFIX}${player.id}`}
 										onPress={() => handleEditPlayer(player.id)}
 										hitSlop={8}
 										style={styles.reorderButton}
@@ -1012,7 +1012,7 @@ function MatchPlayersSection({ onEditPlayers }: Readonly<{ onEditPlayers: () => 
 					onPressOverride={onEditPlayers}
 					rightIcon={
 						<TouchableOpacity
-							nativeID={`${ComponentIds.GAME_SETTINGS_PLAYER_REMOVE_PREFIX}${player.id}`}
+							id={`${ComponentIds.GAME_SETTINGS_PLAYER_REMOVE_PREFIX}${player.id}`}
 							onPress={() => dispatch(removePlayer(player.id))}
 							hitSlop={8}
 						>
@@ -1255,7 +1255,7 @@ function GameHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; on
 	return (
 		<View style={styles.headerButtons}>
 			<TouchableOpacity
-				nativeID={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
+				id={ComponentIds.GAME_HEADER_SETTINGS_BUTTON}
 				onPress={onOpenSettings}
 				style={styles.headerButton}
 			>
@@ -1278,7 +1278,7 @@ function makeGameHeaderRight(color: string, onOpenSettings: () => void) {
 function GameHeaderBackButton({ color, gameTypeId }: Readonly<{ color: string; gameTypeId: string }>) {
 	return (
 		<TouchableOpacity
-			nativeID={ComponentIds.GAME_HEADER_BACK_BUTTON}
+			id={ComponentIds.GAME_HEADER_BACK_BUTTON}
 			onPress={() => router.replace({ pathname: '/games/[id]', params: { id: gameTypeId } })}
 			style={styles.headerBackButton}
 		>
@@ -1725,7 +1725,7 @@ export default function GameScreen() {
 						    use) is enough until someone is seated. */}
 						{players.length > 0 && (
 							<TouchableOpacity
-								nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON_TOP}
+								id={ComponentIds.GAME_ADD_PLAYER_BUTTON_TOP}
 								style={[styles.addPlayerButton, styles.addPlayerButtonTop, { borderColor: PRIMARY_COLOR }]}
 								onPress={() => handleOpenAddPlayerModal(true)}
 								activeOpacity={0.7}
@@ -1750,7 +1750,7 @@ export default function GameScreen() {
 							</View>
 						)}
 						<TouchableOpacity
-							nativeID={ComponentIds.GAME_ADD_PLAYER_BUTTON}
+							id={ComponentIds.GAME_ADD_PLAYER_BUTTON}
 							style={[styles.addPlayerButton, { borderColor: PRIMARY_COLOR }]}
 							onPress={() => handleOpenAddPlayerModal(false)}
 							activeOpacity={0.7}
@@ -1815,7 +1815,7 @@ export default function GameScreen() {
 				<View style={[styles.bottomBar, { borderTopColor: theme.screen.border, paddingBottom: insets.bottom + 12 }]}>
 					{status === 'setup' ? (
 						<TouchableOpacity
-							nativeID={ComponentIds.GAME_START_BUTTON}
+							id={ComponentIds.GAME_START_BUTTON}
 							style={[styles.nextRoundButton, { backgroundColor: PRIMARY_COLOR, opacity: startButtonOpacity }]}
 							onPress={() => dispatch(startGame({ withRounds: trackScores }))}
 							disabled={players.length === 0}
@@ -1826,7 +1826,7 @@ export default function GameScreen() {
 					) : (
 						<>
 							<TouchableOpacity
-								nativeID={ComponentIds.GAME_ROUND_PREV_BUTTON}
+								id={ComponentIds.GAME_ROUND_PREV_BUTTON}
 								style={[styles.roundNavButton, { backgroundColor: theme.screen.border, opacity: prevRoundOpacity }]}
 								onPress={handlePrevRound}
 								disabled={currentRoundIndex === 0}
@@ -1842,7 +1842,7 @@ export default function GameScreen() {
 								{maxRoundsSuffix}
 							</Text>
 							<TouchableOpacity
-								nativeID={ComponentIds.GAME_ROUND_NEXT_BUTTON}
+								id={ComponentIds.GAME_ROUND_NEXT_BUTTON}
 								style={[
 									styles.roundNavButton,
 									{ backgroundColor: PRIMARY_COLOR, opacity: nextRoundOpacity },
