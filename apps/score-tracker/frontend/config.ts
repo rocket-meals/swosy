@@ -32,7 +32,9 @@ export function getVersionPatch() {
 	// 3: the summed-patch experiment already shipped patch 2 from master;
 	// never decrease the visible patch version.
 	// 4: common/common-ui: weather API helper + WeatherPreview playbook entry
-	return 4;
+	// 5: settings: whole-database export/import (Datensicherung group);
+	//    version display from the JS bundle (OTA patch bumps visible)
+	return 5;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

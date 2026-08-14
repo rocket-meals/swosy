@@ -28,7 +28,8 @@ export function getMajorVersion() {
 
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
-	return 0;
+	// 1: expo-updates runtime version pinned to patch 0 (getVersion)
+	return 1;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

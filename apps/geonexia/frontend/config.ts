@@ -33,7 +33,9 @@ export function getVersionPatch() {
 	//    tappable speed/pace stats open a history bar chart modal
 	// 10: reliable background GPS capture (headless updates feed the crash
 	//     snapshot instead of stopping the task); weather saved on activities
-	return 10;
+	// 11: settings: whole-database export/import (Datensicherung group,
+	//     shared SettingsListSqliteBackup from common-ui)
+	return 11;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates
