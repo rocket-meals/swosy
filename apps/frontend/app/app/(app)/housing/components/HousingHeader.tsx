@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { DrawerNavigationProp } from 'expo-router/drawer';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 
 import IconButton from '@/components/UI/IconButton';
@@ -30,7 +30,7 @@ const HeaderIconButton = ({
 	nativeID?: string;
 	children: React.ReactNode;
 }) => (
-	<IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} nativeID={nativeID}>
+	<IconButton {...triggerProps} onPress={onPress} style={{ padding: 10 }} id={nativeID}>
 		{children}
 	</IconButton>
 );

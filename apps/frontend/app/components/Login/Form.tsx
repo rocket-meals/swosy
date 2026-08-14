@@ -117,7 +117,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						if (newValue) setAgbError(false);
 					}}
 					style={styles.section}
-					nativeID={ComponentIds.LOGIN_ACCEPT_PRIVACY}
+					id={ComponentIds.LOGIN_ACCEPT_PRIVACY}
 					accessibilityRole="checkbox"
 					accessibilityState={{ checked: isChecked }}
 					// react-native-web does not reliably map accessibilityState.checked to
@@ -172,7 +172,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 						borderColor: theme.login.border,
 					}}
 					onPress={() => requireAgb(openAttentionSheet)}
-					nativeID={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
+					id={ComponentIds.LOGIN_CONTINUE_WITHOUT_ACCOUNT}
 				>
 					<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
 						<MaterialCommunityIcons name="incognito" size={28} color={contrastColor} />

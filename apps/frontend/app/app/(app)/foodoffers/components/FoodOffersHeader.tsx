@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native'
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useNavigation } from 'expo-router';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { DrawerNavigationProp } from 'expo-router/drawer';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import IconButton from '@/components/UI/IconButton';
@@ -36,7 +36,7 @@ const HeaderIconButton = ({
     nativeID?: string;
     children: React.ReactNode;
 }) => (
-    <IconButton {...triggerProps} onPress={onPress} style={style} nativeID={nativeID}>
+    <IconButton {...triggerProps} onPress={onPress} style={style} id={nativeID}>
         {children}
     </IconButton>
 );

@@ -32,7 +32,7 @@ const CustomBackdrop: React.FC<CustomBackdropProps> = ({ animatedIndex, style, o
 			pointerEvents="box-none"
 		>
 			{isPressableActive && (
-				<Pressable style={StyleSheet.absoluteFillObject} onPress={onPress} />
+				<Pressable style={StyleSheet.absoluteFill} onPress={onPress} />
 			)}
 		</Animated.View>
 	);
@@ -130,7 +130,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 			<View style={styles.header}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
-				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose} nativeID={CommonUiComponentIds.MODAL_CLOSE_BUTTON}>
+				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose} id={CommonUiComponentIds.MODAL_CLOSE_BUTTON}>
 					<AntDesign name={showBackChevron ? 'left' : 'close'} size={24} color={theme.sheet.closeIcon} />
 				</TouchableOpacity>
 			</View>

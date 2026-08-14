@@ -147,7 +147,7 @@ export default function TimerScreen() {
 				{/* Start/Pause + Reset */}
 				<View style={styles.buttonsRow}>
 					<TouchableOpacity
-						nativeID={ComponentIds.TIMER_RESET_BUTTON}
+						id={ComponentIds.TIMER_RESET_BUTTON}
 						style={[styles.roundButton, { backgroundColor: theme.screen.iconBg }]}
 						onPress={handleReset}
 						activeOpacity={0.8}
@@ -155,7 +155,7 @@ export default function TimerScreen() {
 						<Ionicons name="refresh-outline" size={28} color={theme.screen.text} />
 					</TouchableOpacity>
 					<TouchableOpacity
-						nativeID={ComponentIds.TIMER_START_PAUSE_BUTTON}
+						id={ComponentIds.TIMER_START_PAUSE_BUTTON}
 						style={[styles.roundButtonLarge, { backgroundColor: isRunning ? DANGER_COLOR : PRIMARY_COLOR, opacity: isFinished ? 0.5 : 1 }]}
 						onPress={handleStartPause}
 						disabled={isFinished}
@@ -184,7 +184,7 @@ export default function TimerScreen() {
 
 				{/* Custom countdown start time (opens the HH:MM:SS entry modal) */}
 				<TouchableOpacity
-					nativeID={ComponentIds.TIMER_CUSTOM_TIME_BUTTON}
+					id={ComponentIds.TIMER_CUSTOM_TIME_BUTTON}
 					style={[styles.customTimeButton, { borderColor: PRIMARY_COLOR }]}
 					onPress={handleOpenCustomTime}
 					activeOpacity={0.7}

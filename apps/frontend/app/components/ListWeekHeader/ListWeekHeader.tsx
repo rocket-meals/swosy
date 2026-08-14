@@ -48,7 +48,7 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 								<MaterialIcons name="calendar-month" size={24} color={theme.screen.icon} />
 							</TouchableOpacity>
 							{isWeb && (
-								<TouchableOpacity nativeID={ComponentIds.MONITOR_LIST_WEEK_PRINT_BUTTON} onPress={handlePrint}>
+								<TouchableOpacity id={ComponentIds.MONITOR_LIST_WEEK_PRINT_BUTTON} onPress={handlePrint}>
 									<Ionicons name="print-outline" size={24} color={theme.screen.icon} />
 								</TouchableOpacity>
 							)}

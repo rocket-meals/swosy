@@ -176,7 +176,7 @@ export function EnumOptionsRawDataRow({
 			renderModalChildren={(setValue, currentValue) => (
 				<View style={styles.clipboardRow}>
 					<TouchableOpacity
-						nativeID={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_COPY_PREFIX}${category.id}`}
+						id={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_COPY_PREFIX}${category.id}`}
 						style={[styles.clipboardButton, { borderColor: theme.sheet.inputBorder }]}
 						onPress={() => copyToClipboard(currentValue)}
 						activeOpacity={0.7}
@@ -185,7 +185,7 @@ export function EnumOptionsRawDataRow({
 						<Text style={[styles.clipboardButtonText, { color: theme.sheet.text }]}>Kopieren</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
-						nativeID={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_PASTE_PREFIX}${category.id}`}
+						id={`${ComponentIds.CATEGORY_OPTIONS_RAW_DATA_PASTE_PREFIX}${category.id}`}
 						style={[styles.clipboardButton, { borderColor: theme.sheet.inputBorder }]}
 						onPress={() => handlePaste(setValue)}
 						activeOpacity={0.7}

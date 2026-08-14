@@ -55,7 +55,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 				onSubmit={handleSave}
 			/>
 			<TouchableOpacity
-				nativeID={CommonUiComponentIds.TIME_INPUT_SAVE_BUTTON}
+				id={CommonUiComponentIds.TIME_INPUT_SAVE_BUTTON}
 				style={[styles.saveButton, { backgroundColor: primaryColor }]}
 				onPress={handleSave}
 				activeOpacity={0.8}

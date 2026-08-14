@@ -5,9 +5,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { DrawerContentComponentProps } from 'expo-router/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform, type ColorValue } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
@@ -131,7 +131,7 @@ function ThemeSyncBridge() {
 // Drawer.Screen's options can reference a stable function instead of
 // defining a new arrow (and thus a new "component") on every render.
 function makeDrawerIcon(IconSet: typeof Ionicons | typeof MaterialCommunityIcons, name: string) {
-	return ({ color, size }: { color: string; size: number }) => <IconSet name={name as any} size={size} color={color} />;
+	return ({ color, size }: { color: ColorValue; size: number }) => <IconSet name={name as any} size={size} color={color} />;
 }
 
 const renderDrawerContent = (props: DrawerContentComponentProps) => <CustomDrawerContent {...props} />;
@@ -362,19 +362,19 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			{
 				key: 'billboard-config/index',
 				label: 'Billboard Config',
-				renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
+				renderIcon: (_: boolean, color: string) => <Ionicons name="build-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('billboard-config/index'),
 			},
 			{
 				key: 'hex-texture-config/index',
 				label: 'Hex Texture Config',
-				renderIcon: (_, color) => <Ionicons name="grid-outline" size={24} color={color} />,
+				renderIcon: (_: boolean, color: string) => <Ionicons name="grid-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('hex-texture-config/index'),
 			},
 			{
 				key: 'experimental/index',
 				label: 'Experimental',
-				renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+				renderIcon: (_: boolean, color: string) => <Ionicons name="flask-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('experimental/index'),
 			},
 		] : []),

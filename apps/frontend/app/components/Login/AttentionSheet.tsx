@@ -49,7 +49,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 								closeSheet();
 								handleLogin();
 							}}
-							nativeID={ComponentIds.LOGIN_ATTENTION_CONFIRM}
+							id={ComponentIds.LOGIN_ATTENTION_CONFIRM}
 						>
 							<Text style={[styles.confirmLabel, { color: contrastColor }]}>{translate(TranslationKeys.confirm)}</Text>
 						</TouchableOpacity>

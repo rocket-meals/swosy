@@ -253,7 +253,7 @@ export function GameImagePickerContent({
 					return (
 						<TouchableOpacity
 							key={result.id}
-							nativeID={`${ComponentIds.GAME_IMAGE_RESULT_PREFIX}${result.id}`}
+							id={`${ComponentIds.GAME_IMAGE_RESULT_PREFIX}${result.id}`}
 							style={[
 								styles.gridItem,
 								{
@@ -288,7 +288,7 @@ export function GameImagePickerContent({
 					return (
 						<TouchableOpacity
 							key={icon}
-							nativeID={`${ComponentIds.GAME_IMAGE_ICON_PREFIX}${icon}`}
+							id={`${ComponentIds.GAME_IMAGE_ICON_PREFIX}${icon}`}
 							style={[
 								styles.iconGridItem,
 								{

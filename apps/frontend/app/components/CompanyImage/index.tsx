@@ -8,7 +8,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 interface CompanyImageProps {
 	appSettings?: DatabaseTypes.AppSettings | null;
 	style?: StyleProp<ImageStyle>;
-	resizeMode?: ImageResizeMode;
+	resizeMode?: Exclude<ImageResizeMode, 'none'>;
 }
 
 const CompanyImage: React.FC<CompanyImageProps> = ({ appSettings, style, resizeMode = 'contain' }) => {

@@ -16,7 +16,8 @@ export function getBuildNumber() {
 	// the patch segment, so patch-only OTA updates never matched the installed
 	// binary. getVersion() now pins the patch segment to 0 — this build picks
 	// up the stable runtime version plus the update-on-start loader.
-	return 21;
+	// 22: Expo SDK 57 migration (React Native 0.86, React 19.2)
+	return 22;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion

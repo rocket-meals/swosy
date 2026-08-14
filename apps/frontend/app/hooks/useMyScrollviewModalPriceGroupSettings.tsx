@@ -49,13 +49,12 @@ const PriceGroupModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) 
 		<View style={styles.container}>
 			{animationJson && (
 				<View style={styles.lottieWrapper}>
-					{/* @ts-expect-error LottieView autoPlay prop is missing from the type definitions */}
 					<LottieView
 						ref={animationRef}
 						source={animationJson}
 						resizeMode="contain"
 						style={styles.lottie}
-						autoPlay={appSettings?.animations_auto_start}
+						autoPlay={appSettings?.animations_auto_start ?? undefined}
 						loop={false}
 					/>
 				</View>

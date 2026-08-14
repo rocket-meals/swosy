@@ -15,7 +15,7 @@ const DateHelperPreview = () => {
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const smartReadableDate = useSmartReadableDateMethod();
-	const dateLocale = language || Localization.locale || 'en';
+	const dateLocale = language || Localization.getLocales()[0]?.languageTag || 'en';
 
 	const dates = useMemo(() => {
 		const start = new Date();

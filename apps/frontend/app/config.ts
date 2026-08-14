@@ -39,7 +39,8 @@ export enum ConfigCustomerEnum {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 203;
+	// 204: Expo SDK 57 migration (React Native 0.86, React 19.2)
+	return 204;
 }
 
 export function getMajorVersion() {
@@ -353,7 +354,8 @@ export function getFinalConfig(config?: any, licenses?: unknown[]) {
 							buildToolsVersion: '36.0.0',
 						},
 						ios: {
-							deploymentTarget: '15.1',
+							// Expo SDK 57 requires at least iOS 16.4
+							deploymentTarget: '16.4',
 						},
 					},
 				],

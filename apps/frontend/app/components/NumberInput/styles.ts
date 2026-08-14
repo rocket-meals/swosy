@@ -15,7 +15,7 @@ export default StyleSheet.create({
 		height: 50,
 		fontFamily: 'Poppins_400Regular',
 		borderWidth: 1,
-		outline: 'none',
+		outlineWidth: 0,
 		outlineColor: 'transparent',
 		borderColor: '#3A3A3A',
 		fontSize: 16,

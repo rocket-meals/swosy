@@ -285,7 +285,7 @@ export default function SettingsScreen() {
 				)}
 
 				<TouchableOpacity
-					nativeID={ComponentIds.SETTINGS_FOOTER}
+					id={ComponentIds.SETTINGS_FOOTER}
 					style={styles.footer}
 					onPress={handleFooterPress}
 				>

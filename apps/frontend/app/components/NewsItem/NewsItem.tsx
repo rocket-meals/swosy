@@ -1,4 +1,4 @@
-import { Dimensions, Image, Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Linking, Platform, Text, TouchableOpacity, View, type DimensionValue } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -24,7 +24,7 @@ const ReadMoreTriggerButton = ({
 	onPress: () => void;
 	backgroundColor: string;
 	textColor: string;
-	width: number | string;
+	width: DimensionValue;
 	label: string;
 }) => (
 	<TouchableOpacity
@@ -45,7 +45,7 @@ const makeReadMoreTrigger = (props: Readonly<{
 	onPress: () => void;
 	backgroundColor: string;
 	textColor: string;
-	width: number | string;
+	width: DimensionValue;
 	label: string;
 }>) => (triggerProps: object) => <ReadMoreTriggerButton triggerProps={triggerProps} {...props} />;
 
@@ -64,7 +64,7 @@ const NEWS_ITEM_NARROW_LAYOUT = {
 	titleWidth: '100%' as const,
 	dateWidth: '100%' as const,
 	actionAlignItems: 'center' as const,
-	readMoreWidth: '100%' as number | string,
+	readMoreWidth: '100%' as DimensionValue,
 };
 
 /**
@@ -89,7 +89,7 @@ function resolveNewsItemLayout(screenWidth: number) {
 		titleWidth: '80%' as const,
 		dateWidth: '20%' as const,
 		actionAlignItems: 'flex-start' as const,
-		readMoreWidth: 210 as number | string,
+		readMoreWidth: 210 as DimensionValue,
 	};
 }
 

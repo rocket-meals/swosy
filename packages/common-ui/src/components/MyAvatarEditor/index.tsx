@@ -725,7 +725,8 @@ function applyMicahColorCoordination(
 	hiddenPropKeys: Set<string>,
 ): void {
 	if (style !== AvatarStyle.MICAH) return;
-	const hairColorValue = randomOptions['hairColor']?.[0] as string | undefined;
+	const hairColorOption = randomOptions['hairColor'];
+	const hairColorValue = Array.isArray(hairColorOption) ? (hairColorOption[0] as string | undefined) : undefined;
 	if (hairColorValue === undefined) return;
 	if (!hiddenPropKeys.has('eyebrowsColor')) {
 		randomOptions['eyebrowsColor'] = [hairColorValue];
@@ -2436,7 +2437,7 @@ const QuickstartDebugSection: React.FC<QuickstartDebugSectionProps> = ({
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={`${presetConfig.style}-${index}`}
-						nativeID={`${CommonUiComponentIds.AVATAR_EDITOR_DEBUG_PRESET_PREFIX}${index}`}
+						id={`${CommonUiComponentIds.AVATAR_EDITOR_DEBUG_PRESET_PREFIX}${index}`}
 						style={[styles.debugFallbackButton, { backgroundColor: buttonBg }]}
 						onPress={() => {
 							onDebugEvent?.(`debug:fallback-preset press index=${index}`);
@@ -2497,7 +2498,7 @@ const PresetSelectionModalContent: React.FC<PresetSelectionModalContentProps> = 
 				{presets.map((presetConfig, index) => (
 					<TouchableOpacity
 						key={`${presetConfig.style}-${index}`}
-						nativeID={`${CommonUiComponentIds.AVATAR_EDITOR_PRESET_PREFIX}${index}`}
+						id={`${CommonUiComponentIds.AVATAR_EDITOR_PRESET_PREFIX}${index}`}
 						// Debug: red border = the touchable's actual layout box (the touch target).
 						// If it doesn't line up with the yellow-bordered avatar view, hit-testing
 						// and visuals have drifted apart (the "tap only works at the bottom edge"

@@ -42,7 +42,7 @@ function GamesHeaderRight({ color, onOpenSettings }: Readonly<{ color: string; o
 	return (
 		<View style={styles.headerButtons}>
 			<TouchableOpacity
-				nativeID={ComponentIds.GAMES_SCREEN_SETTINGS_BUTTON}
+				id={ComponentIds.GAMES_SCREEN_SETTINGS_BUTTON}
 				onPress={onOpenSettings}
 				style={styles.headerButton}
 			>

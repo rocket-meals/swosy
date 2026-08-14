@@ -120,9 +120,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 					style={webFlex}
 					data={data}
 					keyExtractor={keyExtractor}
-					renderItem={renderItem}
+					renderItem={info => <>{renderItem(info)}</>}
 					ListHeaderComponent={flatListHeader}
-					ListFooterComponent={footerComponent}
+					ListFooterComponent={<>{footerComponent}</>}
 					contentContainerStyle={contentStyle}
 					showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 					keyboardShouldPersistTaps={keyboardShouldPersistTaps}
