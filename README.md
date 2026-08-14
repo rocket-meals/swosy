@@ -34,7 +34,7 @@ https://github.com/rocket-meals/studi-futter
 <!-- android-preview-apk:tag-und-jahr:end -->
 
 <!-- android-preview-apk:geonexia:start -->
-**Geonexia:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/UYZgGVWq2muifAWBieRzsTwRtc6uBsLrhsosIno2yG8.apk)
+**Geonexia:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/b_gmHV5W9uMw04-Jhj-5U_yjNcrKRyUfQZ7kfTbEiHA.apk)
 <!-- android-preview-apk:geonexia:end -->
 
 ## 🍏 iOS Preview (Ad-hoc)
