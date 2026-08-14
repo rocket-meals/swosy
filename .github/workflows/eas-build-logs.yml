@@ -42,11 +42,17 @@ jobs:
           for url in $(jq -r '.data.builds.byId.logFiles[]?' build.json); do
             echo ""
             echo "===== Log file: ${url}"
-            curl -sf "$url" > logfile.raw || { echo "(download failed)"; continue; }
-            # EAS logs are JSON-lines; extract msg fields, fall back to raw
-            if jq -e -r 'select(.msg != null) | .msg' logfile.raw > logfile.txt 2>/dev/null && [ -s logfile.txt ]; then
+            curl -sf --compressed "$url" > logfile.raw || { echo "(download failed)"; continue; }
+            # Log files are usually gzipped JSON-lines; decompress if needed,
+            # then extract msg fields, fall back to raw text
+            if gzip -t logfile.raw 2>/dev/null; then
+              gzip -dc logfile.raw > logfile.dec
+            else
+              mv logfile.raw logfile.dec
+            fi
+            if jq -r 'select(type == "object" and .msg != null) | .msg' logfile.dec > logfile.txt 2>/dev/null && [ -s logfile.txt ]; then
               tail -n "${TAIL}" logfile.txt
             else
-              tail -n "${TAIL}" logfile.raw
+              tail -n "${TAIL}" logfile.dec
             fi
           done
