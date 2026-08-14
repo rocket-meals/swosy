@@ -47,7 +47,7 @@ Die Links werden wie die Android Preview APKs bei jedem Build-Nummern-Bump auf `
 <!-- ios-preview:frontend:end -->
 
 <!-- ios-preview:score-tracker:start -->
-**Score Tracker:** Wird nach dem nächsten iOS-Preview-Build auf `master` automatisch aktualisiert.
+**Score Tracker:** 🍏 [Neueste iOS Preview installieren (Ad-hoc)](https://expo.dev/accounts/baumgartner-software/projects/score-tracker/builds/774f0c8a-b881-4fdd-8d5d-dbdd160a43f1)
 <!-- ios-preview:score-tracker:end -->
 
 <!-- ios-preview:tag-und-jahr:start -->
