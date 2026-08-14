@@ -42,7 +42,8 @@ export function getBuildNumber() {
 	// 204: Expo SDK 57 migration (React Native 0.86, React 19.2)
 	// 205: native build fixes for the SDK 57 migration (expo-modules-core 57.0.11,
 	//      react-native-leaflet-view without jcenter())
-	return 205;
+	// 206: drop expo-edge-speech, its expo-av dependency cannot build on SDK 57
+	return 206;
 }
 
 export function getMajorVersion() {
