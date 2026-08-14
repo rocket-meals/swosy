@@ -37,6 +37,28 @@ https://github.com/rocket-meals/studi-futter
 **Geonexia:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/UYZgGVWq2muifAWBieRzsTwRtc6uBsLrhsosIno2yG8.apk)
 <!-- android-preview-apk:geonexia:end -->
 
+## 🧑‍💻 Dev Client Builds
+
+Development Builds (expo-dev-client) zum Testen von PR-Previews und Dev-Servern auf echten Geräten -
+Android als direkte APK, iOS per Ad-hoc-Install über die EAS-Build-Seite (Gerät muss per `eas device:create` registriert sein).
+Die Links werden bei jedem Build-Nummern-Bump automatisch aktualisiert.
+
+<!-- dev-client:frontend:start -->
+**Rocket Meals (Frontend) Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+<!-- dev-client:frontend:end -->
+
+<!-- dev-client:score-tracker:start -->
+**Score Tracker Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+<!-- dev-client:score-tracker:end -->
+
+<!-- dev-client:tag-und-jahr:start -->
+**Tag und Jahr Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+<!-- dev-client:tag-und-jahr:end -->
+
+<!-- dev-client:geonexia:start -->
+**Geonexia Dev Client:** Wird nach dem nächsten Dev-Client-Build auf `master` automatisch aktualisiert.
+<!-- dev-client:geonexia:end -->
+
 # 🚀 Rocket Meals
 
 **Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von

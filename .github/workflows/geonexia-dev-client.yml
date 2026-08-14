@@ -1,6 +1,6 @@
-name: "🧑‍💻 Rocket Meals Dev Client"
+name: "🧑‍💻 Geonexia Dev Client"
 
-# Builds an expo-dev-client development build for Rocket Meals (frontend) whenever a new
+# Builds an expo-dev-client development build for Geonexia whenever a new
 # native build is due: the local build number (getBuildNumber() in config.ts)
 # is compared against the latest finished EAS build of the "development"
 # profile. This fires on master pushes (a new release build implies a bumped
@@ -13,14 +13,14 @@ on:
   push:
     branches: [master]
     paths:
-      - "apps/frontend/**"
+      - "apps/geonexia/**"
       - "packages/**"
-      - ".github/workflows/frontend-dev-client.yml"
+      - ".github/workflows/geonexia-dev-client.yml"
   pull_request:
     paths:
-      - "apps/frontend/**"
+      - "apps/geonexia/**"
       - "packages/**"
-      - ".github/workflows/frontend-dev-client.yml"
+      - ".github/workflows/geonexia-dev-client.yml"
   workflow_dispatch:
     inputs:
       force:
@@ -70,12 +70,12 @@ jobs:
         uses: ./.github/actions/check-build-number-online
         with:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          working-directory: ./apps/frontend/app
+          working-directory: ./apps/geonexia/frontend
           platform: ios
           build-profile: development
 
   build-dev-client:
-    name: "📱 Build Rocket Meals Dev Client (Android + iOS)"
+    name: "📱 Build Geonexia Dev Client (Android + iOS)"
     runs-on: ubuntu-latest
     needs: [check-repository, check-build-number]
     timeout-minutes: 120
@@ -95,7 +95,7 @@ jobs:
 
       - name: "🤖 Build Android Dev Client"
         run: eas build --platform android --profile development --non-interactive --json > eas-build-dev-android.json
-        working-directory: ./apps/frontend/app
+        working-directory: ./apps/geonexia/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -104,7 +104,7 @@ jobs:
       # register the device and re-run via workflow_dispatch with force=true.
       - name: "🍏 Build iOS Dev Client"
         run: eas build --platform ios --profile development --non-interactive --json > eas-build-dev-ios.json
-        working-directory: ./apps/frontend/app
+        working-directory: ./apps/geonexia/frontend
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -113,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eas-dev-client-build-output
-          path: apps/frontend/app/eas-build-dev-*.json
+          path: apps/geonexia/frontend/eas-build-dev-*.json
           retention-days: 7
           if-no-files-found: ignore
 
@@ -123,8 +123,8 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const dir = 'apps/frontend/app';
-            const marker = '<!-- frontend-dev-client-comment -->';
+            const dir = 'apps/geonexia/frontend';
+            const marker = '<!-- geonexia-dev-client-comment -->';
 
             const readBuilds = file => {
               try {
@@ -139,7 +139,7 @@ jobs:
 
             const lines = [
               marker,
-              '## 🧑‍💻 Rocket Meals Dev Client',
+              '## 🧑‍💻 Geonexia Dev Client',
               '',
             ];
 
@@ -150,7 +150,7 @@ jobs:
               lines.push('|---|---|---|---|');
               for (const b of builds) {
                 const account = b.project?.ownerAccount?.name ?? 'baumgartner-software';
-                const slug = b.project?.slug ?? 'rocket-meals-dev';
+                const slug = b.project?.slug ?? 'geonexia';
                 const pageUrl = `https://expo.dev/accounts/${account}/projects/${slug}/builds/${b.id}`;
                 const artifactUrl = b.artifacts?.buildUrl || b.artifacts?.applicationArchiveUrl;
                 const install = artifactUrl ? `[Download](${artifactUrl})` : `[Build page](${pageUrl})`;
@@ -201,10 +201,10 @@ jobs:
         run: yarn workspace rocket-meals-scripts dev-client:update-readme
         env:
           README_PATH: ${{ github.workspace }}/README.md
-          APP_KEY: frontend
-          APP_LABEL: "Rocket Meals (Frontend)"
-          ANDROID_BUILD_JSON: ${{ github.workspace }}/apps/frontend/app/eas-build-dev-android.json
-          IOS_BUILD_JSON: ${{ github.workspace }}/apps/frontend/app/eas-build-dev-ios.json
+          APP_KEY: geonexia
+          APP_LABEL: "Geonexia"
+          ANDROID_BUILD_JSON: ${{ github.workspace }}/apps/geonexia/frontend/eas-build-dev-android.json
+          IOS_BUILD_JSON: ${{ github.workspace }}/apps/geonexia/frontend/eas-build-dev-ios.json
 
       - name: "💾 Commit README update"
         if: always() && github.event_name == 'push'
@@ -215,7 +215,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update Rocket Meals dev client links in README [skip ci]"
+            git commit -m "chore: update Geonexia dev client links in README [skip ci]"
             git pull --rebase --autostash origin "$GITHUB_REF_NAME"
             git push
           fi

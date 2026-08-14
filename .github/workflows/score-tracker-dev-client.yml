@@ -84,6 +84,7 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && inputs.force)
     permissions:
       pull-requests: write
+      contents: write
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
@@ -193,3 +194,28 @@ jobs:
                 body,
               });
             }
+
+      # Only master pushes update the README (same rule as the preview APK links).
+      - name: "📝 Update dev client links in README"
+        if: always() && github.event_name == 'push'
+        run: yarn workspace rocket-meals-scripts dev-client:update-readme
+        env:
+          README_PATH: ${{ github.workspace }}/README.md
+          APP_KEY: score-tracker
+          APP_LABEL: "Score Tracker"
+          ANDROID_BUILD_JSON: ${{ github.workspace }}/apps/score-tracker/frontend/eas-build-dev-android.json
+          IOS_BUILD_JSON: ${{ github.workspace }}/apps/score-tracker/frontend/eas-build-dev-ios.json
+
+      - name: "💾 Commit README update"
+        if: always() && github.event_name == 'push'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update Score Tracker dev client links in README [skip ci]"
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+            git push
+          fi
