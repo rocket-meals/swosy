@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 13 | 13 |
 | 🐛 Reliability | 13 | 13 |
-| 🔧 Maintainability | 96 | 24 |
+| 🔧 Maintainability | 100 | 24 |
 
-**Total issues:** 122 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 126 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -120,7 +120,7 @@
   packages/common/src/CompressionHelper.ts:236
   https://github.com/rocket-meals/rocket-meals/blob/master/packages/common/src/CompressionHelper.ts#L236
 
-## 🔧 Maintainability (24/96)
+## 🔧 Maintainability (24/100)
 
 - **Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/files-without-folder-report-schedule/index.ts:29
@@ -154,6 +154,14 @@
   apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts:200
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/redux/actions/FoodOffers/FoodOffers.ts#L200
 
+- **'expo-router/drawer' imported multiple times.**
+  apps/geonexia/frontend/app/_layout.tsx:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/_layout.tsx#L8
+
+- **'expo-router/drawer' imported multiple times.**
+  apps/geonexia/frontend/app/_layout.tsx:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/_layout.tsx#L3
+
 - **Remove this useless assignment to variable "liveSpeedKmh".**
   apps/geonexia/frontend/app/index.tsx:4338
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L4338
@@ -165,6 +173,14 @@
 - **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
   apps/geonexia/frontend/app/index.tsx:5390
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L5390
+
+- **'expo-router/drawer' imported multiple times.**
+  apps/score-tracker/frontend/app/_layout.tsx:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/_layout.tsx#L8
+
+- **'expo-router/drawer' imported multiple times.**
+  apps/score-tracker/frontend/app/_layout.tsx:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/_layout.tsx#L3
 
 - **Remove this unused import of 'GameType'.**
   apps/score-tracker/frontend/app/games/[id].tsx:38
@@ -201,20 +217,4 @@
 - **Refactor this code to not use nested template literals.**
   apps/score-tracker/frontend/app/index.tsx:197
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/index.tsx#L197
-
-- **Remove this unused import of 'resetAll'.**
-  apps/score-tracker/frontend/app/match/index.tsx:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L49
-
-- **Refactor this code to not use nested template literals.**
-  apps/score-tracker/frontend/app/match/index.tsx:431
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L431
-
-- **Remove this useless assignment to variable "friends".**
-  apps/score-tracker/frontend/app/match/index.tsx:1370
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1370
-
-- **Remove this useless assignment to variable "categoryValues".**
-  apps/score-tracker/frontend/app/match/index.tsx:1374
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/score-tracker/frontend/app/match/index.tsx#L1374
 
