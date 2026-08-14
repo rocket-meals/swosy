@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-08-14T13:39:07.329Z",
+  "report_timestamp": "2026-08-14T15:34:43.660Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 113,
-          "average": 1.540218132242672,
-          "amountSavedValuesForKeys": 4519,
+          "average": 1.5404211956521738,
+          "amountSavedValuesForKeys": 4535,
           "amountKeys": 30
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 75,
-          "average": 2.2835408022130013,
-          "amountSavedValuesForKeys": 1651,
+          "average": 2.2813793103448274,
+          "amountSavedValuesForKeys": 1654,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 113,
-          "average": 1.5555938037865749,
-          "amountSavedValuesForKeys": 4519,
+          "average": 1.555746140651801,
+          "amountSavedValuesForKeys": 4535,
           "amountKeys": 30
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4512,
-        "detection_time_ms": 101,
+        "ast_generation_time_ms": 3823,
+        "detection_time_ms": 80,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1022-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 135.97,
-          "os_memory_free": 14841421824,
-          "os_memory_total": 16765370368,
+          "os_uptime": 241.28,
+          "os_memory_free": 14784303104,
+          "os_memory_total": 16765378560,
           "os_cpu_cores": 4,
           "os_cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
-          "os_cpu_speed": 2999
+          "os_cpu_speed": 3498
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 16,
-    "amount_files_with_data_clumps": 15,
+    "amount_classes_or_interfaces_with_data_clumps": 18,
+    "amount_files_with_data_clumps": 17,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 16,
+    "fields_to_fields_data_clump": 18,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 16
+    "amount_data_clumps": 18
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "0903eb7340f9e5e0afee4af17313cc30dd2aaff2",
-    "project_commit_hash": "0903eb7340f9e5e0afee4af17313cc30dd2aaff2",
+    "project_version": "3a554d61646541b4fd62d08331aee1e0bfacf8d1",
+    "project_commit_hash": "3a554d61646541b4fd62d08331aee1e0bfacf8d1",
     "project_tag": null,
-    "project_commit_date": "1786714619",
+    "project_commit_date": "1786721539",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 635,
-    "number_of_classes_or_interfaces": 1369,
-    "number_of_methods": 1493,
-    "number_of_data_fields": 4519,
-    "number_of_method_parameters": 1651
+    "number_of_files": 637,
+    "number_of_classes_or_interfaces": 1372,
+    "number_of_methods": 1496,
+    "number_of_data_fields": 4535,
+    "number_of_method_parameters": 1654
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1721,6 +1721,250 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 8,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps-dbNameiconBgColoriconColortextColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps-dbNameiconBgColoriconColortextColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps",
+      "from_class_or_interface_name": "SettingsListSqliteBackupProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps",
+      "to_class_or_interface_name": "SettingsListSqliteStorageProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/dbName": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/dbName",
+          "name": "dbName",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/dbName",
+            "name": "dbName",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 61,
+            "startColumn": 2,
+            "endLine": 61,
+            "endColumn": 18
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconBgColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 2,
+              "endLine": 37,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 64,
+            "startColumn": 2,
+            "endLine": 64,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 2,
+              "endLine": 38,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 2,
+            "endLine": 65,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/textColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/textColor",
+          "name": "textColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/textColor",
+            "name": "textColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 39,
+              "startColumn": 2,
+              "endLine": 39,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 66,
+            "startColumn": 2,
+            "endLine": 66,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps-dbNameiconBgColoriconColortextColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx-packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps-packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps-dbNameiconBgColoriconColortextColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps",
+      "from_class_or_interface_name": "SettingsListSqliteStorageProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps",
+      "to_class_or_interface_name": "SettingsListSqliteBackupProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/dbName": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/dbName",
+          "name": "dbName",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/dbName",
+            "name": "dbName",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 61,
+              "startColumn": 2,
+              "endLine": 61,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 18
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconBgColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconBgColor",
+          "name": "iconBgColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconBgColor",
+            "name": "iconBgColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 64,
+              "startColumn": 2,
+              "endLine": 64,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 2,
+            "endLine": 37,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 2,
+              "endLine": 65,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 2,
+            "endLine": 38,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/textColor": {
+          "key": "packages/common-ui/src/components/SettingsListSqliteStorage/SettingsListSqliteStorage.tsx/interface/SettingsListSqliteStorageProps/memberField/textColor",
+          "name": "textColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListSqliteBackup/SettingsListSqliteBackup.tsx/interface/SettingsListSqliteBackupProps/memberField/textColor",
+            "name": "textColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 66,
+              "startColumn": 2,
+              "endLine": 66,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 39,
+            "startColumn": 2,
+            "endLine": 39,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
