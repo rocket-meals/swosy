@@ -270,6 +270,20 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="playbook/index"
+				options={{
+					title: 'Playbook',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name="playbook/[component]"
+				options={{
+					title: 'Playbook Component',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
