@@ -145,15 +145,20 @@ export function parseHourlyWeatherAt(payload: OpenMeteoResponse, timeMs: number)
   const hourly = payload.hourly;
   const times = hourly?.time;
   if (!hourly || !Array.isArray(times) || times.length === 0) return null;
-  let bestIndex = 0;
+  let bestIndex = -1;
+  let bestTime = 0;
   let bestDelta = Number.POSITIVE_INFINITY;
   for (let i = 0; i < times.length; i++) {
-    const delta = Math.abs(times[i] * 1000 - timeMs);
+    const time = times[i];
+    if (typeof time !== 'number') continue;
+    const delta = Math.abs(time * 1000 - timeMs);
     if (delta < bestDelta) {
       bestDelta = delta;
       bestIndex = i;
+      bestTime = time;
     }
   }
+  if (bestIndex === -1) return null;
   const temperature = hourly.temperature_2m?.[bestIndex];
   const weatherCode = hourly.weather_code?.[bestIndex];
   if (typeof temperature !== 'number' || typeof weatherCode !== 'number') return null;
@@ -163,7 +168,7 @@ export function parseHourlyWeatherAt(payload: OpenMeteoResponse, timeMs: number)
     weatherCode,
     condition: mapWmoCodeToWeatherCondition(weatherCode),
     windSpeedKmh: typeof windSpeed === 'number' ? windSpeed : null,
-    timestamp: times[bestIndex] * 1000,
+    timestamp: bestTime * 1000,
   };
 }
 
