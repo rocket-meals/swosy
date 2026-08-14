@@ -16308,7 +16308,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-constants@npm:~57.0.11":
+"expo-constants@npm:~57.0.11, expo-constants@npm:~57.0.9":
   version: 57.0.11
   resolution: "expo-constants@npm:57.0.11"
   dependencies:
@@ -16317,18 +16317,6 @@ __metadata:
     expo: "*"
     react-native: "*"
   checksum: 10c0/bcb4bbd746d16ad45ad034485489c8bdcc57c2730de6ee5c35c3672bef92af67c75d6756fc1046278a70b368e9be0bd28f20dd7370228afed5c8d937fa5ac8c2
-  languageName: node
-  linkType: hard
-
-"expo-constants@npm:~57.0.9":
-  version: 57.0.9
-  resolution: "expo-constants@npm:57.0.9"
-  dependencies:
-    "@expo/env": "npm:~2.4.2"
-  peerDependencies:
-    expo: "*"
-    react-native: "*"
-  checksum: 10c0/488f0ab22c80bde9f283d2348168df8634afbdb544dfd785eb4f27b0f6f62425f66789b584b393464944616997b03ea56e6c396bb4f0bf25de22b7e3e8099a84
   languageName: node
   linkType: hard
 
@@ -16686,9 +16674,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-modules-core@npm:~57.0.10":
-  version: 57.0.10
-  resolution: "expo-modules-core@npm:57.0.10"
+"expo-modules-core@npm:~57.0.10, expo-modules-core@npm:~57.0.11":
+  version: 57.0.11
+  resolution: "expo-modules-core@npm:57.0.11"
   dependencies:
     "@expo/expo-modules-macros-plugin": "npm:0.6.1"
     expo-modules-jsi: "npm:~57.0.4"
@@ -16700,7 +16688,7 @@ __metadata:
   peerDependenciesMeta:
     react-native-worklets:
       optional: true
-  checksum: 10c0/ab861b7eb066037c88bff0742d108b76b5f1d4bc3d65bd5f26adc39c94fbb2677accdb2b779584b40091c95188bd31d15710dddf473983e336e45c9154cfcf6b
+  checksum: 10c0/4821b01577bc78f8d865067429ef303db5aba2c286ba141cc03d18ec20ff995c46a211f837617ccd5c48265e35dedd129c1da388a3535ae34c39a6fbc73a56f1
   languageName: node
   linkType: hard
 
@@ -26199,13 +26187,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-leaflet-view@npm:^1.1.2":
+"react-native-leaflet-view@npm:1.1.2":
   version: 1.1.2
   resolution: "react-native-leaflet-view@npm:1.1.2"
   peerDependencies:
     react: "*"
     react-native: "*"
   checksum: 10c0/713f4f888118c7e444f900950053d68b10b91357c493bef546e037061699854f61b3e9be5a85b5ab72dc8ea193a8e7ca820c0b40b3e1cd7be4d8fa840fbc113c
+  languageName: node
+  linkType: hard
+
+"react-native-leaflet-view@patch:react-native-leaflet-view@npm%3A1.1.2#~/.yarn/patches/react-native-leaflet-view-npm-1.1.2-30ca028d3b.patch":
+  version: 1.1.2
+  resolution: "react-native-leaflet-view@patch:react-native-leaflet-view@npm%3A1.1.2#~/.yarn/patches/react-native-leaflet-view-npm-1.1.2-30ca028d3b.patch::version=1.1.2&hash=7853e3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/0267d01083c7962696db69addddb524a929122577fa3bdeca326935524abeee11d3f236fa0fc30fdbad008d4c9a164fd5a746868424c6a441577449a6c94e129
   languageName: node
   linkType: hard
 
@@ -27520,7 +27518,7 @@ __metadata:
     expo-linking: "npm:~57.0.5"
     expo-localization: "npm:~57.0.1"
     expo-location: "npm:~57.0.8"
-    expo-modules-core: "npm:~57.0.10"
+    expo-modules-core: "npm:~57.0.11"
     expo-notifications: "npm:~57.0.9"
     expo-print: "npm:~57.0.1"
     expo-router: "npm:~57.0.11"
@@ -27555,7 +27553,7 @@ __metadata:
     react-native-calendars: "npm:^1.1307.0"
     react-native-chart-kit: "npm:^6.12.0"
     react-native-gesture-handler: "npm:~2.32.0"
-    react-native-leaflet-view: "npm:^1.1.2"
+    react-native-leaflet-view: "patch:react-native-leaflet-view@npm%3A1.1.2#~/.yarn/patches/react-native-leaflet-view-npm-1.1.2-30ca028d3b.patch"
     react-native-modal: "npm:^13.0.2"
     react-native-nfc-manager: "npm:^4.0.0-beta.4"
     react-native-qrcode-svg: "npm:^6.3.15"

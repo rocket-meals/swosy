@@ -40,7 +40,9 @@ export enum ConfigCustomerEnum {
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
 	// 204: Expo SDK 57 migration (React Native 0.86, React 19.2)
-	return 204;
+	// 205: native build fixes for the SDK 57 migration (expo-modules-core 57.0.11,
+	//      react-native-leaflet-view without jcenter())
+	return 205;
 }
 
 export function getMajorVersion() {
