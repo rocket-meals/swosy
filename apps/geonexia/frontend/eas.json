@@ -22,7 +22,7 @@
     "previewIos": {
       "extends": "preview",
       "distribution": "internal",
-      "channel": "previewIos"
+      "channel": "preview"
     },
     "production": {
       "android": {
