@@ -261,6 +261,10 @@ export const ComponentIds = {
 	TOOLS_CATEGORY_ROW_PREFIX: 'tools-category-row-',
 	TOOLS_LINK_ROW_PREFIX: 'tools-link-row-',
 
+	// Settings screen: database backup (export/import of the whole kv storage)
+	SETTINGS_EXPORT_DATA_ROW: 'settings-export-data-row',
+	SETTINGS_IMPORT_DATA_ROW: 'settings-import-data-row',
+
 	// Settings screen: legal & support
 	SETTINGS_PRIVACY_ROW: 'settings-privacy-row',
 	SETTINGS_IMPRESSUM_ROW: 'settings-impressum-row',

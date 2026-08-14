@@ -68,3 +68,28 @@ export async function clearStorage(dbName: string = DEFAULT_DB_NAME): Promise<vo
 	const db = await getKvDatabase(dbName);
 	await db.execAsync('DELETE FROM kv');
 }
+
+// Full dump of the kv table for backup/export. Unlike getStorageUsage this includes the
+// internal sentinel keys (e.g. migration markers) on purpose: a restored backup should
+// put the database into exactly the state it was exported in.
+export async function getAllStorageEntries(dbName: string = DEFAULT_DB_NAME): Promise<Record<string, string>> {
+	const db = await getKvDatabase(dbName);
+	const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM kv');
+	const entries: Record<string, string> = {};
+	for (const row of rows) {
+		entries[row.key] = row.value ?? '';
+	}
+	return entries;
+}
+
+// Backup restore counterpart to getAllStorageEntries: atomically replaces the whole kv
+// table with the given entries so a restore never leaves a mix of old and new data.
+export async function replaceAllStorageEntries(entries: Record<string, string>, dbName: string = DEFAULT_DB_NAME): Promise<void> {
+	const db = await getKvDatabase(dbName);
+	await db.withTransactionAsync(async () => {
+		await db.execAsync('DELETE FROM kv');
+		for (const [key, value] of Object.entries(entries)) {
+			await db.runAsync('INSERT OR REPLACE INTO kv (key, value) VALUES (?, ?)', key, value);
+		}
+	});
+}

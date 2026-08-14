@@ -79,6 +79,34 @@ export async function getStorageUsage(
 	return { items, totalBytes };
 }
 
+// Full dump of this helper's keys for backup/export. Unlike getStorageUsage this includes
+// the internal sentinel keys (e.g. migration markers) on purpose: a restored backup should
+// put the storage into exactly the state it was exported in.
+export async function getAllStorageEntries(dbName?: string): Promise<Record<string, string>> {
+	const storage = getLocalStorage();
+	if (!storage) return {};
+	const prefix = keyPrefix(dbName);
+	const entries: Record<string, string> = {};
+	for (let i = 0; i < storage.length; i++) {
+		const fullKey = storage.key(i);
+		if (!fullKey?.startsWith(prefix)) continue;
+		entries[fullKey.slice(prefix.length)] = storage.getItem(fullKey) ?? '';
+	}
+	return entries;
+}
+
+// Backup restore counterpart to getAllStorageEntries: replaces every key owned by this
+// helper with the given entries (mirrors the native transaction-based implementation).
+export async function replaceAllStorageEntries(entries: Record<string, string>, dbName?: string): Promise<void> {
+	const storage = getLocalStorage();
+	if (!storage) return;
+	await clearStorage(dbName);
+	const prefix = keyPrefix(dbName);
+	for (const [key, value] of Object.entries(entries)) {
+		storage.setItem(prefix + key, value);
+	}
+}
+
 export async function clearStorage(dbName?: string): Promise<void> {
 	const storage = getLocalStorage();
 	if (!storage) return;

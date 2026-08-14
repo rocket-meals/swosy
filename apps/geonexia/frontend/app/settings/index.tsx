@@ -10,6 +10,7 @@ import {
 	SettingsListNumberInput,
 	SettingsListSelectOption,
 	SettingsListMyMapThemeSelection,
+	SettingsListSqliteBackup,
 	SettingsListSqliteStorage,
 	useMyScrollViewModal,
 	useTheme,
@@ -819,6 +820,14 @@ export default function SettingsScreen() {
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleResetAllData}
 					groupPosition="bottom"
+				/>
+
+				<SettingsListGroupTitle title="Datensicherung" />
+				<SettingsListSqliteBackup
+					appName="geonexia"
+					iconBgColor={PRIMARY_COLOR}
+					iconColor="#ffffff"
+					textColor={theme.screen.text}
 				/>
 
 				<SettingsListGroupTitle title="Speicher" />

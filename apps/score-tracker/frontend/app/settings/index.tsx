@@ -11,6 +11,7 @@ import {
 	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListSelectOption,
+	SettingsListSqliteBackup,
 	SettingsListSqliteStorage,
 	useMyScrollViewModal,
 	useTheme,
@@ -159,6 +160,16 @@ export default function SettingsScreen() {
 						cancel: 'Abbrechen',
 						confirmClear: 'Löschen',
 					}}
+				/>
+
+				<SettingsListGroupTitle title="Datensicherung" />
+				<SettingsListSqliteBackup
+					appName="score-tracker"
+					iconBgColor={PRIMARY_COLOR}
+					iconColor="#ffffff"
+					textColor={theme.screen.text}
+					exportNativeID={ComponentIds.SETTINGS_EXPORT_DATA_ROW}
+					importNativeID={ComponentIds.SETTINGS_IMPORT_DATA_ROW}
 				/>
 
 				<SettingsListGroupTitle title="Hilfe & Rechtliches" />

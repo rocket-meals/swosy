@@ -20,8 +20,20 @@ export {
 	removeStorageItem,
 	getStorageUsage,
 	clearStorage,
+	getAllStorageEntries,
+	replaceAllStorageEntries,
 } from './src/helpers/SqliteKeyValueStorage';
 export type { SqliteStorageKeyUsage } from './src/helpers/SqliteKeyValueStorage';
+export {
+	KV_BACKUP_FILE_TYPE,
+	KV_BACKUP_FILE_VERSION,
+	createKvBackupJson,
+	parseKvBackupJson,
+	restoreKvBackup,
+} from './src/helpers/KvBackupHelper';
+export type { KvBackupFile } from './src/helpers/KvBackupHelper';
+export { saveJsonToFile, pickJsonFromFile, buildJsonExportFilename } from './src/helpers/JsonFileTransferHelper';
+export type { SaveJsonResult } from './src/helpers/JsonFileTransferHelper';
 export { getUtf8ByteLength, formatBytes } from './src/helpers/ByteSizeHelper';
 export { MyBuffer } from './src/helpers/MyBuffer';
 
@@ -174,6 +186,11 @@ export { default as CollapsibleSection } from './src/components/Collapsible/Coll
 export type { CollapsibleSectionProps } from './src/components/Collapsible/CollapsibleSection';
 
 export { default as SettingsListSqliteStorage } from './src/components/SettingsListSqliteStorage';
+export { default as SettingsListSqliteBackup } from './src/components/SettingsListSqliteBackup';
+export type {
+	SettingsListSqliteBackupProps,
+	SettingsListSqliteBackupTexts,
+} from './src/components/SettingsListSqliteBackup';
 export type {
 	SettingsListSqliteStorageProps,
 	SettingsListSqliteStorageTexts,
