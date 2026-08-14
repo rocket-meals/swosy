@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AaAA69FQNTEx59eUvKp3","`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/KvBackupHelper.ts",61
 "AZ_yQOL1pgUJmaIr0f7D","Remove this useless assignment to variable ""liveSpeedKmh"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4338
 "AZ_yQOL1pgUJmaIr0f7E","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",5436
 "AZ_rjWWpiiRzAXeKHrKM","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/tag-und-jahr/frontend/app/settings/index.tsx",17
