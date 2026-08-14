@@ -25,6 +25,10 @@
       "channel": "preview",
       "node": "22.16.0"
     },
+    "previewIos": {
+      "extends": "previewApk",
+      "distribution": "internal"
+    },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"

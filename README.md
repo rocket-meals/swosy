@@ -37,6 +37,27 @@ https://github.com/rocket-meals/studi-futter
 **Geonexia:** 📱 [Neueste Android Preview APK herunterladen](https://expo.dev/artifacts/eas/UYZgGVWq2muifAWBieRzsTwRtc6uBsLrhsosIno2yG8.apk)
 <!-- android-preview-apk:geonexia:end -->
 
+## 🍏 iOS Preview (Ad-hoc)
+
+Installierbar direkt über die EAS-Build-Seite (QR-Code) - das Gerät muss einmalig per `eas device:create` registriert sein.
+Die Links werden wie die Android Preview APKs bei jedem Build-Nummern-Bump auf `master` automatisch aktualisiert.
+
+<!-- ios-preview:frontend:start -->
+**Rocket Meals (Frontend):** Wird nach dem nächsten iOS-Preview-Build auf `master` automatisch aktualisiert.
+<!-- ios-preview:frontend:end -->
+
+<!-- ios-preview:score-tracker:start -->
+**Score Tracker:** Wird nach dem nächsten iOS-Preview-Build auf `master` automatisch aktualisiert.
+<!-- ios-preview:score-tracker:end -->
+
+<!-- ios-preview:tag-und-jahr:start -->
+**Tag und Jahr:** Wird nach dem nächsten iOS-Preview-Build auf `master` automatisch aktualisiert.
+<!-- ios-preview:tag-und-jahr:end -->
+
+<!-- ios-preview:geonexia:start -->
+**Geonexia:** Wird nach dem nächsten iOS-Preview-Build auf `master` automatisch aktualisiert.
+<!-- ios-preview:geonexia:end -->
+
 ## 🧑‍💻 Dev Client Builds
 
 Development Builds (expo-dev-client) zum Testen von PR-Previews und Dev-Servern auf echten Geräten -
