@@ -27,11 +27,23 @@ export function getMajorVersion() {
 }
 
 export function getVersionPatch() {
+	// Never decrease the visible patch version.
 	return 0;
 }
 
-// Same semver scheme as apps/frontend/app: major.buildNumber.patch
+// Version used for app.config.ts (`version`, and thus the expo-updates
+// runtimeVersion via policy "appVersion") — the patch segment is pinned to 0
+// like in apps/frontend/app: OTA updates only apply when the runtime version
+// matches the installed binary exactly, so including the (OTA-bumped) patch
+// here would make every patch update invisible to existing builds.
 export function getVersion() {
+	return getMajorVersion() + '.' + getBuildNumber() + '.' + 0;
+}
+
+// Full version incl. the real patch segment, meant for any settings/about UI
+// so users can verify which OTA update they are running (same contract as
+// apps/frontend, geonexia and score-tracker).
+export function getVersionInternalForAppsettingsScreen() {
 	return getMajorVersion() + '.' + getBuildNumber() + '.' + getVersionPatch();
 }
 

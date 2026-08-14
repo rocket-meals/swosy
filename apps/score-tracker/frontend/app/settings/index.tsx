@@ -24,7 +24,7 @@ import { setDebugMode, clearDebugLogs } from '../../store/debugSlice';
 import { setOnboardingCompleted } from '../../store/appSettingsSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import { ComponentIds } from '../../constants/ComponentIds';
-import { getCompanyLogoLocalSaved, getCustomerConfig, SUPPORT_EMAIL } from '../../config';
+import { getCompanyLogoLocalSaved, getCustomerConfig, getVersionInternalForAppsettingsScreen, SUPPORT_EMAIL } from '../../config';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -55,7 +55,11 @@ export default function SettingsScreen() {
 	const debugLogs = useSelector((state: RootState) => state.debug.logs);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
-	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+	// Version straight from the JS bundle (config.ts), NOT from
+	// Constants.expoConfig: the latter reflects the natively embedded manifest,
+	// so OTA updates (which only bump the patch version) would never show up
+	// and users could not verify they are running the latest update.
+	const appVersion = getVersionInternalForAppsettingsScreen();
 	const appName = getCustomerConfig().projectName;
 	const licenses = getLicensesFromExtra(Constants.expoConfig?.extra);
 

@@ -13,8 +13,11 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	// 22: Trigger new builds incl. Android preview APK link in the README.
-	return 22;
+	// 23: OTA updates were broken: runtimeVersion policy "appVersion" included
+	// the patch segment, so patch-only OTA updates never matched the installed
+	// binary. getVersion() now pins the patch segment to 0 (like apps/frontend
+	// and geonexia) — this build picks up the stable runtime version.
+	return 23;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
@@ -32,8 +35,18 @@ export function getVersionPatch() {
 	return 4;
 }
 
-// Same semver scheme as apps/frontend/app: major.buildNumber.patch
+// Version used for app.config.ts (`version`, and thus the expo-updates
+// runtimeVersion via policy "appVersion") — the patch segment is pinned to 0
+// like in apps/frontend/app: OTA updates only apply when the runtime version
+// matches the installed binary exactly, so including the (OTA-bumped) patch
+// here would make every patch update invisible to existing builds.
 export function getVersion() {
+	return getMajorVersion() + '.' + getBuildNumber() + '.' + 0;
+}
+
+// Full version incl. the real patch segment, shown on the settings screen so
+// users can verify which OTA update they are running.
+export function getVersionInternalForAppsettingsScreen() {
 	return getMajorVersion() + '.' + getBuildNumber() + '.' + getVersionPatch();
 }
 
