@@ -1,7 +1,10 @@
 import easBuildOutputSample from './__fixtures__/eas-build-output.sample.json';
+import easBuildListSample from './__fixtures__/eas-build-list.sample.json';
 import { getAndroidInstallUrl, getIosBuildPageUrl, renderDevClientBlock, updateReadmeDevClientLink } from './dev-client-readme';
 
 const sampleBuild = easBuildOutputSample[0];
+// eas build:list --json entries have no `project` info (unlike eas build --json).
+const sampleListBuild = easBuildListSample[0];
 
 describe('getAndroidInstallUrl', () => {
   it('extracts the artifact URL from a real eas build --json response', () => {
@@ -26,6 +29,18 @@ describe('getIosBuildPageUrl', () => {
   it('returns an empty string when project info or id is missing', () => {
     expect(getIosBuildPageUrl(null)).toBe('');
     expect(getIosBuildPageUrl({ id: 'abc' })).toBe('');
+  });
+
+  it('falls back to the provided account/slug for eas build:list output without project info', () => {
+    expect(getIosBuildPageUrl(sampleListBuild, { account: 'baumgartner-software', slug: 'score-tracker' })).toBe(
+      'https://expo.dev/accounts/baumgartner-software/projects/score-tracker/builds/9f3c1a2b-4d5e-4f60-8a71-b2c3d4e5f607',
+    );
+  });
+
+  it('prefers the build own project info over the fallback', () => {
+    expect(getIosBuildPageUrl(sampleBuild, { account: 'other', slug: 'other-slug' })).toBe(
+      'https://expo.dev/accounts/baumgartner-software/projects/rocket-meals-dev/builds/0f3fcc30-1ae1-4155-ad0c-78f0bcf2d084',
+    );
   });
 });
 

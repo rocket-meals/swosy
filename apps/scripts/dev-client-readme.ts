@@ -36,11 +36,20 @@ export function getAndroidInstallUrl(build: EasBuild | null): string {
   return build?.artifacts?.applicationArchiveUrl || build?.artifacts?.buildUrl || '';
 }
 
+export type EasProjectFallback = {
+  account?: string;
+  slug?: string;
+};
+
 // Ad-hoc iOS builds are installed from the EAS build details page (QR code /
-// install button), not from the raw .ipa artifact.
-export function getIosBuildPageUrl(build: EasBuild | null): string {
-  const account = build?.project?.ownerAccount?.name;
-  const slug = build?.project?.slug;
+// install button), not from the raw .ipa artifact. `eas build --json` output
+// includes the `project` info, but `eas build:list --json` (used by the
+// update-readme workflow job to pick up builds from earlier/PR runs) does NOT
+// - so account and slug can be supplied as a fallback (EAS_ACCOUNT_NAME /
+// EAS_PROJECT_SLUG in the workflow).
+export function getIosBuildPageUrl(build: EasBuild | null, fallback?: EasProjectFallback): string {
+  const account = build?.project?.ownerAccount?.name || fallback?.account;
+  const slug = build?.project?.slug || fallback?.slug;
   const id = build?.id;
   if (!account || !slug || !id) {
     return '';
@@ -48,7 +57,7 @@ export function getIosBuildPageUrl(build: EasBuild | null): string {
   return `https://expo.dev/accounts/${account}/projects/${slug}/builds/${id}`;
 }
 
-export function renderDevClientBlock(appLabel: string, androidBuild: EasBuild | null, iosBuild: EasBuild | null): string | null {
+export function renderDevClientBlock(appLabel: string, androidBuild: EasBuild | null, iosBuild: EasBuild | null, fallback?: EasProjectFallback): string | null {
   const links: string[] = [];
 
   const androidUrl = getAndroidInstallUrl(androidBuild);
@@ -56,7 +65,7 @@ export function renderDevClientBlock(appLabel: string, androidBuild: EasBuild | 
     links.push(`🤖 [Android APK](${androidUrl})`);
   }
 
-  const iosUrl = getIosBuildPageUrl(iosBuild);
+  const iosUrl = getIosBuildPageUrl(iosBuild, fallback);
   if (iosUrl) {
     links.push(`🍏 [iOS (Ad-hoc Install)](${iosUrl})`);
   }
@@ -101,8 +110,12 @@ function runUpdateReadme(): void {
 
   const androidBuild = androidBuildJsonPath ? readBuildOutput(androidBuildJsonPath) : null;
   const iosBuild = iosBuildJsonPath ? readBuildOutput(iosBuildJsonPath) : null;
+  const fallback: EasProjectFallback = {
+    account: process.env.EAS_ACCOUNT_NAME,
+    slug: process.env.EAS_PROJECT_SLUG,
+  };
 
-  const block = renderDevClientBlock(appLabel, androidBuild, iosBuild);
+  const block = renderDevClientBlock(appLabel, androidBuild, iosBuild, fallback);
   if (block === null) {
     console.log(`No dev client build results found for "${appKey}", skipping README update.`);
     return;

@@ -84,7 +84,6 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && inputs.force)
     permissions:
       pull-requests: write
-      contents: write
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
@@ -197,9 +196,38 @@ jobs:
               });
             }
 
-      # Only master pushes update the README (same rule as the preview APK links).
+  # Only master pushes update the README (same rule as the preview APK links).
+  # This is a separate job that runs even when the native build was skipped:
+  # the bumped build number may already have been built from the PR, or a
+  # previous run was cancelled mid-build (the EAS build finishes server-side
+  # regardless). The links come from the latest finished development build on
+  # EAS, so the README always converges to the newest dev client.
+  update-readme:
+    name: "📝 Update dev client links in README"
+    runs-on: ubuntu-latest
+    needs: [check-repository, check-build-number, build-dev-client]
+    if: >-
+      always() && github.event_name == 'push'
+      && needs.check-repository.outputs.is-upstream == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # Fail open with an empty list: renderDevClientBlock() then skips the
+      # README update instead of wiping the existing links.
+      - name: "📡 Fetch latest finished dev client builds from EAS"
+        working-directory: ./apps/geonexia/frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build:list --platform android --build-profile development --status finished --limit 1 --non-interactive --json > eas-build-dev-android.json || echo "[]" > eas-build-dev-android.json
+          eas build:list --platform ios --build-profile development --status finished --limit 1 --non-interactive --json > eas-build-dev-ios.json || echo "[]" > eas-build-dev-ios.json
       - name: "📝 Update dev client links in README"
-        if: always() && github.event_name == 'push'
         run: yarn workspace rocket-meals-scripts dev-client:update-readme
         env:
           README_PATH: ${{ github.workspace }}/README.md
@@ -207,9 +235,11 @@ jobs:
           APP_LABEL: "Geonexia"
           ANDROID_BUILD_JSON: ${{ github.workspace }}/apps/geonexia/frontend/eas-build-dev-android.json
           IOS_BUILD_JSON: ${{ github.workspace }}/apps/geonexia/frontend/eas-build-dev-ios.json
-
+          # eas build:list --json omits the project info, so the iOS build page
+          # URL needs these as fallback (same values as the PR comment step).
+          EAS_ACCOUNT_NAME: baumgartner-software
+          EAS_PROJECT_SLUG: geonexia
       - name: "💾 Commit README update"
-        if: always() && github.event_name == 'push'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
