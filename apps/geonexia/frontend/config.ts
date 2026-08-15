@@ -35,7 +35,8 @@ export function getVersionPatch() {
 	//     snapshot instead of stopping the task); weather saved on activities
 	// 11: settings: whole-database export/import (Datensicherung group,
 	//     shared SettingsListSqliteBackup from common-ui)
-	return 11;
+	// 12: shared Expo app config moved to repo-depkit-common/appconfig
+	return 12;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

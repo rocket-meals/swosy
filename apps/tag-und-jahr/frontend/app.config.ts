@@ -2,22 +2,33 @@ import type { ConfigContext, ExpoConfig } from '@expo/config';
 
 // Register ts-node so Expo can load TypeScript config helpers without a
 // precompiled JavaScript file.
-require('ts-node').register({
-	transpileOnly: true,
-	compilerOptions: {
-		module: 'Node16',
-		moduleResolution: 'node16',
-	},
-});
+require('repo-depkit-common/appconfig/registerTsNode.js').registerTsNode();
 
 const { getBuildNumber, getVersion } = require('./config.ts');
 const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
+// Settings that are deliberately identical in every app of this monorepo
+// (iOS deployment target, Android SDK levels, OTA setup, privacy manifest
+// boilerplate) live in repo-depkit-common/appconfig.
+const {
+	EXPO_OWNER,
+	getExpoBuildPropertiesPlugin,
+	getExpoSplashScreenPlugin,
+	getExpoUpdatesPlugin,
+	getPrivacyManifests,
+	getRuntimeVersion,
+	getUpdatesConfig,
+	getWebConfig,
+} = require('repo-depkit-common/appconfig/expoAppConfig.ts');
+
+// Created by the first tag-und-jahr-expo-update CI run (eas init), see
+// https://expo.dev/accounts/baumgartner-software/projects/tag-und-jahr
+const EAS_PROJECT_ID = '354220f2-0d5a-46a0-bf47-15d8433432a9';
 
 module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
 	return {
 		...config,
-		owner: 'baumgartner-software',
+		owner: EXPO_OWNER,
 		name: 'Tag und Jahr',
 		slug: 'tag-und-jahr',
 		version: getVersion(),
@@ -33,30 +44,9 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 				usesNonExemptEncryption: false,
 			},
 			// Apple privacy manifest (required for App Review): the app collects
-			// no data off-device - everything happens locally. The accessed-API
-			// reasons cover the React Native/Expo SDK internals (UserDefaults,
-			// boot time, disk space, file timestamps), same as apps/score-tracker.
-			privacyManifests: {
-				NSPrivacyCollectedDataTypes: [],
-				NSPrivacyAccessedAPITypes: [
-					{
-						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
-						NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
-					},
-					{
-						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
-						NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
-					},
-					{
-						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
-						NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
-					},
-					{
-						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
-						NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
-					},
-				],
-			},
+			// no data off-device - everything happens locally, so no collected
+			// data types are declared.
+			privacyManifests: getPrivacyManifests(),
 		},
 		android: {
 			adaptiveIcon: {
@@ -66,35 +56,13 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 			package: 'de.baumgartnersoftware.tagundjahr',
 			versionCode: buildNumber,
 		},
-		web: {
-			bundler: 'metro',
-			output: 'static',
-			favicon: './assets/icons/app_icon_source.png',
-		},
-		updates: {
-			enabled: true,
-			url: 'https://u.expo.dev/354220f2-0d5a-46a0-bf47-15d8433432a9',
-			fallbackToCacheTimeout: 10 * 1000,
-		},
-		runtimeVersion: {
-			// Production builds are tied to the app version, but Expo Go only
-			// loads updates whose runtime version has the exposdk:<version>
-			// form. The PR preview workflow publishes an additional update
-			// with EXPO_GO_PREVIEW=true so PRs can be tested in Expo Go.
-			policy: process.env.EXPO_GO_PREVIEW === 'true' ? 'sdkVersion' : 'appVersion',
-		},
+		web: getWebConfig('./assets/icons/app_icon_source.png'),
+		updates: getUpdatesConfig(EAS_PROJECT_ID),
+		runtimeVersion: getRuntimeVersion(),
 		plugins: [
 			'expo-router',
-			[
-				'expo-splash-screen',
-				{
-					image: './assets/icons/app_icon_source.png',
-					imageWidth: 200,
-					resizeMode: 'contain',
-					backgroundColor: '#5d6b85',
-				},
-			],
-			['expo-updates', { username: 'jack5496' }],
+			getExpoSplashScreenPlugin({ image: './assets/icons/app_icon_source.png', backgroundColor: '#5d6b85' }),
+			getExpoUpdatesPlugin(),
 			'expo-font',
 			[
 				'expo-widgets',
@@ -134,15 +102,14 @@ module.exports = function getExpoConfig({ config }: ConfigContext): ExpoConfig {
 					],
 				},
 			],
+			getExpoBuildPropertiesPlugin(),
 		],
 		experiments: {
 			typedRoutes: true,
 		},
 		extra: {
 			eas: {
-				// Created by the first tag-und-jahr-expo-update CI run (eas init),
-				// see https://expo.dev/accounts/baumgartner-software/projects/tag-und-jahr
-				projectId: '354220f2-0d5a-46a0-bf47-15d8433432a9',
+				projectId: EAS_PROJECT_ID,
 			},
 			// Open-source dependency versions of this app and of its workspace
 			// packages, collected from node_modules at config-evaluation time

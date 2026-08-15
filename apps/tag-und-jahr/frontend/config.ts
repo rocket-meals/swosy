@@ -15,7 +15,8 @@ export type CustomerConfig = {
 export function getBuildNumber() {
 	// 3: Photo-grid food widget (content margins disabled - native change)
 	// and clock themes (year start, sun/moon day display).
-	return 3;
+	// 4: shared expo-build-properties plugin from repo-depkit-common/appconfig
+	return 4;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
@@ -29,7 +30,8 @@ export function getMajorVersion() {
 export function getVersionPatch() {
 	// Never decrease the visible patch version.
 	// 1: expo-updates runtime version pinned to patch 0 (getVersion)
-	return 1;
+	// 2: shared Expo app config moved to repo-depkit-common/appconfig
+	return 2;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

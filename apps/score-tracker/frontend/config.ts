@@ -17,7 +17,8 @@ export function getBuildNumber() {
 	// the patch segment, so patch-only OTA updates never matched the installed
 	// binary. getVersion() now pins the patch segment to 0 (like apps/frontend
 	// and geonexia) — this build picks up the stable runtime version.
-	return 24;
+	// 25: shared expo-build-properties plugin from repo-depkit-common/appconfig
+	return 25;
 }
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getMajorVersion
@@ -34,7 +35,8 @@ export function getVersionPatch() {
 	// 4: common/common-ui: weather API helper + WeatherPreview playbook entry
 	// 5: settings: whole-database export/import (Datensicherung group);
 	//    version display from the JS bundle (OTA patch bumps visible)
-	return 5;
+	// 6: shared Expo app config moved to repo-depkit-common/appconfig
+	return 6;
 }
 
 // Version used for app.config.ts (`version`, and thus the expo-updates

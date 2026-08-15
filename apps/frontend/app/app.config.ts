@@ -2,13 +2,7 @@ import type { ConfigContext } from '@expo/config';
 
 // Register ts-node so Expo can load TypeScript config helpers without a
 // precompiled JavaScript file.
-require('ts-node').register({
-	transpileOnly: true,
-	compilerOptions: {
-		module: 'Node16',
-		moduleResolution: 'node16',
-	},
-});
+require('repo-depkit-common/appconfig/registerTsNode.js').registerTsNode();
 
 const { getFinalConfig } = require('./config.ts');
 const { collectLicenses } = require('repo-depkit-common/licenses/collectLicenses.ts');
